@@ -1,0 +1,147 @@
+{
+    "type" : "Layout",
+    "top" : {
+	"height": 25,
+	"scroll": null, 
+	"zIndex": 2,
+	"children": [
+	{
+	    "type": "Text",
+	    "content": "MENU"
+	}
+	]
+    },
+    "left": {
+	"width": 300, 
+	"resize": true, 
+	"scroll": true,
+	"animate": true,
+	"children": [{
+	    "type": "TabView",
+	    "children": [
+	    {
+		"type": "Tab",
+		"label": "Variables",
+		"children": [
+		{
+		    "type": "DataTable",
+		    "dataSource": "VariableInstance",
+		    "columnset": [ {
+			"key":"id", 
+			"sortable": true
+		    }, {
+			"key":"name", 
+			"sortable": true
+		    }, {
+			"key":"@class"
+		    }]
+		}
+		]
+	    }
+	    ]
+	}]
+    },
+    "right": {
+	"width": 500, 
+	"resize": true,
+	"collapse": false,
+	"scroll": true, 
+	"animate": true,
+	"children": [{
+	    "type": "TabView",
+	    "children": [{
+		"type": "Tab",
+		"label": "Edit",
+		"children": [
+		{
+		    "type": "DisplayArea",
+		    "id": "editor-editdisplayarea"
+		    
+		}
+		]
+	    },
+	    {
+		"type": "Tab",
+		"label": "CometFrame",
+		"children": [
+		{
+		    "type": "CometFrame"		
+		}
+		]
+	    },
+	    {
+		"type": "Tab",
+		"label": "Logger",
+		"children": [
+		{
+		    "type": "Logger"		
+		}
+		]
+	    }]
+	}]
+    },
+    "center": {
+	"children": [{
+	    "type": "TabView",
+	    "children": [
+	    {
+		"type": "Tab",
+		"label": "Variables descriptors",
+		"children": [
+		{
+		    "type": "DataTable",
+		    "dataSource": "VariableDescriptor",
+		    "columnset": [ {
+			"key":"id", 
+			"sortable": true
+		    }, {
+			"key":"name", 
+			"sortable": true
+		    }, {
+			"key":"@class"
+		    }]
+		}
+		]
+	    },
+	    {
+		"type": "Tab",
+		"label": "Type explorer",
+		"children": [
+		{
+		    "type": "DataTable",
+		    "dataSource": "type",
+		    "columnset": [ {
+			"key":"id", 
+			"sortable": true
+		    }, {
+			"key":"name", 
+			"sortable": true
+		    }, {
+			"key":"@class"
+		    }]
+		}
+		]
+	    },
+	    {
+		"type": "Tab",
+		"label": "Game models explorer",
+		"children": [
+		{
+		    "type": "DataTable",
+		    "dataSource": "gameModel",
+		    "columnset": [ {
+			"key":"id", 
+			"sortable": true
+		    }, {
+			"key":"name", 
+			"sortable": true
+		    }, {
+			"key":"@class"
+		    }]
+		}
+		]
+	    }
+	    ]
+	}]
+    }
+}

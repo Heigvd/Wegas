@@ -1,0 +1,346 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.albasim.wegas.ejb;
+
+import com.albasim.wegas.comet.Terminal;
+import com.albasim.wegas.exception.InvalidContent;
+import com.albasim.wegas.exception.NotFound;
+import com.albasim.wegas.persistance.GmEventListener;
+import com.albasim.wegas.persistance.GmInstance;
+import com.albasim.wegas.persistance.GmType;
+import com.albasim.wegas.persistance.GmVariableDescriptor;
+import com.albasim.wegas.persistance.GmVariableInstance;
+import com.albasim.wegas.persistance.instance.GmComplexInstance;
+import com.albasim.wegas.persistance.instance.GmIntegerInstance;
+import com.albasim.wegas.persistance.type.GmComplexType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.xml.bind.annotation.XmlType;
+
+/**
+ *
+ * @author maxence
+ */
+@Stateless
+@LocalBean
+public class GmInstanceManager {
+
+    private static final Logger logger = Logger.getLogger("EJB_GM");
+
+
+    @EJB
+    private AlbaEntityManager aem;
+
+
+    @EJB
+    private GmVarInstManager vim;
+
+
+    @EJB
+    private GmEventListenerManager elm;
+
+
+    @EJB
+    private Dispatcher dispatcher;
+
+
+    @PersistenceContext(unitName = "metaPU")
+    private EntityManager em;
+
+
+    public void createInstance(String gmID, String vID, GmInstance newInstance,
+                               Terminal terminal) {
+        dispatcher.begin(terminal);
+        GmVariableInstance vi = vim.getVariableInstance(gmID, vID, null);
+        GmVariableDescriptor vd = vi.getDescriptor();
+
+        newInstance.setVariable(vi);
+
+        GmType type = vd.getType();
+        XmlType iXmlType = newInstance.getClass().getAnnotation(XmlType.class);
+
+        // Does the cardinality allow to add instances ?
+        if (vd.canAddInstance()) {
+            // Check if the new instance has the correct type
+            if (iXmlType.name().equals(type.getInstanceType())) {
+                instancePrePersist(newInstance);
+                aem.create(newInstance, terminal);
+                return;
+            }
+            throw new InvalidContent("Instance type doesn't match ");
+        }
+        throw new InvalidContent("Cannot add instance to this variable !");
+    }
+
+
+    public void instancePrePersist(GmInstance i) {
+        dispatcher.create(i);
+        i.setInstanceOf(i.getVariable().getDescriptor().getType());
+
+        if (i instanceof GmComplexInstance) {
+            complexeInstancePrePersist((GmComplexInstance) i);
+        }
+    }
+
+
+    private void complexeInstancePrePersist(GmComplexInstance ci) {
+
+        // ARGH this is quite similar to GameModel::prePersist....
+        if (ci.getListeners() != null) {
+            for (GmEventListener el : ci.getListeners()) {
+                el.setGmComplexInstance(ci);
+                elm.eventListenerPrePersist(el);
+            }
+        }
+
+        // Make sure the variable instance list exists
+        if (ci.getVariableInstances() == null) {
+            ci.setVariableInstances(new ArrayList<GmVariableInstance>());
+        }
+
+        GmComplexType theCType = (GmComplexType) ci.getInstanceOf();
+
+        logger.log(Level.INFO, "ComplexInstance ComplexType: {0}", theCType);
+        if (theCType == null) {
+            throw new InvalidContent(ci.toString());
+        }
+
+        Collection<GmVariableDescriptor> vds = theCType.getVariableDescriptors();
+
+        // Check that all variable in the list are correct (i.e. the var name is defined by a descriptor)
+        for (GmVariableInstance i : ci.getVariableInstances()) {
+            GmVariableDescriptor lookupDescriptor = theCType.lookupDescriptor(i.getStringName());
+            if (lookupDescriptor == null) {
+                throw new InvalidContent("The \"" + theCType.getName()
+                        + "\"  doesn't contains any \""
+                        + i.getName() + "\" variable descriptor");
+            } else {
+                // Instance exists, register descriptor and parent (this)
+                i.setDescriptor(lookupDescriptor);
+                i.setParentComplexInstance(ci);
+                i.setParentGameModel(null);
+                vim.variableInstancePrePersist(i);
+            }
+        }
+
+        // Check that each descriptor has a variable; otherwise, propagateCreate the variable
+        for (GmVariableDescriptor vd : vds) {
+            GmVariableInstance theVi = ci.lookupVariableInstance(vd.getName());
+            if (theVi == null) {
+                theVi = new GmVariableInstance();
+                theVi.setDescriptor(vd);
+                theVi.setParentComplexInstance(ci);
+                ci.getVariableInstances().add(theVi);
+                vim.variableInstancePrePersist(theVi);
+            }
+        }
+    }
+
+
+    public GmInstance getInstance(String gmID, String vID, String iID,
+                                  Terminal terminal) {
+        logger.log(Level.INFO, "GetInstance: Terminal is : {0}", terminal);
+        GmInstance find = em.find(GmInstance.class, Long.parseLong(iID));
+        if (find != null) {
+            GmVariableInstance vi = vim.getVariableInstance(gmID, vID, null);
+            if (find.getVariable().equals(vi)) {
+                dispatcher.registerObject(find, terminal);
+                return find;
+            }
+            throw new InvalidContent();
+        }
+        throw new NotFound();
+    }
+
+
+    /** 
+     * juste the same as previous one but for ComplexInstance
+     * For internal USE ONLY -> the returned object shall never been sent to user !
+     * @param gmID
+     * @param vID
+     * @param iID
+     * @return 
+     */
+    public GmComplexInstance getComplexInstance(String gmID, String vID,
+                                                String iID) {
+        GmComplexInstance find = em.find(GmComplexInstance.class, Long.parseLong(iID));
+        if (find != null) {
+            GmVariableInstance vi = vim.getVariableInstance(gmID, vID, null);
+            if (find.getVariable().equals(vi)) {
+                return find;
+            }
+            throw new InvalidContent();
+        }
+        throw new NotFound();
+    }
+
+
+    /**
+     * Update an instance 
+     * 
+     * In the case the instance is an integer one that drives others 
+     * variables instances through an EqualCardinality. The links instances are also
+     * propagateUpdate (creation, destruction) to match the new value !
+     * 
+     * @param gmID game model ID the instance belongs to
+     * @param vID variable id the instance belongs to
+     * @param iID instance id to propagateUpdate
+     * @param theInstance the user-provided instance which embed modifications
+     * 
+     * @return the propagateUpdate instance
+     */
+    public GmInstance updateInstance(String gmID, String vID, String iID,
+                                     GmInstance theInstance, Terminal terminal) {
+        GmInstance instance = getInstance(gmID, vID, iID, null);
+
+        // First, does, the user-provided instance match the one specified folowing IDs ? 
+        if (instance.equals(theInstance)) {
+            dispatcher.begin(terminal);
+            // Set association in the user-provided instance
+            // The type
+            theInstance.setInstanceOf(instance.getInstanceOf());
+            // The variable which define this variable
+            theInstance.setVariable(instance.getVariable());
+
+            // default behaviour is name is only editable with Unbounded cardinality 
+            if (!instance.getVariable().getDescriptor().canChangeInstanceName()) {
+                //revert the name if its modification is not allowed
+                theInstance.setName(instance.getName());
+            }
+
+            if (theInstance instanceof GmIntegerInstance) {
+                // Special case : IntegerInstance may drive EqualCardinalized variables
+
+                // The new int instance
+                GmIntegerInstance iInst = (GmIntegerInstance) theInstance;
+                // And the old one
+                GmIntegerInstance iInstOri = (GmIntegerInstance) instance;
+
+                // Get variable linked to the original instance
+                List<GmVariableInstance> gmVariableInstances = iInstOri.getGmVariableInstances();
+
+                // Is there linked variables ? 
+                if (gmVariableInstances != null && !gmVariableInstances.isEmpty()) {
+
+                    Integer newValue = iInst.getV();
+                    Integer oldValue = iInstOri.getV();
+
+                    int nv = (newValue == null ? 0 : newValue.intValue());
+                    int ov = (oldValue == null ? 0 : oldValue.intValue());
+
+                    logger.log(Level.INFO, "VALUES (eqCard) {0} -> {1}", new Object[]{nv, ov});
+
+                    if (nv < 0) {
+                        // TOOD ?? Why not ... it shall be possible 
+                        throw new InvalidContent("Negative value are forbidden when value is used by an EqualCardinality");
+                    }
+
+                    // be careful : the logic will become invalid if negative value are made valid !
+                    if (nv < ov) {
+                        // Case a) remove instance
+                        for (GmVariableInstance vInst : iInstOri.getGmVariableInstances()) {
+                            for (GmInstance inst : vInst.getInstances()) {
+                                int parseInt = Integer.parseInt(inst.getName());
+                                if (parseInt > nv) {
+                                    // Current instance index is grater than bound
+                                    dispatcher.remove(inst);
+                                    // DO NOT PROVIDE TERMINAL to avoid commiting now !
+                                    aem.destroy(inst, null);
+                                }
+                            }
+                        }
+                    } else if (nv > ov) {
+                        // Case b) propagateCreate instances
+                        Integer i;
+                        for (GmVariableInstance vInst : iInstOri.getGmVariableInstances()) {
+                            for (i = ov + 1; i <= nv; i++) {
+                                GmInstance createInstance = vInst.getDescriptor().getType().createInstance(i.toString(), vInst, null);
+                                dispatcher.create(createInstance);
+                                // DO NOT PROVIDE TERMINAL to avoid commiting now !
+                                aem.create(createInstance, null);
+                            }
+                        }
+                    }
+                }
+            }
+            GmInstance update = aem.update(theInstance, terminal);
+            return update;
+        }
+        throw new InvalidContent();
+    }
+
+
+    /**
+     * Destroy the instance
+     * 
+     * Note about EqualCardinality link to the instance to propagateDestroy:
+     *   Since only one-cardinalized integer instance can be referenced by 
+     *   equalCardinalites, the destruction of such an instance is forbidden
+     *   In the future, if referencable variable is extended, special operation
+     *   shall be included here
+     * 
+     */
+    public void destroyInstance(String gmID, String vID, String iID,
+                                Terminal terminal) {
+        GmInstance instance = getInstance(gmID, vID, iID, null);
+        GmVariableInstance vi = instance.getVariable();
+        GmVariableDescriptor vd = vi.getDescriptor();
+
+        if (vd.canRemoveInstance()) {
+            dispatcher.begin(terminal);
+            instancePreDestroy(instance);
+            aem.destroy(instance, terminal);
+            return;
+        }
+
+        throw new InvalidContent("Cannot destroy variable");
+    }
+
+
+    public void instancePreDestroy(GmInstance i) {
+
+        if (i instanceof GmComplexInstance){
+            GmComplexInstance ci = (GmComplexInstance) i;
+
+            for (GmEventListener el : ci.getListeners()){
+                elm.eventListenerPreDestroy(el);
+            }
+
+            for (GmVariableInstance vi : ci.getVariableInstances()){
+                vim.variableInstancePreDestroy(vi);
+            }
+        }
+        
+        dispatcher.remove(i);
+    }
+
+
+    void detachAll(GmVariableInstance vi, Terminal terminal) {
+        for (GmInstance i : vi.getInstances()){
+            detach(i, terminal);
+        }
+    }
+
+
+    private void detach(GmInstance i, Terminal terminal) {
+        if (i instanceof GmComplexInstance){
+            vim.detachAll((GmComplexInstance)i, terminal);
+            elm.detachAll((GmComplexInstance)i, terminal);
+        }
+        dispatcher.detach(i, terminal);
+    }
+
+
+
+
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="metaPU" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>metalbasim_dev</jta-data-source>
+    <class>com.albasim.wegas.persistance.cardinality.GmEnumCardinality</class>
+    <class>com.albasim.wegas.persistance.cardinality.GmOneCardinality</class>
+    <class>com.albasim.wegas.persistance.cardinality.GmEqualCardinality</class>
+    <class>com.albasim.wegas.persistance.cardinality.GmUnboundedCardinality</class>
+    <class>com.albasim.wegas.persistance.GmVariableDescriptor</class>
+    <class>com.albasim.wegas.persistance.type.GmBooleanType</class>
+    <class>com.albasim.wegas.persistance.type.GmTextType</class>
+    <class>com.albasim.wegas.persistance.type.GmEnumType</class>
+    <class>com.albasim.wegas.persistance.type.GmStringType</class>
+    <class>com.albasim.wegas.persistance.type.GmComplexType</class>
+    <class>com.albasim.wegas.persistance.type.GmIntegerType</class>
+    <class>com.albasim.wegas.persistance.type.GmDoubleType</class>
+    <class>com.albasim.wegas.persistance.type.GmMediaType</class>
+    <class>com.albasim.wegas.persistance.GmType</class>
+    <class>com.albasim.wegas.persistance.GmMethod</class>
+    <class>com.albasim.wegas.persistance.GmCardinality</class>
+    <class>com.albasim.wegas.persistance.GmVariableInstance</class>
+    <class>com.albasim.wegas.persistance.GameModel</class>
+    <class>com.albasim.wegas.persistance.instance.GmComplexInstance</class>
+    <class>com.albasim.wegas.persistance.instance.GmTextInstance</class>
+    <class>com.albasim.wegas.persistance.instance.GmIntegerInstance</class>
+    <class>com.albasim.wegas.persistance.instance.GmDoubleInstance</class>
+    <class>com.albasim.wegas.persistance.instance.GmEnumInstance</class>
+    <class>com.albasim.wegas.persistance.instance.GmStringInstance</class>
+    <class>com.albasim.wegas.persistance.instance.GmMediaInstance</class>
+    <class>com.albasim.wegas.persistance.instance.GmBooleanInstance</class>
+    <class>com.albasim.wegas.persistance.GmEnumItem</class>
+    <class>com.albasim.wegas.persistance.GmEventListener</class>
+    <class>com.albasim.wegas.persistance.GmUserEvent</class>
+    <class>com.albasim.wegas.persistance.GmInstance</class>
+    <class>com.albasim.wegas.persistance.GmParameter</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <shared-cache-mode>NONE</shared-cache-mode>
+    <properties>
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+    </properties>
+  </persistence-unit>
+</persistence>

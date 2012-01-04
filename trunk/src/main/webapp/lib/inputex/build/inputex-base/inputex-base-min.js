@@ -1,0 +1,1 @@
+YUI.add("inputex-base",function(b){function a(c){b.after(this._renderUIInputEx,this,"renderUI");if(this.get("rendered")){this._renderUIInputEx()}}a.ATTRS={inputEx:{},field:{}};a.prototype={_renderUIInputEx:function(){var c={};b.mix(c,this.get("inputEx"));c.parentEl=this.get("contentBox");this.set("field",b.inputEx(c))}};b.inputEx.Base=a},"3.0.0a",{requires:["inputex","base"]});

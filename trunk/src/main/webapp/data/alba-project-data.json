@@ -1,0 +1,191 @@
+﻿{
+	"name" : "as-projectmanagment",
+	"cssUri" : "./src/alba-projectmanagment/assets/alba-project.css",
+	"pages": [{
+		"type": "AlbaPage",
+		"name": "Page 1: Avant-Projet",
+		"uri": "./data/alba-project-layout.json"
+	}],
+	"variables" : [ 
+		{ "id": "phase", "value": 1},
+		{ "id": "period", "value": 1},
+		{ "id": "directionApproval", "value": 1},
+		{ "id": "clientApproval", "value": 1},
+		{ "id": "delay", "value": 1},
+		{ "id": "costs", "value": 1},
+		{ "id": "quality", "value": 1},
+		{ "id": "timeCards", "value": 15}
+	],
+	"texts" : {
+		"T1" : "Selon ces trois personnes, ce projet semble très prometteur et d'une grande importance. \n\nSelon le responsable commercial \"parce que cela permettra d'améliorer l'image de l'entreprise et de répondre à certaines demandes des clients\" \n\nSelon le monteur \"parce que cela nous permettra de diminuer des déplacements inutiles\". Toutefois, le monteur n'est pas encore convaincu de la possibilité pratique de réaliser le partage des connaissances. \n\nL'ingénieur Ra&D pense qu'il s'agit de la première pierre d'un édifice prometteur.",
+		"T2" : "Rien de bien nouveau depuis la dernière identification des enjeux.\n\nVous ne consommez qu'une carte temps.",
+		"T3" : "\"De quel projet parlez-vous ? \n\nPour le moment, nous n'avons pas de disponibilités pour vous recevoir\"",
+		"T4" : "Vous avez pris le café avec un des membres de la direction et en avez profité pour lui parler du projet. \nSon avis: \"hum, tout ceci me semble intéressant et pourrait avoir un bon potentiel de développement. Par contre, les enjeux me semblent encore flous\"\nPassez éventuellement me voir à nouveau lorsque ceci sera plus clair.",
+		"T5" : "Lors d'un café-croissant avec un des membres de la direction, vous avez parler de votre projet. \nSon avis: \"Ce projet semble intéressant. Et si, comme vous me le dites, des monteurs et responsables commerciaux sont convaincus des enjeux, je vous propose de venir faire une présentation à la direction.\"",
+		"T6" : "En début de séance, aucun membre de la direction ne soutenant ce projet, il vous a fallu convaincre tout le monde à la fois, sans soutien.\nLa présentation s'est finalement assez bien déroulée.\nPlusieurs questions ont été posées sur la pertinence et sur l'intérêt de réaliser ce projet. Vos réponses ont convaincu. \nLa direction est intéressée et les enjeux de ce projet lui paraissent importants.\nLors de cette séance, vous avez aussi appris que la diminution des frais de déplacement des monteurs est un des objectifs pour les deux années à venir.",
+		"T7": "Vous nous avez déjà présenté ce projet. On n'est pas encore frappé d'Alzheimer...",
+		"T8": "Vous avez pris un repas en commun. Ceci était sympathique, mais rien de nouveau depuis la dernière fois.\nIl vous a même semblé que comme il n'y avait rien de vraiment nouveau, votre interlocuteur a un peu eu l'impression de perdre son temps.",
+		"T9": "\"Pourquoi me présentez-vous à nouveau ce projet que vous avez déjà présenté en séance de direction ? \""
+	},
+	"stateMachines": {
+		"name": "Stories",
+		"type": "AlbaStateMachines",
+		"children": [
+			{	
+				"id": "Periods&Phases",
+				"type": "AlbaStateMachine",
+				"children": [
+					{
+						"id" : "S1",
+						"type": "AlbaState",
+						"name": "Avant-projet, semaine 1",
+						"position": [50, 50],
+						"active": true,
+						"children" : [
+							{
+								"type": "AlbaTransition",
+								"inputTrigger": "NextWeek",
+								"transitionAction": "period += 1",
+								"nextState": "S2"
+							}
+						]
+					}, {
+						"id" : "S2",
+						"type": "AlbaState",
+						"name": "Avant-projet, semaine 2",
+						"position": [300, 50],
+						"children" : [
+							{
+								"type": "AlbaTransition",
+								"inputTrigger": "NextWeek",
+								"transitionAction": "period += 1",
+								"nextState": "S3"
+							}
+						]
+					}, {
+						"id" : "S3",
+						"type": "AlbaState",
+						"name": "Avant-projet, semaine 3",
+						"position": [550, 50]
+					}
+				]
+			}, {	
+				"id": "Enjeux,Membre&Direction",
+				"type": "AlbaStateMachine",
+				"children": [
+					{
+						"id" : "S04b-1",
+						"type": "AlbaState",
+						"name": "A04B: En attente identification enjeux",
+						"position": [50, 50],
+						"active": true,
+						"children": [
+							{
+								"type": "AlbaTransition",
+								"inputTrigger": "A1",
+								"transitionAction": "timeCards -= 3;\nclientApproval += 0.04;\nalert(texts['T1']);",
+								"nextState": "S04b-2"
+							}, {
+								"type": "AlbaTransition",
+								"inputTrigger": "A3",
+								"transitionAction": "timeCards -= 1;\ndirectionApproval += 0.04;\nalert(texts['T5']);",
+								"nextState": "S04b-2b"
+							}, {
+								"type": "AlbaTransition",
+								"inputTrigger": "A2",
+								"transitionAction": "timeCards -= 3;\ndirectionApproval -= 0.03;\nalert(texts['T3']);",
+								"nextState": "S04b-1"
+							}
+						]
+					}, {
+						"id" : "S04b-2",
+						"type": "AlbaState",
+						"name": "A04B: En attente rencontre membre",
+						"position": [350, 50],
+						"children": [
+							{
+								"type": "AlbaTransition",
+								"inputTrigger": "A1",
+								"transitionAction": "timeCards -= 1;\nalert(texts['T2']);",
+								"nextState": "S04b-2"
+							}, {
+								"type": "AlbaTransition",
+								"inputTrigger": "A3",
+								"transitionAction": "timeCards -= 1;\ndirectionApproval += 0.04;\nalert(texts['T4']);",
+								"nextState": "S04b-3"
+							}, {
+								"type": "AlbaTransition",
+								"inputTrigger": "A2",
+								"transitionAction": "timeCards -= 3;\ndirectionApproval -= 0.05;\nalert(texts['T6']);",
+								"nextState": "S04b-3b"
+							}
+						]
+					}, {
+						"id" : "S04b-3",
+						"type": "AlbaState",
+						"name": "A04B: En attente rencontre direction",
+						"position": [650, 50],
+						"children": [
+							{
+								"type": "AlbaTransition",
+								"inputTrigger": "A1",
+								"transitionAction": "timeCards -= 1;\nalert(texts['T2']);",
+								"nextState": "S04b-3"
+							}, {
+								"type": "AlbaTransition",
+								"inputTrigger": "A3",
+								"transitionAction": "timeCards -= 1;\ndirectionApproval += 0.02;\nalert(texts['T8']);",
+								"nextState": "S04b-3"
+							}, {
+								"type": "AlbaTransition",
+								"inputTrigger": "A2",
+								"transitionAction": "timeCards -= 3;\ndirectionApproval += 0.05;\nalert(texts['T6']);",
+								"nextState": "S04b-4"
+							}
+						]
+					}, {
+						"id" : "S04b-3b",
+						"type": "AlbaState",
+						"name": "A04B: Direction rencontrée avant membre",
+						"position": [650, 250],
+						"children": [ {
+								"type": "AlbaTransition",
+								"inputTrigger": "A3",
+								"transitionAction": "timeCards -= 1;\ndirectionApproval -= 0.03;\nalert(texts['T9']);",
+								"nextState": "S04b-4"
+							}
+						]
+					}, {
+						"id" : "S04b-4",
+						"type": "AlbaState",
+						"name": "A04B: Etat final",
+						"position": [950, 50],
+						"children": [
+							{
+								"type": "AlbaTransition",
+								"inputTrigger": "A1",
+								"transitionAction": "timeCards -= 1;\nalert(texts['T2']);",
+								"nextState": "S04b-4"
+							}, {
+								"type": "AlbaTransition",
+								"inputTrigger": "A3",
+								"transitionAction": "timeCards -= 1;\ndirectionApproval -= 0.02;\nalert(texts['T8']);",
+								"nextState": "S04b-4"
+							}, {
+								"type": "AlbaTransition",
+								"inputTrigger": "A2",
+								"transitionAction": "timeCards -= 3;\ndirectionApproval -= 0.03;\nalert(texts['T7']);",
+								"nextState": "S04b-4"
+							}
+						]
+					}, {
+						"id" : "S04b-2b",
+						"type": "AlbaState",
+						"name": "A04B: Membre rencontré trop tôt",
+						"position": [250, 130]
+					}
+				]
+			}
+		]
+	}
+}
