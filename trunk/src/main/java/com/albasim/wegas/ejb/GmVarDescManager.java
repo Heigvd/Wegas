@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GameModel;
@@ -57,18 +56,17 @@ public class GmVarDescManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
-    public GmVariableDescriptor getVariableDescriptor(String gID, String vdID,
-                                                      Terminal terminal) {
-        GameModel gm = gmm.getGameModel(gID, null);
+    public GmVariableDescriptor getVariableDescriptor(String gID, String vdID) {
+        GameModel gm = gmm.getGameModel(gID);
         GmVariableDescriptor vDesc = em.find(GmVariableDescriptor.class, Long.parseLong(vdID));
 
         if (vDesc != null && gm != null) {
             if (vDesc.getGameModel().equals(gm)) {
-                dispatcher.registerObject(vDesc, terminal);
+            //    dispatcher.registerObject(vDesc);
                 return vDesc;
             }
             throw new InvalidContent();
@@ -77,9 +75,7 @@ public class GmVarDescManager {
     }
 
 
-    public void createVarDesc(GmVariableDescriptor theVarDesc,
-                              Terminal terminal) {
-        dispatcher.begin(terminal);
+    public void createVarDesc(GmVariableDescriptor theVarDesc) {
 
         GameModel gameModel = theVarDesc.getGameModel();
         GmType theType = tm.resolveTypeName(gameModel, theVarDesc.getRealStringType());
@@ -106,7 +102,7 @@ public class GmVarDescManager {
 
         varDescPrePersist(theVarDesc);
 
-        aem.create(theVarDesc, terminal);
+        aem.create(theVarDesc);
     }
 
 
@@ -189,15 +185,13 @@ public class GmVarDescManager {
     }
 
 
-    public void destroyVariableDescriptor(String gmID, String vdID,
-                                          Terminal terminal) {
-        GmVariableDescriptor variableDescriptor = getVariableDescriptor(gmID, vdID, null);
+    public void destroyVariableDescriptor(String gmID, String vdID) {
+        GmVariableDescriptor variableDescriptor = getVariableDescriptor(gmID, vdID);
 
         // TODO ! -> dispatcher  has to know which instances to remove ! -> PreDestroy
 
-        dispatcher.begin(terminal);
         varDescPreDestroy(variableDescriptor);
-        aem.destroy(variableDescriptor, terminal);
+        aem.destroy(variableDescriptor);
     }
 
 
@@ -211,21 +205,21 @@ public class GmVarDescManager {
     }
 
 
-    void detachAll(GameModel gameModel, Terminal terminal) {
+    void detachAll(GameModel gameModel) {
         for (GmVariableDescriptor vd : gameModel.getVariableDescriptors()) {
-            detach(vd, terminal);
+            detach(vd);
         }
     }
 
 
-    void detach(GmVariableDescriptor vd, Terminal terminal) {
-        dispatcher.detach(vd, terminal);
+    void detach(GmVariableDescriptor vd) {
+      //  dispatcher.detach(vd);
     }
 
 
-    void detachAll(GmComplexType ct, Terminal terminal) {
+    void detachAll(GmComplexType ct) {
         for (GmVariableDescriptor vd : ct.getVariableDescriptors()) {
-            detach(vd, terminal);
+            detach(vd);
         }
     }
 

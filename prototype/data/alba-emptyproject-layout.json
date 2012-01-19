@@ -1,0 +1,57 @@
+﻿{
+	"pages": {
+		"type": "AlbaPages",
+		"children": [
+			{
+				"type": "AlbaPageWidget",
+				"id": "alba-mainlayout", 
+				"name": "Sample page",
+				"children": [
+					{
+						"type": "AlbaListWidget",
+						"id": "alba-indicators",
+						"direction": "horizontal",
+						"children": [ 
+							{ 
+								"type": "AlbaLinkWidget",
+								"id": "NextWeek",
+								"label": "Empty button",
+								"targetArea": "",
+								"view": "button",
+							}
+						]
+					},
+					{
+						"type": "AlbaListWidget",
+						"id": "alba-topmenu",
+						"direction": "horizontal",
+						"children": [ 
+							{ 
+								"type": "AlbaLinkWidget",
+								"id": "HomeButton",
+								"label": "Accueil",
+								"cssClass": "alba-topbutton",
+								"targetArea": "maindisplayarea",
+								"targetSubpageId": "Projectpage"
+							}
+						]
+					},
+					{
+						"type": "AlbaDisplayAreaWidget",
+						"id": "maindisplayarea"
+					}
+				]
+			}
+		]
+	},
+	"subpages": {
+		"type": "AlbaSubpages",
+		"children": [
+			{
+				"id": "Homepage",
+				"type": "AlbaTextWidget",
+				"content": "Welcome to empty project."
+			}
+		]
+	}
+}

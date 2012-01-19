@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GameModel;
@@ -55,7 +54,7 @@ public class GmEnumItemManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
@@ -63,10 +62,9 @@ public class GmEnumItemManager {
      * Add an item to an enumeration
      * @param i new enum item
      */
-    public void createEnumItem(GmEnumItem i, Terminal terminal) {
-        dispatcher.begin(terminal);
+    public void createEnumItem(GmEnumItem i) {
         enumItemPrePersist(i);
-        aem.create(i, terminal);
+        aem.create(i);
     }
 
 
@@ -106,16 +104,15 @@ public class GmEnumItemManager {
      * @param itemID  ID of requested enum item
      * @return  the enum item if the request is valid
      */
-    public GmEnumItem getEnumItem(String gmID, String eID, String itemID,
-                                  Terminal terminal) {
+    public GmEnumItem getEnumItem(String gmID, String eID, String itemID) {
         GmEnumItem item = em.find(GmEnumItem.class, Long.parseLong(itemID));
 
         if (item != null) {
-            GameModel gm = gmm.getGameModel(gmID, null);
+            GameModel gm = gmm.getGameModel(gmID);
             GmEnumType enumType = tm.getEnumType(gm, eID);
 
             if (item.getGmEnumType().equals(enumType)) {
-                dispatcher.registerObject(item, terminal);
+               // dispatcher.registerObject(item);
                 return item;
             }
             throw new InvalidContent();
@@ -125,15 +122,14 @@ public class GmEnumItemManager {
 
 
     public GmEnumItem updateEnumItem(String gmID, String eID, String itID,
-                                     GmEnumItem newItem, Terminal terminal) {
-        GmEnumItem enumItem = getEnumItem(gmID, eID, itID, null);
+                                     GmEnumItem newItem) {
+        GmEnumItem enumItem = getEnumItem(gmID, eID, itID);
         if (enumItem.equals(newItem)) {
             newItem.setGmEnumType(enumItem.getGmEnumType());
             //Be sure to reflect new name within instances
             newItem.setInstances(enumItem.getInstances());
-            dispatcher.begin(terminal);
             enumItemPreUpdate(newItem);
-            GmEnumItem update = aem.update(newItem, terminal);
+            GmEnumItem update = aem.update(newItem);
             return update;
         }
         throw new InvalidContent("ID not match path");
@@ -155,12 +151,10 @@ public class GmEnumItemManager {
     }
 
 
-    public void destroyEnumItem(String gmId, String eId, String itId,
-                                Terminal term) {
-        GmEnumItem enumItem = getEnumItem(gmId, eId, itId, null);
-        dispatcher.begin(term);
+    public void destroyEnumItem(String gmId, String eId, String itId) {
+        GmEnumItem enumItem = getEnumItem(gmId, eId, itId);
         enumItemPreDestroy(enumItem);
-        aem.destroy(enumItem, term);
+        aem.destroy(enumItem);
     }
 
 
@@ -174,14 +168,14 @@ public class GmEnumItemManager {
     }
 
 
-    void detach(GmEnumItem it, Terminal terminal) {
-        dispatcher.detach(it, terminal);
+    void detach(GmEnumItem it) {
+       // dispatcher.detach(it);
     }
 
 
-    void detachAll(GmEnumType et, Terminal terminal) {
+    void detachAll(GmEnumType et) {
         for (GmEnumItem it : et.getItems()) {
-            detach(it, terminal);
+            detach(it);
         }
     }
 

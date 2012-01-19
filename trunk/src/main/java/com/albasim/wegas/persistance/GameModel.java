@@ -9,6 +9,7 @@
  * MetAlbasim is distributed under the ??? license
  *
  */
+
 package com.albasim.wegas.persistance;
 
 import com.albasim.wegas.exception.InvalidContent;

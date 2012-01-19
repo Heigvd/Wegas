@@ -102,13 +102,14 @@ YUI.add('wegas-widget', function(Y) {
     
     var CometFrame = Y.Base.create("wegas-cometframe", Y.Widget, [Y.WidgetChild, Y.WeGAS.Widget], {
 	renderUI: function () {
-	    var cb = this.get(CONTENTBOX);
+	    var cb = this.get(CONTENTBOX),
+            cometFrameUrl = '/Wegas/cs?'+Y.WeGAS.App.genId()
 	    cb.setContent('<div id="comet-reply"></div>'+
-		'<iframe id="comet-frame" style="display: none;" src="/Wegas-9999/cs?'+Y.WeGAS.App.genId()+'"></iframe>');
+		'<iframe id="comet-frame" style="display: none;" src="'+cometFrameUrl+'"></iframe>');
 	  
 	    window.app = {
 		listen: function() {
-		    Y.one('#comet-frame').src = '/Wegas-9999/cs?'+Y.WeGAS.App.genId();
+		    Y.one('#comet-frame').src = cometFrameUrl;
 		}, 
 		update: function(data) {
 		    Y.one('#comet-reply').insert(data.name + ':' + data.message+'<br />');

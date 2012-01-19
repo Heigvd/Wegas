@@ -1,0 +1,129 @@
+﻿<div class="alba-pm-body-wrapper">
+<div class="alba-pm-body">
+	<div id="hd">
+		<div id="header_info" widget="ASWidget" class="yui3-g as-widget">
+			<div class="yui3-u">
+				<div widget="ASWidget" config="{&quot;adminMenu&quot;:[{&quot;label&quot;:&quot;Edit&quot;}],&quot;uri&quot;:&quot;mmmm&quot;}" class="as-widget">Phase: <span id="alba-var-phase"></span></div>
+				Period: <span id="alba-var-period"></span>
+			</div>
+			<div class="yui3-u">
+				Direction: <span id="alba-var-directionApproval"></span><br/>
+				Utilisateurs: <span id="alba-var-clientApproval"></span><br/>
+				Qualité: <span>-</span><br/>
+				Coûts: <span>-</span><br/>
+				Délais: <span>-</span>
+			</div>
+			<div class="yui3-u">
+				Budget temps: <span id="alba-var-timeCards">15</span>
+			</div>
+			<div class="yui3-u">
+				<input type="submit" id="nextweek" value="Semaine suivante"></input>
+			</div>
+		</div>
+		<div id="header_menu">
+			<ul>
+				<li>
+					<a href="#">Accueil</a>
+				</li>
+				<li>
+					<a href="#">Projet</a>
+				</li>
+				<li>
+					<span>Tâches</span>
+				</li>
+				<li>
+					<span>Gantt</span>
+				</li>
+				<li>
+					<span>Ressources</span>
+				</li>
+				<li>
+					<span>EVM</span>
+				</li>
+			</ul>
+			<span class="right">				
+				<span class="icon-eye"></span>
+				<!-- <img alt="Eye_2" src="/images/icons/eye_2.png?1290766750">-->
+				[<u><a href="#" id="player_profile_link">test</a></u>] :: 
+				<u><a href="#">déconnexion</a></u>
+			</span>
+		</div>
+	</div> 
+ 
+    <div class="yui3-g" id="layout">
+        <div class="yui3-u" id="main"> 
+		
+            <div class="abla-pm-actions yui3-g" >
+				<div class="yui3-u-1-2" style="border-right: 1px solid black;"> 
+					<div class="h2">Actions possibles pour la phase "Avant-Projet"</div>
+					<div class="h3 yui3-g">
+						<div class="yui3-u-7-8">Nom</div>
+						<div class="yui3-u-1-8 right-col">Effectuée</div>
+					</div>
+					<div class="alba-pm-actions-list">
+					<!--
+						<div class="yui3-g">
+						<div class="yui3-u-7-8">Nom</div>
+						<div class="yui3-u-1-8">Effectuée</div>
+						</div>
+					-->  
+					</div>
+				</div> 
+				<div class="yui3-u-1-2 alba-pm-action-detail"> 
+					<div class="h2">Description</div>
+					<div class="content">
+						<div class="h4"></div>
+						<div class="description"></div>
+						<input type="submit" id="alba-pm-action" value="Effectuer cette action"></input>
+					</div>
+				</div> 
+			</div> 
+			
+            <div class="abla-pm-choices yui3-g" >
+				<div class="yui3-u-1-2" style="border-right: 1px solid black;"> 
+					<div class="h2">Choix à effectuer cette semaine</div>
+					<div class="h3 yui3-g">
+						<div class="yui3-u-7-8">Nom</div>
+						<div class="yui3-u-1-8">Votre choix</div>
+					</div>
+					<!--
+					<div class="content yui3-g">
+						<div class="yui3-u-7-8">Nom</div>
+						<div class="yui3-u-1-8">Effectuée</div>
+					</div>
+					-->  
+				</div> 
+				<div class="yui3-u-1-2"> 
+					<div class="h2">Détails</div>
+				</div> 
+			</div> 
+			
+        </div> 
+		
+		
+ 
+        <div class="yui3-u" id="menu"> 
+            <div class="content">
+				<ul>
+					<li id="module_nav_vertical_actions">
+						<a href="#"><img alt="Actions" src="src/albasim-projectmanagment/assets/available_action.png"></a>
+					</li>
+					<li id="module_nav_vertical_choices" class="selected_menu">
+						<a href="#"><img alt="Choices" src="src/albasim-projectmanagment/assets/choice.png"></a>
+						<!--<span class="one">1</span>-->
+					</li>
+					<li id="module_nav_vertical_messages">
+						<a href="#" ><img alt="Messages" src="src/albasim-projectmanagment/assets/messages.png"></a>
+							<!--<span class="one">1</span>-->
+					</li>
+					<li id="module_nav_vertical_historic">
+						<a href="#"><img alt="Historic" src="src/albasim-projectmanagment/assets/clock.png"></a>
+					</li>
+				</ul>
+			</div> 
+        </div> 
+    </div> 
+ 
+    <div id="ft"></div> 
+</div>
+</div>

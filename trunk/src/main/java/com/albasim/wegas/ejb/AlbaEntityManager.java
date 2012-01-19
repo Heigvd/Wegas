@@ -1,17 +1,13 @@
 /*
- * MetAlbasim is super koool. http://www.albasim.com
+ * Wegas. http://www.albasim.com/wegas/
  * 
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem⁺
  *
  * Copyright (C) 2010, 2011 
- *
- * MetAlbasim is distributed under the ??? license
- *
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.persistance.AnonymousAlbaEntity;
 
@@ -42,18 +38,13 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 public class AlbaEntityManager {
 
     private static final Logger logger = Logger.getLogger("EJB_GM");
-
     @EJB
     Dispatcher dispatcher;
-
-
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
-
     private void processConstraintViolationException(AnonymousAlbaEntity ae,
-                                                     ConstraintViolationException ex,
-                                                     Terminal terminal) {
+            ConstraintViolationException ex) {
 
         logger.log(Level.INFO, "ContrainViolationException on {0} [{1}]", new Object[]{ae.getClass().getSimpleName(), ae.getId()});
 
@@ -80,63 +71,57 @@ public class AlbaEntityManager {
         }
         ae.setErrors(errors);
 
-        if (terminal != null) {
-            logger.log(Level.INFO, "ROLLBACK after constraint validation error");
-            dispatcher.rollback();
-            logger.log(Level.INFO, "ROLLBACK done");
-        }
+        //if (terminal != null) {
+        logger.log(Level.INFO, "ROLLBACK after constraint validation error");
+        dispatcher.rollback();
+        logger.log(Level.INFO, "ROLLBACK done");
+        //}
         throw new InvalidContent(ex, ae);
     }
 
-
     private void processPersistenceException(AnonymousAlbaEntity ae,
-                                             PersistenceException ex,
-                                             Terminal terminal) {
+            PersistenceException ex) {
         logger.log(Level.INFO, "Persistence Exception");
-        
+
         ArrayList<String> errors = new ArrayList<String>();
-        
+
         errors.add("Exception is " + ex.getClass().getSimpleName());
 
         errors.add(ex.getMessage());
-        
+
         ae.setErrors(errors);
-        
+
         Throwable cause = ex.getCause();
-        if (cause instanceof DatabaseException){
-            processDatabaseException(ae, (DatabaseException)cause, terminal);
+        if (cause instanceof DatabaseException) {
+            processDatabaseException(ae, (DatabaseException) cause);
         }
 
-        
-        if (terminal != null) {
-            dispatcher.rollback();
-        }
+
+        dispatcher.rollback();
         throw new InvalidContent(ex, ae);
     }
 
     private void processDatabaseException(AnonymousAlbaEntity ae,
-                                             DatabaseException ex,
-                                             Terminal terminal) {
+            DatabaseException ex) {
         logger.log(Level.INFO, "Database Exception");
         List<String> errors = ae.getErrors();
-        if (errors == null){
+        if (errors == null) {
             errors = new ArrayList<String>();
             ae.setErrors(errors);
         }
-        
+
         errors.add("Exception is " + ex.getClass().getSimpleName());
 
         errors.add(ex.getMessage());
-        
+
         logger.log(Level.INFO, "Accessor: " + ex.getAccessor());
         logger.log(Level.INFO, "ErrorCode: " + ex.getDatabaseErrorCode());
         logger.log(Level.INFO, "Message: " + ex.getMessage());
         logger.log(Level.INFO, "Record: " + ex.getQueryArgumentsRecord());
         logger.log(Level.INFO, "Query: " + ex.getQuery());
-        
+
         throw new InvalidContent(ex, ae);
     }
-
 
     /**
      * Common method that persist the provided entity
@@ -145,33 +130,27 @@ public class AlbaEntityManager {
      * 
      * @param ae 
      */
-    public void create(AnonymousAlbaEntity ae, Terminal terminal) {
+    public void create(AnonymousAlbaEntity ae) {
         try {
             em.persist(ae);
             flush();
-            if (terminal != null) {
                 commit();
-            }
         } catch (PersistenceException ex) {
-            processPersistenceException(ae, ex, terminal);
+            processPersistenceException(ae, ex);
         } catch (ConstraintViolationException ex) {
-            processConstraintViolationException(ae, ex, terminal);
+            processConstraintViolationException(ae, ex);
         } catch (RuntimeException ex) {
             logger.log(Level.INFO, "RuntimeException: " + ex);
-            if (terminal != null) {
-                dispatcher.rollback();
-            }
+            dispatcher.rollback();
             throw new InvalidContent(ex, ae);
-
         }
     }
-
 
     /**
      * Common method that propagateUpdate the provided entity
      * @param ae 
      */
-    public <T extends AnonymousAlbaEntity> T update(T ae, Terminal terminal) {
+    public <T extends AnonymousAlbaEntity> T update(T ae) {
         try {
             T merge = em.merge(ae);
             flush();
@@ -180,34 +159,27 @@ public class AlbaEntityManager {
 
             dispatcher.update(merge);
 
-            if (terminal != null) {
-                commit();
-            }
+            commit();
             return merge;
 
         } catch (PersistenceException ex) {
-            processPersistenceException(ae, ex, terminal);
+            processPersistenceException(ae, ex);
         } catch (ConstraintViolationException ex) {
-            processConstraintViolationException(ae, ex, terminal);
+            processConstraintViolationException(ae, ex);
         }
         return null;
     }
-
 
     /**
      * Destroy an entity 
      * 
      * @param entity  the entity to propagateDestroy
      */
-    public void destroy(Object entity, Terminal terminal) {
+    public void destroy(Object entity) {
         em.remove(entity);
         flush();
-
-        if (terminal != null) {
-            commit();
-        }
+        commit();
     }
-
 
     /**
      * Flushing changes make sure validation exceptions are thrown as soon as possible !
@@ -216,7 +188,7 @@ public class AlbaEntityManager {
         em.flush();
     }
 
-    private void commit(){
+    private void commit() {
         dispatcher.commit();
     }
 }

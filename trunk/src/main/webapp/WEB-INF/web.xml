@@ -1,32 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <servlet-mapping>
-        <servlet-name>AdminServlet</servlet-name>
-        <url-pattern>/admin</url-pattern>
-    </servlet-mapping>
-    <session-config>
-        <session-timeout>
-            30
-        </session-timeout>
-    </session-config>
-    <module-name>WEGAS</module-name>
-    <description>Web Game Authoring System from albasim</description>
+    <module-name>Wegas</module-name>
+    <description>Web Game Authoring System</description>
     <display-name>Web Game Authoring System</display-name>
     <distributable/>
+    <filter>
+        <filter-name>FacebookUserFilter</filter-name>
+        <filter-class>com.albasim.session.facebook.FacebookUserFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>FacebookUserFilter</filter-name>
+        <url-pattern>/facebooktest/*</url-pattern>
+    </filter-mapping>
     <listener>
         <listener-class>com.albasim.wegas.tools.RequestListener</listener-class>
     </listener>
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    <security-constraint>
+        <display-name>SecurityConstraint</display-name>
+        <web-resource-collection>
+            <web-resource-name>WRCollection</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>gamedesigner</role-name>
+        </auth-constraint>
+        <user-data-constraint>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/auth/logon.jsp</form-login-page>
+            <form-error-page>/auth/logonError.jsp</form-error-page>
+        </form-login-config>
+    </login-config>
+    <security-role>
+        <role-name>gamedesigner</role-name>
+    </security-role>
+    <!-- REST Servlet -->
     <servlet>
         <servlet-name>Jersey Web Application</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey Web Application</servlet-name>
+        <url-pattern>/rs/*</url-pattern>
+    </servlet-mapping>
+    <!--
     <servlet>
         <servlet-name>AdminServlet</servlet-name>
         <servlet-class>com.albasim.wegas.admin.AdminServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Jersey Web Application</servlet-name>
-        <url-pattern>/rs/*</url-pattern>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/admin</url-pattern>
+    </servlet-mapping>-->
+    <!-- Atmosphere Servlet -->
+    <servlet>
+        <description>AtmosphereServlet</description>
+        <servlet-name>AtmosphereServlet</servlet-name>
+        <servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class>
+        <init-param>
+            <param-name>org.atmosphere.useWebSocket</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.useNative</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.cpr.broadcastFilterClasses</param-name>
+            <param-value>org.atmosphere.client.JSONPTransportFilter</param-value>
+        </init-param>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AtmosphereServlet</servlet-name>
+        <url-pattern>/atmosphere/*</url-pattern>
     </servlet-mapping>
+    <security-role-mapping>
+        <role-name>loginUser</role-name>
+        <group-name>admin</group-name>
+    </security-role-mapping>
 </web-app>

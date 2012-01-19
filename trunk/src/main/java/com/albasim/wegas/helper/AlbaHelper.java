@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 @Stateless
 public class AlbaHelper {
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private static EntityManager em;
 
 

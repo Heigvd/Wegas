@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.ejb.GmMethodManager;
@@ -72,8 +71,8 @@ public class MethodController {
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<IndexEntry> index(@PathParam("gmID") String gmID,
                                       @PathParam("tID") String tID) throws NotFound, InvalidContent {
-        GameModel gm = gmm.getGameModel(gmID, null);
-        GmType type = tm.getType(gm, tID, null);
+        GameModel gm = gmm.getGameModel(gmID);
+        GmType type = tm.getType(gm, tID);
         return AlbaHelper.getIndex(type.getMethods());
     }
 
@@ -89,8 +88,7 @@ public class MethodController {
     public GmMethod get(@PathParam("gmID") String gmID,
                         @PathParam("tID") String tID,
                         @PathParam("mID") String mID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        GmMethod method = mm.getMethod(gmID, tID, mID, terminal);
+        GmMethod method = mm.getMethod(gmID, tID, mID);
         return method;
     }
 
@@ -107,12 +105,11 @@ public class MethodController {
                            @PathParam("tID") String tID,
                            GmMethod method) {
 
-        GameModel theGameModel = gmm.getGameModel(gmID, null);
-        GmType theType = tm.getType(theGameModel, tID, null);
+        GameModel theGameModel = gmm.getGameModel(gmID);
+        GmType theType = tm.getType(theGameModel, tID);
         method.setBelongsTo(theType);
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        mm.createMethod(method, terminal);
+        mm.createMethod(method);
         return method;
     }
 
@@ -130,8 +127,7 @@ public class MethodController {
                            @PathParam("tID") String tID,
                            @PathParam("mID") String mID,
                            GmMethod method) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        return mm.updateMethod(gmID, tID, mID, method, terminal);
+        return mm.updateMethod(gmID, tID, mID, method);
     }
 
 
@@ -146,8 +142,7 @@ public class MethodController {
     public Response destroy(@PathParam("gmID") String gmID,
                             @PathParam("tID") String tID,
                             @PathParam("mID") String mID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        mm.destroyMethod(gmID, tID, mID, terminal);
+        mm.destroyMethod(gmID, tID, mID);
         return Response.noContent().build();
     }
 

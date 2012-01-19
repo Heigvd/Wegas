@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.ejb.GmVarDescManager;
@@ -63,7 +62,7 @@ public class VariableDescriptorController {
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<IndexEntry> create(
             @PathParam("gmID") String gmID) {
-        GameModel theGameModel = gmm.getGameModel(gmID, null);
+        GameModel theGameModel = gmm.getGameModel(gmID);
         return AlbaHelper.getIndex(theGameModel.getVariableDescriptors());
     }
 
@@ -79,8 +78,7 @@ public class VariableDescriptorController {
     @Produces(MediaType.APPLICATION_JSON)
     public GmVariableDescriptor get(@PathParam("gmID") String gmID,
                                     @PathParam("vdID") String vdID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        return vdm.getVariableDescriptor(gmID, vdID, terminal);
+        return vdm.getVariableDescriptor(gmID, vdID);
     }
 
 
@@ -96,10 +94,9 @@ public class VariableDescriptorController {
     public GmVariableDescriptor createForGameModel(
             @PathParam("gmID") String gmID,
             GmVariableDescriptor theVarDesc) {
-        GameModel theGameModel = gmm.getGameModel(gmID, null);
+        GameModel theGameModel = gmm.getGameModel(gmID);
         theVarDesc.setParentGameModel(theGameModel);
-        Terminal term = dispatcher.getTerminal(request);
-        vdm.createVarDesc(theVarDesc, term);
+        vdm.createVarDesc(theVarDesc);
 
         return theVarDesc;
     }
@@ -131,8 +128,7 @@ public class VariableDescriptorController {
     public Response destroy(@PathParam("gmID") String gmID,
                             @PathParam("vdID") String vdID) {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        vdm.destroyVariableDescriptor(gmID, vdID, terminal);
+        vdm.destroyVariableDescriptor(gmID, vdID);
 
         return Response.status(Response.Status.OK).build();
     }

@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GmEventListener;
@@ -54,14 +53,12 @@ public class GmInstanceManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
-    public void createInstance(String gmID, String vID, GmInstance newInstance,
-                               Terminal terminal) {
-        dispatcher.begin(terminal);
-        GmVariableInstance vi = vim.getVariableInstance(gmID, vID, null);
+    public void createInstance(String gmID, String vID, GmInstance newInstance) {
+        GmVariableInstance vi = vim.getVariableInstance(gmID, vID);
         GmVariableDescriptor vd = vi.getDescriptor();
 
         newInstance.setVariable(vi);
@@ -74,7 +71,7 @@ public class GmInstanceManager {
             // Check if the new instance has the correct type
             if (iXmlType.name().equals(type.getInstanceType())) {
                 instancePrePersist(newInstance);
-                aem.create(newInstance, terminal);
+                aem.create(newInstance);
                 return;
             }
             throw new InvalidContent("Instance type doesn't match ");
@@ -147,14 +144,12 @@ public class GmInstanceManager {
     }
 
 
-    public GmInstance getInstance(String gmID, String vID, String iID,
-                                  Terminal terminal) {
-        logger.log(Level.INFO, "GetInstance: Terminal is : {0}", terminal);
+    public GmInstance getInstance(String gmID, String vID, String iID) {
+        logger.log(Level.INFO, "GetInstance: Terminal is : {0}");
         GmInstance find = em.find(GmInstance.class, Long.parseLong(iID));
         if (find != null) {
-            GmVariableInstance vi = vim.getVariableInstance(gmID, vID, null);
+            GmVariableInstance vi = vim.getVariableInstance(gmID, vID);
             if (find.getVariable().equals(vi)) {
-                dispatcher.registerObject(find, terminal);
                 return find;
             }
             throw new InvalidContent();
@@ -175,7 +170,7 @@ public class GmInstanceManager {
                                                 String iID) {
         GmComplexInstance find = em.find(GmComplexInstance.class, Long.parseLong(iID));
         if (find != null) {
-            GmVariableInstance vi = vim.getVariableInstance(gmID, vID, null);
+            GmVariableInstance vi = vim.getVariableInstance(gmID, vID);
             if (find.getVariable().equals(vi)) {
                 return find;
             }
@@ -200,12 +195,11 @@ public class GmInstanceManager {
      * @return the propagateUpdate instance
      */
     public GmInstance updateInstance(String gmID, String vID, String iID,
-                                     GmInstance theInstance, Terminal terminal) {
-        GmInstance instance = getInstance(gmID, vID, iID, null);
+                                     GmInstance theInstance) {
+        GmInstance instance = getInstance(gmID, vID, iID);
 
         // First, does, the user-provided instance match the one specified folowing IDs ? 
         if (instance.equals(theInstance)) {
-            dispatcher.begin(terminal);
             // Set association in the user-provided instance
             // The type
             theInstance.setInstanceOf(instance.getInstanceOf());
@@ -255,7 +249,7 @@ public class GmInstanceManager {
                                     // Current instance index is grater than bound
                                     dispatcher.remove(inst);
                                     // DO NOT PROVIDE TERMINAL to avoid commiting now !
-                                    aem.destroy(inst, null);
+                                    aem.destroy(inst);
                                 }
                             }
                         }
@@ -267,13 +261,13 @@ public class GmInstanceManager {
                                 GmInstance createInstance = vInst.getDescriptor().getType().createInstance(i.toString(), vInst, null);
                                 dispatcher.create(createInstance);
                                 // DO NOT PROVIDE TERMINAL to avoid commiting now !
-                                aem.create(createInstance, null);
+                                aem.create(createInstance);
                             }
                         }
                     }
                 }
             }
-            GmInstance update = aem.update(theInstance, terminal);
+            GmInstance update = aem.update(theInstance);
             return update;
         }
         throw new InvalidContent();
@@ -290,16 +284,14 @@ public class GmInstanceManager {
      *   shall be included here
      * 
      */
-    public void destroyInstance(String gmID, String vID, String iID,
-                                Terminal terminal) {
-        GmInstance instance = getInstance(gmID, vID, iID, null);
+    public void destroyInstance(String gmID, String vID, String iID) {
+        GmInstance instance = getInstance(gmID, vID, iID);
         GmVariableInstance vi = instance.getVariable();
         GmVariableDescriptor vd = vi.getDescriptor();
 
         if (vd.canRemoveInstance()) {
-            dispatcher.begin(terminal);
             instancePreDestroy(instance);
-            aem.destroy(instance, terminal);
+            aem.destroy(instance);
             return;
         }
 
@@ -325,19 +317,19 @@ public class GmInstanceManager {
     }
 
 
-    void detachAll(GmVariableInstance vi, Terminal terminal) {
+    void detachAll(GmVariableInstance vi) {
         for (GmInstance i : vi.getInstances()){
-            detach(i, terminal);
+            detach(i);
         }
     }
 
 
-    private void detach(GmInstance i, Terminal terminal) {
+    private void detach(GmInstance i) {
         if (i instanceof GmComplexInstance){
-            vim.detachAll((GmComplexInstance)i, terminal);
-            elm.detachAll((GmComplexInstance)i, terminal);
+            vim.detachAll((GmComplexInstance)i);
+            elm.detachAll((GmComplexInstance)i);
         }
-        dispatcher.detach(i, terminal);
+       // dispatcher.detach(i);
     }
 
 

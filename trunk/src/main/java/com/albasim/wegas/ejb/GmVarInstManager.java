@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GameModel;
@@ -53,18 +52,17 @@ public class GmVarInstManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
-    public GmVariableInstance getVariableInstance(String gID, String vID,
-                                                  Terminal terminal) {
+    public GmVariableInstance getVariableInstance(String gID, String vID) {
         GmVariableInstance v = em.find(GmVariableInstance.class, Long.parseLong(vID));
 
         if (v != null) {
             GameModel theGm = v.getGameModel();
-            if (gmm.getGameModel(gID, null).equals(theGm)) {
-                dispatcher.registerObject(v, terminal);
+            if (gmm.getGameModel(gID).equals(theGm)) {
+                //dispatcher.registerObject(v, terminal);
                 return v;
             }
             throw new InvalidContent();
@@ -225,24 +223,24 @@ public class GmVarInstManager {
     }
 
 
-    void detachAll(GameModel gameModel, Terminal terminal) {
+    void detachAll(GameModel gameModel) {
         for (GmVariableInstance vi : gameModel.getVariableInstances()){
-            detach(vi, terminal);
+            detach(vi);
         }
     }
         
 
-    void detach(GmVariableInstance vi, Terminal terminal) {
+    void detach(GmVariableInstance vi) {
 
-        im.detachAll(vi, terminal);
+        im.detachAll(vi);
         
-        dispatcher.detach(vi, terminal);
+      //  dispatcher.detach(vi, terminal);
     }
 
 
-    void detachAll(GmComplexInstance gmComplexInstance, Terminal terminal) {
+    void detachAll(GmComplexInstance gmComplexInstance) {
         for (GmVariableInstance vi : gmComplexInstance.getVariableInstances()){
-            detach(vi, terminal);
+            detach(vi);
         }
     }
 

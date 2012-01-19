@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GmEventListenerManager;
 import com.albasim.wegas.ejb.GmInstanceManager;
@@ -81,8 +80,7 @@ public class EventListenerController {
                                @PathParam("viID") String viID,
                                @PathParam("ciID") String ciID,
                                @PathParam("elID") String elID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        GmEventListener eventListener = elm.getEventListener(gmID, viID, ciID, elID, terminal);
+        GmEventListener eventListener = elm.getEventListener(gmID, viID, ciID, elID);
 
         return eventListener;
     }
@@ -96,8 +94,7 @@ public class EventListenerController {
                                       @PathParam("ciID") String ciID,
                                       GmEventListener listener) {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        elm.createEventListener(gmID, viID, ciID, listener, terminal);
+        elm.createEventListener(gmID, viID, ciID, listener);
 
         return listener;
     }
@@ -113,8 +110,7 @@ public class EventListenerController {
                                       @PathParam("elID") String elID,
                                       GmEventListener listener) {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        return elm.updateEventListener(gmID, viID, ciID, elID, listener, terminal);
+        return elm.updateEventListener(gmID, viID, ciID, elID, listener);
     }
 
 
@@ -125,8 +121,7 @@ public class EventListenerController {
                                 @PathParam("ciID") String ciID,
                                 @PathParam("elID") String elID) {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        elm.destroyEventListener(gmID, viID, ciID, elID, terminal);
+        elm.destroyEventListener(gmID, viID, ciID, elID);
 
         return Response.ok().build();
     }

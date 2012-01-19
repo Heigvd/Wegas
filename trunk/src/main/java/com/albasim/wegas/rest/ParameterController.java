@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GmMethodManager;
 import com.albasim.wegas.ejb.GmParameterManager;
@@ -74,7 +73,7 @@ public class ParameterController {
     public Collection<IndexEntry> index(@PathParam("gmID") String gmID,
                                         @PathParam("tID") String tID,
                                         @PathParam("mID") String mID) throws NotFound, InvalidContent {
-        GmMethod method = mm.getMethod(gmID, tID, mID, null);
+        GmMethod method = mm.getMethod(gmID, tID, mID);
         return AlbaHelper.getIndex(method.getParameters());
     }
 
@@ -91,8 +90,7 @@ public class ParameterController {
                            @PathParam("tID") String tID,
                            @PathParam("mID") String mID,
                            @PathParam("pID") String pID) throws InvalidContent, NotFound {
-        Terminal terminal = dispatcher.getTerminal(request);
-        return pm.getParameter(gmID, tID, mID, pID, terminal);
+        return pm.getParameter(gmID, tID, mID, pID);
     }
 
 
@@ -108,10 +106,9 @@ public class ParameterController {
                               @PathParam("tID") String tID,
                               @PathParam("mID") String mID,
                               GmParameter param) throws NotFound, InvalidContent {
-        GmMethod method = mm.getMethod(gmID, tID, mID, null);
+        GmMethod method = mm.getMethod(gmID, tID, mID);
         param.setMethod(method);
-        Terminal term = dispatcher.getTerminal(request);
-        pm.createParameter(param, term);
+        pm.createParameter(param);
         return param;
     }
 
@@ -131,8 +128,7 @@ public class ParameterController {
                               @PathParam("pID") String pID,
                               GmParameter parameter) throws NotFound, InvalidContent {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        return pm.updateParameter(gmID, tID, mID, pID, parameter, terminal);
+        return pm.updateParameter(gmID, tID, mID, pID, parameter);
     }
 
 
@@ -147,8 +143,7 @@ public class ParameterController {
                             @PathParam("tID") String tID,
                             @PathParam("mID") String mID,
                             @PathParam("pID") String pID) throws InvalidContent, NotFound {
-        Terminal terminal = dispatcher.getTerminal(request);
-        pm.destroyParameter(gmID, tID, mID, pID, terminal);
+        pm.destroyParameter(gmID, tID, mID, pID);
         return Response.ok().build();
     }
 

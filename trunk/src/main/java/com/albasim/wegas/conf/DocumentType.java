@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author maxence
+ * 
  */
 @XmlRootElement
 public enum DocumentType {

@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GameModel;
@@ -61,7 +60,7 @@ public class GmTypeManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
@@ -134,7 +133,7 @@ public class GmTypeManager {
      * @return The Type if gm is correct
      * 
      */
-    public GmType getType(GameModel gm, String id, Terminal ch) {
+    public GmType getType(GameModel gm, String id) {
         GmType find = em.find(GmType.class, Long.parseLong(id));
         if (find == null) {
             throw new NotFound();
@@ -143,7 +142,7 @@ public class GmTypeManager {
             throw new InvalidContent();
         }
 
-        dispatcher.registerObject(find, ch);
+       // dispatcher.registerObject(find, ch);
 
 
         return find;
@@ -196,10 +195,9 @@ public class GmTypeManager {
      * Create a new type 
      * @param o  the type to propagateCreate
      */
-    public void createType(GmType o, Terminal terminal) {
-        dispatcher.begin(terminal);
+    public void createType(GmType o) {
         typePrePersist(o);
-        aem.create(o, terminal);
+        aem.create(o);
     }
 
 
@@ -254,16 +252,14 @@ public class GmTypeManager {
      * @param tID ID of the type to propagateUpdate
      * @param theType  the user-provided type embedded updates
      */
-    public GmType updateType(String gmID, String tID, GmType theType,
-                             Terminal terminal) {
-        GameModel gm = gmm.getGameModel(gmID, null);
-        GmType type = getType(gm, tID, terminal);
+    public GmType updateType(String gmID, String tID, GmType theType) {
+        GameModel gm = gmm.getGameModel(gmID);
+        GmType type = getType(gm, tID);
 
         // Make sure ID is correct
         if (type.equals(theType)) {
-            dispatcher.begin(terminal);
             theType.setGameModel(gm);
-            GmType update = aem.update(theType, terminal);
+            GmType update = aem.update(theType);
             return update;
         }
 
@@ -277,13 +273,12 @@ public class GmTypeManager {
      * @param gmID
      * @param typeID 
      */
-    public void destroyType(String gmID, String typeID, Terminal terminal) {
-        GameModel gm = gmm.getGameModel(gmID, null);
-        GmType type = getType(gm, typeID, null);
+    public void destroyType(String gmID, String typeID) {
+        GameModel gm = gmm.getGameModel(gmID);
+        GmType type = getType(gm, typeID);
 
-        dispatcher.begin(terminal);
         typePreDestroy(type);
-        aem.destroy(type, terminal);
+        aem.destroy(type);
     }
 
 
@@ -319,26 +314,26 @@ public class GmTypeManager {
     }
 
 
-    void detachAll(GameModel gameModel, Terminal terminal) {
+    void detachAll(GameModel gameModel) {
         for (GmType type : gameModel.getTypes()) {
-            detach(type, terminal);
+            detach(type);
         }
     }
 
 
-    void detach(GmType theType, Terminal terminal) {
+    void detach(GmType theType) {
 
-        mm.detachAll(theType, terminal);
-        uem.detachAll(theType, terminal);
+        mm.detachAll(theType);
+        uem.detachAll(theType);
 
         if (theType instanceof GmComplexType) {
-            vdm.detachAll((GmComplexType)theType, terminal);
+            vdm.detachAll((GmComplexType)theType);
 
         } else if (theType instanceof GmEnumType) {
-            eim.detachAll((GmEnumType)theType, terminal);
+            eim.detachAll((GmEnumType)theType);
         }
 
-        dispatcher.detach(theType, terminal);
+        //dispatcher.detach(theType, terminal);
 
     }
 

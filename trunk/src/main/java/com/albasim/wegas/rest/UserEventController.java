@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.ejb.GmTypeManager;
@@ -78,8 +77,8 @@ public class UserEventController {
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<IndexEntry> index(@PathParam("gmID") String gmID,
                                         @PathParam("tID") String tID) {
-        GameModel gm = gmm.getGameModel(gmID, null);
-        GmType t = tm.getType(gm, tID, null);
+        GameModel gm = gmm.getGameModel(gmID);
+        GmType t = tm.getType(gm, tID);
         return AlbaHelper.getIndex(t.getUserEvents());
     }
 
@@ -91,8 +90,7 @@ public class UserEventController {
                            @PathParam("tID") String tID,
                            @PathParam("eID") String eID) {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        return uem.getUserEvent(gmID, tID, eID, terminal);
+        return uem.getUserEvent(gmID, tID, eID);
     }
 
 
@@ -103,14 +101,13 @@ public class UserEventController {
                               @PathParam("tID") String tID,
                               GmUserEvent userEvent) {
 
-        GameModel gm = gmm.getGameModel(gmID, null);
+        GameModel gm = gmm.getGameModel(gmID);
 
 
-        GmType type = tm.getType(gm, tID, null);
+        GmType type = tm.getType(gm, tID);
         userEvent.setBelongsTo(type);
 
-        Terminal term = dispatcher.getTerminal(request);
-        uem.createUserEvent(userEvent, term);
+        uem.createUserEvent(userEvent);
 
         return userEvent;
     }
@@ -125,8 +122,7 @@ public class UserEventController {
                               @PathParam("eID") String eID,
                               GmUserEvent userEvent) {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        return uem.updateUserEvent(gmID, tID, eID, userEvent, terminal);
+        return uem.updateUserEvent(gmID, tID, eID, userEvent);
     }
 
 
@@ -142,8 +138,7 @@ public class UserEventController {
     public Response destroy(@PathParam("gmID") String gmID,
                             @PathParam("tID") String tID,
                             @PathParam("eID") String eID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        uem.destroyUserEvent(gmID, tID, eID, terminal);
+        uem.destroyUserEvent(gmID, tID, eID);
         return Response.ok().build();
     }
 

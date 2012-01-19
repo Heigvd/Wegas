@@ -1,0 +1,33 @@
+﻿{
+	"pages": {
+		"type": "AlbaPages",
+		"children": [
+			{
+				"type": "AlbaPageWidget",
+				"id": "alba-mainlayout", 
+				"name": "Page 1: Avant-projet",
+				"children": [
+					{
+						"type": "AlbaListWidget",
+						"id": "alba-indicators",
+						"direction": "horizontal",
+						"children": [
+							{ 
+								"type": "AlbaLinkWidget",
+								"id": "Throwdice",
+								"label": "Throw Dice",
+								"view": "button",
+								"inputAction": "remainingMoves = Math.round((Math.random()* 6)+0.49);\nalert(\"Vous avez fait un \"+remainingMoves);"
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	"subpages": {
+		"type": "AlbaSubpages",
+		"children": [
+		]
+	}
+}

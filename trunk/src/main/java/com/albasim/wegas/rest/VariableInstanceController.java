@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.ejb.GmInstanceManager;
@@ -83,7 +82,7 @@ public class VariableInstanceController {
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<IndexEntry> create(
             @PathParam("gmID") String gmID) {
-        GameModel theGameModel = gmm.getGameModel(gmID, null);
+        GameModel theGameModel = gmm.getGameModel(gmID);
         return AlbaHelper.getIndex(theGameModel.getVariableInstances());
     }
 
@@ -100,8 +99,7 @@ public class VariableInstanceController {
     public GmVariableInstance get(@PathParam("gmID") String gmID,
                                   @PathParam("vID") String vID) {
 
-        Terminal term = dispatcher.getTerminal(request);
-        return vim.getVariableInstance(gmID, vID, term);
+        return vim.getVariableInstance(gmID, vID);
     }
 
 
@@ -119,9 +117,8 @@ public class VariableInstanceController {
     public GmInstance get(@PathParam("gmID") String gmID,
                           @PathParam("vID") String vID,
                           @PathParam("iID") String iID) {
-        Terminal term = dispatcher.getTerminal(request);
-        logger.log(Level.INFO, "InstanceCTRL: Terminal is : {0}", term);
-        return im.getInstance(gmID, vID, iID, term);
+      //  logger.log(Level.INFO, "InstanceCTRL: Terminal is : {0}", term);
+        return im.getInstance(gmID, vID, iID);
     }
 
 
@@ -141,8 +138,7 @@ public class VariableInstanceController {
     public GmInstance createInstance(@PathParam("gmID") String gmID,
                                      @PathParam("vID") String vID,
                                      GmInstance newInstance) {
-        Terminal term = dispatcher.getTerminal(request);
-        im.createInstance(gmID, vID, newInstance, term);
+        im.createInstance(gmID, vID, newInstance);
 
         return newInstance;
     }
@@ -164,8 +160,7 @@ public class VariableInstanceController {
                              @PathParam("vID") String vID,
                              @PathParam("iID") String iID,
                              GmInstance theInstance) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        return im.updateInstance(gmID, vID, iID, theInstance, terminal);
+        return im.updateInstance(gmID, vID, iID, theInstance);
     }
 
 
@@ -184,8 +179,7 @@ public class VariableInstanceController {
                             @PathParam("vID") String vID,
                             @PathParam("iID") String iID) {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        im.destroyInstance(gmID, vID, iID, terminal);
+        im.destroyInstance(gmID, vID, iID);
 
         return Response.ok().build();
     }

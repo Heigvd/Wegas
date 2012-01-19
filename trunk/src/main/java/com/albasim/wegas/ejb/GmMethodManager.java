@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GameModel;
@@ -49,20 +48,18 @@ public class GmMethodManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
-    /* _/~\_/~\_/~\_/~\_/~\_/~\_ METHODS _/~\_/~\_/~\_/~\_/~\_/~\_/~\_/~\_ */
-    public GmMethod getMethod(String gmId, String tId, String mId,
-                              Terminal terminal) {
+    public GmMethod getMethod(String gmId, String tId, String mId) {
         GmMethod find = em.find(GmMethod.class, Long.parseLong(mId));
 
         if (find == null) {
             throw new NotFound();
         } else {
-            GameModel gm = gmm.getGameModel(gmId, null);
-            GmType t = tm.getType(gm, tId, null);
+            GameModel gm = gmm.getGameModel(gmId);
+            GmType t = tm.getType(gm, tId);
 
             // Does Method belongs to the righe type ?
             if (!find.getBelongsTo().equals(t)) {
@@ -73,16 +70,15 @@ public class GmMethodManager {
                 throw new InvalidContent();
             }
 
-            dispatcher.registerObject(find, terminal);
+           // dispatcher.registerObject(find);
             return find;
         }
     }
 
 
-    public void createMethod(GmMethod method, Terminal terminal) {
-        dispatcher.begin(terminal);
+    public void createMethod(GmMethod method) {
         methodPrePersist(method);
-        aem.create(method, terminal);
+        aem.create(method);
 
     }
 
@@ -99,25 +95,22 @@ public class GmMethodManager {
 
     }
 
-    public GmMethod updateMethod(String gmID, String tID, String mID, GmMethod method, Terminal terminal) {
-        GmMethod m = getMethod(gmID, tID, mID, null);
+    public GmMethod updateMethod(String gmID, String tID, String mID, GmMethod method) {
+        GmMethod m = getMethod(gmID, tID, mID);
 
         if (m.equals(method)) {
             method.setBelongsTo(m.getBelongsTo());
-            dispatcher.begin(terminal);
-            GmMethod update = aem.update(method, terminal);
+            GmMethod update = aem.update(method);
             return update;
         }
         throw new InvalidContent();
     }
 
 
-    public void destroyMethod(String gmId, String tId, String mId,
-                              Terminal terminal) {
-        GmMethod method = getMethod(gmId, tId, mId, null);
-        dispatcher.begin(terminal);
+    public void destroyMethod(String gmId, String tId, String mId) {
+        GmMethod method = getMethod(gmId, tId, mId);
         methodPreDestroy(method);
-        aem.destroy(method, terminal);
+        aem.destroy(method);
     }
 
 
@@ -132,16 +125,16 @@ public class GmMethodManager {
     }
 
 
-    void detachAll(GmType theType, Terminal terminal) {
+    void detachAll(GmType theType) {
         for (GmMethod m : theType.getMethods()){
-            detach(m, terminal);
+            detach(m);
         }
     }
 
 
-    private void detach(GmMethod m, Terminal terminal) {
-        pm.detachAll(m, terminal);
-        dispatcher.detach(m, terminal);
+    private void detach(GmMethod m) {
+        pm.detachAll(m);
+       // dispatcher.detach(m);
     }
 
 

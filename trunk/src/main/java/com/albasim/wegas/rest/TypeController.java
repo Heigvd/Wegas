@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.ejb.GmTypeManager;
@@ -83,7 +82,7 @@ public class TypeController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<IndexEntry> index(@PathParam("gmID") String gmID) {
-        GameModel gm = gmm.getGameModel(gmID, null);
+        GameModel gm = gmm.getGameModel(gmID);
         return AlbaHelper.getIndex(gm.getTypes());
     }
 
@@ -98,9 +97,8 @@ public class TypeController {
     @Produces(MediaType.APPLICATION_JSON)
     public GmType get(@PathParam("gmID") String gmID,
                       @PathParam("tID") String tID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        GameModel gm = gmm.getGameModel(gmID, null);
-        return tm.getType(gm, tID, terminal);
+        GameModel gm = gmm.getGameModel(gmID);
+        return tm.getType(gm, tID);
     }
 
 
@@ -123,10 +121,9 @@ public class TypeController {
     @Produces(MediaType.APPLICATION_JSON)
     public GmType create(@PathParam("gmID") String gmID, GmType theType) {
 
-        GameModel theGameModel = gmm.getGameModel(gmID, null);
+        GameModel theGameModel = gmm.getGameModel(gmID);
         theType.setGameModel(theGameModel);
-        Terminal terminal = dispatcher.getTerminal(request);
-        tm.createType(theType, terminal);
+        tm.createType(theType);
         return theType;
     }
 
@@ -142,7 +139,7 @@ public class TypeController {
     public Collection<IndexEntry> varDescIndex(
             @PathParam("gmID") String gmID,
             @PathParam("cID") String cID) {
-        GameModel theGameModel = gmm.getGameModel(gmID, null);
+        GameModel theGameModel = gmm.getGameModel(gmID);
         GmComplexType complexType = tm.getComplexType(theGameModel, cID);
         return AlbaHelper.getIndex(complexType.getVariableDescriptors());
     }
@@ -160,13 +157,12 @@ public class TypeController {
     public GmVariableDescriptor create(@PathParam("gmID") String gmID,
                                        @PathParam("cID") String cID,
                                        GmVariableDescriptor theVarDesc) {
-        GameModel theGameModel = gmm.getGameModel(gmID, null);
+        GameModel theGameModel = gmm.getGameModel(gmID);
         GmComplexType complexType = tm.getComplexType(theGameModel, cID);
 
         theVarDesc.setParentComplexType(complexType);
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        vdm.createVarDesc(theVarDesc, terminal);
+        vdm.createVarDesc(theVarDesc);
 
         return theVarDesc;
     }
@@ -186,8 +182,7 @@ public class TypeController {
                          @PathParam("tID") String tID,
                          GmType theType) {
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        return tm.updateType(gmID, tID, theType, terminal);
+        return tm.updateType(gmID, tID, theType);
     }
 
 
@@ -202,8 +197,7 @@ public class TypeController {
     @Path("{tID : [1-9][0-9]*}")
     public Response destroy(@PathParam("gmID") String gmID,
                             @PathParam("tID") String tID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        tm.destroyType(gmID, tID, terminal);
+        tm.destroyType(gmID, tID);
         return Response.ok().build();
     }
 

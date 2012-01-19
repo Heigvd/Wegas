@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GmMethod;
@@ -39,18 +38,18 @@ public class GmParameterManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
     public GmParameter getParameter(String gmId, String tId, String mId,
-                                    String pId, Terminal terminal) {
-        GmMethod method = mm.getMethod(gmId, tId, mId, null);
+                                    String pId) {
+        GmMethod method = mm.getMethod(gmId, tId, mId);
         GmParameter find = em.find(GmParameter.class, Long.parseLong(pId));
 
         if (find != null) {
             if (find.getMethod().equals(method)) {
-                dispatcher.registerObject(find, terminal);
+                //dispatcher.registerObject(find, terminal);
                 return find;
             }
             throw new InvalidContent();
@@ -59,10 +58,9 @@ public class GmParameterManager {
     }
 
 
-    public void createParameter(GmParameter param, Terminal terminal) {
-        dispatcher.begin(terminal);
+    public void createParameter(GmParameter param) {
         parameterPrePersist(param);
-        aem.create(param, terminal);
+        aem.create(param);
     }
 
 
@@ -73,13 +71,12 @@ public class GmParameterManager {
 
 
     public GmParameter updateParameter(String gmID, String tID, String mID, String pID,
-                                GmParameter parameter, Terminal terminal) {
+                                GmParameter parameter) {
 
-        GmParameter p = getParameter(gmID, tID, mID, pID, null);
+        GmParameter p = getParameter(gmID, tID, mID, pID);
         if (p.equals(parameter)) {
             parameter.setMethod(p.getMethod());
-            dispatcher.begin(terminal);
-            GmParameter update = aem.update(parameter, terminal);
+            GmParameter update = aem.update(parameter);
             return update;
         }
         throw new InvalidContent();
@@ -87,11 +84,10 @@ public class GmParameterManager {
 
 
     public void destroyParameter(String gmId, String tId, String mId,
-                                 String parameterID, Terminal terminal) {
-        GmParameter parameter = getParameter(gmId, tId, mId, parameterID, null);
-        dispatcher.begin(terminal);
+                                 String parameterID) {
+        GmParameter parameter = getParameter(gmId, tId, mId, parameterID);
         parameterPreDestroy(parameter);
-        aem.destroy(parameter, terminal);
+        aem.destroy(parameter);
     }
 
 
@@ -100,15 +96,15 @@ public class GmParameterManager {
     }
 
 
-    void detachAll(GmMethod m, Terminal terminal) {
+    void detachAll(GmMethod m) {
         for (GmParameter p : m.getParameters()){
-            detach(p, terminal);
+            detach(p);
         }
     }
 
 
-    private void detach(GmParameter p, Terminal terminal) {
-        dispatcher.detach(p, terminal);
+    private void detach(GmParameter p) {
+        //dispatcher.detach(p);
     }
 
 

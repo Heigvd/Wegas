@@ -1,10 +1,13 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas. http://www.albasim.com/wegas/
+ * 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem⁺
+ *
+ * Copyright (C) 2010, 2011 
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.helper.AlbaHelper;
@@ -57,7 +60,7 @@ public class GameModelManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
@@ -101,15 +104,12 @@ public class GameModelManager {
      * @param id
      * @return game model
      */
-    public GameModel getGameModel(String gmid, Terminal terminal) {
+    public GameModel getGameModel(String gmid) {
         GameModel find = em.find(GameModel.class, Long.parseLong(gmid));
 
         if (find == null) {
             throw new NotFound();
         }
-
-        dispatcher.registerObject(find, terminal);
-
         return find;
     }
 
@@ -119,10 +119,10 @@ public class GameModelManager {
      * 
      * @param gm  the game model to propagateCreate
      */
-    public void createGameModel(GameModel gm, Terminal terminal) {
-        dispatcher.begin(terminal);
+    public void createGameModel(GameModel gm) {
+     //   dispatcher.begin();
         gameModelPrePersist(gm);
-        aem.create(gm, terminal);
+        aem.create(gm);
     }
 
 
@@ -190,12 +190,10 @@ public class GameModelManager {
      * 
      * @param gm 
      */
-    public GameModel updateGameModel(String gmID, GameModel theGameModel,
-                                Terminal terminal) {
-        GameModel gm = getGameModel(gmID, null);
+    public GameModel updateGameModel(String gmID, GameModel theGameModel) {
+        GameModel gm = getGameModel(gmID);
         if (gm.equals(theGameModel)) {
-            dispatcher.begin(terminal);
-            GameModel update = aem.update(theGameModel, terminal);
+            GameModel update = aem.update(theGameModel);
             return update;
         }
 
@@ -208,11 +206,10 @@ public class GameModelManager {
      * 
      * @param id
      */
-    public void destroyGameModel(String id, Terminal terminal) {
-        GameModel gameModel = getGameModel(id, null);
-        dispatcher.begin(terminal);
+    public void destroyGameModel(String id) {
+        GameModel gameModel = getGameModel(id);
         gameModelPreDestroy(gameModel);
-        aem.destroy(gameModel, terminal);
+        aem.destroy(gameModel);
     }
 
 
@@ -234,20 +231,20 @@ public class GameModelManager {
     }
 
 
-    public void detachAll(Terminal terminal){
+    public void detachAll(){
         for (GameModel gm : getAllGameModel()){
-            detachGameModel(gm, terminal);
+            detachGameModel(gm);
         }
     }
 
-    public void detachGameModel(GameModel gameModel, Terminal terminal) {
+    public void detachGameModel(GameModel gameModel) {
 
-        tm.detachAll(gameModel, terminal);
+        tm.detachAll(gameModel);
 
-        vdm.detachAll(gameModel, terminal);
+        vdm.detachAll(gameModel);
 
-        vim.detachAll(gameModel, terminal);
+        vim.detachAll(gameModel);
         
-        dispatcher.detach(gameModel, terminal);
+       // dispatcher.detach(gameModel, null);
     }
 }

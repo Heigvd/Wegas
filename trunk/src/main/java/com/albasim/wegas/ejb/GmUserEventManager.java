@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GameModel;
@@ -44,19 +43,18 @@ public class GmUserEventManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
-    public GmUserEvent getUserEvent(String gmID, String tID, String eID,
-                                    Terminal terminal) {
+    public GmUserEvent getUserEvent(String gmID, String tID, String eID) {
         GmUserEvent find = em.find(GmUserEvent.class, Long.parseLong(eID));
 
         if (find != null) {
-            GameModel gm = gmm.getGameModel(gmID, null);
-            GmType type = tm.getType(gm, eID, null);
+            GameModel gm = gmm.getGameModel(gmID);
+            GmType type = tm.getType(gm, eID);
             if (find.getBelongsTo().equals(type)) {
-                dispatcher.registerObject(find, terminal);
+               // dispatcher.registerObject(find);
                 return find;
             }
             throw new InvalidContent();
@@ -65,10 +63,9 @@ public class GmUserEventManager {
     }
 
 
-    public void createUserEvent(GmUserEvent userEvent, Terminal terminal) {
-        dispatcher.begin(terminal);
+    public void createUserEvent(GmUserEvent userEvent) {
         userEventPrePersist(userEvent);
-        aem.create(userEvent, terminal);
+        aem.create(userEvent);
     }
 
 
@@ -78,24 +75,20 @@ public class GmUserEventManager {
 
 
     public GmUserEvent updateUserEvent(String gmID, String tID, String eID,
-                                GmUserEvent userEvent, Terminal terminal) {
-        GmUserEvent ue = getUserEvent(gmID, tID, eID, null);
+                                GmUserEvent userEvent) {
+        GmUserEvent ue = getUserEvent(gmID, tID, eID);
         if (ue.equals(userEvent)) {
-            dispatcher.begin(terminal);
             userEvent.setBelongsTo(ue.getBelongsTo());
-            GmUserEvent update = aem.update(userEvent, terminal);
+            GmUserEvent update = aem.update(userEvent);
             return update;
         }
         throw new InvalidContent();
     }
 
 
-    public void destroyUserEvent(String gmID, String tID, String eID,
-                                 Terminal terminal) {
-        GmUserEvent userEvent = getUserEvent(gmID, tID, eID, null);
-        dispatcher.begin(terminal);
+    public void destroyUserEvent(String gmID, String tID, String eID) {
+        GmUserEvent userEvent = getUserEvent(gmID, tID, eID);
         userEventPreDestroy(userEvent);
-        aem.destroy(userEvent, terminal);
     }
 
 
@@ -104,14 +97,14 @@ public class GmUserEventManager {
     }
 
 
-    void detachAll(GmType theType, Terminal terminal) {
+    void detachAll(GmType theType) {
         for (GmUserEvent ue : theType.getUserEvents()){
-            detach(ue, terminal);
+            detach(ue);
         }
     }
 
-    private void detach(GmUserEvent ue, Terminal terminal) {
-        dispatcher.detach(ue, terminal);
+    private void detach(GmUserEvent ue) {
+       // dispatcher.detach(ue);
     }
 
 

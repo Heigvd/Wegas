@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.persistance.GmEventListener;
@@ -39,19 +38,18 @@ public class GmEventListenerManager {
     private Dispatcher dispatcher;
 
 
-    @PersistenceContext(unitName = "metaPU")
+    @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
 
     public GmEventListener getEventListener(String gmID, String viID,
-                                            String ciID, String elID,
-                                            Terminal terminal) {
+                                            String ciID, String elID) {
         GmEventListener find = em.find(GmEventListener.class, Long.parseLong(elID));
         if (find != null) {
             GmComplexInstance complexInstance = im.getComplexInstance(gmID, viID, ciID);
             GmComplexInstance gmComplexInstance = find.getGmComplexInstance();
             if (complexInstance.equals(gmComplexInstance)) {
-                dispatcher.registerObject(find, terminal);
+                //dispatcher.registerObject(find);
                 return find;
             }
             throw new InvalidContent();
@@ -61,13 +59,11 @@ public class GmEventListenerManager {
 
 
     public void createEventListener(String gmID, String viID, String ciID,
-                                    GmEventListener listener,
-                                    Terminal terminal) {
+                                    GmEventListener listener) {
         GmComplexInstance ci = im.getComplexInstance(gmID, viID, ciID);
-        dispatcher.begin(terminal);
         listener.setGmComplexInstance(ci);
         eventListenerPrePersist(listener);
-        aem.create(listener, terminal);
+        aem.create(listener);
     }
 
 
@@ -79,13 +75,12 @@ public class GmEventListenerManager {
 
     public GmEventListener updateEventListener(String gmID, String viID, String ciID,
                                     String elID,
-                                    GmEventListener listener, Terminal terminal) {
+                                    GmEventListener listener) {
 
-        GmEventListener eventListener = getEventListener(gmID, viID, ciID, elID, null);
+        GmEventListener eventListener = getEventListener(gmID, viID, ciID, elID);
         if (eventListener.equals(listener)) {
-            dispatcher.begin(terminal);
             listener.setGmComplexInstance(eventListener.getGmComplexInstance());
-            GmEventListener update = aem.update(listener, terminal);
+            GmEventListener update = aem.update(listener);
             return update;
         }
         throw new InvalidContent();
@@ -93,11 +88,10 @@ public class GmEventListenerManager {
 
 
     public void destroyEventListener(String gmID, String viID, String ciID,
-                                     String elID, Terminal terminal) {
-        GmEventListener eventListener = getEventListener(gmID, viID, ciID, elID, null);
-        dispatcher.begin(terminal);
+                                     String elID) {
+        GmEventListener eventListener = getEventListener(gmID, viID, ciID, elID);
         eventListenerPreDestroy(eventListener);
-        aem.destroy(eventListener, terminal);
+        aem.destroy(eventListener);
     }
 
 
@@ -106,15 +100,15 @@ public class GmEventListenerManager {
     }
 
 
-    void detachAll(GmComplexInstance gmComplexInstance, Terminal terminal) {
+    void detachAll(GmComplexInstance gmComplexInstance) {
         for (GmEventListener el : gmComplexInstance.getListeners()){
-            detach(el, terminal);
+            detach(el);
         }
     }
 
 
-    private void detach(GmEventListener el, Terminal terminal) {
-        dispatcher.detach(el, terminal);
+    private void detach(GmEventListener el) {
+        //dispatcher.detach(el);
     }
 
 

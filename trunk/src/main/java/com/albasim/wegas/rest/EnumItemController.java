@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.ejb.GmEnumItemManager;
@@ -76,7 +75,7 @@ public class EnumItemController {
                                         @PathParam("eID") String eID) {
 
         logger.log(Level.INFO, "Get enum Item lists");
-        GameModel gm = gmm.getGameModel(gmID, null);
+        GameModel gm = gmm.getGameModel(gmID);
         GmEnumType enumType = tm.getEnumType(gm, eID);
         return AlbaHelper.getIndex(enumType.getItems());
     }
@@ -88,8 +87,8 @@ public class EnumItemController {
     public GmEnumItem get(@PathParam("gmID") String gmID,
                           @PathParam("eID") String eID,
                           @PathParam("itID") String itID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        return amm.getEnumItem(gmID, eID, itID, terminal);
+//        Terminal terminal = dispatcher.getTerminal(request);
+        return amm.getEnumItem(gmID, eID, itID);
     }
 
 
@@ -100,12 +99,11 @@ public class EnumItemController {
                                  @PathParam("eID") String eID,
                                  GmEnumItem item) {
 
-        GameModel gm = gmm.getGameModel(gmID, null);
+        GameModel gm = gmm.getGameModel(gmID);
         GmEnumType enumType = tm.getEnumType(gm, eID);
         item.setGmEnumType(enumType);
 
-        Terminal term = dispatcher.getTerminal(request);
-        amm.createEnumItem(item, term);
+        amm.createEnumItem(item);
 
         return item;
     }
@@ -119,8 +117,7 @@ public class EnumItemController {
                                  @PathParam("eID") String eID,
                                  @PathParam("itID") String itID,
                                  GmEnumItem newItem) {
-        Terminal term = dispatcher.getTerminal(request);
-        return amm.updateEnumItem(gmID, eID, itID, newItem, term);
+        return amm.updateEnumItem(gmID, eID, itID, newItem);
     }
 
 
@@ -129,8 +126,7 @@ public class EnumItemController {
     public Response destroyItem(@PathParam("gmID") String gmID,
                                 @PathParam("eID") String eID,
                                 @PathParam("itID") String itID) {
-        Terminal term = dispatcher.getTerminal(request);
-        amm.destroyEnumItem(gmID, eID, itID, term);
+        amm.destroyEnumItem(gmID, eID, itID);
         return Response.ok().build();
     }
 

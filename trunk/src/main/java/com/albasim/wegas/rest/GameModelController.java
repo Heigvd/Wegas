@@ -11,7 +11,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.comet.Terminal;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.helper.IndexEntry;
@@ -83,8 +82,7 @@ public class GameModelController {
     @Path("{gmID : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public GameModel get(@PathParam("gmID") String gmID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        GameModel gm = gme.getGameModel(gmID, terminal);
+        GameModel gm = gme.getGameModel(gmID);
         return gm;
     }
 
@@ -99,8 +97,7 @@ public class GameModelController {
     @Produces(MediaType.APPLICATION_JSON)
     public GameModel create(GameModel gm) {
         logger.log(Level.INFO, "POST GameModel");
-        Terminal terminal = dispatcher.getTerminal(request);
-        gme.createGameModel(gm, terminal);
+        gme.createGameModel(gm);
         return gm;
     }
 
@@ -115,8 +112,7 @@ public class GameModelController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public GameModel update(@PathParam("gmID") String gmID, GameModel gm) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        return gme.updateGameModel(gmID, gm, terminal);
+        return gme.updateGameModel(gmID, gm);
     }
 
 
@@ -128,8 +124,7 @@ public class GameModelController {
     @DELETE
     @Path("{gmID: [1-9][0-9]*}")
     public Response destroy(@PathParam("gmID") String gmID) {
-        Terminal terminal = dispatcher.getTerminal(request);
-        gme.destroyGameModel(gmID, terminal);
+        gme.destroyGameModel(gmID);
         return Response.noContent().build();
     }
 
@@ -137,8 +132,7 @@ public class GameModelController {
     @GET
     @Path("detach")
     public Response detachAll() {
-        Terminal terminal = dispatcher.getTerminal(request);
-        gme.detachAll(terminal);
+        gme.detachAll();
         return Response.noContent().build();
     }
 
@@ -146,10 +140,9 @@ public class GameModelController {
     @GET
     @Path("{gmID: [1-9][0-9]*}/detach")
     public Response detach(@PathParam("gmID") String gmID) {
-        GameModel gameModel = gme.getGameModel(gmID, null);
+        GameModel gameModel = gme.getGameModel(gmID);
 
-        Terminal terminal = dispatcher.getTerminal(request);
-        gme.detachGameModel(gameModel, terminal);
+        //gme.detachGameModel(gameModel);
         return Response.noContent().build();
     }
 

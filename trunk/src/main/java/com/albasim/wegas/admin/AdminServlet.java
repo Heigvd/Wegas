@@ -4,8 +4,6 @@
  */
 package com.albasim.wegas.admin;
 
-import com.albasim.wegas.comet.Terminal;
-import com.albasim.wegas.ejb.DispatchTransaction;
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.helper.StaticHelper;
 import com.sun.grizzly.comet.CometContext;
@@ -46,7 +44,7 @@ public class AdminServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            HashMap<Integer, DispatchTransaction> transactions = dispatcher.getTransactions();
+         /*   HashMap<Integer, DispatchTransaction> transactions = dispatcher.getTransactions();
 
             out.println("<h1>Transaction</h1>");
             out.println("<ul>");
@@ -74,7 +72,7 @@ public class AdminServlet extends HttpServlet {
                 out.println("<tr><td>" + next + "</td><td>" + next.getCometHandler() + "</td></tr>");
             }
             out.println("</table>");
-            /* TODO output your page here
+            // TODO output your page here
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet AdminServlet</title>");
@@ -83,7 +81,7 @@ public class AdminServlet extends HttpServlet {
             out.println("<h1>Servlet AdminServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
-             */
+             
 
             String action = request.getParameter("action");
 
@@ -104,7 +102,7 @@ public class AdminServlet extends HttpServlet {
             }
 
 
-
+             */
         } finally {
             out.close();
         }

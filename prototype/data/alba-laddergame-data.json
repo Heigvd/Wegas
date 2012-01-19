@@ -1,0 +1,487 @@
+﻿{
+	"name" : "alba-laddergame",
+	"cssUri" : "./src/alba-laddergame/assets/alba-laddergame.css",
+	"pages": [{
+		"type": "AlbaPage",
+		"name": "Main screen",
+		"uri": "./data/alba-laddergame-layout.json"
+	}],
+	"variables" : [ 
+		{ "id": "remainingMoves", "value": 0}
+	],
+	"texts" : {
+	},
+	"stateMachines": {
+		"name": "Stories",
+		"type": "AlbaStateMachines",
+		"children": [
+		
+			{	
+				"id": "Periods&Phases",
+				"type": "AlbaStateMachine",
+				"children": [
+					{
+						"id": "S1",
+						"name": "Case 1",
+						"type": "AlbaStateMachine","position": [95, 1350],
+						"active": true,
+						"children" : [
+							{
+								"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+								"transitionAction": "remainingMoves -= 1",
+								"nextState": "S2"
+							}
+						]
+					}, {
+						"id": "S2",
+						"name": "Case 2",
+						"type": "AlbaStateMachine","position": [240, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S3"
+						}
+						]
+					}, {
+						"id": "S3",
+						"name": "Case 3",
+						"type": "AlbaStateMachine","position": [385, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S4"
+						}
+						]
+					}, {
+						"id": "S4",
+						"name": "Case 4",
+						"type": "AlbaStateMachine","position": [530, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S5"
+						},
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves==0",
+							"transitionAction": "alert(\"Vous avez pris une échelle\")",
+							"nextState": "S24"
+						}
+						]
+					}, {
+						"id": "S5",
+						"name": "Case 5",
+						"type": "AlbaStateMachine","position": [675, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S6"
+						}
+						]
+					}, {
+						"id": "S6",
+						"name": "Case 6",
+						"type": "AlbaStateMachine","position": [820, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S7"
+						}
+						]
+					}, {
+						"id": "S7",
+						"name": "Case 7",
+						"type": "AlbaStateMachine","position": [965, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S8"
+						}
+						] 
+					}, {
+						"id": "S8",
+						"name": "Case 8",
+						"type": "AlbaStateMachine","position": [1100, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S9"
+						}
+						]
+					}, {
+						"id": "S9",
+						"name": "Case 9",
+						"type": "AlbaStateMachine","position": [1245, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S10"
+						},
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves==0",
+							"transitionAction": "alert(\"Vous avez pris une échelle\")",
+							"nextState": "S33"
+						}
+						]
+					}, {
+						"id": "S10",
+						"name": "Case 10",
+						"type": "AlbaStateMachine","position": [1390, 1350],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S11"
+						}
+						]
+					}, {
+						"id": "S11",
+						"name": "Case 11",
+						"type": "AlbaStateMachine","position": [1390, 1205],
+						"children" : [
+							{
+								"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+								"transitionAction": "remainingMoves -= 1",
+								"nextState": "S12"
+							}
+						]
+					}, {
+						"id": "S12",
+						"name": "Case 12",
+						"type": "AlbaStateMachine","position": [1245, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S13"
+						}
+						]
+					}, {
+						"id": "S13",
+						"name": "Case 13",
+						"type": "AlbaStateMachine","position": [1100, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S14"
+						}
+						]
+					}, {
+						"id": "S14",
+						"name": "Case 14",
+						"type": "AlbaStateMachine","position": [965, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S15"
+						}
+						]
+					}, {
+						"id": "S15",
+						"name": "Case 15",
+						"type": "AlbaStateMachine","position": [820, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S16"
+						}
+						]
+					},{
+						"id": "S16",
+						"name": "Case 16",
+						"type": "AlbaStateMachine","position": [675, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S17"
+						}
+						]
+					}, {
+						"id": "S17",
+						"name": "Case 17",
+						"type": "AlbaStateMachine","position": [530, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S18"
+						}
+						] 
+					}, {
+						"id": "S18",
+						"name": "Case 18",
+						"type": "AlbaStateMachine","position": [385, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S19"
+						}
+						]
+					}, {
+						"id": "S19",
+						"name": "Case 19",
+						"type": "AlbaStateMachine","position": [240, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S20"
+						}
+						]
+					}, {
+						"id": "S20",
+						"name": "Case 20",
+						"type": "AlbaStateMachine","position": [95, 1205],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S21"
+						}
+						]
+					}, {
+						"id": "S21",
+						"name": "Case 21",
+						"type": "AlbaStateMachine","position": [95, 1060],
+						"children" : [
+							{
+								"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+								"transitionAction": "remainingMoves -= 1",
+								"nextState": "S22"
+							},
+							{	
+								"type": "AlbaTransition", "transitionCondition": "remainingMoves==0",
+								"transitionAction": "alert(\"Vous avez pris un serpent\")",
+								"nextState": "S3"
+							}
+						]
+					}, {
+						"id": "S22",
+						"name": "Case 22",
+						"type": "AlbaStateMachine","position": [240, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S23"
+						}
+						]
+					}, {
+						"id": "S23",
+						"name": "Case 23",
+						"type": "AlbaStateMachine","position": [385, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S24"
+						}
+						]
+					}, {
+						"id": "S24",
+						"name": "Case 24",
+						"type": "AlbaStateMachine","position": [530, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S25"
+						}
+						]
+					}, {
+						"id": "S25",
+						"name": "Case 25",
+						"type": "AlbaStateMachine","position": [675, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S26"
+						}
+						]
+					}, {
+						"id": "S26",
+						"name": "Case 26",
+						"type": "AlbaStateMachine","position": [820, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S27"
+						}
+						]
+					}, {
+						"id": "S27",
+						"name": "Case 27",
+						"type": "AlbaStateMachine","position": [965, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S28"
+						}
+						] 
+					}, {
+						"id": "S28",
+						"name": "Case 28",
+						"type": "AlbaStateMachine","position": [1100, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S29"
+						}
+						]
+					}, {
+						"id": "S29",
+						"name": "Case 29",
+						"type": "AlbaStateMachine","position": [1245, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S30"
+						}
+						]
+					}, {
+						"id": "S30",
+						"name": "Case 30",
+						"type": "AlbaStateMachine","position": [1390, 1060],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S31"
+						},
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves==0",
+							"transitionAction": "alert(\"Vous avez pris un serpent\")",
+							"nextState": "S7"
+						}
+						]
+					}, {
+						"id": "S31",
+						"name": "Case 31",
+						"type": "AlbaStateMachine","position": [1390, 915],
+						"children" : [
+							{
+								"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+								"transitionAction": "remainingMoves -= 1",
+								"nextState": "S32"
+							}
+						]
+					},{
+						"id": "S32",
+						"name": "Case 32",
+						"type": "AlbaStateMachine","position": [1245, 915],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S33"
+						}
+						]
+					}, {
+						"id": "S33",
+						"name": "Case 33",
+						"type": "AlbaStateMachine","position": [1100, 915],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S34"
+						}
+						]
+					}, {
+						"id": "S34",
+						"name": "Case 34",
+						"type": "AlbaStateMachine","position": [965, 915],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S35"
+						}
+						]
+					}, {
+						"id": "S35",
+						"name": "Case 35",
+						"type": "AlbaStateMachine","position": [820, 915],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S36"
+						}
+						]
+					}, {
+						"id": "S36",
+						"name": "Case 36",
+						"type": "AlbaStateMachine","position": [675, 915],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S37"
+						}
+						]
+					},{
+						"id": "S37",
+						"name": "Case 37",
+						"type": "AlbaStateMachine","position": [530, 915],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S38"
+						}
+						] 
+					},
+					{
+						"id": "S38",
+						"name": "Case 38",
+						"type": "AlbaStateMachine","position": [385, 915],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1",
+							"nextState": "S39"
+						}
+						]
+					},
+					{
+						"id": "S39",
+						"name": "Case 39",
+						"type": "AlbaStateMachine","position": [240, 915],
+						"children" : [
+						{	
+							"type": "AlbaTransition", "transitionCondition": "remainingMoves>0",
+							"transitionAction": "remainingMoves -= 1; alert(\"You won, well done!\")",
+							"nextState": "S40"
+						}
+						]
+					},
+					{
+						"id": "S40",
+						"name": "Case 40",
+						"type": "AlbaStateMachine","position": [95, 915],
+						"children" : [
+						]
+					}
+					]
+			}
+		]
+	}
+}
