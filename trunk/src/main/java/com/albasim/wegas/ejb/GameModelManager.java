@@ -1,10 +1,11 @@
 /*
- * Wegas. http://www.albasim.com/wegas/
+ * Wegas. 
+ * http://www.albasim.com/wegas/
  * 
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2010, 2011 
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.ejb;
 
@@ -12,10 +13,10 @@ import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.helper.AlbaHelper;
 import com.albasim.wegas.helper.IndexEntry;
-import com.albasim.wegas.persistance.GameModel;
-import com.albasim.wegas.persistance.GmType;
-import com.albasim.wegas.persistance.GmVariableDescriptor;
-import com.albasim.wegas.persistance.GmVariableInstance;
+import com.albasim.wegas.persistence.GameModel;
+import com.albasim.wegas.persistence.GmType;
+import com.albasim.wegas.persistence.VariableDescriptorEntity;
+import com.albasim.wegas.persistence.VariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +42,7 @@ public class GameModelManager {
 
 
     @EJB
-    private AlbaEntityManager aem;
+    private WegasEntityManager aem;
 
 
     @EJB
@@ -49,11 +50,11 @@ public class GameModelManager {
 
 
     @EJB
-    private GmVarDescManager vdm;
+    private VariableDescriptorManager vdm;
 
 
     @EJB
-    private GmVarInstManager vim;
+    private VariableInstanceManager vim;
 
 
     @EJB
@@ -140,46 +141,46 @@ public class GameModelManager {
         }
 
         if (gm.getVariableInstances() == null) {
-            gm.setVariableInstances(new ArrayList<GmVariableInstance>());
+            gm.setVariableInstances(new ArrayList<VariableInstanceEntity>());
         }
 
         if (gm.getVariableDescriptors() == null) {
-            gm.setVariableDescriptors(new ArrayList<GmVariableDescriptor>());
+            gm.setVariableDescriptors(new ArrayList<VariableDescriptorEntity>());
         }
 
         // Check that all provided instances match a descriptor
-        for (GmVariableInstance v : gm.getVariableInstances()) {
+     /*   for (VariableInstanceEntity v : gm.getVariableInstances()) {
             String varName = v.getStringName();
-            GmVariableDescriptor lookupDescriptor = gm.lookupDescriptor(varName);
+            VariableDescriptorEntity lookupDescriptor = gm.lookupDescriptor(varName);
             // And link the variable to its desc
             v.setDescriptor(lookupDescriptor);
             // And to the game model
             v.setParentGameModel(gm);
-        }
+        }*/
 
-        Collection<GmVariableInstance> vInsts = gm.getVariableInstances();
-        for (GmVariableDescriptor vd : gm.getVariableDescriptors()) {
+        Collection<VariableInstanceEntity> vInsts = gm.getVariableInstances();
+        for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {
             vd.setParentGameModel(gm);
             //vd.setType(lookupType(vd.getRealStringType(), null));
 
             // Check that an instance exists
-            GmVariableInstance theVi = gm.lookupVariableInstance(vd.getName());
+            VariableInstanceEntity theVi = gm.lookupVariableInstance(vd.getName());
             if (theVi == null) {
                 logger.log(Level.INFO, "Desc has no var => create !{0}", vd.getName());
                 // Not the case ? so propagateCreate variable instance (and dont care about effective instances)
-                theVi = new GmVariableInstance();
-                theVi.setDescriptor(vd);
-                theVi.setParentGameModel(gm);
+                theVi = new VariableInstanceEntity();
+//                theVi.setDescriptor(vd);
+      //          theVi.setParentGameModel(gm);
                 vInsts.add(theVi);
                 //throw new InvalidContent("There is no variable instance for the \"" + vd.getName() + "\" descriptor!");
             }
         }
 
-        for (GmVariableDescriptor vd : gm.getVariableDescriptors()) {
+        for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {
             vdm.varDescPrePersist(vd);
         }
 
-        for (GmVariableInstance vi : gm.getVariableInstances()) {
+        for (VariableInstanceEntity vi : gm.getVariableInstances()) {
             vim.variableInstancePrePersist(vi);
         }
     }
@@ -219,7 +220,7 @@ public class GameModelManager {
             vim.variableInstancePreDestroy(vi);
         }*/
 
-        for (GmVariableDescriptor vd : gm.getVariableDescriptors()){
+        for (VariableDescriptorEntity vd : gm.getVariableDescriptors()){
             vdm.varDescPreDestroy(vd);
         }
 

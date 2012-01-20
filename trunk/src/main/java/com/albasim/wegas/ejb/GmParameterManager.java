@@ -1,13 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas. 
+ * http://www.albasim.com/wegas/
+ * 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem⁺
+ *
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.ejb;
 
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
-import com.albasim.wegas.persistance.GmMethod;
-import com.albasim.wegas.persistance.GmParameter;
+import com.albasim.wegas.persistence.GmMethod;
+import com.albasim.wegas.persistence.GmParameter;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -27,7 +32,7 @@ public class GmParameterManager {
 
 
     @EJB
-    private AlbaEntityManager aem;
+    private WegasEntityManager aem;
 
 
     @EJB

@@ -11,7 +11,7 @@
  */
 package com.albasim.wegas.exception;
 
-import com.albasim.wegas.persistance.AnonymousAlbaEntity;
+import com.albasim.wegas.persistence.AnonymousEntity;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
  */
 public class InvalidContent extends WebApplicationException {
 
-    public InvalidContent(RuntimeException ex, AnonymousAlbaEntity o) {
+    public InvalidContent(RuntimeException ex, AnonymousEntity o) {
         super(ex, Response.status(Response.Status.CONFLICT).entity(o).type(MediaType.APPLICATION_JSON).build());
     }
 

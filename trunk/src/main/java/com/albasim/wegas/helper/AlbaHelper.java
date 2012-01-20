@@ -11,11 +11,10 @@
  */
 package com.albasim.wegas.helper;
 
-import com.albasim.wegas.persistance.NamedAlbaEntity;
+import com.albasim.wegas.persistence.NamedEntity;
 import com.albasim.wegas.conf.Conf;
-import com.albasim.wegas.persistance.GameModel;
-import com.albasim.wegas.persistance.GmVariableInstance;
-import com.sun.grizzly.comet.CometHandler;
+import com.albasim.wegas.persistence.GameModel;
+import com.albasim.wegas.persistence.VariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.Stateless;
@@ -54,18 +53,18 @@ public class AlbaHelper {
 
 
     public static Collection<IndexEntry> getIndex(
-            Collection<? extends NamedAlbaEntity> collection) {
+            Collection<? extends NamedEntity> collection) {
         ArrayList<IndexEntry> index = new ArrayList<IndexEntry>();
-        for (NamedAlbaEntity e : collection) {
+        for (NamedEntity e : collection) {
             index.add(new IndexEntry(e));
         }
         return index;
     }
 
     public static Collection<VariableInstanceIndexEntry> getVariableInstanceIndex(
-            Collection<GmVariableInstance> collection) {
+            Collection<VariableInstanceEntity> collection) {
         ArrayList<VariableInstanceIndexEntry> index = new ArrayList<VariableInstanceIndexEntry>();
-        for (GmVariableInstance vi : collection){
+        for (VariableInstanceEntity vi : collection){
             index.add(new VariableInstanceIndexEntry(vi));
         }
         return index;

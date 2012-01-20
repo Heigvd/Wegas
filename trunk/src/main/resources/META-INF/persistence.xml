@@ -2,38 +2,41 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
   <persistence-unit name="wegasPU" transaction-type="JTA">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <jta-data-source>metalbasim_dev</jta-data-source>
-    <class>com.albasim.wegas.persistance.cardinality.GmEnumCardinality</class>
-    <class>com.albasim.wegas.persistance.cardinality.GmOneCardinality</class>
-    <class>com.albasim.wegas.persistance.cardinality.GmEqualCardinality</class>
-    <class>com.albasim.wegas.persistance.cardinality.GmUnboundedCardinality</class>
-    <class>com.albasim.wegas.persistance.GmVariableDescriptor</class>
-    <class>com.albasim.wegas.persistance.type.GmBooleanType</class>
-    <class>com.albasim.wegas.persistance.type.GmTextType</class>
-    <class>com.albasim.wegas.persistance.type.GmEnumType</class>
-    <class>com.albasim.wegas.persistance.type.GmStringType</class>
-    <class>com.albasim.wegas.persistance.type.GmComplexType</class>
-    <class>com.albasim.wegas.persistance.type.GmIntegerType</class>
-    <class>com.albasim.wegas.persistance.type.GmDoubleType</class>
-    <class>com.albasim.wegas.persistance.type.GmMediaType</class>
-    <class>com.albasim.wegas.persistance.GmType</class>
-    <class>com.albasim.wegas.persistance.GmMethod</class>
-    <class>com.albasim.wegas.persistance.GmCardinality</class>
-    <class>com.albasim.wegas.persistance.GmVariableInstance</class>
-    <class>com.albasim.wegas.persistance.GameModel</class>
-    <class>com.albasim.wegas.persistance.instance.GmComplexInstance</class>
-    <class>com.albasim.wegas.persistance.instance.GmTextInstance</class>
-    <class>com.albasim.wegas.persistance.instance.GmIntegerInstance</class>
-    <class>com.albasim.wegas.persistance.instance.GmDoubleInstance</class>
-    <class>com.albasim.wegas.persistance.instance.GmEnumInstance</class>
-    <class>com.albasim.wegas.persistance.instance.GmStringInstance</class>
-    <class>com.albasim.wegas.persistance.instance.GmMediaInstance</class>
-    <class>com.albasim.wegas.persistance.instance.GmBooleanInstance</class>
-    <class>com.albasim.wegas.persistance.GmEnumItem</class>
-    <class>com.albasim.wegas.persistance.GmEventListener</class>
-    <class>com.albasim.wegas.persistance.GmUserEvent</class>
-    <class>com.albasim.wegas.persistance.GmInstance</class>
-    <class>com.albasim.wegas.persistance.GmParameter</class>
+    <jta-data-source>jdbc/wegas_dev</jta-data-source>
+    <class>com.albasim.wegas.persistence.GmType</class>
+    <!--    <class>com.albasim.wegas.persistence.GmCardinality</class>-->
+    <class>com.albasim.wegas.persistence.type.GmComplexType</class>
+    <class>com.albasim.wegas.persistence.type.GmStringType</class>
+    <class>com.albasim.wegas.persistence.type.GmEnumType</class>
+    <class>com.albasim.wegas.persistence.type.GmBooleanType</class>
+    <class>com.albasim.wegas.persistence.type.GmMediaType</class>
+    <class>com.albasim.wegas.persistence.type.GmIntegerType</class>
+    <class>com.albasim.wegas.persistence.type.GmTextType</class>
+    <class>com.albasim.wegas.persistence.type.GmDoubleType</class>
+    <class>com.albasim.wegas.persistence.GmMethod</class>
+    <class>com.albasim.wegas.persistence.instance.GmBooleanInstance</class>
+    <class>com.albasim.wegas.persistence.instance.GmComplexInstance</class>
+    <class>com.albasim.wegas.persistence.instance.GmIntegerInstance</class>
+    <class>com.albasim.wegas.persistence.instance.GmMediaInstance</class>
+    <class>com.albasim.wegas.persistence.instance.GmTextInstance</class>
+    <class>com.albasim.wegas.persistence.instance.GmDoubleInstance</class>
+    <class>com.albasim.wegas.persistence.instance.GmStringInstance</class>
+    <class>com.albasim.wegas.persistence.instance.GmEnumInstance</class>
+    <class>com.albasim.wegas.persistence.GmEnumItem</class>
+    <class>com.albasim.wegas.persistence.GmEventListener</class>
+    <class>com.albasim.wegas.persistence.GmInstance</class>
+    <class>com.albasim.wegas.persistence.GmUserEvent</class>
+    <class>com.albasim.wegas.persistence.GameModel</class>
+    <class>com.albasim.wegas.persistence.GmParameter</class>
+    <!--    <class>com.albasim.wegas.persistence.cardinality.GmOneCardinality</class>
+    <class>com.albasim.wegas.persistence.cardinality.GmEqualCardinality</class>
+    <class>com.albasim.wegas.persistence.cardinality.GmEnumCardinality</class>
+    <class>com.albasim.wegas.persistence.cardinality.GmUnboundedCardinality</class>-->
+    <class>com.albasim.wegas.persistence.User</class>
+    <class>com.albasim.wegas.persistence.VariableDescriptorEntity</class>
+    <class>com.albasim.wegas.persistence.scope.ScopeEntity</class>
+    <class>com.albasim.wegas.persistence.scope.UserScopeEntity</class>
+    <class>com.albasim.wegas.persistence.VariableInstanceEntity</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <shared-cache-mode>NONE</shared-cache-mode>
     <properties>

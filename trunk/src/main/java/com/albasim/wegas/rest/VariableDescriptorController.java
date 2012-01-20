@@ -1,23 +1,21 @@
 /*
- * MetAlbasim is super koool. http://www.albasim.com
+ * Wegas. 
+ * http://www.albasim.com/wegas/
  * 
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2010, 2011 
- *
- * MetAlbasim is distributed under the ??? license
- *
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.rest;
 
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
-import com.albasim.wegas.ejb.GmVarDescManager;
+import com.albasim.wegas.ejb.VariableDescriptorManager;
 import com.albasim.wegas.helper.AlbaHelper;
 import com.albasim.wegas.helper.IndexEntry;
-import com.albasim.wegas.persistance.GameModel;
-import com.albasim.wegas.persistance.GmVariableDescriptor;
+import com.albasim.wegas.persistence.GameModel;
+import com.albasim.wegas.persistence.VariableDescriptorEntity;
 import java.util.Collection;
 
 
@@ -43,7 +41,7 @@ import javax.ws.rs.core.Response;
  * @author maxence
  */
 @Stateless
-@Path("gm/{gmID : [1-9][0-9]*}/var_desc")
+@Path("gm/{gmID : [1-9][0-9]*}/vardesc")
 public class VariableDescriptorController {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM_VariableDescriptor");
@@ -55,7 +53,7 @@ public class VariableDescriptorController {
     private GameModelManager gmm;
 
     @EJB 
-    private GmVarDescManager vdm;
+    private VariableDescriptorManager vdm;
 
 
     @GET
@@ -74,11 +72,11 @@ public class VariableDescriptorController {
      * @return OK
      */
     @GET
-    @Path("{vdID : [1-9][0-9]*}")
+    @Path("{variableDescriptorId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public GmVariableDescriptor get(@PathParam("gmID") String gmID,
-                                    @PathParam("vdID") String vdID) {
-        return vdm.getVariableDescriptor(gmID, vdID);
+    public VariableDescriptorEntity get(@PathParam("gmID") Long gmID,
+                                    @PathParam("variableDescriptorId") Long variableDescriptorId) {
+        return vdm.getVariableDescriptor(variableDescriptorId);
     }
 
 
@@ -91,9 +89,9 @@ public class VariableDescriptorController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public GmVariableDescriptor createForGameModel(
+    public VariableDescriptorEntity createForGameModel(
             @PathParam("gmID") String gmID,
-            GmVariableDescriptor theVarDesc) {
+            VariableDescriptorEntity theVarDesc) {
         GameModel theGameModel = gmm.getGameModel(gmID);
         theVarDesc.setParentGameModel(theGameModel);
         vdm.createVarDesc(theVarDesc);
@@ -107,13 +105,13 @@ public class VariableDescriptorController {
      * @return 
      */
     /*@PUT
-    @Path("{vdID : [1-9][0-9]*}")
+    @Path("{variableDescriptorId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public GmVariableDescriptor propagateUpdate(@PathParam("gmID") String gmID,
-                                       @PathParam("vdID") String vdID,
+                                       @PathParam("variableDescriptorId") String variableDescriptorId,
                                        GmVariableDescriptor theVarDesc) {
-        GmVariableDescriptor updateVariableDescriptor = gmm.updateVariableDescriptor(gmID, vdID, theVarDesc);
+        GmVariableDescriptor updateVariableDescriptor = gmm.updateVariableDescriptor(gmID, variableDescriptorId, theVarDesc);
         return updateVariableDescriptor;
     }*/
 
@@ -124,11 +122,11 @@ public class VariableDescriptorController {
      * @return 
      */
     @DELETE
-    @Path("{vdID : [1-9][0-9]*}")
+    @Path("{variableDescriptorId : [1-9][0-9]*}")
     public Response destroy(@PathParam("gmID") String gmID,
-                            @PathParam("vdID") String vdID) {
+                            @PathParam("variableDescriptorId") String variableDescriptorId) {
 
-        vdm.destroyVariableDescriptor(gmID, vdID);
+        vdm.destroyVariableDescriptor(gmID, variableDescriptorId);
 
         return Response.status(Response.Status.OK).build();
     }

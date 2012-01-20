@@ -4,21 +4,14 @@
     <description>Web Game Authoring System</description>
     <display-name>Web Game Authoring System</display-name>
     <distributable/>
-    <filter>
-        <filter-name>FacebookUserFilter</filter-name>
-        <filter-class>com.albasim.session.facebook.FacebookUserFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>FacebookUserFilter</filter-name>
-        <url-pattern>/facebooktest/*</url-pattern>
-    </filter-mapping>
     <listener>
         <listener-class>com.albasim.wegas.tools.RequestListener</listener-class>
     </listener>
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-    <security-constraint>
+    
+    <!--<security-constraint>
         <display-name>SecurityConstraint</display-name>
         <web-resource-collection>
             <web-resource-name>WRCollection</web-resource-name>
@@ -40,7 +33,8 @@
     </login-config>
     <security-role>
         <role-name>gamedesigner</role-name>
-    </security-role>
+    </security-role>-->
+    
     <!-- REST Servlet -->
     <servlet>
         <servlet-name>Jersey Web Application</servlet-name>
@@ -51,15 +45,7 @@
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/rs/*</url-pattern>
     </servlet-mapping>
-    <!--
-    <servlet>
-        <servlet-name>AdminServlet</servlet-name>
-        <servlet-class>com.albasim.wegas.admin.AdminServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AdminServlet</servlet-name>
-        <url-pattern>/admin</url-pattern>
-    </servlet-mapping>-->
+    
     <!-- Atmosphere Servlet -->
     <servlet>
         <description>AtmosphereServlet</description>
@@ -83,8 +69,29 @@
         <servlet-name>AtmosphereServlet</servlet-name>
         <url-pattern>/atmosphere/*</url-pattern>
     </servlet-mapping>
-    <security-role-mapping>
+    
+    
+    <!--
+    <servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>com.albasim.wegas.admin.AdminServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/admin</url-pattern>
+    </servlet-mapping>-->
+    
+   <!-- <filter>
+        <filter-name>FacebookUserFilter</filter-name>
+        <filter-class>com.albasim.session.facebook.FacebookUserFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>FacebookUserFilter</filter-name>
+        <url-pattern>/facebooktest/*</url-pattern>
+    </filter-mapping>-->
+    
+   <!-- <security-role-mapping>
         <role-name>loginUser</role-name>
         <group-name>admin</group-name>
-    </security-role-mapping>
+    </security-role-mapping>-->
 </web-app>

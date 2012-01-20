@@ -1,26 +1,24 @@
 /*
- * MetAlbasim is super koool. http://www.albasim.com
+ * Wegas. 
+ * http://www.albasim.com/wegas/
  * 
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2010, 2011 
- *
- * MetAlbasim is distributed under the ??? license
- *
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.rest;
 
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.ejb.GmTypeManager;
-import com.albasim.wegas.ejb.GmVarDescManager;
+import com.albasim.wegas.ejb.VariableDescriptorManager;
 import com.albasim.wegas.helper.AlbaHelper;
-import com.albasim.wegas.persistance.GameModel;
-import com.albasim.wegas.persistance.GmType;
+import com.albasim.wegas.persistence.GameModel;
+import com.albasim.wegas.persistence.GmType;
 import com.albasim.wegas.helper.IndexEntry;
-import com.albasim.wegas.persistance.GmVariableDescriptor;
-import com.albasim.wegas.persistance.type.GmComplexType;
+import com.albasim.wegas.persistence.VariableDescriptorEntity;
+import com.albasim.wegas.persistence.type.GmComplexType;
 
 import java.util.Collection;
 
@@ -70,7 +68,7 @@ public class TypeController {
 
 
     @EJB
-    private GmVarDescManager vdm;
+    private VariableDescriptorManager vdm;
 
 
     /**
@@ -154,9 +152,9 @@ public class TypeController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{cID : [1-9][0-9]*}/var_desc")
-    public GmVariableDescriptor create(@PathParam("gmID") String gmID,
+    public VariableDescriptorEntity create(@PathParam("gmID") String gmID,
                                        @PathParam("cID") String cID,
-                                       GmVariableDescriptor theVarDesc) {
+                                       VariableDescriptorEntity theVarDesc) {
         GameModel theGameModel = gmm.getGameModel(gmID);
         GmComplexType complexType = tm.getComplexType(theGameModel, cID);
 

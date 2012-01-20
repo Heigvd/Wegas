@@ -11,8 +11,8 @@
  */
 package com.albasim.wegas.helper;
 
-import com.albasim.wegas.persistance.GmCardinality;
-import com.albasim.wegas.persistance.GmVariableInstance;
+import com.albasim.wegas.persistence.GmCardinality;
+import com.albasim.wegas.persistence.VariableInstanceEntity;
 
 /**
  *
@@ -24,10 +24,10 @@ public class VariableInstanceIndexEntry extends IndexEntry {
 
     private GmCardinality cardinality;
     
-    public VariableInstanceIndexEntry(GmVariableInstance vi){
+    public VariableInstanceIndexEntry(VariableInstanceEntity vi){
         super(vi);
-        this.type = vi.getDescriptor().getType().getName();
-        this.cardinality = vi.getCardinality();
+        //this.type = vi.getDescriptor().getType().getName();
+       // this.cardinality = vi.getCardinality();
     }
 
 

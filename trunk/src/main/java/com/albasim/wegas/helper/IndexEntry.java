@@ -11,7 +11,7 @@
  */
 package com.albasim.wegas.helper;
 
-import com.albasim.wegas.persistance.NamedAlbaEntity;
+import com.albasim.wegas.persistence.NamedEntity;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -37,7 +37,7 @@ public class IndexEntry {
     @XmlAttribute(name="@class")
     private String type;
     
-    public IndexEntry(NamedAlbaEntity e) {
+    public IndexEntry(NamedEntity e) {
         this.id = e.getId();
         this.name = e.getName();
 

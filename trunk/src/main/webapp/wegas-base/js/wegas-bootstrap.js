@@ -82,8 +82,12 @@ var Y = YUI({
 		'wegas-datatable': {
 		    path: 'wegas-base/js/wegas-datatable.js',
 		    requires: ['datatable', "datatable-datasource", 'yui2-button',
-		    /*'datatable-events', 'datatable-sort',*/ ]
+                        /*'datatable-events', 'datatable-sort',*/ ]
 		},
+                'wegas-treeble': {
+		    path: 'wegas-base/js/wegas-treeble.js',
+		    requires: ['gallery-treeble', 'yui2-button' ]
+                },
 		'wegas-tabview': {
 		    path: 'wegas-base/js/wegas-tabview.js',
 		    requires: ['tabview']

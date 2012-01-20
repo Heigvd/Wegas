@@ -15,17 +15,12 @@
     </properties>
 
     <dependencies>
-        
-      <!--  <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
-        </dependency>
-        -->
+
+        <!-- DB Driver -->
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
-             <version>9.0-801.jdbc4</version>
+            <version>9.0-801.jdbc4</version>
         </dependency>   
         
         <dependency>
@@ -40,14 +35,13 @@
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
             <scope>test</scope>
-        </dependency>   
-
+        </dependency> 
+        
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
             <version>1.8</version>
         </dependency>
-
         <dependency>
             <groupId>com.sun.jersey.jersey-test-framework</groupId>
             <artifactId>jersey-test-framework-embedded-glassfish</artifactId>
@@ -55,6 +49,8 @@
             <scope>test</scope>
         </dependency>
 
+
+        <!-- eclipse persistence link -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
@@ -73,17 +69,7 @@
             <version>2.2.0</version>
             <scope>provided</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.0-801.jdbc4</version>
-        </dependency>-->
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-comet</artifactId>
-            <version>1.9.36</version>
-            <type>jar</type>
-        </dependency>
+        
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
@@ -92,7 +78,7 @@
         </dependency>
         
         <!-- Atmosphere Dependencies -->
-          <dependency>
+        <dependency>
             <groupId>org.atmosphere</groupId>
             <artifactId>atmosphere-jquery</artifactId>
             <version>0.9-SNAPSHOT</version>
@@ -123,44 +109,25 @@
             <version>0.9.24</version>
         </dependency>
         
-        <dependency>
+        <!-- Facebook API Dependencies -->
+        <!--<dependency>
           <groupId>com.google.code.facebookapi</groupId>
           <artifactId>facebook-java-api</artifactId>
           <version>2.0.5</version>
-        </dependency>
+        </dependency>-->
         
+        <!-- YUI -->        
+        <!--<dependency>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yui</artifactId>
+            <version>2.5.0</version>
+            <type>zip</type>
+            <scope>runtime</scope>
+        </dependency>-->
+     
         <!--
-         <properties>
+        <properties>
         <jetty-version>6.1.22</jetty-version>
-        <jersey-version>1.10</jersey-version>
-        <atmosphere-version>0.7-SNAPSHOT</atmosphere-version>
-        <jaxb-version>2.1</jaxb-version>
-        <jackson-version>1.3.1</jackson-version>
-        <gwt-version>2.3.0</gwt-version>
-        <junit-version>3.8.1</junit-version>
-        <maven-plugin.version>1.0.0</maven-plugin.version>
-        <servlet-version>3.0-b74b</servlet-version>
-        <bayeux-version>1.1.3</bayeux-version>
-        <grizzly-version>1.9.39</grizzly-version>
-        <jboss-version>2.1.1.GA</jboss-version>
-        <grizzly10-version>1.0.31</grizzly10-version>
-        <jetty7-version>7.5.1.v20110908</jetty7-version>
-        <tomcat-version>6.0.18</tomcat-version>
-        <tomcat7-version>7.0.0-RC2</tomcat7-version>
-        <jgroups-version>2.8.0.GA</jgroups-version>
-        <common-logging-version>1.1.1</common-logging-version>
-        <scala.version>2.7.7</scala.version>
-        <shade-version>1.2.1</shade-version>
-        <felix-version>1.4.0</felix-version>
-        <jms-version>1.1</jms-version>
-        <guice-version>2.0</guice-version>
-        <spring-version>3.0.6.RELEASE</spring-version>
-        <wicket.version>1.4.12</wicket.version>
-        <ahc.version>1.6.5</ahc.version>
-        <jedis.version>2.0.0</jedis.version>
-        <slf4j-impl-version>1.6.1</slf4j-impl-version>
-        <slf4j-version>1.6.1</slf4j-version>
-        <logback-version>0.9.24</logback-version>
     </properties>-->
     </dependencies>
 
@@ -184,7 +151,20 @@
                 <version>2.1</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    
+                    <!--<overlays>
+                        <overlay>
+                            <groupId>com.yahoo</groupId>
+                            <artifactId>yui</artifactId>
+                            <type>zip</type>
+                            <targetPath>lib/yui</targetPath>
+                            <includes>
+                                <include>build/**</include>
+                            </includes>
+                        </overlay>
+                    </overlays>-->
                 </configuration>
+                
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -211,22 +191,39 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            
+            <!-- YUI JS Compression Plugin -->
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                      
+                <configuration>
+                    <excludes>
+                        <exclude>lib/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            
         </plugins>
-        <finalName>MetAlbaSim</finalName>
+        <finalName>Wegas</finalName>
     </build>
     <repositories>
         <repository>
             <id>EclipseLink Repo</id>
-            <!-- note that ampersands in this URL are escaped because this is in an xml file -
-                un-escape them to use in browser 
-            -->
             <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo</url>
             <snapshots>
-              <enabled>true</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>    
-
-
         <repository>
             <id>maven2-repository.java.net</id>
             <name>Java.net Repository for Maven</name>
@@ -234,4 +231,11 @@
             <layout>default</layout>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <name>oss.sonatype.org</name>
+            <id>oss.sonatype.org</id>
+            <url>http://oss.sonatype.org/content/groups/public</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

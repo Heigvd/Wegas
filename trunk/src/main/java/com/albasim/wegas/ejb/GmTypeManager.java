@@ -1,19 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas. 
+ * http://www.albasim.com/wegas/
+ * 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem⁺
+ *
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.ejb;
 
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
-import com.albasim.wegas.persistance.GameModel;
-import com.albasim.wegas.persistance.GmEnumItem;
-import com.albasim.wegas.persistance.GmMethod;
-import com.albasim.wegas.persistance.GmType;
-import com.albasim.wegas.persistance.GmUserEvent;
-import com.albasim.wegas.persistance.GmVariableDescriptor;
-import com.albasim.wegas.persistance.type.GmComplexType;
-import com.albasim.wegas.persistance.type.GmEnumType;
+import com.albasim.wegas.persistence.GameModel;
+import com.albasim.wegas.persistence.GmEnumItem;
+import com.albasim.wegas.persistence.GmMethod;
+import com.albasim.wegas.persistence.GmType;
+import com.albasim.wegas.persistence.GmUserEvent;
+import com.albasim.wegas.persistence.VariableDescriptorEntity;
+import com.albasim.wegas.persistence.type.GmComplexType;
+import com.albasim.wegas.persistence.type.GmEnumType;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -33,7 +38,7 @@ public class GmTypeManager {
 
 
     @EJB
-    private AlbaEntityManager aem;
+    private WegasEntityManager aem;
 
 
     @EJB
@@ -45,7 +50,7 @@ public class GmTypeManager {
 
 
     @EJB
-    private GmVarDescManager vdm;
+    private VariableDescriptorManager vdm;
 
 
     @EJB
@@ -238,7 +243,7 @@ public class GmTypeManager {
 
     private void complexTypePrePersist(GmComplexType cType) {
         if (cType.getVariableDescriptors() != null) {
-            for (GmVariableDescriptor vd : cType.getVariableDescriptors()) {
+            for (VariableDescriptorEntity vd : cType.getVariableDescriptors()) {
                 vd.setParentComplexType(cType);
                 vdm.varDescPrePersist(vd);
             }
@@ -299,7 +304,7 @@ public class GmTypeManager {
 
         if (t instanceof GmComplexType) {
             GmComplexType ct = (GmComplexType) t;
-            for (GmVariableDescriptor vd : ct.getVariableDescriptors()) {
+            for (VariableDescriptorEntity vd : ct.getVariableDescriptors()) {
                 vdm.varDescPreDestroy(vd);
             }
         } else if (t instanceof GmEnumType) {

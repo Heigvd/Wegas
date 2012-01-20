@@ -1,13 +1,11 @@
 /*
- * MetAlbasim is super koool. http://www.albasim.com
+ * Wegas. 
+ * http://www.albasim.com/wegas/
  * 
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2010, 2011 
- *
- * MetAlbasim is distributed under the ??? license
- *
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.rest;
 
@@ -19,9 +17,9 @@ import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.helper.AlbaHelper;
 import com.albasim.wegas.helper.IndexEntry;
-import com.albasim.wegas.persistance.GameModel;
-import com.albasim.wegas.persistance.GmMethod;
-import com.albasim.wegas.persistance.GmType;
+import com.albasim.wegas.persistence.GameModel;
+import com.albasim.wegas.persistence.GmMethod;
+import com.albasim.wegas.persistence.GmType;
 
 import java.util.Collection;
 

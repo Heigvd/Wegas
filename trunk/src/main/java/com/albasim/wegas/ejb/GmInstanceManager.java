@@ -1,19 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas. 
+ * http://www.albasim.com/wegas/
+ * 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem⁺
+ *
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.ejb;
 
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
-import com.albasim.wegas.persistance.GmEventListener;
-import com.albasim.wegas.persistance.GmInstance;
-import com.albasim.wegas.persistance.GmType;
-import com.albasim.wegas.persistance.GmVariableDescriptor;
-import com.albasim.wegas.persistance.GmVariableInstance;
-import com.albasim.wegas.persistance.instance.GmComplexInstance;
-import com.albasim.wegas.persistance.instance.GmIntegerInstance;
-import com.albasim.wegas.persistance.type.GmComplexType;
+import com.albasim.wegas.persistence.GmEventListener;
+import com.albasim.wegas.persistence.GmInstance;
+import com.albasim.wegas.persistence.GmType;
+import com.albasim.wegas.persistence.VariableDescriptorEntity;
+import com.albasim.wegas.persistence.VariableInstanceEntity;
+import com.albasim.wegas.persistence.instance.GmComplexInstance;
+import com.albasim.wegas.persistence.instance.GmIntegerInstance;
+import com.albasim.wegas.persistence.type.GmComplexType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,11 +43,11 @@ public class GmInstanceManager {
 
 
     @EJB
-    private AlbaEntityManager aem;
+    private WegasEntityManager aem;
 
 
     @EJB
-    private GmVarInstManager vim;
+    private VariableInstanceManager vim;
 
 
     @EJB
@@ -58,8 +63,8 @@ public class GmInstanceManager {
 
 
     public void createInstance(String gmID, String vID, GmInstance newInstance) {
-        GmVariableInstance vi = vim.getVariableInstance(gmID, vID);
-        GmVariableDescriptor vd = vi.getDescriptor();
+        VariableInstanceEntity vi = vim.getVariableInstance(gmID, vID);
+/*        VariableDescriptorEntity vd = vi.getDescriptor();
 
         newInstance.setVariable(vi);
 
@@ -67,7 +72,7 @@ public class GmInstanceManager {
         XmlType iXmlType = newInstance.getClass().getAnnotation(XmlType.class);
 
         // Does the cardinality allow to add instances ?
-        if (vd.canAddInstance()) {
+/*        if (vd.canAddInstance()) {
             // Check if the new instance has the correct type
             if (iXmlType.name().equals(type.getInstanceType())) {
                 instancePrePersist(newInstance);
@@ -75,18 +80,18 @@ public class GmInstanceManager {
                 return;
             }
             throw new InvalidContent("Instance type doesn't match ");
-        }
+        }*/
         throw new InvalidContent("Cannot add instance to this variable !");
     }
 
 
     public void instancePrePersist(GmInstance i) {
-        dispatcher.create(i);
+       /* dispatcher.create(i);
         i.setInstanceOf(i.getVariable().getDescriptor().getType());
 
         if (i instanceof GmComplexInstance) {
             complexeInstancePrePersist((GmComplexInstance) i);
-        }
+        }*/
     }
 
 
@@ -102,7 +107,7 @@ public class GmInstanceManager {
 
         // Make sure the variable instance list exists
         if (ci.getVariableInstances() == null) {
-            ci.setVariableInstances(new ArrayList<GmVariableInstance>());
+            ci.setVariableInstances(new ArrayList<VariableInstanceEntity>());
         }
 
         GmComplexType theCType = (GmComplexType) ci.getInstanceOf();
@@ -112,11 +117,11 @@ public class GmInstanceManager {
             throw new InvalidContent(ci.toString());
         }
 
-        Collection<GmVariableDescriptor> vds = theCType.getVariableDescriptors();
+        Collection<VariableDescriptorEntity> vds = theCType.getVariableDescriptors();
 
         // Check that all variable in the list are correct (i.e. the var name is defined by a descriptor)
-        for (GmVariableInstance i : ci.getVariableInstances()) {
-            GmVariableDescriptor lookupDescriptor = theCType.lookupDescriptor(i.getStringName());
+        for (VariableInstanceEntity i : ci.getVariableInstances()) {
+/*            VariableDescriptorEntity lookupDescriptor = theCType.lookupDescriptor(i.getStringName());
             if (lookupDescriptor == null) {
                 throw new InvalidContent("The \"" + theCType.getName()
                         + "\"  doesn't contains any \""
@@ -127,16 +132,16 @@ public class GmInstanceManager {
                 i.setParentComplexInstance(ci);
                 i.setParentGameModel(null);
                 vim.variableInstancePrePersist(i);
-            }
+            }*/
         }
 
         // Check that each descriptor has a variable; otherwise, propagateCreate the variable
-        for (GmVariableDescriptor vd : vds) {
-            GmVariableInstance theVi = ci.lookupVariableInstance(vd.getName());
+        for (VariableDescriptorEntity vd : vds) {
+            VariableInstanceEntity theVi = ci.lookupVariableInstance(vd.getName());
             if (theVi == null) {
-                theVi = new GmVariableInstance();
-                theVi.setDescriptor(vd);
-                theVi.setParentComplexInstance(ci);
+                theVi = new VariableInstanceEntity();
+//                theVi.setDescriptor(vd);
+          //      theVi.setParentComplexInstance(ci);
                 ci.getVariableInstances().add(theVi);
                 vim.variableInstancePrePersist(theVi);
             }
@@ -148,7 +153,7 @@ public class GmInstanceManager {
         logger.log(Level.INFO, "GetInstance: Terminal is : {0}");
         GmInstance find = em.find(GmInstance.class, Long.parseLong(iID));
         if (find != null) {
-            GmVariableInstance vi = vim.getVariableInstance(gmID, vID);
+            VariableInstanceEntity vi = vim.getVariableInstance(gmID, vID);
             if (find.getVariable().equals(vi)) {
                 return find;
             }
@@ -170,7 +175,7 @@ public class GmInstanceManager {
                                                 String iID) {
         GmComplexInstance find = em.find(GmComplexInstance.class, Long.parseLong(iID));
         if (find != null) {
-            GmVariableInstance vi = vim.getVariableInstance(gmID, vID);
+            VariableInstanceEntity vi = vim.getVariableInstance(gmID, vID);
             if (find.getVariable().equals(vi)) {
                 return find;
             }
@@ -207,10 +212,10 @@ public class GmInstanceManager {
             theInstance.setVariable(instance.getVariable());
 
             // default behaviour is name is only editable with Unbounded cardinality 
-            if (!instance.getVariable().getDescriptor().canChangeInstanceName()) {
+/*            if (!instance.getVariable().getDescriptor().canChangeInstanceName()) {
                 //revert the name if its modification is not allowed
                 theInstance.setName(instance.getName());
-            }
+            }*/
 
             if (theInstance instanceof GmIntegerInstance) {
                 // Special case : IntegerInstance may drive EqualCardinalized variables
@@ -221,7 +226,7 @@ public class GmInstanceManager {
                 GmIntegerInstance iInstOri = (GmIntegerInstance) instance;
 
                 // Get variable linked to the original instance
-                List<GmVariableInstance> gmVariableInstances = iInstOri.getGmVariableInstances();
+                List<VariableInstanceEntity> gmVariableInstances = iInstOri.getGmVariableInstances();
 
                 // Is there linked variables ? 
                 if (gmVariableInstances != null && !gmVariableInstances.isEmpty()) {
@@ -242,8 +247,8 @@ public class GmInstanceManager {
                     // be careful : the logic will become invalid if negative value are made valid !
                     if (nv < ov) {
                         // Case a) remove instance
-                        for (GmVariableInstance vInst : iInstOri.getGmVariableInstances()) {
-                            for (GmInstance inst : vInst.getInstances()) {
+                        for (VariableInstanceEntity vInst : iInstOri.getGmVariableInstances()) {
+/*                            for (GmInstance inst : vInst.getInstances()) {
                                 int parseInt = Integer.parseInt(inst.getName());
                                 if (parseInt > nv) {
                                     // Current instance index is grater than bound
@@ -251,18 +256,18 @@ public class GmInstanceManager {
                                     // DO NOT PROVIDE TERMINAL to avoid commiting now !
                                     aem.destroy(inst);
                                 }
-                            }
+                            }*/
                         }
                     } else if (nv > ov) {
                         // Case b) propagateCreate instances
                         Integer i;
-                        for (GmVariableInstance vInst : iInstOri.getGmVariableInstances()) {
-                            for (i = ov + 1; i <= nv; i++) {
+                        for (VariableInstanceEntity vInst : iInstOri.getGmVariableInstances()) {
+                     /*       for (i = ov + 1; i <= nv; i++) {
                                 GmInstance createInstance = vInst.getDescriptor().getType().createInstance(i.toString(), vInst, null);
                                 dispatcher.create(createInstance);
                                 // DO NOT PROVIDE TERMINAL to avoid commiting now !
                                 aem.create(createInstance);
-                            }
+                            }*/
                         }
                     }
                 }
@@ -286,14 +291,14 @@ public class GmInstanceManager {
      */
     public void destroyInstance(String gmID, String vID, String iID) {
         GmInstance instance = getInstance(gmID, vID, iID);
-        GmVariableInstance vi = instance.getVariable();
-        GmVariableDescriptor vd = vi.getDescriptor();
+        VariableInstanceEntity vi = instance.getVariable();
+/*        VariableDescriptorEntity vd = vi.getDescriptor();
 
-        if (vd.canRemoveInstance()) {
+/*        if (vd.canRemoveInstance()) {
             instancePreDestroy(instance);
             aem.destroy(instance);
             return;
-        }
+        }*/
 
         throw new InvalidContent("Cannot destroy variable");
     }
@@ -308,7 +313,7 @@ public class GmInstanceManager {
                 elm.eventListenerPreDestroy(el);
             }
 
-            for (GmVariableInstance vi : ci.getVariableInstances()){
+            for (VariableInstanceEntity vi : ci.getVariableInstances()){
                 vim.variableInstancePreDestroy(vi);
             }
         }
@@ -317,10 +322,10 @@ public class GmInstanceManager {
     }
 
 
-    void detachAll(GmVariableInstance vi) {
-        for (GmInstance i : vi.getInstances()){
+    void detachAll(VariableInstanceEntity vi) {
+/*        for (GmInstance i : vi.getInstances()){
             detach(i);
-        }
+        }*/
     }
 
 

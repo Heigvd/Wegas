@@ -1,6 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas. 
+ * http://www.albasim.com/wegas/
+ * 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem⁺
+ *
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.ejb;
 
@@ -9,10 +14,8 @@ import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.MissingTransaction;
 import com.albasim.wegas.exception.MissingWebSocketSession;
 import com.albasim.wegas.helper.IndexEntry;
-import com.albasim.wegas.persistance.AnonymousAlbaEntity;
+import com.albasim.wegas.persistence.AnonymousEntity;
 import com.albasim.wegas.helper.StaticHelper;
-import com.sun.grizzly.comet.CometContext;
-import com.sun.grizzly.comet.CometEngine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -185,7 +188,7 @@ public class Dispatcher {
      * @param o
      * @param webSocketSessionId 
      */
-    public void propagateCreate(AnonymousAlbaEntity o) {
+    public void propagateCreate(AnonymousEntity o) {
         logger.log(Level.INFO, "Shall propagate {0} creation to ", o);
 //        assertWebSocketSession(terminal);
  //       registerObject(o, terminal);
@@ -200,12 +203,12 @@ public class Dispatcher {
      * @param o
      * @param webSocketSessionId 
      */
-    public void propagateUpdate(AnonymousAlbaEntity o) {
+    public void propagateUpdate(AnonymousEntity o) {
         try {
             logger.log(Level.INFO, "Shall propagate {0} update to ", o);
            // assertWebSocketSession(terminal);
 
-            CometContext context = CometEngine.getEngine().register(contextPath);
+//            CometContext context = CometEngine.getEngine().register(contextPath);
 
             // Fetch handler list to propagate propagateUpdate
             String json = o.toJson(ps);
@@ -234,14 +237,14 @@ public class Dispatcher {
      * @param o
      * @param webSocketSessionId 
      */
-    public void propagateDestroy(AnonymousAlbaEntity o) {
+    public void propagateDestroy(AnonymousEntity o) {
         try {
             String key = o.getKey();
             logger.log(Level.INFO, "Shall propagate deletion of {0} to ", o);
             //assertWebSocketSession(terminal);
 
 
-            CometContext context = CometEngine.getEngine().register(contextPath);
+//            CometContext context = CometEngine.getEngine().register(contextPath);
 
             // Fetch handler list to propagate propagateUpdate
             IndexEntry entry = null;
@@ -351,19 +354,19 @@ public class Dispatcher {
     }
 
 
-    public void remove(AnonymousAlbaEntity o) {
+    public void remove(AnonymousEntity o) {
         //DispatchTransaction transaction = getTransaction();
         //transaction.remove(o);
     }
 
 
-    public void update(AnonymousAlbaEntity o) {
+    public void update(AnonymousEntity o) {
         //DispatchTransaction transaction = getTransaction();
         //transaction.update(o);
     }
 
 
-    public void create(AnonymousAlbaEntity o) {
+    public void create(AnonymousEntity o) {
        // DispatchTransaction transaction = getTransaction();
        // transaction.create(o);
     }

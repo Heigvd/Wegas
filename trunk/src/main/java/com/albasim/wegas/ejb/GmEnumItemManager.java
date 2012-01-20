@@ -1,18 +1,23 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas. 
+ * http://www.albasim.com/wegas/
+ * 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem⁺
+ *
+ * Copyright (C) 2011 
  */
 package com.albasim.wegas.ejb;
 
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
-import com.albasim.wegas.persistance.GameModel;
-import com.albasim.wegas.persistance.GmEnumItem;
-import com.albasim.wegas.persistance.GmInstance;
-import com.albasim.wegas.persistance.GmVariableDescriptor;
-import com.albasim.wegas.persistance.GmVariableInstance;
-import com.albasim.wegas.persistance.cardinality.GmEnumCardinality;
-import com.albasim.wegas.persistance.type.GmEnumType;
+import com.albasim.wegas.persistence.GameModel;
+import com.albasim.wegas.persistence.GmEnumItem;
+import com.albasim.wegas.persistence.GmInstance;
+import com.albasim.wegas.persistence.VariableDescriptorEntity;
+import com.albasim.wegas.persistence.VariableInstanceEntity;
+import com.albasim.wegas.persistence.cardinality.GmEnumCardinality;
+import com.albasim.wegas.persistence.type.GmEnumType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,7 +40,7 @@ public class GmEnumItemManager {
 
 
     @EJB
-    private AlbaEntityManager aem;
+    private WegasEntityManager aem;
 
 
     @EJB
@@ -72,7 +77,7 @@ public class GmEnumItemManager {
      * When a new enum item is added, add instance within a varInstance which refer to this.getEnumType through their cardinality
      */
     public void enumItemPrePersist(GmEnumItem it) {
-        dispatcher.create(it);
+      /*  dispatcher.create(it);
         GmEnumType enumType = it.getGmEnumType();
         if (it.getInstances() == null) {
             List<GmInstance> is = new ArrayList<GmInstance>();
@@ -83,8 +88,8 @@ public class GmEnumItemManager {
         List<GmEnumCardinality> gmEnumCardinalities = enumType.getGmEnumCardinalities();
         if (gmEnumCardinalities != null) {
             for (GmEnumCardinality card : gmEnumCardinalities) {
-                GmVariableDescriptor vd = card.getVarDesc();
-                for (GmVariableInstance vi : vd.getGmVariableInstances()) {
+                VariableDescriptorEntity vd = card.getVarDesc();
+                for (VariableInstanceEntity vi : vd.getGmVariableInstances()) {
                     if (!vi.isInstanceExists(it.getName())) {
                         GmInstance createInstance = vd.getType().createInstance(it.getName(), vi, it);
                         is.add(createInstance);
@@ -92,7 +97,7 @@ public class GmEnumItemManager {
                     }
                 }
             }
-        }
+        }*/
     }
 
 

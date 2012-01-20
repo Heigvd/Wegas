@@ -6,8 +6,6 @@ package com.albasim.wegas.admin;
 
 import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.helper.StaticHelper;
-import com.sun.grizzly.comet.CometContext;
-import com.sun.grizzly.comet.CometEngine;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
