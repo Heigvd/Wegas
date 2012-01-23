@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author maxence
  */
+
 public class RequestListener implements ServletRequestListener {
 
     private static final Logger logger = Logger.getLogger("RequestListener");

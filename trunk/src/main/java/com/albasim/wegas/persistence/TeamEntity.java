@@ -12,8 +12,6 @@ package com.albasim.wegas.persistence;
 
 
 import com.albasim.wegas.persistence.users.*;
-import com.albasim.wegas.persistence.AnonymousEntity;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
@@ -34,10 +32,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+
 
 /**
  *
- * @author maxence
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 @Entity
@@ -79,7 +79,8 @@ public class TeamEntity extends AnonymousEntity {
     @ManyToOne
     @NotNull
     @XmlTransient
-    private GameModel gameModel;
+    @XmlInverseReference(mappedBy = "teams")
+    private GameModelEntity gameModel;
 
     @Override
     public Long getId() {
@@ -101,18 +102,12 @@ public class TeamEntity extends AnonymousEntity {
     public void setName(String name) {
         this.name = name;
     }
-    
-    
-    @Override
-    public AnonymousEntity getParent() {
-        return null;
-    }
 
     /**
      * @return the gameModel
      */
     @XmlTransient
-    public GameModel getGameModel() {
+    public GameModelEntity getGameModel() {
         return gameModel;
     }
 
@@ -120,7 +115,7 @@ public class TeamEntity extends AnonymousEntity {
      * @param gameModel the gameModel to set
      */
     @XmlTransient
-    public void setGameModel(GameModel gameModel) {
+    public void setGameModel(GameModelEntity gameModel) {
         this.gameModel = gameModel;
     }
 

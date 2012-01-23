@@ -13,8 +13,8 @@ package com.albasim.wegas.helper;
 
 import com.albasim.wegas.persistence.NamedEntity;
 import com.albasim.wegas.conf.Conf;
-import com.albasim.wegas.persistence.GameModel;
-import com.albasim.wegas.persistence.VariableInstanceEntity;
+import com.albasim.wegas.persistence.GameModelEntity;
+import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.Stateless;

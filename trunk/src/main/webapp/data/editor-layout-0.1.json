@@ -40,6 +40,24 @@
                     "rootClass": "Team"
                 }
                 ]
+            },{
+                "type": "Tab",
+                "label": "Variables",
+                "children": [
+                {
+                    "type": "DataTable",
+                    "dataSource": "VariableInstance",
+                    "columnset": [ {
+                        "key":"id", 
+                        "sortable": true
+                    }, {
+                        "key":"name", 
+                        "sortable": true
+                    }, {
+                        "key":"@class"
+                    }]
+                }
+                ]
             },
             {
                 "type": "Tab",
@@ -48,6 +66,25 @@
                 {
                     "type": "DataTable",
                     "dataSource": "User",
+                    "columnset": [ {
+                        "key":"id", 
+                        "sortable": true
+                    }, {
+                        "key":"name", 
+                        "sortable": true
+                    }, {
+                        "key":"@class"
+                    }]
+                }
+                ]
+            },
+            {
+                "type": "Tab",
+                "label": "Teams",
+                "children": [
+                {
+                    "type": "DataTable",
+                    "dataSource": "Team",
                     "columnset": [ {
                         "key":"id", 
                         "sortable": true
@@ -106,6 +143,44 @@
         "children": [{
             "type": "TabView",
             "children": [
+            {
+                "type": "Tab",
+                "label": "Variables descriptors",
+                "children": [
+                {
+                    "type": "DataTable",
+                    "dataSource": "VariableDescriptor",
+                    "columnset": [ {
+                        "key":"id", 
+                        "sortable": true
+                    }, {
+                        "key":"name", 
+                        "sortable": true
+                    }, {
+                        "key":"@class"
+                    }]
+                }
+                ]
+            },
+            {
+                "type": "Tab",
+                "label": "Type explorer",
+                "children": [
+                {
+                    "type": "DataTable",
+                    "dataSource": "type",
+                    "columnset": [ {
+                        "key":"id", 
+                        "sortable": true
+                    }, {
+                        "key":"name", 
+                        "sortable": true
+                    }, {
+                        "key":"@class"
+                    }]
+                }
+                ]
+            },
             {
                 "type": "Tab",
                 "label": "Game models explorer",

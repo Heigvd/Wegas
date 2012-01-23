@@ -11,17 +11,8 @@ package com.albasim.wegas.ejb;
 
 import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
-import com.albasim.wegas.helper.AlbaHelper;
-import com.albasim.wegas.helper.IndexEntry;
-import com.albasim.wegas.persistence.GameModel;
-import com.albasim.wegas.persistence.GmType;
-import com.albasim.wegas.persistence.VariableDescriptorEntity;
-import com.albasim.wegas.persistence.VariableInstanceEntity;
 import com.albasim.wegas.persistence.users.UserEntity;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -44,22 +35,6 @@ public class UserManager {
 
     @EJB
     private WegasEntityManager aem;
-
-
-    @EJB
-    private GmTypeManager tm;
-
-
-    @EJB
-    private VariableDescriptorManager vdm;
-
-
-    @EJB
-    private VariableInstanceManager vim;
-
-
-    @EJB
-    private Dispatcher dispatcher;
 
 
     @PersistenceContext(unitName = "wegasPU")

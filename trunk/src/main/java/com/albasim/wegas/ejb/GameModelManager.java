@@ -13,10 +13,9 @@ import com.albasim.wegas.exception.InvalidContent;
 import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.helper.AlbaHelper;
 import com.albasim.wegas.helper.IndexEntry;
-import com.albasim.wegas.persistence.GameModel;
-import com.albasim.wegas.persistence.GmType;
-import com.albasim.wegas.persistence.VariableDescriptorEntity;
-import com.albasim.wegas.persistence.VariableInstanceEntity;
+import com.albasim.wegas.persistence.GameModelEntity;
+import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
+import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,9 +44,6 @@ public class GameModelManager {
     private WegasEntityManager aem;
 
 
-    @EJB
-    private GmTypeManager tm;
-
 
     @EJB
     private VariableDescriptorManager vdm;
@@ -55,10 +51,6 @@ public class GameModelManager {
 
     @EJB
     private VariableInstanceManager vim;
-
-
-    @EJB
-    private Dispatcher dispatcher;
 
 
     @PersistenceContext(unitName = "wegasPU")
@@ -73,9 +65,9 @@ public class GameModelManager {
      */
     public Collection<IndexEntry> getGameModels() {
         CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-        cq.select(cq.from(GameModel.class));
+        cq.select(cq.from(GameModelEntity.class));
         Query q = em.createQuery(cq);
-        List<GameModel> resultList = q.getResultList();
+        List<GameModelEntity> resultList = q.getResultList();
 
         return AlbaHelper.getIndex(resultList);
     }
@@ -87,11 +79,11 @@ public class GameModelManager {
      * @todo security + acl
      * @return  list of game model
      */
-    private Collection<GameModel> getAllGameModel() {
+    private Collection<GameModelEntity> getAllGameModel() {
         CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-        cq.select(cq.from(GameModel.class));
+        cq.select(cq.from(GameModelEntity.class));
         Query q = em.createQuery(cq);
-        List<GameModel> resultList = q.getResultList();
+        List<GameModelEntity> resultList = q.getResultList();
 
         return resultList;
     }
@@ -105,8 +97,8 @@ public class GameModelManager {
      * @param id
      * @return game model
      */
-    public GameModel getGameModel(String gmid) {
-        GameModel find = em.find(GameModel.class, Long.parseLong(gmid));
+    public GameModelEntity getGameModel(Long gmid) {
+        GameModelEntity find = em.find(GameModelEntity.class, gmid);
 
         if (find == null) {
             throw new NotFound();
@@ -120,69 +112,10 @@ public class GameModelManager {
      * 
      * @param gm  the game model to propagateCreate
      */
-    public void createGameModel(GameModel gm) {
+    public void createGameModel(GameModelEntity gm) {
      //   dispatcher.begin();
-        gameModelPrePersist(gm);
+       // gameModelPrePersist(gm);
         aem.create(gm);
-    }
-
-
-    private void gameModelPrePersist(GameModel gm) {
-        logger.log(Level.INFO, "Thread : {0}", Thread.currentThread().hashCode());
-        logger.log(Level.INFO, "Dispatch : {0}", dispatcher);
-
-        dispatcher.create(gm);
-
-        if (gm.getTypes() != null) {
-            for (GmType t : gm.getTypes()) {
-                t.setGameModel(gm);
-                tm.typePrePersist(t);
-            }
-        }
-
-        if (gm.getVariableInstances() == null) {
-            gm.setVariableInstances(new ArrayList<VariableInstanceEntity>());
-        }
-
-        if (gm.getVariableDescriptors() == null) {
-            gm.setVariableDescriptors(new ArrayList<VariableDescriptorEntity>());
-        }
-
-        // Check that all provided instances match a descriptor
-     /*   for (VariableInstanceEntity v : gm.getVariableInstances()) {
-            String varName = v.getStringName();
-            VariableDescriptorEntity lookupDescriptor = gm.lookupDescriptor(varName);
-            // And link the variable to its desc
-            v.setDescriptor(lookupDescriptor);
-            // And to the game model
-            v.setParentGameModel(gm);
-        }*/
-
-        Collection<VariableInstanceEntity> vInsts = gm.getVariableInstances();
-        for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {
-            vd.setParentGameModel(gm);
-            //vd.setType(lookupType(vd.getRealStringType(), null));
-
-            // Check that an instance exists
-            VariableInstanceEntity theVi = gm.lookupVariableInstance(vd.getName());
-            if (theVi == null) {
-                logger.log(Level.INFO, "Desc has no var => create !{0}", vd.getName());
-                // Not the case ? so propagateCreate variable instance (and dont care about effective instances)
-                theVi = new VariableInstanceEntity();
-//                theVi.setDescriptor(vd);
-      //          theVi.setParentGameModel(gm);
-                vInsts.add(theVi);
-                //throw new InvalidContent("There is no variable instance for the \"" + vd.getName() + "\" descriptor!");
-            }
-        }
-
-        for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {
-            vdm.varDescPrePersist(vd);
-        }
-
-        for (VariableInstanceEntity vi : gm.getVariableInstances()) {
-            vim.variableInstancePrePersist(vi);
-        }
     }
 
 
@@ -191,10 +124,10 @@ public class GameModelManager {
      * 
      * @param gm 
      */
-    public GameModel updateGameModel(String gmID, GameModel theGameModel) {
-        GameModel gm = getGameModel(gmID);
+    public GameModelEntity updateGameModel(Long gmID, GameModelEntity theGameModel) {
+        GameModelEntity gm = getGameModel(gmID);
         if (gm.equals(theGameModel)) {
-            GameModel update = aem.update(theGameModel);
+            GameModelEntity update = aem.update(theGameModel);
             return update;
         }
 
@@ -207,45 +140,9 @@ public class GameModelManager {
      * 
      * @param id
      */
-    public void destroyGameModel(String id) {
-        GameModel gameModel = getGameModel(id);
-        gameModelPreDestroy(gameModel);
+    public void destroyGameModel(Long id) {
+        GameModelEntity gameModel = getGameModel(id);
         aem.destroy(gameModel);
     }
 
-
-    private void gameModelPreDestroy(GameModel gm) {
-        // removing var instance is done by removing the descs
-        /*for (GmVariableInstance vi : gm.getVariableInstances()){
-            vim.variableInstancePreDestroy(vi);
-        }*/
-
-        for (VariableDescriptorEntity vd : gm.getVariableDescriptors()){
-            vdm.varDescPreDestroy(vd);
-        }
-
-        for (GmType t : gm.getTypes()){
-            tm.typePreDestroy(t);
-        }
-        
-        dispatcher.remove(gm);
-    }
-
-
-    public void detachAll(){
-        for (GameModel gm : getAllGameModel()){
-            detachGameModel(gm);
-        }
-    }
-
-    public void detachGameModel(GameModel gameModel) {
-
-        tm.detachAll(gameModel);
-
-        vdm.detachAll(gameModel);
-
-        vim.detachAll(gameModel);
-        
-       // dispatcher.detach(gameModel, null);
-    }
 }

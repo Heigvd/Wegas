@@ -26,9 +26,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
+
 /**
  *
- * @author maxence
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 @Entity
@@ -37,7 +38,6 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 @XmlRootElement
 @XmlType(name = "Group", propOrder = {"@class", "id", "name"})
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 
 public class GroupEntity extends AnonymousEntity {
 
@@ -71,11 +71,5 @@ public class GroupEntity extends AnonymousEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-    
-    
-    @Override
-    public AnonymousEntity getParent() {
-        return null;
     }
 }

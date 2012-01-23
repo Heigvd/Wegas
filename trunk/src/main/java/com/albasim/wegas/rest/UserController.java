@@ -9,7 +9,6 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.UserManager;
 
 import com.albasim.wegas.persistence.users.UserEntity;
@@ -47,10 +46,6 @@ public class UserController {
 
     @Context
     private HttpServletRequest request;
-
-
-    @EJB
-    private Dispatcher dispatcher;
 
 
     @EJB

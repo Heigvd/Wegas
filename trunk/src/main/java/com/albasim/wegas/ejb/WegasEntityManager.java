@@ -17,18 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import org.eclipse.persistence.exceptions.DatabaseException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.xml.bind.annotation.XmlType;
-import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
  *
@@ -39,8 +38,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 public class WegasEntityManager {
 
     private static final Logger logger = Logger.getLogger("EJB_GM");
-    @EJB
-    Dispatcher dispatcher;
+    
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -74,7 +72,7 @@ public class WegasEntityManager {
 
         //if (terminal != null) {
         logger.log(Level.INFO, "ROLLBACK after constraint validation error");
-        dispatcher.rollback();
+//        dispatcher.rollback();
         logger.log(Level.INFO, "ROLLBACK done");
         //}
         throw new InvalidContent(ex, ae);
@@ -98,7 +96,7 @@ public class WegasEntityManager {
         }
 
 
-        dispatcher.rollback();
+//        dispatcher.rollback();
         throw new InvalidContent(ex, ae);
     }
 
@@ -142,7 +140,7 @@ public class WegasEntityManager {
             processConstraintViolationException(ae, ex);
         } catch (RuntimeException ex) {
             logger.log(Level.INFO, "RuntimeException: " + ex);
-            dispatcher.rollback();
+//            dispatcher.rollback();
             throw new InvalidContent(ex, ae);
         }
     }
@@ -158,7 +156,7 @@ public class WegasEntityManager {
 
             em.refresh(merge);
 
-            dispatcher.update(merge);
+//            dispatcher.update(merge);
 
             commit();
             return merge;
@@ -190,6 +188,6 @@ public class WegasEntityManager {
     }
 
     private void commit() {
-        dispatcher.commit();
+//        dispatcher.commit();
     }
 }

@@ -16,7 +16,7 @@ YUI.add('wegas-editor', function(Y) {
 	
 	
 	/*********************************************************************** INITIALIZE EDITION TAB */
-	edit: function(data, callback, formFields) {
+	edit: function(data, callback, formFields, scope) {
 	    var node = Y.one('#editor-editdisplayarea').one('div');
 	    node.empty();
 	    
@@ -39,7 +39,7 @@ YUI.add('wegas-editor', function(Y) {
 		    }
 		    this.fire("afterValidation");
 		    
-		    callback.call(this, this.getValue());
+		    callback.call(scope || this, this.getValue());
 	   	}
 	    });
 	    cForm.setValue(data);

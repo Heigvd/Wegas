@@ -9,11 +9,11 @@
  */
 package com.albasim.wegas.persistence;
 
-
 /**
  *
- * @author maxence
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 public abstract class NamedEntity extends AnonymousEntity {
 
     public abstract String getName();
@@ -24,7 +24,4 @@ public abstract class NamedEntity extends AnonymousEntity {
         return this.getClass().getName().toString() + " [" + getName() + ", " + getId() + " ]";
     }
 
-
-    @Override
-    public abstract AnonymousEntity getParent();
 }

@@ -49,7 +49,7 @@
 
         <!-- Inputex Base -->
         <script src="lib/inputex/build/loader.js"  type='text/javascript'></script>
-        
+
         <!-- Atmosphere jquery -->
         <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
         <script type="text/javascript" src="jquery/jquery.form.js"></script>
@@ -334,9 +334,92 @@
                     /*********************************************************** Types Forms */
 		   
                     "GameModel" : [ 
-                        { name: 'id', label:'Id', required: true },
+                        { name: 'id', label:'Id', type: 'hidden'/*, required: true*/ },
                         { name: 'name', label:'Name'},
-                        { name: '@class', label:'Class'}
+                        { name: '@class', value:'GameModel', type: 'hidden'}
+                    ],
+                    "Team" : [ 
+                        { name: 'id', label:'Id', type: 'hidden'},
+                        { name: '@class', value:'Team', type: 'hidden'},
+                        { name: 'name', label:'Name'},
+                        // { name: 'token', label:'Token'},
+                    ],
+                    "VariableDescriptor" : [
+                        { name: 'id', label:'Id', type: 'hidden'},
+                        { name: '@class', type: 'hidden', value: 'StringVariableDescriptor'},
+                        { name: 'name', label:'Name'},
+                        { name: 'scope', type:'group', fields: [
+                                { name: 'id', label:'Id', type: 'hidden'},
+                                { name: '@class', value:'UserScope', type: 'hidden'}
+                            ]},
+                        { name: 'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'StringVariableInstance', type: 'hidden'},
+                                { name: 'id', label:'Id', type: 'hidden'},
+                                { name: 'content', label: 'DefaultValue'}
+                            ]},
+                        { type: 'select', 
+                            label: 'Variable Type',
+                            choices: [{ value: "StringVariableInstance", label: 'String' }, { value: "DoubleVariableInstance", label: 'Number'}],
+                            interactions: [
+                                {
+                                    valueTrigger: "StringVariableInstance",
+                                    actions: [
+                                        {
+                                            name: "franceCitiesSelect",
+                                            action: "show"
+                                        },
+                                        {
+                                            name: "USACitiesSelect",
+                                            action: "hide"
+                                        },
+                                    ]
+                                },
+                                {
+                                    valueTrigger: "DoubleVariableInstance",
+                                    actions: [
+                                        {
+                                            name: "franceCitiesSelect",
+                                            action: "hide"
+                                        },
+                                        {
+                                            name: "USACitiesSelect",
+                                            action: "show"
+                                        },
+                                    ]
+                                }
+                            ]
+                        },
+                        {type: 'select', label: 'Select your city', name: 'franceCitiesSelect', choices: [{ value : "Paris" }, { value: "Lyon" }, { value: "Marseille" }] },
+                        {type: 'select', label: 'Select your city', name: 'USACitiesSelect', choices: [{ value: "NewYork" }, { value: "Chicago" }, { value: "LA" }, { value: "San Francisco" }] }
+   
+                    ],
+                    "StringVariableDescriptor" : [
+                        { name: 'id', label:'Id', type: 'hidden'},
+                        { name: '@class', type: 'hidden', value: 'StringVariableDescriptor'},
+                        { name: 'name', label:'Name'},
+                        { name: 'scope', type:'group', fields: [
+                                { name: 'id', label:'Id', type: 'hidden'},
+                                { name: '@class', value:'UserScope', type: 'hidden'}
+                            ]},
+                        { name: 'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'StringVariableInstance', type: 'hidden'},
+                                { name: 'id', label:'Id', type: 'hidden'},
+                                { name: 'content', label: 'DefaultValue'}
+                            ]}
+                    ],
+                    
+                    "StringVariableInstance" : [
+                        { name: 'id', type: 'hidden'},
+                        { name: '@class', type: 'hidden', value: 'StringVariableInstance'},
+                        { name: 'content', label:'Value'}
+                    ],
+                    "User" : [ 
+                        { name: 'id', label:'Id', type: 'hidden'},
+                        { name: 'name', label:'Name'},
+                        { name: 'email', label:'E-mail'},
+                        { name: 'password', type: 'password', label: 'New password', showMsg: true,  id: 'firstPassword', strengthIndicator: true, capsLockWarning: true },
+                        { type: 'password', label: 'Confirmation', showMsg: true, confirm: 'firstPassword' },
+                        { name: '@class', label:'Class', type: 'hidden'}
                     ],
                     "VarDesc" : [ 
                         { name: 'id', label:'Id', required: true },

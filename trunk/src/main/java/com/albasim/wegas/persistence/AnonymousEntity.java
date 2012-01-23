@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.persistence.Transient;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -24,17 +25,18 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
- * @author maxence
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public abstract class AnonymousEntity implements Serializable {
+public abstract class AnonymousEntity implements Serializable, Cloneable {
+    
+    private static final Logger logger = Logger.getLogger("GMVariableDescriptor");
 
     public abstract Long getId();
 
-
     public abstract void setId(Long id);
-
     @Transient
     private List<String> errors;
 
@@ -45,7 +47,6 @@ public abstract class AnonymousEntity implements Serializable {
         hash += getClass().hashCode();
         return hash;
     }
-
 
     @Override
     public boolean equals(Object object) {
@@ -66,18 +67,15 @@ public abstract class AnonymousEntity implements Serializable {
         return false;
     }
 
-
     @Override
     public String toString() {
         return this.getClass().getName().toString() + " [" + getId() + " ]";
     }
 
-
     @XmlTransient
     public String getKey() {
         return this.getClass().getSimpleName() + getId();
     }
-
 
     @XmlTransient
     public String toJson(Providers ps) throws IOException {
@@ -87,23 +85,23 @@ public abstract class AnonymousEntity implements Serializable {
         mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
         return os.toString();
     }
-
+    
 
     @Transient
     public List<String> getErrors() {
         return errors;
     }
 
-
     @Transient
     @XmlTransient
     public void setErrors(List<String> errors) {
         this.errors = errors;
     }
-
-    /**
-     * Return the parent of this entity  (used to propagate indexes)
-     * @return 
-     */
-    public abstract AnonymousEntity getParent();
+    
+    @Override
+    public AnonymousEntity clone() throws CloneNotSupportedException {
+        AnonymousEntity ae = (AnonymousEntity)super.clone();
+        ae.setId(null);
+        return ae;
+    }
 }

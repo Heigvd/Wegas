@@ -14,7 +14,7 @@ YUI.add('wegas-datatable', function(Y) {
 	_table: null,
 	
 	initializer: function(cfg) {
-	    this._dataSource = Y.WeGAS.app[this.get('dataSource')+"DataSource"];
+	    this._dataSource = Y.WeGAS.app.dataSources[this.get('dataSource')];
 	},
 	
 	renderUI: function () {

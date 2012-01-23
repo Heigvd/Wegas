@@ -3,3 +3,4 @@
 *.class
 trunk/target/*
 trunk/catalog.xml
+**Thumbs.db

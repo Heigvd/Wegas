@@ -9,13 +9,11 @@
  */
 package com.albasim.wegas.rest;
 
-import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.ejb.GameModelManager;
 import com.albasim.wegas.helper.IndexEntry;
-import com.albasim.wegas.persistence.GameModel;
+import com.albasim.wegas.persistence.GameModelEntity;
 
 import java.util.Collection;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,10 +33,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 /**
  *
- * @author maxence
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 @Stateless
 @Path("gm")
 public class GameModelController {
@@ -48,10 +48,6 @@ public class GameModelController {
 
     @Context
     private HttpServletRequest request;
-
-
-    @EJB
-    private Dispatcher dispatcher;
 
 
     @EJB
@@ -79,8 +75,8 @@ public class GameModelController {
     @GET
     @Path("{gmID : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public GameModel get(@PathParam("gmID") String gmID) {
-        GameModel gm = gme.getGameModel(gmID);
+    public GameModelEntity get(@PathParam("gmID") Long gmID) {
+        GameModelEntity gm = gme.getGameModel(gmID);
         return gm;
     }
 
@@ -93,9 +89,9 @@ public class GameModelController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public GameModel create(GameModel gm) {
+    public GameModelEntity create(GameModelEntity gm) {
         logger.log(Level.INFO, "POST GameModel");
-        gme.createGameModel(gm);
+         gme.createGameModel(gm);
         return gm;
     }
 
@@ -109,7 +105,7 @@ public class GameModelController {
     @Path("{gmID: [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public GameModel update(@PathParam("gmID") String gmID, GameModel gm) {
+    public GameModelEntity update(@PathParam("gmID") Long gmID, GameModelEntity gm) {
         return gme.updateGameModel(gmID, gm);
     }
 
@@ -121,26 +117,8 @@ public class GameModelController {
      */
     @DELETE
     @Path("{gmID: [1-9][0-9]*}")
-    public Response destroy(@PathParam("gmID") String gmID) {
+    public Response delete(@PathParam("gmID") Long gmID) {
         gme.destroyGameModel(gmID);
-        return Response.noContent().build();
-    }
-
-
-    @GET
-    @Path("detach")
-    public Response detachAll() {
-        gme.detachAll();
-        return Response.noContent().build();
-    }
-
-
-    @GET
-    @Path("{gmID: [1-9][0-9]*}/detach")
-    public Response detach(@PathParam("gmID") String gmID) {
-        GameModel gameModel = gme.getGameModel(gmID);
-
-        //gme.detachGameModel(gameModel);
         return Response.noContent().build();
     }
 }

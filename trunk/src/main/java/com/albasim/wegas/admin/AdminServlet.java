@@ -4,7 +4,6 @@
  */
 package com.albasim.wegas.admin;
 
-import com.albasim.wegas.ejb.Dispatcher;
 import com.albasim.wegas.helper.StaticHelper;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class AdminServlet extends HttpServlet {
 
-    @EJB
-    Dispatcher dispatcher;
 
     private static final String BEGIN_SCRIPT_TAG = "<script type='text/javascript'>\n";
     private static final String END_SCRIPT_TAG = "</script>\n";
