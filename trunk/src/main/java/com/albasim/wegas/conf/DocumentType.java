@@ -19,5 +19,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public enum DocumentType {
-    VIDEO, SOUND, DOCUMENT;
+    /**
+     * 
+     */
+    VIDEO,
+    /**
+     * 
+     */
+    SOUND,
+    /**
+     * 
+     */
+    DOCUMENT;
 }

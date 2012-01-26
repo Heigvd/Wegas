@@ -10,6 +10,11 @@ package com.albasim.wegas.helper;
  */
 public class StaticHelper {
 
+    /**
+     * 
+     * @param orig
+     * @return
+     */
     static public String escape(String orig) {
         StringBuilder buffer = new StringBuilder(orig.length());
 

@@ -11,6 +11,7 @@ var Y = YUI({
     loadOptional: true,
     insertBefore: 'customstyles',
     gallery: 'gallery-2011.02.18-23-10',
+    throwFail:true,
     //combine: false,
     //timeout: 10000,
     //filter: 'debug',
@@ -19,6 +20,9 @@ var Y = YUI({
     //logExclude: { event : true },
     //logInclude: { event : true },
     //useBrowserConsole: true,
+    errorFn: function(e) {
+        Y.log('Uncaught error: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
+    },
     groups: {
         wegas: {
             combine: false,
@@ -29,10 +33,11 @@ var Y = YUI({
                 /*************************************************************** Base */
                 'wegas-app': {
                     path: 'wegas-base/js/wegas-app.js',
-                    requires: [ 'wegas-appcss', 'wegas-widget', 'wegas-datasourcerest',
+                    requires: ['stylesheet', 
+                    'wegas-appcss',  'wegas-datasourcerest', 'wegas-widget', 'wegas-widgetloader',
                     // FIXME those should be included on the fly
                     'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
-                    'wegas-logger'
+                    'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat'
                     ]
                 },
                 'wegas-appcss': {
@@ -44,28 +49,22 @@ var Y = YUI({
                     requires: ['plugin', 'json', 'io-base', "datasource-io", "datasource-jsonschema", "datasource-cache", 'array-extras'
                     /*'json-stringify', "datatype-date */]
                 },
-                /*************************************************************** Editor */
-                'wegas-editor': {
-                    path: 'wegas-editor/js/wegas-editor.js',
-                    requires: ['wegas-treeview',
-                    'wegas-editorcss',
-                    'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url', 
-                    'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden', 
-                    'inputex-password', 'inputex-group'
-                    ]
-                },
-                'wegas-editorcss': {
-                    path: 'wegas-editor/assets/wegas-editor.css',
-                    type: 'css'
-                },
                 /*************************************************************** Widgets */
                 'wegas-widget': {
                     path: 'wegas-base/js/wegas-widget.js',
                     requires: ['widget', 'widget-parent', 'widget-child']
                 },
-                'wegas-logger': {
-                    path: 'wegas-base/js/wegas-logger.js',
-                    requires: ['console', 'console-filters']
+                'wegas-widgetloader': {
+                    path: 'wegas-base/js/wegas-widgetloader.js'
+                },
+                'wegas-button': {
+                    path: 'wegas-base/js/wegas-button.js'
+                },
+                'wegas-variabledisplay': {
+                    path: 'wegas-base/js/wegas-variabledisplay.js'
+                },
+                'wegas-chat': {
+                    path: 'wegas-base/js/wegas-chat.js'
                 },
                 'wegas-layout': {
                     path: 'wegas-base/js/wegas-layout.js',
@@ -90,7 +89,7 @@ var Y = YUI({
                 'wegas-treeview': {
                     path: 'wegas-base/js/wegas-treeview.js',
                     requires: [ 'yui2-treeview'
-                        /*'gallery-yui3treeview', 'wegas-treeviewcss'*/]
+                    /*'gallery-yui3treeview', 'wegas-treeviewcss'*/]
                 },
                 'wegas-treeviewcss': {
                     path: 'wegas-base/assets/treeview-classic.css',
@@ -102,10 +101,35 @@ var Y = YUI({
                 },
                 'wegas-tabview': {
                     path: 'wegas-base/js/wegas-tabview.js',
-                    requires: ['tabview']
+                    requires: ['tabview', 'yui2-editor']
                 },
                 'wegas-displayarea': {
                     path: 'wegas-base/js/wegas-displayarea.js'
+                },
+                /*************************************************************** Editor */
+                'wegas-editor': {
+                    path: 'wegas-editor/js/wegas-editor.js',
+                    requires: [
+                    'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url', 
+                    'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden', 
+                    'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
+                    'wegas-app', 'wegas-treeview', 'wegas-logger', 'wegas-csseditor'
+                    //'wegas-editorcss'
+                    ]
+                },
+                'wegas-editorcss': {
+                    path: 'wegas-editor/assets/wegas-editor.css',
+                    type: 'css'
+                },
+                
+                
+                /*************************************************************** Editor Widget's*/
+                'wegas-logger': {
+                    path: 'wegas-editor/js/wegas-logger.js',
+                    requires: ['console', 'console-filters']
+                },
+                'wegas-csseditor': {
+                    path: 'wegas-editor/js/wegas-csseditor.js'
                 }
             }
         },
@@ -163,9 +187,8 @@ var Y = YUI({
 }).use('wegas-app', 'wegas-editor', function (Y) {
     
     Y.on('domready', function() {						// Launch the app as soon as Dom is ready
-        var app = new Y.WeGAS.App(Config),
-        editor = new Y.WeGAS.Editor();
-	
+        var editor = new Y.Wegas.Editor(Config);
+        editor.render();
     });
     
 });

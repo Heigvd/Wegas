@@ -85,32 +85,56 @@ public class VariableDescriptorEntity extends NamedEntity {
     @XmlTransient
     private GameModelEntity gameModel;
 
+    /**
+     * 
+     * @return
+     */
     @Override
     
     public Long getId() {
         return id;
     }
 
+    /**
+     * 
+     * @param id
+     */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * 
+     * @return
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * 
+     * @param name
+     */
     @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * 
+     * @param gameModel
+     */
     @XmlTransient
     public void setGameModel(GameModelEntity gameModel) {
         this.gameModel = gameModel;
     }
 
+    /**
+     * 
+     * @return
+     */
     @XmlTransient
     @XmlInverseReference(mappedBy="variableDescriptors")
     public GameModelEntity getGameModel() {
@@ -127,10 +151,13 @@ public class VariableDescriptorEntity extends NamedEntity {
     /**
      * @param scope the scope to set
      */
-    public void setScope(UserScopeEntity scope) {
+    public void setScope(ScopeEntity scope) {
         this.scope = scope;
     }
 
+    /**
+     * 
+     */
     @PrePersist
     public void prePersist() {
         this.scope.setVariableDescscriptor(this);

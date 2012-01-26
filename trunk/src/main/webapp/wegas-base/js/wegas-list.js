@@ -7,9 +7,21 @@ YUI.add('wegas-list', function(Y) {
     var Lang = Y.Lang,
     BOUNDINGBOX = 'boundingBox',
     CONTENTBOX = 'contentBox',
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.WeGAS.Widget ], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget ], {
 
-	//CONTENT_TEMPLATE : "<ul></ul>",
+        syncUI: function() {
+            var cb = this.get(CONTENTBOX),
+            bb = this.get(BOUNDINGBOX);
+            if (this.get('direction') == 'vertical') {
+                cb.addClass(this.getClassName('vertical'));
+                cb.removeClass(this.getClassName('horizontal'));
+            } else {
+                cb.addClass(this.getClassName('horizontal'));
+                cb.removeClass(this.getClassName('vertical'));
+            }
+                bb.append('<div style="clear:both"></div>');
+        }
+        //CONTENT_TEMPLATE : "<ul></ul>",
 	/*
 	bindUI: function() {
 
@@ -117,35 +129,23 @@ YUI.add('wegas-list', function(Y) {
 		li.appendChild(boundingBox);
 		parent.appendChild(li);
 	    }
-	},
-	syncUI: function() {
-	    var cb = this.get(CONTENTBOX),
-	    bb = this.get(BOUNDINGBOX);
-	    if (this.get('direction') == 'vertical') {
-		cb.addClass(this.getClassName('vertical'));
-		cb.removeClass(this.getClassName('horizontal'));
-	    } else {
-		cb.addClass(this.getClassName('horizontal'));
-		cb.removeClass(this.getClassName('vertical'));
-		bb.append('<div style="clear:both"></div>');
-	    }
-	}*/
-	}, { 
-	    ATTRS : {
-		defaultChildType: {  
-		    value: "Text"
-		},
-		direction: {
-		    value: 'vertical'
-		},
-		classTxt: {
-		    value: 'List'
-		},
-		type: {
-		    value: "List"
-		}
-	    }
-	});
+	},*/
+    }, { 
+        ATTRS : {
+            defaultChildType: {  
+                value: "Text"
+            },
+            direction: {
+                value: 'vertical'
+            },
+            classTxt: {
+                value: 'List'
+            },
+            type: {
+                value: "List"
+            }
+        }
+    });
     
-    Y.namespace('WeGAS').List = List;
+    Y.namespace('Wegas').List = List;
 });

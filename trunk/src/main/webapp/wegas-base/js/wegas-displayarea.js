@@ -5,7 +5,7 @@
 YUI.add('wegas-displayarea', function(Y) {
     var CONTENTBOX = 'contentBox',
     
-    DisplayArea = Y.Base.create("wegas-displayarea", Y.Widget, [Y.WidgetChild, Y.WeGAS.Widget], {
+    DisplayArea = Y.Base.create("wegas-displayarea", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 	renderUI: function () {
 	    this.get(CONTENTBOX).setContent("Nothing to display here for now.");
 	},
@@ -22,5 +22,5 @@ YUI.add('wegas-displayarea', function(Y) {
 	}
     });
     
-    Y.namespace('WeGAS').DisplayArea = DisplayArea;
+    Y.namespace('Wegas').DisplayArea = DisplayArea;
 });

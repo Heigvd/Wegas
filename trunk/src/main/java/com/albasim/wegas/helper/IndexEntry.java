@@ -37,6 +37,10 @@ public class IndexEntry {
     @XmlAttribute(name="@class")
     private String type;
     
+    /**
+     * 
+     * @param e
+     */
     public IndexEntry(NamedEntity e) {
         this.id = e.getId();
         this.name = e.getName();
@@ -46,36 +50,63 @@ public class IndexEntry {
         this.type = annotation.name();
     }
 
+    /**
+     * 
+     */
     public IndexEntry(){
     }
 
 
+    /**
+     * 
+     * @return
+     */
     public Long getId() {
         return id;
     }
 
 
+    /**
+     * 
+     * @param id
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
 
+    /**
+     * 
+     * @return
+     */
     public String getName() {
         return name;
     }
 
 
+    /**
+     * 
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
 
+    /**
+     * 
+     * @return
+     */
     @XmlTransient
     public String getType() {
         return type;
     }
 
 
+    /**
+     * 
+     * @param type
+     */
     @XmlTransient
     public void setType(String type) {
         this.type = type;

@@ -1,9 +1,8 @@
 /*
-Copyright (c) 2010, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
-version: 3.3.0
-build: 3167
+YUI 3.5.0pr1 (build 4342)
+Copyright 2011 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
 */
 YUI.add('node-flick', function(Y) {
 
@@ -161,7 +160,7 @@ YUI.add('node-flick', function(Y) {
      * The NAME of the Flick class. Used to prefix events generated
      * by the plugin.
      *
-     * @property Flick.NAME
+     * @property NAME
      * @static
      * @type String
      * @default "pluginFlick"
@@ -172,7 +171,7 @@ YUI.add('node-flick', function(Y) {
      * The namespace for the plugin. This will be the property on the node, which will 
      * reference the plugin instance, when it's plugged in.
      *
-     * @property Flick.NS
+     * @property NS
      * @static
      * @type String
      * @default "flick"
@@ -344,6 +343,7 @@ YUI.add('node-flick', function(Y) {
         /**
          * Internal utility method to set the X offset position
          *
+         * @method _setX
          * @param {Number} val
          * @private
          */
@@ -354,6 +354,7 @@ YUI.add('node-flick', function(Y) {
         /**
          * Internal utility method to set the Y offset position
          * 
+         * @method _setY
          * @param {Number} val
          * @private
          */
@@ -365,6 +366,7 @@ YUI.add('node-flick', function(Y) {
          * Internal utility method to move the node to a given XY position,
          * using transitions, if specified.
          *
+         * @method _move
          * @param {Number} x The X offset position
          * @param {Number} y The Y offset position
          * @param {Number} duration The duration to use for the transition animation
@@ -398,6 +400,7 @@ YUI.add('node-flick', function(Y) {
         /**
          * Internal utility method to perform the transition step
          *
+         * @method _anim
          * @param {Number} x The X offset position
          * @param {Number} y The Y offset position
          * @param {Number} duration The duration to use for the transition animation
@@ -429,6 +432,7 @@ YUI.add('node-flick', function(Y) {
          * Internal utility method to constrain the offset value
          * based on the bounce criteria. 
          *
+         * @method _bounce
          * @param {Number} x The offset value to constrain.
          * @param {Number} max The max offset value.
          *
@@ -469,7 +473,7 @@ YUI.add('node-flick', function(Y) {
          * The threshold used to determine when the decelerated velocity of the node
          * is practically 0.
          *
-         * @property Flick.VELOCITY_THRESHOLD
+         * @property VELOCITY_THRESHOLD
          * @static
          * @type Number
          * @default 0.015
@@ -479,7 +483,7 @@ YUI.add('node-flick', function(Y) {
         /**
          * The duration to use for the bounce snap-back transition
          *
-         * @property Flick.SNAP_DURATION
+         * @property SNAP_DURATION
          * @static
          * @type Number
          * @default 400
@@ -489,7 +493,7 @@ YUI.add('node-flick', function(Y) {
         /**
          * The default easing to use for the main flick movement transition
          *
-         * @property Flick.EASING
+         * @property EASING
          * @static
          * @type String
          * @default 'cubic-bezier(0, 0.1, 0, 1.0)'
@@ -499,7 +503,7 @@ YUI.add('node-flick', function(Y) {
         /**
          * The default easing to use for the bounce snap-back transition
          *
-         * @property Flick.SNAP_EASING
+         * @property SNAP_EASING
          * @static
          * @type String
          * @default 'ease-out'
@@ -509,7 +513,7 @@ YUI.add('node-flick', function(Y) {
         /**
          * The default CSS class names used by the plugin
          *
-         * @property Flick.CLASS_NAMES
+         * @property CLASS_NAMES
          * @static
          * @type Object
          */
@@ -522,4 +526,4 @@ YUI.add('node-flick', function(Y) {
     Y.Plugin.Flick = Flick;
 
 
-}, '3.3.0' ,{requires:['classnamemanager', 'transition', 'event-flick', 'plugin']});
+}, '3.5.0pr1' ,{requires:['classnamemanager', 'transition', 'event-flick', 'plugin']});

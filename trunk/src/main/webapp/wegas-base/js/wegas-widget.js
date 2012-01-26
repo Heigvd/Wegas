@@ -7,6 +7,13 @@ YUI.add('wegas-widget', function(Y) {
     CONTENTBOX = 'contentBox';
     
     function Widget() {
+        this.after('render', function() {
+            
+            var cb = this.get(CONTENTBOX);
+            cb.addClass(this.get('cssClass'));
+        
+        });
+    
 
     /*this.publish("redcms:select", {
                 emitFacade: false
@@ -23,28 +30,28 @@ YUI.add('wegas-widget', function(Y) {
     }
 
     Widget.ATTRS = {
-
+        cssClass: {}
     };
     Widget.create = function(config) {
-	var type = config.childType || config.type,
-	child,
-	Fn;
+        var type = config.childType || config.type,
+        child,
+        Fn;
 
-	if (type) {
-	    Fn = Lang.isString(type) ? Y.WeGAS[type] : type;
-	}
+        if (type) {
+            Fn = Lang.isString(type) ? Y.Wegas[type] : type;
+        }
 
-	if (Lang.isFunction(Fn)) {
-	    child = new Fn(config);
-	} else {
-	    Y.error("Could not create a child instance because its constructor is either undefined or invalid.");
-	}
+        if (Lang.isFunction(Fn)) {
+            child = new Fn(config);
+        } else {
+            Y.log("Could not create a child widget because its constructor is either undefined or invalid("+type+").", 'error', 'Wegas.Widget')
+        }
 
-	return child;
+        return child;
     }
 
     Widget.prototype = {
-    /*   _overlay: null,
+        /*   _overlay: null,
 
             hideReloadOverlay: function(){
                     this._overlay.hide();
@@ -62,74 +69,41 @@ YUI.add('wegas-widget', function(Y) {
             }*/
     };
 
-    Y.namespace('WeGAS').Widget = Widget;
+    Y.namespace('Wegas').Widget = Widget;
     
     
     
     
     /**
-     * FIXME We override this function so widget are looked for in WeGAS ns.
+     * FIXME We override this function so widget are looked for in Wegas ns.
      */
     Y.WidgetParent.prototype._createChild = function (config) {
 
-	var defaultType = this.get("defaultChildType"),
-	altType = config.childType || config.type,
-	child,
-	Fn,
-	FnConstructor;
+        var defaultType = this.get("defaultChildType"),
+        altType = config.childType || config.type,
+        child,
+        Fn,
+        FnConstructor;
 
-	if (altType) {
-	    Fn = Lang.isString(altType) ? Y.WeGAS[altType] : altType;
-	}
+        if (altType) {
+            Fn = Lang.isString(altType) ? Y.Wegas[altType] : altType;
+        }
 
-	if (Lang.isFunction(Fn)) {
-	    FnConstructor = Fn;
-	} else if (defaultType) {
-	    // defaultType is normalized to a function in it's setter 
-	    FnConstructor = defaultType;
-	}
+        if (Lang.isFunction(Fn)) {
+            FnConstructor = Fn;
+        } else if (defaultType) {
+            // defaultType is normalized to a function in it's setter 
+            FnConstructor = defaultType;
+        }
 
-	if (FnConstructor) {
-	    child = new FnConstructor(config);
-	} else {
-	    Y.error("Could not create a child instance because its constructor is either undefined or invalid.");
-	}
+        if (FnConstructor) {
+            child = new FnConstructor(config);
+        } else {
+            Y.error("Could not create a child instance because its constructor is either undefined or invalid ("+altType+")");
+        }
 
-	return child;
+        return child;
         
     }
-    
-    
-    var CometFrame = Y.Base.create("wegas-cometframe", Y.Widget, [Y.WidgetChild, Y.WeGAS.Widget], {
-	renderUI: function () {
-	    var cb = this.get(CONTENTBOX),
-            cometFrameUrl = '/Wegas/cs?'+Y.WeGAS.App.genId()
-	    cb.setContent('<div id="comet-reply"></div>'+
-		'<iframe id="comet-frame" style="display: none;" src="'+cometFrameUrl+'"></iframe>');
-	  
-	    window.app = {
-		listen: function() {
-		    Y.one('#comet-frame').src = cometFrameUrl;
-		}, 
-		update: function(data) {
-		    Y.one('#comet-reply').insert(data.name + ':' + data.message+'<br />');
-		},
-		updateRaw: function(data) {
-		    Y.one('#comet-reply').insert(data+'<br /><br />');	    
-		}
-	    }
-	}
-    }, {
-	ATTRS : {
-	    classTxt: {
-		value: 'CometFrame'
-	    },
-	    type: {
-		value: "CometFrame"
-	    }
-	}
-    });
-    
-    Y.namespace('WeGAS').CometFrame = CometFrame;
     
 });

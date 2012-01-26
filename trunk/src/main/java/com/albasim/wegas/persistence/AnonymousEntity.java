@@ -34,12 +34,24 @@ public abstract class AnonymousEntity implements Serializable, Cloneable {
     
     private static final Logger logger = Logger.getLogger("GMVariableDescriptor");
 
+    /**
+     * 
+     * @return
+     */
     public abstract Long getId();
 
+    /**
+     * 
+     * @param id
+     */
     public abstract void setId(Long id);
     @Transient
     private List<String> errors;
 
+    /**
+     * 
+     * @return
+     */
     @Override
     public int hashCode() {
         int hash = 0;
@@ -48,6 +60,11 @@ public abstract class AnonymousEntity implements Serializable, Cloneable {
         return hash;
     }
 
+    /**
+     * 
+     * @param object
+     * @return
+     */
     @Override
     public boolean equals(Object object) {
         // First, the two object shall be instances of the same class
@@ -67,16 +84,30 @@ public abstract class AnonymousEntity implements Serializable, Cloneable {
         return false;
     }
 
+    /**
+     * 
+     * @return
+     */
     @Override
     public String toString() {
         return this.getClass().getName().toString() + " [" + getId() + " ]";
     }
 
+    /**
+     * 
+     * @return
+     */
     @XmlTransient
     public String getKey() {
         return this.getClass().getSimpleName() + getId();
     }
 
+    /**
+     * 
+     * @param ps
+     * @return
+     * @throws IOException
+     */
     @XmlTransient
     public String toJson(Providers ps) throws IOException {
         // Marshall new version
@@ -87,17 +118,30 @@ public abstract class AnonymousEntity implements Serializable, Cloneable {
     }
     
 
+    /**
+     * 
+     * @return
+     */
     @Transient
     public List<String> getErrors() {
         return errors;
     }
 
+    /**
+     * 
+     * @param errors
+     */
     @Transient
     @XmlTransient
     public void setErrors(List<String> errors) {
         this.errors = errors;
     }
     
+    /**
+     * 
+     * @return
+     * @throws CloneNotSupportedException
+     */
     @Override
     public AnonymousEntity clone() throws CloneNotSupportedException {
         AnonymousEntity ae = (AnonymousEntity)super.clone();

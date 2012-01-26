@@ -45,6 +45,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
 import java.io.InputStream;
 
+/**
+ * 
+ * @author Francois-Xavier Aeberhard <francois-xavier.aeberhard@red-agent.com>
+ */
 @Path("/")
 @Produces("text/html")
 public class FileResource {
@@ -53,12 +57,21 @@ public class FileResource {
     @Context
     ServletContext sc;
 
+    /**
+     * 
+     * @param ps
+     * @return
+     */
     @Path("/jquery/{id}")
     @GET
     public InputStream getJQuery(@PathParam("id") PathSegment ps) {
         return sc.getResourceAsStream("/jquery/" + ps.getPath());
     }
 
+    /**
+     * 
+     * @return
+     */
     @GET
     public InputStream getIndex() {
         return sc.getResourceAsStream("/index.html");

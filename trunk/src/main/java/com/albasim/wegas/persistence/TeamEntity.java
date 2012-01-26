@@ -59,7 +59,7 @@ public class TeamEntity extends AnonymousEntity {
 
 
     @NotNull
-    @javax.validation.constraints.Pattern(regexp = "^\\w+$")
+   // @javax.validation.constraints.Pattern(regexp = "^\\w+$")
     private String name;
     
     
@@ -82,23 +82,39 @@ public class TeamEntity extends AnonymousEntity {
     @XmlInverseReference(mappedBy = "teams")
     private GameModelEntity gameModel;
 
+    /**
+     * 
+     * @return
+     */
     @Override
     public Long getId() {
         return id;
     }
 
 
+    /**
+     * 
+     * @param id
+     */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
 
 
+    /**
+     * 
+     * @return
+     */
     public String getName() {
         return name;
     }
 
 
+    /**
+     * 
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }

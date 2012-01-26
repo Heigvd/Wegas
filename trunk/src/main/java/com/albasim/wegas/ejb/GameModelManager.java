@@ -94,7 +94,7 @@ public class GameModelManager {
     /**
      * Read a game model
      * 
-     * @param id
+     * @param gmid 
      * @return game model
      */
     public GameModelEntity getGameModel(Long gmid) {
@@ -122,7 +122,9 @@ public class GameModelManager {
     /**
      * Update a game model
      * 
-     * @param gm 
+     * @param gmID 
+     * @param theGameModel
+     * @return  
      */
     public GameModelEntity updateGameModel(Long gmID, GameModelEntity theGameModel) {
         GameModelEntity gm = getGameModel(gmID);

@@ -52,6 +52,7 @@ public class TeamController {
 
     /**
      * 
+     * @param gmID 
      * @return 
      */
     @GET
@@ -75,7 +76,8 @@ public class TeamController {
 
     /**
      * 
-     * @param is
+     * @param gmID 
+     * @param team 
      * @return 
      */
     @POST
@@ -90,7 +92,8 @@ public class TeamController {
 
     /**
      * 
-     * @param gmID
+     * @param teamId 
+     * @param team 
      * @return 
      */
     @PUT
@@ -103,7 +106,8 @@ public class TeamController {
 
     /**
      * 
-     * @param gmID
+     * @param teamId 
+     * @param userId 
      * @return 
      */
     @PUT
@@ -116,7 +120,8 @@ public class TeamController {
     
     /**
      * 
-     * @param gmID
+     * @param teamId 
+     * @param u 
      * @return 
      */
     @POST
@@ -130,7 +135,7 @@ public class TeamController {
 
     /**
      * 
-     * @param gmID
+     * @param teamId 
      * @return 
      */
     @DELETE

@@ -1,9 +1,8 @@
 /*
-Copyright (c) 2010, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
-version: 3.3.0
-build: 3167
+YUI 3.5.0pr1 (build 4342)
+Copyright 2011 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
 */
 YUI.add('classnamemanager', function(Y) {
 
@@ -35,7 +34,7 @@ var CLASS_NAME_PREFIX = 'classNamePrefix',
 /**
  * Configuration property indicating the prefix for all CSS class names in this YUI instance.
  *
- * @property Y.config.classNamePrefix
+ * @property classNamePrefix
  * @type {String}
  * @default "yui"
  * @static
@@ -46,7 +45,7 @@ CONFIG[CLASS_NAME_PREFIX] = CONFIG[CLASS_NAME_PREFIX] || 'yui3';
  * Configuration property indicating the delimiter used to compose all CSS class names in
  * this YUI instance.
  *
- * @property Y.config.classNameDelimiter
+ * @property classNameDelimiter
  * @type {String}
  * @default "-"
  * @static
@@ -88,4 +87,4 @@ Y.ClassNameManager = function () {
 }();
 
 
-}, '3.3.0' );
+}, '3.5.0pr1' ,{requires:['yui-base']});

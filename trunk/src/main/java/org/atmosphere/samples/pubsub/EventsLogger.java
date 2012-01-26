@@ -45,10 +45,17 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * 
+ * @author Francois-Xavier Aeberhard <francois-xavier.aeberhard@red-agent.com>
+ */
 public class EventsLogger implements WebSocketEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(EventsLogger.class);
 
+    /**
+     * 
+     */
     public EventsLogger() {
     }
 

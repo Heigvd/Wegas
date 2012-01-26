@@ -37,11 +37,24 @@ public class VariableInstanceManager {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
+    /**
+     * 
+     * @param vID
+     * @return
+     */
     public VariableInstanceEntity getVariableInstance(Long vID) {
         VariableInstanceEntity v = em.find(VariableInstanceEntity.class, vID);
         return v;
     }
 
+    /**
+     * 
+     * @param gameModelId
+     * @param variableDescriptorId
+     * @param userId
+     * @param newInstance
+     * @return
+     */
     public VariableInstanceEntity createInstance(Long gameModelId, Long variableDescriptorId, Long userId, VariableInstanceEntity newInstance) {
 
         VariableDescriptorEntity vd = vdm.getVariableDescriptor(variableDescriptorId);
@@ -59,6 +72,12 @@ public class VariableInstanceManager {
         return newInstance;
     }
 
+    /**
+     * 
+     * @param variableInstanceId
+     * @param variableInstance
+     * @return
+     */
     public VariableInstanceEntity update(Long variableInstanceId, VariableInstanceEntity variableInstance) {
         VariableInstanceEntity vi = this.getVariableInstance(variableInstanceId);
         vi = (VariableInstanceEntity) AnonymousEntityMerger.merge(vi, variableInstance);

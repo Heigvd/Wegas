@@ -20,6 +20,9 @@ import javax.ws.rs.core.Response;
  * @author maxence
  */
 public class ConcurrentAccessException extends WebApplicationException {
+    /**
+     * 
+     */
     public ConcurrentAccessException(){
         super(Response.serverError().entity("Concurrent Access Error").build());
     }

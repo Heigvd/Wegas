@@ -45,6 +45,10 @@ public class TeamManager {
     private EntityManager em;
 
     
+    /**
+     * 
+     * @return
+     */
     public List<TeamEntity> getTeams() {
         CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
         cq.select(cq.from(GroupEntity.class));
@@ -53,6 +57,11 @@ public class TeamManager {
         return q.getResultList();
     }
     
+    /**
+     * 
+     * @param id
+     * @return
+     */
     public TeamEntity getTeam(Long id) {
         TeamEntity find = em.find(TeamEntity.class, id);
 
@@ -62,10 +71,20 @@ public class TeamManager {
         return find;
     }
     
+    /**
+     * 
+     * @param u
+     */
     public void createTeam(TeamEntity u) {
         aem.create(u);
     }
     
+    /**
+     * 
+     * @param id
+     * @param t
+     * @return
+     */
     public TeamEntity updateTeam(Long id, TeamEntity t) {
         TeamEntity cTeam = this.getTeam(id);
         if (cTeam.equals(t)) {
@@ -75,6 +94,12 @@ public class TeamManager {
         throw new InvalidContent();
     }
     
+    /**
+     * 
+     * @param teamId
+     * @param userId
+     * @return
+     */
     public TeamEntity addUser(Long teamId, Long userId) {
         UserEntity u = ume.getUser(userId);
         TeamEntity t = this.getTeam(teamId);
@@ -83,6 +108,10 @@ public class TeamManager {
         return t;
     }
     
+    /**
+     * 
+     * @param id
+     */
     public void destroyTeam(Long id) {
         TeamEntity u = this.getTeam(id);
         aem.destroy(u);

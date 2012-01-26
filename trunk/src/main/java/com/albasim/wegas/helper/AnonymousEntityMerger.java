@@ -17,6 +17,12 @@ import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
  */
 public class AnonymousEntityMerger {
     
+    /**
+     * 
+     * @param original
+     * @param updated
+     * @return
+     */
     public static AnonymousEntity merge(AnonymousEntity original, AnonymousEntity updated) {
         
         if (original instanceof GameModelEntity) {

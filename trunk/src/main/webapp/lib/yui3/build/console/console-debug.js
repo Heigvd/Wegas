@@ -1,9 +1,8 @@
 /*
-Copyright (c) 2010, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
-version: 3.3.0
-build: 3167
+YUI 3.5.0pr1 (build 4342)
+Copyright 2011 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
 */
 YUI.add('console', function(Y) {
 
@@ -37,7 +36,6 @@ var getCN = Y.ClassNameManager.getClassName,
     ERROR          = 'error',
     HEIGHT         = 'height',
     INFO           = 'info',
-    INNER_HTML     = 'innerHTML',
     LAST_TIME      = 'lastTime',
     PAUSE          = 'pause',
     PAUSED         = 'paused',
@@ -189,7 +187,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      */
     clearConsole : function () {
         // TODO: clear event listeners from console contents
-        this._body.set(INNER_HTML,'');
+        this._body.empty();
 
         this._cancelPrintLoop();
 
@@ -349,9 +347,7 @@ Y.Console = Y.extend(Console, Y.Widget,
 
         this.get('logSource').detach(this._evtCat + '*');
         
-        Y.Event.purgeElement(bb, true);
-
-        bb.set('innerHTML','');
+        bb.purge(true);
     },
 
     /**
@@ -368,7 +364,7 @@ Y.Console = Y.extend(Console, Y.Widget,
         // Apply positioning to the bounding box if appropriate
         var style = this.get('style');
         if (style !== 'block') {
-            this.get('boundingBox').addClass('yui3-'+style+'-console');
+            this.get('boundingBox').addClass(this.getClassName(style));
         }
     },
 
@@ -800,7 +796,9 @@ Y.Console = Y.extend(Console, Y.Widget,
     },
 
     /**
-     * Set the height of the Console container.  Set the body height to the difference between the configured height and the calculated heights of the header and footer.
+     * Set the height of the Console container.  Set the body height to the
+     * difference between the configured height and the calculated heights of
+     * the header and footer.
      * Overrides Widget.prototype._uiSetHeight.
      *
      * @method _uiSetHeight
@@ -846,11 +844,11 @@ Y.Console = Y.extend(Console, Y.Widget,
             after  = e.newVal;
 
         if ((!prop || prop === TITLE) && before.title !== after.title) {
-            cb.all(DOT+C_CONSOLE_TITLE).set(INNER_HTML, after.title);
+            cb.all(DOT+C_CONSOLE_TITLE).setContent(after.title);
         }
 
         if ((!prop || prop === PAUSE) && before.pause !== after.pause) {
-            cb.all(DOT+C_PAUSE_LABEL).set(INNER_HTML, after.pause);
+            cb.all(DOT+C_PAUSE_LABEL).setContent(after.pause);
         }
 
         if ((!prop || prop === CLEAR) && before.clear !== after.clear) {
@@ -935,7 +933,7 @@ Y.Console = Y.extend(Console, Y.Widget,
         bb[method](C_COLLAPSED);
 
         if (button) {
-            button.set('innerHTML',str);
+            button.setContent(str);
         }
 
         this._uiSetHeight(v ? this._head.get('offsetHeight'): this.get(HEIGHT));
@@ -1029,7 +1027,7 @@ Y.Console = Y.extend(Console, Y.Widget,
     /**
      * The identity of the widget.
      *
-     * @property Console.NAME
+     * @property NAME
      * @type String
      * @static
      */
@@ -1039,7 +1037,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      * Static identifier for logLevel configuration setting to allow all
      * incoming messages to generate Console entries.
      *
-     * @property Console.LOG_LEVEL_INFO
+     * @property LOG_LEVEL_INFO
      * @type String
      * @static
      */
@@ -1050,7 +1048,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      * incoming messages of logLevel &quot;warn&quot; or &quot;error&quot;
      * to generate Console entries.
      *
-     * @property Console.LOG_LEVEL_WARN
+     * @property LOG_LEVEL_WARN
      * @type String
      * @static
      */
@@ -1061,7 +1059,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      * incoming messages of logLevel &quot;error&quot; to generate
      * Console entries.
      *
-     * @property Console.LOG_LEVEL_ERROR
+     * @property LOG_LEVEL_ERROR
      * @type String
      * @static
      */
@@ -1081,7 +1079,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      *    <li>entry_content_class</li>
      * </ul>
      *
-     * @property Console.ENTRY_CLASSES
+     * @property ENTRY_CLASSES
      * @type Object
      * @static
      */
@@ -1114,7 +1112,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      *   <li>console_title_class</li>
      * </ul>
      *
-     * @property Console.CHROME_CLASSES
+     * @property CHROME_CLASSES
      * @type Object
      * @static
      */
@@ -1146,7 +1144,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      *   <li>str_title - pulled from attribute strings.title</li>
      * </ul>
      *
-     * @property Console.HEADER_TEMPLATE
+     * @property HEADER_TEMPLATE
      * @type String
      * @static
      */
@@ -1164,7 +1162,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      * includes only the {placeholder} &quot;console_bd_class&quot;, which is
      * constributed by Console.CHROME_CLASSES.
      *
-     * @property Console.BODY_TEMPLATE
+     * @property BODY_TEMPLATE
      * @type String
      * @static
      */
@@ -1181,7 +1179,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      *   <li>str_clear - pulled from attribute strings.clear</li>
      * </ul>
      *
-     * @property Console.FOOTER_TEMPLATE
+     * @property FOOTER_TEMPLATE
      * @type String
      * @static
      */
@@ -1215,7 +1213,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      *   <li>message</li>
      * </ul>
      *
-     * @property Console.ENTRY_TEMPLATE
+     * @property ENTRY_TEMPLATE
      * @type String
      * @static
      */
@@ -1225,7 +1223,7 @@ Y.Console = Y.extend(Console, Y.Widget,
      * Static property used to define the default attribute configuration of
      * the Widget.
      *
-     * @property Console.ATTRS
+     * @property ATTRS
      * @Type Object
      * @static
      */
@@ -1522,4 +1520,4 @@ Y.Console = Y.extend(Console, Y.Widget,
 });
 
 
-}, '3.3.0' ,{requires:['substitute','widget'], lang:['en', 'es' ]});
+}, '3.5.0pr1' ,{lang:['en', 'es', 'ja'], requires:['substitute','widget','yui-log']});

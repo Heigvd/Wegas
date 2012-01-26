@@ -83,17 +83,29 @@ public class UserScopeEntity extends ScopeEntity {
     @XmlTransient
     private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<Long, VariableInstanceEntity>();
   
+    /**
+     * 
+     * @return
+     */
     @Override
     public Map<Long, VariableInstanceEntity> getVariableInstances() {
         return this.variableInstances;
     }
 
+    /**
+     * 
+     * @param userId
+     * @param v
+     */
     @Override
     public void setVariableInstances(Long userId, VariableInstanceEntity v) {
         this.variableInstances.put(userId, v);
         v.setScope(this);
     }
 
+    /**
+     * 
+     */
     @PrePersist
     public void prePersist() {
         VariableDescriptorEntity vd = this.getVariableDescriptor();

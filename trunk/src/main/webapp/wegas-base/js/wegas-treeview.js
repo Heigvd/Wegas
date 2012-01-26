@@ -5,16 +5,16 @@
 YUI.add('wegas-treeview', function(Y) {
     
     var CONTENTBOX = 'contentBox',
-    BOUNDINGBOX = 'contentBox',
+    BOUNDINGBOX = 'boundingBox',
     YAHOO = Y.YUI2,
-    WTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.WeGAS.Widget], {
+    WTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 	
         _dataSource: null,
         _pushButton: null,
         _treeView: null,
 	
         initializer: function(cfg) {
-            this._dataSource = Y.WeGAS.app.dataSources[this.get('dataSource')];
+            this._dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
         },
         destroyer: function() {
             this._treeView.destroy();
@@ -34,6 +34,41 @@ YUI.add('wegas-treeview', function(Y) {
                 container:cb._node
             });
             
+        },
+        
+        bindUI: function() {
+            
+            this._dataSource.after("response", function(e) {			// Listen for datasource updates
+                if (e.response.results && ! e.response.error) {
+                    var treeViewElements = this._genTreeViewElements(e.response.results);
+                    this._treeView.removeChildren(this._treeView.getRoot());
+                    this._treeView.buildTreeFromObject(treeViewElements);
+                    this._treeView.render();
+                };
+            }, this);
+	   
+            this._treeView.subscribe("clickEvent", function() {
+                return false;
+            });
+            
+            this._treeView.subscribe("labelClick", function(node) { 
+                Y.Wegas.editor.edit(node.data, function(cfg) {
+                    this._dataSource.rest.put(cfg);
+                }, null, this);
+                YAHOO.log(node.index + " label was clicked", "info", "example"); 
+                return false;
+            }, null, this); 
+            
+            this._pushButton.on("click", function() {				// New button click event
+                Y.Wegas.editor.edit({
+                    "@class": this.get('rootClass')
+                }, function(cfg) {
+                    this._dataSource.rest.post(cfg);
+                }, null, this);
+            }, null, this);
+	  
+        },
+        syncUI: function() {
         },
         
         _genTreeViewElements: function(elements) {
@@ -61,67 +96,65 @@ YUI.add('wegas-treeview', function(Y) {
                         })
                         break;
                     case 'StringVariableDescriptor':
+                        
+                        var children = [];
+                     
+                        for (var j in el.scope.variableInstances) {
+                            subEl = el.scope.variableInstances[j];
+                                
+                            switch (el.scope['@class'] ) {
+                                case 'UserScope':
+                                    var user = Y.Wegas.app.dataSources.User.rest.getCachedVariableById(j);
+                                    children.push({
+                                        type:'Text',
+                                        label: user.name+': '+subEl['content'],
+                                        title: user.name+': '+subEl['content'],
+                                        data: subEl
+                                    });
+                                    break;
+                                case 'TeamScope':
+                                    var team = Y.Wegas.app.dataSources.Team.rest.getCachedVariableById(j);
+                                    children.push({
+                                        type:'Text',
+                                        label: team.name+': '+subEl['content'],
+                                        title: team.name+': '+subEl['content'],
+                                        data: subEl
+                                    });
+                                    break;
+                                case 'GameScope':
+                                    children.push({
+                                        type:'Text',
+                                        label: 'value: '+subEl['content'],
+                                        title: 'value: '+subEl['content'],
+                                        data: subEl
+                                    });
+                                    break;
+                            }
+                        }
                         ret.push( {
                             type:'Text',
                             label: 'Variable: '+el['name'],
                             title: 'Variable: '+el['name'],
                             expanded:true, 
-                            children: this._genTreeViewElements(el.scope.variableInstances),
+                            children: children,
                             data: el
                         });
                         break;
-                    case 'StringVariableInstance':
-                        var user = Y.WeGAS.app.dataSources.User.rest.getCachedItem(i);
+                /* case 'StringVariableInstance':
+                        var user = Y.Wegas.app.dataSources.User.rest.getCachedVariableById(i);
+                        
                         ret.push( {
                             type:'Text',
                             label: user.name+': '+el['content'],
                             title: user.name+': '+el['content'],
                             data: el
                         });
-                        break;
+                        break;*/
                 }
             }
             return ret;
-        },
-        
-        bindUI: function() {
-            
-            this._dataSource.after("response", function(e) {			// Listen for datasource updates
-                console.log("response from data source")
-                if (e.response.results && ! e.response.error) {
-                    var treeViewElements = this._genTreeViewElements(e.response.results);
-                    this._treeView.removeChildren(this._treeView.getRoot());
-                    this._treeView.buildTreeFromObject(treeViewElements);
-                    this._treeView.render();
-                };
-            }, this);
-	   
-            this._dataSource.sendRequest({
-                request: "/"
-            });
-            this._treeView.subscribe("clickEvent", function() {
-                return false;
-            });
-            
-            this._treeView.subscribe("labelClick", function(node) { 
-                Y.WeGAS.editor.edit(node.data, function(cfg) {
-                    this._dataSource.rest.put(cfg);
-                }, null, this);
-                YAHOO.log(node.index + " label was clicked", "info", "example"); 
-                return false;
-            }, null, this); 
-            
-            this._pushButton.on("click", function() {				// New button click event
-                Y.WeGAS.editor.edit({
-                    "@class": this.get('rootClass')
-                }, function(cfg) {
-                    this._dataSource.rest.post(cfg);
-                }, null, this);
-            }, null, this);
-	  
-        },
-        syncUI: function() {
         }
+        
     }, {
         ATTRS : {
             classTxt: {
@@ -136,5 +169,5 @@ YUI.add('wegas-treeview', function(Y) {
     });
      
     
-    Y.namespace('WeGAS').WTreeView = WTreeView;
+    Y.namespace('Wegas').WTreeView = WTreeView;
 });

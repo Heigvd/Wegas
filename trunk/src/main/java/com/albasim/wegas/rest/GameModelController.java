@@ -83,7 +83,7 @@ public class GameModelController {
 
     /**
      * 
-     * @param is
+     * @param gm 
      * @return 
      */
     @POST
@@ -99,6 +99,7 @@ public class GameModelController {
     /**
      * 
      * @param gmID
+     * @param gm 
      * @return 
      */
     @PUT

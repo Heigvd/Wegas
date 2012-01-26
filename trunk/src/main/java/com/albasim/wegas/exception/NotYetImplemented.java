@@ -21,6 +21,10 @@ import javax.ws.rs.core.Response;
  */
 public class NotYetImplemented extends WebApplicationException {
 
+    /**
+     * 
+     * @param message
+     */
     public NotYetImplemented(String message) {
         super(Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(message).type(MediaType.TEXT_PLAIN).build());
     }

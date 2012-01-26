@@ -4,100 +4,152 @@
 
 YUI.add('wegas-tabview', function(Y) {
     var Lang = Y.Lang,
+    YAHOO = Y.YUI2,
     
-    TabView = Y.Base.create("tabview", Y.TabView , [Y.WidgetChild, Y.WeGAS.Widget], {
-	//NESTED_TEMPLATE : '<li id="{liId}-container" class="{nestedOptionClassName}"></li>',
-		
-	/*renderUI: function () {
-			var tokens = {
-					nestedOptionClassName : this.getClassName("container"),
-					liId : this.get('id')
-				},
-				liHtml = Y.substitute(this.NESTED_TEMPLATE, tokens),
-				li = Y.Node.create(liHtml),
-				boundingBox = this.get(BOUNDINGBOX),
-				parent = boundingBox.get("parentNode");
-
-			li.appendChild(boundingBox);
-			parent.appendChild(li);
-		},*/
-	//syncUI: function() {
-	//}	
-	}, {
-
-	    ATTRS : {
-		/*tabIndex: {
-		    value: -1
-		},*/
-		classTxt: {
-		    value: 'Tabview'
-		},
-		type: {
-		    value: "Tabview"
-		}
-	    }
-	}),
+    TabView = Y.Base.create("tabview", Y.TabView , [Y.WidgetChild, Y.Wegas.Widget], {
+        
+        }, {
+            ATTRS : {
+                classTxt: {
+                    value: 'Tabview'
+                },
+                type: {
+                    value: "Tabview"
+                }
+            }
+        }),
 	
-    Tab = Y.Base.create("tab", Y.Tab , [Y.WeGAS.Widget/*, Y.WidgetParent*/], {
-	//NESTED_TEMPLATE : '<li id="{liId}-container" class="{nestedOptionClassName}"></li>',
-		
-	/*initializer: function(cfg){
-	},*/
-	renderUI: function() {
-	    Tab.superclass.renderUI.apply(this, arguments);
-	    //this._childrenContainer = this.get('panelNode');
-	    
-	    this.get('panelNode').getContent();
-	},
-	/*renderUI: function () {
-			var tokens = {
-					nestedOptionClassName : this.getClassName("container"),
-					liId : this.get('id')
-				},
-				liHtml = Y.substitute(this.NESTED_TEMPLATE, tokens),
-				li = Y.Node.create(liHtml),
-				boundingBox = this.get(BOUNDINGBOX),
-				parent = boundingBox.get("parentNode");
-
-			li.appendChild(boundingBox);
-			parent.appendChild(li);
-		},*/
-	syncUI: function() {
-	    Tab.superclass.syncUI.apply(this, arguments);
-	    
-	    var cWidget = new Y.WeGAS.List({children:this.get('children')});
-	    cWidget.render(this.get('panelNode'));
-	}	  
-	/*_renderChildren: function () {
-	    var renderTo = this._childrenContainer || this.get("contentBox");
-
-	    this._childrenContainer = renderTo;
-
-	    this.each(function (child) {
-		child.render(renderTo);
-	    });
-	}*/
+    Tab = Y.Base.create("tab", Y.Tab , [Y.Wegas.Widget/*, Y.WidgetParent*/], {
+        _toolbar: null,
+       
+        renderUI: function() {
+            Tab.superclass.renderUI.apply(this, arguments);
+            
+            // if (this.get('toolbarButtons')) {
+            this._renderToolbar();
+            //}
+            
+            try {
+                var cWidget = new Y.Wegas.List({
+                    children:this.get('children')
+                });
+                cWidget.render(this.get('panelNode'));
+            } catch (e) {
+                Y.log('Error rendering tab '+this.get('label')+': '+((e.stack)?e.stack:e), 'error', 'Wegas.TabView');
+            }
+            
+        },
+        _renderToolbar: function() {
+            var panelNode = this.get('panelNode');
+			
+			
+            panelNode.addClass('wegas-tab-hastoolbar');
+            panelNode.prepend('<div class="yui-editor-container"><div class="first-child"><div></div></div></div>');	
+	
+       
+        
+            this._toolbar = new YAHOO.widget.Toolbar(panelNode.one('.yui-editor-container')._node.firstChild.firstChild, {
+                buttonType: 'advanced',
+                draggable: false,
+                // collapse:, cont:, disabled:,  grouplabels:, titlebar: "test",
+                buttons: this.get('toolbarButtons')
+            });
+            if (this.get('toolbarLabel')) {
+                panelNode.one('.yui-toolbar-subcont').setContent('<span class="title">'+this.get('toolbarLabel')+'</span></div>');
+            }
+            this._toolbar.on('buttonClick', function(e) {
+                var button = this._toolbar.getButtonByValue(e.button.value);		// We have a button reference
+                //button.set('menu', ["test"]);						
+                // toolbar.deselectAllButtons();
+                //toolbar.selectButton(_button);
+                // status.innerHTML = 'You clicked on ' + _button.get('label') + ', with the value of ' + ((info.button.color) ? '#' + info.button.color + ' : ' + info.button.colorName : info.button.value);
+            
+                switch (button.get('value')) {
+                    case 'selectuser':
+                        var newUser = Y.Wegas.app.dataSources.User.rest.getCachedVariableBy('name', e.button.value);
+                        Y.Wegas.app.set('currentUserId', newUser.id )
+                        break;
+                }
+            }, null, this);
+            
+            Y.Wegas.app.dataSources.User.after("response", function(e) {
+                var buttons = this._toolbar.getButtons(),
+                menu = [],
+                button;
+                if (!buttons) return;
+                
+                for (var i=0; i<buttons.length; i++) {
+                    button = buttons[i];
+                    switch (button.get('value')) {
+                        case 'selectuser':
+                            //if (button.getMenu().getItems().length == 0) return;
+                            var currentUserId = Y.Wegas.app.get('currentUserId'),
+                            menu = button.getMenu(),
+                            k = 0;
+                                
+                            for (;k< menu.getItems().length;k++) {
+                            //  menu.removeItem(0);
+                            }
+                            /*
+                            button.getMenu().addItem( {
+                                "text": "eee",
+                                "value": 1
+                               // "checked": "true"
+                            });*/
+                            /*                            for (var j in e.response.results) {
+                                var u = e.response.results[j];
+                                menu.addItem({
+                                    "text": u.name,
+                                    "value": u.id,
+                                    "checked": false
+                                });
+                            }*/
+                            // button.set('menu', menu);
+                            //for (Y.Wegas.app.dataSources.User.getCached)
+                            /*   button.set('type', {
+                                "type": "menu", 
+                                "label": "fx", 
+                                "value": "selectuser", 
+                                "menu": menu
+                            });*/
+                            //button.getMenu().render();
+                           
+                                
+                            /*    button.getMenu().addItems([ 
+                            {
+                                text: "Four", 
+                                value: 4
+                            }, 
+                            {
+                                text: "Five", 
+                                value: 5
+                            } 
+                            ]);*/
+                            // button.getMenu().render();
+                            break;
+                    }
+                }
+            }, this);
+        }
     }, {
-	ATTRS : {
-	  /*  tabIndex: {
-		value: -1
-	    },*/
-	    classTxt: {
-		value: 'Tab'
-	    },
-	    type: {
-		value: "Tab"
-	    }, 
-	    children: {}
-	/*    content: {
-		setter: function() {
-		    
-		},
-		validator: Lang.isString
-	    }*/
-	}
+        ATTRS : {
+            classTxt: {
+                value: 'Tab'
+            },
+            type: {
+                value: "Tab"
+            }, 
+            children: { },
+            toolbarButtons: {
+                value:[]
+            },
+            toolbarLabel: {},
+            content: {
+                setter: function() { }                                          // Overrides the panelNode management                          
+            }
+        }
     });
 	
-    Y.namespace('WeGAS').TabView = TabView;
-    Y.namespace('WeGAS').Tab = Tab;
+    Y.namespace('Wegas').TabView = TabView;
+    Y.namespace('Wegas').Tab = Tab;
 });

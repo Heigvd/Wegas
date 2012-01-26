@@ -23,6 +23,6 @@ YUI.add('wegas-widgetmanager', function(Y) {
     });
     
     // Y.JSON.useNativeParse = true;
-    Y.namespace('WeGAS').WidgetManager = WidgetManager;
+    Y.namespace('Wegas').WidgetManager = WidgetManager;
 
 });

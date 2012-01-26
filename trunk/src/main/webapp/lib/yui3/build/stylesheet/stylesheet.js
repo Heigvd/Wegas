@@ -1,9 +1,8 @@
 /*
-Copyright (c) 2010, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
-version: 3.3.0
-build: 3167
+YUI 3.5.0pr1 (build 4342)
+Copyright 2011 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
 */
 YUI.add('stylesheet', function(Y) {
 
@@ -468,7 +467,7 @@ Y.mix(StyleSheet, {
      * starting state of the style prior to alterations.  This is most often
      * extracted from the eventual target's current el.style.cssText.</p>
      *
-     * @method StyleSheet.toCssText
+     * @method toCssText
      * @param css {Object} object literal of style properties and values
      * @param cssText {String} (optional) starting cssText value
      * @return {String} the resulting cssText string
@@ -492,7 +491,7 @@ Y.mix(StyleSheet, {
     /**
      * Registers a StyleSheet instance in the static registry by the given name
      *
-     * @method StyleSheet.register
+     * @method register
      * @param name {String} the name to assign the StyleSheet in the registry
      * @param sheet {StyleSheet} The StyleSheet instance
      * @return {Boolean} false if no name or sheet is not a StyleSheet
@@ -515,7 +514,7 @@ Y.mix(StyleSheet, {
      * #_abc or '# ' all fail.  There are likely more failure cases, so
      * please file a bug if you encounter one.</p>
      *
-     * @method StyleSheet.isValidSelector
+     * @method isValidSelector
      * @param sel {String} the selector string
      * @return {Boolean}
      * @static
@@ -642,4 +641,4 @@ NOTES
 
 
 
-}, '3.3.0' );
+}, '3.5.0pr1' ,{requires:['yui-base']});

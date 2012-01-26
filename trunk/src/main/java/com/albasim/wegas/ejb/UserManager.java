@@ -69,10 +69,20 @@ public class UserManager {
         return find;
     }
     
+    /**
+     * 
+     * @param u
+     */
     public void createUser(UserEntity u) {
         aem.create(u);
     }
     
+    /**
+     * 
+     * @param id
+     * @param u
+     * @return
+     */
     public UserEntity updateUser(Long id, UserEntity u) {
         UserEntity gm = this.getUser(id);
         if (gm.equals(u)) {

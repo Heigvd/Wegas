@@ -24,28 +24,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 
-@XmlType(name = "StringVariableDescriptor")
+@XmlType(name = "ListVariableDescriptorEntity")
 public class ListVariableDescriptorEntity extends VariableDescriptorEntity {
 
     private static final long serialVersionUID = 1L;
     
     private static final Logger logger = Logger.getLogger("GMVariableDescriptor");
-
-    //@NotNull
-    //@Pattern(regexp = "^\\w*$")
-    private String validationPattern;
-
-    /**
-     * @return the validationPattern
-     */
-    public String getValidationPattern() {
-        return validationPattern;
-    }
-
-    /**
-     * @param validationPattern the validationPattern to set
-     */
-    public void setValidationPattern(String validationPattern) {
-        this.validationPattern = validationPattern;
-    }
 }

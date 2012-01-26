@@ -4,37 +4,71 @@
 
 YUI.add('wegas-app', function(Y) {
     var	CONTENT_BOX = 'contentBox',
-    Lang = Y.Lang,
     
     App = Y.Base.create("wegas-app", Y.Base, [ ], {
+        
+        dataSources: [],
+        
+        _rootWidgetCfg: null,
+        _rootWidget: null,
 	
         initializer: function(cfg){
-            Y.WeGAS.app = this;
+            Y.Wegas.app = this;
 	    
             this._initDataSources();
             this._initUI();
+            this._initCSS();
         },
         destructor : function(){
+        // TODO Delete datasources
+        },
+        render: function() {
+            
+            this._requestDataSources();
         },
 	
 	
         _initDataSources: function() {
-            var dataSources = this.get('dataSources');
-            this.dataSources = [];
-            for (var k in dataSources) {
-                // Y.JSON.useNativeParse = true;
-                var ds = new Y.DataSource.IO(dataSources[k]);
-                ds.plug(Y.Plugin.DataSourceREST);
-                this.dataSources[k] = ds;
-            }
+            var dataSources = this.get('dataSources'),
+            k;
             
-            this.dataSources.User.sendRequest({
-                request: "/"
-            });
+            // @todo Shall we use browser native parsers
+            // Y.JSON.useNativeParse = true;
+                
+            for (k in dataSources) {
+                this.dataSources[k] = new Y.DataSource.IO(dataSources[k]);
+            }
+        },
+        _initCSS: function() {
+            var css = this.get('css'),
+            i=0;
+            for (; i<css.length;i++){
+                Y.io(css[i]+'?id='+App.genId(), {				// Load the page css
+                    timeout : 3000,
+                    context: this,
+                    on : {
+                        success : function (x,o) {
+                            this._customCSSText = o.responseText;
+                            this._customCSSStyleSheet = new Y.StyleSheet(o.responseText);
+                            //Y.log("RAW JSON DATA: " + o.responseText);
+                            //this.updateCustomCSS(o.responseText);
+                            if ( this._customCSSForm ) this._customCSSForm.inputs[0].setValue(o.responseText);
+                        },
+                        failure : function (x,o) {
+                            Y.log("_initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
+                        }
+                    }
+                })
+            };
+        },
+        _requestDataSources: function() {
+            for (var k in this.dataSources) {
+                this.dataSources[k].sendRequest({
+                    request: "/"
+                });
+            }
         },
 	
-        _rootWidgetCfg: null,
-        _rootWidget: null,
         _initUI: function() {
             var request = Y.io(this.get('base')+this.get('layoutSrc')+'?id='+App.genId(), {
                 context: this,
@@ -44,41 +78,53 @@ YUI.add('wegas-app', function(Y) {
                         try {
                             this._rootWidgetCfg = Y.JSON.parse(o.responseText);				// Process the JSON data returned from the server
                         } catch (e) {
-                            alert("WeGAS.App._initUI(): JSON Parse failed!");
+                            alert("Wegas.App._initUI(): JSON Parse failed!");
                             return;
                         }
-                        this._rootWidget = Y.WeGAS.Widget.create(this._rootWidgetCfg);
+                        this._rootWidget = Y.Wegas.Widget.create(this._rootWidgetCfg);
                         
                         try {
                             this._rootWidget.render();
-                        } catch (exception) {
-                            console.log(exception);
-                            Y.log('Error rendering UI', 'error', 'base');
+                        } catch (e) {
+                            Y.log('_initUI(): Error rendering UI: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
                         }
                     }
                 }
             });
         }
-	
-	
-    /////////////////////HACK Those are temporary helpers, to be removed
-	
-	
     }, {
         ATTRS: {
             /**
-		 * Base url for app
-		 */
+             * Base url for app
+             */
             base: { },
             layoutSrc: {},
             dataSources: {
                 value: {}
             },
-	    
-            // FIXME temporary attributes, to be removed in future versions
-            forms :{},
-            adminMenus: {},
-            currentGameModel: {}
+            forms: {
+                value: []
+            },
+            css: {
+                value: []
+            },
+            currentGameModel: {},
+            currentTeamId: { },
+            currentUserId: { 
+                setter: function(val, name) {
+                    var teams = this.dataSources.Team.rest.getCachedVariables(),
+                    j=0, k;
+                    for (;j<teams.length;j++) {
+                        for (k=0;k<teams[j].users.length;k++) {
+                            if (teams[j].users[k].id == val) {
+                                this.set('currentTeamId', teams[j].id);
+                                return val;
+                            }
+                        }
+                    }
+                    return val;
+                }
+            }
         },
         genId: function() {
             var now = new Date();
@@ -86,5 +132,5 @@ YUI.add('wegas-app', function(Y) {
         }		
     });
     
-    Y.namespace('WeGAS').App = App;
+    Y.namespace('Wegas').App = App;
 });

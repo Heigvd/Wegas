@@ -43,6 +43,12 @@ public class VariableInstanceController {
     @EJB
     private VariableInstanceManager vim;
 
+    /**
+     * 
+     * @param gmID
+     * @param variableDescriptorId
+     * @return
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<VariableInstanceEntity> index(
@@ -52,6 +58,13 @@ public class VariableInstanceController {
         return vd.getScope().getVariableInstances().values();
     }
 
+    /**
+     * 
+     * @param gameModelId
+     * @param variableDescriptorId
+     * @param variableInstanceId
+     * @return
+     */
     @GET
     @Path("{variableInstanceId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -63,6 +76,14 @@ public class VariableInstanceController {
         return vim.getVariableInstance(variableInstanceId);
     }
     
+    /**
+     * 
+     * @param gameModelId
+     * @param variableDescriptorId
+     * @param userId
+     * @param newInstance
+     * @return
+     */
     @POST
     @Path("user/{userId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -75,6 +96,14 @@ public class VariableInstanceController {
         return vim.createInstance(gameModelId, variableDescriptorId, userId, newInstance);
     }
     
+    /**
+     * 
+     * @param gameModelId
+     * @param variableDescriptorId
+     * @param variableInstanceId
+     * @param newInstance
+     * @return
+     */
     @PUT
     @Path("{variableInstanceId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)

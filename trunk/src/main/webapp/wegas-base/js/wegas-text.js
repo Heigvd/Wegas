@@ -6,7 +6,7 @@ YUI.add('wegas-text', function(Y) {
     var CONTENTBOX = 'contentBox',
     
     
-    Text = Y.Base.create("wegas-text", Y.Widget, [Y.WidgetChild, Y.WeGAS.Widget], {
+    Text = Y.Base.create("wegas-text", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 	//NESTED_TEMPLATE : '<li id="{liId}-container" class="{nestedOptionClassName}"></li>',
 	//CONTENT_TEMPLATE : "<em></em>",
 	//BOUNDING_TEMPLATE : "<li></li>",
@@ -29,9 +29,6 @@ YUI.add('wegas-text', function(Y) {
 	}
     }, {
 	ATTRS : {
-	    tabIndex: {
-		value: -1
-	    }, 
 	    content: { },
 	    classTxt: {
 		value: 'Text element'
@@ -42,5 +39,5 @@ YUI.add('wegas-text', function(Y) {
 	}
     });
     
-    Y.namespace('WeGAS').Text = Text;
+    Y.namespace('Wegas').Text = Text;
 });

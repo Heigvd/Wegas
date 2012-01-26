@@ -22,6 +22,10 @@ public class VariableInstanceIndexEntry extends IndexEntry {
     private String type;
 
     
+    /**
+     * 
+     * @param vi
+     */
     public VariableInstanceIndexEntry(VariableInstanceEntity vi){
       //  super(vi);
         //this.type = vi.getDescriptor().getType().getName();
@@ -29,11 +33,19 @@ public class VariableInstanceIndexEntry extends IndexEntry {
     }
 
 
+    /**
+     * 
+     * @return
+     */
     public String getType() {
         return type;
     }
 
 
+    /**
+     * 
+     * @param type
+     */
     public void setType(String type) {
         this.type = type;
     }

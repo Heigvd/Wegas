@@ -1,5 +1,58 @@
 {
     "type" : "Layout",
+    
+    "right": {
+        "width": 500, 
+        "resize": true,
+        "collapse": false,
+        "scroll": true, 
+        "animate": true,
+        "children": [{
+            "type": "TabView",
+            "children": [{
+                "type": "Tab",
+                "label": "Edit",
+                "toolbarLabel": "Edit",
+                "children": [
+                {
+                    "type": "DisplayArea",
+                    "id": "editor-editdisplayarea"
+                }
+                ]
+            },
+            {
+                "type": "Tab",
+                "label": "CSS",
+                "toolbarLabel": "Edit CSS",
+                "children": [
+                {
+                    "type": "CSSEditor",
+                    "class": "wegas-csseditor"
+                }
+                ]
+            },
+            {
+                "type": "Tab",
+                "label": "Chat",
+                "toolbarLabel": "Chat",
+                "children": [
+                {
+                    "type": "Chat"		
+                }
+                ]
+            },
+            {
+                "type": "Tab",
+                "label": "Log",
+                "toolbarLabel": "Log",
+                "children": [
+                {
+                    "type": "Logger"		
+                }
+                ]
+            }]
+        }]
+    },
     "top" : {
         "height": 25,
         "scroll": null, 
@@ -27,8 +80,14 @@
                     "type": "WTreeView",
                     "dataSource": "VariableDescriptor",
                     "rootClass": "VariableDescriptor"
-                }
-                ]
+                }         
+                ],
+                "toolbarButtons": [{
+                    "type": "push", 
+                    "label": "Add a new element", 
+                    "value": "new", 
+                    "id": "new"
+                }]
             },
             {
                 "type": "Tab",
@@ -63,49 +122,40 @@
             ]
         }]
     },
-    "right": {
-        "width": 500, 
-        "resize": true,
-        "collapse": false,
-        "scroll": true, 
-        "animate": true,
-        "children": [{
-            "type": "TabView",
-            "children": [{
-                "type": "Tab",
-                "label": "Edit",
-                "children": [
-                {
-                    "type": "DisplayArea",
-                    "id": "editor-editdisplayarea"
-		    
-                }
-                ]
-            },
-            {
-                "type": "Tab",
-                "label": "CometFrame",
-                "children": [
-                {
-                    "type": "CometFrame"		
-                }
-                ]
-            },
-            {
-                "type": "Tab",
-                "label": "Logger",
-                "children": [
-                {
-                    "type": "Logger"		
-                }
-                ]
-            }]
-        }]
-    },
     "center": {
         "children": [{
             "type": "TabView",
             "children": [
+            {
+                "type": "Tab",
+                "label": "Preview",
+                "toolbarButtons": [
+                {
+                    "type": "select", 
+                    "label": "Francois", 
+                    "value": "selectuser",
+                    "menu": [
+                    {
+                        "text": "Francois", 
+                        "checked": true
+                    },
+                    {
+                        "text": "Roger"
+                    },
+                    {
+                        "text": "Dominique"
+                    },
+                    {
+                        "text": "Marc"
+                    }
+                    ]
+                }
+                ],
+                "children": [{
+                    "type": "WidgetLoader",
+                    "layourUrl": "data/pmg-layout.json"
+                }]
+            },
             {
                 "type": "Tab",
                 "label": "Game models explorer",

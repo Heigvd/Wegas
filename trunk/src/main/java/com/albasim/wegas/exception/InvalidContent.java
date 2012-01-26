@@ -22,14 +22,26 @@ import javax.ws.rs.core.Response;
  */
 public class InvalidContent extends WebApplicationException {
 
+    /**
+     * 
+     * @param ex
+     * @param o
+     */
     public InvalidContent(RuntimeException ex, AnonymousEntity o) {
         super(ex, Response.status(Response.Status.CONFLICT).entity(o).type(MediaType.APPLICATION_JSON).build());
     }
 
+    /**
+     * 
+     */
     public InvalidContent() {
         super(Response.status(Response.Status.CONFLICT).build());
     }
 
+    /**
+     * 
+     * @param message
+     */
     public InvalidContent(String message) {
         super(Response.status(Response.Status.CONFLICT).entity(message).type(MediaType.TEXT_PLAIN).build());
     }

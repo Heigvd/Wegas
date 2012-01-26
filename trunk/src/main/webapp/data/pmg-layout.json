@@ -1,0 +1,78 @@
+{
+    "type": "List",
+    "cssClass": "pmg-mainlayout",
+    "children": [{
+        "type": "List",
+        "cssClass": "pmg-indicators",
+        "direction": "horizontal",
+        "children": [
+        { 
+            "type": "VariableDisplay",
+            "label": "Direction",
+            "variable": "Direction",
+            "dataSource": "VariableDescriptor"
+        },{ 
+            "type": "VariableDisplay",
+            "label": "Price",
+            "variable": "Price",
+            "dataSource": "VariableDescriptor"
+        },{ 
+            "type": "VariableDisplay",
+            "label": "Money",
+            "variable": "Money",
+            "dataSource": "VariableDescriptor"
+        }]
+    },
+    {
+        "type": "List",
+        "cssClass": "pmg-topmenu",
+        "direction": "horizontal",
+        "children": [
+        { 
+            "type": "Button",
+            "label": "Accueil",
+            "id": "pmg-topbutton",
+            "cssClass": "pmg-topbutton",
+            "targetArea": "maindisplayarea",
+            "targetSubpageId": "Projectpage"
+        }, { 
+            "type": "Button",
+            "label": "Projet",
+            "id": "pmg-topbutton",
+            "cssClass": "pmg-topbutton",
+            "targetArea": "maindisplayarea",
+            "targetSubpageId": "Homepage"
+        }
+        ]
+    },
+    {
+        "type": "List",
+        "id": "pmg-body", 
+        "cssClass": "pmg-body", 
+        "children": [
+        {   
+            "type": "DisplayArea",
+            "id": "pmg-maindisplayarea",
+            "cssClass": "pmg-maindisplayarea"
+        }, {
+            "type": "List",
+            "id": "pmg-rightmenu",
+            "cssClass": "pmg-rightmenu", 
+            "children": [ 
+            { 
+                "type": "Button",
+                "cssClass": "pmg-actionbutton",
+                "label": "",
+                "targetArea": "maindisplayarea",
+                "targetSubpageId": "ActionsTabview"
+            }, { 
+                "type": "Button",
+                "cssClass": "pmg-choicebutton",
+                "label": "",
+                "targetArea": "maindisplayarea"
+            }
+            ]
+        }
+        ]
+    }]
+}

@@ -19,6 +19,9 @@ import javax.ws.rs.core.Response;
  * @author maxence
  */
 public class MissingWebSocketSession extends WebApplicationException {
+    /**
+     * 
+     */
     public MissingWebSocketSession(){
         super(Response.serverError().entity("Please create a comet session -> /cometListener.html || /cs").build());
     }

@@ -67,7 +67,7 @@ public class UserController {
 
     /**
      * Retrieve a specific game model
-     * @param gmID game model id
+     * @param userId 
      * @return OK
      */
     @GET
@@ -81,7 +81,7 @@ public class UserController {
 
     /**
      * 
-     * @param is
+     * @param u 
      * @return 
      */
     @POST
@@ -96,7 +96,8 @@ public class UserController {
 
     /**
      * 
-     * @param gmID
+     * @param userId 
+     * @param user 
      * @return 
      */
     @PUT
@@ -110,7 +111,7 @@ public class UserController {
 
     /**
      * 
-     * @param gmID
+     * @param userId 
      * @return 
      */
     @DELETE

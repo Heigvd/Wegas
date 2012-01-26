@@ -23,13 +23,13 @@ public class RequestListener implements ServletRequestListener {
 
     @Override
     public void requestDestroyed(ServletRequestEvent sre) {
-        logger.log(Level.INFO, "THREAD WAS :{0}", Thread.currentThread());
+        //logger.log(Level.INFO, "THREAD WAS :{0}", Thread.currentThread());
     }
 
 
     @Override
     public void requestInitialized(ServletRequestEvent sre) {
-        logger.log(Level.INFO, "THREAD IS :{0}", Thread.currentThread());
+        //logger.log(Level.INFO, "THREAD IS :{0}", Thread.currentThread());
         /*ServletRequest servletRequest = sre.getServletRequest();
 
         logger.log(Level.INFO, "Request initialized");

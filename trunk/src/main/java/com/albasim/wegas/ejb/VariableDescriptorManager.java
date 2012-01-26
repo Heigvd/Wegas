@@ -42,6 +42,11 @@ public class VariableDescriptorManager {
     private EntityManager em;
 
 
+    /**
+     * 
+     * @param variableDescriptorId
+     * @return
+     */
     public VariableDescriptorEntity getVariableDescriptor(Long variableDescriptorId) {
         VariableDescriptorEntity vDesc = em.find(VariableDescriptorEntity.class, variableDescriptorId);
 
@@ -49,6 +54,11 @@ public class VariableDescriptorManager {
     }
 
 
+    /**
+     * 
+     * @param gameModelId
+     * @param variableDescriptor
+     */
     public void create(Long gameModelId, VariableDescriptorEntity variableDescriptor) {
         
         GameModelEntity gm = gmm.getGameModel(gameModelId);
@@ -58,6 +68,12 @@ public class VariableDescriptorManager {
         //aem.update(gm);
     }
 
+    /**
+     * 
+     * @param variableDescriptorId
+     * @param variableDescriptor
+     * @return
+     */
     public VariableDescriptorEntity update(Long variableDescriptorId, VariableDescriptorEntity variableDescriptor) {
         VariableDescriptorEntity vd = this.getVariableDescriptor(variableDescriptorId);
         vd = (VariableDescriptorEntity) AnonymousEntityMerger.merge(vd, variableDescriptor);
@@ -65,6 +81,11 @@ public class VariableDescriptorManager {
         return vd;
     }
 
+    /**
+     * 
+     * @param gmID
+     * @param vdID
+     */
     public void destroyVariableDescriptor(String gmID, String vdID) {
         VariableDescriptorEntity variableDescriptor = getVariableDescriptor(Long.parseLong(vdID));
         aem.destroy(variableDescriptor);

@@ -147,7 +147,9 @@ public class WegasEntityManager {
 
     /**
      * Common method that propagateUpdate the provided entity
-     * @param ae 
+     * @param <T> 
+     * @param ae
+     * @return  
      */
     public <T extends AnonymousEntity> T update(T ae) {
         try {

@@ -26,7 +26,19 @@ import javax.validation.ConstraintPayload;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NumericRange {
+    /**
+     * 
+     * @return
+     */
     String message() default "Range has to be valid";
+    /**
+     * 
+     * @return
+     */
     Class<?>[] groups() default {};
+    /**
+     * 
+     * @return
+     */
     Class<? extends ConstraintPayload>[] payload() default {};
 }

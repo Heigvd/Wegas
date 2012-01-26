@@ -5,6 +5,7 @@
 YUI.add('wegas-datasourcerest', function(Y) {
 	 
     var Lang = Y.Lang,
+    VariableDescriptorDataSourcePlugin,
     
     DataSourceREST = function() {
         DataSourceREST.superclass.constructor.apply(this, arguments);
@@ -73,7 +74,11 @@ YUI.add('wegas-datasourcerest', function(Y) {
 	    
             e.response.results = data;
         },
-        getCachedItem: function(id) {
+        getCachedVariables: function() {
+            var host = this.get('host');
+            return host.data;
+        },
+        getCachedVariableById: function(id) {
             var host = this.get('host');
             for (var i in host.data) {                                          // We first check in the cache if the data is available
                 if (host.data[i].id == id) {
@@ -82,10 +87,18 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
             return null;
         },
+        getCachedVariableBy: function(key, val) {
+            var host = this.get('host');
+            for (var i in host.data) {                                          // We first check in the cache if the data is available
+                if (host.data[i][key] == val) {
+                    return host.data[i];
+                }
+            }
+            return null;
+        },
+        
         getById: function(id) {  
             var host = this.get('host');
-	    
-           
             
             host.sendRequest({
                 request: "/"+id,
@@ -120,7 +133,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             });
         },
         _successHandler: function(e){
-        //console.log("Datasource reply:", e.response);
+            Y.log("Datasource reply:"+ e.response, 'log', 'Wegas.DataSourceRest');
         //data = Y.JSON.stringify(e.response, null, 2);
         // host.sendRequest('/');
         },
@@ -142,7 +155,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         },
         put: function(data) {
             var host = this.get('host'),
-                request = (data.id)?"/"+data.id:"";
+            request = (data.id)?"/"+data.id:"";
               
             if (data['@class'] == 'StringVariableInstance') {
                 request = '/1/varinst/'+data.id;
@@ -168,6 +181,35 @@ YUI.add('wegas-datasourcerest', function(Y) {
     
     Y.namespace('Plugin').DataSourceREST = DataSourceREST;
     
+    
+    DataSourceVariableDescriptorREST = function() {
+        DataSourceREST.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(DataSourceVariableDescriptorREST, {
+        NS: "rest",
+        NAME: "DataSourceVariableDescriptorREST"
+    });
+
+    Y.extend(DataSourceVariableDescriptorREST, DataSourceREST, {
+        
+        getInstanceBy: function(key, val) {
+            var el = this.getCachedVariableBy(key, val);
+            switch (el.scope['@class']) {
+                case 'UserScope':
+                    return el.scope.variableInstances[Y.Wegas.app.get('currentUserId')];
+                    break;
+                case 'TeamScope':
+                    return el.scope.variableInstances[Y.Wegas.app.get('currentTeamId')];
+                    break;
+                case 'GameScope':
+                    return el.scope.variableInstances[0];
+                    break;  
+            }
+        }
+    });
+    
+    Y.namespace('Plugin').DataSourceVariableDescriptorREST = DataSourceVariableDescriptorREST;
     	
     /** 
  * FIXME We redefine this so we can use a "." selector and a "@..." field name

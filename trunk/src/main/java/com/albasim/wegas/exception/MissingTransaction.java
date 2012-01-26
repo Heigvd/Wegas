@@ -19,6 +19,9 @@ import javax.ws.rs.core.Response;
  * @author maxence
  */
 public class MissingTransaction extends WebApplicationException {
+    /**
+     * 
+     */
     public MissingTransaction(){
         super(Response.serverError().entity("There is no transaction").build());
     }

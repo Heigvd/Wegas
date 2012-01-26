@@ -67,10 +67,20 @@ public class GroupManager {
         return find;
     }
     
+    /**
+     * 
+     * @param u
+     */
     public void createGroup(GroupEntity u) {
         aem.create(u);
     }
     
+    /**
+     * 
+     * @param id
+     * @param u
+     * @return
+     */
     public GroupEntity updateGroup(Long id, GroupEntity u) {
         GroupEntity gm = this.getGroup(id);
         if (gm.equals(u)) {

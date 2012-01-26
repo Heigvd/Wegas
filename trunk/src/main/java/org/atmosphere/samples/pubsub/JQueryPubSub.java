@@ -62,6 +62,10 @@ public class JQueryPubSub {
     @PathParam("topic")
     Broadcaster topic;
 
+    /**
+     * 
+     * @return
+     */
     @GET
     public SuspendResponse<String> subscribe() {
         return new SuspendResponse.SuspendResponseBuilder<String>()
@@ -71,6 +75,11 @@ public class JQueryPubSub {
                 .build();
     }
 
+    /**
+     * 
+     * @param message
+     * @return
+     */
     @POST
     @Broadcast
     public Broadcastable publish(@FormParam("message") String message) {

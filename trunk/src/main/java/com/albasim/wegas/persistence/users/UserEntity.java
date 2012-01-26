@@ -53,20 +53,36 @@ public class UserEntity extends AnonymousEntity {
         @JoinColumn(name = "userId")})
     Collection<TeamEntity> teams;
     
+    /**
+     * 
+     * @return
+     */
     @Override
     public Long getId() {
         return id;
     }
     
+    /**
+     * 
+     * @param id
+     */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
     
+    /**
+     * 
+     * @return
+     */
     public String getName() {
         return name;
     }
     
+    /**
+     * 
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }

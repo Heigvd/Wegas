@@ -7,14 +7,14 @@ YUI.add('wegas-datatable', function(Y) {
     var CONTENTBOX = 'contentBox',
     YAHOO = Y.YUI2,
     
-    DataTable = Y.Base.create("wegas-datatable", Y.Widget, [Y.WidgetChild, Y.WeGAS.Widget], {
+    DataTable = Y.Base.create("wegas-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 	
 	_dataSource: null,
 	_pushButton: null,
 	_table: null,
 	
 	initializer: function(cfg) {
-	    this._dataSource = Y.WeGAS.app.dataSources[this.get('dataSource')];
+	    this._dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
 	},
 	
 	renderUI: function () {
@@ -44,7 +44,7 @@ YUI.add('wegas-datatable', function(Y) {
 	    }, this);
 	    
 	    this._pushButton.on("click", function() {				// New button click event
-		Y.WeGAS.editor.edit({
+		Y.Wegas.editor.edit({
 		    "@class": "GameModel"
 		}, function(cfg) {
 		    that._dataSource.rest.post(cfg);
@@ -63,7 +63,7 @@ YUI.add('wegas-datatable', function(Y) {
 		this._dataSource.rest.getById(record.getValue('id'));
 		
 		this._dataSource.once('response', function(e) {
-		    Y.WeGAS.editor.edit(e.response.results[0], function(cfg) {
+		    Y.Wegas.editor.edit(e.response.results[0], function(cfg) {
 			that._dataSource.rest.put(cfg);
 		    });
 		})
@@ -85,5 +85,5 @@ YUI.add('wegas-datatable', function(Y) {
 	}
     });
     
-    Y.namespace('WeGAS').DataTable = DataTable;
+    Y.namespace('Wegas').DataTable = DataTable;
 });

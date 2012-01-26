@@ -46,6 +46,11 @@ public class VariableDescriptorController {
     @EJB
     private VariableDescriptorManager vdm;
 
+    /**
+     * 
+     * @param gameModelId
+     * @return
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<VariableDescriptorEntity> index(
@@ -59,6 +64,7 @@ public class VariableDescriptorController {
      * Retrieve the list of game model variable descriptor
      *   To fetch complex type varDes see gm/x/type/y/var_desc
      * @param gameModelId game model id
+     * @param variableDescriptorId 
      * @return OK
      */
     @GET
@@ -72,7 +78,8 @@ public class VariableDescriptorController {
     /**
      * Create a global variable descriptor
      * 
-     * @param is
+     * @param gameModelId 
+     * @param variableDescriptor 
      * @return 
      */
     @POST
@@ -89,6 +96,8 @@ public class VariableDescriptorController {
 
     /**
      * @param gameModelId
+     * @param variableDescriptorId 
+     * @param variableDescriptor 
      * @return 
      */
     @PUT
@@ -105,6 +114,7 @@ public class VariableDescriptorController {
     /**
      * 
      * @param gameModelId
+     * @param variableDescriptorId 
      * @return 
      */
     @DELETE

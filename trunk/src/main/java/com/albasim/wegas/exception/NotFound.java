@@ -21,6 +21,9 @@ import javax.ws.rs.core.Response.Status;
  */
 public class NotFound extends WebApplicationException {
     
+    /**
+     * 
+     */
     public NotFound(){
         super(Response.status(Status.NOT_FOUND).build());
     }

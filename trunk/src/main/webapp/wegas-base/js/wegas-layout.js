@@ -6,7 +6,7 @@ YUI.add('wegas-layout', function(Y) {
 	
     var CONTENTBOX = 'contentBox',
     YAHOO = Y.YUI2,
-    Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.WeGAS.Widget], {
+    Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.Wegas.Widget], {
 	
 	_layout: null,
 	
@@ -32,10 +32,10 @@ YUI.add('wegas-layout', function(Y) {
 	},
 	
 	_renderUnitContent: function(position) {
-	    //var cWidget = Y.WeGAS.Widget.create(this.get(position).content);
+	    //var cWidget = Y.Wegas.Widget.create(this.get(position).content);
 	    var pos = this.get(position);
 	    pos.width = null;
-	    var cWidget = new Y.WeGAS.List(pos);
+	    var cWidget = new Y.Wegas.List(pos);
 	    cWidget.render(this._layout.getUnitByPosition(position).body)
 	}
     }, {
@@ -48,5 +48,5 @@ YUI.add('wegas-layout', function(Y) {
 	}
     });
 
-    Y.namespace('WeGAS').Layout = Layout;
+    Y.namespace('Wegas').Layout = Layout;
 });

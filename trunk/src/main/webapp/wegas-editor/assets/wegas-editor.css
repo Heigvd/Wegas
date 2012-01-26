@@ -1,17 +1,181 @@
-/* 
-    Document   : wegas-app
-    Created on : Nov 2, 2011, 1:02:16 AM
-    Author     : fx
-    Description:
-        Purpose of the stylesheet follows.
-*/
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
 
-/* 
-   TODO customize this sample style
-   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
-*/
-
-root { 
-    display: block;
+/* Layout styles */
+.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd,
+.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd {
+    background-color: white;
+}
+.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd-nohd {
+    border:none;
 }
 
+/* InputEx Styles */
+.inputEx-Button {
+    padding: 3px 5px;
+}
+
+
+/* Tabs styles */
+/* FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-wegas-list,
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-wegas-list > .yui3-wegas-list-content,
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-wegas-list > .yui3-wegas-list-content >.yui3-tabview,
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-wegas-list > .yui3-wegas-list-content > .yui3-tabview >  .yui3-tabview-content,
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-wegas-list > .yui3-wegas-list-content > .yui3-tabview >  .yui3-tabview-content > .yui3-tabview-panel,
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-wegas-list > .yui3-wegas-list-content > .yui3-tabview >  .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel {
+    height:inherit;
+}
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd {
+    overflow:initial;
+}
+.yui3-skin-sam .yui3-tabview-panel {
+    padding:0;
+}
+.yui3-skin-sam .yui3-tabview-panel > .yui3-tab-panel > .yui3-wegas-list{
+    position: absolute;
+    top: 28px;
+    bottom: 0px;
+    overflow: auto;
+    padding:0;
+    left:0px;
+    right:0px;
+}
+.yui3-skin-sam .yui3-tabview-panel > .yui3-tab-panel > .yui3-wegas-list > .yui3-wegas-list-content{
+    height: 100%;
+}
+.yui3-skin-sam .yui3-tabview-panel > .yui3-tab-panel.wegas-tab-hastoolbar > .yui3-wegas-list{
+    top: 56px;
+}
+.yui3-skin-sam .yui-layout-unit-right .yui3-tabview-panel > .yui3-tab-panel > .yui3-wegas-list {
+    left:4px;
+}
+.yui3-skin-sam .yui-layout-unit-left .yui3-tabview-panel > .yui3-tab-panel > .yui3-wegas-list {
+    right:4px;
+}
+
+
+/* Tabview toolbar styles */
+.yui-skin-sam .yui-editor-container {
+    border: none;
+    border-bottom: 1px solid gray;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont {
+    border: none;
+    padding: 2px 3px;
+    min-height: 24px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont .title {
+    color: #2647A0;
+    padding: 5px 5px 0px;
+    font-size: 12pt;
+    font-weight: bold;
+    display: block;
+}
+.yui-skin-sam .yui-toolbar-container .yui-push-button span.yui-toolbar-icon {
+    left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectuser {
+    width:170px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectuser .first-child a:before {
+    content: 'Current user: ';
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-new span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px 0px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-play span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -192px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-stop span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -172px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-zoomin span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -124px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-zoomout span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -152px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-selecttool span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -244px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-movetool span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -214px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-cut span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -42px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-copy span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -68px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-paste span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 0px -271px;
+}
+
+
+/* Console style */
+.yui3-console-hd {
+    display:none;
+}
+.yui3-skin-sam .yui3-console-ft, .yui3-skin-sam .yui3-console-content,
+.yui3-skin-sam .yui3-console-ft .yui3-console-filters-sources,
+.yui3-skin-sam .yui3-console-ft .yui3-console-filters-categories{
+    background: transparent;   
+    border: none;
+}
+.yui3-skin-sam .yui3-console-ft .yui3-console-filters-sources,
+.yui3-skin-sam .yui3-console-ft .yui3-console-filters-categories {
+    /*padding:0;*/
+    margin:0;
+    border-top: 1px solid #777;
+}
+.yui3-skin-sam .yui3-console-bd {
+    border-top: none;
+    height:auto !important;
+    position: absolute;
+    bottom: 90px;
+    left: 0;
+    right: 0;
+    top:0;
+}
+.yui3-skin-sam .yui3-console-ft {
+    height:auto !important;
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+}
+
+
+/* CSSEditor Styles */
+.yui3-wegas-csseditor div.inputEx-Field {
+    float:none;
+}
+
+.yui3-wegas-csseditor div.inputEx-Field textarea {
+    width:96%;
+    padding: 2% 2%;
+    border: none;
+    border-bottom:1px solid lightgray;
+}
+.yui3-wegas-csseditor div.inputEx-Form-buttonBar {
+    margin: 0;
+    float: right;
+}
+
+
+/* Chat styles */
+.yui3-wegas-chat div.inputEx-Field {
+    float:none;
+}
+.yui3-wegas-chat textarea {  
+    width:98%;
+    padding: 1% 1%;
+    border: none;
+    border-bottom:1px solid lightgray;
+}
+.yui3-wegas-chat div.inputEx-Form-buttonBar {
+    margin: 0;
+    float: right;
+}

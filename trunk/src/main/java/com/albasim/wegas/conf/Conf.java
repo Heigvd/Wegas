@@ -16,7 +16,13 @@ package com.albasim.wegas.conf;
  * @author maxence
  */
 public class Conf {
+    /**
+     * 
+     */
     public static final String[] privitiveTypes = {"int", "double", "string", "boolean"};
 
+    /**
+     * 
+     */
     public static final String WS_SESSION_ID_KEY = "WSSESSIONID";
 }

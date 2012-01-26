@@ -16,9 +16,21 @@ package com.albasim.wegas.persistence;
 
 public abstract class NamedEntity extends AnonymousEntity {
 
+    /**
+     * 
+     * @return
+     */
     public abstract String getName();
+    /**
+     * 
+     * @param name
+     */
     public abstract void setName(String name);
 
+    /**
+     * 
+     * @return
+     */
     @Override
     public String toString() {
         return this.getClass().getName().toString() + " [" + getName() + ", " + getId() + " ]";

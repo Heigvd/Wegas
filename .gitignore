@@ -3,4 +3,5 @@
 *.class
 trunk/target/*
 trunk/catalog.xml
+trunk/nb-configuration.xml
 **Thumbs.db

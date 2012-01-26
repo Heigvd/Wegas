@@ -23,26 +23,50 @@ public class ParameterDescriptor {
     private String name;
     private String type;
 
+    /**
+     * 
+     */
     public ParameterDescriptor() {
     }
 
+    /**
+     * 
+     * @param name
+     * @param type
+     */
     public ParameterDescriptor(String name, String type) {
         this.name = name;
         this.type = type;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * 
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * 
+     * @param type
+     */
     public void setType(String type) {
         this.type = type;
     }

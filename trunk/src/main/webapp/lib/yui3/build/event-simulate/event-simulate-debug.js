@@ -1,15 +1,15 @@
 /*
-Copyright (c) 2010, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
-version: 3.3.0
-build: 3167
+YUI 3.5.0pr1 (build 4342)
+Copyright 2011 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
 */
 YUI.add('event-simulate', function(Y) {
 
 (function() {
 /**
- * Synthetic DOM events
+ * Simulate user interaction by generating native DOM events.
+ *
  * @module event-simulate
  * @requires event
  */
@@ -611,4 +611,4 @@ Y.Event.simulate = function(target, type, options){
 
 
 
-}, '3.3.0' ,{requires:['event-base']});
+}, '3.5.0pr1' ,{requires:['event-base']});

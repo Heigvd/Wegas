@@ -1,9 +1,8 @@
 /*
-Copyright (c) 2010, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
-version: 3.3.0
-build: 3167
+YUI 3.5.0pr1 (build 4342)
+Copyright 2011 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
 */
 /**
  * The YUI module contains the components required for building the YUI seed
@@ -18,30 +17,43 @@ if (typeof YUI != 'undefined') {
 }
 
 /**
- * The YUI global namespace object.  If YUI is already defined, the
- * existing YUI object will not be overwritten so that defined
- * namespaces are preserved.  It is the constructor for the object
- * the end user interacts with.  As indicated below, each instance
- * has full custom event support, but only if the event system
- * is available.  This is a self-instantiable factory function.  You
- * can invoke it directly like this:
- *
- * YUI().use('*', function(Y) {
- *   // ready
- * });
- *
- * But it also works like this:
- *
- * var Y = YUI();
- *
- * @class YUI
- * @constructor
- * @global
- * @uses EventTarget
- * @param o* {object} 0..n optional configuration objects.  these values
- * are store in Y.config.  See config for the list of supported
- * properties.
- */
+The YUI global namespace object.  If YUI is already defined, the
+existing YUI object will not be overwritten so that defined
+namespaces are preserved.  It is the constructor for the object
+the end user interacts with.  As indicated below, each instance
+has full custom event support, but only if the event system
+is available.  This is a self-instantiable factory function.  You
+can invoke it directly like this:
+
+     YUI().use('*', function(Y) {
+         // ready
+     });
+
+But it also works like this:
+
+     var Y = YUI();
+
+Configuring the YUI object:
+
+    YUI({
+        debug: true,
+        combine: false
+    }).use('node', function(Y) {
+        //Node is ready to use
+    });
+
+See the API docs for the <a href="config.html">Config</a> class
+for the complete list of supported configuration properties accepted
+by the YUI constuctor.
+
+@class YUI
+@constructor
+@global
+@uses EventTarget
+@param o* {Object} 0..n optional configuration objects.  these values
+are store in Y.config.  See <a href="config.html">Config</a> for the list of supported
+properties.
+*/
     /*global YUI*/
     /*global YUI_config*/
     var YUI = function() {
@@ -60,17 +72,62 @@ if (typeof YUI != 'undefined') {
             // set up the core environment
             Y._init();
 
-            // YUI.GlobalConfig is a master configuration that might span
-            // multiple contexts in a non-browser environment.  It is applied
-            // first to all instances in all contexts.
+            /**
+                YUI.GlobalConfig is a master configuration that might span
+                multiple contexts in a non-browser environment.  It is applied
+                first to all instances in all contexts.
+                @property GlobalConfig
+                @type {Object}
+                @global
+                @static
+                @example
+
+                    
+                    YUI.GlobalConfig = {
+                        filter: 'debug'
+                    };
+
+                    YUI().use('node', function(Y) {
+                        //debug files used here
+                    });
+
+                    YUI({
+                        filter: 'min'
+                    }).use('node', function(Y) {
+                        //min files used here
+                    });
+
+            */
             if (YUI.GlobalConfig) {
                 Y.applyConfig(YUI.GlobalConfig);
             }
+            
+            /**
+                YUI_config is a page-level config.  It is applied to all
+                instances created on the page.  This is applied after
+                YUI.GlobalConfig, and before the instance level configuration
+                objects.
+                @global
+                @property YUI_config
+                @type {Object}
+                @example
 
-            // YUI_Config is a page-level config.  It is applied to all
-            // instances created on the page.  This is applied after
-            // YUI.GlobalConfig, and before the instance level configuration
-            // objects.
+                    
+                    //Single global var to include before YUI seed file
+                    YUI_config = {
+                        filter: 'debug'
+                    };
+                    
+                    YUI().use('node', function(Y) {
+                        //debug files used here
+                    });
+
+                    YUI({
+                        filter: 'min'
+                    }).use('node', function(Y) {
+                        //min files used here
+                    });
+            */
             if (gconf) {
                 Y.applyConfig(gconf);
             }
@@ -101,10 +158,11 @@ if (typeof YUI != 'undefined') {
 (function() {
 
     var proto, prop,
-        VERSION = '3.3.0',
+        VERSION = '3.5.0pr1',
         PERIOD = '.',
         BASE = 'http://yui.yahooapis.com/',
         DOC_LABEL = 'yui3-js-enabled',
+        CSS_STAMP_EL = 'yui3-css-stamp',
         NOOP = function() {},
         SLICE = Array.prototype.slice,
         APPLY_TO_AUTH = { 'io.xdrReady': 1,   // the functions applyTo
@@ -144,6 +202,7 @@ if (typeof YUI != 'undefined') {
         getLoader = function(Y, o) {
             var loader = Y.Env._loader;
             if (loader) {
+                //loader._config(Y.config);
                 loader.ignoreRegistered = false;
                 loader.onEnd = null;
                 loader.data = null;
@@ -153,6 +212,7 @@ if (typeof YUI != 'undefined') {
                 loader = new Y.Loader(Y.config);
                 Y.Env._loader = loader;
             }
+            YUI.Env.core = Y.Array.dedupe([].concat(YUI.Env.core, [ 'loader-base', 'loader-rollup', 'loader-yui3' ]));
 
             return loader;
         },
@@ -178,7 +238,7 @@ if (docEl && docClass.indexOf(DOC_LABEL) == -1) {
 }
 
 if (VERSION.indexOf('@') > -1) {
-    VERSION = '3.2.0'; // dev time hack for cdn test
+    VERSION = '3.3.0'; // dev time hack for cdn test
 }
 
 proto = {
@@ -188,7 +248,7 @@ proto = {
      * update the loader cache if necessary.  Updating Y.config directly
      * will not update the cache.
      * @method applyConfig
-     * @param {object} the configuration object.
+     * @param {Object} o the configuration object.
      * @since 3.2.0
      */
     applyConfig: function(o) {
@@ -201,7 +261,6 @@ proto = {
             config = this.config,
             mods = config.modules,
             groups = config.groups,
-            rls = config.rls,
             loader = this.Env._loader;
 
         for (name in o) {
@@ -211,11 +270,9 @@ proto = {
                     clobber(mods, attr);
                 } else if (groups && name == 'groups') {
                     clobber(groups, attr);
-                } else if (rls && name == 'rls') {
-                    clobber(rls, attr);
                 } else if (name == 'win') {
-                    config[name] = attr.contentWindow || attr;
-                    config.doc = config[name].document;
+                    config[name] = (attr && attr.contentWindow) || attr;
+                    config.doc = config[name] ? config[name].document : null;
                 } else if (name == '_yuid') {
                     // preserve the guid
                 } else {
@@ -227,8 +284,14 @@ proto = {
         if (loader) {
             loader._config(o);
         }
-    },
 
+    },
+    /**
+    * Old way to apply a config to the instance (calls `applyConfig` under the hood)
+    * @private
+    * @method _config
+    * @param {Object} o The config to apply
+    */
     _config: function(o) {
         this.applyConfig(o);
     },
@@ -236,9 +299,10 @@ proto = {
     /**
      * Initialize this YUI instance
      * @private
+     * @method _init
      */
     _init: function() {
-        var filter,
+        var filter, el,
             Y = this,
             G_ENV = YUI.Env,
             Env = Y.Env,
@@ -253,6 +317,7 @@ proto = {
 
         if (!Env) {
             Y.Env = {
+                core: ['get','features','intl-base','yui-log','yui-later','loader-base', 'loader-rollup', 'loader-yui3'],
                 mods: {}, // flat module map
                 versions: {}, // version module map
                 base: BASE,
@@ -261,51 +326,85 @@ proto = {
                 _idx: 0,
                 _used: {},
                 _attached: {},
+                _missed: [],
                 _yidx: 0,
                 _uidx: 0,
                 _guidp: 'y',
                 _loaded: {},
-                serviced: {},
-                getBase: G_ENV && G_ENV.getBase ||
+                // serviced: {},
+                // Regex in English:
+                // I'll start at the \b(simpleyui).
+                // 1. Look in the test string for "simpleyui" or "yui" or
+                //    "yui-base" or "yui-davglass" or "yui-foobar" that comes after a word break.  That is, it
+                //    can't match "foyui" or "i_heart_simpleyui". This can be anywhere in the string.
+                // 2. After #1 must come a forward slash followed by the string matched in #1, so
+                //    "yui-base/yui-base" or "simpleyui/simpleyui" or "yui-pants/yui-pants".
+                // 3. The second occurence of the #1 token can optionally be followed by "-debug" or "-min",
+                //    so "yui/yui-min", "yui/yui-debug", "yui-base/yui-base-debug". NOT "yui/yui-tshirt".
+                // 4. This is followed by ".js", so "yui/yui.js", "simpleyui/simpleyui-min.js"
+                // 0. Going back to the beginning, now. If all that stuff in 1-4 comes after a "?" in the string,
+                //    then capture the junk between the LAST "&" and the string in 1-4.  So
+                //    "blah?foo/yui/yui.js" will capture "foo/" and "blah?some/thing.js&3.3.0/build/yui-davglass/yui-davglass.js"
+                //    will capture "3.3.0/build/"
+                //
+                // Regex Exploded:
+                // (?:\?             Find a ?
+                //   (?:[^&]*&)      followed by 0..n characters followed by an &
+                //   *               in fact, find as many sets of characters followed by a & as you can
+                //   ([^&]*)         capture the stuff after the last & in \1
+                // )?                but it's ok if all this ?junk&more_junk stuff isn't even there
+                // \b(simpleyui|     after a word break find either the string "simpleyui" or
+                //    yui(?:-\w+)?   the string "yui" optionally followed by a -, then more characters
+                // )                 and store the simpleyui or yui-* string in \2
+                // \/\2              then comes a / followed by the simpleyui or yui-* string in \2
+                // (?:-(min|debug))? optionally followed by "-min" or "-debug"
+                // .js               and ending in ".js"
+                _BASE_RE: /(?:\?(?:[^&]*&)*([^&]*))?\b(simpleyui|yui(?:-\w+)?)\/\2(?:-(min|debug))?\.js/,
+                parseBasePath: function(src, pattern) {
+                    var match = src.match(pattern),
+                        path, filter;
 
-    function(srcPattern, comboPattern) {
-        var b, nodes, i, src, match;
-        // get from querystring
-        nodes = (doc && doc.getElementsByTagName('script')) || [];
-        for (i = 0; i < nodes.length; i = i + 1) {
-            src = nodes[i].src;
-            if (src) {
+                    if (match) {
+                        path = RegExp.leftContext || src.slice(0, src.indexOf(match[0]));
 
-                match = src.match(srcPattern);
-                b = match && match[1];
-                if (b) {
-                    // this is to set up the path to the loader.  The file
-                    // filter for loader should match the yui include.
-                    filter = match[2];
+                        // this is to set up the path to the loader.  The file
+                        // filter for loader should match the yui include.
+                        filter = match[3];
 
-                    if (filter) {
-                        match = filter.indexOf('js');
-
-                        if (match > -1) {
-                            filter = filter.substr(0, match);
+                        // extract correct path for mixed combo urls
+                        // http://yuilibrary.com/projects/yui3/ticket/2528423
+                        if (match[1]) {
+                            path += '?' + match[1];
+                        }
+                        path = {
+                            filter: filter,
+                            path: path
                         }
                     }
+                    return path;
+                },
+                getBase: G_ENV && G_ENV.getBase ||
+                        function(pattern) {
+                            var nodes = (doc && doc.getElementsByTagName('script')) || [],
+                                path = Env.cdn, parsed,
+                                i, len, src;
 
-                    // extract correct path for mixed combo urls
-                    // http://yuilibrary.com/projects/yui3/ticket/2528423
-                    match = src.match(comboPattern);
-                    if (match && match[3]) {
-                        b = match[1] + match[3];
-                    }
+                            for (i = 0, len = nodes.length; i < len; ++i) {
+                                src = nodes[i].src;
+                                if (src) {
+                                    parsed = Y.Env.parseBasePath(src, pattern);
+                                    if (parsed) {
+                                        filter = parsed.filter;
+                                        path = parsed.path;
+                                        break;
+                                    }
+                                }
+                            }
 
-                    break;
-                }
-            }
-        }
+                            // use CDN default
+                            return path;
+                        }
 
-        // use CDN default
-        return b || Env.cdn;
-    }
             };
 
             Env = Y.Env;
@@ -337,7 +436,7 @@ proto = {
         }
 
         Y.constructor = YUI;
-
+        
         // configuration defaults
         Y.config = Y.config || {
             win: win,
@@ -350,16 +449,23 @@ proto = {
             fetchCSS: true
         };
 
-        Y.config.base = YUI.config.base ||
-            Y.Env.getBase(/^(.*)yui\/yui([\.\-].*)js(\?.*)?$/,
-                          /^(.*\?)(.*\&)(.*)yui\/yui[\.\-].*js(\?.*)?$/);
-
-        if (!filter || (!('-min.-debug.').indexOf(filter))) {
-            filter = '-min.';
+        //Register the CSS stamp element
+        if (doc && !doc.getElementById(CSS_STAMP_EL)) {
+            el = doc.createElement('div');
+            el.innerHTML = '<div id="' + CSS_STAMP_EL + '" style="position: absolute !important; visibility: hidden !important"></div>';
+            YUI.Env.cssStampEl = el.firstChild;
+            docEl.insertBefore(YUI.Env.cssStampEl, docEl.firstChild);
         }
 
-        Y.config.loaderPath = YUI.config.loaderPath ||
-            'loader/loader' + (filter || '-min.') + 'js';
+        Y.config.lang = Y.config.lang || 'en-US';
+
+        Y.config.base = YUI.config.base || Y.Env.getBase(Y.Env._BASE_RE);
+        
+        if (!filter || (!('mindebug').indexOf(filter))) {
+            filter = 'min';
+        }
+        filter = (filter) ? '-' + filter : filter;
+        Y.config.loaderPath = YUI.config.loaderPath || 'loader/loader' + filter + '.js';
 
     },
 
@@ -373,13 +479,8 @@ proto = {
         var i, Y = this,
             core = [],
             mods = YUI.Env.mods,
-            extras = Y.config.core || ['get',
-                                        'rls',
-                                        'intl-base',
-                                        'loader',
-                                        'yui-log',
-                                        'yui-later',
-                                        'yui-throttle'];
+            //extras = Y.config.core || ['get','features','intl-base','yui-log','yui-later','loader-base', 'loader-rollup', 'loader-yui3'];
+            extras = Y.config.core || [].concat(YUI.Env.core); //Clone it..
 
         for (i = 0; i < extras.length; i++) {
             if (mods[extras[i]]) {
@@ -390,6 +491,10 @@ proto = {
         Y._attach(['yui-base']);
         Y._attach(core);
 
+        if (Y.Loader) {
+            getLoader(Y);
+        }
+
         // Y.log(Y.id + ' initialized', 'info', 'yui');
     },
 
@@ -397,11 +502,11 @@ proto = {
      * Executes a method on a YUI instance with
      * the specified id if the specified method is whitelisted.
      * @method applyTo
-     * @param id {string} the YUI instance id.
-     * @param method {string} the name of the method to exectute.
+     * @param id {String} the YUI instance id.
+     * @param method {String} the name of the method to exectute.
      * Ex: 'Object.keys'.
      * @param args {Array} the arguments to apply to the method.
-     * @return {object} the return value from the applied method or null.
+     * @return {Object} the return value from the applied method or null.
      */
     applyTo: function(id, method, args) {
         if (!(method in APPLY_TO_AUTH)) {
@@ -425,34 +530,41 @@ proto = {
         return null;
     },
 
-    /**
-     * Registers a module with the YUI global.  The easiest way to create a
-     * first-class YUI module is to use the YUI component build tool.
-     *
-     * http://yuilibrary.com/projects/builder
-     *
-     * The build system will produce the YUI.add wrapper for you module, along
-     * with any configuration info required for the module.
-     * @method add
-     * @param name {string} module name.
-     * @param fn {Function} entry point into the module that
-     * is used to bind module to the YUI instance.
-     * @param version {string} version string.
-     * @param details {object} optional config data:
-     * requires: features that must be present before this module can be
-     * attached.
-     * optional: optional features that should be present if loadOptional
-     * is defined.  Note: modules are not often loaded this way in YUI 3,
-     * but this field is still useful to inform the user that certain
-     * features in the component will require additional dependencies.
-     * use: features that are included within this module which need to
-     * be attached automatically when this module is attached.  This
-     * supports the YUI 3 rollup system -- a module with submodules
-     * defined will need to have the submodules listed in the 'use'
-     * config.  The YUI component build tool does this for you.
-     * @return {YUI} the YUI instance.
-     *
-     */
+/**
+Registers a module with the YUI global.  The easiest way to create a
+first-class YUI module is to use the YUI component build tool.
+
+http://yuilibrary.com/projects/builder
+
+The build system will produce the `YUI.add` wrapper for you module, along
+with any configuration info required for the module.
+@method add
+@param name {String} module name.
+@param fn {Function} entry point into the module that is used to bind module to the YUI instance.
+@param {YUI} fn.Y The YUI instance this module is executed in.
+@param {String} fn.name The name of the module
+@param version {String} version string.
+@param details {Object} optional config data:
+@param details.requires {Array} features that must be present before this module can be attached.
+@param details.optional {Array} optional features that should be present if loadOptional
+ is defined.  Note: modules are not often loaded this way in YUI 3,
+ but this field is still useful to inform the user that certain
+ features in the component will require additional dependencies.
+@param details.use {Array} features that are included within this module which need to
+ be attached automatically when this module is attached.  This
+ supports the YUI 3 rollup system -- a module with submodules
+ defined will need to have the submodules listed in the 'use'
+ config.  The YUI component build tool does this for you.
+@return {YUI} the YUI instance.
+@example
+
+    YUI.add('davglass', function(Y, name) {
+        Y.davglass = function() {
+            alert('Dav was here!');
+        };
+    }, '3.4.0', { requires: ['yui-base', 'harley-davidson', 'mt-dew'] });
+
+*/
     add: function(name, fn, version, details) {
         details = details || {};
         var env = YUI.Env,
@@ -486,32 +598,75 @@ proto = {
     /**
      * Executes the function associated with each required
      * module, binding the module to the YUI instance.
+     * @param {Array} r The array of modules to attach
+     * @param {Boolean} [moot=false] Don't throw a warning if the module is not attached
      * @method _attach
      * @private
      */
-    _attach: function(r, fromLoader) {
+    _attach: function(r, moot) {
         var i, name, mod, details, req, use, after,
             mods = YUI.Env.mods,
+            aliases = YUI.Env.aliases,
             Y = this, j,
+            loader = Y.Env._loader,
             done = Y.Env._attached,
-            len = r.length, loader;
+            len = r.length, loader,
+            c = [];
 
-        // Y.log('attaching: ' + r, 'info', 'yui');
+        //Check for conditional modules (in a second+ instance) and add their requirements
+        //TODO I hate this entire method, it needs to be fixed ASAP (3.5.0) ^davglass
+        for (i = 0; i < len; i++) {
+            name = r[i];
+            mod = mods[name];
+            c.push(name);
+            if (loader && loader.conditions[name]) {
+                Y.Object.each(loader.conditions[name], function(def) {
+                    var go = def && ((def.ua && Y.UA[def.ua]) || (def.test && def.test(Y)));
+                    if (go) {
+                        c.push(def.name);
+                    }
+                });
+            }
+        }
+        r = c;
+        len = r.length;
 
         for (i = 0; i < len; i++) {
             if (!done[r[i]]) {
                 name = r[i];
                 mod = mods[name];
+
+                if (aliases && aliases[name]) {
+                    Y._attach(aliases[name]);
+                    continue;
+                }
                 if (!mod) {
-                    loader = Y.Env._loader;
+                    if (loader && loader.moduleInfo[name]) {
+                        mod = loader.moduleInfo[name];
+                        moot = true;
+                    }
 
                     // Y.log('no js def for: ' + name, 'info', 'yui');
 
-                    if (!loader || !loader.moduleInfo[name]) {
-                        Y.message('NOT loaded: ' + name, 'warn', 'yui');
+                    //if (!loader || !loader.moduleInfo[name]) {
+                    //if ((!loader || !loader.moduleInfo[name]) && !moot) {
+                    if (!moot && name) {
+                        if ((name.indexOf('skin-') === -1) && (name.indexOf('css') === -1)) {
+                            Y.Env._missed.push(name);
+                            Y.Env._missed = Y.Array.dedupe(Y.Env._missed);
+                            Y.message('NOT loaded: ' + name, 'warn', 'yui');
+                        }
                     }
                 } else {
                     done[name] = true;
+                    //Don't like this, but in case a mod was asked for once, then we fetch it
+                    //We need to remove it from the missed list ^davglass
+                    for (j = 0; j < Y.Env._missed.length; j++) {
+                        if (Y.Env._missed[j] === name) {
+                            Y.message('Found: ' + name + ' (was reported as missing earlier)', 'warn', 'yui');
+                            Y.Env._missed.splice(j, 1);
+                        }
+                    }
                     details = mod.details;
                     req = details.requires;
                     use = details.use;
@@ -531,18 +686,7 @@ proto = {
                     if (after) {
                         for (j = 0; j < after.length; j++) {
                             if (!done[after[j]]) {
-                                if (!Y._attach(after)) {
-                                    return false;
-                                }
-                                break;
-                            }
-                        }
-                    }
-
-                    if (use) {
-                        for (j = 0; j < use.length; j++) {
-                            if (!done[use[j]]) {
-                                if (!Y._attach(use)) {
+                                if (!Y._attach(after, true)) {
                                     return false;
                                 }
                                 break;
@@ -559,6 +703,19 @@ proto = {
                         }
                     }
 
+                    if (use) {
+                        for (j = 0; j < use.length; j++) {
+                            if (!done[use[j]]) {
+                                if (!Y._attach(use)) {
+                                    return false;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+
+
                 }
             }
         }
@@ -571,37 +728,44 @@ proto = {
      * is executed, the requirements are analyzed, and one of
      * several things can happen:
      *
-     * - All requirements are available on the page --  The modules
+     *  * All requirements are available on the page --  The modules
      *   are attached to the instance.  If supplied, the use callback
      *   is executed synchronously.
      *
-     * - Modules are missing, the Get utility is not available OR
+     *  * Modules are missing, the Get utility is not available OR
      *   the 'bootstrap' config is false -- A warning is issued about
      *   the missing modules and all available modules are attached.
      *
-     * - Modules are missing, the Loader is not available but the Get
+     *  * Modules are missing, the Loader is not available but the Get
      *   utility is and boostrap is not false -- The loader is bootstrapped
      *   before doing the following....
      *
-     * - Modules are missing and the Loader is available -- The loader
+     *  * Modules are missing and the Loader is available -- The loader
      *   expands the dependency tree and fetches missing modules.  When
      *   the loader is finshed the callback supplied to use is executed
      *   asynchronously.
      *
-     * @param modules* {string} 1-n modules to bind (uses arguments array).
-     * @param *callback {function} callback function executed when
+     * @method use
+     * @param modules* {String} 1-n modules to bind (uses arguments array).
+     * @param *callback {Function} callback function executed when
      * the instance has the required functionality.  If included, it
      * must be the last parameter.
-     * <code>
-     * // loads and attaches drag and drop and its dependencies
-     * YUI().use('dd', function(Y) &#123;&#125);
-     * // attaches all modules that are available on the page
-     * YUI().use('*', function(Y) &#123;&#125);
-     * // intrinsic YUI gallery support (since 3.1.0)
-     * YUI().use('gallery-yql', function(Y) &#123;&#125);
-     * // intrinsic YUI 2in3 support (since 3.1.0)
-     * YUI().use('yui2-datatable', function(Y) &#123;&#125);.
-     * </code>
+     *
+     * @example
+     *      // loads and attaches dd and its dependencies
+     *      YUI().use('dd', function(Y) {});
+     *
+     *      // loads and attaches dd and node as well as all of their dependencies (since 3.4.0)
+     *      YUI().use(['dd', 'node'], function(Y) {});
+     *
+     *      // attaches all modules that are available on the page
+     *      YUI().use('*', function(Y) {});
+     *
+     *      // intrinsic YUI gallery support (since 3.1.0)
+     *      YUI().use('gallery-yql', function(Y) {});
+     *
+     *      // intrinsic YUI 2in3 support (since 3.1.0)
+     *      YUI().use('yui2-datatable', function(Y) {});
      *
      * @return {YUI} the YUI instance.
      */
@@ -609,7 +773,11 @@ proto = {
         var args = SLICE.call(arguments, 0),
             callback = args[args.length - 1],
             Y = this,
-            key;
+            i = 0,
+            a = [],
+            name,
+            Env = Y.Env,
+            provisioned = true;
 
         // The last argument supplied to use can be a load complete callback
         if (Y.Lang.isFunction(callback)) {
@@ -617,30 +785,46 @@ proto = {
         } else {
             callback = null;
         }
+        if (Y.Lang.isArray(args[0])) {
+            args = args[0];
+        }
+
+        if (Y.config.cacheUse) {
+            while ((name = args[i++])) {
+                if (!Env._attached[name]) {
+                    provisioned = false;
+                    break;
+                }
+            }
+
+            if (provisioned) {
+                if (args.length) {
+                    Y.log('already provisioned: ' + args, 'info', 'yui');
+                }
+                Y._notify(callback, ALREADY_DONE, args);
+                return Y;
+            }
+        }
 
         if (Y._loading) {
             Y._useQueue = Y._useQueue || new Y.Queue();
             Y._useQueue.add([args, callback]);
         } else {
-            key = args.join();
-
-            if (Y.config.cacheUse && Y.Env.serviced[key]) {
-                Y.log('already provisioned: ' + key, 'info', 'yui');
-                Y._notify(callback, ALREADY_DONE, args);
-            } else {
-                Y._use(args, function(Y, response) {
-                    if (Y.config.cacheUse) {
-                        Y.log('caching request: ' + key, 'info', 'yui');
-                        Y.Env.serviced[key] = true;
-                    }
-                    Y._notify(callback, response, args);
-                });
-            }
+            Y._use(args, function(Y, response) {
+                Y._notify(callback, response, args);
+            });
         }
 
         return Y;
     },
-
+    /**
+    * Notify handler from Loader for attachment/load errors
+    * @method _notify
+    * @param callback {Function} The callback to pass to the `Y.config.loadErrorFn`
+    * @param response {Object} The response returned from Loader
+    * @param args {Array} The aruments passed from Loader
+    * @private
+    */
     _notify: function(callback, response, args) {
         if (!response.success && this.config.loadErrorFn) {
             this.config.loadErrorFn.call(this, this, callback, response, args);
@@ -652,19 +836,30 @@ proto = {
             }
         }
     },
-
+    
+    /**
+    * This private method is called from the `use` method queue. To ensure that only one set of loading
+    * logic is performed at a time.
+    * @method _use
+    * @private
+    * @param args* {String} 1-n modules to bind (uses arguments array).
+    * @param *callback {Function} callback function executed when
+    * the instance has the required functionality.  If included, it
+    * must be the last parameter.
+    */
     _use: function(args, callback) {
 
         if (!this.Array) {
             this._attach(['yui-base']);
         }
 
-        var len, loader, handleBoot,
+        var len, loader, handleBoot, handleRLS,
             Y = this,
             G_ENV = YUI.Env,
             mods = G_ENV.mods,
             Env = Y.Env,
             used = Env._used,
+            aliases = G_ENV.aliases,
             queue = G_ENV._loaderQueue,
             firstArg = args[0],
             YArray = Y.Array,
@@ -676,8 +871,21 @@ proto = {
             fetchCSS = config.fetchCSS,
             process = function(names, skip) {
 
+                var i = 0, a = [];
+
                 if (!names.length) {
                     return;
+                }
+
+                if (aliases) {
+                    for (i = 0; i < names.length; i++) {
+                        if (aliases[names[i]]) {
+                            a = [].concat(a, aliases[names[i]]);
+                        } else {
+                            a.push(names[i]);
+                        }
+                    }
+                    names = a;
                 }
 
                 YArray.each(names, function(name) {
@@ -805,6 +1013,7 @@ proto = {
 Y.log('Modules missing: ' + missing + ', ' + missing.length, 'info', 'yui');
         }
 
+
         // dynamic load
         if (boot && len && Y.Loader) {
 // Y.log('Using loader to fetch missing deps: ' + missing, 'info', 'yui');
@@ -819,16 +1028,6 @@ Y.log('Modules missing: ' + missing + ', ' + missing.length, 'info', 'yui');
             loader.insert(null, (fetchCSS) ? null : 'js');
             // loader.partial(missing, (fetchCSS) ? null : 'js');
 
-        } else if (len && Y.config.use_rls) {
-
-            // server side loader service
-            Y.Get.script(Y._rls(args), {
-                onEnd: function(o) {
-                    handleLoader(o);
-                },
-                data: args
-            });
-
         } else if (boot && len && Y.Get && !Env.bootstrapped) {
 
             Y._loading = true;
@@ -837,6 +1036,7 @@ Y.log('Modules missing: ' + missing + ', ' + missing.length, 'info', 'yui');
                 Y._loading = false;
                 queue.running = false;
                 Env.bootstrapped = true;
+                G_ENV._bootstrapping = false;
                 if (Y._attach(['loader'])) {
                     Y._use(args, callback);
                 }
@@ -866,32 +1066,45 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
 
 
     /**
-     * Returns the namespace specified and creates it if it doesn't exist
-     * <pre>
-     * YUI.namespace("property.package");
-     * YUI.namespace("YAHOO.property.package");
-     * </pre>
-     * Either of the above would create YUI.property, then
-     * YUI.property.package (YAHOO is scrubbed out, this is
-     * to remain compatible with YUI2)
-     *
-     * Be careful when naming packages. Reserved words may work in some browsers
-     * and not others. For instance, the following will fail in Safari:
-     * <pre>
-     * YUI.namespace("really.long.nested.namespace");
-     * </pre>
-     * This fails because "long" is a future reserved word in ECMAScript
-     *
-     * @method namespace
-     * @param  {string*} arguments 1-n namespaces to create.
-     * @return {object}  A reference to the last namespace object created.
-     */
+    Adds a namespace object onto the YUI global if called statically.
+
+        // creates YUI.your.namespace.here as nested objects
+        YUI.namespace("your.namespace.here");
+
+    If called as a method on a YUI <em>instance</em>, it creates the
+    namespace on the instance.
+
+         // creates Y.property.package
+         Y.namespace("property.package");
+    
+    Dots in the input string cause `namespace` to create nested objects for
+    each token. If any part of the requested namespace already exists, the
+    current object will be left in place.  This allows multiple calls to
+    `namespace` to preserve existing namespaced properties.
+    
+    If the first token in the namespace string is "YAHOO", the token is
+    discarded.
+
+    Be careful with namespace tokens. Reserved words may work in some browsers
+    and not others. For instance, the following will fail in some browsers
+    because the supported version of JavaScript reserves the word "long":
+    
+         Y.namespace("really.long.nested.namespace");
+
+    <em>Note: If you pass multiple arguments to create multiple namespaces, only 
+    the last one created is returned from this function.</em>
+    
+    @method namespace
+    @param  {String} namespace* namespaces to create.
+    @return {Object}  A reference to the last namespace object created.
+    **/
     namespace: function() {
-        var a = arguments, o = this, i = 0, j, d, arg;
+        var a = arguments, o, i = 0, j, d, arg;
+
         for (; i < a.length; i++) {
-            // d = ('' + a[i]).split('.');
+            o = this; //Reset base object per argument or it will get reused from the last
             arg = a[i];
-            if (arg.indexOf(PERIOD)) {
+            if (arg.indexOf(PERIOD) > -1) { //Skip this if no "." is present
                 d = arg.split(PERIOD);
                 for (j = (d[0] == 'YAHOO') ? 1 : 0; j < d.length; j++) {
                     o[d[j]] = o[d[j]] || {};
@@ -899,6 +1112,7 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
                 }
             } else {
                 o[arg] = o[arg] || {};
+                o = o[arg]; //Reset base object to the new object so it's returned
             }
         }
         return o;
@@ -907,20 +1121,23 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
     // this is replaced if the log module is included
     log: NOOP,
     message: NOOP,
+    // this is replaced if the dump module is included
+    dump: function (o) { return ''+o; },
 
     /**
      * Report an error.  The reporting mechanism is controled by
-     * the 'throwFail' configuration attribute.  If throwFail is
+     * the `throwFail` configuration attribute.  If throwFail is
      * not specified, the message is written to the Logger, otherwise
      * a JS error is thrown
      * @method error
-     * @param msg {string} the error message.
-     * @param e {Error|string} Optional JS error that was caught, or an error string.
+     * @param msg {String} the error message.
+     * @param e {Error|String} Optional JS error that was caught, or an error string.
      * @param data Optional additional info
-     * and throwFail is specified, this error will be re-thrown.
+     * and `throwFail` is specified, this error will be re-thrown.
      * @return {YUI} this YUI instance.
      */
     error: function(msg, e, data) {
+        //TODO Add check for window.onerror here
 
         var Y = this, ret;
 
@@ -940,23 +1157,23 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
     /**
      * Generate an id that is unique among all YUI instances
      * @method guid
-     * @param pre {string} optional guid prefix.
-     * @return {string} the guid.
+     * @param pre {String} optional guid prefix.
+     * @return {String} the guid.
      */
     guid: function(pre) {
-        var id = this.Env._guidp + (++this.Env._uidx);
+        var id = this.Env._guidp + '_' + (++this.Env._uidx);
         return (pre) ? (pre + id) : id;
     },
 
     /**
-     * Returns a guid associated with an object.  If the object
-     * does not have one, a new one is created unless readOnly
+     * Returns a `guid` associated with an object.  If the object
+     * does not have one, a new one is created unless `readOnly`
      * is specified.
      * @method stamp
-     * @param o The object to stamp.
-     * @param readOnly {boolean} if true, a valid guid will only
+     * @param o {Object} The object to stamp.
+     * @param readOnly {Boolean} if `true`, a valid guid will only
      * be returned if the object has one assigned to it.
-     * @return {string} The object's guid or null.
+     * @return {String} The object's guid or null.
      */
     stamp: function(o, readOnly) {
         var uid;
@@ -1009,8 +1226,6 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
      */
 };
 
-
-
     YUI.prototype = proto;
 
     // inheritance utilities are not available yet
@@ -1019,6 +1234,52 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
             YUI[prop] = proto[prop];
         }
     }
+    
+    /**
+Static method on the Global YUI object to apply a config to all YUI instances.
+It's main use case is "mashups" where several third party scripts are trying to write to
+a global YUI config at the same time. This way they can all call `YUI.applyConfig({})` instead of
+overwriting other scripts configs.
+@static
+@since 3.5.0
+@method applyConfig
+@param {Object} o the configuration object.
+@example
+
+    YUI.applyConfig({
+        modules: {
+            davglass: {
+                fullpath: './davglass.js'
+            }
+        }
+    });
+
+    YUI.applyConfig({
+        modules: {
+            foo: {
+                fullpath: './foo.js'
+            }
+        }
+    });
+
+    YUI().use('davglass', function(Y) {
+        //Module davglass will be available here..
+    });
+    
+    */
+    YUI.applyConfig = function(o) {
+        if (!o) {
+            return;
+        }
+        //If there is a GlobalConfig, apply it first to set the defaults
+        if (YUI.GlobalConfig) {
+            this.prototype.applyConfig.call(this, YUI.GlobalConfig);
+        }
+        //Apply this config to it
+        this.prototype.applyConfig.call(this, o);
+        //Reset GlobalConfig to the combined config
+        YUI.GlobalConfig = this.config;
+    };
 
     // set up the environment
     YUI._init();
@@ -1046,11 +1307,11 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
 
 /**
  * The config object contains all of the configuration options for
- * the YUI instance.  This object is supplied by the implementer
- * when instantiating a YUI instance.  Some properties have default
+ * the `YUI` instance.  This object is supplied by the implementer
+ * when instantiating a `YUI` instance.  Some properties have default
  * values if they are not supplied by the implementer.  This should
  * not be updated directly because some values are cached.  Use
- * applyConfig() to update the config object on a YUI instance that
+ * `applyConfig()` to update the config object on a YUI instance that
  * has already been configured.
  *
  * @class config
@@ -1062,6 +1323,14 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  * metadata to dynamically load additional dependencies.
  *
  * @property bootstrap
+ * @type boolean
+ * @default true
+ */
+
+/**
+ * Turns on writing Ylog messages to the browser console.
+ *
+ * @property debug
  * @type boolean
  * @default true
  */
@@ -1094,7 +1363,7 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
 /**
  * Set to true if the yui seed file was dynamically loaded in
  * order to bootstrap components relying on the window load event
- * and the 'domready' custom event.
+ * and the `domready` custom event.
  *
  * @property injected
  * @type boolean
@@ -1102,7 +1371,7 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  */
 
 /**
- * If throwFail is set, Y.error will generate or re-throw a JS Error.
+ * If `throwFail` is set, `Y.error` will generate or re-throw a JS Error.
  * Otherwise the failure is logged.
  *
  * @property throwFail
@@ -1127,10 +1396,11 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  */
 
 /**
- * A list of modules that defines the YUI core (overrides the default).
+ * A list of modules that defines the YUI core (overrides the default list).
  *
  * @property core
- * @type string[]
+ * @type Array
+ * @default [ get,features,intl-base,yui-log,yui-later,loader-base, loader-rollup, loader-yui3 ]
  */
 
 /**
@@ -1150,14 +1420,14 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  * The default date format
  * @property dateFormat
  * @type string
- * @deprecated use configuration in DataType.Date.format() instead.
+ * @deprecated use configuration in `DataType.Date.format()` instead.
  */
 
 /**
  * The default locale
  * @property locale
  * @type string
- * @deprecated use config.lang instead.
+ * @deprecated use `config.lang` instead.
  */
 
 /**
@@ -1170,7 +1440,7 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
 /**
  * The number of dynamic nodes to insert by default before
  * automatically removing them.  This applies to script nodes
- * because remove the node will not make the evaluated script
+ * because removing the node will not make the evaluated script
  * unavailable.  Dynamic CSS is not auto purged, because removing
  * a linked style sheet will also remove the style definitions.
  * @property purgethreshold
@@ -1199,7 +1469,7 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  */
 
 /**
- * The YUI combo service base dir. Ex: http://yui.yahooapis.com/combo?
+ * The YUI combo service base dir. Ex: `http://yui.yahooapis.com/combo?`
  * For dynamic loading.
  * @property comboBase
  * @type string
@@ -1228,12 +1498,11 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  * </dl>
  * You can also define a custom filter, which must be an object literal
  * containing a search expression and a replace string:
- * <pre>
- *  myFilter: &#123;
- *      'searchExp': "-min\\.js",
- *      'replaceStr': "-debug.js"
- *  &#125;
- * </pre>
+ * 
+ *      myFilter: {
+ *          'searchExp': "-min\\.js",
+ *          'replaceStr': "-debug.js"
+ *      }
  *
  * For dynamic loading.
  *
@@ -1242,7 +1511,7 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  */
 
 /**
- * The 'skin' config let's you configure application level skin
+ * The `skin` config let's you configure application level skin
  * customizations.  It contains the following attributes which
  * can be specified to override the defaults:
  *
@@ -1348,23 +1617,22 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
 /**
  * A hash of module definitions to add to the list of YUI components.
  * These components can then be dynamically loaded side by side with
- * YUI via the use() method. This is a hash, the key is the module
+ * YUI via the `use()` method. This is a hash, the key is the module
  * name, and the value is an object literal specifying the metdata
- * for the module.  * See Loader.addModule for the supported module
- * metadata fields.  Also @see groups, which provides a way to
+ * for the module.  See `Loader.addModule` for the supported module
+ * metadata fields.  Also see groups, which provides a way to
  * configure the base and combo spec for a set of modules.
- * <code>
- * modules: {
- * &nbsp; mymod1: {
- * &nbsp;   requires: ['node'],
- * &nbsp;   fullpath: 'http://myserver.mydomain.com/mymod1/mymod1.js'
- * &nbsp; },
- * &nbsp; mymod2: {
- * &nbsp;   requires: ['mymod1'],
- * &nbsp;   fullpath: 'http://myserver.mydomain.com/mymod2/mymod2.js'
- * &nbsp; }
- * }
- * </code>
+ * 
+ *      modules: {
+ *          mymod1: {
+ *              requires: ['node'],
+ *              fullpath: 'http://myserver.mydomain.com/mymod1/mymod1.js'
+ *          },
+ *          mymod2: {
+ *              requires: ['mymod1'],
+ *              fullpath: 'http://myserver.mydomain.com/mymod2/mymod2.js'
+ *          }
+ *      }
  *
  * @property modules
  * @type object
@@ -1373,39 +1641,37 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
 /**
  * A hash of module group definitions.  It for each group you
  * can specify a list of modules and the base path and
- * combo spec to use when dynamically loading the modules.  @see
- * @see modules for the details about the modules part of the
- * group definition.
- * <code>
- * &nbsp; groups: {
- * &nbsp;     yui2: {
- * &nbsp;         // specify whether or not this group has a combo service
- * &nbsp;         combine: true,
- * &nbsp;
- * &nbsp;         // the base path for non-combo paths
- * &nbsp;         base: 'http://yui.yahooapis.com/2.8.0r4/build/',
- * &nbsp;
- * &nbsp;         // the path to the combo service
- * &nbsp;         comboBase: 'http://yui.yahooapis.com/combo?',
- * &nbsp;
- * &nbsp;         // a fragment to prepend to the path attribute when
- * &nbsp;         // when building combo urls
- * &nbsp;         root: '2.8.0r4/build/',
- * &nbsp;
- * &nbsp;         // the module definitions
- * &nbsp;         modules:  {
- * &nbsp;             yui2_yde: {
- * &nbsp;                 path: "yahoo-dom-event/yahoo-dom-event.js"
- * &nbsp;             },
- * &nbsp;             yui2_anim: {
- * &nbsp;                 path: "animation/animation.js",
- * &nbsp;                 requires: ['yui2_yde']
- * &nbsp;             }
- * &nbsp;         }
- * &nbsp;     }
- * &nbsp; }
- * </code>
- * @property modules
+ * combo spec to use when dynamically loading the modules.
+ * 
+ *      groups: {
+ *          yui2: {
+ *              // specify whether or not this group has a combo service
+ *              combine: true,
+ * 
+ *              // the base path for non-combo paths
+ *              base: 'http://yui.yahooapis.com/2.8.0r4/build/',
+ * 
+ *              // the path to the combo service
+ *              comboBase: 'http://yui.yahooapis.com/combo?',
+ * 
+ *              // a fragment to prepend to the path attribute when
+ *              // when building combo urls
+ *              root: '2.8.0r4/build/',
+ * 
+ *              // the module definitions
+ *              modules:  {
+ *                  yui2_yde: {
+ *                      path: "yahoo-dom-event/yahoo-dom-event.js"
+ *                  },
+ *                  yui2_anim: {
+ *                      path: "animation/animation.js",
+ *                      requires: ['yui2_yde']
+ *                  }
+ *              }
+ *          }
+ *      }
+ * 
+ * @property groups
  * @type object
  */
 
@@ -1439,13 +1705,13 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
 
 /**
  * The default YUI 2 version to build yui2 module urls.  This is for
- * intrinsic YUI 2 support via the 2in3 project.  Also @see the '2in3'
+ * intrinsic YUI 2 support via the 2in3 project.  Also see the '2in3'
  * config for pulling different revisions of the wrapped YUI 2
  * modules.
  * @since 3.1.0
  * @property yui2
  * @type string
- * @default 2.8.1
+ * @default 2.9.0
  */
 
 /**
@@ -1457,7 +1723,7 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  * @since 3.1.0
  * @property 2in3
  * @type string
- * @default 1
+ * @default 4
  */
 
 /**
@@ -1514,63 +1780,9 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
  * @property cacheUse
  * @type boolean
  * @default true
+ * @deprecated no longer used
  */
 
-/**
- * The parameter defaults for the remote loader service.
- * Requires the rls submodule.  The properties that are
- * supported:
- * <pre>
- * m: comma separated list of module requirements.  This
- *    must be the param name even for custom implemetations.
- * v: the version of YUI to load.  Defaults to the version
- *    of YUI that is being used.
- * gv: the version of the gallery to load (@see the gallery config)
- * env: comma separated list of modules already on the page.
- *      this must be the param name even for custom implemetations.
- * lang: the languages supported on the page (@see the lang config)
- * '2in3v':  the version of the 2in3 wrapper to use (@see the 2in3 config).
- * '2v': the version of yui2 to use in the yui 2in3 wrappers
- *       (@see the yui2 config)
- * filt: a filter def to apply to the urls (@see the filter config).
- * filts: a list of custom filters to apply per module
- *        (@see the filters config).
- * tests: this is a map of conditional module test function id keys
- * with the values of 1 if the test passes, 0 if not.  This must be
- * the name of the querystring param in custom templates.
- *</pre>
- *
- * @since 3.2.0
- * @property rls
- */
-
-/**
- * The base path to the remote loader service
- *
- * @since 3.2.0
- * @property rls_base
- */
-
-/**
- * The template to use for building the querystring portion
- * of the remote loader service url.  The default is determined
- * by the rls config -- each property that has a value will be
- * represented.
- *
- * ex: m={m}&v={v}&env={env}&lang={lang}&filt={filt}&tests={tests}
- *
- *
- * @since 3.2.0
- * @property rls_tmpl
- */
-
-/**
- * Configure the instance to use a remote loader service instead of
- * the client loader.
- *
- * @since 3.2.0
- * @property use_rls
- */
 YUI.add('yui-base', function(Y) {
 
 /*
@@ -1587,61 +1799,53 @@ YUI.add('yui-base', function(Y) {
  */
 
 /**
- * Provides the language utilites and extensions used by the library
+ * Provides core language utilites and extensions used throughout YUI.
+ *
  * @class Lang
  * @static
  */
-Y.Lang = Y.Lang || {};
 
-var L = Y.Lang,
+var L = Y.Lang || (Y.Lang = {}),
 
-ARRAY = 'array',
-BOOLEAN = 'boolean',
-DATE = 'date',
-ERROR = 'error',
-FUNCTION = 'function',
-NUMBER = 'number',
-NULL = 'null',
-OBJECT = 'object',
-REGEX = 'regexp',
-STRING = 'string',
 STRING_PROTO = String.prototype,
-TOSTRING = Object.prototype.toString,
-UNDEFINED = 'undefined',
+TOSTRING     = Object.prototype.toString,
 
 TYPES = {
-    'undefined' : UNDEFINED,
-    'number' : NUMBER,
-    'boolean' : BOOLEAN,
-    'string' : STRING,
-    '[object Function]' : FUNCTION,
-    '[object RegExp]' : REGEX,
-    '[object Array]' : ARRAY,
-    '[object Date]' : DATE,
-    '[object Error]' : ERROR
+    'undefined'        : 'undefined',
+    'number'           : 'number',
+    'boolean'          : 'boolean',
+    'string'           : 'string',
+    '[object Function]': 'function',
+    '[object RegExp]'  : 'regexp',
+    '[object Array]'   : 'array',
+    '[object Date]'    : 'date',
+    '[object Error]'   : 'error'
 },
 
+SUBREGEX  = /\{\s*([^|}]+?)\s*(?:\|([^}]*))?\s*\}/g,
 TRIMREGEX = /^\s+|\s+$/g,
-EMPTYSTRING = '',
-SUBREGEX = /\{\s*([^\|\}]+?)\s*(?:\|([^\}]*))?\s*\}/g;
+
+// If either MooTools or Prototype is on the page, then there's a chance that we
+// can't trust "native" language features to actually be native. When this is
+// the case, we take the safe route and fall back to our own non-native
+// implementation.
+win           = Y.config.win,
+unsafeNatives = win && !!(win.MooTools || win.Prototype);
 
 /**
  * Determines whether or not the provided item is an array.
- * Returns false for array-like collections such as the
- * function arguments collection or HTMLElement collection
- * will return false.  Use <code>Y.Array.test</code> if you
- * want to test for an array-like collection.
+ *
+ * Returns `false` for array-like collections such as the function `arguments`
+ * collection or `HTMLElement` collections. Use `Y.Array.test()` if you want to
+ * test for an array-like collection.
+ *
  * @method isArray
- * @static
  * @param o The object to test.
  * @return {boolean} true if o is an array.
+ * @static
  */
-// L.isArray = Array.isArray || function(o) {
-//     return L.type(o) === ARRAY;
-// };
-
-L.isArray = function(o) {
-    return L.type(o) === ARRAY;
+L.isArray = (!unsafeNatives && Array.isArray) || function (o) {
+    return L.type(o) === 'array';
 };
 
 /**
@@ -1652,7 +1856,7 @@ L.isArray = function(o) {
  * @return {boolean} true if o is a boolean.
  */
 L.isBoolean = function(o) {
-    return typeof o === BOOLEAN;
+    return typeof o === 'boolean';
 };
 
 /**
@@ -1680,7 +1884,7 @@ L.isBoolean = function(o) {
  * @return {boolean} true if o is a function.
  */
 L.isFunction = function(o) {
-    return L.type(o) === FUNCTION;
+    return L.type(o) === 'function';
 };
 
 /**
@@ -1691,8 +1895,7 @@ L.isFunction = function(o) {
  * @return {boolean} true if o is a date.
  */
 L.isDate = function(o) {
-    // return o instanceof Date;
-    return L.type(o) === DATE && o.toString() !== 'Invalid Date' && !isNaN(o);
+    return L.type(o) === 'date' && o.toString() !== 'Invalid Date' && !isNaN(o);
 };
 
 /**
@@ -1714,7 +1917,7 @@ L.isNull = function(o) {
  * @return {boolean} true if o is a number.
  */
 L.isNumber = function(o) {
-    return typeof o === NUMBER && isFinite(o);
+    return typeof o === 'number' && isFinite(o);
 };
 
 /**
@@ -1726,11 +1929,12 @@ L.isNumber = function(o) {
  * @param o The object to test.
  * @param failfn {boolean} fail if the input is a function.
  * @return {boolean} true if o is an object.
+ * @see isPlainObject
  */
 L.isObject = function(o, failfn) {
     var t = typeof o;
-    return (o && (t === OBJECT ||
-        (!failfn && (t === FUNCTION || L.isFunction(o))))) || false;
+    return (o && (t === 'object' ||
+        (!failfn && (t === 'function' || L.isFunction(o))))) || false;
 };
 
 /**
@@ -1741,7 +1945,7 @@ L.isObject = function(o, failfn) {
  * @return {boolean} true if o is a string.
  */
 L.isString = function(o) {
-    return typeof o === STRING;
+    return typeof o === 'string';
 };
 
 /**
@@ -1752,7 +1956,7 @@ L.isString = function(o) {
  * @return {boolean} true if o is undefined.
  */
 L.isUndefined = function(o) {
-    return typeof o === UNDEFINED;
+    return typeof o === 'undefined';
 };
 
 /**
@@ -1764,10 +1968,10 @@ L.isUndefined = function(o) {
  * @return {string} the trimmed string.
  */
 L.trim = STRING_PROTO.trim ? function(s) {
-    return (s && s.trim) ? s.trim() : s;
+    return s && s.trim ? s.trim() : s;
 } : function (s) {
     try {
-        return s.replace(TRIMREGEX, EMPTYSTRING);
+        return s.replace(TRIMREGEX, '');
     } catch (e) {
         return s;
     }
@@ -1810,14 +2014,17 @@ L.trimRight = STRING_PROTO.trimRight ? function (s) {
  */
 L.isValue = function(o) {
     var t = L.type(o);
+
     switch (t) {
-        case NUMBER:
+        case 'number':
             return isFinite(o);
-        case NULL:
-        case UNDEFINED:
+
+        case 'null': // fallthru
+        case 'undefined':
             return false;
+
         default:
-            return !!(t);
+            return !!t;
     }
 };
 
@@ -1844,7 +2051,7 @@ L.isValue = function(o) {
  * @static
  */
 L.type = function(o) {
-    return TYPES[typeof o] || TYPES[TOSTRING.call(o)] || (o ? OBJECT : NULL);
+    return TYPES[typeof o] || TYPES[TOSTRING.call(o)] || (o ? 'object' : 'null');
 };
 
 /**
@@ -1859,225 +2066,295 @@ L.type = function(o) {
  * @since 3.2.0
  */
 L.sub = function(s, o) {
-    return ((s.replace) ? s.replace(SUBREGEX, function(match, key) {
-        return (!L.isUndefined(o[key])) ? o[key] : match;
-    }) : s);
+    return s.replace ? s.replace(SUBREGEX, function (match, key) {
+        return L.isUndefined(o[key]) ? match : o[key];
+    }) : s;
 };
 
 /**
  * Returns the current time in milliseconds.
+ *
  * @method now
- * @return {int} the current date
+ * @return {Number} Current time in milliseconds.
+ * @static
  * @since 3.3.0
  */
 L.now = Date.now || function () {
-  return new Date().getTime();
+    return new Date().getTime();
 };
+/**
+@module yui
+@submodule yui-base
+*/
+
+var Lang   = Y.Lang,
+    Native = Array.prototype,
+
+    hasOwn = Object.prototype.hasOwnProperty;
 
 /**
- * The YUI module contains the components required for building the YUI seed
- * file.  This includes the script loading mechanism, a simple queue, and the
- * core utilities for the library.
- * @module yui
- * @submodule yui-base
- */
+Provides utility methods for working with arrays. Additional array helpers can
+be found in the `collection` and `array-extras` modules.
 
+`Y.Array(thing)` returns a native array created from _thing_. Depending on
+_thing_'s type, one of the following will happen:
 
-var Native = Array.prototype, LENGTH = 'length',
+  * Arrays are returned unmodified unless a non-zero _startIndex_ is
+    specified.
+  * Array-like collections (see `Array.test()`) are converted to arrays.
+  * For everything else, a new array is created with _thing_ as the sole
+    item.
 
-/**
- * Adds the following array utilities to the YUI instance.  Additional
- * array helpers can be found in the collection component.
- * @class Array
- */
+Note: elements that are also collections, such as `<form>` and `<select>`
+elements, are not automatically converted to arrays. To force a conversion,
+pass `true` as the value of the _force_ parameter.
 
-/**
- * Y.Array(o) returns an array:
- * - Arrays are return unmodified unless the start position is specified.
- * - "Array-like" collections (@see Array.test) are converted to arrays
- * - For everything else, a new array is created with the input as the sole
- *   item.
- * - The start position is used if the input is or is like an array to return
- *   a subset of the collection.
- *
- *   @todo this will not automatically convert elements that are also
- *   collections such as forms and selects.  Passing true as the third
- *   param will force a conversion.
- *
- * @method ()
- * @static
- *   @param {object} o the item to arrayify.
- *   @param {int} startIdx if an array or array-like, this is the start index.
- *   @param {boolean} arraylike if true, it forces the array-like fork.  This
- *   can be used to avoid multiple Array.test calls.
- *   @return {Array} the resulting array.
- */
-YArray = function(o, startIdx, arraylike) {
-    var t = (arraylike) ? 2 : YArray.test(o),
-        l, a, start = startIdx || 0;
+@class Array
+@constructor
+@param {Any} thing The thing to arrayify.
+@param {Number} [startIndex=0] If non-zero and _thing_ is an array or array-like
+  collection, a subset of items starting at the specified index will be
+  returned.
+@param {Boolean} [force=false] If `true`, _thing_ will be treated as an
+  array-like collection no matter what.
+@return {Array} A native array created from _thing_, according to the rules
+  described above.
+**/
+function YArray(thing, startIndex, force) {
+    var len, result;
 
-    if (t) {
-        // IE errors when trying to slice HTMLElement collections
+    startIndex || (startIndex = 0);
+
+    if (force || YArray.test(thing)) {
+        // IE throws when trying to slice HTMLElement collections.
         try {
-            return Native.slice.call(o, start);
-        } catch (e) {
-            a = [];
-            l = o.length;
-            for (; start < l; start++) {
-                a.push(o[start]);
+            return Native.slice.call(thing, startIndex);
+        } catch (ex) {
+            result = [];
+
+            for (len = thing.length; startIndex < len; ++startIndex) {
+                result.push(thing[startIndex]);
             }
-            return a;
+
+            return result;
         }
-    } else {
-        return [o];
     }
-};
+
+    return [thing];
+}
 
 Y.Array = YArray;
 
 /**
- * Evaluates the input to determine if it is an array, array-like, or
- * something else.  This is used to handle the arguments collection
- * available within functions, and HTMLElement collections
- *
- * @method test
- * @static
- *
- * @todo current implementation (intenionally) will not implicitly
- * handle html elements that are array-like (forms, selects, etc).
- *
- * @param {object} o the object to test.
- *
- * @return {int} a number indicating the results:
- * 0: Not an array or an array-like collection
- * 1: A real array.
- * 2: array-like collection.
- */
-YArray.test = function(o) {
-    var r = 0;
-    if (Y.Lang.isObject(o)) {
-        if (Y.Lang.isArray(o)) {
-            r = 1;
-        } else {
-            try {
-                // indexed, but no tagName (element) or alert (window),
-                // or functions without apply/call (Safari
-                // HTMLElementCollection bug).
-                if ((LENGTH in o) && !o.tagName && !o.alert && !o.apply) {
-                    r = 2;
-                }
+Dedupes an array of strings, returning an array that's guaranteed to contain
+only one copy of a given string.
 
-            } catch (e) {}
+This method differs from `Array.unique()` in that it's optimized for use only
+with strings, whereas `unique` may be used with other types (but is slower).
+Using `dedupe()` with non-string values may result in unexpected behavior.
+
+@method dedupe
+@param {String[]} array Array of strings to dedupe.
+@return {Array} Deduped copy of _array_.
+@static
+@since 3.4.0
+**/
+YArray.dedupe = function (array) {
+    var hash    = {},
+        results = [],
+        i, item, len;
+
+    for (i = 0, len = array.length; i < len; ++i) {
+        item = array[i];
+
+        if (!hasOwn.call(hash, item)) {
+            hash[item] = 1;
+            results.push(item);
         }
     }
-    return r;
+
+    return results;
 };
 
 /**
- * Executes the supplied function on each item in the array.
- * @method each
- * @param {Array} a the array to iterate.
- * @param {Function} f the function to execute on each item.  The
- * function receives three arguments: the value, the index, the full array.
- * @param {object} o Optional context object.
- * @static
- * @return {YUI} the YUI instance.
- */
-YArray.each = (Native.forEach) ?
-    function(a, f, o) {
-        Native.forEach.call(a || [], f, o || Y);
-        return Y;
-    } :
-    function(a, f, o) {
-        var l = (a && a.length) || 0, i;
-        for (i = 0; i < l; i = i + 1) {
-            f.call(o || Y, a[i], i, a);
-        }
-        return Y;
-    };
+Executes the supplied function on each item in the array. This method wraps
+the native ES5 `Array.forEach()` method if available.
 
-/**
- * Returns an object using the first array as keys, and
- * the second as values.  If the second array is not
- * provided the value is set to true for each.
- * @method hash
- * @static
- * @param {Array} k keyset.
- * @param {Array} v optional valueset.
- * @return {object} the hash.
- */
-YArray.hash = function(k, v) {
-    var o = {}, l = k.length, vl = v && v.length, i;
-    for (i = 0; i < l; i = i + 1) {
-        o[k[i]] = (vl && vl > i) ? v[i] : true;
+@method each
+@param {Array} array Array to iterate.
+@param {Function} fn Function to execute on each item in the array. The function
+  will receive the following arguments:
+    @param {Any} fn.item Current array item.
+    @param {Number} fn.index Current array index.
+    @param {Array} fn.array Array being iterated.
+@param {Object} [thisObj] `this` object to use when calling _fn_.
+@return {YUI} The YUI instance.
+@static
+**/
+YArray.each = YArray.forEach = Native.forEach ? function (array, fn, thisObj) {
+    Native.forEach.call(array || [], fn, thisObj || Y);
+    return Y;
+} : function (array, fn, thisObj) {
+    for (var i = 0, len = (array && array.length) || 0; i < len; ++i) {
+        if (i in array) {
+            fn.call(thisObj || Y, array[i], i, array);
+        }
     }
 
-    return o;
+    return Y;
 };
 
 /**
- * Returns the index of the first item in the array
- * that contains the specified value, -1 if the
- * value isn't found.
- * @method indexOf
- * @static
- * @param {Array} a the array to search.
- * @param {any} val the value to search for.
- * @return {int} the index of the item that contains the value or -1.
- */
-YArray.indexOf = (Native.indexOf) ?
-    function(a, val) {
-        return Native.indexOf.call(a, val);
-    } :
-    function(a, val) {
-        for (var i = 0; i < a.length; i = i + 1) {
-            if (a[i] === val) {
-                return i;
-            }
-        }
+Alias for `each()`.
 
-        return -1;
-    };
+@method forEach
+@static
+**/
 
 /**
- * Numeric sort convenience function.
- * Y.ArrayAssert.itemsAreEqual([1,2,3], [3,1,2].sort(Y.Array.numericSort));
- * @method numericSort
- * @static
- * @param {number} a a number.
- * @param {number} b a number.
- */
-YArray.numericSort = function(a, b) {
-    return (a - b);
+Returns an object using the first array as keys and the second as values. If
+the second array is not provided, or if it doesn't contain the same number of
+values as the first array, then `true` will be used in place of the missing
+values.
+
+@example
+
+    Y.Array.hash(['a', 'b', 'c'], ['foo', 'bar']);
+    // => {a: 'foo', b: 'bar', c: true}
+
+@method hash
+@param {String[]} keys Array of strings to use as keys.
+@param {Array} [values] Array to use as values.
+@return {Object} Hash using the first array as keys and the second as values.
+@static
+**/
+YArray.hash = function (keys, values) {
+    var hash = {},
+        vlen = (values && values.length) || 0,
+        i, len;
+
+    for (i = 0, len = keys.length; i < len; ++i) {
+        if (i in keys) {
+            hash[keys[i]] = vlen > i && i in values ? values[i] : true;
+        }
+    }
+
+    return hash;
 };
 
 /**
- * Executes the supplied function on each item in the array.
- * Returning true from the processing function will stop the
- * processing of the remaining items.
- * @method some
- * @param {Array} a the array to iterate.
- * @param {Function} f the function to execute on each item. The function
- * receives three arguments: the value, the index, the full array.
- * @param {object} o Optional context object.
- * @static
- * @return {boolean} true if the function returns true on
- * any of the items in the array.
- */
-YArray.some = (Native.some) ?
-    function(a, f, o) {
-        return Native.some.call(a, f, o);
-    } :
-    function(a, f, o) {
-        var l = a.length, i;
-        for (i = 0; i < l; i = i + 1) {
-            if (f.call(o, a[i], i, a)) {
-                return true;
-            }
-        }
-        return false;
-    };
+Returns the index of the first item in the array that's equal (using a strict
+equality check) to the specified _value_, or `-1` if the value isn't found.
 
+This method wraps the native ES5 `Array.indexOf()` method if available.
+
+@method indexOf
+@param {Array} array Array to search.
+@param {Any} value Value to search for.
+@return {Number} Index of the item strictly equal to _value_, or `-1` if not
+  found.
+@static
+**/
+YArray.indexOf = Native.indexOf ? function (array, value) {
+    // TODO: support fromIndex
+    return Native.indexOf.call(array, value);
+} : function (array, value) {
+    for (var i = 0, len = array.length; i < len; ++i) {
+        if (i in array && array[i] === value) {
+            return i;
+        }
+    }
+
+    return -1;
+};
+
+/**
+Numeric sort convenience function.
+
+The native `Array.prototype.sort()` function converts values to strings and
+sorts them in lexicographic order, which is unsuitable for sorting numeric
+values. Provide `Array.numericSort` as a custom sort function when you want
+to sort values in numeric order.
+
+@example
+
+    [42, 23, 8, 16, 4, 15].sort(Y.Array.numericSort);
+    // => [4, 8, 15, 16, 23, 42]
+
+@method numericSort
+@param {Number} a First value to compare.
+@param {Number} b Second value to compare.
+@return {Number} Difference between _a_ and _b_.
+@static
+**/
+YArray.numericSort = function (a, b) {
+    return a - b;
+};
+
+/**
+Executes the supplied function on each item in the array. Returning a truthy
+value from the function will stop the processing of remaining items.
+
+@method some
+@param {Array} array Array to iterate over.
+@param {Function} fn Function to execute on each item. The function will receive
+  the following arguments:
+    @param {Any} fn.value Current array item.
+    @param {Number} fn.index Current array index.
+    @param {Array} fn.array Array being iterated over.
+@param {Object} [thisObj] `this` object to use when calling _fn_.
+@return {Boolean} `true` if the function returns a truthy value on any of the
+  items in the array; `false` otherwise.
+@static
+**/
+YArray.some = Native.some ? function (array, fn, thisObj) {
+    return Native.some.call(array, fn, thisObj);
+} : function (array, fn, thisObj) {
+    for (var i = 0, len = array.length; i < len; ++i) {
+        if (i in array && fn.call(thisObj, array[i], i, array)) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+/**
+Evaluates _obj_ to determine if it's an array, an array-like collection, or
+something else. This is useful when working with the function `arguments`
+collection and `HTMLElement` collections.
+
+Note: This implementation doesn't consider elements that are also
+collections, such as `<form>` and `<select>`, to be array-like.
+
+@method test
+@param {Object} obj Object to test.
+@return {Number} A number indicating the results of the test:
+
+  * 0: Neither an array nor an array-like collection.
+  * 1: Real array.
+  * 2: Array-like collection.
+
+@static
+**/
+YArray.test = function (obj) {
+    var result = 0;
+
+    if (Lang.isArray(obj)) {
+        result = 1;
+    } else if (Lang.isObject(obj)) {
+        try {
+            // indexed, but no tagName (element) or alert (window),
+            // or functions without apply/call (Safari
+            // HTMLElementCollection bug).
+            if ('length' in obj && !obj.tagName && !obj.alert && !obj.apply) {
+                result = 2;
+            }
+        } catch (ex) {}
+    }
+
+    return result;
+};
 /**
  * The YUI module contains the components required for building the YUI
  * seed file.  This includes the script loading mechanism, a simple queue,
@@ -2166,174 +2443,227 @@ Y.Queue = Queue;
 YUI.Env._loaderQueue = YUI.Env._loaderQueue || new Queue();
 
 /**
- * The YUI module contains the components required for building the YUI
- * seed file.  This includes the script loading mechanism, a simple queue,
- * and the core utilities for the library.
- * @module yui
- * @submodule yui-base
- */
+The YUI module contains the components required for building the YUI seed file.
+This includes the script loading mechanism, a simple queue, and the core
+utilities for the library.
+
+@module yui
+@submodule yui-base
+**/
 
 var CACHED_DELIMITER = '__',
 
-/*
- * IE will not enumerate native functions in a derived object even if the
- * function was overridden.  This is a workaround for specific functions
- * we care about on the Object prototype.
- * @property _iefix
- * @for YUI
- * @param {Function} r  the object to receive the augmentation
- * @param {Function} s  the object that supplies the properties to augment
- * @private
- */
-_iefix = function(r, s) {
-    var fn = s.toString;
-    if (Y.Lang.isFunction(fn) && fn != Object.prototype.toString) {
-        r.toString = fn;
-    }
-};
-
+    hasOwn   = Object.prototype.hasOwnProperty,
+    isObject = Y.Lang.isObject;
 
 /**
- * Returns a new object containing all of the properties of
- * all the supplied objects.  The properties from later objects
- * will overwrite those in earlier objects.  Passing in a
- * single object will create a shallow copy of it.  For a deep
- * copy, use clone.
- * @method merge
- * @for YUI
- * @param arguments {Object*} the objects to merge.
- * @return {object} the new merged object.
- */
-Y.merge = function() {
-    var a = arguments, o = {}, i, l = a.length;
-    for (i = 0; i < l; i = i + 1) {
-        Y.mix(o, a[i], true);
-    }
-    return o;
+Returns a wrapper for a function which caches the return value of that function,
+keyed off of the combined string representation of the argument values provided
+when the wrapper is called.
+
+Calling this function again with the same arguments will return the cached value
+rather than executing the wrapped function.
+
+Note that since the cache is keyed off of the string representation of arguments
+passed to the wrapper function, arguments that aren't strings and don't provide
+a meaningful `toString()` method may result in unexpected caching behavior. For
+example, the objects `{}` and `{foo: 'bar'}` would both be converted to the
+string `[object Object]` when used as a cache key.
+
+@method cached
+@param {Function} source The function to memoize.
+@param {Object} [cache={}] Object in which to store cached values. You may seed
+  this object with pre-existing cached values if desired.
+@param {any} [refetch] If supplied, this value is compared with the cached value
+  using a `==` comparison. If the values are equal, the wrapped function is
+  executed again even though a cached value exists.
+@return {Function} Wrapped function.
+@for YUI
+**/
+Y.cached = function (source, cache, refetch) {
+    cache || (cache = {});
+
+    return function (arg) {
+        var key = arguments.length > 1 ?
+                Array.prototype.join.call(arguments, CACHED_DELIMITER) :
+                String(arg);
+
+        if (!(key in cache) || (refetch && cache[key] == refetch)) {
+            cache[key] = source.apply(source, arguments);
+        }
+
+        return cache[key];
+    };
 };
 
 /**
- * Applies the supplier's properties to the receiver.  By default
- * all prototype and static propertes on the supplier are applied
- * to the corresponding spot on the receiver.  By default all
- * properties are applied, and a property that is already on the
- * reciever will not be overwritten.  The default behavior can
- * be modified by supplying the appropriate parameters.
- *
- * @todo add constants for the modes
- *
- * @method mix
- * @param {Function} r  the object to receive the augmentation.
- * @param {Function} s  the object that supplies the properties to augment.
- * @param ov {boolean} if true, properties already on the receiver
- * will be overwritten if found on the supplier.
- * @param wl {string[]} a whitelist.  If supplied, only properties in
- * this list will be applied to the receiver.
- * @param {int} mode what should be copies, and to where
- *        default(0): object to object
- *        1: prototype to prototype (old augment)
- *        2: prototype to prototype and object props (new augment)
- *        3: prototype to object
- *        4: object to prototype.
- * @param merge {boolean/int} merge objects instead of overwriting/ignoring.
- * A value of 2 will skip array merge
- * Used by Y.aggregate.
- * @return {object} the augmented object.
- */
-Y.mix = function(r, s, ov, wl, mode, merge) {
+Returns a new object containing all of the properties of all the supplied
+objects. The properties from later objects will overwrite those in earlier
+objects.
 
-    if (!s || !r) {
-        return r || Y;
+Passing in a single object will create a shallow copy of it. For a deep copy,
+use `clone()`.
+
+@method merge
+@param {Object} objects* One or more objects to merge.
+@return {Object} A new merged object.
+**/
+Y.merge = function () {
+    var args   = arguments,
+        i      = 0,
+        len    = args.length,
+        result = {};
+
+    for (; i < len; ++i) {
+        Y.mix(result, args[i], true);
+    }
+
+    return result;
+};
+
+/**
+Mixes _supplier_'s properties into _receiver_.
+
+Properties on _receiver_ or _receiver_'s prototype will not be overwritten or
+shadowed unless the _overwrite_ parameter is `true`, and will not be merged
+unless the _merge_ parameter is `true`.
+
+In the default mode (0), only properties the supplier owns are copied (prototype
+properties are not copied). The following copying modes are available:
+
+  * `0`: _Default_. Object to object.
+  * `1`: Prototype to prototype.
+  * `2`: Prototype to prototype and object to object.
+  * `3`: Prototype to object.
+  * `4`: Object to prototype.
+
+@method mix
+@param {Function|Object} receiver The object or function to receive the mixed
+  properties.
+@param {Function|Object} supplier The object or function supplying the
+  properties to be mixed.
+@param {Boolean} [overwrite=false] If `true`, properties that already exist
+  on the receiver will be overwritten with properties from the supplier.
+@param {String[]} [whitelist] An array of property names to copy. If
+  specified, only the whitelisted properties will be copied, and all others
+  will be ignored.
+@param {Number} [mode=0] Mix mode to use. See above for available modes.
+@param {Boolean} [merge=false] If `true`, objects and arrays that already
+  exist on the receiver will have the corresponding object/array from the
+  supplier merged into them, rather than being skipped or overwritten. When
+  both _overwrite_ and _merge_ are `true`, _merge_ takes precedence.
+@return {Function|Object|YUI} The receiver, or the YUI instance if the
+  specified receiver is falsy.
+**/
+Y.mix = function(receiver, supplier, overwrite, whitelist, mode, merge) {
+    var alwaysOverwrite, exists, from, i, key, len, to;
+
+    // If no supplier is given, we return the receiver. If no receiver is given,
+    // we return Y. Returning Y doesn't make much sense to me, but it's
+    // grandfathered in for backcompat reasons.
+    if (!receiver || !supplier) {
+        return receiver || Y;
     }
 
     if (mode) {
-        switch (mode) {
-            case 1: // proto to proto
-                return Y.mix(r.prototype, s.prototype, ov, wl, 0, merge);
-            case 2: // object to object and proto to proto
-                Y.mix(r.prototype, s.prototype, ov, wl, 0, merge);
-                break; // pass through
-            case 3: // proto to static
-                return Y.mix(r, s.prototype, ov, wl, 0, merge);
-            case 4: // static to proto
-                return Y.mix(r.prototype, s, ov, wl, 0, merge);
-            default:  // object to object is what happens below
+        // In mode 2 (prototype to prototype and object to object), we recurse
+        // once to do the proto to proto mix. The object to object mix will be
+        // handled later on.
+        if (mode === 2) {
+            Y.mix(receiver.prototype, supplier.prototype, overwrite,
+                    whitelist, 0, merge);
         }
+
+        // Depending on which mode is specified, we may be copying from or to
+        // the prototypes of the supplier and receiver.
+        from = mode === 1 || mode === 3 ? supplier.prototype : supplier;
+        to   = mode === 1 || mode === 4 ? receiver.prototype : receiver;
+
+        // If either the supplier or receiver doesn't actually have a
+        // prototype property, then we could end up with an undefined `from`
+        // or `to`. If that happens, we abort and return the receiver.
+        if (!from || !to) {
+            return receiver;
+        }
+    } else {
+        from = supplier;
+        to   = receiver;
     }
 
-    // Maybe don't even need this wl && wl.length check anymore??
-    var i, l, p, type;
+    // If `overwrite` is truthy and `merge` is falsy, then we can skip a
+    // property existence check on each iteration and save some time.
+    alwaysOverwrite = overwrite && !merge;
 
-    if (wl && wl.length) {
-        for (i = 0, l = wl.length; i < l; ++i) {
-            p = wl[i];
-            type = Y.Lang.type(r[p]);
-            if (s.hasOwnProperty(p)) {
-                if (merge && type == 'object') {
-                    Y.mix(r[p], s[p]);
-                } else if (ov || !(p in r)) {
-                    r[p] = s[p];
-                }
+    if (whitelist) {
+        for (i = 0, len = whitelist.length; i < len; ++i) {
+            key = whitelist[i];
+
+            // We call `Object.prototype.hasOwnProperty` instead of calling
+            // `hasOwnProperty` on the object itself, since the object's
+            // `hasOwnProperty` method may have been overridden or removed.
+            // Also, some native objects don't implement a `hasOwnProperty`
+            // method.
+            if (!hasOwn.call(from, key)) {
+                continue;
+            }
+
+            // The `key in to` check here is (sadly) intentional for backwards
+            // compatibility reasons. It prevents undesired shadowing of
+            // prototype members on `to`.
+            exists = alwaysOverwrite ? false : key in to;
+
+            if (merge && exists && isObject(to[key], true)
+                    && isObject(from[key], true)) {
+                // If we're in merge mode, and the key is present on both
+                // objects, and the value on both objects is either an object or
+                // an array (but not a function), then we recurse to merge the
+                // `from` value into the `to` value instead of overwriting it.
+                //
+                // Note: It's intentional that the whitelist isn't passed to the
+                // recursive call here. This is legacy behavior that lots of
+                // code still depends on.
+                Y.mix(to[key], from[key], overwrite, null, 0, merge);
+            } else if (overwrite || !exists) {
+                // We're not in merge mode, so we'll only copy the `from` value
+                // to the `to` value if we're in overwrite mode or if the
+                // current key doesn't exist on the `to` object.
+                to[key] = from[key];
             }
         }
     } else {
-        for (i in s) {
-            // if (s.hasOwnProperty(i) && !(i in FROZEN)) {
-            if (s.hasOwnProperty(i)) {
-                // check white list if it was supplied
-                // if the receiver has this property, it is an object,
-                // and merge is specified, merge the two objects.
-                if (merge && Y.Lang.isObject(r[i], true)) {
-                    Y.mix(r[i], s[i], ov, wl, 0, true); // recursive
-                // otherwise apply the property only if overwrite
-                // is specified or the receiver doesn't have one.
-                } else if (ov || !(i in r)) {
-                    r[i] = s[i];
-                }
-                // if merge is specified and the receiver is an array,
-                // append the array item
-                // } else if (arr) {
-                    // r.push(s[i]);
-                // }
+        for (key in from) {
+            // The code duplication here is for runtime performance reasons.
+            // Combining whitelist and non-whitelist operations into a single
+            // loop or breaking the shared logic out into a function both result
+            // in worse performance, and Y.mix is critical enough that the byte
+            // tradeoff is worth it.
+            if (!hasOwn.call(from, key)) {
+                continue;
+            }
+
+            // The `key in to` check here is (sadly) intentional for backwards
+            // compatibility reasons. It prevents undesired shadowing of
+            // prototype members on `to`.
+            exists = alwaysOverwrite ? false : key in to;
+
+            if (merge && exists && isObject(to[key], true)
+                    && isObject(from[key], true)) {
+                Y.mix(to[key], from[key], overwrite, null, 0, merge);
+            } else if (overwrite || !exists) {
+                to[key] = from[key];
             }
         }
 
-        if (Y.UA.ie) {
-            _iefix(r, s);
+        // If this is an IE browser with the JScript enumeration bug, force
+        // enumeration of the buggy properties by making a recursive call with
+        // the buggy properties as the whitelist.
+        if (Y.Object._hasEnumBug) {
+            Y.mix(to, from, overwrite, Y.Object._forceEnum, mode, merge);
         }
     }
 
-    return r;
+    return receiver;
 };
-
-/**
- * Returns a wrapper for a function which caches the
- * return value of that function, keyed off of the combined
- * argument values.
- * @method cached
- * @param source {function} the function to memoize.
- * @param cache an optional cache seed.
- * @param refetch if supplied, this value is tested against the cached
- * value.  If the values are equal, the wrapped function is executed again.
- * @return {Function} the wrapped function.
- */
-Y.cached = function(source, cache, refetch) {
-    cache = cache || {};
-
-    return function(arg1) {
-
-        var k = (arguments.length > 1) ?
-            Array.prototype.join.call(arguments, CACHED_DELIMITER) : arg1;
-
-        if (!(k in cache) || (refetch && cache[k] == refetch)) {
-            cache[k] = source.apply(source, arguments);
-        }
-
-        return cache[k];
-    };
-
-};
-
 /**
  * The YUI module contains the components required for building the YUI
  * seed file.  This includes the script loading mechanism, a simple queue,
@@ -2343,188 +2673,302 @@ Y.cached = function(source, cache, refetch) {
  */
 
 /**
- * Adds the following Object utilities to the YUI instance
+ * Adds utilities to the YUI instance for working with objects.
+ *
  * @class Object
  */
 
-/**
- * Y.Object(o) returns a new object based upon the supplied object.
- * @method ()
- * @static
- * @param o the supplier object.
- * @return {Object} the new object.
- */
-var F = function() {},
+var hasOwn = Object.prototype.hasOwnProperty,
 
-// O = Object.create || function(o) {
-//     F.prototype = o;
-//     return new F();
-// },
+// If either MooTools or Prototype is on the page, then there's a chance that we
+// can't trust "native" language features to actually be native. When this is
+// the case, we take the safe route and fall back to our own non-native
+// implementations.
+win           = Y.config.win,
+unsafeNatives = win && !!(win.MooTools || win.Prototype),
 
-O = function(o) {
-    F.prototype = o;
-    return new F();
-},
-
-owns = function(o, k) {
-    return o && o.hasOwnProperty && o.hasOwnProperty(k);
-    // return Object.prototype.hasOwnProperty.call(o, k);
-},
-
-UNDEF,
+UNDEFINED, // <-- Note the comma. We're still declaring vars.
 
 /**
- * Extracts the keys, values, or size from an object
+ * Returns a new object that uses _obj_ as its prototype. This method wraps the
+ * native ES5 `Object.create()` method if available, but doesn't currently
+ * pass through `Object.create()`'s second argument (properties) in order to
+ * ensure compatibility with older browsers.
  *
- * @method _extract
- * @param o the object.
- * @param what what to extract (0: keys, 1: values, 2: size).
- * @return {boolean|Array} the extracted info.
+ * @method ()
+ * @param {Object} obj Prototype object.
+ * @return {Object} New object using _obj_ as its prototype.
  * @static
- * @private
  */
-_extract = function(o, what) {
-    var count = (what === 2), out = (count) ? 0 : [], i;
+O = Y.Object = (!unsafeNatives && Object.create) ? function (obj) {
+    // We currently wrap the native Object.create instead of simply aliasing it
+    // to ensure consistency with our fallback shim, which currently doesn't
+    // support Object.create()'s second argument (properties). Once we have a
+    // safe fallback for the properties arg, we can stop wrapping
+    // Object.create().
+    return Object.create(obj);
+} : (function () {
+    // Reusable constructor function for the Object.create() shim.
+    function F() {}
 
-    for (i in o) {
-        if (owns(o, i)) {
-            if (count) {
-                out++;
-            } else {
-                out.push((what) ? o[i] : i);
+    // The actual shim.
+    return function (obj) {
+        F.prototype = obj;
+        return new F();
+    };
+}()),
+
+/**
+ * Property names that IE doesn't enumerate in for..in loops, even when they
+ * should be enumerable. When `_hasEnumBug` is `true`, it's necessary to
+ * manually enumerate these properties.
+ *
+ * @property _forceEnum
+ * @type String[]
+ * @protected
+ * @static
+ */
+forceEnum = O._forceEnum = [
+    'hasOwnProperty',
+    'isPrototypeOf',
+    'propertyIsEnumerable',
+    'toString',
+    'toLocaleString',
+    'valueOf'
+],
+
+/**
+ * `true` if this browser has the JScript enumeration bug that prevents
+ * enumeration of the properties named in the `_forceEnum` array, `false`
+ * otherwise.
+ *
+ * See:
+ *   - <https://developer.mozilla.org/en/ECMAScript_DontEnum_attribute#JScript_DontEnum_Bug>
+ *   - <http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation>
+ *
+ * @property _hasEnumBug
+ * @type Boolean
+ * @protected
+ * @static
+ */
+hasEnumBug = O._hasEnumBug = !{valueOf: 0}.propertyIsEnumerable('valueOf'),
+
+/**
+ * `true` if this browser incorrectly considers the `prototype` property of
+ * functions to be enumerable. Currently known to affect Opera 11.50.
+ *
+ * @property _hasProtoEnumBug
+ * @type Boolean
+ * @protected
+ * @static
+ */
+hasProtoEnumBug = O._hasProtoEnumBug = (function () {}).propertyIsEnumerable('prototype'),
+
+/**
+ * Returns `true` if _key_ exists on _obj_, `false` if _key_ doesn't exist or
+ * exists only on _obj_'s prototype. This is essentially a safer version of
+ * `obj.hasOwnProperty()`.
+ *
+ * @method owns
+ * @param {Object} obj Object to test.
+ * @param {String} key Property name to look for.
+ * @return {Boolean} `true` if _key_ exists on _obj_, `false` otherwise.
+ * @static
+ */
+owns = O.owns = function (obj, key) {
+    return !!obj && hasOwn.call(obj, key);
+}; // <-- End of var declarations.
+
+/**
+ * Alias for `owns()`.
+ *
+ * @method hasKey
+ * @param {Object} obj Object to test.
+ * @param {String} key Property name to look for.
+ * @return {Boolean} `true` if _key_ exists on _obj_, `false` otherwise.
+ * @static
+ */
+O.hasKey = owns;
+
+/**
+ * Returns an array containing the object's enumerable keys. Does not include
+ * prototype keys or non-enumerable keys.
+ *
+ * Note that keys are returned in enumeration order (that is, in the same order
+ * that they would be enumerated by a `for-in` loop), which may not be the same
+ * as the order in which they were defined.
+ *
+ * This method is an alias for the native ES5 `Object.keys()` method if
+ * available.
+ *
+ * @example
+ *
+ *     Y.Object.keys({a: 'foo', b: 'bar', c: 'baz'});
+ *     // => ['a', 'b', 'c']
+ *
+ * @method keys
+ * @param {Object} obj An object.
+ * @return {String[]} Array of keys.
+ * @static
+ */
+O.keys = (!unsafeNatives && Object.keys) || function (obj) {
+    if (!Y.Lang.isObject(obj)) {
+        throw new TypeError('Object.keys called on a non-object');
+    }
+
+    var keys = [],
+        i, key, len;
+
+    if (hasProtoEnumBug && typeof obj === 'function') {
+        for (key in obj) {
+            if (owns(obj, key) && key !== 'prototype') {
+                keys.push(key);
+            }
+        }
+    } else {
+        for (key in obj) {
+            if (owns(obj, key)) {
+                keys.push(key);
             }
         }
     }
 
-    return out;
-};
+    if (hasEnumBug) {
+        for (i = 0, len = forceEnum.length; i < len; ++i) {
+            key = forceEnum[i];
 
-Y.Object = O;
-
-/**
- * Returns an array containing the object's keys
- * @method keys
- * @static
- * @param o an object.
- * @return {string[]} the keys.
- */
-// O.keys = Object.keys || function(o) {
-//     return _extract(o);
-// };
-
-O.keys = function(o) {
-    return _extract(o);
-};
-
-/**
- * Returns an array containing the object's values
- * @method values
- * @static
- * @param o an object.
- * @return {Array} the values.
- */
-// O.values = Object.values || function(o) {
-//     return _extract(o, 1);
-// };
-
-O.values = function(o) {
-    return _extract(o, 1);
-};
-
-/**
- * Returns the size of an object
- * @method size
- * @static
- * @param o an object.
- * @return {int} the size.
- */
-O.size = Object.size || function(o) {
-    return _extract(o, 2);
-};
-
-/**
- * Returns true if the object contains a given key
- * @method hasKey
- * @static
- * @param o an object.
- * @param k the key to query.
- * @return {boolean} true if the object contains the key.
- */
-O.hasKey = owns;
-/**
- * Returns true if the object contains a given value
- * @method hasValue
- * @static
- * @param o an object.
- * @param v the value to query.
- * @return {boolean} true if the object contains the value.
- */
-O.hasValue = function(o, v) {
-    return (Y.Array.indexOf(O.values(o), v) > -1);
-};
-
-/**
- * Determines whether or not the property was added
- * to the object instance.  Returns false if the property is not present
- * in the object, or was inherited from the prototype.
- *
- * @method owns
- * @static
- * @param o {any} The object being testing.
- * @param p {string} the property to look for.
- * @return {boolean} true if the object has the property on the instance.
- */
-O.owns = owns;
-
-/**
- * Executes a function on each item. The function
- * receives the value, the key, and the object
- * as parameters (in that order).
- * @method each
- * @static
- * @param o the object to iterate.
- * @param f {Function} the function to execute on each item. The function
- * receives three arguments: the value, the the key, the full object.
- * @param c the execution context.
- * @param proto {boolean} include proto.
- * @return {YUI} the YUI instance.
- */
-O.each = function(o, f, c, proto) {
-    var s = c || Y, i;
-
-    for (i in o) {
-        if (proto || owns(o, i)) {
-            f.call(s, o[i], i, o);
+            if (owns(obj, key)) {
+                keys.push(key);
+            }
         }
     }
+
+    return keys;
+};
+
+/**
+ * Returns an array containing the values of the object's enumerable keys.
+ *
+ * Note that values are returned in enumeration order (that is, in the same
+ * order that they would be enumerated by a `for-in` loop), which may not be the
+ * same as the order in which they were defined.
+ *
+ * @example
+ *
+ *     Y.Object.values({a: 'foo', b: 'bar', c: 'baz'});
+ *     // => ['foo', 'bar', 'baz']
+ *
+ * @method values
+ * @param {Object} obj An object.
+ * @return {Array} Array of values.
+ * @static
+ */
+O.values = function (obj) {
+    var keys   = O.keys(obj),
+        i      = 0,
+        len    = keys.length,
+        values = [];
+
+    for (; i < len; ++i) {
+        values.push(obj[keys[i]]);
+    }
+
+    return values;
+};
+
+/**
+ * Returns the number of enumerable keys owned by an object.
+ *
+ * @method size
+ * @param {Object} obj An object.
+ * @return {Number} The object's size.
+ * @static
+ */
+O.size = function (obj) {
+    try {
+        return O.keys(obj).length;
+    } catch (ex) {
+        return 0; // Legacy behavior for non-objects.
+    }
+};
+
+/**
+ * Returns `true` if the object owns an enumerable property with the specified
+ * value.
+ *
+ * @method hasValue
+ * @param {Object} obj An object.
+ * @param {any} value The value to search for.
+ * @return {Boolean} `true` if _obj_ contains _value_, `false` otherwise.
+ * @static
+ */
+O.hasValue = function (obj, value) {
+    return Y.Array.indexOf(O.values(obj), value) > -1;
+};
+
+/**
+ * Executes a function on each enumerable property in _obj_. The function
+ * receives the value, the key, and the object itself as parameters (in that
+ * order).
+ *
+ * By default, only properties owned by _obj_ are enumerated. To include
+ * prototype properties, set the _proto_ parameter to `true`.
+ *
+ * @method each
+ * @param {Object} obj Object to enumerate.
+ * @param {Function} fn Function to execute on each enumerable property.
+ *   @param {mixed} fn.value Value of the current property.
+ *   @param {String} fn.key Key of the current property.
+ *   @param {Object} fn.obj Object being enumerated.
+ * @param {Object} [thisObj] `this` object to use when calling _fn_.
+ * @param {Boolean} [proto=false] Include prototype properties.
+ * @return {YUI} the YUI instance.
+ * @chainable
+ * @static
+ */
+O.each = function (obj, fn, thisObj, proto) {
+    var key;
+
+    for (key in obj) {
+        if (proto || owns(obj, key)) {
+            fn.call(thisObj || Y, obj[key], key, obj);
+        }
+    }
+
     return Y;
 };
 
 /**
- * Executes a function on each item, but halts if the
- * function returns true.  The function
- * receives the value, the key, and the object
- * as paramters (in that order).
+ * Executes a function on each enumerable property in _obj_, but halts if the
+ * function returns a truthy value. The function receives the value, the key,
+ * and the object itself as paramters (in that order).
+ *
+ * By default, only properties owned by _obj_ are enumerated. To include
+ * prototype properties, set the _proto_ parameter to `true`.
+ *
  * @method some
+ * @param {Object} obj Object to enumerate.
+ * @param {Function} fn Function to execute on each enumerable property.
+ *   @param {mixed} fn.value Value of the current property.
+ *   @param {String} fn.key Key of the current property.
+ *   @param {Object} fn.obj Object being enumerated.
+ * @param {Object} [thisObj] `this` object to use when calling _fn_.
+ * @param {Boolean} [proto=false] Include prototype properties.
+ * @return {Boolean} `true` if any execution of _fn_ returns a truthy value,
+ *   `false` otherwise.
  * @static
- * @param o the object to iterate.
- * @param f {Function} the function to execute on each item. The function
- * receives three arguments: the value, the the key, the full object.
- * @param c the execution context.
- * @param proto {boolean} include proto.
- * @return {boolean} true if any execution of the function returns true,
- * false otherwise.
  */
-O.some = function(o, f, c, proto) {
-    var s = c || Y, i;
+O.some = function (obj, fn, thisObj, proto) {
+    var key;
 
-    for (i in o) {
-        if (proto || owns(o, i)) {
-            if (f.call(s, o[i], i, o)) {
+    for (key in obj) {
+        if (proto || owns(obj, key)) {
+            if (fn.call(thisObj || Y, obj[key], key, obj)) {
                 return true;
             }
         }
     }
+
     return false;
 };
 
@@ -2543,14 +2987,14 @@ O.some = function(o, f, c, proto) {
  */
 O.getValue = function(o, path) {
     if (!Y.Lang.isObject(o)) {
-        return UNDEF;
+        return UNDEFINED;
     }
 
     var i,
         p = Y.Array(path),
         l = p.length;
 
-    for (i = 0; o !== UNDEF && i < l; i++) {
+    for (i = 0; o !== UNDEFINED && i < l; i++) {
         o = o[p[i]];
     }
 
@@ -2578,14 +3022,14 @@ O.setValue = function(o, path, val) {
         ref = o;
 
     if (leafIdx >= 0) {
-        for (i = 0; ref !== UNDEF && i < leafIdx; i++) {
+        for (i = 0; ref !== UNDEFINED && i < leafIdx; i++) {
             ref = ref[p[i]];
         }
 
-        if (ref !== UNDEF) {
+        if (ref !== UNDEFINED) {
             ref[p[i]] = val;
         } else {
-            return UNDEF;
+            return UNDEFINED;
         }
     }
 
@@ -2593,19 +3037,16 @@ O.setValue = function(o, path, val) {
 };
 
 /**
- * Returns true if the object has no properties of its own
+ * Returns `true` if the object has no enumerable properties of its own.
+ *
  * @method isEmpty
+ * @param {Object} obj An object.
+ * @return {Boolean} `true` if the object is empty.
  * @static
- * @return {boolean} true if the object is empty.
  * @since 3.2.0
  */
-O.isEmpty = function(o) {
-    for (var i in o) {
-        if (owns(o, i)) {
-            return false;
-        }
-    }
-    return true;
+O.isEmpty = function (obj) {
+    return !O.keys(Object(obj)).length;
 };
 /**
  * The YUI module contains the components required for building the YUI seed
@@ -2618,25 +3059,30 @@ O.isEmpty = function(o) {
 /**
  * YUI user agent detection.
  * Do not fork for a browser if it can be avoided.  Use feature detection when
- * you can.  Use the user agent as a last resort.  UA stores a version
- * number for the browser engine, 0 otherwise.  This value may or may not map
- * to the version number of the browser using the engine.  The value is
- * presented as a float so that it can easily be used for boolean evaluation
- * as well as for looking for a particular range of versions.  Because of this,
- * some of the granularity of the version info may be lost (e.g., Gecko 1.8.0.9
- * reports 1.8).
+ * you can.  Use the user agent as a last resort.  For all fields listed
+ * as @type float, UA stores a version number for the browser engine,
+ * 0 otherwise.  This value may or may not map to the version number of
+ * the browser using the engine.  The value is presented as a float so
+ * that it can easily be used for boolean evaluation as well as for
+ * looking for a particular range of versions.  Because of this,
+ * some of the granularity of the version info may be lost.  The fields that
+ * are @type string default to null.  The API docs list the values that
+ * these fields can have.
  * @class UA
  * @static
  */
+
 /**
-* Static method for parsing the UA string. Defaults to assigning it's value to Y.UA
+* Static method on `YUI.Env` for parsing a UA string.  Called at instantiation
+* to populate `Y.UA`.
+*
 * @static
-* @method Env.parseUA
-* @param {String} subUA Parse this UA string instead of navigator.userAgent
+* @method parseUA
+* @param {String} [subUA=navigator.userAgent] UA string to parse
 * @returns {Object} The Y.UA object
 */
 YUI.Env.parseUA = function(subUA) {
-    
+
     var numberify = function(s) {
             var c = 0;
             return parseFloat(s.replace(/\./g, function() {
@@ -2711,6 +3157,15 @@ YUI.Env.parseUA = function(subUA) {
         webkit: 0,
 
         /**
+         * Safari will be detected as webkit, but this property will also
+         * be populated with the Safari version number
+         * @property safari
+         * @type float
+         * @static
+         */
+        safari: 0,
+
+        /**
          * Chrome will be detected as webkit, but this property will also
          * be populated with the Chrome version number
          * @property chrome
@@ -2726,6 +3181,7 @@ YUI.Env.parseUA = function(subUA) {
          * devices with the WebKit-based browser, and Opera Mini.
          * @property mobile
          * @type string
+         * @default null
          * @static
          */
         mobile: null,
@@ -2762,6 +3218,7 @@ YUI.Env.parseUA = function(subUA) {
          * General truthy check for iPad, iPhone or iPod
          * @property ios
          * @type float
+         * @default null
          * @static
          */
         ios: null,
@@ -2799,10 +3256,19 @@ YUI.Env.parseUA = function(subUA) {
          * The operating system.  Currently only detecting windows or macintosh
          * @property os
          * @type string
+         * @default null
          * @static
          */
-        os: null
+        os: null,
 
+        /**
+         * The Nodejs Version
+         * @property nodejs
+         * @type float
+         * @default 0
+         * @static
+         */
+        nodejs: 0
     },
 
     ua = subUA || nav && nav.userAgent,
@@ -2812,6 +3278,15 @@ YUI.Env.parseUA = function(subUA) {
     href = loc && loc.href,
 
     m;
+
+    /**
+    * The User Agent string that was parsed
+    * @property userAgent
+    * @type String
+    * @static
+    */
+    o.userAgent = ua;
+
 
     o.secure = href && (href.toLowerCase().indexOf('https') === 0);
 
@@ -2833,6 +3308,7 @@ YUI.Env.parseUA = function(subUA) {
         m = ua.match(/AppleWebKit\/([^\s]*)/);
         if (m && m[1]) {
             o.webkit = numberify(m[1]);
+            o.safari = o.webkit;
 
             // Mobile browser check
             if (/ Mobile\//.test(ua)) {
@@ -2850,9 +3326,9 @@ YUI.Env.parseUA = function(subUA) {
                     o[m[0].toLowerCase()] = o.ios;
                 }
             } else {
-                m = ua.match(/NokiaN[^\/]*|Android \d\.\d|webOS\/\d\.\d/);
+                m = ua.match(/NokiaN[^\/]*|webOS\/\d\.\d/);
                 if (m) {
-                    // Nokia N-series, Android, webOS, ex: NokiaN95
+                    // Nokia N-series, webOS, ex: NokiaN95
                     o.mobile = m[0];
                 }
                 if (/webOS/.test(ua)) {
@@ -2863,7 +3339,9 @@ YUI.Env.parseUA = function(subUA) {
                     }
                 }
                 if (/ Android/.test(ua)) {
-                    o.mobile = 'Android';
+                    if (/Mobile/.test(ua)) {
+                        o.mobile = 'Android';
+                    }
                     m = ua.match(/Android ([^\s]*);/);
                     if (m && m[1]) {
                         o.android = numberify(m[1]);
@@ -2875,6 +3353,7 @@ YUI.Env.parseUA = function(subUA) {
             m = ua.match(/Chrome\/([^\s]*)/);
             if (m && m[1]) {
                 o.chrome = numberify(m[1]); // Chrome
+                o.safari = 0; //Reset safari back to 0
             } else {
                 m = ua.match(/AdobeAIR\/([^\s]*)/);
                 if (m) {
@@ -2888,7 +3367,13 @@ YUI.Env.parseUA = function(subUA) {
             m = ua.match(/Opera[\s\/]([^\s]*)/);
             if (m && m[1]) {
                 o.opera = numberify(m[1]);
+                m = ua.match(/Version\/([^\s]*)/);
+                if (m && m[1]) {
+                    o.opera = numberify(m[1]); // opera 10+
+                }
+
                 m = ua.match(/Opera Mini[^;]*/);
+
                 if (m) {
                     o.mobile = m[0]; // ex: Opera Mini/2.0.4509/1316
                 }
@@ -2910,817 +3395,1362 @@ YUI.Env.parseUA = function(subUA) {
         }
     }
 
-    YUI.Env.UA = o;
+    //It was a parsed UA, do not assign the global value.
+    if (!subUA) {
+
+        if (typeof process == 'object') {
+
+            if (process.versions && process.versions.node) {
+                //NodeJS
+                o.os = process.platform;
+                o.nodejs = process.versions.node;
+            }
+        }
+
+        YUI.Env.UA = o;
+
+    }
 
     return o;
 };
 
 
 Y.UA = YUI.Env.UA || YUI.Env.parseUA();
+YUI.Env.aliases = {
+    "anim": ["anim-base","anim-color","anim-curve","anim-easing","anim-node-plugin","anim-scroll","anim-xy"],
+    "app": ["app-base","model","model-list","router","view"],
+    "attribute": ["attribute-base","attribute-complex"],
+    "autocomplete": ["autocomplete-base","autocomplete-sources","autocomplete-list","autocomplete-plugin"],
+    "base": ["base-base","base-pluginhost","base-build"],
+    "cache": ["cache-base","cache-offline","cache-plugin"],
+    "collection": ["array-extras","arraylist","arraylist-add","arraylist-filter","array-invoke"],
+    "controller": ["router"],
+    "dataschema": ["dataschema-base","dataschema-json","dataschema-xml","dataschema-array","dataschema-text"],
+    "datasource": ["datasource-local","datasource-io","datasource-get","datasource-function","datasource-cache","datasource-jsonschema","datasource-xmlschema","datasource-arrayschema","datasource-textschema","datasource-polling"],
+    "datatable": ["datatable-base","datatable-datasource","datatable-sort","datatable-scroll"],
+    "datatype": ["datatype-number","datatype-date","datatype-xml"],
+    "datatype-date": ["datatype-date-parse","datatype-date-format"],
+    "datatype-number": ["datatype-number-parse","datatype-number-format"],
+    "datatype-xml": ["datatype-xml-parse","datatype-xml-format"],
+    "dd": ["dd-ddm-base","dd-ddm","dd-ddm-drop","dd-drag","dd-proxy","dd-constrain","dd-drop","dd-scroll","dd-delegate"],
+    "dom": ["dom-base","dom-screen","dom-style","selector-native","selector"],
+    "editor": ["frame","selection","exec-command","editor-base","editor-para","editor-br","editor-bidi","editor-tab","createlink-base"],
+    "event": ["event-base","event-delegate","event-synthetic","event-mousewheel","event-mouseenter","event-key","event-focus","event-resize","event-hover","event-outside","event-touch","event-move","event-flick","event-valuechange"],
+    "event-custom": ["event-custom-base","event-custom-complex"],
+    "event-gestures": ["event-flick","event-move"],
+    "handlebars": ["handlebars-compiler"],
+    "highlight": ["highlight-base","highlight-accentfold"],
+    "history": ["history-base","history-hash","history-hash-ie","history-html5"],
+    "io": ["io-base","io-xdr","io-form","io-upload-iframe","io-queue"],
+    "json": ["json-parse","json-stringify"],
+    "loader": ["loader-base","loader-rollup","loader-yui3"],
+    "node": ["node-base","node-event-delegate","node-pluginhost","node-screen","node-style"],
+    "pluginhost": ["pluginhost-base","pluginhost-config"],
+    "querystring": ["querystring-parse","querystring-stringify"],
+    "recordset": ["recordset-base","recordset-sort","recordset-filter","recordset-indexer"],
+    "resize": ["resize-base","resize-proxy","resize-constrain"],
+    "slider": ["slider-base","slider-value-range","clickable-rail","range-slider"],
+    "text": ["text-accentfold","text-wordbreak"],
+    "widget": ["widget-base","widget-htmlparser","widget-uievents","widget-skin"]
+};
 
 
-}, '3.3.0' );
+}, '3.5.0pr1' );
 YUI.add('get', function(Y) {
 
+/*jslint boss:true, expr:true, laxbreak: true */
 
 /**
- * Provides a mechanism to fetch remote resources and
- * insert them into a document.
- * @module yui
- * @submodule get
- */
+Provides dynamic loading of remote JavaScript and CSS resources.
 
-var ua = Y.UA,
-    L = Y.Lang,
-    TYPE_JS = 'text/javascript',
-    TYPE_CSS = 'text/css',
-    STYLESHEET = 'stylesheet';
+@module get
+@class Get
+@static
+**/
 
-/**
- * Fetches and inserts one or more script or link nodes into the document
- * @class Get
- * @static
- */
-Y.Get = function() {
+var Lang = Y.Lang,
+    Get, Transaction;
+
+Y.Get = Get = {
+    // -- Public Properties ----------------------------------------------------
 
     /**
-     * hash of queues to manage multiple requests
-     * @property queues
-     * @private
-     */
-    var _get, _purge, _track,
+    Default options for CSS requests. Options specified here will override
+    global defaults for CSS requests.
 
-    queues = {},
+    See the `options` property for all available options.
 
-    /**
-     * queue index used to generate transaction ids
-     * @property qidx
-     * @type int
-     * @private
-     */
-    qidx = 0,
+    @property cssOptions
+    @type Object
+    @static
+    @since 3.5.0
+    **/
+    cssOptions: {
+        attributes: {
+            rel: 'stylesheet'
+        },
 
-    /**
-     * interal property used to prevent multiple simultaneous purge
-     * processes
-     * @property purging
-     * @type boolean
-     * @private
-     */
-    purging,
-
-
-    /**
-     * Generates an HTML element, this is not appended to a document
-     * @method _node
-     * @param {string} type the type of element.
-     * @param {string} attr the attributes.
-     * @param {Window} win optional window to create the element in.
-     * @return {HTMLElement} the generated node.
-     * @private
-     */
-    _node = function(type, attr, win) {
-        var w = win || Y.config.win,
-            d = w.document,
-            n = d.createElement(type),
-            i;
-
-        for (i in attr) {
-            if (attr[i] && attr.hasOwnProperty(i)) {
-                n.setAttribute(i, attr[i]);
-            }
-        }
-
-        return n;
+        doc         : Y.config.linkDoc || Y.config.doc,
+        pollInterval: 50
     },
 
     /**
-     * Generates a link node
-     * @method _linkNode
-     * @param {string} url the url for the css file.
-     * @param {Window} win optional window to create the node in.
-     * @param {object} attributes optional attributes collection to apply to the
-     * new node.
-     * @return {HTMLElement} the generated node.
-     * @private
-     */
-    _linkNode = function(url, win, attributes) {
-        var o = {
-            id: Y.guid(),
-            type: TYPE_CSS,
-            rel: STYLESHEET,
-            href: url
-        };
-        if (attributes) {
-            Y.mix(o, attributes);
-        }
-        return _node('link', o, win);
+    Default options for JS requests. Options specified here will override global
+    defaults for JS requests.
+
+    See the `options` property for all available options.
+
+    @property jsOptions
+    @type Object
+    @static
+    @since 3.5.0
+    **/
+    jsOptions: {
+        autopurge: true,
+        doc      : Y.config.scriptDoc || Y.config.doc
     },
 
     /**
-     * Generates a script node
-     * @method _scriptNode
-     * @param {string} url the url for the script file.
-     * @param {Window} win optional window to create the node in.
-     * @param {object} attributes optional attributes collection to apply to the
-     * new node.
-     * @return {HTMLElement} the generated node.
-     * @private
-     */
-    _scriptNode = function(url, win, attributes) {
-        var o = {
-            id: Y.guid(),
-            type: TYPE_JS
-        };
+    Default options to use for all requests.
 
-        if (attributes) {
-            Y.mix(o, attributes);
-        }
+    Note that while all available options are documented here for ease of
+    discovery, some options (like callback functions) only make sense at the
+    transaction level.
 
-        o.src = url;
+    Callback functions specified via the options object or the `options`
+    parameter of the `css()`, `js()`, or `load()` methods will receive the
+    transaction object as a parameter. See `Y.Get.Transaction` for details on
+    the properties and methods available on transactions.
 
-        return _node('script', o, win);
+    @static
+    @since 3.5.0
+    @property {Object} options
+
+    @property {Boolean} [options.async=false] Whether or not to load scripts
+        asynchronously, meaning they're requested in parallel and execution
+        order is not guaranteed. Has no effect on CSS, since CSS is always
+        loaded asynchronously.
+
+    @property {Object} [options.attributes] HTML attribute name/value pairs that
+        should be added to inserted nodes. By default, the `charset` attribute
+        will be set to "utf-8" and nodes will be given an auto-generated `id`
+        attribute, but you can override these with your own values if desired.
+
+    @property {Boolean} [options.autopurge] Whether or not to automatically
+        purge inserted nodes after the purge threshold is reached. This is
+        `true` by default for JavaScript, but `false` for CSS since purging a
+        CSS node will also remove any styling applied by the referenced file.
+
+    @property {Object} [options.context] `this` object to use when calling
+        callback functions. Defaults to the transaction object.
+
+    @property {Mixed} [options.data] Arbitrary data object to pass to "on*"
+        callbacks.
+
+    @property {Document} [options.doc] Document into which nodes should be
+        inserted. By default, the current document is used.
+
+    @property {HTMLElement|String} [options.insertBefore] HTML element or id
+        string of an element before which all generated nodes should be
+        inserted. If not specified, Get will automatically determine the best
+        place to insert nodes for maximum compatibility.
+
+    @property {Function} [options.onEnd] Callback to execute after a transaction
+        is complete, regardless of whether it succeeded or failed.
+
+    @property {Function} [options.onFailure] Callback to execute after a
+        transaction fails, times out, or is aborted.
+
+    @property {Function} [options.onSuccess] Callback to execute after a
+        transaction completes successfully with no errors. Note that in browsers
+        that don't support the `error` event on CSS `<link>` nodes, a failed CSS
+        request may still be reported as a success because in these browsers
+        it can be difficult or impossible to distinguish between success and
+        failure for CSS resources.
+
+    @property {Function} [options.onTimeout] Callback to execute after a
+        transaction times out.
+
+    @property {Number} [options.pollInterval=50] Polling interval (in
+        milliseconds) for detecting CSS load completion in browsers that don't
+        support the `load` event on `<link>` nodes. This isn't used for
+        JavaScript.
+
+    @property {Number} [options.purgethreshold=20] Number of nodes to insert
+        before triggering an automatic purge when `autopurge` is `true`.
+
+    @property {Number} [options.timeout] Number of milliseconds to wait before
+        aborting a transaction. When a timeout occurs, the `onTimeout` callback
+        is called, followed by `onFailure` and finally `onEnd`. By default,
+        there is no timeout.
+
+    @property {String} [options.type] Resource type ("css" or "js"). This option
+        is set automatically by the `css()` and `js()` functions and will be
+        ignored there, but may be useful when using the `load()` function. If
+        not specified, the type will be inferred from the URL, defaulting to
+        "js" if the URL doesn't contain a recognizable file extension.
+    **/
+    options: {
+        attributes: {
+            charset: 'utf-8'
+        },
+
+        purgethreshold: 20
     },
 
-    /**
-     * Returns the data payload for callback functions.
-     * @method _returnData
-     * @param {object} q the queue.
-     * @param {string} msg the result message.
-     * @param {string} result the status message from the request.
-     * @return {object} the state data from the request.
-     * @private
-     */
-    _returnData = function(q, msg, result) {
-        return {
-                tId: q.tId,
-                win: q.win,
-                data: q.data,
-                nodes: q.nodes,
-                msg: msg,
-                statusText: result,
-                purge: function() {
-                    _purge(this.tId);
-                }
-            };
-    },
+    // -- Protected Properties -------------------------------------------------
 
     /**
-     * The transaction is finished
-     * @method _end
-     * @param {string} id the id of the request.
-     * @param {string} msg the result message.
-     * @param {string} result the status message from the request.
-     * @private
-     */
-    _end = function(id, msg, result) {
-        var q = queues[id], sc;
-        if (q && q.onEnd) {
-            sc = q.context || q;
-            q.onEnd.call(sc, _returnData(q, msg, result));
-        }
-    },
+    Regex that matches a CSS URL. Used to guess the file type when it's not
+    specified.
 
-    /*
-     * The request failed, execute fail handler with whatever
-     * was accomplished.  There isn't a failure case at the
-     * moment unless you count aborted transactions
-     * @method _fail
-     * @param {string} id the id of the request
-     * @private
-     */
-    _fail = function(id, msg) {
-        Y.log('get failure: ' + msg, 'warn', 'get');
-
-        var q = queues[id], sc;
-        if (q.timer) {
-            // q.timer.cancel();
-            clearTimeout(q.timer);
-        }
-
-        // execute failure callback
-        if (q.onFailure) {
-            sc = q.context || q;
-            q.onFailure.call(sc, _returnData(q, msg));
-        }
-
-        _end(id, msg, 'failure');
-    },
+    @property REGEX_CSS
+    @type RegExp
+    @final
+    @protected
+    @static
+    @since 3.5.0
+    **/
+    REGEX_CSS: /\.css(?:[?;].*)?$/i,
 
     /**
-     * The request is complete, so executing the requester's callback
-     * @method _finish
-     * @param {string} id the id of the request.
-     * @private
-     */
-    _finish = function(id) {
-        // Y.log("Finishing transaction " + id, "info", "get");
-        var q = queues[id], msg, sc;
-        if (q.timer) {
-            // q.timer.cancel();
-            clearTimeout(q.timer);
-        }
-        q.finished = true;
+    Regex that matches a JS URL. Used to guess the file type when it's not
+    specified.
 
-        if (q.aborted) {
-            msg = 'transaction ' + id + ' was aborted';
-            _fail(id, msg);
-            return;
-        }
-
-        // execute success callback
-        if (q.onSuccess) {
-            sc = q.context || q;
-            q.onSuccess.call(sc, _returnData(q));
-        }
-
-        _end(id, msg, 'OK');
-    },
+    @property REGEX_JS
+    @type RegExp
+    @final
+    @protected
+    @static
+    @since 3.5.0
+    **/
+    REGEX_JS : /\.js(?:[?;].*)?$/i,
 
     /**
-     * Timeout detected
-     * @method _timeout
-     * @param {string} id the id of the request.
-     * @private
-     */
-    _timeout = function(id) {
-        Y.log('Timeout ' + id, 'info', 'get');
-        var q = queues[id], sc;
-        if (q.onTimeout) {
-            sc = q.context || q;
-            q.onTimeout.call(sc, _returnData(q));
-        }
+    Contains information about the current environment, such as what script and
+    link injection features it supports.
 
-        _end(id, 'timeout', 'timeout');
-    },
+    This object is created and populated the first time the `_getEnv()` method
+    is called.
 
+    @property _env
+    @type Object
+    @protected
+    @static
+    @since 3.5.0
+    **/
 
     /**
-     * Loads the next item for a given request
-     * @method _next
-     * @param {string} id the id of the request.
-     * @param {string} loaded the url that was just loaded, if any.
-     * @return {string} the result.
-     * @private
-     */
-    _next = function(id, loaded) {
-// Y.log("_next: " + id + ", loaded: " + (loaded || "nothing"), "info", "get");
-        var q = queues[id], msg, w, d, h, n, url, s,
-            insertBefore;
+    Mapping of document _yuid strings to <head> or <base> node references so we
+    don't have to look the node up each time we want to insert a request node.
 
-        if (q.timer) {
-            // Y.log('cancel timer');
-            // q.timer.cancel();
-            clearTimeout(q.timer);
-        }
-
-        if (q.aborted) {
-            msg = 'transaction ' + id + ' was aborted';
-            _fail(id, msg);
-            return;
-        }
-
-        if (loaded) {
-            q.url.shift();
-            if (q.varName) {
-                q.varName.shift();
-            }
-        } else {
-            // This is the first pass: make sure the url is an array
-            q.url = (L.isString(q.url)) ? [q.url] : q.url;
-            if (q.varName) {
-                q.varName = (L.isString(q.varName)) ? [q.varName] : q.varName;
-            }
-        }
-
-        w = q.win;
-        d = w.document;
-        h = d.getElementsByTagName('head')[0];
-
-        if (q.url.length === 0) {
-            _finish(id);
-            return;
-        }
-
-        url = q.url[0];
-
-        // if the url is undefined, this is probably a trailing comma
-        // problem in IE.
-        if (!url) {
-            q.url.shift();
-            Y.log('skipping empty url');
-            return _next(id);
-        }
-
-        Y.log('attempting to load ' + url, 'info', 'get');
-
-        if (q.timeout) {
-            // Y.log('create timer');
-            // q.timer = L.later(q.timeout, q, _timeout, id);
-            q.timer = setTimeout(function() {
-                _timeout(id);
-            }, q.timeout);
-        }
-
-        if (q.type === 'script') {
-            n = _scriptNode(url, w, q.attributes);
-        } else {
-            n = _linkNode(url, w, q.attributes);
-        }
-
-        // track this node's load progress
-        _track(q.type, n, id, url, w, q.url.length);
-
-        // add the node to the queue so we can return it to the user supplied
-        // callback
-        q.nodes.push(n);
-
-        // add it to the head or insert it before 'insertBefore'.  Work around
-        // IE bug if there is a base tag.
-        insertBefore = q.insertBefore ||
-                       d.getElementsByTagName('base')[0];
-
-        if (insertBefore) {
-            s = _get(insertBefore, id);
-            if (s) {
-                Y.log('inserting before: ' + insertBefore, 'info', 'get');
-                s.parentNode.insertBefore(n, s);
-            }
-        } else {
-            h.appendChild(n);
-        }
-
-        // Y.log("Appending node: " + url, "info", "get");
-
-        // FireFox does not support the onload event for link nodes, so
-        // there is no way to make the css requests synchronous. This means
-        // that the css rules in multiple files could be applied out of order
-        // in this browser if a later request returns before an earlier one.
-        // Safari too.
-        if ((ua.webkit || ua.gecko) && q.type === 'css') {
-            _next(id, url);
-        }
-    },
+    @property _insertCache
+    @type Object
+    @protected
+    @static
+    @since 3.5.0
+    **/
+    _insertCache: {},
 
     /**
-     * Removes processed queues and corresponding nodes
-     * @method _autoPurge
-     * @private
-     */
-    _autoPurge = function() {
-        if (purging) {
-            return;
-        }
-        purging = true;
+    Information about the currently pending transaction, if any.
 
-        var i, q;
+    This is actually an object with two properties: `callback`, containing the
+    optional callback passed to `css()`, `load()`, or `js()`; and `transaction`,
+    containing the actual transaction instance.
 
-        for (i in queues) {
-            if (queues.hasOwnProperty(i)) {
-                q = queues[i];
-                if (q.autopurge && q.finished) {
-                    _purge(q.tId);
-                    delete queues[i];
-                }
-            }
-        }
-
-        purging = false;
-    },
+    @property _pending
+    @type Object
+    @protected
+    @static
+    @since 3.5.0
+    **/
+    _pending: null,
 
     /**
-     * Saves the state for the request and begins loading
-     * the requested urls
-     * @method queue
-     * @param {string} type the type of node to insert.
-     * @param {string} url the url to load.
-     * @param {object} opts the hash of options for this request.
-     * @return {object} transaction object.
-     * @private
-     */
-    _queue = function(type, url, opts) {
-        opts = opts || {};
+    HTML nodes eligible to be purged next time autopurge is triggered.
 
-        var id = 'q' + (qidx++), q,
-            thresh = opts.purgethreshold || Y.Get.PURGE_THRESH;
-
-        if (qidx % thresh === 0) {
-            _autoPurge();
-        }
-
-        queues[id] = Y.merge(opts, {
-            tId: id,
-            type: type,
-            url: url,
-            finished: false,
-            nodes: []
-        });
-
-        q = queues[id];
-        q.win = q.win || Y.config.win;
-        q.context = q.context || q;
-        q.autopurge = ('autopurge' in q) ? q.autopurge :
-                      (type === 'script') ? true : false;
-
-        q.attributes = q.attributes || {};
-        q.attributes.charset = opts.charset || q.attributes.charset || 'utf-8';
-
-        _next(id);
-
-        return {
-            tId: id
-        };
-    };
+    @property _purgeNodes
+    @type HTMLElement[]
+    @protected
+    @static
+    @since 3.5.0
+    **/
+    _purgeNodes: [],
 
     /**
-     * Detects when a node has been loaded.  In the case of
-     * script nodes, this does not guarantee that contained
-     * script is ready to use.
-     * @method _track
-     * @param {string} type the type of node to track.
-     * @param {HTMLElement} n the node to track.
-     * @param {string} id the id of the request.
-     * @param {string} url the url that is being loaded.
-     * @param {Window} win the targeted window.
-     * @param {int} qlength the number of remaining items in the queue,
-     * including this one.
-     * @param {Function} trackfn function to execute when finished
-     * the default is _next.
-     * @private
-     */
-    _track = function(type, n, id, url, win, qlength, trackfn) {
-        var f = trackfn || _next;
+    Queued transactions and associated callbacks.
 
-        // IE supports the readystatechange event for script and css nodes
-        // Opera only for script nodes.  Opera support onload for script
-        // nodes, but this doesn't fire when there is a load failure.
-        // The onreadystatechange appears to be a better way to respond
-        // to both success and failure.
-        if (ua.ie) {
-            n.onreadystatechange = function() {
-                var rs = this.readyState;
-                if ('loaded' === rs || 'complete' === rs) {
-                    // Y.log(id + " onreadstatechange " + url, "info", "get");
-                    n.onreadystatechange = null;
-                    f(id, url);
-                }
-            };
+    @property _queue
+    @type Object[]
+    @protected
+    @static
+    @since 3.5.0
+    **/
+    _queue: [],
 
-        // webkit prior to 3.x is no longer supported
-        } else if (ua.webkit) {
-            if (type === 'script') {
-                // Safari 3.x supports the load event for script nodes (DOM2)
-                n.addEventListener('load', function() {
-                    // Y.log(id + " DOM2 onload " + url, "info", "get");
-                    f(id, url);
-                });
-            }
-
-        // FireFox and Opera support onload (but not DOM2 in FF) handlers for
-        // script nodes.  Opera, but not FF, supports the onload event for link
-        // nodes.
-        } else {
-            n.onload = function() {
-                // Y.log(id + " onload " + url, "info", "get");
-                f(id, url);
-            };
-
-            n.onerror = function(e) {
-                _fail(id, e + ': ' + url);
-            };
-        }
-    };
-
-    _get = function(nId, tId) {
-        var q = queues[tId],
-            n = (L.isString(nId)) ? q.win.document.getElementById(nId) : nId;
-        if (!n) {
-            _fail(tId, 'target node not found: ' + nId);
-        }
-
-        return n;
-    };
+    // -- Public Methods -------------------------------------------------------
 
     /**
-     * Removes the nodes for the specified queue
-     * @method _purge
-     * @param {string} tId the transaction id.
-     * @private
-     */
-    _purge = function(tId) {
-        var n, l, d, h, s, i, node, attr, insertBefore,
-            q = queues[tId];
+    Aborts the specified transaction.
 
-        if (q) {
-            n = q.nodes;
-            l = n.length;
-            d = q.win.document;
-            h = d.getElementsByTagName('head')[0];
+    This will cause the transaction's `onFailure` callback to be called and
+    will prevent any new script and link nodes from being added to the document,
+    but any resources that have already been requested will continue loading
+    (there's no safe way to prevent this, unfortunately).
 
-            insertBefore = q.insertBefore ||
-                           d.getElementsByTagName('base')[0];
+    *Note:* This method is deprecated as of 3.5.0, and will be removed in a
+    future version of YUI. Use the transaction-level `abort()` method instead.
 
-            if (insertBefore) {
-                s = _get(insertBefore, tId);
-                if (s) {
-                    h = s.parentNode;
-                }
-            }
+    @method abort
+    @param {Get.Transaction} transaction Transaction to abort.
+    @deprecated Use the `abort()` method on the transaction instead.
+    @static
+    **/
+    abort: function (transaction) {
+        var i, id, item, len, pending;
 
-            for (i = 0; i < l; i = i + 1) {
-                node = n[i];
-                if (node.clearAttributes) {
-                    node.clearAttributes();
-                } else {
-                    for (attr in node) {
-                        if (node.hasOwnProperty(attr)) {
-                            delete node[attr];
-                        }
+        Y.log('`Y.Get.abort()` is deprecated as of 3.5.0. Use the `abort()` method on the transaction instead.', 'warn', 'get');
+
+        if (!transaction.abort) {
+            id          = transaction;
+            pending     = this._pending;
+            transaction = null;
+
+            if (pending && pending.transaction.id === id) {
+                transaction   = pending.transaction;
+                this._pending = null;
+            } else {
+                for (i = 0, len = this._queue.length; i < len; ++i) {
+                    item = this._queue[i].transaction;
+
+                    if (item.id === id) {
+                        transaction = item;
+                        this._queue.splice(i, 1);
+                        break;
                     }
                 }
-
-                h.removeChild(node);
             }
         }
-        q.nodes = [];
-    };
 
-    return {
+        transaction && transaction.abort();
+    },
 
-        /**
-         * The number of request required before an automatic purge.
-         * Can be configured via the 'purgethreshold' config
-         * property PURGE_THRESH
-         * @static
-         * @type int
-         * @default 20
-         * @private
-         */
-        PURGE_THRESH: 20,
+    /**
+    Loads one or more CSS files.
 
-        /**
-         * Called by the the helper for detecting script load in Safari
-         * @method _finalize
-         * @static
-         * @param {string} id the transaction id.
-         * @private
-         */
-        _finalize: function(id) {
-            Y.log(id + ' finalized ', 'info', 'get');
-            setTimeout(function() {
-                _finish(id);
-            }, 0);
-        },
+    The _urls_ parameter may be provided as a URL string, a request object,
+    or an array of URL strings and/or request objects.
 
-        /**
-         * Abort a transaction
-         * @method abort
-         * @static
-         * @param {string|object} o Either the tId or the object returned from
-         * script() or css().
-         */
-        abort: function(o) {
-            var id = (L.isString(o)) ? o : o.tId,
-                q = queues[id];
-            if (q) {
-                Y.log('Aborting ' + id, 'info', 'get');
-                q.aborted = true;
+    A request object is just an object that contains a `url` property and zero
+    or more options that should apply specifically to that request.
+    Request-specific options take priority over transaction-level options and
+    default options.
+
+    URLs may be relative or absolute, and do not have to have the same origin
+    as the current page.
+
+    The `options` parameter may be omitted completely and a callback passed in
+    its place, if desired.
+
+    @example
+
+        // Load a single CSS file and log a message on completion.
+        Y.Get.css('foo.css', function (err) {
+            if (err) {
+                Y.log('foo.css failed to load!');
+            } else {
+                Y.log('foo.css was loaded successfully');
             }
-        },
+        });
 
-        /**
-         * Fetches and inserts one or more script nodes into the head
-         * of the current document or the document in a specified window.
-         *
-         * @method script
-         * @static
-         * @param {string|string[]} url the url or urls to the script(s).
-         * @param {object} opts Options:
-         * <dl>
-         * <dt>onSuccess</dt>
-         * <dd>
-         * callback to execute when the script(s) are finished loading
-         * The callback receives an object back with the following
-         * data:
-         * <dl>
-         * <dt>win</dt>
-         * <dd>the window the script(s) were inserted into</dd>
-         * <dt>data</dt>
-         * <dd>the data object passed in when the request was made</dd>
-         * <dt>nodes</dt>
-         * <dd>An array containing references to the nodes that were
-         * inserted</dd>
-         * <dt>purge</dt>
-         * <dd>A function that, when executed, will remove the nodes
-         * that were inserted</dd>
-         * <dt>
-         * </dl>
-         * </dd>
-         * <dt>onTimeout</dt>
-         * <dd>
-         * callback to execute when a timeout occurs.
-         * The callback receives an object back with the following
-         * data:
-         * <dl>
-         * <dt>win</dt>
-         * <dd>the window the script(s) were inserted into</dd>
-         * <dt>data</dt>
-         * <dd>the data object passed in when the request was made</dd>
-         * <dt>nodes</dt>
-         * <dd>An array containing references to the nodes that were
-         * inserted</dd>
-         * <dt>purge</dt>
-         * <dd>A function that, when executed, will remove the nodes
-         * that were inserted</dd>
-         * <dt>
-         * </dl>
-         * </dd>
-         * <dt>onEnd</dt>
-         * <dd>a function that executes when the transaction finishes,
-         * regardless of the exit path</dd>
-         * <dt>onFailure</dt>
-         * <dd>
-         * callback to execute when the script load operation fails
-         * The callback receives an object back with the following
-         * data:
-         * <dl>
-         * <dt>win</dt>
-         * <dd>the window the script(s) were inserted into</dd>
-         * <dt>data</dt>
-         * <dd>the data object passed in when the request was made</dd>
-         * <dt>nodes</dt>
-         * <dd>An array containing references to the nodes that were
-         * inserted successfully</dd>
-         * <dt>purge</dt>
-         * <dd>A function that, when executed, will remove any nodes
-         * that were inserted</dd>
-         * <dt>
-         * </dl>
-         * </dd>
-         * <dt>context</dt>
-         * <dd>the execution context for the callbacks</dd>
-         * <dt>win</dt>
-         * <dd>a window other than the one the utility occupies</dd>
-         * <dt>autopurge</dt>
-         * <dd>
-         * setting to true will let the utilities cleanup routine purge
-         * the script once loaded
-         * </dd>
-         * <dt>purgethreshold</dt>
-         * <dd>
-         * The number of transaction before autopurge should be initiated
-         * </dd>
-         * <dt>data</dt>
-         * <dd>
-         * data that is supplied to the callback when the script(s) are
-         * loaded.
-         * </dd>
-         * <dt>insertBefore</dt>
-         * <dd>node or node id that will become the new node's nextSibling.
-         * If this is not specified, nodes will be inserted before a base
-         * tag should it exist.  Otherwise, the nodes will be appended to the
-         * end of the document head.</dd>
-         * </dl>
-         * <dt>charset</dt>
-         * <dd>Node charset, default utf-8 (deprecated, use the attributes
-         * config)</dd>
-         * <dt>attributes</dt>
-         * <dd>An object literal containing additional attributes to add to
-         * the link tags</dd>
-         * <dt>timeout</dt>
-         * <dd>Number of milliseconds to wait before aborting and firing
-         * the timeout event</dd>
-         * <pre>
-         * &nbsp; Y.Get.script(
-         * &nbsp; ["http://yui.yahooapis.com/2.5.2/build/yahoo/yahoo-min.js",
-         * &nbsp;  "http://yui.yahooapis.com/2.5.2/build/event/event-min.js"],
-         * &nbsp; &#123;
-         * &nbsp;   onSuccess: function(o) &#123;
-         * &nbsp;     this.log("won't cause error because Y is the context");
-         * &nbsp;     Y.log(o.data); // foo
-         * &nbsp;     Y.log(o.nodes.length === 2) // true
-         * &nbsp;     // o.purge(); // optionally remove the script nodes
-         * &nbsp;                   // immediately
-         * &nbsp;   &#125;,
-         * &nbsp;   onFailure: function(o) &#123;
-         * &nbsp;     Y.log("transaction failed");
-         * &nbsp;   &#125;,
-         * &nbsp;   onTimeout: function(o) &#123;
-         * &nbsp;     Y.log("transaction timed out");
-         * &nbsp;   &#125;,
-         * &nbsp;   data: "foo",
-         * &nbsp;   timeout: 10000, // 10 second timeout
-         * &nbsp;   context: Y, // make the YUI instance
-         * &nbsp;   // win: otherframe // target another window/frame
-         * &nbsp;   autopurge: true // allow the utility to choose when to
-         * &nbsp;                   // remove the nodes
-         * &nbsp;   purgetheshold: 1 // purge previous transaction before
-         * &nbsp;                    // next transaction
-         * &nbsp; &#125;);.
-         * </pre>
-         * @return {tId: string} an object containing info about the
-         * transaction.
-         */
-        script: function(url, opts) {
-            return _queue('script', url, opts);
-        },
+        // Load multiple CSS files and log a message when all have finished
+        // loading.
+        var urls = ['foo.css', 'http://example.com/bar.css', 'baz/quux.css'];
 
-        /**
-         * Fetches and inserts one or more css link nodes into the
-         * head of the current document or the document in a specified
-         * window.
-         * @method css
-         * @static
-         * @param {string} url the url or urls to the css file(s).
-         * @param {object} opts Options:
-         * <dl>
-         * <dt>onSuccess</dt>
-         * <dd>
-         * callback to execute when the css file(s) are finished loading
-         * The callback receives an object back with the following
-         * data:
-         * <dl>win</dl>
-         * <dd>the window the link nodes(s) were inserted into</dd>
-         * <dt>data</dt>
-         * <dd>the data object passed in when the request was made</dd>
-         * <dt>nodes</dt>
-         * <dd>An array containing references to the nodes that were
-         * inserted</dd>
-         * <dt>purge</dt>
-         * <dd>A function that, when executed, will remove the nodes
-         * that were inserted</dd>
-         * <dt>
-         * </dl>
-         * </dd>
-         * <dt>context</dt>
-         * <dd>the execution context for the callbacks</dd>
-         * <dt>win</dt>
-         * <dd>a window other than the one the utility occupies</dd>
-         * <dt>data</dt>
-         * <dd>
-         * data that is supplied to the callbacks when the nodes(s) are
-         * loaded.
-         * </dd>
-         * <dt>insertBefore</dt>
-         * <dd>node or node id that will become the new node's nextSibling</dd>
-         * <dt>charset</dt>
-         * <dd>Node charset, default utf-8 (deprecated, use the attributes
-         * config)</dd>
-         * <dt>attributes</dt>
-         * <dd>An object literal containing additional attributes to add to
-         * the link tags</dd>
-         * </dl>
-         * <pre>
-         * Y.Get.css("http://localhost/css/menu.css");
-         * </pre>
-         * <pre>
-         * &nbsp; Y.Get.css(
-         * &nbsp; ["http://localhost/css/menu.css",
-         * &nbsp;  "http://localhost/css/logger.css"], &#123;
-         * &nbsp;   insertBefore: 'custom-styles' // nodes will be inserted
-         * &nbsp;                                 // before the specified node
-         * &nbsp; &#125;);.
-         * </pre>
-         * @return {tId: string} an object containing info about the
-         * transaction.
-         */
-        css: function(url, opts) {
-            return _queue('css', url, opts);
+        Y.Get.css(urls, function (err) {
+            if (err) {
+                Y.log('one or more files failed to load!');
+            } else {
+                Y.log('all files loaded successfully');
+            }
+        });
+
+        // Specify transaction-level options, which will apply to all requests
+        // within the transaction.
+        Y.Get.css(urls, {
+            attributes: {'class': 'my-css'},
+            timeout   : 5000
+        });
+
+        // Specify per-request options, which override transaction-level and
+        // default options.
+        Y.Get.css([
+            {url: 'foo.css', attributes: {id: 'foo'}},
+            {url: 'bar.css', attributes: {id: 'bar', charset: 'iso-8859-1'}}
+        ]);
+
+    @method css
+    @param {String|Object|Array} urls URL string, request object, or array
+        of URLs and/or request objects to load.
+    @param {Object} [options] Options for this transaction. See the
+        `Y.Get.options` property for a complete list of available options.
+    @param {Function} [callback] Callback function to be called on completion.
+        This is a general callback and will be called before any more granular
+        callbacks (`onSuccess`, `onFailure`, etc.) specified in the `options`
+        object.
+
+        @param {Array|null} callback.err Array of errors that occurred during
+            the transaction, or `null` on success.
+        @param {Get.Transaction} callback.transaction Transaction object.
+
+    @return {Get.Transaction} Transaction object.
+    @static
+    **/
+    css: function (urls, options, callback) {
+        return this._load('css', urls, options, callback);
+    },
+
+    /**
+    Loads one or more JavaScript resources.
+
+    The _urls_ parameter may be provided as a URL string, a request object,
+    or an array of URL strings and/or request objects.
+
+    A request object is just an object that contains a `url` property and zero
+    or more options that should apply specifically to that request.
+    Request-specific options take priority over transaction-level options and
+    default options.
+
+    URLs may be relative or absolute, and do not have to have the same origin
+    as the current page.
+
+    The `options` parameter may be omitted completely and a callback passed in
+    its place, if desired.
+
+    Scripts will be executed in the order they're specified unless the `async`
+    option is `true`, in which case they'll be loaded in parallel and executed
+    in whatever order they finish loading.
+
+    @example
+
+        // Load a single JS file and log a message on completion.
+        Y.Get.js('foo.js', function (err) {
+            if (err) {
+                Y.log('foo.js failed to load!');
+            } else {
+                Y.log('foo.js was loaded successfully');
+            }
+        });
+
+        // Load multiple JS files, execute them in order, and log a message when
+        // all have finished loading.
+        var urls = ['foo.js', 'http://example.com/bar.js', 'baz/quux.js'];
+
+        Y.Get.js(urls, function (err) {
+            if (err) {
+                Y.log('one or more files failed to load!');
+            } else {
+                Y.log('all files loaded successfully');
+            }
+        });
+
+        // Specify transaction-level options, which will apply to all requests
+        // within the transaction.
+        Y.Get.js(urls, {
+            attributes: {'class': 'my-js'},
+            timeout   : 5000
+        });
+
+        // Specify per-request options, which override transaction-level and
+        // default options.
+        Y.Get.js([
+            {url: 'foo.js', attributes: {id: 'foo'}},
+            {url: 'bar.js', attributes: {id: 'bar', charset: 'iso-8859-1'}}
+        ]);
+
+    @method js
+    @param {String|Object|Array} urls URL string, request object, or array
+        of URLs and/or request objects to load.
+    @param {Object} [options] Options for this transaction. See the
+        `Y.Get.options` property for a complete list of available options.
+    @param {Function} [callback] Callback function to be called on completion.
+        This is a general callback and will be called before any more granular
+        callbacks (`onSuccess`, `onFailure`, etc.) specified in the `options`
+        object.
+
+        @param {Array|null} callback.err Array of errors that occurred during
+            the transaction, or `null` on success.
+        @param {Get.Transaction} callback.transaction Transaction object.
+
+    @return {Get.Transaction} Transaction object.
+    @since 3.5.0
+    @static
+    **/
+    js: function (urls, options, callback) {
+        return this._load('js', urls, options, callback);
+    },
+
+    /**
+    Loads one or more CSS and/or JavaScript resources in the same transaction.
+
+    Use this method when you want to load both CSS and JavaScript in a single
+    transaction and be notified when all requested URLs have finished loading,
+    regardless of type.
+
+    Behavior and options are the same as for the `css()` and `js()` methods. If
+    a resource type isn't specified in per-request options or transaction-level
+    options, Get will guess the file type based on the URL's extension (`.css`
+    or `.js`, with or without a following query string). If the file type can't
+    be guessed from the URL, a warning will be logged and Get will assume the
+    URL is a JavaScript resource.
+
+    @example
+
+        // Load both CSS and JS files in a single transaction, and log a message
+        // when all files have finished loading.
+        Y.Get.load(['foo.css', 'bar.js', 'baz.css'], function (err) {
+            if (err) {
+                Y.log('one or more files failed to load!');
+            } else {
+                Y.log('all files loaded successfully');
+            }
+        });
+
+    @method load
+    @param {String|Object|Array} urls URL string, request object, or array
+        of URLs and/or request objects to load.
+    @param {Object} [options] Options for this transaction. See the
+        `Y.Get.options` property for a complete list of available options.
+    @param {Function} [callback] Callback function to be called on completion.
+        This is a general callback and will be called before any more granular
+        callbacks (`onSuccess`, `onFailure`, etc.) specified in the `options`
+        object.
+
+        @param {Array|null} err Array of errors that occurred during the
+            transaction, or `null` on success.
+        @param {Get.Transaction} Transaction object.
+
+    @return {Get.Transaction} Transaction object.
+    @since 3.5.0
+    @static
+    **/
+    load: function (urls, options, callback) {
+        return this._load(null, urls, options, callback);
+    },
+
+    // -- Protected Methods ----------------------------------------------------
+
+    /**
+    Triggers an automatic purge if the purge threshold has been reached.
+
+    @method _autoPurge
+    @param {Number} threshold Purge threshold to use, in milliseconds.
+    @protected
+    @since 3.5.0
+    @static
+    **/
+    _autoPurge: function (threshold) {
+        if (threshold && this._purgeNodes.length >= threshold) {
+            Y.log('autopurge triggered after ' + this._purgeNodes.length + ' nodes', 'info', 'get');
+            this._purge(this._purgeNodes);
         }
-    };
-}();
+    },
+
+    /**
+    Populates the `_env` property with information about the current
+    environment.
+
+    @method _getEnv
+    @return {Object} Environment information.
+    @protected
+    @since 3.5.0
+    @static
+    **/
+    _getEnv: function () {
+        var doc = Y.config.doc,
+            ua  = Y.UA;
+
+        // Note: some of these checks require browser sniffs since it's not
+        // feasible to load test files on every pageview just to perform a
+        // feature test. I'm sorry if this makes you sad.
+        return (this._env = {
+            // True if this is a browser that supports disabling async mode on
+            // dynamically created script nodes. See
+            // https://developer.mozilla.org/En/HTML/Element/Script#Attributes
+            async: doc && doc.createElement('script').async === true,
+
+            // True if this browser fires an event when a dynamically injected
+            // link node finishes loading. This is currently true for IE, Opera,
+            // and Firefox 9+. Note that IE versions <9 fire the DOM 0 "onload"
+            // event, but not "load". All versions of IE fire "onload".
+            cssLoad: !!(ua.gecko ? ua.gecko >= 9 : !ua.webkit),
+
+            // True if this browser preserves script execution order while
+            // loading scripts in parallel as long as the script node's `async`
+            // attribute is set to false to explicitly disable async execution.
+            preservesScriptOrder: !!(ua.gecko || ua.opera)
+        });
+    },
+
+    _getTransaction: function (urls, options) {
+        var requests = [],
+            i, len, req, url;
+
+        if (!Lang.isArray(urls)) {
+            urls = [urls];
+        }
+
+        for (i = 0, len = urls.length; i < len; ++i) {
+            url = urls[i];
+            req = {attributes: {}};
+
+            // If `url` is a string, we create a URL object for it, then mix in
+            // global options and request-specific options. If it's an object
+            // with a "url" property, we assume it's a request object containing
+            // URL-specific options.
+            if (typeof url === 'string') {
+                req.url = url;
+            } else if (url.url) {
+                // URL-specific options override both global defaults and
+                // request-specific options.
+                Y.mix(req, url, false, null, 0, true);
+                url = url.url; // Make url a string so we can use it later.
+            } else {
+                Y.log('URL must be a string or an object with a `url` property.', 'error', 'get');
+                continue;
+            }
+
+            Y.mix(req, options, false, null, 0, true);
+            Y.mix(req, this.options, false, null, 0, true);
+
+            // If we didn't get an explicit type for this URL either in the
+            // request options or the URL-specific options, try to determine
+            // one from the file extension.
+            if (!req.type) {
+                if (this.REGEX_CSS.test(url)) {
+                    req.type = 'css';
+                } else {
+                    if (!this.REGEX_JS.test(url)) {
+                        Y.log("Can't guess file type from URL. Assuming JS: " + url, 'warn', 'get');
+                    }
+
+                    req.type = 'js';
+                }
+            }
+
+            // Mix in type-specific default options, but don't overwrite any
+            // options that have already been set.
+            Y.mix(req, req.type === 'js' ? this.jsOptions : this.cssOptions,
+                false, null, 0, true);
+
+            // Give the node an id attribute if it doesn't already have one.
+            req.attributes.id || (req.attributes.id = Y.guid());
+
+            // Backcompat for <3.5.0 behavior.
+            if (req.win) {
+                Y.log('The `win` option is deprecated as of 3.5.0. Use `doc` instead.', 'warn', 'get');
+                req.doc = req.win.document;
+            } else {
+                req.win = req.doc.defaultView || req.doc.parentWindow;
+            }
+
+            if (req.charset) {
+                Y.log('The `charset` option is deprecated as of 3.5.0. Set `attributes.charset` instead.', 'warn', 'get');
+                req.attributes.charset = req.charset;
+            }
+
+            requests.push(req);
+        }
+
+        return new Transaction(requests, options);
+    },
+
+    _load: function (type, urls, options, callback) {
+        var transaction;
+
+        // Allow callback as third param.
+        if (typeof options === 'function') {
+            callback = options;
+            options  = {};
+        }
+
+        options || (options = {});
+        options.type = type;
+
+        if (!this._env) {
+            this._getEnv();
+        }
+
+        transaction = this._getTransaction(urls, options);
+
+        this._queue.push({
+            callback   : callback,
+            transaction: transaction
+        });
+
+        this._next();
+
+        return transaction;
+    },
+
+    _next: function () {
+        var item;
+
+        if (this._pending) {
+            return;
+        }
+
+        item = this._queue.shift();
+
+        if (item) {
+            this._pending = item;
+
+            item.transaction.execute(function () {
+                item.callback && item.callback.apply(this, arguments);
+
+                Get._pending = null;
+                Get._next();
+            });
+        }
+    },
+
+    _purge: function (nodes) {
+        var purgeNodes    = this._purgeNodes,
+            isTransaction = nodes !== purgeNodes,
+            index, node;
+
+        while (node = nodes.pop()) { // assignment
+            node.parentNode && node.parentNode.removeChild(node);
+
+            // If this is a transaction-level purge and this node also exists in
+            // the Get-level _purgeNodes array, we need to remove it from
+            // _purgeNodes to avoid creating a memory leak. The indexOf lookup
+            // sucks, but until we get WeakMaps, this is the least troublesome
+            // way to do this (we can't just hold onto node ids because they may
+            // not be in the same document).
+            if (isTransaction) {
+                index = Y.Array.indexOf(purgeNodes, node);
+
+                if (index > -1) {
+                    purgeNodes.splice(index, 1);
+                }
+            }
+        }
+    }
+};
+
+/**
+Alias for `js()`.
+
+@method script
+@static
+**/
+Get.script = Get.js;
+
+/**
+Represents a Get transaction, which may contain requests for one or more JS or
+CSS files.
+
+This class should not be instantiated manually. Instances will be created and
+returned as needed by Y.Get's `css()`, `js()`, and `load()` methods.
+
+@class Get.Transaction
+@constructor
+@since 3.5.0
+**/
+Get.Transaction = Transaction = function (requests, options) {
+    var self = this;
+
+    self.id       = Transaction._lastId += 1;
+    self.data     = options.data;
+    self.errors   = [];
+    self.nodes    = [];
+    self.options  = options;
+    self.requests = requests;
+
+    self._callbacks = []; // callbacks to call after execution finishes
+    self._queue     = [];
+    self._waiting   = 0;
+
+    // Deprecated pre-3.5.0 properties.
+    self.tId   = self.id; // Use `id` instead.
+    self.win   = options.win || Y.config.win;
+};
+
+/**
+Arbitrary data object associated with this transaction.
+
+This object comes from the options passed to `Get.css()`, `Get.js()`, or
+`Get.load()`, and will be `undefined` if no data object was specified.
+
+@property {Object} data
+**/
+
+/**
+Array of errors that have occurred during this transaction, if any.
+
+@since 3.5.0
+@property {Object[]} errors
+@property {String} errors.error Error message.
+@property {Object} errors.request Request object related to the error.
+**/
+
+/**
+Numeric id for this transaction, unique among all transactions within the same
+YUI sandbox in the current pageview.
+
+@property {Number} id
+@since 3.5.0
+**/
+
+/**
+HTMLElement nodes (native ones, not YUI Node instances) that have been inserted
+during the current transaction.
+
+@property {HTMLElement[]} nodes
+**/
+
+/**
+Options associated with this transaction.
+
+See `Get.options` for the full list of available options.
+
+@property {Object} options
+@since 3.5.0
+**/
+
+/**
+Request objects contained in this transaction. Each request object represents
+one CSS or JS URL that will be (or has been) requested and loaded into the page.
+
+@property {Object} requests
+@since 3.5.0
+**/
+
+/**
+Id of the most recent transaction.
+
+@property _lastId
+@type Number
+@protected
+@static
+**/
+Transaction._lastId = 0;
+
+Transaction.prototype = {
+    // -- Public Properties ----------------------------------------------------
+
+    /**
+    Current state of this transaction. One of "new", "executing", or "done".
+
+    @property _state
+    @type String
+    @protected
+    **/
+    _state: 'new', // "new", "executing", or "done"
+
+    // -- Public Methods -------------------------------------------------------
+
+    /**
+    Aborts this transaction.
+
+    This will cause the transaction's `onFailure` callback to be called and
+    will prevent any new script and link nodes from being added to the document,
+    but any resources that have already been requested will continue loading
+    (there's no safe way to prevent this, unfortunately).
+
+    @method abort
+    @param {String} [msg="Aborted."] Optional message to use in the `errors`
+        array describing why the transaction was aborted.
+    **/
+    abort: function (msg) {
+        this._pending    = null;
+        this._pendingCSS = null;
+        this._pollTimer  = clearTimeout(this._pollTimer);
+        this._queue      = [];
+        this._waiting    = 0;
+
+        this.errors.push({error: msg || 'Aborted'});
+        this._finish();
+    },
+
+    /**
+    Begins execting the transaction.
+
+    There's usually no reason to call this manually, since Get will call it
+    automatically when other pending transactions have finished. If you really
+    want to execute your transaction before Get does, you can, but be aware that
+    this transaction's scripts may end up executing before the scripts in other
+    pending transactions.
+
+    If the transaction is already executing, the specified callback (if any)
+    will be queued and called after execution finishes. If the transaction has
+    already finished, the callback will be called immediately (the transaction
+    will not be executed again).
+
+    @method execute
+    @param {Function} callback Callback function to execute after all requests
+        in the transaction are complete, or after the transaction is aborted.
+    **/
+    execute: function (callback) {
+        var self     = this,
+            requests = self.requests,
+            state    = self._state,
+            i, len, queue, req;
+
+        if (state === 'done') {
+            callback && callback(self.errors.length ? self.errors : null, self);
+            return;
+        } else {
+            callback && self._callbacks.push(callback);
+
+            if (state === 'executing') {
+                return;
+            }
+        }
+
+        self._state = 'executing';
+        self._queue = queue = [];
+
+        if (self.options.timeout) {
+            self._timeout = setTimeout(function () {
+                self.abort('Timeout');
+            }, self.options.timeout);
+        }
+
+        for (i = 0, len = requests.length; i < len; ++i) {
+            req = self.requests[i];
+
+            if (req.async || req.type === 'css') {
+                // No need to queue CSS or fully async JS.
+                self._insert(req);
+            } else {
+                queue.push(req);
+            }
+        }
+
+        self._next();
+    },
+
+    /**
+    Manually purges any `<script>` or `<link>` nodes this transaction has
+    created.
+
+    Be careful when purging a transaction that contains CSS requests, since
+    removing `<link>` nodes will also remove any styles they applied.
+
+    @method purge
+    **/
+    purge: function () {
+        Get._purge(this.nodes);
+    },
+
+    // -- Protected Methods ----------------------------------------------------
+    _createNode: function (name, attrs, doc) {
+        var node = doc.createElement(name),
+            attr;
+
+        for (attr in attrs) {
+            if (attrs.hasOwnProperty(attr)) {
+                node.setAttribute(attr, attrs[attr]);
+            }
+        }
+
+        return node;
+    },
+
+    _finish: function () {
+        var errors  = this.errors.length ? this.errors : null,
+            options = this.options,
+            thisObj = options.context || this,
+            data, i, len;
+
+        if (this._state === 'done') {
+            return;
+        }
+
+        this._state = 'done';
+
+        for (i = 0, len = this._callbacks.length; i < len; ++i) {
+            this._callbacks[i].call(thisObj, errors, this);
+        }
+
+        data = this._getEventData();
+
+        if (errors) {
+            if (options.onTimeout && errors[errors.length - 1] === 'Timeout') {
+                options.onTimeout.call(thisObj, data);
+            }
+
+            if (options.onFailure) {
+                options.onFailure.call(thisObj, data);
+            }
+        } else if (options.onSuccess) {
+            options.onSuccess.call(thisObj, data);
+        }
+
+        if (options.onEnd) {
+            options.onEnd.call(thisObj, data);
+        }
+    },
+
+    _getEventData: function (req) {
+        if (req) {
+            // This merge is necessary for backcompat. I hate it.
+            return Y.merge(this, {
+                abort  : this.abort, // have to copy these because the prototype isn't preserved
+                purge  : this.purge,
+                request: req,
+                url    : req.url,
+                win    : req.win
+            });
+        } else {
+            return this;
+        }
+    },
+
+    _getInsertBefore: function (req) {
+        var doc = req.doc,
+            el  = req.insertBefore,
+            cache, cachedNode, docStamp;
+
+        if (el) {
+            return typeof el === 'string' ? doc.getElementById(el) : el;
+        }
+
+        cache    = Get._insertCache;
+        docStamp = Y.stamp(doc);
+
+        if ((el = cache[docStamp])) { // assignment
+            return el;
+        }
+
+        // Inserting before a <base> tag apparently works around an IE bug
+        // (according to a comment from pre-3.5.0 Y.Get), but I'm not sure what
+        // bug that is, exactly. Better safe than sorry?
+        if ((el = doc.getElementsByTagName('base')[0])) { // assignment
+            return (cache[docStamp] = el);
+        }
+
+        // Look for a <head> element.
+        el = doc.head || doc.getElementsByTagName('head')[0];
+
+        if (el) {
+            // Create a marker node at the end of <head> to use as an insertion
+            // point. Inserting before this node will ensure that all our CSS
+            // gets inserted in the correct order, to maintain style precedence.
+            el.appendChild(doc.createTextNode(''));
+            return (cache[docStamp] = el.lastChild);
+        }
+
+        // If all else fails, just insert before the first script node on the
+        // page, which is virtually guaranteed to exist.
+        return (cache[docStamp] = doc.getElementsByTagName('script')[0]);
+    },
+
+    _insert: function (req) {
+        var env          = Get._env,
+            insertBefore = this._getInsertBefore(req),
+            isScript     = req.type === 'js',
+            node         = req.node,
+            self         = this,
+            ua           = Y.UA,
+            nodeType;
+
+        if (!node) {
+            if (isScript) {
+                nodeType = 'script';
+            } else if (!env.cssLoad && ua.gecko) {
+                nodeType = 'style';
+            } else {
+                nodeType = 'link';
+            }
+
+            node = req.node = this._createNode(nodeType, req.attributes,
+                req.doc);
+        }
+
+        function onError() {
+            self._progress('Failed to load ' + req.url, req);
+        }
+
+        function onLoad() {
+            self._progress(null, req);
+        }
+
+        // Deal with script asynchronicity.
+        if (isScript) {
+            node.setAttribute('src', req.url);
+
+            if (req.async) {
+                // Explicitly indicate that we want the browser to execute this
+                // script asynchronously. This is necessary for older browsers
+                // like Firefox <4.
+                node.async = true;
+            } else {
+                if (env.async) {
+                    // This browser treats injected scripts as async by default
+                    // (standard HTML5 behavior) but asynchronous loading isn't
+                    // desired, so tell the browser not to mark this script as
+                    // async.
+                    node.async = false;
+                }
+
+                // If this browser doesn't preserve script execution order based
+                // on insertion order, we'll need to avoid inserting other
+                // scripts until this one finishes loading.
+                if (!env.preservesScriptOrder) {
+                    this._pending = req;
+                }
+            }
+        } else {
+            if (!env.cssLoad && ua.gecko) {
+                // In Firefox <9, we can import the requested URL into a <style>
+                // node and poll for the existence of node.sheet.cssRules. This
+                // gives us a reliable way to determine CSS load completion that
+                // also works for cross-domain stylesheets.
+                //
+                // Props to Zach Leatherman for calling my attention to this
+                // technique.
+                node.innerHTML = (req.attributes.charset ?
+                    '@charset "' + req.attributes.charset + '";' : '') +
+                    '@import "' + req.url + '";';
+            } else {
+                node.setAttribute('href', req.url);
+            }
+        }
+
+        // Inject the node.
+        if (isScript && ua.ie && ua.ie < 9) {
+            // Script on IE6, 7, and 8.
+            node.onreadystatechange = function () {
+                if (/loaded|complete/.test(node.readyState)) {
+                    node.onreadystatechange = null;
+                    onLoad();
+                }
+            };
+        } else if (!isScript && !env.cssLoad) {
+            // CSS on Firefox <9 or WebKit.
+            this._poll(req);
+        } else {
+            // Script or CSS on everything else. Using DOM 0 events because that
+            // evens the playing field with older IEs.
+            node.onerror = onError;
+            node.onload  = onLoad;
+        }
+
+        this._waiting += 1;
+
+        this.nodes.push(node);
+        insertBefore.parentNode.insertBefore(node, insertBefore);
+    },
+
+    _next: function () {
+        if (this._pending) {
+            return;
+        }
+
+        // If there are requests in the queue, insert the next queued request.
+        // Otherwise, if we're waiting on already-inserted requests to finish,
+        // wait longer. If there are no queued requests and we're not waiting
+        // for anything to load, then we're done!
+        if (this._queue.length) {
+            this._insert(this._queue.shift());
+        } else if (!this._waiting) {
+            this._finish();
+        }
+    },
+
+    _poll: function (newReq) {
+        var self       = this,
+            pendingCSS = self._pendingCSS,
+            isWebKit   = Y.UA.webkit,
+            i, hasRules, j, nodeHref, req, sheets;
+
+        if (newReq) {
+            pendingCSS || (pendingCSS = self._pendingCSS = []);
+            pendingCSS.push(newReq);
+
+            if (self._pollTimer) {
+                // A poll timeout is already pending, so no need to create a
+                // new one.
+                return;
+            }
+        }
+
+        self._pollTimer = null;
+
+        // Note: in both the WebKit and Gecko hacks below, a CSS URL that 404s
+        // will still be treated as a success. There's no good workaround for
+        // this.
+
+        for (i = 0; i < pendingCSS.length; ++i) {
+            req = pendingCSS[i];
+
+            if (isWebKit) {
+                // Look for a stylesheet matching the pending URL.
+                sheets   = req.doc.styleSheets;
+                j        = sheets.length;
+                nodeHref = req.node.href;
+
+                while (--j >= 0) {
+                    if (sheets[j].href === nodeHref) {
+                        pendingCSS.splice(i, 1);
+                        i -= 1;
+                        self._progress(null, req);
+                        break;
+                    }
+                }
+            } else {
+                // Many thanks to Zach Leatherman for calling my attention to
+                // the @import-based cross-domain technique used here, and to
+                // Oleg Slobodskoi for an earlier same-domain implementation.
+                //
+                // See Zach's blog for more details:
+                // http://www.zachleat.com/web/2010/07/29/load-css-dynamically/
+                try {
+                    // We don't really need to store this value since we never
+                    // use it again, but if we don't store it, Closure Compiler
+                    // assumes the code is useless and removes it.
+                    hasRules = !!req.node.sheet.cssRules;
+
+                    // If we get here, the stylesheet has loaded.
+                    pendingCSS.splice(i, 1);
+                    i -= 1;
+                    self._progress(null, req);
+                } catch (ex) {
+                    // An exception means the stylesheet is still loading.
+                }
+            }
+        }
+
+        if (pendingCSS.length) {
+            self._pollTimer = setTimeout(function () {
+                self._poll.call(self);
+            }, self.options.pollInterval);
+        }
+    },
+
+    _progress: function (err, req) {
+        var options = this.options;
+
+        if (err) {
+            req.error = err;
+
+            this.errors.push({
+                error  : err,
+                request: req
+            });
+
+            Y.log(err, 'error', 'get');
+        }
+
+        req.finished = true;
+
+        if (options.onProgress) {
+            options.onProgress.call(options.context || this,
+                this._getEventData(req));
+        }
+
+        if (req.autopurge) {
+            // Pre-3.5.0 Get always excludes the most recent node from an
+            // autopurge. I find this odd, but I'm keeping that behavior for
+            // the sake of backcompat.
+            Get._autoPurge(this.options.purgethreshold);
+            Get._purgeNodes.push(req.node);
+        }
+
+        if (this._pending === req) {
+            this._pending = null;
+        }
+
+        this._waiting -= 1;
+        this._next();
+    }
+};
 
 
-
-}, '3.3.0' ,{requires:['yui-base']});
+}, '3.5.0pr1' ,{requires:['yui-base']});
 YUI.add('features', function(Y) {
 
 var feature_tests = {};
 
+/**
+Contains the core of YUI's feature test architecture.
+@module features
+*/
+
+/**
+* Feature detection
+* @class Features
+* @static
+*/
+
 Y.mix(Y.namespace('Features'), {
-
+    
+    /**
+    * Object hash of all registered feature tests
+    * @property tests
+    * @type Object
+    */
     tests: feature_tests,
-
+    
+    /**
+    * Add a test to the system
+    * 
+    *   ```
+    *   Y.Features.add("load", "1", {});
+    *   ```
+    * 
+    * @method add
+    * @param {String} cat The category, right now only 'load' is supported
+    * @param {String} name The number sequence of the test, how it's reported in the URL or config: 1, 2, 3
+    * @param {Object} o Object containing test properties
+    * @param {String} o.name The name of the test
+    * @param {Function} o.test The test function to execute, the only argument to the function is the `Y` instance
+    * @param {String} o.trigger The module that triggers this test.
+    */
     add: function(cat, name, o) {
         feature_tests[cat] = feature_tests[cat] || {};
         feature_tests[cat][name] = o;
     },
-
+    /**
+    * Execute all tests of a given category and return the serialized results
+    *
+    *   ```
+    *   caps=1:1;2:1;3:0
+    *   ```
+    * @method all
+    * @param {String} cat The category to execute
+    * @param {Array} args The arguments to pass to the test function
+    * @return {String} A semi-colon separated string of tests and their success/failure: 1:1;2:1;3:0
+    */
     all: function(cat, args) {
         var cat_o = feature_tests[cat],
             // results = {};
-            result = '';
+            result = [];
         if (cat_o) {
             Y.Object.each(cat_o, function(v, k) {
-                // results[k] = Y.Features.test(cat, k, args);
-                result += k + ':' +
-                       (Y.Features.test(cat, k, args) ? 1 : 0) + ';';
+                result.push(k + ':' + (Y.Features.test(cat, k, args) ? 1 : 0));
             });
         }
 
-        return result;
+        return (result.length) ? result.join(';') : '';
     },
-
+    /**
+    * Run a sepecific test and return a Boolean response.
+    *
+    *   ```
+    *   Y.Features.test("load", "1");
+    *   ```
+    *
+    * @method test
+    * @param {String} cat The category of the test to run
+    * @param {String} name The name of the test to run
+    * @param {Array} args The arguments to pass to the test function
+    * @return {Boolean} True or false if the test passed/failed.
+    */
     test: function(cat, name, args) {
         args = args || [];
         var result, ua, test,
@@ -3757,10 +4787,21 @@ Y.mix(Y.namespace('Features'), {
 // Y.Features.test("load", "1");
 // caps=1:1;2:0;3:1;
 
-/* This file is auto-generated by src/loader/meta_join.py */
+/* This file is auto-generated by src/loader/scripts/meta_join.py */
 var add = Y.Features.add;
-// autocomplete-list-keys-sniff.js
+// graphics-canvas-default
 add('load', '0', {
+    "name": "graphics-canvas-default", 
+    "test": function(Y) {
+    var DOCUMENT = Y.config.doc,
+		canvas = DOCUMENT && DOCUMENT.createElement("canvas");
+	return (DOCUMENT && !DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") && (canvas && canvas.getContext && canvas.getContext("2d")));
+}, 
+    "trigger": "graphics"
+});
+// autocomplete-list-keys
+add('load', '1', {
+    "name": "autocomplete-list-keys", 
     "test": function (Y) {
     // Only add keyboard support to autocomplete-list if this doesn't appear to
     // be an iOS or Android-based mobile device.
@@ -3777,8 +4818,70 @@ add('load', '0', {
 }, 
     "trigger": "autocomplete-list"
 });
-// ie-style-test.js
-add('load', '1', {
+// graphics-svg
+add('load', '2', {
+    "name": "graphics-svg", 
+    "test": function(Y) {
+    var DOCUMENT = Y.config.doc;
+	return (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
+}, 
+    "trigger": "graphics"
+});
+// history-hash-ie
+add('load', '3', {
+    "name": "history-hash-ie", 
+    "test": function (Y) {
+    var docMode = Y.config.doc && Y.config.doc.documentMode;
+
+    return Y.UA.ie && (!('onhashchange' in Y.config.win) ||
+            !docMode || docMode < 8);
+}, 
+    "trigger": "history-hash"
+});
+// graphics-vml-default
+add('load', '4', {
+    "name": "graphics-vml-default", 
+    "test": function(Y) {
+    var DOCUMENT = Y.config.doc,
+		canvas = DOCUMENT && DOCUMENT.createElement("canvas");
+    return (DOCUMENT && !DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") && (!canvas || !canvas.getContext || !canvas.getContext("2d")));
+}, 
+    "trigger": "graphics"
+});
+// graphics-svg-default
+add('load', '5', {
+    "name": "graphics-svg-default", 
+    "test": function(Y) {
+    var DOCUMENT = Y.config.doc;
+	return (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
+}, 
+    "trigger": "graphics"
+});
+// widget-base-ie
+add('load', '6', {
+    "name": "widget-base-ie", 
+    "trigger": "widget-base", 
+    "ua": "ie"
+});
+// transition-timer
+add('load', '7', {
+    "name": "transition-timer", 
+    "test": function (Y) {
+    var DOCUMENT = Y.config.doc,
+        node = (DOCUMENT) ? DOCUMENT.documentElement: null,
+        ret = true;
+
+    if (node && node.style) {
+        ret = !('MozTransition' in node.style || 'WebkitTransition' in node.style);
+    } 
+
+    return ret;
+}, 
+    "trigger": "transition"
+});
+// dom-style-ie
+add('load', '8', {
+    "name": "dom-style-ie", 
     "test": function (Y) {
 
     var testFeature = Y.Features.test,
@@ -3807,100 +4910,63 @@ add('load', '1', {
 }, 
     "trigger": "dom-style"
 });
-// 0
-add('load', '2', {
-    "trigger": "widget-base", 
-    "ua": "ie"
+// selector-css2
+add('load', '9', {
+    "name": "selector-css2", 
+    "test": function (Y) {
+    var DOCUMENT = Y.config.doc,
+        ret = DOCUMENT && !('querySelectorAll' in DOCUMENT);
+
+    return ret;
+}, 
+    "trigger": "selector"
 });
-// ie-base-test.js
-add('load', '3', {
+// event-base-ie
+add('load', '10', {
+    "name": "event-base-ie", 
     "test": function(Y) {
     var imp = Y.config.doc && Y.config.doc.implementation;
     return (imp && (!imp.hasFeature('Events', '2.0')));
 }, 
     "trigger": "node-base"
 });
-// dd-gestures-test.js
-add('load', '4', {
+// dd-gestures
+add('load', '11', {
+    "name": "dd-gestures", 
     "test": function(Y) {
     return (Y.config.win && ('ontouchstart' in Y.config.win && !Y.UA.chrome));
 }, 
     "trigger": "dd-drag"
 });
-// history-hash-ie-test.js
-add('load', '5', {
-    "test": function (Y) {
-    var docMode = Y.config.doc.documentMode;
-
-    return Y.UA.ie && (!('onhashchange' in Y.config.win) ||
-            !docMode || docMode < 8);
+// scrollview-base-ie
+add('load', '12', {
+    "name": "scrollview-base-ie", 
+    "trigger": "scrollview-base", 
+    "ua": "ie"
+});
+// graphics-canvas
+add('load', '13', {
+    "name": "graphics-canvas", 
+    "test": function(Y) {
+    var DOCUMENT = Y.config.doc,
+		canvas = DOCUMENT && DOCUMENT.createElement("canvas");
+	return (DOCUMENT && !DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") && (canvas && canvas.getContext && canvas.getContext("2d")));
 }, 
-    "trigger": "history-hash"
+    "trigger": "graphics"
+});
+// graphics-vml
+add('load', '14', {
+    "name": "graphics-vml", 
+    "test": function(Y) {
+    var DOCUMENT = Y.config.doc,
+		canvas = DOCUMENT && DOCUMENT.createElement("canvas");
+    return (DOCUMENT && !DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") && (!canvas || !canvas.getContext || !canvas.getContext("2d")));
+}, 
+    "trigger": "graphics"
 });
 
 
-}, '3.3.0' ,{requires:['yui-base']});
-YUI.add('rls', function(Y) {
-
-/**
- * Implentation for building the remote loader service url.
- * @method _rls
- * @param {Array} what the requested modules.
- * @since 3.2.0
- * @return {string} the url for the remote loader service call.
- */
-Y._rls = function(what) {
-
-    var config = Y.config,
-
-        // the configuration
-        rls = config.rls || {
-            m: 1, // required in the template
-            v: Y.version,
-            gv: config.gallery,
-            env: 1, // required in the template
-            lang: config.lang,
-            '2in3v': config['2in3'],
-            '2v': config.yui2,
-            filt: config.filter,
-            filts: config.filters,
-            tests: 1 // required in the template
-        },
-
-        // The rls base path
-        rls_base = config.rls_base || 'load?',
-
-        // the template
-        rls_tmpl = config.rls_tmpl || function() {
-            var s = '', param;
-            for (param in rls) {
-                if (param in rls && rls[param]) {
-                    s += param + '={' + param + '}&';
-                }
-            }
-            // console.log('rls_tmpl: ' + s);
-            return s;
-        }(),
-
-        url;
-
-    // update the request
-    rls.m = what;
-    rls.env = Y.Object.keys(YUI.Env.mods);
-    rls.tests = Y.Features.all('load', [Y]);
-
-    url = Y.Lang.sub(rls_base + rls_tmpl, rls);
-
-    config.rls = rls;
-    config.rls_tmpl = rls_tmpl;
-
-    // console.log(url);
-    return url;
-};
-
-
-
-}, '3.3.0' ,{requires:['get','features']});
+}, '3.5.0pr1' ,{requires:['yui-base']});
 YUI.add('intl-base', function(Y) {
 
 /**
@@ -3988,12 +5054,13 @@ Y.mix(Y.namespace('Intl'), {
 });
 
 
-}, '3.3.0' ,{requires:['yui-base']});
+}, '3.5.0pr1' ,{requires:['yui-base']});
 YUI.add('yui-log', function(Y) {
 
 /**
  * Provides console log capability and exposes a custom event for
- * console implementations.
+ * console implementations. This module is a `core` YUI module, <a href="../classes/YUI.html#method_log">it's documentation is located under the YUI class</a>.
+ *
  * @module yui
  * @submodule yui-log
  */
@@ -4039,8 +5106,10 @@ INSTANCE.log = function(msg, cat, src, silent) {
             incl = c.logInclude;
             if (incl && !(src in incl)) {
                 bail = 1;
+            } else if (incl && (src in incl)) {
+                bail = !incl[src];
             } else if (excl && (src in excl)) {
-                bail = 1;
+                bail = excl[src];
             }
         }
         if (!bail) {
@@ -4094,21 +5163,24 @@ INSTANCE.message = function() {
 };
 
 
-}, '3.3.0' ,{requires:['yui-base']});
+}, '3.5.0pr1' ,{requires:['yui-base']});
 YUI.add('yui-later', function(Y) {
 
 /**
- * Provides a setTimeout/setInterval wrapper
+ * Provides a setTimeout/setInterval wrapper. This module is a `core` YUI module, <a href="../classes/YUI.html#method_later">it's documentation is located under the YUI class</a>.
+ *
  * @module yui
  * @submodule yui-later
  */
+
+var NO_ARGS = [];
 
 /**
  * Executes the supplied function in the context of the supplied
  * object 'when' milliseconds later.  Executes the function a
  * single time unless periodic is set to true.
- * @method later
  * @for YUI
+ * @method later
  * @param when {int} the number of milliseconds to wait until the fn
  * is executed.
  * @param o the context object.
@@ -4119,6 +5191,10 @@ YUI.add('yui-later', function(Y) {
  * the function is executed with one parameter for each array item.
  * If you need to pass a single array parameter, it needs to be wrapped
  * in an array [myarray].
+ *
+ * Note: native methods in IE may not have the call and apply methods.
+ * In this case, it will work, but you are limited to four arguments.
+ *
  * @param periodic {boolean} if true, executes continuously at supplied
  * interval until canceled.
  * @return {object} a timer object. Call the cancel() method on this
@@ -4126,25 +5202,31 @@ YUI.add('yui-later', function(Y) {
  */
 Y.later = function(when, o, fn, data, periodic) {
     when = when || 0;
+    data = (!Y.Lang.isUndefined(data)) ? Y.Array(data) : NO_ARGS;
+    o = o || Y.config.win || Y;
 
-    var m = fn, f, id;
-
-    if (o && Y.Lang.isString(fn)) {
-        m = o[fn];
-    }
-
-    f = !Y.Lang.isUndefined(data) ? function() {
-        m.apply(o, Y.Array(data));
-    } : function() {
-        m.call(o);
-    };
-
-    id = (periodic) ? setInterval(f, when) : setTimeout(f, when);
+    var cancelled = false,
+        method = (o && Y.Lang.isString(fn)) ? o[fn] : fn,
+        wrapper = function() {
+            // IE 8- may execute a setInterval callback one last time
+            // after clearInterval was called, so in order to preserve
+            // the cancel() === no more runny-run, we have to jump through
+            // an extra hoop.
+            if (!cancelled) {
+                if (!method.apply) {
+                    method(data[0], data[1], data[2], data[3]);
+                } else {
+                    method.apply(o, data || NO_ARGS);
+                }
+            }
+        },
+        id = (periodic) ? setInterval(wrapper, when) : setTimeout(wrapper, when);
 
     return {
         id: id,
         interval: periodic,
         cancel: function() {
+            cancelled = true;
             if (this.interval) {
                 clearInterval(id);
             } else {
@@ -4158,50 +5240,4675 @@ Y.Lang.later = Y.later;
 
 
 
-}, '3.3.0' ,{requires:['yui-base']});
-YUI.add('yui-throttle', function(Y) {
+}, '3.5.0pr1' ,{requires:['yui-base']});
+YUI.add('loader-base', function(Y) {
 
 /**
- * Provides a throttle/limiter for function calls
- * @module yui
- * @submodule yui-throttle
+ * The YUI loader core
+ * @module loader
+ * @submodule loader-base
  */
 
-/*! Based on work by Simon Willison: http://gist.github.com/292562 */
+if (!YUI.Env[Y.version]) {
+
+    (function() {
+        var VERSION = Y.version,
+            BUILD = '/build/',
+            ROOT = VERSION + BUILD,
+            CDN_BASE = Y.Env.base,
+            GALLERY_VERSION = 'gallery-2011.11.30-20-58',
+            TNT = '2in3',
+            TNT_VERSION = '4',
+            YUI2_VERSION = '2.9.0',
+            COMBO_BASE = CDN_BASE + 'combo?',
+            META = { version: VERSION,
+                              root: ROOT,
+                              base: Y.Env.base,
+                              comboBase: COMBO_BASE,
+                              skin: { defaultSkin: 'sam',
+                                           base: 'assets/skins/',
+                                           path: 'skin.css',
+                                           after: ['cssreset',
+                                                          'cssfonts',
+                                                          'cssgrids',
+                                                          'cssbase',
+                                                          'cssreset-context',
+                                                          'cssfonts-context']},
+                              groups: {},
+                              patterns: {} },
+            groups = META.groups,
+            yui2Update = function(tnt, yui2) {
+                                  var root = TNT + '.' +
+                                            (tnt || TNT_VERSION) + '/' +
+                                            (yui2 || YUI2_VERSION) + BUILD;
+                                  groups.yui2.base = CDN_BASE + root;
+                                  groups.yui2.root = root;
+                              },
+            galleryUpdate = function(tag) {
+                                  var root = (tag || GALLERY_VERSION) + BUILD;
+                                  groups.gallery.base = CDN_BASE + root;
+                                  groups.gallery.root = root;
+                              };
+
+        groups[VERSION] = {};
+
+        groups.gallery = {
+            ext: false,
+            combine: true,
+            comboBase: COMBO_BASE,
+            update: galleryUpdate,
+            patterns: { 'gallery-': { },
+                        'lang/gallery-': {},
+                        'gallerycss-': { type: 'css' } }
+        };
+
+        groups.yui2 = {
+            combine: true,
+            ext: false,
+            comboBase: COMBO_BASE,
+            update: yui2Update,
+            patterns: {
+                'yui2-': {
+                    configFn: function(me) {
+                        if (/-skin|reset|fonts|grids|base/.test(me.name)) {
+                            me.type = 'css';
+                            me.path = me.path.replace(/\.js/, '.css');
+                            // this makes skins in builds earlier than
+                            // 2.6.0 work as long as combine is false
+                            me.path = me.path.replace(/\/yui2-skin/,
+                                             '/assets/skins/sam/yui2-skin');
+                        }
+                    }
+                }
+            }
+        };
+
+        galleryUpdate();
+        yui2Update();
+
+        YUI.Env[VERSION] = META;
+    }());
+}
+
+
 /**
- * Throttles a call to a method based on the time between calls.
- * @method throttle
+ * Loader dynamically loads script and css files.  It includes the dependency
+ * info for the version of the library in use, and will automatically pull in
+ * dependencies for the modules requested.  It supports rollup files and will
+ * automatically use these when appropriate in order to minimize the number of
+ * http connections required to load all of the dependencies.  It can load the
+ * files from the Yahoo! CDN, and it can utilize the combo service provided on
+ * this network to reduce the number of http connections required to download
+ * YUI files.
+ *
+ * @module loader
+ * @main loader
+ * @submodule loader-base
+ */
+
+var NOT_FOUND = {},
+    NO_REQUIREMENTS = [],
+    MAX_URL_LENGTH = 2048,
+    GLOBAL_ENV = YUI.Env,
+    GLOBAL_LOADED = GLOBAL_ENV._loaded,
+    CSS = 'css',
+    JS = 'js',
+    INTL = 'intl',
+    VERSION = Y.version,
+    ROOT_LANG = '',
+    YObject = Y.Object,
+    oeach = YObject.each,
+    YArray = Y.Array,
+    _queue = GLOBAL_ENV._loaderQueue,
+    META = GLOBAL_ENV[VERSION],
+    SKIN_PREFIX = 'skin-',
+    L = Y.Lang,
+    ON_PAGE = GLOBAL_ENV.mods,
+    modulekey,
+    cache,
+    _path = function(dir, file, type, nomin) {
+                        var path = dir + '/' + file;
+                        if (!nomin) {
+                            path += '-min';
+                        }
+                        path += '.' + (type || CSS);
+
+                        return path;
+                    };
+
+/**
+ * The component metadata is stored in Y.Env.meta.
+ * Part of the loader module.
+ * @property meta
  * @for YUI
- * @param fn {function} The function call to throttle.
- * @param ms {int} The number of milliseconds to throttle the method call.
- * Can set globally with Y.config.throttleTime or by call. Passing a -1 will
- * disable the throttle. Defaults to 150.
- * @return {function} Returns a wrapped function that calls fn throttled.
- * @since 3.1.0
  */
-Y.throttle = function(fn, ms) {
-    ms = (ms) ? ms : (Y.config.throttleTime || 150);
+Y.Env.meta = META;
 
-    if (ms === -1) {
-        return (function() {
-            fn.apply(null, arguments);
+/**
+ * Loader dynamically loads script and css files.  It includes the dependency
+ * info for the version of the library in use, and will automatically pull in
+ * dependencies for the modules requested.  It supports rollup files and will
+ * automatically use these when appropriate in order to minimize the number of
+ * http connections required to load all of the dependencies.  It can load the
+ * files from the Yahoo! CDN, and it can utilize the combo service provided on
+ * this network to reduce the number of http connections required to download
+ * YUI files.
+ *
+ * While the loader can be instantiated by the end user, it normally is not.
+ * @see YUI.use for the normal use case.  The use function automatically will
+ * pull in missing dependencies.
+ *
+ * @constructor
+ * @class Loader
+ * @param {object} o an optional set of configuration options.  Valid options:
+ * <ul>
+ *  <li>base:
+ *  The base dir</li>
+ *  <li>comboBase:
+ *  The YUI combo service base dir. Ex: http://yui.yahooapis.com/combo?</li>
+ *  <li>root:
+ *  The root path to prepend to module names for the combo service.
+ *  Ex: 2.5.2/build/</li>
+ *  <li>filter:.
+ *
+ * A filter to apply to result urls.  This filter will modify the default
+ * path for all modules.  The default path for the YUI library is the
+ * minified version of the files (e.g., event-min.js).  The filter property
+ * can be a predefined filter or a custom filter.  The valid predefined
+ * filters are:
+ * <dl>
+ *  <dt>DEBUG</dt>
+ *  <dd>Selects the debug versions of the library (e.g., event-debug.js).
+ *      This option will automatically include the Logger widget</dd>
+ *  <dt>RAW</dt>
+ *  <dd>Selects the non-minified version of the library (e.g., event.js).
+ *  </dd>
+ * </dl>
+ * You can also define a custom filter, which must be an object literal
+ * containing a search expression and a replace string:
+ * <pre>
+ *  myFilter: &#123;
+ *      'searchExp': "-min\\.js",
+ *      'replaceStr': "-debug.js"
+ *  &#125;
+ * </pre>
+ *
+ *  </li>
+ *  <li>filters: per-component filter specification.  If specified
+ *  for a given component, this overrides the filter config. _Note:_ This does not work on combo urls, use the filter property instead.</li>
+ *  <li>combine:
+ *  Use the YUI combo service to reduce the number of http connections
+ *  required to load your dependencies</li>
+ *  <li>ignore:
+ *  A list of modules that should never be dynamically loaded</li>
+ *  <li>force:
+ *  A list of modules that should always be loaded when required, even if
+ *  already present on the page</li>
+ *  <li>insertBefore:
+ *  Node or id for a node that should be used as the insertion point for
+ *  new nodes</li>
+ *  <li>charset:
+ *  charset for dynamic nodes (deprecated, use jsAttributes or cssAttributes)
+ *  </li>
+ *  <li>jsAttributes: object literal containing attributes to add to script
+ *  nodes</li>
+ *  <li>cssAttributes: object literal containing attributes to add to link
+ *  nodes</li>
+ *  <li>timeout:
+ *  The number of milliseconds before a timeout occurs when dynamically
+ *  loading nodes.  If not set, there is no timeout</li>
+ *  <li>context:
+ *  execution context for all callbacks</li>
+ *  <li>onSuccess:
+ *  callback for the 'success' event</li>
+ *  <li>onFailure: callback for the 'failure' event</li>
+ *  <li>onCSS: callback for the 'CSSComplete' event.  When loading YUI
+ *  components with CSS the CSS is loaded first, then the script.  This
+ *  provides a moment you can tie into to improve
+ *  the presentation of the page while the script is loading.</li>
+ *  <li>onTimeout:
+ *  callback for the 'timeout' event</li>
+ *  <li>onProgress:
+ *  callback executed each time a script or css file is loaded</li>
+ *  <li>modules:
+ *  A list of module definitions.  See Loader.addModule for the supported
+ *  module metadata</li>
+ *  <li>groups:
+ *  A list of group definitions.  Each group can contain specific definitions
+ *  for base, comboBase, combine, and accepts a list of modules.  See above
+ *  for the description of these properties.</li>
+ *  <li>2in3: the version of the YUI 2 in 3 wrapper to use.  The intrinsic
+ *  support for YUI 2 modules in YUI 3 relies on versions of the YUI 2
+ *  components inside YUI 3 module wrappers.  These wrappers
+ *  change over time to accomodate the issues that arise from running YUI 2
+ *  in a YUI 3 sandbox.</li>
+ *  <li>yui2: when using the 2in3 project, you can select the version of
+ *  YUI 2 to use.  Valid values *  are 2.2.2, 2.3.1, 2.4.1, 2.5.2, 2.6.0,
+ *  2.7.0, 2.8.0, and 2.8.1 [default] -- plus all versions of YUI 2
+ *  going forward.</li>
+ * </ul>
+ */
+Y.Loader = function(o) {
+
+    var defaults = META.modules,
+        self = this;
+
+    modulekey = META.md5;
+
+    /**
+     * Internal callback to handle multiple internal insert() calls
+     * so that css is inserted prior to js
+     * @property _internalCallback
+     * @private
+     */
+    // self._internalCallback = null;
+
+    /**
+     * Callback that will be executed when the loader is finished
+     * with an insert
+     * @method onSuccess
+     * @type function
+     */
+    // self.onSuccess = null;
+
+    /**
+     * Callback that will be executed if there is a failure
+     * @method onFailure
+     * @type function
+     */
+    // self.onFailure = null;
+
+    /**
+     * Callback for the 'CSSComplete' event.  When loading YUI components
+     * with CSS the CSS is loaded first, then the script.  This provides
+     * a moment you can tie into to improve the presentation of the page
+     * while the script is loading.
+     * @method onCSS
+     * @type function
+     */
+    // self.onCSS = null;
+
+    /**
+     * Callback executed each time a script or css file is loaded
+     * @method onProgress
+     * @type function
+     */
+    // self.onProgress = null;
+
+    /**
+     * Callback that will be executed if a timeout occurs
+     * @method onTimeout
+     * @type function
+     */
+    // self.onTimeout = null;
+
+    /**
+     * The execution context for all callbacks
+     * @property context
+     * @default {YUI} the YUI instance
+     */
+    self.context = Y;
+
+    /**
+     * Data that is passed to all callbacks
+     * @property data
+     */
+    // self.data = null;
+
+    /**
+     * Node reference or id where new nodes should be inserted before
+     * @property insertBefore
+     * @type string|HTMLElement
+     */
+    // self.insertBefore = null;
+
+    /**
+     * The charset attribute for inserted nodes
+     * @property charset
+     * @type string
+     * @deprecated , use cssAttributes or jsAttributes.
+     */
+    // self.charset = null;
+
+    /**
+     * An object literal containing attributes to add to link nodes
+     * @property cssAttributes
+     * @type object
+     */
+    // self.cssAttributes = null;
+
+    /**
+     * An object literal containing attributes to add to script nodes
+     * @property jsAttributes
+     * @type object
+     */
+    // self.jsAttributes = null;
+
+    /**
+     * The base directory.
+     * @property base
+     * @type string
+     * @default http://yui.yahooapis.com/[YUI VERSION]/build/
+     */
+    self.base = Y.Env.meta.base + Y.Env.meta.root;
+
+    /**
+     * Base path for the combo service
+     * @property comboBase
+     * @type string
+     * @default http://yui.yahooapis.com/combo?
+     */
+    self.comboBase = Y.Env.meta.comboBase;
+
+    /*
+     * Base path for language packs.
+     */
+    // self.langBase = Y.Env.meta.langBase;
+    // self.lang = "";
+
+    /**
+     * If configured, the loader will attempt to use the combo
+     * service for YUI resources and configured external resources.
+     * @property combine
+     * @type boolean
+     * @default true if a base dir isn't in the config
+     */
+    self.combine = o.base &&
+        (o.base.indexOf(self.comboBase.substr(0, 20)) > -1);
+    
+    /**
+    * The default seperator to use between files in a combo URL
+    * @property comboSep
+    * @type {String}
+    * @default Ampersand
+    */
+    self.comboSep = '&';
+    /**
+     * Max url length for combo urls.  The default is 2048. This is the URL
+     * limit for the Yahoo! hosted combo servers.  If consuming
+     * a different combo service that has a different URL limit
+     * it is possible to override this default by supplying
+     * the maxURLLength config option.  The config option will
+     * only take effect if lower than the default.
+     *
+     * @property maxURLLength
+     * @type int
+     */
+    self.maxURLLength = MAX_URL_LENGTH;
+
+    /**
+     * Ignore modules registered on the YUI global
+     * @property ignoreRegistered
+     * @default false
+     */
+    // self.ignoreRegistered = false;
+
+    /**
+     * Root path to prepend to module path for the combo
+     * service
+     * @property root
+     * @type string
+     * @default [YUI VERSION]/build/
+     */
+    self.root = Y.Env.meta.root;
+
+    /**
+     * Timeout value in milliseconds.  If set, self value will be used by
+     * the get utility.  the timeout event will fire if
+     * a timeout occurs.
+     * @property timeout
+     * @type int
+     */
+    self.timeout = 0;
+
+    /**
+     * A list of modules that should not be loaded, even if
+     * they turn up in the dependency tree
+     * @property ignore
+     * @type string[]
+     */
+    // self.ignore = null;
+
+    /**
+     * A list of modules that should always be loaded, even
+     * if they have already been inserted into the page.
+     * @property force
+     * @type string[]
+     */
+    // self.force = null;
+
+    self.forceMap = {};
+
+    /**
+     * Should we allow rollups
+     * @property allowRollup
+     * @type boolean
+     * @default false
+     */
+    self.allowRollup = false;
+
+    /**
+     * A filter to apply to result urls.  This filter will modify the default
+     * path for all modules.  The default path for the YUI library is the
+     * minified version of the files (e.g., event-min.js).  The filter property
+     * can be a predefined filter or a custom filter.  The valid predefined
+     * filters are:
+     * <dl>
+     *  <dt>DEBUG</dt>
+     *  <dd>Selects the debug versions of the library (e.g., event-debug.js).
+     *      This option will automatically include the Logger widget</dd>
+     *  <dt>RAW</dt>
+     *  <dd>Selects the non-minified version of the library (e.g., event.js).
+     *  </dd>
+     * </dl>
+     * You can also define a custom filter, which must be an object literal
+     * containing a search expression and a replace string:
+     * <pre>
+     *  myFilter: &#123;
+     *      'searchExp': "-min\\.js",
+     *      'replaceStr': "-debug.js"
+     *  &#125;
+     * </pre>
+     * @property filter
+     * @type string| {searchExp: string, replaceStr: string}
+     */
+    // self.filter = null;
+
+    /**
+     * per-component filter specification.  If specified for a given
+     * component, this overrides the filter config.
+     * @property filters
+     * @type object
+     */
+    self.filters = {};
+
+    /**
+     * The list of requested modules
+     * @property required
+     * @type {string: boolean}
+     */
+    self.required = {};
+
+    /**
+     * If a module name is predefined when requested, it is checked againsts
+     * the patterns provided in this property.  If there is a match, the
+     * module is added with the default configuration.
+     *
+     * At the moment only supporting module prefixes, but anticipate
+     * supporting at least regular expressions.
+     * @property patterns
+     * @type Object
+     */
+    // self.patterns = Y.merge(Y.Env.meta.patterns);
+    self.patterns = {};
+
+    /**
+     * The library metadata
+     * @property moduleInfo
+     */
+    // self.moduleInfo = Y.merge(Y.Env.meta.moduleInfo);
+    self.moduleInfo = {};
+
+    self.groups = Y.merge(Y.Env.meta.groups);
+
+    /**
+     * Provides the information used to skin the skinnable components.
+     * The following skin definition would result in 'skin1' and 'skin2'
+     * being loaded for calendar (if calendar was requested), and
+     * 'sam' for all other skinnable components:
+     *
+     *   <code>
+     *   skin: {
+     *
+     *      // The default skin, which is automatically applied if not
+     *      // overriden by a component-specific skin definition.
+     *      // Change this in to apply a different skin globally
+     *      defaultSkin: 'sam',
+     *
+     *      // This is combined with the loader base property to get
+     *      // the default root directory for a skin. ex:
+     *      // http://yui.yahooapis.com/2.3.0/build/assets/skins/sam/
+     *      base: 'assets/skins/',
+     *
+     *      // Any component-specific overrides can be specified here,
+     *      // making it possible to load different skins for different
+     *      // components.  It is possible to load more than one skin
+     *      // for a given component as well.
+     *      overrides: {
+     *          calendar: ['skin1', 'skin2']
+     *      }
+     *   }
+     *   </code>
+     *   @property skin
+     */
+    self.skin = Y.merge(Y.Env.meta.skin);
+
+    /*
+     * Map of conditional modules
+     * @since 3.2.0
+     */
+    self.conditions = {};
+
+    // map of modules with a hash of modules that meet the requirement
+    // self.provides = {};
+
+    self.config = o;
+    self._internal = true;
+
+
+    cache = GLOBAL_ENV._renderedMods;
+
+    if (cache) {
+        oeach(cache, function modCache(v, k) {
+            //self.moduleInfo[k] = Y.merge(v);
+            self.moduleInfo[k] = v;
         });
+
+        cache = GLOBAL_ENV._conditions;
+
+        oeach(cache, function condCache(v, k) {
+            //self.conditions[k] = Y.merge(v);
+            self.conditions[k] = v;
+        });
+
+    } else {
+        oeach(defaults, self.addModule, self);
     }
 
-    var last = Y.Lang.now();
+    if (!GLOBAL_ENV._renderedMods) {
+        //GLOBAL_ENV._renderedMods = Y.merge(self.moduleInfo);
+        //GLOBAL_ENV._conditions = Y.merge(self.conditions);
+        GLOBAL_ENV._renderedMods = self.moduleInfo;
+        GLOBAL_ENV._conditions = self.conditions;
+    }
 
-    return (function() {
-        var now = Y.Lang.now();
-        if (now - last > ms) {
-            last = now;
-            fn.apply(null, arguments);
+
+    /**
+     * Set when beginning to compute the dependency tree.
+     * Composed of what YUI reports to be loaded combined
+     * with what has been loaded by any instance on the page
+     * with the version number specified in the metadata.
+     * @property loaded
+     * @type {string: boolean}
+     */
+    self.loaded = GLOBAL_LOADED[VERSION];
+
+
+    self._inspectPage();
+
+    self._internal = false;
+
+    self._config(o);
+
+    self.forceMap = (self.force) ? Y.Array.hash(self.force) : {};	
+
+    self.testresults = null;
+
+    if (Y.config.tests) {
+        self.testresults = Y.config.tests;
+    }
+
+    /**
+     * List of rollup files found in the library metadata
+     * @property rollups
+     */
+    // self.rollups = null;
+
+    /**
+     * Whether or not to load optional dependencies for
+     * the requested modules
+     * @property loadOptional
+     * @type boolean
+     * @default false
+     */
+    // self.loadOptional = false;
+
+    /**
+     * All of the derived dependencies in sorted order, which
+     * will be populated when either calculate() or insert()
+     * is called
+     * @property sorted
+     * @type string[]
+     */
+    self.sorted = [];
+
+    /*
+     * A list of modules to attach to the YUI instance when complete.
+     * If not supplied, the sorted list of dependencies are applied.
+     * @property attaching
+     */
+    // self.attaching = null;
+
+    /**
+     * Flag to indicate the dependency tree needs to be recomputed
+     * if insert is called again.
+     * @property dirty
+     * @type boolean
+     * @default true
+     */
+    self.dirty = true;
+
+    /**
+     * List of modules inserted by the utility
+     * @property inserted
+     * @type {string: boolean}
+     */
+    self.inserted = {};
+
+    /**
+     * List of skipped modules during insert() because the module
+     * was not defined
+     * @property skipped
+     */
+    self.skipped = {};
+
+    // Y.on('yui:load', self.loadNext, self);
+
+    self.tested = {};
+
+    /*
+     * Cached sorted calculate results
+     * @property results
+     * @since 3.2.0
+     */
+    //self.results = {};
+
+};
+
+Y.Loader.prototype = {
+
+    FILTER_DEFS: {
+        RAW: {
+            'searchExp': '-min\\.js',
+            'replaceStr': '.js'
+        },
+        DEBUG: {
+            'searchExp': '-min\\.js',
+            'replaceStr': '-debug.js'
         }
-    });
+    },
+    /*
+    * Check the pages meta-data and cache the result.
+    * @method _inspectPage
+    * @private
+    */
+    _inspectPage: function() {
+        
+        //Inspect the page for CSS only modules and mark them as loaded.
+        oeach(this.moduleInfo, function(v, k) {
+            if (v.type && v.type === CSS) {
+                if (this.isCSSLoaded(k)) {
+                    Y.log('Found CSS module on page: ' + k, 'info', 'loader');
+                    this.loaded[k] = true;
+                }
+            }
+        }, this);
+        
+        oeach(ON_PAGE, function(v, k) {
+           if (v.details) {
+               var m = this.moduleInfo[k],
+                   req = v.details.requires,
+                   mr = m && m.requires;
+               if (m) {
+                   if (!m._inspected && req && mr.length != req.length) {
+                       // console.log('deleting ' + m.name);
+                       delete m.expanded;
+                   }
+               } else {
+                   m = this.addModule(v.details, k);
+               }
+               m._inspected = true;
+           }
+       }, this);
+    },
+    /*
+    * returns true if b is not loaded, and is required directly or by means of modules it supersedes.
+    * @private
+    * @method _requires
+    * @param {String} mod1 The first module to compare
+    * @param {String} mod2 The second module to compare
+    */
+   _requires: function(mod1, mod2) {
+
+        var i, rm, after_map, s,
+            info = this.moduleInfo,
+            m = info[mod1],
+            other = info[mod2];
+
+        if (!m || !other) {
+            return false;
+        }
+
+        rm = m.expanded_map;
+        after_map = m.after_map;
+
+        // check if this module should be sorted after the other
+        // do this first to short circut circular deps
+        if (after_map && (mod2 in after_map)) {
+            return true;
+        }
+
+        after_map = other.after_map;
+
+        // and vis-versa
+        if (after_map && (mod1 in after_map)) {
+            return false;
+        }
+
+        // check if this module requires one the other supersedes
+        s = info[mod2] && info[mod2].supersedes;
+        if (s) {
+            for (i = 0; i < s.length; i++) {
+                if (this._requires(mod1, s[i])) {
+                    return true;
+                }
+            }
+        }
+
+        s = info[mod1] && info[mod1].supersedes;
+        if (s) {
+            for (i = 0; i < s.length; i++) {
+                if (this._requires(mod2, s[i])) {
+                    return false;
+                }
+            }
+        }
+
+        // check if this module requires the other directly
+        // if (r && YArray.indexOf(r, mod2) > -1) {
+        if (rm && (mod2 in rm)) {
+            return true;
+        }
+
+        // external css files should be sorted below yui css
+        if (m.ext && m.type == CSS && !other.ext && other.type == CSS) {
+            return true;
+        }
+
+        return false;
+    },
+    /**
+    * Apply a new config to the Loader instance
+    * @method _config
+    * @param {Object} o The new configuration
+    */
+    _config: function(o) {
+        var i, j, val, f, group, groupName, self = this;
+        // apply config values
+        if (o) {
+            for (i in o) {
+                if (o.hasOwnProperty(i)) {
+                    val = o[i];
+                    if (i == 'require') {
+                        self.require(val);
+                    } else if (i == 'skin') {
+                        Y.mix(self.skin, o[i], true);
+                    } else if (i == 'groups') {
+                        for (j in val) {
+                            if (val.hasOwnProperty(j)) {
+                                // Y.log('group: ' + j);
+                                groupName = j;
+                                group = val[j];
+                                self.addGroup(group, groupName);
+                            }
+                        }
+
+                    } else if (i == 'modules') {
+                        // add a hash of module definitions
+                        oeach(val, self.addModule, self);
+                    } else if (i == 'gallery') {
+                        this.groups.gallery.update(val);
+                    } else if (i == 'yui2' || i == '2in3') {
+                        this.groups.yui2.update(o['2in3'], o.yui2);
+                    } else if (i == 'maxURLLength') {
+                        self[i] = Math.min(MAX_URL_LENGTH, val);
+                    } else {
+                        self[i] = val;
+                    }
+                }
+            }
+        }
+
+        // fix filter
+        f = self.filter;
+
+        if (L.isString(f)) {
+            f = f.toUpperCase();
+            self.filterName = f;
+            self.filter = self.FILTER_DEFS[f];
+            if (f == 'DEBUG') {
+                self.require('yui-log', 'dump');
+            }
+        }
+
+        if (self.lang) {
+            self.require('intl-base', 'intl');
+        }
+
+    },
+
+    /**
+     * Returns the skin module name for the specified skin name.  If a
+     * module name is supplied, the returned skin module name is
+     * specific to the module passed in.
+     * @method formatSkin
+     * @param {string} skin the name of the skin.
+     * @param {string} mod optional: the name of a module to skin.
+     * @return {string} the full skin module name.
+     */
+    formatSkin: function(skin, mod) {
+        var s = SKIN_PREFIX + skin;
+        if (mod) {
+            s = s + '-' + mod;
+        }
+
+        return s;
+    },
+
+    /**
+     * Adds the skin def to the module info
+     * @method _addSkin
+     * @param {string} skin the name of the skin.
+     * @param {string} mod the name of the module.
+     * @param {string} parent parent module if this is a skin of a
+     * submodule or plugin.
+     * @return {string} the module name for the skin.
+     * @private
+     */
+    _addSkin: function(skin, mod, parent) {
+        var mdef, pkg, name, nmod,
+            info = this.moduleInfo,
+            sinf = this.skin,
+            ext = info[mod] && info[mod].ext;
+
+        // Add a module definition for the module-specific skin css
+        if (mod) {
+            name = this.formatSkin(skin, mod);
+            if (!info[name]) {
+                mdef = info[mod];
+                pkg = mdef.pkg || mod;
+                nmod = {
+                    name: name,
+                    group: mdef.group,
+                    type: 'css',
+                    after: sinf.after,
+                    path: (parent || pkg) + '/' + sinf.base + skin +
+                          '/' + mod + '.css',
+                    ext: ext
+                };
+                if (mdef.base) {
+                    nmod.base = mdef.base;
+                }
+                if (mdef.configFn) {
+                    nmod.configFn = mdef.configFn;
+                }
+                this.addModule(nmod, name);
+
+                Y.log('adding skin ' + name + ', ' + parent + ', ' + pkg + ', ' + info[name].path);
+            }
+        }
+
+        return name;
+    },
+
+    /**
+     * Add a new module group
+     * <dl>
+     *   <dt>name:</dt>      <dd>required, the group name</dd>
+     *   <dt>base:</dt>      <dd>The base dir for this module group</dd>
+     *   <dt>root:</dt>      <dd>The root path to add to each combo
+     *   resource path</dd>
+     *   <dt>combine:</dt>   <dd>combo handle</dd>
+     *   <dt>comboBase:</dt> <dd>combo service base path</dd>
+     *   <dt>modules:</dt>   <dd>the group of modules</dd>
+     * </dl>
+     * @method addGroup
+     * @param {object} o An object containing the module data.
+     * @param {string} name the group name.
+     */
+    addGroup: function(o, name) {
+        var mods = o.modules,
+            self = this;
+        name = name || o.name;
+        o.name = name;
+        self.groups[name] = o;
+
+        if (o.patterns) {
+            oeach(o.patterns, function(v, k) {
+                v.group = name;
+                self.patterns[k] = v;
+            });
+        }
+
+        if (mods) {
+            oeach(mods, function(v, k) {
+                v.group = name;
+                self.addModule(v, k);
+            }, self);
+        }
+    },
+
+    /**
+     * Add a new module to the component metadata.
+     * <dl>
+     *     <dt>name:</dt>       <dd>required, the component name</dd>
+     *     <dt>type:</dt>       <dd>required, the component type (js or css)
+     *     </dd>
+     *     <dt>path:</dt>       <dd>required, the path to the script from
+     *     "base"</dd>
+     *     <dt>requires:</dt>   <dd>array of modules required by this
+     *     component</dd>
+     *     <dt>optional:</dt>   <dd>array of optional modules for this
+     *     component</dd>
+     *     <dt>supersedes:</dt> <dd>array of the modules this component
+     *     replaces</dd>
+     *     <dt>after:</dt>      <dd>array of modules the components which, if
+     *     present, should be sorted above this one</dd>
+     *     <dt>after_map:</dt>  <dd>faster alternative to 'after' -- supply
+     *     a hash instead of an array</dd>
+     *     <dt>rollup:</dt>     <dd>the number of superseded modules required
+     *     for automatic rollup</dd>
+     *     <dt>fullpath:</dt>   <dd>If fullpath is specified, this is used
+     *     instead of the configured base + path</dd>
+     *     <dt>skinnable:</dt>  <dd>flag to determine if skin assets should
+     *     automatically be pulled in</dd>
+     *     <dt>submodules:</dt> <dd>a hash of submodules</dd>
+     *     <dt>group:</dt>      <dd>The group the module belongs to -- this
+     *     is set automatically when it is added as part of a group
+     *     configuration.</dd>
+     *     <dt>lang:</dt>
+     *       <dd>array of BCP 47 language tags of languages for which this
+     *           module has localized resource bundles,
+     *           e.g., ["en-GB","zh-Hans-CN"]</dd>
+     *     <dt>condition:</dt>
+     *       <dd>Specifies that the module should be loaded automatically if
+     *           a condition is met.  This is an object with up to three fields:
+     *           [trigger] - the name of a module that can trigger the auto-load
+     *           [test] - a function that returns true when the module is to be
+     *           loaded.
+     *           [when] - specifies the load order of the conditional module
+     *           with regard to the position of the trigger module.
+     *           This should be one of three values: 'before', 'after', or
+     *           'instead'.  The default is 'after'.
+     *       </dd>
+     *     <dt>testresults:</dt><dd>a hash of test results from Y.Features.all()</dd>
+     * </dl>
+     * @method addModule
+     * @param {object} o An object containing the module data.
+     * @param {string} name the module name (optional), required if not
+     * in the module data.
+     * @return {object} the module definition or null if
+     * the object passed in did not provide all required attributes.
+     */
+    addModule: function(o, name) {
+        name = name || o.name;
+        
+        //Only merge this data if the temp flag is set
+        //from an earlier pass from a pattern or else
+        //an override module (YUI_config) can not be used to
+        //replace a default module.
+        if (this.moduleInfo[name] && this.moduleInfo[name].temp) {
+            //This catches temp modules loaded via a pattern
+            // The module will be added twice, once from the pattern and
+            // Once from the actual add call, this ensures that properties
+            // that were added to the module the first time around (group: gallery)
+            // are also added the second time around too.
+            o = Y.merge(this.moduleInfo[name], o);
+        }
+
+        o.name = name;
+
+        if (!o || !o.name) {
+            return null;
+        }
+
+        if (!o.type) {
+            o.type = JS;
+        }
+
+        if (!o.path && !o.fullpath) {
+            o.path = _path(name, name, o.type);
+        }
+        o.supersedes = o.supersedes || o.use;
+
+        o.ext = ('ext' in o) ? o.ext : (this._internal) ? false : true;
+        o.requires = this.filterRequires(o.requires) || [];
+
+        // Handle submodule logic
+        var subs = o.submodules, i, l, t, sup, s, smod, plugins, plug,
+            j, langs, packName, supName, flatSup, flatLang, lang, ret,
+            overrides, skinname, when,
+            conditions = this.conditions, trigger;
+            // , existing = this.moduleInfo[name], newr;
+
+        this.moduleInfo[name] = o;
+
+        if (!o.langPack && o.lang) {
+            langs = YArray(o.lang);
+            for (j = 0; j < langs.length; j++) {
+                lang = langs[j];
+                packName = this.getLangPackName(lang, name);
+                smod = this.moduleInfo[packName];
+                if (!smod) {
+                    smod = this._addLangPack(lang, o, packName);
+                }
+            }
+        }
+
+        if (subs) {
+            sup = o.supersedes || [];
+            l = 0;
+
+            for (i in subs) {
+                if (subs.hasOwnProperty(i)) {
+                    s = subs[i];
+
+                    s.path = s.path || _path(name, i, o.type);
+                    s.pkg = name;
+                    s.group = o.group;
+
+                    if (s.supersedes) {
+                        sup = sup.concat(s.supersedes);
+                    }
+
+                    smod = this.addModule(s, i);
+                    sup.push(i);
+
+                    if (smod.skinnable) {
+                        o.skinnable = true;
+                        overrides = this.skin.overrides;
+                        if (overrides && overrides[i]) {
+                            for (j = 0; j < overrides[i].length; j++) {
+                                skinname = this._addSkin(overrides[i][j],
+                                         i, name);
+                                sup.push(skinname);
+                            }
+                        }
+                        skinname = this._addSkin(this.skin.defaultSkin,
+                                        i, name);
+                        sup.push(skinname);
+                    }
+
+                    // looks like we are expected to work out the metadata
+                    // for the parent module language packs from what is
+                    // specified in the child modules.
+                    if (s.lang && s.lang.length) {
+
+                        langs = YArray(s.lang);
+                        for (j = 0; j < langs.length; j++) {
+                            lang = langs[j];
+                            packName = this.getLangPackName(lang, name);
+                            supName = this.getLangPackName(lang, i);
+                            smod = this.moduleInfo[packName];
+
+                            if (!smod) {
+                                smod = this._addLangPack(lang, o, packName);
+                            }
+
+                            flatSup = flatSup || YArray.hash(smod.supersedes);
+
+                            if (!(supName in flatSup)) {
+                                smod.supersedes.push(supName);
+                            }
+
+                            o.lang = o.lang || [];
+
+                            flatLang = flatLang || YArray.hash(o.lang);
+
+                            if (!(lang in flatLang)) {
+                                o.lang.push(lang);
+                            }
+
+// Y.log('pack ' + packName + ' should supersede ' + supName);
+// Add rollup file, need to add to supersedes list too
+
+                            // default packages
+                            packName = this.getLangPackName(ROOT_LANG, name);
+                            supName = this.getLangPackName(ROOT_LANG, i);
+
+                            smod = this.moduleInfo[packName];
+
+                            if (!smod) {
+                                smod = this._addLangPack(lang, o, packName);
+                            }
+
+                            if (!(supName in flatSup)) {
+                                smod.supersedes.push(supName);
+                            }
+
+// Y.log('pack ' + packName + ' should supersede ' + supName);
+// Add rollup file, need to add to supersedes list too
+
+                        }
+                    }
+
+                    l++;
+                }
+            }
+            //o.supersedes = YObject.keys(YArray.hash(sup));
+            o.supersedes = YArray.dedupe(sup);
+            if (this.allowRollup) {
+                o.rollup = (l < 4) ? l : Math.min(l - 1, 4);
+            }
+        }
+
+        plugins = o.plugins;
+        if (plugins) {
+            for (i in plugins) {
+                if (plugins.hasOwnProperty(i)) {
+                    plug = plugins[i];
+                    plug.pkg = name;
+                    plug.path = plug.path || _path(name, i, o.type);
+                    plug.requires = plug.requires || [];
+                    plug.group = o.group;
+                    this.addModule(plug, i);
+                    if (o.skinnable) {
+                        this._addSkin(this.skin.defaultSkin, i, name);
+                    }
+
+                }
+            }
+        }
+
+        if (o.condition) {
+            t = o.condition.trigger;
+            if (YUI.Env.aliases[t]) {
+                t = YUI.Env.aliases[t];
+            }
+            if (!Y.Lang.isArray(t)) {
+                t = [t];
+            }
+
+            for (i = 0; i < t.length; i++) {
+                trigger = t[i];
+                when = o.condition.when;
+                conditions[trigger] = conditions[trigger] || {};
+                conditions[trigger][name] = o.condition;
+                // the 'when' attribute can be 'before', 'after', or 'instead'
+                // the default is after.
+                if (when && when != 'after') {
+                    if (when == 'instead') { // replace the trigger
+                        o.supersedes = o.supersedes || [];
+                        o.supersedes.push(trigger);
+                    } else { // before the trigger
+                        // the trigger requires the conditional mod,
+                        // so it should appear before the conditional
+                        // mod if we do not intersede.
+                    }
+                } else { // after the trigger
+                    o.after = o.after || [];
+                    o.after.push(trigger);
+                }
+            }
+        }
+
+        if (o.supersedes) {
+            o.supersedes = this.filterRequires(o.supersedes);
+        }
+
+        if (o.after) {
+            o.after = this.filterRequires(o.after);
+            o.after_map = YArray.hash(o.after);
+        }
+
+        // this.dirty = true;
+
+        if (o.configFn) {
+            ret = o.configFn(o);
+            if (ret === false) {
+                delete this.moduleInfo[name];
+                o = null;
+            }
+        }
+
+        return o;
+    },
+
+    /**
+     * Add a requirement for one or more module
+     * @method require
+     * @param {string[] | string*} what the modules to load.
+     */
+    require: function(what) {
+        var a = (typeof what === 'string') ? YArray(arguments) : what;
+        this.dirty = true;
+        this.required = Y.merge(this.required, YArray.hash(this.filterRequires(a)));
+
+        this._explodeRollups();
+    },
+    /**
+    * Grab all the items that were asked for, check to see if the Loader
+    * meta-data contains a "use" array. If it doesm remove the asked item and replace it with 
+    * the content of the "use".
+    * This will make asking for: "dd"
+    * Actually ask for: "dd-ddm-base,dd-ddm,dd-ddm-drop,dd-drag,dd-proxy,dd-constrain,dd-drop,dd-scroll,dd-drop-plugin"
+    * @private
+    * @method _explodeRollups
+    */
+    _explodeRollups: function() {
+        var self = this, m,
+        r = self.required;
+        if (!self.allowRollup) {
+            oeach(r, function(v, name) {
+                m = self.getModule(name);
+                if (m && m.use) {
+                    //delete r[name];
+                    YArray.each(m.use, function(v) {
+                        m = self.getModule(v);
+                        if (m && m.use) {
+                            //delete r[v];
+                            YArray.each(m.use, function(v) {
+                                r[v] = true;
+                            });
+                        } else {
+                            r[v] = true;
+                        }
+                    });
+                }
+            });
+            self.required = r;
+        }
+
+    },
+    /**
+    * Explodes the required array to remove aliases and replace them with real modules
+    * @method filterRequires
+    * @param {Array} r The original requires array
+    * @return {Array} The new array of exploded requirements
+    */
+    filterRequires: function(r) {
+        if (r) {
+            if (!Y.Lang.isArray(r)) {
+                r = [r];
+            }
+            r = Y.Array(r);
+            var c = [], i, mod, o, m;
+
+            for (i = 0; i < r.length; i++) {
+                mod = this.getModule(r[i]);
+                if (mod && mod.use) {
+                    for (o = 0; o < mod.use.length; o++) {
+                        //Must walk the other modules in case a module is a rollup of rollups (datatype)
+                        m = this.getModule(mod.use[o]);
+                        if (m && m.use) {
+                            c = Y.Array.dedupe([].concat(c, this.filterRequires(m.use)));
+                        } else {
+                            c.push(mod.use[o]);
+                        }
+                    }
+                } else {
+                    c.push(r[i]);
+                }
+            }
+            r = c;
+        }
+        return r;
+    },
+    /**
+     * Returns an object containing properties for all modules required
+     * in order to load the requested module
+     * @method getRequires
+     * @param {object}  mod The module definition from moduleInfo.
+     * @return {array} the expanded requirement list.
+     */
+    getRequires: function(mod) {
+
+        if (!mod) {
+            //console.log('returning no reqs for ' + mod.name);
+            return NO_REQUIREMENTS;
+        }
+
+        if (mod._parsed) {
+            //console.log('returning requires for ' + mod.name, mod.requires);
+            return mod.expanded || NO_REQUIREMENTS;
+        }
+
+        //TODO add modue cache here out of scope..
+
+        var i, m, j, add, packName, lang, testresults = this.testresults,
+            name = mod.name, cond,
+            adddef = ON_PAGE[name] && ON_PAGE[name].details,
+            d, k, m1,
+            r, old_mod,
+            o, skinmod, skindef, skinpar, skinname,
+            intl = mod.lang || mod.intl,
+            info = this.moduleInfo,
+            ftests = Y.Features && Y.Features.tests.load,
+            hash;
+
+        // console.log(name);
+
+        // pattern match leaves module stub that needs to be filled out
+        if (mod.temp && adddef) {
+            old_mod = mod;
+            mod = this.addModule(adddef, name);
+            mod.group = old_mod.group;
+            mod.pkg = old_mod.pkg;
+            delete mod.expanded;
+        }
+
+        // console.log('cache: ' + mod.langCache + ' == ' + this.lang);
+
+        // if (mod.expanded && (!mod.langCache || mod.langCache == this.lang)) {
+        if (mod.expanded && (!this.lang || mod.langCache === this.lang)) {
+            //Y.log('Already expanded ' + name + ', ' + mod.expanded);
+            return mod.expanded;
+        }
+        
+
+        d = [];
+        hash = {};
+        r = this.filterRequires(mod.requires);
+        if (mod.lang) {
+            //If a module has a lang attribute, auto add the intl requirement.
+            d.unshift('intl');
+            r.unshift('intl');
+            intl = true;
+        }
+        o = this.filterRequires(mod.optional);
+
+        // Y.log("getRequires: " + name + " (dirty:" + this.dirty +
+        // ", expanded:" + mod.expanded + ")");
+
+        mod._parsed = true;
+        mod.langCache = this.lang;
+
+        for (i = 0; i < r.length; i++) {
+            //Y.log(name + ' requiring ' + r[i], 'info', 'loader');
+            if (!hash[r[i]]) {
+                d.push(r[i]);
+                hash[r[i]] = true;
+                m = this.getModule(r[i]);
+                if (m) {
+                    add = this.getRequires(m);
+                    intl = intl || (m.expanded_map &&
+                        (INTL in m.expanded_map));
+                    for (j = 0; j < add.length; j++) {
+                        d.push(add[j]);
+                    }
+                }
+            }
+        }
+
+        // get the requirements from superseded modules, if any
+        r = this.filterRequires(mod.supersedes);
+        if (r) {
+            for (i = 0; i < r.length; i++) {
+                if (!hash[r[i]]) {
+                    // if this module has submodules, the requirements list is
+                    // expanded to include the submodules.  This is so we can
+                    // prevent dups when a submodule is already loaded and the
+                    // parent is requested.
+                    if (mod.submodules) {
+                        d.push(r[i]);
+                    }
+
+                    hash[r[i]] = true;
+                    m = this.getModule(r[i]);
+
+                    if (m) {
+                        add = this.getRequires(m);
+                        intl = intl || (m.expanded_map &&
+                            (INTL in m.expanded_map));
+                        for (j = 0; j < add.length; j++) {
+                            d.push(add[j]);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (o && this.loadOptional) {
+            for (i = 0; i < o.length; i++) {
+                if (!hash[o[i]]) {
+                    d.push(o[i]);
+                    hash[o[i]] = true;
+                    m = info[o[i]];
+                    if (m) {
+                        add = this.getRequires(m);
+                        intl = intl || (m.expanded_map &&
+                            (INTL in m.expanded_map));
+                        for (j = 0; j < add.length; j++) {
+                            d.push(add[j]);
+                        }
+                    }
+                }
+            }
+        }
+
+        cond = this.conditions[name];
+
+        if (cond) {
+            //Set the module to not parsed since we have conditionals and this could change the dependency tree.
+            mod._parsed = false;
+            if (testresults && ftests) {
+                oeach(testresults, function(result, id) {
+                    var condmod = ftests[id].name;
+                    if (!hash[condmod] && ftests[id].trigger == name) {
+                        if (result && ftests[id]) {
+                            hash[condmod] = true;
+                            d.push(condmod);
+                        }
+                    }
+                });
+            } else {
+                oeach(cond, function(def, condmod) {
+                    if (!hash[condmod]) {
+                        //first see if they've specfied a ua check
+                        //then see if they've got a test fn & if it returns true
+                        //otherwise just having a condition block is enough
+                        var go = def && ((!def.ua && !def.test) || (def.ua && Y.UA[def.ua]) ||
+                                    (def.test && def.test(Y, r)));
+
+                        if (go) {
+                            hash[condmod] = true;
+                            d.push(condmod);
+                            m = this.getModule(condmod);
+                            if (m) {
+                                add = this.getRequires(m);
+                                for (j = 0; j < add.length; j++) {
+                                    d.push(add[j]);
+                                }
+
+                            }
+                        }
+                    }
+                }, this);
+            }
+        }
+
+        // Create skin modules
+        if (mod.skinnable) {
+            skindef = this.skin.overrides;
+            oeach(YUI.Env.aliases, function(o, n) {
+                if (Y.Array.indexOf(o, name) > -1) {
+                    skinpar = n;
+                }
+            });
+            if (skindef && (skindef[name] || (skinpar && skindef[skinpar]))) {
+                skinname = name;
+                if (skindef[skinpar]) {
+                    skinname = skinpar;
+                }
+                for (i = 0; i < skindef[skinname].length; i++) {
+                    skinmod = this._addSkin(skindef[skinname][i], name);
+                    if (!this.isCSSLoaded(skinmod)) {
+                        d.push(skinmod);
+                    }
+                }
+            } else {
+                skinmod = this._addSkin(this.skin.defaultSkin, name);
+                if (!this.isCSSLoaded(skinmod)) {
+                    d.push(skinmod);
+                }
+            }
+        }
+
+        mod._parsed = false;
+
+        if (intl) {
+
+            if (mod.lang && !mod.langPack && Y.Intl) {
+                lang = Y.Intl.lookupBestLang(this.lang || ROOT_LANG, mod.lang);
+                //Y.log('Best lang: ' + lang + ', this.lang: ' + this.lang + ', mod.lang: ' + mod.lang);
+                packName = this.getLangPackName(lang, name);
+                if (packName) {
+                    d.unshift(packName);
+                }
+            }
+            d.unshift(INTL);
+        }
+
+        mod.expanded_map = YArray.hash(d);
+
+        mod.expanded = YObject.keys(mod.expanded_map);
+
+        return mod.expanded;
+    },
+    /**
+    * Check to see if named css module is already loaded on the page
+    * @method isCSSLoaded
+    * @param {String} name The name of the css file
+    * @return Boolean
+    */
+    isCSSLoaded: function(name) {
+        //TODO - Make this call a batching call with name being an array
+        if (!name || !YUI.Env.cssStampEl) {
+            return false;
+        }
+        
+        var el = YUI.Env.cssStampEl,
+            ret = false,
+            style = el.currentStyle; //IE
+
+        //Add the classname to the element
+        el.className = name;
+
+        if (!style) {
+            style = Y.config.doc.defaultView.getComputedStyle(el, null);
+        }
+
+        if (style['display'] === 'none') {
+            ret = true;
+        }
+
+        Y.log('Has Skin? ' + name + ' : ' + ret, 'info', 'loader');
+
+        el.className = ''; //Reset the classname to ''
+        return ret;
+    },
+
+    /**
+     * Returns a hash of module names the supplied module satisfies.
+     * @method getProvides
+     * @param {string} name The name of the module.
+     * @return {object} what this module provides.
+     */
+    getProvides: function(name) {
+        var m = this.getModule(name), o, s;
+            // supmap = this.provides;
+
+        if (!m) {
+            return NOT_FOUND;
+        }
+
+        if (m && !m.provides) {
+            o = {};
+            s = m.supersedes;
+
+            if (s) {
+                YArray.each(s, function(v) {
+                    Y.mix(o, this.getProvides(v));
+                }, this);
+            }
+
+            o[name] = true;
+            m.provides = o;
+
+        }
+
+        return m.provides;
+    },
+
+    /**
+     * Calculates the dependency tree, the result is stored in the sorted
+     * property.
+     * @method calculate
+     * @param {object} o optional options object.
+     * @param {string} type optional argument to prune modules.
+     */
+    calculate: function(o, type) {
+        if (o || type || this.dirty) {
+
+            if (o) {
+                this._config(o);
+            }
+
+            if (!this._init) {
+                this._setup();
+            }
+
+            this._explode();
+
+            if (this.allowRollup) {
+                this._rollup();
+            } else {
+                this._explodeRollups();
+            }
+            this._reduce();
+            this._sort();
+        }
+    },
+    /**
+    * Creates a "psuedo" package for languages provided in the lang array
+    * @method _addLangPack
+    * @param {String} lang The language to create
+    * @param {Object} m The module definition to create the language pack around
+    * @param {String} packName The name of the package (e.g: lang/datatype-date-en-US)
+    * @return {Object} The module definition
+    */
+    _addLangPack: function(lang, m, packName) {
+        var name = m.name,
+            packPath,
+            existing = this.moduleInfo[packName];
+
+        if (!existing) {
+
+            packPath = _path((m.pkg || name), packName, JS, true);
+
+            this.addModule({ path: packPath,
+                             intl: true,
+                             langPack: true,
+                             ext: m.ext,
+                             group: m.group,
+                             supersedes: [] }, packName);
+
+            if (lang) {
+                Y.Env.lang = Y.Env.lang || {};
+                Y.Env.lang[lang] = Y.Env.lang[lang] || {};
+                Y.Env.lang[lang][name] = true;
+            }
+        }
+
+        return this.moduleInfo[packName];
+    },
+
+    /**
+     * Investigates the current YUI configuration on the page.  By default,
+     * modules already detected will not be loaded again unless a force
+     * option is encountered.  Called by calculate()
+     * @method _setup
+     * @private
+     */
+    _setup: function() {
+        var info = this.moduleInfo, name, i, j, m, l,
+            packName;
+
+        for (name in info) {
+            if (info.hasOwnProperty(name)) {
+                m = info[name];
+                if (m) {
+
+                    // remove dups
+                    //m.requires = YObject.keys(YArray.hash(m.requires));
+                    m.requires = YArray.dedupe(m.requires);
+
+                    // Create lang pack modules
+                    if (m.lang && m.lang.length) {
+                        // Setup root package if the module has lang defined,
+                        // it needs to provide a root language pack
+                        packName = this.getLangPackName(ROOT_LANG, name);
+                        this._addLangPack(null, m, packName);
+                    }
+
+                }
+            }
+        }
+
+
+        //l = Y.merge(this.inserted);
+        l = {};
+
+        // available modules
+        if (!this.ignoreRegistered) {
+            Y.mix(l, GLOBAL_ENV.mods);
+        }
+
+        // add the ignore list to the list of loaded packages
+        if (this.ignore) {
+            Y.mix(l, YArray.hash(this.ignore));
+        }
+
+        // expand the list to include superseded modules
+        for (j in l) {
+            if (l.hasOwnProperty(j)) {
+                Y.mix(l, this.getProvides(j));
+            }
+        }
+
+        // remove modules on the force list from the loaded list
+        if (this.force) {
+            for (i = 0; i < this.force.length; i++) {
+                if (this.force[i] in l) {
+                    delete l[this.force[i]];
+                }
+            }
+        }
+
+        Y.mix(this.loaded, l);
+
+        this._init = true;
+    },
+
+    /**
+     * Builds a module name for a language pack
+     * @method getLangPackName
+     * @param {string} lang the language code.
+     * @param {string} mname the module to build it for.
+     * @return {string} the language pack module name.
+     */
+    getLangPackName: function(lang, mname) {
+        return ('lang/' + mname + ((lang) ? '_' + lang : ''));
+    },
+    /**
+     * Inspects the required modules list looking for additional
+     * dependencies.  Expands the required list to include all
+     * required modules.  Called by calculate()
+     * @method _explode
+     * @private
+     */
+    _explode: function() {
+        //TODO Move done out of scope
+        var r = this.required, m, reqs, done = {},
+            self = this;
+
+        // the setup phase is over, all modules have been created
+        self.dirty = false;
+
+        self._explodeRollups();
+        r = self.required;
+        
+        oeach(r, function(v, name) {
+            if (!done[name]) {
+                done[name] = true;
+                m = self.getModule(name);
+                if (m) {
+                    var expound = m.expound;
+
+                    if (expound) {
+                        r[expound] = self.getModule(expound);
+                        reqs = self.getRequires(r[expound]);
+                        Y.mix(r, YArray.hash(reqs));
+                    }
+
+                    reqs = self.getRequires(m);
+                    Y.mix(r, YArray.hash(reqs));
+                }
+            }
+        });
+
+        // Y.log('After explode: ' + YObject.keys(r));
+    },
+    /**
+    * Get's the loader meta data for the requested module
+    * @method getModule
+    * @param {String} mname The module name to get
+    * @return {Object} The module metadata
+    */
+    getModule: function(mname) {
+        //TODO: Remove name check - it's a quick hack to fix pattern WIP
+        if (!mname) {
+            return null;
+        }
+
+        var p, found, pname,
+            m = this.moduleInfo[mname],
+            patterns = this.patterns;
+
+        // check the patterns library to see if we should automatically add
+        // the module with defaults
+        if (!m) {
+           // Y.log('testing patterns ' + YObject.keys(patterns));
+            for (pname in patterns) {
+                if (patterns.hasOwnProperty(pname)) {
+                    // Y.log('testing pattern ' + i);
+                    p = patterns[pname];
+                    
+                    //There is no test method, create a default one that tests
+                    // the pattern against the mod name
+                    if (!p.test) {
+                        p.test = function(mname, pname) {
+                            return (mname.indexOf(pname) > -1);
+                        };
+                    }
+
+                    if (p.test(mname, pname)) {
+                        // use the metadata supplied for the pattern
+                        // as the module definition.
+                        found = p;
+                        break;
+                    }
+                }
+            }
+
+            if (found) {
+                if (p.action) {
+                    // Y.log('executing pattern action: ' + pname);
+                    p.action.call(this, mname, pname);
+                } else {
+Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
+    pname, 'info', 'loader');
+                    // ext true or false?
+                    m = this.addModule(Y.merge(found), mname);
+                    m.temp = true;
+                }
+            }
+        }
+
+        return m;
+    },
+
+    // impl in rollup submodule
+    _rollup: function() { },
+
+    /**
+     * Remove superceded modules and loaded modules.  Called by
+     * calculate() after we have the mega list of all dependencies
+     * @method _reduce
+     * @return {object} the reduced dependency hash.
+     * @private
+     */
+    _reduce: function(r) {
+
+        r = r || this.required;
+
+        var i, j, s, m, type = this.loadType,
+        ignore = this.ignore ? YArray.hash(this.ignore) : false;
+
+        for (i in r) {
+            if (r.hasOwnProperty(i)) {
+                m = this.getModule(i);
+                // remove if already loaded
+                if (((this.loaded[i] || ON_PAGE[i]) &&
+                        !this.forceMap[i] && !this.ignoreRegistered) ||
+                        (type && m && m.type != type)) {
+                    delete r[i];
+                }
+                if (ignore && ignore[i]) {
+                    delete r[i];
+                }
+                // remove anything this module supersedes
+                s = m && m.supersedes;
+                if (s) {
+                    for (j = 0; j < s.length; j++) {
+                        if (s[j] in r) {
+                            delete r[s[j]];
+                        }
+                    }
+                }
+            }
+        }
+
+        return r;
+    },
+    /**
+    * Handles the queue when a module has been loaded for all cases
+    * @method _finish
+    * @private
+    * @param {String} msg The message from Loader
+    * @param {Boolean} success A boolean denoting success or failure
+    */
+    _finish: function(msg, success) {
+        Y.log('loader finishing: ' + msg + ', ' + Y.id + ', ' +
+            this.data, 'info', 'loader');
+
+        _queue.running = false;
+
+        var onEnd = this.onEnd;
+        if (onEnd) {
+            onEnd.call(this.context, {
+                msg: msg,
+                data: this.data,
+                success: success
+            });
+        }
+        this._continue();
+    },
+    /**
+    * The default Loader onSuccess handler, calls this.onSuccess with a payload
+    * @method _onSuccess
+    * @private
+    */
+    _onSuccess: function() {
+        var self = this, skipped = Y.merge(self.skipped), fn,
+            failed = [], rreg = self.requireRegistration,
+            success, msg;
+
+        oeach(skipped, function(k) {
+            delete self.inserted[k];
+        });
+
+        self.skipped = {};
+
+        oeach(self.inserted, function(v, k) {
+            var mod = self.getModule(k);
+            if (mod && rreg && mod.type == JS && !(k in YUI.Env.mods)) {
+                failed.push(k);
+            } else {
+                Y.mix(self.loaded, self.getProvides(k));
+            }
+        });
+
+        fn = self.onSuccess;
+        msg = (failed.length) ? 'notregistered' : 'success';
+        success = !(failed.length);
+        if (fn) {
+            fn.call(self.context, {
+                msg: msg,
+                data: self.data,
+                success: success,
+                failed: failed,
+                skipped: skipped
+            });
+        }
+        self._finish(msg, success);
+    },
+    /**
+    * The default Loader onProgress handler, calls this.onProgress with a payload
+    * @method _onProgress
+    * @private
+    */
+    _onProgress: function(e) {
+        var self = this;
+        if (self.onProgress) {
+            self.onProgress.call(self.context, {
+                name: e.url,
+                data: e.data
+            });
+        }
+    },
+    /**
+    * The default Loader onFailure handler, calls this.onFailure with a payload
+    * @method _onFailure
+    * @private
+    */
+    _onFailure: function(o) {
+        Y.log('load error: ' + o.msg + ', ' + Y.id, 'error', 'loader');
+        var f = this.onFailure, msg = 'failure: ' + o.msg;
+        if (f) {
+            f.call(this.context, {
+                msg: msg,
+                data: this.data,
+                success: false
+            });
+        }
+        this._finish(msg, false);
+    },
+
+    /**
+    * The default Loader onTimeout handler, calls this.onTimeout with a payload
+    * @method _onTimeout
+    * @private
+    */
+    _onTimeout: function() {
+        Y.log('loader timeout: ' + Y.id, 'error', 'loader');
+        var f = this.onTimeout;
+        if (f) {
+            f.call(this.context, {
+                msg: 'timeout',
+                data: this.data,
+                success: false
+            });
+        }
+        this._finish('timeout', false);
+    },
+
+    /**
+     * Sorts the dependency tree.  The last step of calculate()
+     * @method _sort
+     * @private
+     */
+    _sort: function() {
+
+        // create an indexed list
+        var s = YObject.keys(this.required),
+            // loaded = this.loaded,
+            //TODO Move this out of scope
+            done = {},
+            p = 0, l, a, b, j, k, moved, doneKey;
+
+        // keep going until we make a pass without moving anything
+        for (;;) {
+
+            l = s.length;
+            moved = false;
+
+            // start the loop after items that are already sorted
+            for (j = p; j < l; j++) {
+
+                // check the next module on the list to see if its
+                // dependencies have been met
+                a = s[j];
+
+                // check everything below current item and move if we
+                // find a requirement for the current item
+                for (k = j + 1; k < l; k++) {
+                    doneKey = a + s[k];
+
+                    if (!done[doneKey] && this._requires(a, s[k])) {
+
+                        // extract the dependency so we can move it up
+                        b = s.splice(k, 1);
+
+                        // insert the dependency above the item that
+                        // requires it
+                        s.splice(j, 0, b[0]);
+
+                        // only swap two dependencies once to short circut
+                        // circular dependencies
+                        done[doneKey] = true;
+
+                        // keep working
+                        moved = true;
+
+                        break;
+                    }
+                }
+
+                // jump out of loop if we moved something
+                if (moved) {
+                    break;
+                // this item is sorted, move our pointer and keep going
+                } else {
+                    p++;
+                }
+            }
+
+            // when we make it here and moved is false, we are
+            // finished sorting
+            if (!moved) {
+                break;
+            }
+
+        }
+
+        this.sorted = s;
+    },
+    /**
+    * (Unimplemented)
+    * @method partial
+    * @unimplemented
+    */
+    partial: function(partial, o, type) {
+        this.sorted = partial;
+        this.insert(o, type, true);
+    },
+
+    /**
+    * Handles the actual insertion of script/link tags
+    * @method _insert
+    * @param {Object} source The YUI instance the request came from
+    * @param {Object} o The metadata to include
+    * @param {String} type JS or CSS
+    * @param {Boolean} [skipcalc=false] Do a Loader.calculate on the meta
+    */
+    _insert: function(source, o, type, skipcalc) {
+
+        Y.log('private _insert() ' + (type || '') + ', ' + Y.id, "info", "loader");
+
+        // restore the state at the time of the request
+        if (source) {
+            this._config(source);
+        }
+
+        // build the dependency list
+        // don't include type so we can process CSS and script in
+        // one pass when the type is not specified.
+        if (!skipcalc) {
+            this.calculate(o);
+        }
+
+        var modules = this.resolve(),
+            self = this, comp = 0, actions = 0;
+
+        if (type) {
+            var m = modules[type];
+            modules = {};
+            modules[type] = m;
+            comp++;
+        } else {
+            if (modules.js.length) {
+                comp++;
+            }
+            if (modules.css.length) {
+                comp++;
+            }
+        }
+
+        //console.log('Resolved Modules: ', modules);
+
+        var complete = function(d) {
+            actions++;
+            
+            if (d && d.data && d.data.length) {
+                for (var i = 0; i < d.data.length; i++) {
+                    self.inserted[d.data[i].name] = true;
+                }
+            }
+            
+            if (actions === comp) {
+                self._loading = null;
+                Y.log('Loader actions complete!', 'info', 'loader');
+                self._onSuccess();
+            }
+        };
+
+        this._loading = true;
+
+        if (!modules.js.length && !modules.css.length) {
+            Y.log('No modules resolved..', 'warn', 'loader');
+            actions = -1;
+            complete();
+            return;
+        }
+        
+
+        if (modules.css.length) { //Load CSS first
+            Y.log('Loading CSS modules', 'info', 'loader');
+            Y.Get.css(modules.css, {
+                data: modules.cssMods,
+                insertBefore: self.insertBefore,
+                charset: self.charset,
+                timeout: self.timeout,
+                context: self,
+                onFailure: self._onFailure,
+                onTimeout: self._onTimeout,
+                onProgress: function(e) {
+                    self._onProgress.call(self, e);
+                },
+                onSuccess: complete
+            });
+        }
+
+        if (modules.js.length) {
+            Y.log('Loading JS modules', 'info', 'loader');
+            Y.Get.script(modules.js, {
+                data: modules.jsMods,
+                insertBefore: self.insertBefore,
+                charset: self.charset,
+                timeout: self.timeout,
+                autopurge: false,
+                context: self,
+                async: true,
+                onProgress: function(e) {
+                    self._onProgress.call(self, e);
+                },
+                onFailure: self._onFailure,
+                onTimeout: self._onTimeout,                
+                onSuccess: complete
+            });
+        }
+    },
+    /**
+    * Once a loader operation is completely finished, process any additional queued items.
+    * @method _continue
+    * @private
+    */
+    _continue: function() {
+        if (!(_queue.running) && _queue.size() > 0) {
+            _queue.running = true;
+            _queue.next()();
+        }
+    },
+
+    /**
+     * inserts the requested modules and their dependencies.
+     * <code>type</code> can be "js" or "css".  Both script and
+     * css are inserted if type is not provided.
+     * @method insert
+     * @param {object} o optional options object.
+     * @param {string} type the type of dependency to insert.
+     */
+    insert: function(o, type, skipsort) {
+         Y.log('public insert() ' + (type || '') + ', ' +
+         Y.Object.keys(this.required), "info", "loader");
+        var self = this, copy = Y.merge(this);
+        delete copy.require;
+        delete copy.dirty;
+        _queue.add(function() {
+            self._insert(copy, o, type, skipsort);
+        });
+        this._continue();
+    },
+
+    /**
+     * Executed every time a module is loaded, and if we are in a load
+     * cycle, we attempt to load the next script.  Public so that it
+     * is possible to call this if using a method other than
+     * Y.register to determine when scripts are fully loaded
+     * @method loadNext
+     * @deprecated
+     * @param {string} mname optional the name of the module that has
+     * been loaded (which is usually why it is time to load the next
+     * one).
+     */
+    loadNext: function(mname) {
+        Y.log('loadNext was called..', 'error', 'loader');
+        return;
+    },
+
+    /**
+     * Apply filter defined for this instance to a url/path
+     * @method _filter
+     * @param {string} u the string to filter.
+     * @param {string} name the name of the module, if we are processing
+     * a single module as opposed to a combined url.
+     * @return {string} the filtered string.
+     * @private
+     */
+    _filter: function(u, name) {
+        var f = this.filter,
+            hasFilter = name && (name in this.filters),
+            modFilter = hasFilter && this.filters[name],
+	    groupName = this.moduleInfo[name] ? this.moduleInfo[name].group:null;		
+	    if (groupName && this.groups[groupName].filter) {		
+	 	   modFilter = this.groups[groupName].filter;
+		   hasFilter = true;		
+	     };
+
+        if (u) {
+            if (hasFilter) {
+                f = (L.isString(modFilter)) ?
+                    this.FILTER_DEFS[modFilter.toUpperCase()] || null :
+                    modFilter;
+            }
+            if (f) {
+                u = u.replace(new RegExp(f.searchExp, 'g'), f.replaceStr);
+            }
+        }
+
+        return u;
+    },
+
+    /**
+     * Generates the full url for a module
+     * @method _url
+     * @param {string} path the path fragment.
+     * @param {String} name The name of the module
+     * @pamra {String} [base=self.base] The base url to use
+     * @return {string} the full url.
+     * @private
+     */
+    _url: function(path, name, base) {
+        return this._filter((base || this.base || '') + path, name);
+    },
+    /**
+    * Returns an Object hash of file arrays built from `loader.sorted` or from an arbitrary list of sorted modules.
+    * @method resolve
+    * @param {Boolean} [calc=false] Perform a loader.calculate() before anything else
+    * @param {Array} [s=loader.sorted] An override for the loader.sorted array
+    * @return {Object} Object hash (js and css) of two arrays of file lists
+    * @example This method can be used as an off-line dep calculator
+    *
+    *        var Y = YUI();
+    *        var loader = new Y.Loader({
+    *            filter: 'debug',
+    *            base: '../../',
+    *            root: 'build/',
+    *            combine: true,
+    *            require: ['node', 'dd', 'console']
+    *        });
+    *        var out = loader.resolve(true);
+    *
+    */
+    resolve: function(calc, s) {
+
+        var len, i, m, url, fn, msg, attr, group, groupName, j, frag,
+            comboSource, comboSources, mods, comboBase,
+            base, urls, u = [], tmpBase, baseLen, resCombos = {},
+            self = this,
+            resolved = { js: [], jsMods: [], css: [], cssMods: [] },
+            type = self.loadType || 'js';
+
+        if (calc) {
+            self.calculate();
+        }
+        s = s || self.sorted;
+
+        if (self.combine) {
+
+            len = s.length;
+
+            // the default combo base
+            comboBase = self.comboBase;
+
+            url = comboBase;
+
+            comboSources = {};
+
+            for (i = 0; i < len; i++) {
+                comboSource = comboBase;
+                m = self.getModule(s[i]);
+                groupName = m && m.group;
+                if (groupName) {
+
+                    group = self.groups[groupName];
+
+                    if (!group.combine) {
+                        m.combine = false;
+                        continue;
+                    }
+                    m.combine = true;
+                    if (group.comboBase) {
+                        comboSource = group.comboBase;
+                    }
+
+                    if ("root" in group && L.isValue(group.root)) {
+                        m.root = group.root;
+                    }
+
+                }
+
+                comboSources[comboSource] = comboSources[comboSource] || [];
+                comboSources[comboSource].push(m);
+            }
+
+            for (j in comboSources) {
+                if (comboSources.hasOwnProperty(j)) {
+                    resCombos[j] = resCombos[j] || { js: [], jsMods: [], css: [], cssMods: [] };
+                    url = j;
+                    mods = comboSources[j];
+                    len = mods.length;
+                    
+                    if (len) {
+                        for (i = 0; i < len; i++) {
+                            m = mods[i];
+                            // Do not try to combine non-yui JS unless combo def
+                            // is found
+                            if (m && (m.combine || !m.ext)) {
+
+                                frag = ((L.isValue(m.root)) ? m.root : self.root) + m.path;
+                                frag = self._filter(frag, m.name);
+                                resCombos[j][m.type].push(frag);
+                                resCombos[j][m.type + 'Mods'].push(m);
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            for (j in resCombos) {
+                base = j;
+                for (type in resCombos[base]) {
+                    if (type === JS || type === CSS) {
+                        urls = resCombos[base][type];
+                        mods = resCombos[base][type + 'Mods'];
+                        len = urls.length;
+                        tmpBase = base + urls.join(self.comboSep);
+                        baseLen = tmpBase.length;
+                        
+                        if (len) {
+                            if (baseLen > self.maxURLLength) {
+                                Y.log('Exceeded maxURLLength for ' + type + ', splitting', 'info', 'loader');
+                                u = [];
+                                m = [];
+                                for (s = 0; s < len; s++) {
+                                    tmpBase = base + u.join(self.comboSep);
+                                    if (tmpBase.length < self.maxURLLength) {
+                                        u.push(urls[s]);
+                                        m.push(mods[s]);
+                                    } else {
+                                        resolved[type].push(tmpBase);
+                                        u = [];
+                                        m = [];
+                                    }
+                                }
+                            } else {
+                                resolved[type].push(tmpBase);
+                                resolved[type + 'Mods'] = mods;
+                            }
+                        }
+                    }
+                }
+            }
+
+            resCombos = null;
+            
+        } else {
+
+            s = self.sorted;
+            len = s.length;
+
+            for (i = 0; i < len; i = i + 1) {
+
+                m = self.getModule(s[i]);
+
+                if (!m) {
+                    if (!self.skipped[s[i]]) {
+                        msg = 'Undefined module ' + s[i] + ' skipped';
+                        Y.log(msg, 'warn', 'loader');
+                    }
+                    continue;
+
+                }
+
+                group = (m.group && self.groups[m.group]) || NOT_FOUND;
+
+                url = (m.fullpath) ? self._filter(m.fullpath, s[i]) :
+                      self._url(m.path, s[i], group.base || m.base);
+                
+                resolved[m.type].push(url);
+                resolved[m.type + 'Mods'].push(m);
+            }
+        }
+
+        return resolved;
+    }
 };
 
 
-}, '3.3.0' ,{requires:['yui-base']});
+
+}, '3.5.0pr1' ,{requires:['get', 'features']});
+YUI.add('loader-rollup', function(Y) {
+
+/**
+ * Optional automatic rollup logic for reducing http connections
+ * when not using a combo service.
+ * @module loader
+ * @submodule rollup
+ */
+
+/**
+ * Look for rollup packages to determine if all of the modules a
+ * rollup supersedes are required.  If so, include the rollup to
+ * help reduce the total number of connections required.  Called
+ * by calculate().  This is an optional feature, and requires the
+ * appropriate submodule to function.
+ * @method _rollup
+ * @for Loader
+ * @private
+ */
+Y.Loader.prototype._rollup = function() {
+    var i, j, m, s, r = this.required, roll,
+        info = this.moduleInfo, rolled, c, smod;
+
+    // find and cache rollup modules
+    if (this.dirty || !this.rollups) {
+        this.rollups = {};
+        for (i in info) {
+            if (info.hasOwnProperty(i)) {
+                m = this.getModule(i);
+                // if (m && m.rollup && m.supersedes) {
+                if (m && m.rollup) {
+                    this.rollups[i] = m;
+                }
+            }
+        }
+    }
+
+    // make as many passes as needed to pick up rollup rollups
+    for (;;) {
+        rolled = false;
+
+        // go through the rollup candidates
+        for (i in this.rollups) {
+            if (this.rollups.hasOwnProperty(i)) {
+                // there can be only one, unless forced
+                if (!r[i] && ((!this.loaded[i]) || this.forceMap[i])) {
+                    m = this.getModule(i);
+                    s = m.supersedes || [];
+                    roll = false;
+
+                    // @TODO remove continue
+                    if (!m.rollup) {
+                        continue;
+                    }
+
+                    c = 0;
+
+                    // check the threshold
+                    for (j = 0; j < s.length; j++) {
+                        smod = info[s[j]];
+
+                        // if the superseded module is loaded, we can't
+                        // load the rollup unless it has been forced.
+                        if (this.loaded[s[j]] && !this.forceMap[s[j]]) {
+                            roll = false;
+                            break;
+                        // increment the counter if this module is required.
+                        // if we are beyond the rollup threshold, we will
+                        // use the rollup module
+                        } else if (r[s[j]] && m.type == smod.type) {
+                            c++;
+                            // Y.log("adding to thresh: " + c + ", " + s[j]);
+                            roll = (c >= m.rollup);
+                            if (roll) {
+                                // Y.log("over thresh " + c + ", " + s[j]);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (roll) {
+                        // Y.log("adding rollup: " +  i);
+                        // add the rollup
+                        r[i] = true;
+                        rolled = true;
+
+                        // expand the rollup's dependencies
+                        this.getRequires(m);
+                    }
+                }
+            }
+        }
+
+        // if we made it here w/o rolling up something, we are done
+        if (!rolled) {
+            break;
+        }
+    }
+};
 
 
-YUI.add('yui', function(Y){}, '3.3.0' ,{use:['yui-base','get','features','rls','intl-base','yui-log','yui-later','yui-throttle']});
+}, '3.5.0pr1' ,{requires:['loader-base']});
+YUI.add('loader-yui3', function(Y) {
+
+/* This file is auto-generated by src/loader/scripts/meta_join.py */
+
+/**
+ * YUI 3 module metadata
+ * @module loader
+ * @submodule yui3
+ */
+YUI.Env[Y.version].modules = YUI.Env[Y.version].modules || {
+    "align-plugin": {
+        "requires": [
+            "node-screen", 
+            "node-pluginhost"
+        ]
+    }, 
+    "anim": {
+        "use": [
+            "anim-base", 
+            "anim-color", 
+            "anim-curve", 
+            "anim-easing", 
+            "anim-node-plugin", 
+            "anim-scroll", 
+            "anim-xy"
+        ]
+    }, 
+    "anim-base": {
+        "requires": [
+            "base-base", 
+            "node-style"
+        ]
+    }, 
+    "anim-color": {
+        "requires": [
+            "anim-base"
+        ]
+    }, 
+    "anim-curve": {
+        "requires": [
+            "anim-xy"
+        ]
+    }, 
+    "anim-easing": {
+        "requires": [
+            "anim-base"
+        ]
+    }, 
+    "anim-node-plugin": {
+        "requires": [
+            "node-pluginhost", 
+            "anim-base"
+        ]
+    }, 
+    "anim-scroll": {
+        "requires": [
+            "anim-base"
+        ]
+    }, 
+    "anim-transform": {
+        "requires": [
+            "anim-base", 
+            "anim-easing", 
+            "matrix"
+        ]
+    }, 
+    "anim-xy": {
+        "requires": [
+            "anim-base", 
+            "node-screen"
+        ]
+    }, 
+    "app": {
+        "use": [
+            "app-base", 
+            "model", 
+            "model-list", 
+            "router", 
+            "view"
+        ]
+    }, 
+    "app-base": {
+        "requires": [
+            "classnamemanager", 
+            "pjax-base", 
+            "router", 
+            "view"
+        ]
+    }, 
+    "app-transitions": {
+        "requires": [
+            "app-base", 
+            "transition"
+        ]
+    }, 
+    "array-extras": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "array-invoke": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "arraylist": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "arraylist-add": {
+        "requires": [
+            "arraylist"
+        ]
+    }, 
+    "arraylist-filter": {
+        "requires": [
+            "arraylist"
+        ]
+    }, 
+    "arraysort": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "async-queue": {
+        "requires": [
+            "event-custom"
+        ]
+    }, 
+    "attribute": {
+        "use": [
+            "attribute-base", 
+            "attribute-complex"
+        ]
+    }, 
+    "attribute-base": {
+        "requires": [
+            "event-custom"
+        ]
+    }, 
+    "attribute-complex": {
+        "requires": [
+            "attribute-base"
+        ]
+    }, 
+    "autocomplete": {
+        "use": [
+            "autocomplete-base", 
+            "autocomplete-sources", 
+            "autocomplete-list", 
+            "autocomplete-plugin"
+        ]
+    }, 
+    "autocomplete-base": {
+        "optional": [
+            "autocomplete-sources"
+        ], 
+        "requires": [
+            "array-extras", 
+            "base-build", 
+            "escape", 
+            "event-valuechange", 
+            "node-base"
+        ]
+    }, 
+    "autocomplete-filters": {
+        "requires": [
+            "array-extras", 
+            "text-wordbreak"
+        ]
+    }, 
+    "autocomplete-filters-accentfold": {
+        "requires": [
+            "array-extras", 
+            "text-accentfold", 
+            "text-wordbreak"
+        ]
+    }, 
+    "autocomplete-highlighters": {
+        "requires": [
+            "array-extras", 
+            "highlight-base"
+        ]
+    }, 
+    "autocomplete-highlighters-accentfold": {
+        "requires": [
+            "array-extras", 
+            "highlight-accentfold"
+        ]
+    }, 
+    "autocomplete-list": {
+        "after": [
+            "autocomplete-sources"
+        ], 
+        "lang": [
+            "en"
+        ], 
+        "requires": [
+            "autocomplete-base", 
+            "event-resize", 
+            "node-screen", 
+            "selector-css3", 
+            "shim-plugin", 
+            "widget", 
+            "widget-position", 
+            "widget-position-align"
+        ], 
+        "skinnable": true
+    }, 
+    "autocomplete-list-keys": {
+        "condition": {
+            "name": "autocomplete-list-keys", 
+            "test": function (Y) {
+    // Only add keyboard support to autocomplete-list if this doesn't appear to
+    // be an iOS or Android-based mobile device.
+    //
+    // There's currently no feasible way to actually detect whether a device has
+    // a hardware keyboard, so this sniff will have to do. It can easily be
+    // overridden by manually loading the autocomplete-list-keys module.
+    //
+    // Worth noting: even though iOS supports bluetooth keyboards, Mobile Safari
+    // doesn't fire the keyboard events used by AutoCompleteList, so there's
+    // no point loading the -keys module even when a bluetooth keyboard may be
+    // available.
+    return !(Y.UA.ios || Y.UA.android);
+}, 
+            "trigger": "autocomplete-list"
+        }, 
+        "requires": [
+            "autocomplete-list", 
+            "base-build"
+        ]
+    }, 
+    "autocomplete-plugin": {
+        "requires": [
+            "autocomplete-list", 
+            "node-pluginhost"
+        ]
+    }, 
+    "autocomplete-sources": {
+        "optional": [
+            "io-base", 
+            "json-parse", 
+            "jsonp", 
+            "yql"
+        ], 
+        "requires": [
+            "autocomplete-base"
+        ]
+    }, 
+    "base": {
+        "use": [
+            "base-base", 
+            "base-pluginhost", 
+            "base-build"
+        ]
+    }, 
+    "base-base": {
+        "after": [
+            "attribute-complex"
+        ], 
+        "requires": [
+            "attribute-base"
+        ]
+    }, 
+    "base-build": {
+        "requires": [
+            "base-base"
+        ]
+    }, 
+    "base-pluginhost": {
+        "requires": [
+            "base-base", 
+            "pluginhost"
+        ]
+    }, 
+    "cache": {
+        "use": [
+            "cache-base", 
+            "cache-offline", 
+            "cache-plugin"
+        ]
+    }, 
+    "cache-base": {
+        "requires": [
+            "base"
+        ]
+    }, 
+    "cache-offline": {
+        "requires": [
+            "cache-base", 
+            "json"
+        ]
+    }, 
+    "cache-plugin": {
+        "requires": [
+            "plugin", 
+            "cache-base"
+        ]
+    }, 
+    "calendar": {
+        "lang": [
+            "en", 
+            "ja", 
+            "ru"
+        ], 
+        "requires": [
+            "calendar-base", 
+            "calendarnavigator"
+        ], 
+        "skinnable": true
+    }, 
+    "calendar-base": {
+        "lang": [
+            "en", 
+            "ja", 
+            "ru"
+        ], 
+        "requires": [
+            "widget", 
+            "substitute", 
+            "datatype-date", 
+            "datatype-date-math", 
+            "cssgrids"
+        ], 
+        "skinnable": true
+    }, 
+    "calendarnavigator": {
+        "requires": [
+            "plugin", 
+            "classnamemanager", 
+            "datatype-date", 
+            "node", 
+            "substitute"
+        ], 
+        "skinnable": true
+    }, 
+    "charts": {
+        "requires": [
+            "dom", 
+            "datatype-number", 
+            "datatype-date", 
+            "event-custom", 
+            "event-mouseenter", 
+            "widget", 
+            "widget-position", 
+            "widget-stack", 
+            "graphics", 
+            "escape"
+        ]
+    }, 
+    "classnamemanager": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "clickable-rail": {
+        "requires": [
+            "slider-base"
+        ]
+    }, 
+    "collection": {
+        "use": [
+            "array-extras", 
+            "arraylist", 
+            "arraylist-add", 
+            "arraylist-filter", 
+            "array-invoke"
+        ]
+    }, 
+    "console": {
+        "lang": [
+            "en", 
+            "es", 
+            "ja"
+        ], 
+        "requires": [
+            "yui-log", 
+            "widget", 
+            "substitute"
+        ], 
+        "skinnable": true
+    }, 
+    "console-filters": {
+        "requires": [
+            "plugin", 
+            "console"
+        ], 
+        "skinnable": true
+    }, 
+    "controller": {
+        "use": [
+            "router"
+        ]
+    }, 
+    "cookie": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "createlink-base": {
+        "requires": [
+            "editor-base"
+        ]
+    }, 
+    "cssbase": {
+        "after": [
+            "cssreset", 
+            "cssfonts", 
+            "cssgrids", 
+            "cssreset-context", 
+            "cssfonts-context", 
+            "cssgrids-context"
+        ], 
+        "type": "css"
+    }, 
+    "cssbase-context": {
+        "after": [
+            "cssreset", 
+            "cssfonts", 
+            "cssgrids", 
+            "cssreset-context", 
+            "cssfonts-context", 
+            "cssgrids-context"
+        ], 
+        "type": "css"
+    }, 
+    "cssfonts": {
+        "type": "css"
+    }, 
+    "cssfonts-context": {
+        "type": "css"
+    }, 
+    "cssgrids": {
+        "optional": [
+            "cssreset", 
+            "cssfonts"
+        ], 
+        "type": "css"
+    }, 
+    "cssreset": {
+        "type": "css"
+    }, 
+    "cssreset-context": {
+        "type": "css"
+    }, 
+    "dataschema": {
+        "use": [
+            "dataschema-base", 
+            "dataschema-json", 
+            "dataschema-xml", 
+            "dataschema-array", 
+            "dataschema-text"
+        ]
+    }, 
+    "dataschema-array": {
+        "requires": [
+            "dataschema-base"
+        ]
+    }, 
+    "dataschema-base": {
+        "requires": [
+            "base"
+        ]
+    }, 
+    "dataschema-json": {
+        "requires": [
+            "dataschema-base", 
+            "json"
+        ]
+    }, 
+    "dataschema-text": {
+        "requires": [
+            "dataschema-base"
+        ]
+    }, 
+    "dataschema-xml": {
+        "requires": [
+            "dataschema-base"
+        ]
+    }, 
+    "datasource": {
+        "use": [
+            "datasource-local", 
+            "datasource-io", 
+            "datasource-get", 
+            "datasource-function", 
+            "datasource-cache", 
+            "datasource-jsonschema", 
+            "datasource-xmlschema", 
+            "datasource-arrayschema", 
+            "datasource-textschema", 
+            "datasource-polling"
+        ]
+    }, 
+    "datasource-arrayschema": {
+        "requires": [
+            "datasource-local", 
+            "plugin", 
+            "dataschema-array"
+        ]
+    }, 
+    "datasource-cache": {
+        "requires": [
+            "datasource-local", 
+            "plugin", 
+            "cache-base"
+        ]
+    }, 
+    "datasource-function": {
+        "requires": [
+            "datasource-local"
+        ]
+    }, 
+    "datasource-get": {
+        "requires": [
+            "datasource-local", 
+            "get"
+        ]
+    }, 
+    "datasource-io": {
+        "requires": [
+            "datasource-local", 
+            "io-base"
+        ]
+    }, 
+    "datasource-jsonschema": {
+        "requires": [
+            "datasource-local", 
+            "plugin", 
+            "dataschema-json"
+        ]
+    }, 
+    "datasource-local": {
+        "requires": [
+            "base"
+        ]
+    }, 
+    "datasource-polling": {
+        "requires": [
+            "datasource-local"
+        ]
+    }, 
+    "datasource-textschema": {
+        "requires": [
+            "datasource-local", 
+            "plugin", 
+            "dataschema-text"
+        ]
+    }, 
+    "datasource-xmlschema": {
+        "requires": [
+            "datasource-local", 
+            "plugin", 
+            "dataschema-xml"
+        ]
+    }, 
+    "datatable": {
+        "use": [
+            "datatable-base", 
+            "datatable-datasource", 
+            "datatable-sort", 
+            "datatable-scroll"
+        ]
+    }, 
+    "datatable-base": {
+        "requires": [
+            "recordset-base", 
+            "widget", 
+            "substitute", 
+            "event-mouseenter"
+        ], 
+        "skinnable": true
+    }, 
+    "datatable-datasource": {
+        "requires": [
+            "datatable-base", 
+            "plugin", 
+            "datasource-local"
+        ]
+    }, 
+    "datatable-scroll": {
+        "requires": [
+            "datatable-base", 
+            "plugin"
+        ]
+    }, 
+    "datatable-sort": {
+        "lang": [
+            "en"
+        ], 
+        "requires": [
+            "datatable-base", 
+            "plugin", 
+            "recordset-sort"
+        ]
+    }, 
+    "datatype": {
+        "use": [
+            "datatype-number", 
+            "datatype-date", 
+            "datatype-xml"
+        ]
+    }, 
+    "datatype-date": {
+        "supersedes": [
+            "datatype-date-format"
+        ], 
+        "use": [
+            "datatype-date-parse", 
+            "datatype-date-format"
+        ]
+    }, 
+    "datatype-date-format": {
+        "lang": [
+            "ar", 
+            "ar-JO", 
+            "ca", 
+            "ca-ES", 
+            "da", 
+            "da-DK", 
+            "de", 
+            "de-AT", 
+            "de-DE", 
+            "el", 
+            "el-GR", 
+            "en", 
+            "en-AU", 
+            "en-CA", 
+            "en-GB", 
+            "en-IE", 
+            "en-IN", 
+            "en-JO", 
+            "en-MY", 
+            "en-NZ", 
+            "en-PH", 
+            "en-SG", 
+            "en-US", 
+            "es", 
+            "es-AR", 
+            "es-BO", 
+            "es-CL", 
+            "es-CO", 
+            "es-EC", 
+            "es-ES", 
+            "es-MX", 
+            "es-PE", 
+            "es-PY", 
+            "es-US", 
+            "es-UY", 
+            "es-VE", 
+            "fi", 
+            "fi-FI", 
+            "fr", 
+            "fr-BE", 
+            "fr-CA", 
+            "fr-FR", 
+            "hi", 
+            "hi-IN", 
+            "id", 
+            "id-ID", 
+            "it", 
+            "it-IT", 
+            "ja", 
+            "ja-JP", 
+            "ko", 
+            "ko-KR", 
+            "ms", 
+            "ms-MY", 
+            "nb", 
+            "nb-NO", 
+            "nl", 
+            "nl-BE", 
+            "nl-NL", 
+            "pl", 
+            "pl-PL", 
+            "pt", 
+            "pt-BR", 
+            "ro", 
+            "ro-RO", 
+            "ru", 
+            "ru-RU", 
+            "sv", 
+            "sv-SE", 
+            "th", 
+            "th-TH", 
+            "tr", 
+            "tr-TR", 
+            "vi", 
+            "vi-VN", 
+            "zh-Hans", 
+            "zh-Hans-CN", 
+            "zh-Hant", 
+            "zh-Hant-HK", 
+            "zh-Hant-TW"
+        ]
+    }, 
+    "datatype-date-math": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "datatype-date-parse": {}, 
+    "datatype-number": {
+        "use": [
+            "datatype-number-parse", 
+            "datatype-number-format"
+        ]
+    }, 
+    "datatype-number-format": {}, 
+    "datatype-number-parse": {}, 
+    "datatype-xml": {
+        "use": [
+            "datatype-xml-parse", 
+            "datatype-xml-format"
+        ]
+    }, 
+    "datatype-xml-format": {}, 
+    "datatype-xml-parse": {}, 
+    "dd": {
+        "use": [
+            "dd-ddm-base", 
+            "dd-ddm", 
+            "dd-ddm-drop", 
+            "dd-drag", 
+            "dd-proxy", 
+            "dd-constrain", 
+            "dd-drop", 
+            "dd-scroll", 
+            "dd-delegate"
+        ]
+    }, 
+    "dd-constrain": {
+        "requires": [
+            "dd-drag"
+        ]
+    }, 
+    "dd-ddm": {
+        "requires": [
+            "dd-ddm-base", 
+            "event-resize"
+        ]
+    }, 
+    "dd-ddm-base": {
+        "requires": [
+            "node", 
+            "base", 
+            "yui-throttle", 
+            "classnamemanager"
+        ]
+    }, 
+    "dd-ddm-drop": {
+        "requires": [
+            "dd-ddm"
+        ]
+    }, 
+    "dd-delegate": {
+        "requires": [
+            "dd-drag", 
+            "dd-drop-plugin", 
+            "event-mouseenter"
+        ]
+    }, 
+    "dd-drag": {
+        "requires": [
+            "dd-ddm-base"
+        ]
+    }, 
+    "dd-drop": {
+        "requires": [
+            "dd-drag", 
+            "dd-ddm-drop"
+        ]
+    }, 
+    "dd-drop-plugin": {
+        "requires": [
+            "dd-drop"
+        ]
+    }, 
+    "dd-gestures": {
+        "condition": {
+            "name": "dd-gestures", 
+            "test": function(Y) {
+    return (Y.config.win && ('ontouchstart' in Y.config.win && !Y.UA.chrome));
+}, 
+            "trigger": "dd-drag"
+        }, 
+        "requires": [
+            "dd-drag", 
+            "event-synthetic", 
+            "event-gestures"
+        ]
+    }, 
+    "dd-plugin": {
+        "optional": [
+            "dd-constrain", 
+            "dd-proxy"
+        ], 
+        "requires": [
+            "dd-drag"
+        ]
+    }, 
+    "dd-proxy": {
+        "requires": [
+            "dd-drag"
+        ]
+    }, 
+    "dd-scroll": {
+        "requires": [
+            "dd-drag"
+        ]
+    }, 
+    "dial": {
+        "lang": [
+            "en", 
+            "es"
+        ], 
+        "requires": [
+            "widget", 
+            "dd-drag", 
+            "substitute", 
+            "event-mouseenter", 
+            "event-move", 
+            "event-key", 
+            "transition", 
+            "intl"
+        ], 
+        "skinnable": true
+    }, 
+    "dom": {
+        "use": [
+            "dom-base", 
+            "dom-screen", 
+            "dom-style", 
+            "selector-native", 
+            "selector"
+        ]
+    }, 
+    "dom-base": {
+        "requires": [
+            "dom-core"
+        ]
+    }, 
+    "dom-core": {
+        "requires": [
+            "oop", 
+            "features"
+        ]
+    }, 
+    "dom-deprecated": {
+        "requires": [
+            "dom-base"
+        ]
+    }, 
+    "dom-screen": {
+        "requires": [
+            "dom-base", 
+            "dom-style"
+        ]
+    }, 
+    "dom-style": {
+        "requires": [
+            "dom-base"
+        ]
+    }, 
+    "dom-style-ie": {
+        "condition": {
+            "name": "dom-style-ie", 
+            "test": function (Y) {
+
+    var testFeature = Y.Features.test,
+        addFeature = Y.Features.add,
+        WINDOW = Y.config.win,
+        DOCUMENT = Y.config.doc,
+        DOCUMENT_ELEMENT = 'documentElement',
+        ret = false;
+
+    addFeature('style', 'computedStyle', {
+        test: function() {
+            return WINDOW && 'getComputedStyle' in WINDOW;
+        }
+    });
+
+    addFeature('style', 'opacity', {
+        test: function() {
+            return DOCUMENT && 'opacity' in DOCUMENT[DOCUMENT_ELEMENT].style;
+        }
+    });
+
+    ret =  (!testFeature('style', 'opacity') &&
+            !testFeature('style', 'computedStyle'));
+
+    return ret;
+}, 
+            "trigger": "dom-style"
+        }, 
+        "requires": [
+            "dom-style"
+        ]
+    }, 
+    "dump": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "editor": {
+        "use": [
+            "frame", 
+            "selection", 
+            "exec-command", 
+            "editor-base", 
+            "editor-para", 
+            "editor-br", 
+            "editor-bidi", 
+            "editor-tab", 
+            "createlink-base"
+        ]
+    }, 
+    "editor-base": {
+        "requires": [
+            "base", 
+            "frame", 
+            "node", 
+            "exec-command", 
+            "selection"
+        ]
+    }, 
+    "editor-bidi": {
+        "requires": [
+            "editor-base"
+        ]
+    }, 
+    "editor-br": {
+        "requires": [
+            "editor-base"
+        ]
+    }, 
+    "editor-lists": {
+        "requires": [
+            "editor-base"
+        ]
+    }, 
+    "editor-para": {
+        "requires": [
+            "editor-base"
+        ]
+    }, 
+    "editor-tab": {
+        "requires": [
+            "editor-base"
+        ]
+    }, 
+    "escape": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "event": {
+        "after": [
+            "node-base"
+        ], 
+        "use": [
+            "event-base", 
+            "event-delegate", 
+            "event-synthetic", 
+            "event-mousewheel", 
+            "event-mouseenter", 
+            "event-key", 
+            "event-focus", 
+            "event-resize", 
+            "event-hover", 
+            "event-outside", 
+            "event-touch", 
+            "event-move", 
+            "event-flick", 
+            "event-valuechange"
+        ]
+    }, 
+    "event-base": {
+        "after": [
+            "node-base"
+        ], 
+        "requires": [
+            "event-custom-base"
+        ]
+    }, 
+    "event-base-ie": {
+        "after": [
+            "event-base"
+        ], 
+        "condition": {
+            "name": "event-base-ie", 
+            "test": function(Y) {
+    var imp = Y.config.doc && Y.config.doc.implementation;
+    return (imp && (!imp.hasFeature('Events', '2.0')));
+}, 
+            "trigger": "node-base"
+        }, 
+        "requires": [
+            "node-base"
+        ]
+    }, 
+    "event-custom": {
+        "use": [
+            "event-custom-base", 
+            "event-custom-complex"
+        ]
+    }, 
+    "event-custom-base": {
+        "requires": [
+            "oop"
+        ]
+    }, 
+    "event-custom-complex": {
+        "requires": [
+            "event-custom-base"
+        ]
+    }, 
+    "event-delegate": {
+        "requires": [
+            "node-base"
+        ]
+    }, 
+    "event-flick": {
+        "requires": [
+            "node-base", 
+            "event-touch", 
+            "event-synthetic"
+        ]
+    }, 
+    "event-focus": {
+        "requires": [
+            "event-synthetic"
+        ]
+    }, 
+    "event-gestures": {
+        "use": [
+            "event-flick", 
+            "event-move"
+        ]
+    }, 
+    "event-hover": {
+        "requires": [
+            "event-mouseenter"
+        ]
+    }, 
+    "event-key": {
+        "requires": [
+            "event-synthetic"
+        ]
+    }, 
+    "event-mouseenter": {
+        "requires": [
+            "event-synthetic"
+        ]
+    }, 
+    "event-mousewheel": {
+        "requires": [
+            "node-base"
+        ]
+    }, 
+    "event-move": {
+        "requires": [
+            "node-base", 
+            "event-touch", 
+            "event-synthetic"
+        ]
+    }, 
+    "event-outside": {
+        "requires": [
+            "event-synthetic"
+        ]
+    }, 
+    "event-resize": {
+        "requires": [
+            "node-base", 
+            "event-synthetic"
+        ]
+    }, 
+    "event-simulate": {
+        "requires": [
+            "event-base"
+        ]
+    }, 
+    "event-synthetic": {
+        "requires": [
+            "node-base", 
+            "event-custom-complex"
+        ]
+    }, 
+    "event-touch": {
+        "requires": [
+            "node-base"
+        ]
+    }, 
+    "event-valuechange": {
+        "requires": [
+            "event-focus", 
+            "event-synthetic"
+        ]
+    }, 
+    "exec-command": {
+        "requires": [
+            "frame"
+        ]
+    }, 
+    "features": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "frame": {
+        "requires": [
+            "base", 
+            "node", 
+            "selector-css3", 
+            "substitute", 
+            "yui-throttle"
+        ]
+    }, 
+    "get": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "graphics": {
+        "requires": [
+            "node", 
+            "event-custom", 
+            "pluginhost", 
+            "matrix"
+        ]
+    }, 
+    "graphics-canvas": {
+        "condition": {
+            "name": "graphics-canvas", 
+            "test": function(Y) {
+    var DOCUMENT = Y.config.doc,
+		canvas = DOCUMENT && DOCUMENT.createElement("canvas");
+	return (DOCUMENT && !DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") && (canvas && canvas.getContext && canvas.getContext("2d")));
+}, 
+            "trigger": "graphics"
+        }, 
+        "requires": [
+            "graphics"
+        ]
+    }, 
+    "graphics-canvas-default": {
+        "condition": {
+            "name": "graphics-canvas-default", 
+            "test": function(Y) {
+    var DOCUMENT = Y.config.doc,
+		canvas = DOCUMENT && DOCUMENT.createElement("canvas");
+	return (DOCUMENT && !DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") && (canvas && canvas.getContext && canvas.getContext("2d")));
+}, 
+            "trigger": "graphics"
+        }
+    }, 
+    "graphics-svg": {
+        "condition": {
+            "name": "graphics-svg", 
+            "test": function(Y) {
+    var DOCUMENT = Y.config.doc;
+	return (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
+}, 
+            "trigger": "graphics"
+        }, 
+        "requires": [
+            "graphics"
+        ]
+    }, 
+    "graphics-svg-default": {
+        "condition": {
+            "name": "graphics-svg-default", 
+            "test": function(Y) {
+    var DOCUMENT = Y.config.doc;
+	return (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
+}, 
+            "trigger": "graphics"
+        }
+    }, 
+    "graphics-vml": {
+        "condition": {
+            "name": "graphics-vml", 
+            "test": function(Y) {
+    var DOCUMENT = Y.config.doc,
+		canvas = DOCUMENT && DOCUMENT.createElement("canvas");
+    return (DOCUMENT && !DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") && (!canvas || !canvas.getContext || !canvas.getContext("2d")));
+}, 
+            "trigger": "graphics"
+        }, 
+        "requires": [
+            "graphics"
+        ]
+    }, 
+    "graphics-vml-default": {
+        "condition": {
+            "name": "graphics-vml-default", 
+            "test": function(Y) {
+    var DOCUMENT = Y.config.doc,
+		canvas = DOCUMENT && DOCUMENT.createElement("canvas");
+    return (DOCUMENT && !DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1") && (!canvas || !canvas.getContext || !canvas.getContext("2d")));
+}, 
+            "trigger": "graphics"
+        }
+    }, 
+    "handlebars": {
+        "use": [
+            "handlebars-compiler"
+        ]
+    }, 
+    "handlebars-base": {
+        "requires": [
+            "escape"
+        ]
+    }, 
+    "handlebars-compiler": {
+        "requires": [
+            "handlebars-base"
+        ]
+    }, 
+    "highlight": {
+        "use": [
+            "highlight-base", 
+            "highlight-accentfold"
+        ]
+    }, 
+    "highlight-accentfold": {
+        "requires": [
+            "highlight-base", 
+            "text-accentfold"
+        ]
+    }, 
+    "highlight-base": {
+        "requires": [
+            "array-extras", 
+            "classnamemanager", 
+            "escape", 
+            "text-wordbreak"
+        ]
+    }, 
+    "history": {
+        "use": [
+            "history-base", 
+            "history-hash", 
+            "history-hash-ie", 
+            "history-html5"
+        ]
+    }, 
+    "history-base": {
+        "requires": [
+            "event-custom-complex"
+        ]
+    }, 
+    "history-hash": {
+        "after": [
+            "history-html5"
+        ], 
+        "requires": [
+            "event-synthetic", 
+            "history-base", 
+            "yui-later"
+        ]
+    }, 
+    "history-hash-ie": {
+        "condition": {
+            "name": "history-hash-ie", 
+            "test": function (Y) {
+    var docMode = Y.config.doc && Y.config.doc.documentMode;
+
+    return Y.UA.ie && (!('onhashchange' in Y.config.win) ||
+            !docMode || docMode < 8);
+}, 
+            "trigger": "history-hash"
+        }, 
+        "requires": [
+            "history-hash", 
+            "node-base"
+        ]
+    }, 
+    "history-html5": {
+        "optional": [
+            "json"
+        ], 
+        "requires": [
+            "event-base", 
+            "history-base", 
+            "node-base"
+        ]
+    }, 
+    "imageloader": {
+        "requires": [
+            "base-base", 
+            "node-style", 
+            "node-screen"
+        ]
+    }, 
+    "intl": {
+        "requires": [
+            "intl-base", 
+            "event-custom"
+        ]
+    }, 
+    "intl-base": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "io": {
+        "use": [
+            "io-base", 
+            "io-xdr", 
+            "io-form", 
+            "io-upload-iframe", 
+            "io-queue"
+        ]
+    }, 
+    "io-base": {
+        "requires": [
+            "event-custom-base", 
+            "querystring-stringify-simple"
+        ]
+    }, 
+    "io-form": {
+        "requires": [
+            "io-base", 
+            "node-base"
+        ]
+    }, 
+    "io-queue": {
+        "requires": [
+            "io-base", 
+            "queue-promote"
+        ]
+    }, 
+    "io-upload-iframe": {
+        "requires": [
+            "io-base", 
+            "node-base"
+        ]
+    }, 
+    "io-xdr": {
+        "requires": [
+            "io-base", 
+            "datatype-xml-parse"
+        ]
+    }, 
+    "json": {
+        "use": [
+            "json-parse", 
+            "json-stringify"
+        ]
+    }, 
+    "json-parse": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "json-stringify": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "jsonp": {
+        "requires": [
+            "get", 
+            "oop"
+        ]
+    }, 
+    "jsonp-url": {
+        "requires": [
+            "jsonp"
+        ]
+    }, 
+    "loader": {
+        "use": [
+            "loader-base", 
+            "loader-rollup", 
+            "loader-yui3"
+        ]
+    }, 
+    "loader-base": {
+        "requires": [
+            "get", 
+            "features"
+        ]
+    }, 
+    "loader-rollup": {
+        "requires": [
+            "loader-base"
+        ]
+    }, 
+    "loader-yui3": {
+        "requires": [
+            "loader-base"
+        ]
+    }, 
+    "matrix": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "model": {
+        "requires": [
+            "base-build", 
+            "escape", 
+            "json-parse"
+        ]
+    }, 
+    "model-list": {
+        "requires": [
+            "array-extras", 
+            "array-invoke", 
+            "arraylist", 
+            "base-build", 
+            "escape", 
+            "json-parse", 
+            "model"
+        ]
+    }, 
+    "node": {
+        "use": [
+            "node-base", 
+            "node-event-delegate", 
+            "node-pluginhost", 
+            "node-screen", 
+            "node-style"
+        ]
+    }, 
+    "node-base": {
+        "requires": [
+            "event-base", 
+            "node-core", 
+            "dom-base"
+        ]
+    }, 
+    "node-core": {
+        "requires": [
+            "dom-core", 
+            "selector"
+        ]
+    }, 
+    "node-deprecated": {
+        "requires": [
+            "node-base"
+        ]
+    }, 
+    "node-event-delegate": {
+        "requires": [
+            "node-base", 
+            "event-delegate"
+        ]
+    }, 
+    "node-event-html5": {
+        "requires": [
+            "node-base"
+        ]
+    }, 
+    "node-event-simulate": {
+        "requires": [
+            "node-base", 
+            "event-simulate"
+        ]
+    }, 
+    "node-flick": {
+        "requires": [
+            "classnamemanager", 
+            "transition", 
+            "event-flick", 
+            "plugin"
+        ], 
+        "skinnable": true
+    }, 
+    "node-focusmanager": {
+        "requires": [
+            "attribute", 
+            "node", 
+            "plugin", 
+            "node-event-simulate", 
+            "event-key", 
+            "event-focus"
+        ]
+    }, 
+    "node-load": {
+        "requires": [
+            "node-base", 
+            "io-base"
+        ]
+    }, 
+    "node-menunav": {
+        "requires": [
+            "node", 
+            "classnamemanager", 
+            "plugin", 
+            "node-focusmanager"
+        ], 
+        "skinnable": true
+    }, 
+    "node-pluginhost": {
+        "requires": [
+            "node-base", 
+            "pluginhost"
+        ]
+    }, 
+    "node-screen": {
+        "requires": [
+            "dom-screen", 
+            "node-base"
+        ]
+    }, 
+    "node-style": {
+        "requires": [
+            "dom-style", 
+            "node-base"
+        ]
+    }, 
+    "oop": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "overlay": {
+        "requires": [
+            "widget", 
+            "widget-stdmod", 
+            "widget-position", 
+            "widget-position-align", 
+            "widget-stack", 
+            "widget-position-constrain"
+        ], 
+        "skinnable": true
+    }, 
+    "panel": {
+        "requires": [
+            "widget", 
+            "widget-stdmod", 
+            "widget-position", 
+            "widget-position-align", 
+            "widget-stack", 
+            "widget-position-constrain", 
+            "widget-modality", 
+            "widget-autohide", 
+            "widget-buttons"
+        ], 
+        "skinnable": true
+    }, 
+    "parallel": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "pjax": {
+        "requires": [
+            "pjax-base", 
+            "io-base"
+        ]
+    }, 
+    "pjax-base": {
+        "requires": [
+            "classnamemanager", 
+            "node-event-delegate", 
+            "router"
+        ]
+    }, 
+    "pjax-plugin": {
+        "requires": [
+            "node-pluginhost", 
+            "pjax", 
+            "plugin"
+        ]
+    }, 
+    "plugin": {
+        "requires": [
+            "base-base"
+        ]
+    }, 
+    "pluginhost": {
+        "use": [
+            "pluginhost-base", 
+            "pluginhost-config"
+        ]
+    }, 
+    "pluginhost-base": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "pluginhost-config": {
+        "requires": [
+            "pluginhost-base"
+        ]
+    }, 
+    "profiler": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "querystring": {
+        "use": [
+            "querystring-parse", 
+            "querystring-stringify"
+        ]
+    }, 
+    "querystring-parse": {
+        "requires": [
+            "yui-base", 
+            "array-extras"
+        ]
+    }, 
+    "querystring-parse-simple": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "querystring-stringify": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "querystring-stringify-simple": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "queue-promote": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "range-slider": {
+        "requires": [
+            "slider-base", 
+            "slider-value-range", 
+            "clickable-rail"
+        ]
+    }, 
+    "recordset": {
+        "use": [
+            "recordset-base", 
+            "recordset-sort", 
+            "recordset-filter", 
+            "recordset-indexer"
+        ]
+    }, 
+    "recordset-base": {
+        "requires": [
+            "base", 
+            "arraylist"
+        ]
+    }, 
+    "recordset-filter": {
+        "requires": [
+            "recordset-base", 
+            "array-extras", 
+            "plugin"
+        ]
+    }, 
+    "recordset-indexer": {
+        "requires": [
+            "recordset-base", 
+            "plugin"
+        ]
+    }, 
+    "recordset-sort": {
+        "requires": [
+            "arraysort", 
+            "recordset-base", 
+            "plugin"
+        ]
+    }, 
+    "resize": {
+        "use": [
+            "resize-base", 
+            "resize-proxy", 
+            "resize-constrain"
+        ]
+    }, 
+    "resize-base": {
+        "requires": [
+            "base", 
+            "widget", 
+            "substitute", 
+            "event", 
+            "oop", 
+            "dd-drag", 
+            "dd-delegate", 
+            "dd-drop"
+        ], 
+        "skinnable": true
+    }, 
+    "resize-constrain": {
+        "requires": [
+            "plugin", 
+            "resize-base"
+        ]
+    }, 
+    "resize-plugin": {
+        "optional": [
+            "resize-constrain"
+        ], 
+        "requires": [
+            "resize-base", 
+            "plugin"
+        ]
+    }, 
+    "resize-proxy": {
+        "requires": [
+            "plugin", 
+            "resize-base"
+        ]
+    }, 
+    "rls": {
+        "requires": [
+            "get", 
+            "features"
+        ]
+    }, 
+    "router": {
+        "optional": [
+            "querystring-parse"
+        ], 
+        "requires": [
+            "array-extras", 
+            "base-build", 
+            "history"
+        ]
+    }, 
+    "scrollview": {
+        "requires": [
+            "scrollview-base", 
+            "scrollview-scrollbars"
+        ]
+    }, 
+    "scrollview-base": {
+        "requires": [
+            "widget", 
+            "event-gestures", 
+            "transition"
+        ], 
+        "skinnable": true
+    }, 
+    "scrollview-base-ie": {
+        "condition": {
+            "name": "scrollview-base-ie", 
+            "trigger": "scrollview-base", 
+            "ua": "ie"
+        }, 
+        "requires": [
+            "scrollview-base"
+        ]
+    }, 
+    "scrollview-list": {
+        "requires": [
+            "plugin", 
+            "classnamemanager"
+        ], 
+        "skinnable": true
+    }, 
+    "scrollview-paginator": {
+        "requires": [
+            "plugin"
+        ]
+    }, 
+    "scrollview-scrollbars": {
+        "requires": [
+            "classnamemanager", 
+            "transition", 
+            "plugin"
+        ], 
+        "skinnable": true
+    }, 
+    "selection": {
+        "requires": [
+            "node"
+        ]
+    }, 
+    "selector": {
+        "requires": [
+            "selector-native"
+        ]
+    }, 
+    "selector-css2": {
+        "condition": {
+            "name": "selector-css2", 
+            "test": function (Y) {
+    var DOCUMENT = Y.config.doc,
+        ret = DOCUMENT && !('querySelectorAll' in DOCUMENT);
+
+    return ret;
+}, 
+            "trigger": "selector"
+        }, 
+        "requires": [
+            "selector-native"
+        ]
+    }, 
+    "selector-css3": {
+        "requires": [
+            "selector-native", 
+            "selector-css2"
+        ]
+    }, 
+    "selector-native": {
+        "requires": [
+            "dom-base"
+        ]
+    }, 
+    "shim-plugin": {
+        "requires": [
+            "node-style", 
+            "node-pluginhost"
+        ]
+    }, 
+    "slider": {
+        "use": [
+            "slider-base", 
+            "slider-value-range", 
+            "clickable-rail", 
+            "range-slider"
+        ]
+    }, 
+    "slider-base": {
+        "requires": [
+            "widget", 
+            "dd-constrain", 
+            "substitute", 
+            "event-key"
+        ], 
+        "skinnable": true
+    }, 
+    "slider-value-range": {
+        "requires": [
+            "slider-base"
+        ]
+    }, 
+    "sortable": {
+        "requires": [
+            "dd-delegate", 
+            "dd-drop-plugin", 
+            "dd-proxy"
+        ]
+    }, 
+    "sortable-scroll": {
+        "requires": [
+            "dd-scroll", 
+            "sortable"
+        ]
+    }, 
+    "stylesheet": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "substitute": {
+        "optional": [
+            "dump"
+        ], 
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "swf": {
+        "requires": [
+            "event-custom", 
+            "node", 
+            "swfdetect", 
+            "escape"
+        ]
+    }, 
+    "swfdetect": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "tabview": {
+        "requires": [
+            "widget", 
+            "widget-parent", 
+            "widget-child", 
+            "tabview-base", 
+            "node-pluginhost", 
+            "node-focusmanager"
+        ], 
+        "skinnable": true
+    }, 
+    "tabview-base": {
+        "requires": [
+            "node-event-delegate", 
+            "classnamemanager", 
+            "skin-sam-tabview"
+        ]
+    }, 
+    "tabview-plugin": {
+        "requires": [
+            "tabview-base"
+        ]
+    }, 
+    "test": {
+        "requires": [
+            "event-simulate", 
+            "event-custom", 
+            "substitute", 
+            "json-stringify"
+        ], 
+        "skinnable": true
+    }, 
+    "test-console": {
+        "requires": [
+            "console-filters", 
+            "test"
+        ], 
+        "skinnable": true
+    }, 
+    "text": {
+        "use": [
+            "text-accentfold", 
+            "text-wordbreak"
+        ]
+    }, 
+    "text-accentfold": {
+        "requires": [
+            "array-extras", 
+            "text-data-accentfold"
+        ]
+    }, 
+    "text-data-accentfold": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "text-data-wordbreak": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "text-wordbreak": {
+        "requires": [
+            "array-extras", 
+            "text-data-wordbreak"
+        ]
+    }, 
+    "transition": {
+        "requires": [
+            "node-style"
+        ]
+    }, 
+    "transition-timer": {
+        "condition": {
+            "name": "transition-timer", 
+            "test": function (Y) {
+    var DOCUMENT = Y.config.doc,
+        node = (DOCUMENT) ? DOCUMENT.documentElement: null,
+        ret = true;
+
+    if (node && node.style) {
+        ret = !('MozTransition' in node.style || 'WebkitTransition' in node.style);
+    } 
+
+    return ret;
+}, 
+            "trigger": "transition"
+        }, 
+        "requires": [
+            "transition"
+        ]
+    }, 
+    "uploader": {
+        "requires": [
+            "event-custom", 
+            "node", 
+            "base", 
+            "swf"
+        ]
+    }, 
+    "view": {
+        "requires": [
+            "base-build", 
+            "node-event-delegate"
+        ]
+    }, 
+    "widget": {
+        "use": [
+            "widget-base", 
+            "widget-htmlparser", 
+            "widget-uievents", 
+            "widget-skin"
+        ]
+    }, 
+    "widget-anim": {
+        "requires": [
+            "plugin", 
+            "anim-base", 
+            "widget"
+        ]
+    }, 
+    "widget-autohide": {
+        "requires": [
+            "widget", 
+            "event-outside", 
+            "base-build", 
+            "event-key"
+        ], 
+        "skinnable": false
+    }, 
+    "widget-base": {
+        "requires": [
+            "attribute", 
+            "event-focus", 
+            "base-base", 
+            "base-pluginhost", 
+            "node-base", 
+            "node-style", 
+            "classnamemanager"
+        ], 
+        "skinnable": true
+    }, 
+    "widget-base-ie": {
+        "condition": {
+            "name": "widget-base-ie", 
+            "trigger": "widget-base", 
+            "ua": "ie"
+        }, 
+        "requires": [
+            "widget-base"
+        ]
+    }, 
+    "widget-buttons": {
+        "requires": [
+            "widget", 
+            "base-build", 
+            "widget-stdmod"
+        ], 
+        "skinnable": true
+    }, 
+    "widget-child": {
+        "requires": [
+            "base-build", 
+            "widget"
+        ]
+    }, 
+    "widget-htmlparser": {
+        "requires": [
+            "widget-base"
+        ]
+    }, 
+    "widget-locale": {
+        "requires": [
+            "widget-base"
+        ]
+    }, 
+    "widget-modality": {
+        "requires": [
+            "widget", 
+            "event-outside", 
+            "base-build"
+        ], 
+        "skinnable": false
+    }, 
+    "widget-parent": {
+        "requires": [
+            "base-build", 
+            "arraylist", 
+            "widget"
+        ]
+    }, 
+    "widget-position": {
+        "requires": [
+            "base-build", 
+            "node-screen", 
+            "widget"
+        ]
+    }, 
+    "widget-position-align": {
+        "requires": [
+            "widget-position"
+        ]
+    }, 
+    "widget-position-constrain": {
+        "requires": [
+            "widget-position"
+        ]
+    }, 
+    "widget-skin": {
+        "requires": [
+            "widget-base"
+        ]
+    }, 
+    "widget-stack": {
+        "requires": [
+            "base-build", 
+            "widget"
+        ], 
+        "skinnable": true
+    }, 
+    "widget-stdmod": {
+        "requires": [
+            "base-build", 
+            "widget"
+        ]
+    }, 
+    "widget-uievents": {
+        "requires": [
+            "widget-base", 
+            "node-event-delegate"
+        ]
+    }, 
+    "yql": {
+        "requires": [
+            "jsonp", 
+            "jsonp-url"
+        ]
+    }, 
+    "yui": {}, 
+    "yui-base": {}, 
+    "yui-later": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "yui-log": {
+        "requires": [
+            "yui-base"
+        ]
+    }, 
+    "yui-rls": {}, 
+    "yui-throttle": {
+        "requires": [
+            "yui-base"
+        ]
+    }
+};
+YUI.Env[Y.version].md5 = 'c075c6b01045f120558254c68a43f92e';
+
+
+}, '3.5.0pr1' ,{requires:['loader-base']});
+
+
+YUI.add('yui', function(Y){}, '3.5.0pr1' ,{use:['yui-base','get','features','intl-base','yui-log','yui-later','loader-base', 'loader-rollup', 'loader-yui3']});
 

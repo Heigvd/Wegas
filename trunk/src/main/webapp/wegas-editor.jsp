@@ -1,12 +1,8 @@
 <!DOCTYPE html >
-<!--<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
--->
-<html> 
+<html lang="en"> 
     <head>  
-        <title>WeGAS - 0.1</title> 
+        <title>Wegas - 0.2</title> 
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-        <meta http-equiv="Content-Language" content="en" />
         <meta name="description" content="" /> 
         <meta name="keywords" content="" />     
         <meta name="robots" content="index, follow" /> 
@@ -16,43 +12,42 @@
         <meta name="revisit-after" content="30 days" /> 
         <link rel="icon" type="image/ico" href="/favicon.ico" /> 
 
-
         <!-- YUI -->
-
-        <!--	Online version -->
+        <!-- CDN  -->
         <!--<link rel="stylesheet" type="text/css" 
                         href="http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&3.3.0/build/cssreset/reset-min.css&3.3.0/build/cssgrids/grids-min.css&3.3.0/build/cssbase/base-min.css&3.3.0pr3/build/widget/assets/skins/sam/widget.css&3.3.0pr3/build/node-menunav/assets/skins/sam/node-menunav.css&" charset="utf-8" /> 
             <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/skin.css">   -->
 
+        <!-- Self hosted -->
         <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssfonts/fonts-min.css" />
         <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssreset/reset-min.css" />
-        <link rel="stylesheet" type="text/css" href="lib/yui3/build/widget/assets/skins/sam/widget.css" />
-
+        
+        <!-- WireIt -->
         <link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> 
-        <!--	<link type='text/css' rel='stylesheet' href='lib/inputex/css/inputEx.css' />-->
+
+        <!-- InputEx -->
+        <!-- <link type='text/css' rel='stylesheet' href='lib/inputex/css/inputEx.css' />-->
 
         <meta id="customstyles" /> 
-        <!--<link rel="stylesheet" type="text/css" href="wegas-core/assets/wegas-admin.css" /> 
-        
-        <link rel="stylesheet" type="text/css" href="/src/redcms-base/assets/redcms-base.css" /> 
-        <link rel="stylesheet" type="text/css" href="/src/redcms-base/assets/skin/sam/redcms-base-skin-sam.css" />
-        -->
+        <link rel="stylesheet" type="text/css" href="wegas-editor/assets/wegas-editor.css" />
 
     </head> 
     <body class="yui3-skin-sam yui-skin-sam " > 
 
         <!-- YUI Base -->
-        <!--<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.3.0pr3/build/yui/yui-min.js&3.3.0pr3/build/loader/loader-min.js"></script> 
+        <!-- CDN -->
+        <!--<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.5.0pr1/build/yui/yui-min.js&3.5.0pr1/build/loader/loader-min.js"></script> 
         -->
+        <!-- Self hosted -->
         <script type="text/javascript" src="lib/yui3/build/yui/yui.js"></script> 
-        <script type="text/javascript" src="lib/yui3/build/loader/loader.js"></script> 
+        <script type="text/javascript" src="lib/yui3/build/loader/loader.js"></script>
 
-        <!-- Inputex Base -->
+        <!-- inputEx Base -->
         <script src="lib/inputex/build/loader.js"  type='text/javascript'></script>
 
         <!-- Atmosphere jquery -->
         <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
-        <script type="text/javascript" src="jquery/jquery.form.js"></script>
+        <!-- <script type="text/javascript" src="jquery/jquery.form.js"></script>-->
         <script type="text/javascript" src="jquery/jquery.atmosphere.js"></script>
 
 
@@ -60,13 +55,14 @@
             YUI_config.groups.inputex.base = 'lib/inputex/build/';		// Hack fix inputex loading path so it uses local files
 	    
             var Config = {
-                base : '/Wegas/',
+                base : 'http://localhost:8080/Wegas/',
                 layoutSrc: 'data/editor-layout.json',
                 lang : 'en-US',
                 debug : true,
-		
                 currentGameModel: 1,
-                //dataSrc : './data/data-asprojectmanagment.json',
+                currentTeamId: 1,
+                currentUserId: 1,
+                css: ['wegas-projectmanagementgame/assets/wegas-projectmanagementgame.css'],
                 dataSources: {
                     gameModel: {
                         source: "rs/gm",
@@ -79,46 +75,7 @@
                                         resultFields: ["name", "id", "@class", "errors"]
                                     }
                                 }
-                            }
-                        ]
-                    },
-                    type: {
-                        source: "rs/gm/1/type",
-                        plugins: [
-                            {
-                                fn: "DataSourceJSONSchema", 
-                                cfg: {
-                                    schema: {
-                                        resultListLocator: "."
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    "VariableInstance": {
-                        source: "rs/gm/1/var",
-                        plugins: [
-                            {
-                                fn: "DataSourceJSONSchema", 
-                                cfg: {
-                                    schema: {
-                                        resultListLocator: "."
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    "VariableDescriptor": {
-                        source: "rs/gm/1/vardesc",
-                        plugins: [
-                            {
-                                fn: "DataSourceJSONSchema", 
-                                cfg: {
-                                    schema: {
-                                        resultListLocator: "."
-                                    }
-                                }
-                            }
+                            }, { fn: "DataSourceREST" }
                         ]
                     },
                     "User": {
@@ -131,7 +88,7 @@
                                         resultListLocator: "."
                                     }
                                 }
-                            }
+                            }, { fn: "DataSourceREST" }
                         ]
                     },
                     "Team": {
@@ -144,7 +101,20 @@
                                         resultListLocator: "."
                                     }
                                 }
-                            }
+                            }, { fn: "DataSourceREST" }
+                        ]
+                    },
+                    "VariableDescriptor": {
+                        source: "rs/gm/1/vardesc",
+                        plugins: [
+                            {
+                                fn: "DataSourceJSONSchema", 
+                                cfg: {
+                                    schema: {
+                                        resultListLocator: "."
+                                    }
+                                }
+                            }, { fn: "DataSourceVariableDescriptorREST" }
                         ]
                     }
                 },
@@ -348,16 +318,12 @@
                         { name: 'id', label:'Id', type: 'hidden'},
                         { name: '@class', type: 'hidden', value: 'StringVariableDescriptor'},
                         { name: 'name', label:'Name'},
-                        { name: 'scope', type:'group', fields: [
-                                { name: 'id', label:'Id', type: 'hidden'},
-                                { name: '@class', value:'UserScope', type: 'hidden'}
-                            ]},
                         { name: 'defaultVariableInstance', type:'group', fields: [
                                 { name: '@class', value:'StringVariableInstance', type: 'hidden'},
                                 { name: 'id', label:'Id', type: 'hidden'},
                                 { name: 'content', label: 'DefaultValue'}
                             ]},
-                        { type: 'select', 
+                        /*{ type: 'select', 
                             label: 'Variable Type',
                             choices: [{ value: "StringVariableInstance", label: 'String' }, { value: "DoubleVariableInstance", label: 'Number'}],
                             interactions: [
@@ -388,10 +354,24 @@
                                     ]
                                 }
                             ]
+                        },*/
+                        { type: 'select', 
+                            name: '@class',
+                            label: 'Variable is',
+                            choices: [{ value: "StringVariableDescriptor", label: 'a string' }, { value: "number", label: 'a number'}]
                         },
-                        {type: 'select', label: 'Select your city', name: 'franceCitiesSelect', choices: [{ value : "Paris" }, { value: "Lyon" }, { value: "Marseille" }] },
-                        {type: 'select', label: 'Select your city', name: 'USACitiesSelect', choices: [{ value: "NewYork" }, { value: "Chicago" }, { value: "LA" }, { value: "San Francisco" }] }
-   
+                        { name: 'scope', type:'group', fields: [
+                                { name: 'id', label:'Id', type: 'hidden'},
+                                { type: 'select', 
+                                    name: '@class',
+                                    label: 'Variable is',
+                                    choices: [
+                                        { value: "UserScope", label: 'different for each user' }, 
+                                        { value: "TeamScope", label: 'different for each team' }, 
+                                        { value: "GameScope", label: 'the same for everybody' }
+                                    ]
+                                }
+                            ]}
                     ],
                     "StringVariableDescriptor" : [
                         { name: 'id', label:'Id', type: 'hidden'},

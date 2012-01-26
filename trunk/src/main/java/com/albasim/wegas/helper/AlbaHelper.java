@@ -39,7 +39,8 @@ public class AlbaHelper {
      * GmTyoe uniqueness is a database constraint and will be checked by
      * standard JPA validation life-cycle
      * 
-     * @param typeName 
+     * @param typeName
+     * @return  
      * 
      */
     public static boolean isTypeNameValid(String typeName) {
@@ -52,6 +53,11 @@ public class AlbaHelper {
     }
 
 
+    /**
+     * 
+     * @param collection
+     * @return
+     */
     public static Collection<IndexEntry> getIndex(
             Collection<? extends NamedEntity> collection) {
         ArrayList<IndexEntry> index = new ArrayList<IndexEntry>();
@@ -61,6 +67,11 @@ public class AlbaHelper {
         return index;
     }
 
+    /**
+     * 
+     * @param collection
+     * @return
+     */
     public static Collection<VariableInstanceIndexEntry> getVariableInstanceIndex(
             Collection<VariableInstanceEntity> collection) {
         ArrayList<VariableInstanceIndexEntry> index = new ArrayList<VariableInstanceIndexEntry>();

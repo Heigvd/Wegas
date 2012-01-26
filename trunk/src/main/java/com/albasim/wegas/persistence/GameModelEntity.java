@@ -68,54 +68,75 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
     private List<TeamEntity> teams;
 
+    /**
+     * 
+     * @return
+     */
     @Override
     public Long getId() {
         return id;
     }
 
+    /**
+     * 
+     * @param id
+     */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * 
+     * @return
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * 
+     * @param name
+     */
     @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    
+    /**
+     * 
+     * @return
+     */
     @XmlTransient
     public Collection<VariableDescriptorEntity> getVariableDescriptors() {
         return variableDescriptors;
     }
 
+    /**
+     * 
+     * @param variableDescriptor
+     */
     @XmlTransient
     public void addVariableDescriptor(VariableDescriptorEntity variableDescriptor) {
         this.variableDescriptors.add(variableDescriptor);
         variableDescriptor.setGameModel(this);
     }
 
-    @XmlTransient
+    
+    /**
+     * 
+     * @param variableDescriptors
+     */
     public void setVariableDescriptors(
             List<VariableDescriptorEntity> variableDescriptors) {
         this.variableDescriptors = variableDescriptors;
+        for (VariableDescriptorEntity vd: variableDescriptors) {
+            vd.setGameModel(this);
+        }
     }
 
-    @XmlTransient
-    public List<VariableDescriptorEntity> getVariableInstances() {
-        return variableDescriptors;
-    }
-
-    //@XmlTransient
-    //@XmlElement(nillable=true)
-    public void setVariableInstances(
-            Collection<VariableInstanceEntity> variableInstances) {
-        //this.variableInstances = variableInstances;
-    }
 
     /**
      * @return the teams
