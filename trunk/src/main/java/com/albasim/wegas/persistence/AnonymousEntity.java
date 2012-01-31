@@ -21,17 +21,17 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.maven.surefire.shade.org.apache.commons.lang.SerializationUtils;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public abstract class AnonymousEntity implements Serializable, Cloneable {
-    
+
     private static final Logger logger = Logger.getLogger("GMVariableDescriptor");
 
     /**
@@ -116,7 +116,6 @@ public abstract class AnonymousEntity implements Serializable, Cloneable {
         mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
         return os.toString();
     }
-    
 
     /**
      * 
@@ -136,15 +135,16 @@ public abstract class AnonymousEntity implements Serializable, Cloneable {
     public void setErrors(List<String> errors) {
         this.errors = errors;
     }
-    
+
     /**
      * 
      * @return
      * @throws CloneNotSupportedException
      */
     @Override
-    public AnonymousEntity clone() throws CloneNotSupportedException {
-        AnonymousEntity ae = (AnonymousEntity)super.clone();
+    public AnonymousEntity clone()  {
+        //AnonymousEntity ae = (AnonymousEntity)super.clone();
+        AnonymousEntity ae = (AnonymousEntity) SerializationUtils.clone(this);
         ae.setId(null);
         return ae;
     }

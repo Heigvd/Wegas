@@ -114,6 +114,46 @@ YUI.add('wegas-datasourcerest', function(Y) {
             });
 	    
         },
+         getRequest: function(request) {
+            var host = this.get('host');
+              
+            host.sendRequest({
+                request: '/'+request,
+                cfg: {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8'
+                    }
+                },
+                callback: {
+                    success: this._successHandler,
+                    failure: this._failureHandler
+                }
+            });
+        },
+        put: function(data) {
+            var host = this.get('host'),
+            request = (data.id)?"/"+data.id:"";
+              
+            if (data['@class'] == 'StringVariableInstance') {
+                request = '/1/varinst/'+data.id;
+            }
+            
+            host.sendRequest({
+                request: request,
+                cfg: {
+                    method: "PUT",
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8'
+                    },
+                    data: Y.JSON.stringify(data)
+                },
+                callback: {
+                    success: this._successHandler,
+                    failure: this._failureHandler
+                }
+            });
+        },
         post: function(data) {
             var host = this.get('host');
 	    
@@ -152,29 +192,6 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
                 alert(errorMsg);
             } else if (e.error) alert(e.error.message);
-        },
-        put: function(data) {
-            var host = this.get('host'),
-            request = (data.id)?"/"+data.id:"";
-              
-            if (data['@class'] == 'StringVariableInstance') {
-                request = '/1/varinst/'+data.id;
-            }
-            
-            host.sendRequest({
-                request: request,
-                cfg: {
-                    method: "PUT",
-                    headers: {
-                        'Content-Type': 'application/json; charset=utf-8'
-                    },
-                    data: Y.JSON.stringify(data)
-                },
-                callback: {
-                    success: this._successHandler,
-                    failure: this._failureHandler
-                }
-            });
         }
         
     });

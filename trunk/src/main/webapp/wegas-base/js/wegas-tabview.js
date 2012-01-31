@@ -44,7 +44,7 @@ YUI.add('wegas-tabview', function(Y) {
 			
 			
             panelNode.addClass('wegas-tab-hastoolbar');
-            panelNode.prepend('<div class="yui-editor-container"><div class="first-child"><div></div></div></div>');	
+            panelNode.prepend('<div class="yui-editor-container"><div class="first-child"><div></div></div></div><div style="clear:both"></div>');	
 	
        
         
@@ -68,6 +68,9 @@ YUI.add('wegas-tabview', function(Y) {
                     case 'selectuser':
                         var newUser = Y.Wegas.app.dataSources.User.rest.getCachedVariableBy('name', e.button.value);
                         Y.Wegas.app.set('currentUserId', newUser.id )
+                        break;
+                    case 'reset': 
+                        Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest('reset');
                         break;
                 }
             }, null, this);

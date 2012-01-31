@@ -21,6 +21,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -43,9 +44,10 @@ public abstract class ScopeEntity extends AnonymousEntity implements Serializabl
 
     private static final long serialVersionUID = 1L;
     @Id
+    @XmlID
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scope_seq")
     private Long id;
-    //abstract public void getVariableInstance(UserEntity u);
+    //abstract public void getVariableInstanceByUserId(UserEntity u);
  /*   @OneToOne(mappedBy="scope")
     @NotNull
     @XmlTransient
@@ -61,13 +63,20 @@ public abstract class ScopeEntity extends AnonymousEntity implements Serializabl
      * @param userId
      * @param v
      */
-    abstract public void setVariableInstances(Long userId, VariableInstanceEntity v);
+    @XmlTransient
+    abstract public void setVariableInstanceByUserId(Long userId, VariableInstanceEntity v);
+    
+    @XmlTransient
+    abstract public void getVariableInstanceByUserId(Long userId);
 
     /**
      * 
      * @return
      */
     abstract public Map<Long, VariableInstanceEntity> getVariableInstances();
+
+    @XmlTransient
+    abstract public void reset();
 
     /*@OneToOne
     @JoinColumn(name = "variabledescriptor_id")
@@ -110,4 +119,5 @@ public abstract class ScopeEntity extends AnonymousEntity implements Serializabl
     public void setId(Long id) {
         this.id = id;
     }
+
 }

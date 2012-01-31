@@ -60,7 +60,7 @@
         "children": [
         {
             "type": "Text",
-            "content": "MENU"
+            "content": "Menu"
         }
         ]
     },
@@ -84,9 +84,14 @@
                 ],
                 "toolbarButtons": [{
                     "type": "push", 
-                    "label": "Add a new element", 
+                    "label": "New variable", 
                     "value": "new", 
                     "id": "new"
+                },{
+                    "type": "push", 
+                    "label": "Reset this game", 
+                    "value": "reset", 
+                    "id": "reset"
                 }]
             },
             {

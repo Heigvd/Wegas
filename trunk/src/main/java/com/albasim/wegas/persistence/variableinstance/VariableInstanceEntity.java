@@ -12,7 +12,6 @@ package com.albasim.wegas.persistence.variableinstance;
 import com.albasim.wegas.persistence.AnonymousEntity;
 import com.albasim.wegas.persistence.scope.ScopeEntity;
 import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
-import com.albasim.wegas.persistence.scope.UserScopeEntity;
 import java.util.logging.Logger;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,49 +25,45 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
-
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {}))
-
 @XmlType(name = "VariableInstance", propOrder = {"@class", "id"})
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "StringVariableInstance", value = StringVariableInstanceEntity.class)
+    @JsonSubTypes.Type(name = "StringVariableInstance", value = StringVariableInstanceEntity.class),
+    @JsonSubTypes.Type(name = "ListVariableInstance", value = ListVariableInstanceEntity.class)
 })
 public class VariableInstanceEntity extends AnonymousEntity {
 
     private static final long serialVersionUID = 1L;
-
     private static final Logger logger = Logger.getLogger("GMVariableKInstance");
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "var_instance_seq")
     private Long id;
-    
     @ManyToOne
     @XmlTransient
     private ScopeEntity scope;
-    
-    
     @ManyToOne
     @XmlTransient
     private ScopeEntity teamScope;
-    
-    
     @OneToOne
     @XmlTransient
     private ScopeEntity gameScope;
-    
     /*
      * This attribute is only present when the variable is used as a devaultVariableD
      */
     @OneToOne
     @XmlTransient
     private VariableDescriptorEntity variableDescriptor;
+
+    @XmlTransient
+    @Override
+    public VariableInstanceEntity clone() {
+        VariableInstanceEntity c = (VariableInstanceEntity) super.clone();
+        return c;
+    }
 
     /**
      * @return the id
@@ -100,14 +95,14 @@ public class VariableInstanceEntity extends AnonymousEntity {
     public void setScope(ScopeEntity scope) {
         this.scope = scope;
     }
-    
+
     /**
      * @param scope the scope to set
      */
     public void setTeamScope(ScopeEntity scope) {
         this.teamScope = scope;
     }
-    
+
     /**
      * 
      * @param scope
@@ -115,10 +110,9 @@ public class VariableInstanceEntity extends AnonymousEntity {
     public void setGameScope(ScopeEntity scope) {
         this.gameScope = scope;
     }
-    
-   /* @Override
+    /* @Override
     public VariableInstanceEntity clone() {
-        VariableInstanceEntity vi = new  VariableInstanceEntity();
-        return vi;
+    VariableInstanceEntity vi = new  VariableInstanceEntity();
+    return vi;
     }*/
 }

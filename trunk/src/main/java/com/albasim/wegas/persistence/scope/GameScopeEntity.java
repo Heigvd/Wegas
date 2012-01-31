@@ -9,7 +9,7 @@
  */
 package com.albasim.wegas.persistence.scope;
 
-import com.albasim.wegas.persistence.GameModelEntity;
+import com.albasim.wegas.helper.AnonymousEntityMerger;
 import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
@@ -28,7 +28,6 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-
 @XmlType(name = "GameScope", propOrder = {"@class", "id", "name"})
 public class GameScopeEntity extends ScopeEntity {
 
@@ -40,6 +39,31 @@ public class GameScopeEntity extends ScopeEntity {
     //@MapKey(name="id")
     @XmlTransient
     private VariableInstanceEntity variableInstance;
+
+    @Override
+    @XmlTransient
+    public void reset() {
+        this.propagateDefaultVariableInstance(true);
+    }
+
+    /**
+     * 
+     */
+    @PrePersist
+    public void prePersist() {
+        this.propagateDefaultVariableInstance(false);
+    }
+
+    @XmlTransient
+    public void propagateDefaultVariableInstance(boolean forceUpdate) {
+        VariableDescriptorEntity vd = this.getVariableDescriptor();
+        VariableInstanceEntity vi = this.getVariableInstance();
+        if (vi == null) {
+            this.setVariableInstanceByUserId(new Long("0"), vd.getDefaultVariableInstance().clone());
+        } else if (forceUpdate) {
+            AnonymousEntityMerger.merge(vi, vd.getDefaultVariableInstance());
+        }
+    }
 
     /**
      * 
@@ -58,25 +82,9 @@ public class GameScopeEntity extends ScopeEntity {
      * @param v
      */
     @Override
-    public void setVariableInstances(Long userId, VariableInstanceEntity v) {
+    public void setVariableInstanceByUserId(Long userId, VariableInstanceEntity v) {
         this.setVariableInstance(v);
         v.setGameScope(this);
-    }
-
-    /**
-     * 
-     */
-    @PrePersist
-    public void prePersist() {
-        VariableDescriptorEntity vd = this.getVariableDescriptor();
-        GameModelEntity gm = vd.getGameModel();
-        VariableInstanceEntity newVi;
-        try {
-            newVi = (VariableInstanceEntity) vd.getDefaultVariableInstance().clone();
-            this.setVariableInstances(new Long(0), newVi);
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(GameScopeEntity.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**
@@ -93,5 +101,10 @@ public class GameScopeEntity extends ScopeEntity {
     @XmlTransient
     public void setVariableInstance(VariableInstanceEntity variableInstance) {
         this.variableInstance = variableInstance;
+    }
+
+    @Override
+    public void getVariableInstanceByUserId(Long userId) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -10,7 +10,6 @@
 package com.albasim.wegas.persistence;
 
 import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
-import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -29,6 +28,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -48,6 +48,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * 
      */
     @Id
+    @XmlID
     @Column(name = "gamemodel_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gamemodel_seq")
     private Long id;
@@ -157,5 +158,11 @@ public class GameModelEntity extends NamedEntity implements Serializable {
         for (TeamEntity t : this.teams) {
             t.setGameModel(this);
         }
+    }
+
+    public void reset() {
+       for (VariableDescriptorEntity vd: this.getVariableDescriptors()) {
+           vd.getScope().reset();
+       }   
     }
 }

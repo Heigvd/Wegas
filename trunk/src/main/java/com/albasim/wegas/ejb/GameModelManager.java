@@ -14,12 +14,8 @@ import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.helper.AlbaHelper;
 import com.albasim.wegas.helper.IndexEntry;
 import com.albasim.wegas.persistence.GameModelEntity;
-import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
-import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -143,8 +139,15 @@ public class GameModelManager {
      * @param id
      */
     public void destroyGameModel(Long id) {
-        GameModelEntity gameModel = getGameModel(id);
+        GameModelEntity gameModel = this.getGameModel(id);
         aem.destroy(gameModel);
+    }
+
+    public GameModelEntity reset(Long gameModelId) {
+        
+        GameModelEntity gm = this.getGameModel(gameModelId);
+        gm.reset();
+        return gm;
     }
 
 }

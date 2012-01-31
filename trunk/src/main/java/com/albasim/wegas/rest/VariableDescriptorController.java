@@ -62,7 +62,7 @@ public class VariableDescriptorController {
 
     /**
      * Retrieve the list of game model variable descriptor
-     *   To fetch complex type varDes see gm/x/type/y/var_desc
+     * 
      * @param gameModelId game model id
      * @param variableDescriptorId 
      * @return OK
@@ -125,5 +125,19 @@ public class VariableDescriptorController {
         vdm.destroyVariableDescriptor(gameModelId, variableDescriptorId);
 
         return Response.status(Response.Status.OK).build();
+    }
+
+    /**
+     * Resets all the variables of a given game model
+     * 
+     * @param gameModelId game model id
+     * @param variableDescriptorId 
+     * @return OK
+     */
+    @GET
+    @Path("reset/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<VariableDescriptorEntity> reset(@PathParam("gameModelId") Long gameModelId) {
+        return gmm.reset(gameModelId).getVariableDescriptors();
     }
 }

@@ -71,6 +71,42 @@ YUI.add('wegas-treeview', function(Y) {
         syncUI: function() {
         },
         
+        _genScopeTreeViewElements: function(el) {
+            var children=[];
+            for (var j in el.scope.variableInstances) {
+                subEl = el.scope.variableInstances[j];
+                                
+                switch (el.scope['@class'] ) {
+                    case 'UserScope':
+                        var user = Y.Wegas.app.dataSources.User.rest.getCachedVariableById(j);
+                        children.push({
+                            type:'Text',
+                            label: user.name+': '+subEl['content'],
+                            title: user.name+': '+subEl['content'],
+                            data: subEl
+                        });
+                        break;
+                    case 'TeamScope':
+                        var team = Y.Wegas.app.dataSources.Team.rest.getCachedVariableById(j);
+                        children.push({
+                            type:'Text',
+                            label: team.name+': '+subEl['content'],
+                            title: team.name+': '+subEl['content'],
+                            data: subEl
+                        });
+                        break;
+                    case 'GameScope':
+                        children.push({
+                            type:'Text',
+                            label: 'Global: '+subEl['content'],
+                            title: 'Global: '+subEl['content'],
+                            data: subEl
+                        });
+                        break;
+                }
+            }
+            return children;
+        },
         _genTreeViewElements: function(elements) {
             var ret = [];
             for (var i in elements) {
@@ -96,47 +132,13 @@ YUI.add('wegas-treeview', function(Y) {
                         })
                         break;
                     case 'StringVariableDescriptor':
-                        
-                        var children = [];
-                     
-                        for (var j in el.scope.variableInstances) {
-                            subEl = el.scope.variableInstances[j];
-                                
-                            switch (el.scope['@class'] ) {
-                                case 'UserScope':
-                                    var user = Y.Wegas.app.dataSources.User.rest.getCachedVariableById(j);
-                                    children.push({
-                                        type:'Text',
-                                        label: user.name+': '+subEl['content'],
-                                        title: user.name+': '+subEl['content'],
-                                        data: subEl
-                                    });
-                                    break;
-                                case 'TeamScope':
-                                    var team = Y.Wegas.app.dataSources.Team.rest.getCachedVariableById(j);
-                                    children.push({
-                                        type:'Text',
-                                        label: team.name+': '+subEl['content'],
-                                        title: team.name+': '+subEl['content'],
-                                        data: subEl
-                                    });
-                                    break;
-                                case 'GameScope':
-                                    children.push({
-                                        type:'Text',
-                                        label: 'value: '+subEl['content'],
-                                        title: 'value: '+subEl['content'],
-                                        data: subEl
-                                    });
-                                    break;
-                            }
-                        }
+                    case 'ListVariableDescriptor':
                         ret.push( {
                             type:'Text',
                             label: 'Variable: '+el['name'],
                             title: 'Variable: '+el['name'],
                             expanded:true, 
-                            children: children,
+                            children: this._genScopeTreeViewElements(el),
                             data: el
                         });
                         break;

@@ -14,7 +14,6 @@ import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
 import com.albasim.wegas.persistence.GameModelEntity;
 import com.albasim.wegas.persistence.NamedEntity;
 import com.albasim.wegas.persistence.scope.ScopeEntity;
-import com.albasim.wegas.persistence.scope.UserScopeEntity;
 
 
 import javax.persistence.CascadeType;
@@ -49,13 +48,11 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @XmlType(name = "VariableDescriptor", propOrder = {"@class", "id", "name", "scope", "defaultVariableInstance"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringVariableDescriptor", value = StringVariableDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "ListVariableDescriptorEntity", value = ListVariableDescriptorEntity.class),
-        
+    @JsonSubTypes.Type(name = "ListVariableDescriptor", value = ListVariableDescriptorEntity.class)
 })
 public class VariableDescriptorEntity extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-   
     @Id
     @Column(name = "variabledescriptor_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "var_desc_seq")
@@ -71,17 +68,17 @@ public class VariableDescriptorEntity extends NamedEntity {
      */
     @OneToOne(cascade = {CascadeType.ALL})
     private VariableInstanceEntity defaultVariableInstance;
-  /*  @OneToOne(cascade = CascadeType.ALL)
+    /*  @OneToOne(cascade = CascadeType.ALL)
     @NotNull
     //@JsonManagedReference
     @JoinColumn(name = "SCOPE_ID", unique = true, nullable = false, insertable = true, updatable = true)*/
-    @OneToOne(cascade={CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL})
     private ScopeEntity scope;
     /**
      * 
      */
     @ManyToOne
-    @JoinColumn(name="gamemodel_id")
+    @JoinColumn(name = "gamemodel_id")
     @XmlTransient
     private GameModelEntity gameModel;
 
@@ -90,7 +87,6 @@ public class VariableDescriptorEntity extends NamedEntity {
      * @return
      */
     @Override
-    
     public Long getId() {
         return id;
     }
@@ -136,7 +132,7 @@ public class VariableDescriptorEntity extends NamedEntity {
      * @return
      */
     @XmlTransient
-    @XmlInverseReference(mappedBy="variableDescriptors")
+    @XmlInverseReference(mappedBy = "variableDescriptors")
     public GameModelEntity getGameModel() {
         return this.gameModel;
     }

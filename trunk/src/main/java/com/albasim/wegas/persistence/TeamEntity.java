@@ -42,7 +42,7 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 @Entity
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"gamemodel_id", "name"}))
+@UniqueConstraint(columnNames = {"name"}))
 @Inheritance(strategy = InheritanceType.JOINED)
 
 @XmlRootElement

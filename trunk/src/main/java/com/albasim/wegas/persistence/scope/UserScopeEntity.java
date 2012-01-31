@@ -9,6 +9,7 @@
  */
 package com.albasim.wegas.persistence.scope;
 
+import com.albasim.wegas.helper.AnonymousEntityMerger;
 import com.albasim.wegas.persistence.GameModelEntity;
 import com.albasim.wegas.persistence.TeamEntity;
 import com.albasim.wegas.persistence.users.UserEntity;
@@ -21,10 +22,8 @@ import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -33,19 +32,14 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints =
-@UniqueConstraint(columnNames = "name"))
+@Table()
 @XmlType(name = "UserScope", propOrder = {"@class", "id", "name"})
 public class UserScopeEntity extends ScopeEntity {
 
     private static final Logger logger = Logger.getLogger(UserScopeEntity.class.getName());
-    
-    
-    
     //@EJB
     //@Transient
-   // private WegasEntityManager wem;
-    
+    // private WegasEntityManager wem;
     /*
     @ElementCollection(fetch=FetchType.EAGER)
     @MapKeyColumn(name = "id", insertable = false, updatable = false)
@@ -77,12 +71,11 @@ public class UserScopeEntity extends ScopeEntity {
     /*
      * FIXME Here we should use UserEntity reference and add a key deserializer module 
      */
-  
-    @OneToMany(mappedBy = "scope", cascade = { CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "scope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     //@MapKey(name="id")
     @XmlTransient
     private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<Long, VariableInstanceEntity>();
-  
+
     /**
      * 
      * @return
@@ -98,9 +91,14 @@ public class UserScopeEntity extends ScopeEntity {
      * @param v
      */
     @Override
-    public void setVariableInstances(Long userId, VariableInstanceEntity v) {
+    public void setVariableInstanceByUserId(Long userId, VariableInstanceEntity v) {
         this.variableInstances.put(userId, v);
         v.setScope(this);
+    }
+
+    @Override
+    public void reset() {
+        this.propagateDefaultVariableInstance(true);
     }
 
     /**
@@ -108,24 +106,28 @@ public class UserScopeEntity extends ScopeEntity {
      */
     @PrePersist
     public void prePersist() {
+        propagateDefaultVariableInstance(false);
+    }
+
+    @XmlTransient
+    public void propagateDefaultVariableInstance(boolean forceUpdate) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
         GameModelEntity gm = vd.getGameModel();
         for (TeamEntity t : gm.getTeams()) {
             for (UserEntity u : t.getUsers()) {
                 VariableInstanceEntity vi = this.variableInstances.get(u.getId());
                 if (vi == null) {
-                    try {
-                        VariableInstanceEntity newVi = (VariableInstanceEntity) vd.getDefaultVariableInstance().clone();
-                        this.setVariableInstances(u.getId(), newVi);
-                      //  wem.create(newVi);
-                       // this.vari
-                    } catch (CloneNotSupportedException ex) {
-                        logger.log(Level.SEVERE, "Error cloning VariableInstanceEntity", ex);
-                    }
+                    this.setVariableInstanceByUserId(u.getId(), vd.getDefaultVariableInstance().clone());
+                } else if (forceUpdate) {
+                    AnonymousEntityMerger.merge(vi, vd.getDefaultVariableInstance());
                 }
             }
         }
+    }
 
+    @Override
+    public void getVariableInstanceByUserId(Long userId) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
 /*

@@ -1,6 +1,6 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- */
+*/
 
 /* Layout styles */
 .yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd,
@@ -74,13 +74,28 @@
     display: block;
 }
 .yui-skin-sam .yui-toolbar-container .yui-push-button span.yui-toolbar-icon {
-    left:5px;
+    left:3px;
 }
+.yui-skin-sam .yui-toolbar-container .yui-push-button, 
+.yui-skin-sam .yui-toolbar-container .yui-color-button, 
+.yui-skin-sam .yui-toolbar-container .yui-menu-button {
+    float:left;
+    width: 25px;
+}
+
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-selectuser {
     width:170px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-selectuser .first-child a:before {
     content: 'Current user: ';
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-reset{
+    margin-left: 5px;
+}
+
+
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-reset span.yui-toolbar-icon {
+    background: url(wegas-editor-sprite.png) no-repeat 1px -300px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-new span.yui-toolbar-icon {
     background: url(wegas-editor-sprite.png) no-repeat 0px 0px;

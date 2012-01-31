@@ -9,7 +9,6 @@
  */
 package com.albasim.wegas.ejb;
 
-import com.albasim.wegas.exception.NotFound;
 import com.albasim.wegas.helper.AnonymousEntityMerger;
 import com.albasim.wegas.persistence.scope.ScopeEntity;
 import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
@@ -55,13 +54,22 @@ public class VariableInstanceManager {
      * @param newInstance
      * @return
      */
-    public VariableInstanceEntity createInstance(Long gameModelId, Long variableDescriptorId, Long userId, VariableInstanceEntity newInstance) {
+    public VariableInstanceEntity setVariableInstance(Long gameModelId, Long variableDescriptorId, Long instanceId, VariableInstanceEntity newInstance) {
+        return null;
+    }
+
+    public VariableInstanceEntity setVariableInstanceByUserId(Long gameModelId, Long variableDescriptorId, Long userId, VariableInstanceEntity newInstance) {
 
         VariableDescriptorEntity vd = vdm.getVariableDescriptor(variableDescriptorId);
         ScopeEntity s = vd.getScope();
 
-        s.setVariableInstances(userId, newInstance);
+        s.setVariableInstanceByUserId(userId, newInstance);
+        //  VariableInstanceEntity = vd
+        VariableInstanceEntity vi = this.getVariableInstance(newInstance.getId());
 
+        if (vi == null) {
+            s.setVariableInstanceByUserId(userId, newInstance);
+        }
         /*
          * FIXME Does it hurt to create a new entity even although there was already one existing entity
          */

@@ -91,14 +91,15 @@ var Y = YUI({
                     requires: [ 'yui2-treeview'
                     /*'gallery-yui3treeview', 'wegas-treeviewcss'*/]
                 },
-                'wegas-treeviewcss': {
+                /* This one is only seful w/ yui3 treeview widget */
+                /* 'wegas-treeviewcss': {
                     path: 'wegas-base/assets/treeview-classic.css',
                     type: 'css'
                 },
                 'wegas-treeble': {
                     path: 'wegas-base/js/wegas-treeble.js',
                     requires: ['gallery-treeble', 'yui2-button' ]
-                },
+                },*/
                 'wegas-tabview': {
                     path: 'wegas-base/js/wegas-tabview.js',
                     requires: ['tabview', 'yui2-editor']
@@ -110,10 +111,8 @@ var Y = YUI({
                 'wegas-editor': {
                     path: 'wegas-editor/js/wegas-editor.js',
                     requires: [
-                    'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url', 
-                    'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden', 
-                    'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
-                    'wegas-app', 'wegas-treeview', 'wegas-logger', 'wegas-csseditor'
+                    'wegas-inputex', 'wegas-app', 'wegas-treeview', 'wegas-logger', 'wegas-csseditor',
+                    /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                     //'wegas-editorcss'
                     ]
                 },
@@ -121,12 +120,17 @@ var Y = YUI({
                     path: 'wegas-editor/assets/wegas-editor.css',
                     type: 'css'
                 },
-                
-                
-                /*************************************************************** Editor Widget's*/
+                /************************************************************** Editor Widget's */
                 'wegas-logger': {
                     path: 'wegas-editor/js/wegas-logger.js',
                     requires: ['console', 'console-filters']
+                },
+                'wegas-inputex':{
+                    path: 'wegas-base/js/wegas-inputex.js',
+                    requires: [
+                    'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url', 
+                    'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden', 
+                    'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',]
                 },
                 'wegas-csseditor': {
                     path: 'wegas-editor/js/wegas-csseditor.js'
