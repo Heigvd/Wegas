@@ -9,6 +9,7 @@
  */
 package com.albasim.wegas.persistence.variabledescriptor;
 
+import com.albasim.wegas.persistence.AnonymousEntity;
 import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
 
 import com.albasim.wegas.persistence.GameModelEntity;
@@ -22,6 +23,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -42,13 +45,15 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"gamemodel_id", "name", "scope_id"}))
 @XmlType(name = "VariableDescriptor", propOrder = {"@class", "id", "name", "scope", "defaultVariableInstance"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringVariableDescriptor", value = StringVariableDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "ListVariableDescriptor", value = ListVariableDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "ListVariableDescriptor", value = ListVariableDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQVariableDescriptorEntity.class)
 })
 public class VariableDescriptorEntity extends NamedEntity {
 
@@ -61,7 +66,7 @@ public class VariableDescriptorEntity extends NamedEntity {
      * 
      */
     @NotNull
-    @Pattern(regexp = "^\\w*$")
+    //@Pattern(regexp = "^\\w*$")
     private String name;
     /**
      * 
@@ -171,5 +176,18 @@ public class VariableDescriptorEntity extends NamedEntity {
      */
     public void setDefaultVariableInstance(VariableInstanceEntity defaultVariableInstance) {
         this.defaultVariableInstance = defaultVariableInstance;
+    }
+
+    /**
+     * 
+     * @param a
+     */
+    @Override
+    public void merge(AnonymousEntity a) {
+        super.merge(a);
+        VariableDescriptorEntity vd = (VariableDescriptorEntity) a;
+        this.setName(vd.getName());
+        this.scope.merge(vd.getScope());
+        this.defaultVariableInstance.merge(vd.getDefaultVariableInstance());
     }
 }

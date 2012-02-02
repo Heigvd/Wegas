@@ -96,7 +96,16 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
             return null;
         },
-        
+        getCachedVariablesBy: function(key, val) {
+            var host = this.get('host'),
+            ret = [];
+            for (var i in host.data) {                                          // We first check in the cache if the data is available
+                if (host.data[i][key] == val) {
+                    ret.push(host.data[i]);
+                }
+            }
+            return ret;
+        },
         getById: function(id) {  
             var host = this.get('host');
             
@@ -114,7 +123,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             });
 	    
         },
-         getRequest: function(request) {
+        getRequest: function(request) {
             var host = this.get('host');
               
             host.sendRequest({
@@ -200,7 +209,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
     
     
     DataSourceVariableDescriptorREST = function() {
-        DataSourceREST.superclass.constructor.apply(this, arguments);
+        DataSourceVariableDescriptorREST.superclass.constructor.apply(this, arguments);
     };
 
     Y.mix(DataSourceVariableDescriptorREST, {
@@ -209,6 +218,20 @@ YUI.add('wegas-datasourcerest', function(Y) {
     });
 
     Y.extend(DataSourceVariableDescriptorREST, DataSourceREST, {
+        
+        post: function(data) {
+            /* switch (data['@class']) {
+                case 'ListVariableDescriptor':
+                    data['defaultVariableInstance'] = data.defaultListVariableInstance;
+                    break;
+                case 'StringVariableDescriptor':
+                    data['defaultVariableInstance'] = data.defaultStringVariableInstance;
+                    break;
+            };
+            delete data.defaultListVariableInstance;
+            delete data.defaultStringVariableInstance;*/
+            DataSourceVariableDescriptorREST.superclass.post.call(this, data);
+        },
         
         getInstanceBy: function(key, val) {
             var el = this.getCachedVariableBy(key, val);

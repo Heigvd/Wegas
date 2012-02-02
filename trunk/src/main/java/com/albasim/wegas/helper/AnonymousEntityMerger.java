@@ -9,7 +9,6 @@ import com.albasim.wegas.persistence.GameModelEntity;
 import com.albasim.wegas.persistence.scope.ScopeEntity;
 import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.albasim.wegas.persistence.variableinstance.StringVariableInstanceEntity;
-import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
 
 /**
  *

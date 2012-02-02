@@ -131,7 +131,6 @@ public class VariableDescriptorController {
      * Resets all the variables of a given game model
      * 
      * @param gameModelId game model id
-     * @param variableDescriptorId 
      * @return OK
      */
     @GET

@@ -21,33 +21,33 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "StringVariableInstance")
-public class StringVariableInstanceEntity extends VariableInstanceEntity {
+public class NumberVariableInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("StringVariableInstanceEntity");
-    private String content;
+    private double content;
 
     /**
      * @return the content
      */
-    public String getContent() {
+    public double getContent() {
         return content;
     }
 
     /**
      * @param content the content to set
      */
-    public void setContent(String content) {
+    public void setContent(double content) {
         this.content = content;
     }
-    
+
     /**
      * 
      * @param a
      */
     @Override
     public void merge(AnonymousEntity a) {
-        StringVariableInstanceEntity vi = (StringVariableInstanceEntity) a;
+        NumberVariableInstanceEntity vi = (NumberVariableInstanceEntity) a;
         this.setContent(vi.getContent());
     }
 }

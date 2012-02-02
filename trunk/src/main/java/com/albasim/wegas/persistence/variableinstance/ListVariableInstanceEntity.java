@@ -28,7 +28,6 @@ public class ListVariableInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("StringVariableInstanceEntity");
-    private String content;
     @OneToMany(cascade = {CascadeType.ALL})
     private List<VariableDescriptorEntity> variableDescriptors;
 
@@ -47,6 +46,10 @@ public class ListVariableInstanceEntity extends VariableInstanceEntity {
         this.variableDescriptors = variableDescriptors;
     }
     
+    /**
+     * 
+     * @param vd
+     */
     @XmlTransient 
     public void addVariableDescriptor(VariableDescriptorEntity vd) {
         this.variableDescriptors.add(vd);

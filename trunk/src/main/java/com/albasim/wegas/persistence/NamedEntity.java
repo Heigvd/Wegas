@@ -16,6 +16,15 @@ package com.albasim.wegas.persistence;
 
 public abstract class NamedEntity extends AnonymousEntity {
 
+    
+    /**
+     * 
+     * @param n
+     */
+    @Override
+    public void merge(AnonymousEntity n) {
+        this.setName(((NamedEntity)n).getName());
+    }
     /**
      * 
      * @return

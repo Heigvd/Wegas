@@ -12,11 +12,59 @@
 }
 
 /* InputEx Styles */
+div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
+    border: 1px solid lightgray;
+}
+div.inputEx-Field input {
+    width: 100% !important;
+}
+div.inputEx-Field select {
+    margin: 0;
+}
+div.inputEx-Field textarea {
+    width:100%;
+}
+div.inputEx-fieldWrapper {
+    padding-left:135px;
+}
+div.inputEx-fieldWrapper > div.inputEx-label {
+    padding:.2em 5px 0 0;
+    margin-left:-135px;
+}
+div.inputEx-fieldWrapper > div.inputEx-Field {
+    width:99.8%;
+}
+div.inputEx-fieldWrapper div.inputEx-fieldWrapper {
+    padding-left:70px;
+}
+div.inputEx-fieldWrapper div.inputEx-fieldWrapper > div.inputEx-label {
+    margin-left:-70px;
+    width:65px;
+}
+
 .inputEx-Button {
     padding: 3px 5px;
 }
-
-
+.inputEx-CombineField > .inputEx-Group {
+    float:none !important;
+    clear:both !important;
+}
+.inputEx-CombineField > .inputEx-fieldWrapper {
+    padding:0;
+}
+/* Inputex List styles */
+div.inputEx-ListField-subFieldEl {
+    margin-left: 0;
+    width: 100%;
+}
+.inputEx-ListField-childContainer > div {
+    margin-left:16px;
+    border-top: 1px solid lightgray;
+    padding-top: 5px;
+}
+img.inputEx-ListField-delButton {
+    margin-left:-16px;
+}
 /* Tabs styles */
 /* FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
 .yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-wegas-list,
@@ -54,31 +102,30 @@
 .yui3-skin-sam .yui-layout-unit-left .yui3-tabview-panel > .yui3-tab-panel > .yui3-wegas-list {
     right:4px;
 }
-
+.yui3-skin-sam #centerTabView > yui3-tabview-content > yui3-tabview-list > .yui3-tabview-panel > .yui3-tab-panel > .yui3-wegas-list > .yui3-wegas-list-content {
+    padding-right: 5px;
+}
 
 /* Tabview toolbar styles */
-.yui-skin-sam .yui-editor-container {
+.yui-skin-sam .wegas-tab-toolbar.yui-editor-container {
     border: none;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid lightgray;
 }
-.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont {
+.yui-skin-sam .wegas-tab-toolbar .yui-toolbar-container .yui-toolbar-subcont {
     border: none;
-    padding: 2px 3px;
     min-height: 24px;
 }
-.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont .title {
+.yui-skin-sam .wegas-tab-toolbar .yui-toolbar-container .yui-toolbar-subcont .title {
     color: #2647A0;
     padding: 5px 5px 0px;
     font-size: 12pt;
     font-weight: bold;
     display: block;
 }
-.yui-skin-sam .yui-toolbar-container .yui-push-button span.yui-toolbar-icon {
+.yui-skin-sam .wegas-tab-toolbar .yui-toolbar-container .yui-push-button span.yui-toolbar-icon {
     left:3px;
 }
-.yui-skin-sam .yui-toolbar-container .yui-push-button, 
-.yui-skin-sam .yui-toolbar-container .yui-color-button, 
-.yui-skin-sam .yui-toolbar-container .yui-menu-button {
+.yui-skin-sam .wegas-tab-toolbar .yui-toolbar-container .yui-push-button {
     float:left;
     width: 25px;
 }
@@ -164,6 +211,9 @@
 
 
 /* CSSEditor Styles */
+.yui3-wegas-csseditor  div.inputEx-fieldWrapper {
+    padding:0;
+}
 .yui3-wegas-csseditor div.inputEx-Field {
     float:none;
 }
@@ -181,10 +231,13 @@
 
 
 /* Chat styles */
+.yui3-wegas-chat  div.inputEx-fieldWrapper {
+    padding:0;
+}
 .yui3-wegas-chat div.inputEx-Field {
     float:none;
 }
-.yui3-wegas-chat textarea {  
+.yui3-wegas-chat  div.inputEx-Field textarea {
     width:98%;
     padding: 1% 1%;
     border: none;
@@ -193,4 +246,28 @@
 .yui3-wegas-chat div.inputEx-Form-buttonBar {
     margin: 0;
     float: right;
+}
+.wegas-chat-msgs {
+    margin-top: 5px;
+    border-top: 1px solid lightgray;
+    padding:5px;
+}
+.wegas-chat-msg {
+    padding-bottom:2px;
+}
+
+/* YUI 2 RTE Styles */
+
+.yui-skin-sam .yui-editor-container {
+    border: 1px solid lightgray;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-titlebar {
+    display: none;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-group h3 {
+    margin: 0;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont {
+    padding: 2px 3px;
+    border-bottom: 1px solid lightgray;
 }

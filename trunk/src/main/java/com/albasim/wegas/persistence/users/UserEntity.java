@@ -86,4 +86,13 @@ public class UserEntity extends AnonymousEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    /**
+     * 
+     * @param a
+     */
+    @Override
+    public void merge(AnonymousEntity a) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

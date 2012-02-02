@@ -50,7 +50,7 @@ public class VariableInstanceManager {
      * 
      * @param gameModelId
      * @param variableDescriptorId
-     * @param userId
+     * @param instanceId 
      * @param newInstance
      * @return
      */
@@ -58,6 +58,14 @@ public class VariableInstanceManager {
         return null;
     }
 
+    /**
+     * 
+     * @param gameModelId
+     * @param variableDescriptorId
+     * @param userId
+     * @param newInstance
+     * @return
+     */
     public VariableInstanceEntity setVariableInstanceByUserId(Long gameModelId, Long variableDescriptorId, Long userId, VariableInstanceEntity newInstance) {
 
         VariableDescriptorEntity vd = vdm.getVariableDescriptor(variableDescriptorId);

@@ -37,7 +37,8 @@ var Y = YUI({
                     'wegas-appcss',  'wegas-datasourcerest', 'wegas-widget', 'wegas-widgetloader',
                     // FIXME those should be included on the fly
                     'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
-                    'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat'
+                    'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 
+                    'wegas-projectmanagementgame'
                     ]
                 },
                 'wegas-appcss': {
@@ -120,6 +121,7 @@ var Y = YUI({
                     path: 'wegas-editor/assets/wegas-editor.css',
                     type: 'css'
                 },
+                
                 /************************************************************** Editor Widget's */
                 'wegas-logger': {
                     path: 'wegas-editor/js/wegas-logger.js',
@@ -130,11 +132,18 @@ var Y = YUI({
                     requires: [
                     'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url', 
                     'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden', 
-                    'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',]
+                    'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
+                    'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
                 },
                 'wegas-csseditor': {
                     path: 'wegas-editor/js/wegas-csseditor.js'
+                },
+                
+                /************************************************************** PMG */
+                'wegas-projectmanagementgame': {
+                    path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame.js'
                 }
+                
             }
         },
         wireit: {

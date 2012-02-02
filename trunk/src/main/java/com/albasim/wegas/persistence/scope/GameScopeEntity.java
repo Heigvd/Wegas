@@ -10,6 +10,7 @@
 package com.albasim.wegas.persistence.scope;
 
 import com.albasim.wegas.helper.AnonymousEntityMerger;
+import com.albasim.wegas.persistence.AnonymousEntity;
 import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
@@ -40,6 +41,9 @@ public class GameScopeEntity extends ScopeEntity {
     @XmlTransient
     private VariableInstanceEntity variableInstance;
 
+    /**
+     * 
+     */
     @Override
     @XmlTransient
     public void reset() {
@@ -54,6 +58,10 @@ public class GameScopeEntity extends ScopeEntity {
         this.propagateDefaultVariableInstance(false);
     }
 
+    /**
+     * 
+     * @param forceUpdate
+     */
     @XmlTransient
     public void propagateDefaultVariableInstance(boolean forceUpdate) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
@@ -103,8 +111,20 @@ public class GameScopeEntity extends ScopeEntity {
         this.variableInstance = variableInstance;
     }
 
+    /**
+     * 
+     * @param userId
+     */
     @Override
     public void getVariableInstanceByUserId(Long userId) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * 
+     * @param a
+     */
+    @Override
+    public void merge(AnonymousEntity a) {
     }
 }

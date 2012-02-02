@@ -76,7 +76,7 @@ public class VariableDescriptorManager {
      */
     public VariableDescriptorEntity update(Long variableDescriptorId, VariableDescriptorEntity variableDescriptor) {
         VariableDescriptorEntity vd = this.getVariableDescriptor(variableDescriptorId);
-        vd = (VariableDescriptorEntity) AnonymousEntityMerger.merge(vd, variableDescriptor);
+        vd.merge(variableDescriptor);
         vd = aem.update(vd);
         return vd;
     }

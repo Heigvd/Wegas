@@ -21,7 +21,7 @@ YUI.add('wegas-chat', function(Y) {
                     type:'text', 
                     rows: 3, 
                     cols: 40, 
-                    invite: 'Type here to chat',
+                    typeInvite: 'Type here to chat',
                     value: ''
                 }],
                 buttons: [{
@@ -46,7 +46,7 @@ YUI.add('wegas-chat', function(Y) {
                     Y.log("Response(state: "+response.state+", transport: "+response.transport+", status:"+response.status+", body: "+ response.responseBody+")", 'info', 'Wegas.Chat');
                         
                     if (response.transport != 'polling' && response.state == 'messageReceived' && response.status == 200 && response.responseBody.length > 0) {
-                        cb.one('.wegas-chat-msgs').prepend('<div class="wegas-chat-msg">'+response.responseBody+'</div>');
+                        cb.one('.wegas-chat-msgs').prepend('<div class="wegas-chat-msg">You: '+response.responseBody+'</div>');
                     }
                 },
                 /* websocket, streaming, long-polling, jsonp */

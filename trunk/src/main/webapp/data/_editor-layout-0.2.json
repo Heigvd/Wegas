@@ -2,22 +2,21 @@
     "type" : "Layout",
     
     "right": {
-        "width": 50, 
+        "width": 300, 
         "resize": true,
         "collapse": false,
         "scroll": true, 
         "animate": true,
         "children": [{
             "type": "TabView",
-            "id": "rightTabView",
-            "children": [
-            {
+            "children": [{
                 "type": "Tab",
-                "label": "Chat",
-                "toolbarLabel": "Chat",
+                "label": "Edit",
+                "toolbarLabel": "Edit",
                 "children": [
                 {
-                    "type": "Chat"		
+                    "type": "DisplayArea",
+                    "id": "editor-editdisplayarea"
                 }
                 ]
             },
@@ -29,6 +28,16 @@
                 {
                     "type": "CSSEditor",
                     "class": "wegas-csseditor"
+                }
+                ]
+            },
+            {
+                "type": "Tab",
+                "label": "Chat",
+                "toolbarLabel": "Chat",
+                "children": [
+                {
+                    "type": "Chat"		
                 }
                 ]
             },
@@ -70,49 +79,14 @@
                 {
                     "type": "WTreeView",
                     "dataSource": "VariableDescriptor",
-                    "rootClass": "VariableDescriptor",
-                    "includeClasses": {
-                        "StringVariableDescriptor": true
-                    }
+                    "rootClass": "VariableDescriptor"
                 }         
                 ],
                 "toolbarButtons": [{
                     "type": "push", 
-                    "label": "New choice", 
+                    "label": "New variable", 
                     "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"VariableDescriptor", 
-                        "@class": "VariableDescriptor"
-                    }
-                },{
-                    "type": "push", 
-                    "label": "Reset this game", 
-                    "value": "reset", 
-                    "id": "reset"
-                }]
-            },{
-                "type": "Tab",
-                "label": "Choices",
-                "children": [
-                {
-                    "type": "WTreeView",
-                    "dataSource": "VariableDescriptor",
-                    "rootClass": "VariableDescriptor",
-                    "includeClasses": {
-                        "MCQVariableDescriptor": true
-                    }
-                }         
-                ],
-                "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New choice", 
-                    "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"VariableDescriptor", 
-                        "@class": "MCQVariableDescriptor"
-                    }
+                    "id": "new"
                 },{
                     "type": "push", 
                     "label": "Reset this game", 
@@ -129,17 +103,7 @@
                     "dataSource": "Team",
                     "rootClass": "Team"
                 }
-                ],
-                "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New team", 
-                    "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"Team", 
-                        "@class": "Team"
-                    }
-                }]
+                ]
             },
             {
                 "type": "Tab",
@@ -158,17 +122,7 @@
                         "key":"@class"
                     }]
                 }
-                ],
-                "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New user", 
-                    "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"User", 
-                        "@class": "User"
-                    }
-                }]
+                ]
             }
             ]
         }]
@@ -225,17 +179,7 @@
                         "key":"@class"
                     }]
                 }
-                ],
-                "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New choice", 
-                    "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"gameModel", 
-                        "@class": "GameModel"
-                    }
-                }]
+                ]
             }
             ]
         }]

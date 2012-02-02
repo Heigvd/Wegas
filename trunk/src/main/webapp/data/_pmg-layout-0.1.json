@@ -51,7 +51,7 @@
         "cssClass": "pmg-body", 
         "children": [
         {   
-            "type": "PMGChoiceDisplay",
+            "type": "DisplayArea",
             "id": "pmg-maindisplayarea",
             "cssClass": "pmg-maindisplayarea"
         }, {

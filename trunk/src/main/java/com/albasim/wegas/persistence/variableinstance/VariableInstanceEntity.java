@@ -17,10 +17,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -30,10 +30,12 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @XmlType(name = "VariableInstance", propOrder = {"@class", "id"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringVariableInstance", value = StringVariableInstanceEntity.class),
-    @JsonSubTypes.Type(name = "ListVariableInstance", value = ListVariableInstanceEntity.class)
+    @JsonSubTypes.Type(name = "ListVariableInstance", value = ListVariableInstanceEntity.class),
+    @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQVariableInstanceEntity.class)
 })
 public class VariableInstanceEntity extends AnonymousEntity {
 
@@ -115,4 +117,12 @@ public class VariableInstanceEntity extends AnonymousEntity {
     VariableInstanceEntity vi = new  VariableInstanceEntity();
     return vi;
     }*/
+
+    /**
+     * 
+     * @param a
+     */
+    @Override
+    public void merge(AnonymousEntity a) {
+    }
 }

@@ -143,6 +143,11 @@ public class GameModelManager {
         aem.destroy(gameModel);
     }
 
+    /**
+     * 
+     * @param gameModelId
+     * @return
+     */
     public GameModelEntity reset(Long gameModelId) {
         
         GameModelEntity gm = this.getGameModel(gameModelId);

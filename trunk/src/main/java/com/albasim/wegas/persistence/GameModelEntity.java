@@ -160,6 +160,9 @@ public class GameModelEntity extends NamedEntity implements Serializable {
         }
     }
 
+    /**
+     * 
+     */
     public void reset() {
        for (VariableDescriptorEntity vd: this.getVariableDescriptors()) {
            vd.getScope().reset();

@@ -148,4 +148,13 @@ public class TeamEntity extends AnonymousEntity {
     public void setUsers(Collection<UserEntity> users) {
         this.users = users;
     }
+
+    /**
+     * 
+     * @param a
+     */
+    @Override
+    public void merge(AnonymousEntity a) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

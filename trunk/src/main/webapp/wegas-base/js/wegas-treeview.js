@@ -28,16 +28,9 @@ YUI.add('wegas-treeview', function(Y) {
             
             this._treeView = new YAHOO.widget.TreeView(el._node,[]);
             this._treeView.render();
-            
-            this._pushButton = new YAHOO.widget.Button({			//Instantiate the "New" button
-                label:"New "+this.get('rootClass'), 
-                container:cb._node
-            });
-            
         },
         
         bindUI: function() {
-            
             this._dataSource.after("response", function(e) {			// Listen for datasource updates
                 if (e.response.results && ! e.response.error) {
                     var treeViewElements = this._genTreeViewElements(e.response.results);
@@ -58,57 +51,68 @@ YUI.add('wegas-treeview', function(Y) {
                 YAHOO.log(node.index + " label was clicked", "info", "example"); 
                 return false;
             }, null, this); 
-            
-            this._pushButton.on("click", function() {				// New button click event
-                Y.Wegas.editor.edit({
-                    "@class": this.get('rootClass')
-                }, function(cfg) {
-                    this._dataSource.rest.post(cfg);
-                }, null, this);
-            }, null, this);
-	  
         },
         syncUI: function() {
         },
         
+        _genVariableInstanceElements: function(label, el) {
+            switch (el['@class']) {
+                case 'StringVariableInstance' :
+                    return {
+                        type:'Text',
+                        label: label+': '+el['content'],
+                        title: label+': '+el['content'],
+                        data: el
+                    }
+                    break;
+                    
+                case 'MCQVariableInstance' :
+                    return {
+                        type:'Text',
+                        label: label+': not replied',
+                        title: label+': not replied',
+                        data: el
+                    }
+                    break;
+                default:
+                    return {
+                        type:'Text',
+                        label: label,
+                        title: label,
+                        data: el
+                    }
+                    break;
+                    
+            }
+        },
         _genScopeTreeViewElements: function(el) {
             var children=[];
             for (var j in el.scope.variableInstances) {
                 subEl = el.scope.variableInstances[j];
-                                
+                var label = '';
                 switch (el.scope['@class'] ) {
                     case 'UserScope':
                         var user = Y.Wegas.app.dataSources.User.rest.getCachedVariableById(j);
-                        children.push({
-                            type:'Text',
-                            label: user.name+': '+subEl['content'],
-                            title: user.name+': '+subEl['content'],
-                            data: subEl
-                        });
+                        label = user.name;
                         break;
                     case 'TeamScope':
                         var team = Y.Wegas.app.dataSources.Team.rest.getCachedVariableById(j);
-                        children.push({
-                            type:'Text',
-                            label: team.name+': '+subEl['content'],
-                            title: team.name+': '+subEl['content'],
-                            data: subEl
-                        });
+                        label = team.name;
                         break;
                     case 'GameScope':
-                        children.push({
-                            type:'Text',
-                            label: 'Global: '+subEl['content'],
-                            title: 'Global: '+subEl['content'],
-                            data: subEl
-                        });
+                        label = 'Global';
                         break;
                 }
+                children.push(this._genVariableInstanceElements(label, subEl));
             }
             return children;
         },
         _genTreeViewElements: function(elements) {
-            var ret = [];
+            var class2text = {
+                MCQVariableDescriptor: "Choice",
+                StringVariableDescriptor: "String"
+            }, ret = [];
+            
             for (var i in elements) {
                 var el = elements[i];
                 
@@ -133,14 +137,19 @@ YUI.add('wegas-treeview', function(Y) {
                         break;
                     case 'StringVariableDescriptor':
                     case 'ListVariableDescriptor':
-                        ret.push( {
-                            type:'Text',
-                            label: 'Variable: '+el['name'],
-                            title: 'Variable: '+el['name'],
-                            expanded:true, 
-                            children: this._genScopeTreeViewElements(el),
-                            data: el
-                        });
+                    default:
+                        
+                        if (el['@class'] in this.get('includeClasses')) {
+                            var text = (class2text[el['@class']] || el['@class'])+': '+el['name'];
+                            ret.push( {
+                                type:'Text',
+                                label: text,
+                                title: text,
+                                expanded:false, 
+                                children: this._genScopeTreeViewElements(el),
+                                data: el
+                            });
+                        }
                         break;
                 /* case 'StringVariableInstance':
                         var user = Y.Wegas.app.dataSources.User.rest.getCachedVariableById(i);
@@ -164,6 +173,9 @@ YUI.add('wegas-treeview', function(Y) {
             },
             type: {
                 value: "TreeView"
+            },
+            includeClasses: {
+                value: {}
             },
             rootClass: {},
             dataSource: {}

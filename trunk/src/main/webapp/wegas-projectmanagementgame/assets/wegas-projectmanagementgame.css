@@ -136,57 +136,64 @@
 
 
 /* PMG TABVIEW WIDGET STYLES */
-.pmg-project-tab  .yui3-alba-tabview-content {
-    padding-left: 350px;
+.pmg-maindisplayarea {
+    height:100%;
 }
-.yui3-skin-sam  .pmg-project-tab .yui3-tabview-list {
-    display:block;
+.pmg-maindisplayarea  .yui3-tabview-content {
+    /*padding-left: 350px;*/
+}
+.yui3-skin-sam  .pmg-maindisplayarea .yui3-tabview-list {
+    display: inline-block;
     float:left;
-    margin-left: -350px;
-    width: 349px;
+    /* margin-left: -350px;*/
     border: none;
-    border-right: 1px solid black;
+    display: inline-block;
+    border-right: 1px solid lightgray;
+    width: 39.9%;
 }
-.yui3-skin-sam  .pmg-project-tab  .yui3-tabview-panel {
-    display:block;
-    width:100%;
+
+.yui3-skin-sam  .pmg-maindisplayarea .yui3-tabview-panel {
+    display:inline-block;
+    width:60%;
     float:left;
-    overflow:inherit;
-    border: none;
+    overflow:inherit;  
 }
-.pmg-project-tab .yui3-tab {
+.pmg-maindisplayarea .yui3-tab {
     display: block;
     border:none;
     border-bottom:1px solid #DBDBDB;
     margin: 0;
     cursor:pointer;
+    width:100%;
 }
-.yui3-skin-sam .pmg-project-tab  .yui3-tab .yui3-tab-label  {
+.yui3-skin-sam .pmg-maindisplayarea  .yui3-tab .yui3-tab-label  {
     background: none;
     border: none;
     padding: 6px 8px;
     font-size: 9pt;
     text-decoration: underline;
 }
-.yui3-skin-sam  .pmg-project-tab .yui3-tab:hover {
+.yui3-skin-sam  .pmg-maindisplayarea .yui3-tab:hover {
     background: #B2D2FF;
 }
-.yui3-skin-sam  .pmg-project-tab .yui3-alba-tab-selected {
+.yui3-skin-sam  .pmg-maindisplayarea .yui3-tab-selected {
     background: #CCCCCC;
 }
-.yui3-skin-sam  .pmg-project-tab .yui3-alba-tab-selected .yui3-tab-label {
+.yui3-skin-sam  .pmg-maindisplayarea .yui3-tab-selected .yui3-tab-label {
     color:black;
 }
-
-.yui3-skin-sam  .yui-layout-unit-center .yui-layout-bd .pmg-project-tab,
+/*
+.yui3-skin-sam  .yui-layout-unit-center .yui-layout-bd .pmg-maindisplayarea,
 .yui3-alba-displayareawidget,
-.yui3-alba-displayareawidget-content, 
-.pmg-project-tab .yui3-alba-tabview-content,
-.yui3-skin-sam .pmg-project-tab .yui3-tabview-list,
+.yui3-alba-displayareawidget-content, */
+.pmg-maindisplayarea .yui3-tabview ,
+.pmg-maindisplayarea .yui3-tabview-content,
+.yui3-skin-sam .pmg-maindisplayarea .yui3-tabview-list,
 .syui3-alba-textwidget-container {
     height:100%;
 }
-.pmg-project-tab .h2 {
+
+.pmg-maindisplayarea .h2 {
     display: block;
     height: 26px;
     background: transparent url(wegas-projectmanagementgame/assets/h2.png) repeat;
@@ -196,13 +203,16 @@
     font-size: 1.1em;
     font-weight: bold;
 }
-.pmg-project-tab .h3 {
+.pmg-maindisplayarea {
+    line-height: normal;
+}
+.pmg-maindisplayarea .h3 {
     font-size: 1.2em;
     font-weight: normal;
     padding: 2px 8px;
     border-bottom: 2px solid #4D4D4D;
 }
-.pmg-project-tab .h4 {
+.pmg-maindisplayarea .h4 {
     display: block;
     height: 18px;
     background: transparent url(wegas-projectmanagementgame/assets/h3.png) repeat;
@@ -214,9 +224,24 @@
     font-size: 1.1em;
     font-weight: bold;
 }
-.pmg-project-tab  .description {
+.pmg-maindisplayarea  .description {
+    margin: 5px;
+    margin-bottom: 20px;
+}
+.pmg-maindisplayarea  input {
+    margin: 5px;
+    float: right;
+    padding:5px;
+}
+.pmg-maindisplayarea .replies {
     margin: 5px;
 }
-.pmg-project-tab  input {
-    margin: 5px;
+.pmg-maindisplayarea .reply {
+    margin-bottom: 5px;
+    border-bottom:1px solid lightgray;
+}
+.pmg-maindisplayarea .reply bold {
+    font-weight: bold;
+    display:block;
+    margin-bottom:10px;
 }

@@ -139,7 +139,6 @@ public abstract class AnonymousEntity implements Serializable, Cloneable {
     /**
      * 
      * @return
-     * @throws CloneNotSupportedException
      */
     @Override
     public AnonymousEntity clone()  {
@@ -148,4 +147,10 @@ public abstract class AnonymousEntity implements Serializable, Cloneable {
         ae.setId(null);
         return ae;
     }
+    
+    /**
+     * 
+     * @param a
+     */
+    public abstract void merge(AnonymousEntity a);
 }

@@ -10,6 +10,7 @@
 package com.albasim.wegas.persistence.scope;
 
 import com.albasim.wegas.helper.AnonymousEntityMerger;
+import com.albasim.wegas.persistence.AnonymousEntity;
 import com.albasim.wegas.persistence.GameModelEntity;
 import com.albasim.wegas.persistence.TeamEntity;
 import com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
@@ -70,12 +71,19 @@ public class TeamScopeEntity extends ScopeEntity {
         this.propagateDefaultVariableInstance(false);
     }
 
+    /**
+     * 
+     */
     @Override
     public void reset() {
         this.propagateDefaultVariableInstance(true);
         //        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * 
+     * @param forceUpdate
+     */
     @XmlTransient
     //@Transient
     public void propagateDefaultVariableInstance(boolean forceUpdate) {
@@ -93,8 +101,20 @@ public class TeamScopeEntity extends ScopeEntity {
         }
     }
 
+    /**
+     * 
+     * @param userId
+     */
     @Override
     public void getVariableInstanceByUserId(Long userId) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * 
+     * @param a
+     */
+    @Override
+    public void merge(AnonymousEntity a) {
     }
 }

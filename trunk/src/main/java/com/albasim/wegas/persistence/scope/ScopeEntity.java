@@ -66,6 +66,10 @@ public abstract class ScopeEntity extends AnonymousEntity implements Serializabl
     @XmlTransient
     abstract public void setVariableInstanceByUserId(Long userId, VariableInstanceEntity v);
     
+    /**
+     * 
+     * @param userId
+     */
     @XmlTransient
     abstract public void getVariableInstanceByUserId(Long userId);
 
@@ -75,6 +79,9 @@ public abstract class ScopeEntity extends AnonymousEntity implements Serializabl
      */
     abstract public Map<Long, VariableInstanceEntity> getVariableInstances();
 
+    /**
+     * 
+     */
     @XmlTransient
     abstract public void reset();
 
