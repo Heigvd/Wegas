@@ -24,8 +24,6 @@
     <class>com.albasim.wegas.persistence.cardinality.GmEnumCardinality</class>
     <class>com.albasim.wegas.persistence.cardinality.GmUnboundedCardinality</class>-->
     <class>com.albasim.wegas.persistence.User</class>
-    <class>com.albasim.wegas.persistence.scope.ScopeEntity</class>
-    <class>com.albasim.wegas.persistence.scope.UserScopeEntity</class>
     <class>com.albasim.wegas.persistence.variableinstance.GmEnumInstance</class>
     <class>com.albasim.wegas.persistence.variableinstance.GmMediaInstance</class>
     <class>com.albasim.wegas.persistence.variableinstance.GmBooleanInstance</class>
@@ -34,9 +32,11 @@
     <class>com.albasim.wegas.persistence.variableinstance.GmTextInstance</class>
     <class>com.albasim.wegas.persistence.variableinstance.GmStringInstance</class>
     <class>com.albasim.wegas.persistence.variableinstance.GmComplexInstance</class>
-    <class>com.albasim.wegas.persistence.variableinstance.VariableInstanceEntity</class>
-    <class>com.albasim.wegas.persistence.variabledescriptor.VariableDescriptorEntity</class>
-    <class>com.albasim.wegas.persistence.GameModelEntity</class>
+    <class>com.wegas.persistence.GameModelEntity</class>
+    <class>com.wegas.persistence.scope.UserScopeEntity</class>
+    <class>com.wegas.persistence.scope.ScopeEntity</class>
+    <class>com.wegas.persistence.variabledescriptor.VariableDescriptorEntity</class>
+    <class>com.wegas.persistence.variableinstance.VariableInstanceEntity</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <shared-cache-mode>NONE</shared-cache-mode>
     <properties>

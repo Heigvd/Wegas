@@ -5,12 +5,11 @@
     <display-name>Web Game Authoring System</display-name>
     <distributable/>
     <listener>
-        <listener-class>com.albasim.wegas.tools.RequestListener</listener-class>
+        <listener-class>com.wegas.tools.RequestListener</listener-class>
     </listener>
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-    
     <!--<security-constraint>
         <display-name>SecurityConstraint</display-name>
         <web-resource-collection>
@@ -34,7 +33,6 @@
     <security-role>
         <role-name>gamedesigner</role-name>
     </security-role>-->
-    
     <!-- REST Servlet -->
     <servlet>
         <servlet-name>Jersey Web Application</servlet-name>
@@ -45,7 +43,6 @@
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/rs/*</url-pattern>
     </servlet-mapping>
-    
     <!-- Atmosphere Servlet -->
     <servlet>
         <description>AtmosphereServlet</description>
@@ -69,8 +66,6 @@
         <servlet-name>AtmosphereServlet</servlet-name>
         <url-pattern>/atmosphere/*</url-pattern>
     </servlet-mapping>
-    
-    
     <!--
     <servlet>
         <servlet-name>AdminServlet</servlet-name>
@@ -80,8 +75,7 @@
         <servlet-name>AdminServlet</servlet-name>
         <url-pattern>/admin</url-pattern>
     </servlet-mapping>-->
-    
-   <!-- <filter>
+    <!-- <filter>
         <filter-name>FacebookUserFilter</filter-name>
         <filter-class>com.albasim.session.facebook.FacebookUserFilter</filter-class>
     </filter>
@@ -89,8 +83,7 @@
         <filter-name>FacebookUserFilter</filter-name>
         <url-pattern>/facebooktest/*</url-pattern>
     </filter-mapping>-->
-    
-   <!-- <security-role-mapping>
+    <!-- <security-role-mapping>
         <role-name>loginUser</role-name>
         <group-name>admin</group-name>
     </security-role-mapping>-->
