@@ -62,7 +62,8 @@ var Y = YUI({
                     path: 'wegas-base/js/wegas-button.js'
                 },
                 'wegas-variabledisplay': {
-                    path: 'wegas-base/js/wegas-variabledisplay.js'
+                    path: 'wegas-base/js/wegas-variabledisplay.js',
+                    requires: ['excanvas']
                 },
                 'wegas-chat': {
                     path: 'wegas-base/js/wegas-chat.js'

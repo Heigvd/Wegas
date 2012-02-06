@@ -49,29 +49,24 @@ public class ScriptManager {
      * @param playerId
      * @param s
      */
-    public void runScript(Long gameModelId, Long playerId, ScriptEntity s) {
+    public List<VariableInstanceEntity> runScript(Long gameModelId, Long playerId, ScriptEntity s) {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         Invocable invocableEngine = (Invocable) engine;
+        GameModelEntity gm = gmm.getGameModel(gameModelId);
+        List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
 
         try {
-            GameModelEntity gm = gmm.getGameModel(gameModelId);
-            List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
-            for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {
+            for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
                 VariableInstanceEntity vi = vd.getVariableInstance(playerId);
-                engine.put(vd.getName(), vi);                                   // We inject the variable instances in the script
+                engine.put(vd.getName(), vi);                                   
                 vis.add(vi);
             }
-            engine.eval("println(timeCards);");
-            engine.eval("println(timeCards.content);");
-            engine.eval(s.getContent());                                        // Then we evaluate the script itself
-            
-            engine.eval("println(timeCards);");
-            
-            engine.eval("println(timeCards.content);");
+            engine.eval(s.getContent());                                        // Then we evaluate the script
         } catch (ScriptException ex) {
             Logger.getLogger(ScriptManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return vis;
     }
     /*
     Object invokeFunction = invocableEngine.invokeFunction("sayHello");

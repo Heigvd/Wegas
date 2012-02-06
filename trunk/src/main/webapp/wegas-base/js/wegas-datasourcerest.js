@@ -29,7 +29,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         },
         _beforeDefResponseFn: function(e) {
             var data = this.get('host').data;
-            if (e.response.results[1] && e.response.results[1].errors) {        // We have errors in the reply
+            /* if (e.response.results[1] && e.response.results[1].errors) {        // We have errors in the reply
                 var errorMsg = "";
 	    
                 for (var i = 0; i<e.response.results.length;i++) {
@@ -40,36 +40,39 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     }
                 }
                 alert(errorMsg);
-            } else {                                                            // Treat reply
-                for (var i=0;i<e.response.results.length;i++) {
-                    var cEl = e.response.results[i];
-                    if (cEl['@class'] == "StringVariableInstance" ||
-                        cEl['@class'] == "NumberVariableInstance")  {
+            } else {            */                                                // Treat reply
+            for (var i=0;i<e.response.results.length;i++) {
+                var cEl = e.response.results[i];
+                if (!cEl) {
+                    
+                } else if (cEl['@class'] == "StringVariableInstance" ||
+                    cEl['@class'] == "NumberVariableInstance"||
+                    cEl['@class'] == "MCQVariableInstance")  {
                         
-                        Y.Array.each(data, function(o, index, a) {
-                            for (var i in o.scope.variableInstances) {
-                                if (o.scope.variableInstances[i].id == cEl.id) {
-                                    o.scope.variableInstances[i] = Y.merge(o.scope.variableInstances[i], cEl);                                
-                                }
+                    Y.Array.each(data, function(o, index, a) {
+                        for (var i in o.scope.variableInstances) {
+                            if (o.scope.variableInstances[i].id == cEl.id) {
+                                o.scope.variableInstances[i] = Y.merge(o.scope.variableInstances[i], cEl);                                
                             }
-                        });
-                    } else {
+                        }
+                    });
+                } else {
                         
-                        var loaded = false;
-                        /* data = Y.Array.filter(this._data, function(o){
+                    var loaded = false;
+                    /* data = Y.Array.filter(this._data, function(o){
                             return !(o.id == e.response.results[i].id);
                         }, this);
                         */
-                        Y.Array.each(data, function(o, index, a) {
-                            if (o.id == cEl.id) {
-                                a[index] = Y.merge(o, cEl);
-                                loaded = true
-                            }
-                        });
-                        if (!loaded) data.push(cEl);
+                    Y.Array.each(data, function(o, index, a) {
+                        if (o.id == cEl.id) {
+                            a[index] = Y.merge(o, cEl);
+                            loaded = true
+                        }
+                    });
+                    if (!loaded) data.push(cEl);
                         
-                    }
                 }
+            //}
             //this._data = this._data.concat(e.response.results);
             }
 	    
@@ -220,6 +223,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
 
     Y.extend(DataSourceVariableDescriptorREST, DataSourceREST, {
         
+        /* getRequest: function(request) {
+            DataSourceVariableDescriptorREST.superclass.getRequest.call(this, request);
+           // "rs/gm/1/vardesc
+        },*/
         post: function(data) {
             /* switch (data['@class']) {
                 case 'ListVariableDescriptor':
@@ -233,7 +240,6 @@ YUI.add('wegas-datasourcerest', function(Y) {
             delete data.defaultStringVariableInstance;*/
             DataSourceVariableDescriptorREST.superclass.post.call(this, data);
         },
-        
         getInstanceBy: function(key, val) {
             var el = this.getCachedVariableBy(key, val);
             if (!el) return null;

@@ -9,32 +9,39 @@
         { 
             "type": "VariableDisplay",
             "label": "Direction",
+            "view": "gauge",
             "variable": "managementApproval",
             "dataSource": "VariableDescriptor"
         },{ 
             "type": "VariableDisplay",
             "label": "User",
+            "view": "gauge",
             "variable": "userApproval",
             "dataSource": "VariableDescriptor"
         },{ 
             "type": "VariableDisplay",
             "label": "Fixed costs",
+            "view": "gauge",
             "variable": "fixedCosts",
             "dataSource": "VariableDescriptor"
         },{ 
             "type": "VariableDisplay",
             "label": "Quality",
+            "view": "gauge",
             "variable": "quality",
             "dataSource": "VariableDescriptor"
         },{ 
             "type": "VariableDisplay",
             "label": "Delay",
+            "view": "gauge",
             "variable": "delay",
             "dataSource": "VariableDescriptor"
         },{ 
+            "cssClass": "pmg-timevariable",
             "type": "VariableDisplay",
             "label": "Time cards",
             "variable": "timeCards",
+            "view": "box",
             "dataSource": "VariableDescriptor"
         }]
     },

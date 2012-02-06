@@ -13,19 +13,24 @@ YUI.add('wegas-projectmanagementgame', function(Y) {
         },
         
         bindUI: function() {
+            var questions = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQVariableDescriptor");
+            
+            this.get(CONTENTBOX).delegate("click", function(e) {    
+                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("mcqvariable/player/"+Y.Wegas.app.get('currentUserId')+"/reply/"+e.target.get('id')+"/runscript/");
+            }, "input[type=submit]", this);
+            
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", function(e) {
                 this.syncUI();
             }, this);
+            
             Y.Wegas.app.after('currentUserIdChange', function(e) {
                 this.syncUI();
             }, this);
         },
         
-        syncUI: function() {
-            // this.get(CONTENTBOX).setContent('sthg');
-            
+        syncUI: function() {            
             var questions = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQVariableDescriptor");
-            console.log(questions);
+            
             this._tabView.removeAll();
             
             for (var i=0; i<questions.length; i++) {
@@ -35,7 +40,7 @@ YUI.add('wegas-projectmanagementgame', function(Y) {
                     replies.push('<div class="reply">'+
                         '<bold>'+cQuestion.replies[j].name+'</bold>'+
                         '<div>'+cQuestion.replies[j].description+'</div>'+
-                        '<input type="submit" id="alba-pm-action" value="Submit"></input>'+
+                        '<input type="submit" id="'+cQuestion.replies[j].id+'" value="Submit"></input>'+
                         '<div style="clear:both"></div>'+
                         '</div>');
                 }

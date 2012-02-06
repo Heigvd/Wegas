@@ -163,7 +163,7 @@
                     "name":"b) refuse",
                     "description":"You reply you would rather not make a prototype.",
                     "answer":"OK.<br />The project will therefore be implemented without presenting any prototype to the users. Future users find out and are somewhat disappointed.",
-                    "impact":"userAproval-=6;\nquality.value-=2"
+                    "impact":"userApproval.value-=6;\nquality.value-=2"
                 }],
             "defaultVariableInstance": {
                 "@class": "MCQVariableInstance"

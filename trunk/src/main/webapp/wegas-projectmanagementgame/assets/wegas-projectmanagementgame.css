@@ -16,7 +16,21 @@
 }
 
 /* PMG TOP MENU STYLES */
-.yui3-alba-variablewidget-unit {
+.yui3-wegas-variabledisplay-content {
+    position:relative;
+}
+.yui3-wegas-variabledisplay-content canvas {
+    margin-top: 5px;
+}
+.yui3-wegas-variabledisplay-gauge-text {
+    position: absolute;
+    top: 23px;
+    left: 26px;
+    color: #4D4D4D;
+    width: 40px;
+    text-align: right;
+}
+.yui3-wegas-variabledisplay-box-unit {
     background-color: yellow;
     border: 1pt solid #7D7D7D;
     float: left;
@@ -189,7 +203,7 @@
 .pmg-maindisplayarea .yui3-tabview ,
 .pmg-maindisplayarea .yui3-tabview-content,
 .yui3-skin-sam .pmg-maindisplayarea .yui3-tabview-list,
-.syui3-alba-textwidget-container {
+.yui3-alba-textwidget-container {
     height:100%;
 }
 

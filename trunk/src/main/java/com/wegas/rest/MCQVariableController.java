@@ -11,11 +11,13 @@ package com.wegas.rest;
 
 import com.wegas.ejb.MCQVariableManager;
 import com.wegas.persistence.variabledescriptor.MCQVariableDescriptorReplyEntity;
+import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import com.wegas.script.ScriptEntity;
 import com.wegas.script.ScriptManager;
 
 
 
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -31,7 +33,7 @@ import javax.ws.rs.core.Response;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("gm/{gameModelId : [1-9][0-9]*}/mcqvariable/")
+@Path("gm/{gameModelId : [1-9][0-9]*}/vardesc/mcqvariable/")
 public class MCQVariableController {
 
     @EJB
@@ -49,13 +51,12 @@ public class MCQVariableController {
     @GET
     @Path("/player/{playerId : [1-9][0-9]*}/reply/{replyId : [1-9][0-9]*}/runscript/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response runScript(@PathParam("gameModelId") Long gameModelId,
+    public List<VariableInstanceEntity> runScript(@PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, @PathParam("replyId") Long replyId) {
         MCQVariableDescriptorReplyEntity reply = mcqvm.getMCQReply(replyId);
         System.out.println(reply.getImpact());
         ScriptEntity s = new ScriptEntity();
         s.setContent(reply.getImpact());
-        sm.runScript(1l, 1l, s);
-        return Response.status(Response.Status.OK).build();
+        return sm.runScript(gameModelId, playerId, s);
     }
 }

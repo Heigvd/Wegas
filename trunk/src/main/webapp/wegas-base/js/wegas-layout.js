@@ -15,7 +15,7 @@ YUI.add('wegas-layout', function(Y) {
 		units = [
 		    {position: 'top', height: 25, body: '', scroll: null, zIndex: 2},
 		    {position: 'left', width: 300, resize: true, scroll: true,  body: '', animate: true},	// was 550px
-		    {position: 'right', width: 300, resize: true, collapse: false, scroll: true,  body: '', animate: true},
+		    {position: 'right', width: 350, resize: true, collapse: false, scroll: true,  body: '', animate: true},
 		    {position: 'center', body: ''}
 		];
 	    
