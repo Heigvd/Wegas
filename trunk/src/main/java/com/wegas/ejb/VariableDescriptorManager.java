@@ -9,7 +9,6 @@
  */
 package com.wegas.ejb;
 
-import com.wegas.helper.AnonymousEntityMerger;
 import com.wegas.persistence.GameModelEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import java.util.logging.Logger;
@@ -30,7 +29,7 @@ public class VariableDescriptorManager {
     private static final Logger logger = Logger.getLogger("EJB_GM");
 
     @EJB
-    private WegasEntityManager aem;
+    private AnonymousEntityManager aem;
 
     @EJB
     private VariableInstanceManager vim;

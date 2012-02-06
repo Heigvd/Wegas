@@ -39,7 +39,7 @@ public class AnonymousEntityMerger {
         } else if (original instanceof StringVariableInstanceEntity) {
             StringVariableInstanceEntity o = (StringVariableInstanceEntity) original;
             StringVariableInstanceEntity u = (StringVariableInstanceEntity) updated;
-            o.setContent(u.getContent());
+            o.setValue(u.getValue());
         }
         return original;
     }

@@ -35,7 +35,9 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringVariableInstance", value = StringVariableInstanceEntity.class),
     @JsonSubTypes.Type(name = "ListVariableInstance", value = ListVariableInstanceEntity.class),
-    @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQVariableInstanceEntity.class)
+    @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQVariableInstanceEntity.class),
+    @JsonSubTypes.Type(name = "NumberVariableInstance", value = NumberVariableInstanceEntity.class),
+    
 })
 public class VariableInstanceEntity extends AnonymousEntity {
 
@@ -52,7 +54,7 @@ public class VariableInstanceEntity extends AnonymousEntity {
     private ScopeEntity teamScope;
     @OneToOne
     @XmlTransient
-    private ScopeEntity gameScope;
+    private ScopeEntity gameModelScope;
     /*
      * This attribute is only present when the variable is used as a devaultVariableD
      */
@@ -109,8 +111,8 @@ public class VariableInstanceEntity extends AnonymousEntity {
      * 
      * @param scope
      */
-    public void setGameScope(ScopeEntity scope) {
-        this.gameScope = scope;
+    public void setGameModelScope(ScopeEntity scope) {
+        this.gameModelScope = scope;
     }
     /* @Override
     public VariableInstanceEntity clone() {

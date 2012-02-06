@@ -34,7 +34,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
             var val = this._dataSource.rest.getInstanceBy('name', this.get("variable")) || "undefined";
             switch (this.get('view'))  {
                 case 'text':
-                    this.get(CONTENTBOX).setContent(this.get('label')+": "+val.content);
+                    this.get(CONTENTBOX).setContent(this.get('label')+": "+val.value);
                     break;
                 case 'box':
                     break;

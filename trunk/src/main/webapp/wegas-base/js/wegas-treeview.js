@@ -58,10 +58,11 @@ YUI.add('wegas-treeview', function(Y) {
         _genVariableInstanceElements: function(label, el) {
             switch (el['@class']) {
                 case 'StringVariableInstance' :
+                case 'NumberVariableInstance' :
                     return {
                         type:'Text',
-                        label: label+': '+el['content'],
-                        title: label+': '+el['content'],
+                        label: label+': '+el['value'],
+                        title: label+': '+el['value'],
                         data: el
                     }
                     break;
@@ -99,7 +100,7 @@ YUI.add('wegas-treeview', function(Y) {
                         var team = Y.Wegas.app.dataSources.Team.rest.getCachedVariableById(j);
                         label = team.name;
                         break;
-                    case 'GameScope':
+                    case 'GameModelScope':
                         label = 'Global';
                         break;
                 }
@@ -110,7 +111,8 @@ YUI.add('wegas-treeview', function(Y) {
         _genTreeViewElements: function(elements) {
             var class2text = {
                 MCQVariableDescriptor: "Choice",
-                StringVariableDescriptor: "String"
+                StringVariableDescriptor: "String",
+                NumberVariableDescriptor: "Number"
             }, ret = [];
             
             for (var i in elements) {
@@ -136,6 +138,7 @@ YUI.add('wegas-treeview', function(Y) {
                         })
                         break;
                     case 'StringVariableDescriptor':
+                    case 'NumberVariableDescriptor':
                     case 'ListVariableDescriptor':
                     default:
                         

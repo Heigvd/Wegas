@@ -9,7 +9,6 @@
  */
 package com.wegas.persistence.scope;
 
-import com.wegas.helper.AnonymousEntityMerger;
 import com.wegas.persistence.AnonymousEntity;
 import com.wegas.persistence.GameModelEntity;
 import com.wegas.persistence.TeamEntity;
@@ -85,15 +84,23 @@ public class UserScopeEntity extends ScopeEntity {
     public Map<Long, VariableInstanceEntity> getVariableInstances() {
         return this.variableInstances;
     }
-
+   /**
+     * 
+     * @param playerId
+     * @return  
+     */
+    @Override
+    public VariableInstanceEntity getVariableInstance(Long playerId) {
+        return this.variableInstances.get(playerId);
+    }
     /**
      * 
-     * @param userId
+     * @param playerId 
      * @param v
      */
     @Override
-    public void setVariableInstanceByUserId(Long userId, VariableInstanceEntity v) {
-        this.variableInstances.put(userId, v);
+    public void setVariableInstance(Long playerId, VariableInstanceEntity v) {
+        this.variableInstances.put(playerId, v);
         v.setScope(this);
     }
 
@@ -125,22 +132,15 @@ public class UserScopeEntity extends ScopeEntity {
             for (UserEntity u : t.getUsers()) {
                 VariableInstanceEntity vi = this.variableInstances.get(u.getId());
                 if (vi == null) {
-                    this.setVariableInstanceByUserId(u.getId(), vd.getDefaultVariableInstance().clone());
+                    this.setVariableInstance(u.getId(), vd.getDefaultVariableInstance().clone());
                 } else if (forceUpdate) {
-                    AnonymousEntityMerger.merge(vi, vd.getDefaultVariableInstance());
+                    vi.merge(vd.getDefaultVariableInstance());
                 }
             }
         }
     }
 
-    /**
-     * 
-     * @param userId
-     */
-    @Override
-    public void getVariableInstanceByUserId(Long userId) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+ 
 
     /**
      * 

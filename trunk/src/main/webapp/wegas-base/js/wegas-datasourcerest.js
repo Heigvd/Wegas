@@ -43,7 +43,8 @@ YUI.add('wegas-datasourcerest', function(Y) {
             } else {                                                            // Treat reply
                 for (var i=0;i<e.response.results.length;i++) {
                     var cEl = e.response.results[i];
-                    if (cEl['@class'] == "StringVariableInstance")  {
+                    if (cEl['@class'] == "StringVariableInstance" ||
+                        cEl['@class'] == "NumberVariableInstance")  {
                         
                         Y.Array.each(data, function(o, index, a) {
                             for (var i in o.scope.variableInstances) {
@@ -144,7 +145,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             var host = this.get('host'),
             request = (data.id)?"/"+data.id:"";
               
-            if (data['@class'] == 'StringVariableInstance') {
+            if (data['@class'] == 'StringVariableInstance' || data['@class'] == 'NumberVariableInstance') {
                 request = '/1/varinst/'+data.id;
             }
             
@@ -235,6 +236,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         
         getInstanceBy: function(key, val) {
             var el = this.getCachedVariableBy(key, val);
+            if (!el) return null;
             switch (el.scope['@class']) {
                 case 'UserScope':
                     return el.scope.variableInstances[Y.Wegas.app.get('currentUserId')];
@@ -242,6 +244,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 case 'TeamScope':
                     return el.scope.variableInstances[Y.Wegas.app.get('currentTeamId')];
                     break;
+                case 'GameModelScope':
                 case 'GameScope':
                     return el.scope.variableInstances[0];
                     break;  

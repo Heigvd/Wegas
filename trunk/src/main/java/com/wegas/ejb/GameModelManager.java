@@ -25,9 +25,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 
+
 /**
  *
- * @author maxence
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
 @LocalBean
@@ -37,7 +38,7 @@ public class GameModelManager {
 
 
     @EJB
-    private WegasEntityManager aem;
+    private AnonymousEntityManager aem;
 
 
 

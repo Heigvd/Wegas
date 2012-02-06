@@ -34,7 +34,7 @@ public class UserManager {
 
 
     @EJB
-    private WegasEntityManager aem;
+    private AnonymousEntityManager aem;
 
 
     @PersistenceContext(unitName = "wegasPU")

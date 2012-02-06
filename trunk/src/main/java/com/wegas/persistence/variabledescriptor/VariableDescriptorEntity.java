@@ -53,7 +53,8 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringVariableDescriptor", value = StringVariableDescriptorEntity.class),
     @JsonSubTypes.Type(name = "ListVariableDescriptor", value = ListVariableDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQVariableDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQVariableDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "NumberVariableDescriptor", value = NumberVariableDescriptorEntity.class)
 })
 public class VariableDescriptorEntity extends NamedEntity {
 
@@ -87,6 +88,35 @@ public class VariableDescriptorEntity extends NamedEntity {
     @XmlTransient
     private GameModelEntity gameModel;
 
+    
+    /**
+     * 
+     */
+    @PrePersist
+    public void prePersist() {
+        this.scope.setVariableDescscriptor(this);
+    }
+    /**
+     * 
+     * @param a
+     */
+    @Override
+    public void merge(AnonymousEntity a) {
+        super.merge(a);
+        VariableDescriptorEntity vd = (VariableDescriptorEntity) a;
+        this.setName(vd.getName());
+        this.scope.merge(vd.getScope());
+        this.defaultVariableInstance.merge(vd.getDefaultVariableInstance());
+    }
+    /**
+     * 
+     * @param playerId
+     * @return
+     */
+    @XmlTransient
+    public VariableInstanceEntity getVariableInstance(Long playerId) {
+        return this.scope.getVariableInstance(playerId);
+    }
     /**
      * 
      * @return
@@ -156,13 +186,6 @@ public class VariableDescriptorEntity extends NamedEntity {
         this.scope = scope;
     }
 
-    /**
-     * 
-     */
-    @PrePersist
-    public void prePersist() {
-        this.scope.setVariableDescscriptor(this);
-    }
 
     /**
      * @return the defaultVariableInstance
@@ -178,16 +201,4 @@ public class VariableDescriptorEntity extends NamedEntity {
         this.defaultVariableInstance = defaultVariableInstance;
     }
 
-    /**
-     * 
-     * @param a
-     */
-    @Override
-    public void merge(AnonymousEntity a) {
-        super.merge(a);
-        VariableDescriptorEntity vd = (VariableDescriptorEntity) a;
-        this.setName(vd.getName());
-        this.scope.merge(vd.getScope());
-        this.defaultVariableInstance.merge(vd.getDefaultVariableInstance());
-    }
 }

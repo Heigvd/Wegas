@@ -35,7 +35,7 @@ public class TeamManager {
     private static final Logger logger = Logger.getLogger("EJB_UM");
 
     @EJB
-    private WegasEntityManager aem;
+    private AnonymousEntityManager aem;
     
     @EJB
     private UserManager ume;

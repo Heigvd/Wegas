@@ -61,13 +61,13 @@
                     choices: [
                         { value: "UserScope", label: 'different for each user' }, 
                         { value: "TeamScope", label: 'different for each team' }, 
-                        { value: "GameScope", label: 'the same for everybody' }
+                        { value: "GameModelScope", label: 'the same for everybody' }
                     ]
                 }
             ],
             Config = {
                 base : 'http://localhost:8080/Wegas/',
-                layoutSrc: 'data/editor-layout.json',
+                layoutSrc: 'wegas-editor/db/editor-layout.json',
                 lang : 'en-US',
                 debug : true,
                 currentGameModel: 1,
@@ -160,13 +160,13 @@
                         { name:'defaultVariableInstance', type:'group', fields: [
                                 { name: '@class', value:'StringVariableInstance', type: 'hidden'},
                                 { name: 'id', type: 'hidden'},
-                                { name: 'content', label: 'Default value'}
+                                { name: 'value', label: 'Default value'}
                             ]}
                     ],
                     "StringVariableInstance": [
                         { name: '@class', value:'StringVariableInstance', type: 'hidden'},
                         { name: 'id', type: 'hidden'},
-                        { name: 'content', label: 'Text'}
+                        { name: 'value', label: 'Text'}
                     ],
                     "NumberVariableDescriptor": [
                         { name: 'id', type: 'hidden'},
@@ -176,13 +176,13 @@
                         { name:'defaultVariableInstance', type:'group', fields: [
                                 { name: '@class', value:'NumberVariableInstance', type: 'hidden'},
                                 { name: 'id', type: 'hidden'},
-                                { name: 'content', label: 'Default value', regexp: /^[0-9]*$/ }
+                                { name: 'value', label: 'Default value', regexp: /^[0-9]*$/ }
                             ]}
                     ],
                     "NumberVariableInstance": [
                         { name: '@class', value:'NumberVariableInstance:', type: 'hidden'},
                         { name: 'id', type: 'hidden'},
-                        { name: 'content', label: 'Value', regexp: /^[0-9]*$/ }
+                        { name: 'value', label: 'Value', regexp: /^[0-9]*$/ }
                     ],
                     "ListVariableDescriptor": [
                         { name: 'id', type: 'hidden'},

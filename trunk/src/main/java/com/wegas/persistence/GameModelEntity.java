@@ -56,7 +56,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * 
      */
     @NotNull
-    @Pattern(regexp = "^\\w+$")
+    //@Pattern(regexp = "^\\w+$")
     private String name;
     /**
      * 
@@ -105,7 +105,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
         this.name = name;
     }
 
-    
     /**
      * 
      * @return
@@ -125,7 +124,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
         variableDescriptor.setGameModel(this);
     }
 
-    
     /**
      * 
      * @param variableDescriptors
@@ -133,11 +131,10 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     public void setVariableDescriptors(
             List<VariableDescriptorEntity> variableDescriptors) {
         this.variableDescriptors = variableDescriptors;
-        for (VariableDescriptorEntity vd: variableDescriptors) {
+        for (VariableDescriptorEntity vd : variableDescriptors) {
             vd.setGameModel(this);
         }
     }
-
 
     /**
      * @return the teams
@@ -164,8 +161,8 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * 
      */
     public void reset() {
-       for (VariableDescriptorEntity vd: this.getVariableDescriptors()) {
-           vd.getScope().reset();
-       }   
+        for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
+            vd.getScope().reset();
+        }
     }
 }

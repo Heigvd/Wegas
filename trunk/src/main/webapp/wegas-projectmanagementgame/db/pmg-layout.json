@@ -9,17 +9,32 @@
         { 
             "type": "VariableDisplay",
             "label": "Direction",
-            "variable": "Direction",
+            "variable": "managementApproval",
             "dataSource": "VariableDescriptor"
         },{ 
             "type": "VariableDisplay",
-            "label": "Price",
-            "variable": "Price",
+            "label": "User",
+            "variable": "userApproval",
             "dataSource": "VariableDescriptor"
         },{ 
             "type": "VariableDisplay",
-            "label": "Money",
-            "variable": "Money",
+            "label": "Fixed costs",
+            "variable": "fixedCosts",
+            "dataSource": "VariableDescriptor"
+        },{ 
+            "type": "VariableDisplay",
+            "label": "Quality",
+            "variable": "quality",
+            "dataSource": "VariableDescriptor"
+        },{ 
+            "type": "VariableDisplay",
+            "label": "Delay",
+            "variable": "delay",
+            "dataSource": "VariableDescriptor"
+        },{ 
+            "type": "VariableDisplay",
+            "label": "Time cards",
+            "variable": "timeCards",
             "dataSource": "VariableDescriptor"
         }]
     },

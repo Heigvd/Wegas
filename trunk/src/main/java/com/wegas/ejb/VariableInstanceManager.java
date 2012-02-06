@@ -9,7 +9,6 @@
  */
 package com.wegas.ejb;
 
-import com.wegas.helper.AnonymousEntityMerger;
 import com.wegas.persistence.scope.ScopeEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
@@ -32,7 +31,7 @@ public class VariableInstanceManager {
     @EJB
     private VariableDescriptorManager vdm;
     @EJB
-    private WegasEntityManager wem;
+    private AnonymousEntityManager wem;
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -71,12 +70,12 @@ public class VariableInstanceManager {
         VariableDescriptorEntity vd = vdm.getVariableDescriptor(variableDescriptorId);
         ScopeEntity s = vd.getScope();
 
-        s.setVariableInstanceByUserId(userId, newInstance);
+        s.setVariableInstance(userId, newInstance);
         //  VariableInstanceEntity = vd
         VariableInstanceEntity vi = this.getVariableInstance(newInstance.getId());
 
         if (vi == null) {
-            s.setVariableInstanceByUserId(userId, newInstance);
+            s.setVariableInstance(userId, newInstance);
         }
         /*
          * FIXME Does it hurt to create a new entity even although there was already one existing entity
@@ -96,8 +95,7 @@ public class VariableInstanceManager {
      */
     public VariableInstanceEntity update(Long variableInstanceId, VariableInstanceEntity variableInstance) {
         VariableInstanceEntity vi = this.getVariableInstance(variableInstanceId);
-        vi = (VariableInstanceEntity) AnonymousEntityMerger.merge(vi, variableInstance);
-        vi = wem.update(vi);
+        vi.merge(variableInstance);
         return vi;
     }
 }

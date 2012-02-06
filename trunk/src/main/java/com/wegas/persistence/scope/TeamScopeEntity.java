@@ -9,7 +9,6 @@
  */
 package com.wegas.persistence.scope;
 
-import com.wegas.helper.AnonymousEntityMerger;
 import com.wegas.persistence.AnonymousEntity;
 import com.wegas.persistence.GameModelEntity;
 import com.wegas.persistence.TeamEntity;
@@ -55,10 +54,20 @@ public class TeamScopeEntity extends ScopeEntity {
     /**
      * 
      * @param userId
+     * @return  
+     */
+    @Override
+    public VariableInstanceEntity getVariableInstance(Long userId) {
+        return this.teamVariableInstances.get(userId);
+    }
+
+    /**
+     * 
+     * @param userId
      * @param v
      */
     @Override
-    public void setVariableInstanceByUserId(Long userId, VariableInstanceEntity v) {
+    public void setVariableInstance(Long userId, VariableInstanceEntity v) {
         this.teamVariableInstances.put(userId, v);
         v.setTeamScope(this);
     }
@@ -93,21 +102,12 @@ public class TeamScopeEntity extends ScopeEntity {
             VariableInstanceEntity vi = this.teamVariableInstances.get(t.getId());
 
             if (vi == null) {
-                this.setVariableInstanceByUserId(t.getId(), vd.getDefaultVariableInstance().clone());
+                this.setVariableInstance(t.getId(), vd.getDefaultVariableInstance().clone());
             } else if (forceUpdate) {
-                AnonymousEntityMerger.merge(vi, vd.getDefaultVariableInstance());
+                vi.merge(vd.getDefaultVariableInstance());
             }
 
         }
-    }
-
-    /**
-     * 
-     * @param userId
-     */
-    @Override
-    public void getVariableInstanceByUserId(Long userId) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**

@@ -12,7 +12,6 @@ package com.wegas.persistence.variableinstance;
 import com.wegas.persistence.AnonymousEntity;
 import java.util.logging.Logger;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -20,25 +19,25 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "StringVariableInstance")
+@XmlType(name = "NumberVariableInstance")
 public class NumberVariableInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("StringVariableInstanceEntity");
-    private double content;
+    private double val;
 
     /**
-     * @return the content
+     * @return the value
      */
-    public double getContent() {
-        return content;
+    public double getValue() {
+        return val;
     }
 
     /**
-     * @param content the content to set
+     * @param value the value to set
      */
-    public void setContent(double content) {
-        this.content = content;
+    public void setValue(double value) {
+        this.val = value;
     }
 
     /**
@@ -48,6 +47,6 @@ public class NumberVariableInstanceEntity extends VariableInstanceEntity {
     @Override
     public void merge(AnonymousEntity a) {
         NumberVariableInstanceEntity vi = (NumberVariableInstanceEntity) a;
-        this.setContent(vi.getContent());
+        this.setValue(vi.getValue());
     }
 }

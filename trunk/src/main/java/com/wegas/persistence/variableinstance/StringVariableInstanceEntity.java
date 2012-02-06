@@ -25,20 +25,20 @@ public class StringVariableInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("StringVariableInstanceEntity");
-    private String content;
+    private String val;
 
     /**
-     * @return the content
+     * @return the value
      */
-    public String getContent() {
-        return content;
+    public String getValue() {
+        return val;
     }
 
     /**
-     * @param content the content to set
+     * @param value the value to set
      */
-    public void setContent(String content) {
-        this.content = content;
+    public void setValue(String value) {
+        this.val = value;
     }
     
     /**
@@ -48,6 +48,6 @@ public class StringVariableInstanceEntity extends VariableInstanceEntity {
     @Override
     public void merge(AnonymousEntity a) {
         StringVariableInstanceEntity vi = (StringVariableInstanceEntity) a;
-        this.setContent(vi.getContent());
+        this.setValue(vi.getValue());
     }
 }

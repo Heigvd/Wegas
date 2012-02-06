@@ -13,6 +13,7 @@ import com.wegas.ejb.GameModelManager;
 import com.wegas.helper.IndexEntry;
 import com.wegas.persistence.GameModelEntity;
 
+import com.wegas.script.ScriptManager;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,26 +34,21 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 @Stateless
 @Path("gm")
 public class GameModelController {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM");
-
-
     @Context
     private HttpServletRequest request;
-
-
     @EJB
     private GameModelManager gme;
-
+    @EJB
+    private ScriptManager sm;
 
     /**
      * Index : retrieve the game model list
@@ -65,7 +61,6 @@ public class GameModelController {
         Collection<IndexEntry> gameModels = gme.getGameModels();
         return gameModels;
     }
-
 
     /**
      * Retrieve a specific game model
@@ -80,7 +75,6 @@ public class GameModelController {
         return gm;
     }
 
-
     /**
      * 
      * @param gm 
@@ -91,10 +85,9 @@ public class GameModelController {
     @Produces(MediaType.APPLICATION_JSON)
     public GameModelEntity create(GameModelEntity gm) {
         logger.log(Level.INFO, "POST GameModel");
-         gme.createGameModel(gm);
+        gme.createGameModel(gm);
         return gm;
     }
-
 
     /**
      * 
@@ -109,7 +102,6 @@ public class GameModelController {
     public GameModelEntity update(@PathParam("gmID") Long gmID, GameModelEntity gm) {
         return gme.updateGameModel(gmID, gm);
     }
-
 
     /**
      * 

@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Stateless
 @LocalBean
-public class WegasEntityManager {
+public class AnonymousEntityManager {
 
     private static final Logger logger = Logger.getLogger("EJB_GM");
     

@@ -38,7 +38,8 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "UserScope", value = UserScopeEntity.class),
     @JsonSubTypes.Type(name = "TeamScope", value = TeamScopeEntity.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameScopeEntity.class)
+    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScopeEntity.class),
+    @JsonSubTypes.Type(name = "GameScope", value = GameModelScopeEntity.class)
 })
 public abstract class ScopeEntity extends AnonymousEntity implements Serializable {
 
@@ -47,7 +48,7 @@ public abstract class ScopeEntity extends AnonymousEntity implements Serializabl
     @XmlID
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scope_seq")
     private Long id;
-    //abstract public void getVariableInstanceByUserId(UserEntity u);
+    //abstract public void getVariableInstance(UserEntity u);
  /*   @OneToOne(mappedBy="scope")
     @NotNull
     @XmlTransient
@@ -64,14 +65,15 @@ public abstract class ScopeEntity extends AnonymousEntity implements Serializabl
      * @param v
      */
     @XmlTransient
-    abstract public void setVariableInstanceByUserId(Long userId, VariableInstanceEntity v);
+    abstract public void setVariableInstance(Long userId, VariableInstanceEntity v);
     
     /**
      * 
      * @param userId
+     * @return  
      */
     @XmlTransient
-    abstract public void getVariableInstanceByUserId(Long userId);
+    abstract public VariableInstanceEntity getVariableInstance(Long userId);
 
     /**
      * 

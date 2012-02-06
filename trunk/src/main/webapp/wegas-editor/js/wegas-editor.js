@@ -7,6 +7,8 @@ YUI.add('wegas-editor', function(Y) {
     
     Editor = Y.Base.create("wegas-editor", Y.Wegas.App, [], {
 	
+        _tab: null,
+        _form: null,
         initializer: function(){
             Y.Wegas.editor = this;
         },
@@ -16,19 +18,21 @@ YUI.add('wegas-editor', function(Y) {
         /*********************************************************************** INITIALIZE EDITION TAB */
         edit: function(data, callback, formFields, scope) {
             
-           // var widget = Y.Widget.getByNode('#centerTabView'),
-            var widget = Y.Widget.getByNode('#rightTabView'),
-            newTab = widget.add({
-                type: "Tab",
-                label: "Edit",
-                toolbarLabel: "Edit"
-            });
+            var widget = Y.Widget.getByNode('#rightTabView')
+            // var widget = Y.Widget.getByNode('#centerTabView'),
+            if (!this._tab) {
+                this._tab = widget.add({
+                    type: "Tab",
+                    label: "Edit",
+                    toolbarLabel: "Edit"
+                });
+            }
             widget.selectChild(widget.size()-1);
-            
-            // var node = Y.one('#editor-editdisplayarea').one('div');
-            //node.empty();
-            //var node = newTab.item(0).get('panelNode').append('<div></div>');
-            var node = newTab.item(0).get('panelNode').one('.yui3-wegas-list-content');
+            /* var node = Y.one('#editor-editdisplayarea').one('div');
+            node.empty();
+            var node = newTab.item(0).get('panelNode').append('<div></div>');
+            */
+            var node = this._tab.item(0).get('panelNode').one('.yui3-wegas-list-content');
             node.setStyle('padding-right', '5px');
             data = data || {};
 	    
@@ -36,7 +40,9 @@ YUI.add('wegas-editor', function(Y) {
                 formFields = Y.Wegas.app.get('forms')[data['@class']]
             }
 	    
-            var cForm = new Y.inputEx.Form( { 
+            if (this._form)  this._form.destroy();
+            
+            this._form = new Y.inputEx.Form( { 
                 fields: formFields,
                 buttons: [{
                     type: 'submit', 
@@ -45,7 +51,7 @@ YUI.add('wegas-editor', function(Y) {
                     type: 'button',
                     value: 'Cancel',
                     onClick: function() {
-                        cForm.destroy();
+                        this._form.destroy();
                         widget.remove(newTab.item(0).get('index'));
                         widget.selectChild(0);
                     } 
@@ -59,13 +65,14 @@ YUI.add('wegas-editor', function(Y) {
                     var val = this.getValue();
                     if (val.valueselector) val = val.valueselector;
                     callback.call(scope || this, val);
-                    
-                    cForm.destroy();
+                /*
+                      this._form.destroy();
                     widget.remove(newTab.item(0).get('index'));
                     widget.selectChild(0);
+                     */
                 }
             });
-            cForm.setValue(data);
+            this._form.setValue(data);
         }
     });
 	

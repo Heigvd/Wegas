@@ -33,7 +33,7 @@ public class GroupManager {
     private static final Logger logger = Logger.getLogger("EJB_UM");
 
     @EJB
-    private WegasEntityManager aem;
+    private AnonymousEntityManager aem;
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;

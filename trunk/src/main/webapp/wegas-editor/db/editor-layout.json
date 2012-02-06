@@ -72,7 +72,8 @@
                     "dataSource": "VariableDescriptor",
                     "rootClass": "VariableDescriptor",
                     "includeClasses": {
-                        "StringVariableDescriptor": true
+                        "StringVariableDescriptor": true,
+                        "NumberVariableDescriptor": true
                     }
                 }         
                 ],
@@ -205,7 +206,7 @@
                 ],
                 "children": [{
                     "type": "WidgetLoader",
-                    "layourUrl": "data/pmg-layout.json"
+                    "layourUrl": "wegas-projectmanagementgame/db/pmg-layout.json"
                 }]
             },
             {

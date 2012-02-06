@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "NumberVariableDescriptorEntity")
+@XmlType(name = "NumberVariableDescriptor")
 public class NumberVariableDescriptorEntity extends VariableDescriptorEntity {
 
     private static final long serialVersionUID = 1L;
