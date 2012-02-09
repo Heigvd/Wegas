@@ -9,6 +9,7 @@
  */
 package com.wegas.persistence.scope;
 
+import com.wegas.ejb.AnonymousEntityManager;
 import com.wegas.persistence.AnonymousEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class GameScopeEntity extends ScopeEntity {
     }
 
     @Override
-    public void reset() {
+    public void reset(AnonymousEntityManager aem) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

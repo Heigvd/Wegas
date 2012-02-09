@@ -87,11 +87,8 @@ public class TeamManager {
      */
     public TeamEntity updateTeam(Long id, TeamEntity t) {
         TeamEntity cTeam = this.getTeam(id);
-        if (cTeam.equals(t)) {
-            TeamEntity update = aem.update(t);
-            return update;
-        }
-        throw new InvalidContent();
+        cTeam.merge(t);
+        return cTeam;
     }
     
     /**

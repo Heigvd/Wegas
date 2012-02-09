@@ -11,6 +11,9 @@ package com.wegas.rest;
 
 import com.wegas.ejb.MCQVariableManager;
 import com.wegas.persistence.variabledescriptor.MCQVariableDescriptorReplyEntity;
+import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
+import com.wegas.persistence.variableinstance.MCQVariableInstanceEntity;
+import com.wegas.persistence.variableinstance.MCQVariableInstanceReplyEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import com.wegas.script.ScriptEntity;
 import com.wegas.script.ScriptManager;
@@ -26,7 +29,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  *
@@ -54,9 +56,19 @@ public class MCQVariableController {
     public List<VariableInstanceEntity> runScript(@PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, @PathParam("replyId") Long replyId) {
         MCQVariableDescriptorReplyEntity reply = mcqvm.getMCQReply(replyId);
-        System.out.println(reply.getImpact());
-        ScriptEntity s = new ScriptEntity();
+        
+        VariableDescriptorEntity vd = reply.getMCQVariableDescriptor();
+        MCQVariableInstanceEntity vi = (MCQVariableInstanceEntity)vd.getVariableInstance(playerId);
+        
+        MCQVariableInstanceReplyEntity viReply = new MCQVariableInstanceReplyEntity();
+        viReply.setAnswer(reply.getAnswer());
+        viReply.setDescription(reply.getDescription());
+        viReply.setName(reply.getName());
+        vi.addReply(viReply);
+        
+        ScriptEntity s = new ScriptEntity();                                    // Run the impact
         s.setContent(reply.getImpact());
+        
         return sm.runScript(gameModelId, playerId, s);
     }
 }

@@ -155,6 +155,7 @@ public class TeamEntity extends AnonymousEntity {
      */
     @Override
     public void merge(AnonymousEntity a) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        TeamEntity t = (TeamEntity)a;
+        this.setName(t.getName());
     }
 }

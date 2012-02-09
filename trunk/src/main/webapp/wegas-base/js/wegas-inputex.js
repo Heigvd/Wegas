@@ -32,6 +32,26 @@ YUI.add('wegas-inputex', function(Y) {
         this.options.trim = (options.trim === true) ? true : false;
     };
        
+       
+    /**
+     * @fixme Hack to get the rtefield to interpret the parameters given through the opts config object.
+     */
+    Y.inputEx.RTEField.prototype.setValue= function(value, sendUpdatedEvt) {
+        if(this.editor) {
+            var iframeId = this.el.id+"_editor";
+	      
+            // if editor iframe not rendered
+            if (!YAHOO.util.Dom.get(iframeId)) {
+                // put value in textarea : will be processed by this.editor._setInitialContent (clean html, etc...)
+                //this.el.value = value;
+                this.editor.on('editorContentLoaded', function(){               /* @modified */
+                    this.editor.setEditorHTML(value);
+                }, value, this);
+            } else {
+                this.editor.setEditorHTML(value);
+            }
+        }
+    }
     /**
      * @fixme Hack to get the rtefield to interpret the parameters given through the opts config object.
      */
@@ -81,11 +101,11 @@ YUI.add('wegas-inputex', function(Y) {
 	   
 	   
         /**
-   	 * Filters out msword html comments, classes, and other junk
-   	 * (complementary with YAHOO.widget.SimpleEditor.prototype.filter_msword, when filterWord option is true)
-   	 * @param {String} value The html string
-   	 * @return {String} The html string
-   	 */
+             * Filters out msword html comments, classes, and other junk
+             * (complementary with YAHOO.widget.SimpleEditor.prototype.filter_msword, when filterWord option is true)
+             * @param {String} value The html string
+             * @return {String} The html string
+             */
         this.editor.filter_msword = function(html) {
    	   
             html = editorType.prototype.filter_msword.call(this,html);

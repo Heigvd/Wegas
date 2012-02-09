@@ -15,7 +15,7 @@
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }
-div.inputEx-Field input {
+div.inputEx-Field input[type=text] {
     width: 100% !important;
 }
 div.inputEx-Field select {

@@ -1,6 +1,5 @@
 {
     "type" : "Layout",
-    
     "right": {
         "width": 50, 
         "resize": true,
@@ -70,7 +69,6 @@
                 {
                     "type": "WTreeView",
                     "dataSource": "VariableDescriptor",
-                    "rootClass": "VariableDescriptor",
                     "includeClasses": {
                         "StringVariableDescriptor": true,
                         "NumberVariableDescriptor": true
@@ -99,7 +97,6 @@
                 {
                     "type": "WTreeView",
                     "dataSource": "VariableDescriptor",
-                    "rootClass": "VariableDescriptor",
                     "includeClasses": {
                         "MCQVariableDescriptor": true
                     }
@@ -123,24 +120,12 @@
             },
             {
                 "type": "Tab",
-                "label": "Teams",
-                "children": [
-                {
+                "label": "Pages",
+                "children": [{
                     "type": "WTreeView",
-                    "dataSource": "Team",
-                    "rootClass": "Team"
-                }
-                ],
-                "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New team", 
-                    "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"Team", 
-                        "@class": "Team"
-                    }
-                }]
+                    "dataSource": "Page"
+                }],
+                "toolbarButtons": []
             },
             {
                 "type": "Tab",
@@ -160,16 +145,7 @@
                     }]
                 }
                 ],
-                "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New user", 
-                    "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"User", 
-                        "@class": "User"
-                    }
-                }]
+                "toolbarButtons": []
             }
             ]
         }]
@@ -206,39 +182,18 @@
                 ],
                 "children": [{
                     "type": "WidgetLoader",
-                    "layourUrl": "wegas-projectmanagementgame/db/pmg-layout.json"
+                    "pageId": 1
                 }]
             },
             {
                 "type": "Tab",
-                "label": "Game models explorer",
-                "children": [
-                {
-                    "type": "DataTable",
-                    "dataSource": "gameModel",
-                    "columnset": [ {
-                        "key":"id", 
-                        "sortable": true
-                    }, {
-                        "key":"name", 
-                        "sortable": true
-                    }, {
-                        "key":"@class"
-                    }]
-                }
-                ],
-                "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New choice", 
-                    "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"gameModel", 
-                        "@class": "GameModel"
-                    }
-                }]
-            }
-            ]
+                "label": "Game models",
+                "children": [{
+                    "type": "WTreeView",
+                    "dataSource": "GameModel"
+                }],
+                "toolbarButtons": []
+            }]
         }]
     }
 }

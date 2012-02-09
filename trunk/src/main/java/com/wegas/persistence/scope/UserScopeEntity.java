@@ -9,6 +9,7 @@
  */
 package com.wegas.persistence.scope;
 
+import com.wegas.ejb.AnonymousEntityManager;
 import com.wegas.persistence.AnonymousEntity;
 import com.wegas.persistence.GameModelEntity;
 import com.wegas.persistence.TeamEntity;
@@ -17,13 +18,14 @@ import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -37,6 +39,10 @@ import javax.xml.bind.annotation.XmlType;
 public class UserScopeEntity extends ScopeEntity {
 
     private static final Logger logger = Logger.getLogger(UserScopeEntity.class.getName());
+    
+    @EJB
+    @Transient
+    private AnonymousEntityManager aem;
     //@EJB
     //@Transient
     // private WegasEntityManager wem;
@@ -71,7 +77,8 @@ public class UserScopeEntity extends ScopeEntity {
     /*
      * FIXME Here we should use UserEntity reference and add a key deserializer module 
      */
-    @OneToMany(mappedBy = "scope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  //  @OneToMany(mappedBy = "scope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "scope", cascade = {CascadeType.ALL})
     //@MapKey(name="id")
     @XmlTransient
     private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<Long, VariableInstanceEntity>();
@@ -84,7 +91,8 @@ public class UserScopeEntity extends ScopeEntity {
     public Map<Long, VariableInstanceEntity> getVariableInstances() {
         return this.variableInstances;
     }
-   /**
+
+    /**
      * 
      * @param playerId
      * @return  
@@ -93,6 +101,7 @@ public class UserScopeEntity extends ScopeEntity {
     public VariableInstanceEntity getVariableInstance(Long playerId) {
         return this.variableInstances.get(playerId);
     }
+
     /**
      * 
      * @param playerId 
@@ -108,7 +117,7 @@ public class UserScopeEntity extends ScopeEntity {
      * 
      */
     @Override
-    public void reset() {
+    public void reset(AnonymousEntityManager aem) {
         this.propagateDefaultVariableInstance(true);
     }
 
@@ -135,12 +144,11 @@ public class UserScopeEntity extends ScopeEntity {
                     this.setVariableInstance(u.getId(), vd.getDefaultVariableInstance().clone());
                 } else if (forceUpdate) {
                     vi.merge(vd.getDefaultVariableInstance());
+                    //vi = aem.update(vi);
                 }
             }
         }
     }
-
- 
 
     /**
      * 

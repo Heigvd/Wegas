@@ -57,8 +57,8 @@ public class GameModelController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<IndexEntry> index() {
-        Collection<IndexEntry> gameModels = gme.getGameModels();
+    public Collection<GameModelEntity> index() {
+        Collection<GameModelEntity> gameModels = gme.getGameModels();
         return gameModels;
     }
 

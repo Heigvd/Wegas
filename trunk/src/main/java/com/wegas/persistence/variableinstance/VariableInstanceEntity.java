@@ -13,6 +13,7 @@ import com.wegas.persistence.AnonymousEntity;
 import com.wegas.persistence.scope.ScopeEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import java.util.logging.Logger;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -44,6 +45,7 @@ public class VariableInstanceEntity extends AnonymousEntity {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("GMVariableKInstance");
     @Id
+    @Column(name = "variableinstance_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "var_instance_seq")
     private Long id;
     @ManyToOne

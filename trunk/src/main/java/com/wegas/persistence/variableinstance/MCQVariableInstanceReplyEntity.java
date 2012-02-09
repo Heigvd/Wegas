@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2011 
  */
-package com.wegas.persistence.variabledescriptor;
+package com.wegas.persistence.variableinstance;
 
 import com.wegas.persistence.AnonymousEntity;
 import com.wegas.persistence.NamedEntity;
@@ -30,16 +30,16 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQVariableDescriptorReply")
-public class MCQVariableDescriptorReplyEntity extends NamedEntity {
+@XmlType(name = "MCQVariableInstanceReply")
+public class MCQVariableInstanceReplyEntity extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQVariableDescriptorReplyEntity");
+    private static final Logger logger = Logger.getLogger("MCQVariableInstanceReplyEntity");
     /**
      * 
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvardescrep_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvarinstrep_seq")
     private Long id;
     /**
      * 
@@ -63,10 +63,10 @@ public class MCQVariableDescriptorReplyEntity extends NamedEntity {
     /**
      * 
      */
-    @JsonBackReference("question-reply")
+    @JsonBackReference("question-replyi")
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variabledescriptor_id", nullable = false)
-    private MCQVariableDescriptorEntity mCQVariableDescriptor;
+    @JoinColumn(name = "variableinstance_id", nullable = false)
+    private MCQVariableInstanceEntity mCQVariableInstance;
 
     /**
      * 
@@ -75,7 +75,7 @@ public class MCQVariableDescriptorReplyEntity extends NamedEntity {
     @Override
     public void merge(AnonymousEntity a) {
         super.merge(a);
-        MCQVariableDescriptorReplyEntity r = (MCQVariableDescriptorReplyEntity) a;
+        MCQVariableInstanceReplyEntity r = (MCQVariableInstanceReplyEntity) a;
         this.setDescription(r.getDescription());
         this.setAnswer(r.getAnswer());
         this.setImpact(r.getImpact());
@@ -83,7 +83,7 @@ public class MCQVariableDescriptorReplyEntity extends NamedEntity {
 
     @Override
     public boolean equals(Object o) {
-        MCQVariableDescriptorReplyEntity vd = (MCQVariableDescriptorReplyEntity) o;
+        MCQVariableInstanceReplyEntity vd = (MCQVariableInstanceReplyEntity) o;
         return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
     }
 
@@ -136,18 +136,18 @@ public class MCQVariableDescriptorReplyEntity extends NamedEntity {
     }
 
     /**
-     * @return the mCQVariableDescriptor
+     * @return the mcqVariableDescriptor
      */
     @XmlTransient
-    public MCQVariableDescriptorEntity getMCQVariableDescriptor() {
-        return mCQVariableDescriptor;
+    public MCQVariableInstanceEntity getMCQVariableInstance() {
+        return mCQVariableInstance;
     }
 
     /**
-     * @param mCQVariableDescriptor the mCQVariableDescriptor to set
+     * @param mcqVariableDescriptor the mcqVariableDescriptor to set
      */
-    public void setMCQVariableDescriptor(MCQVariableDescriptorEntity mCQVariableDescriptor) {
-        this.mCQVariableDescriptor = mCQVariableDescriptor;
+    public void setMCQVariableInstance(MCQVariableInstanceEntity mCQVariableInstance) {
+        this.mCQVariableInstance = mCQVariableInstance;
     }
 
     /**

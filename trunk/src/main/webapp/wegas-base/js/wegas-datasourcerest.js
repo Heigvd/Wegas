@@ -6,6 +6,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
 	 
     var Lang = Y.Lang,
     VariableDescriptorDataSourcePlugin,
+    GameModelDataSourceREST,
     
     DataSourceREST = function() {
         DataSourceREST.superclass.constructor.apply(this, arguments);
@@ -28,41 +29,13 @@ YUI.add('wegas-datasourcerest', function(Y) {
         _beforeDefRequestFn: function(e) {
         },
         _beforeDefResponseFn: function(e) {
-            var data = this.get('host').data;
-            /* if (e.response.results[1] && e.response.results[1].errors) {        // We have errors in the reply
-                var errorMsg = "";
-	    
-                for (var i = 0; i<e.response.results.length;i++) {
-                    if (e.response.results[i].errors){
-                        for (var j=0; j<e.response.results[i].errors.length;j++) {
-                            errorMsg += e.response.results[i].errors[j];
-                        }
-                    }
-                }
-                alert(errorMsg);
-            } else {            */                                                // Treat reply
+            var data = this.get('host').data;                                        // Treat reply
             for (var i=0;i<e.response.results.length;i++) {
                 var cEl = e.response.results[i];
                 if (!cEl) {
                     
-                } else if (cEl['@class'] == "StringVariableInstance" ||
-                    cEl['@class'] == "NumberVariableInstance"||
-                    cEl['@class'] == "MCQVariableInstance")  {
-                        
-                    Y.Array.each(data, function(o, index, a) {
-                        for (var i in o.scope.variableInstances) {
-                            if (o.scope.variableInstances[i].id == cEl.id) {
-                                o.scope.variableInstances[i] = Y.merge(o.scope.variableInstances[i], cEl);                                
-                            }
-                        }
-                    });
                 } else {
-                        
                     var loaded = false;
-                    /* data = Y.Array.filter(this._data, function(o){
-                            return !(o.id == e.response.results[i].id);
-                        }, this);
-                        */
                     Y.Array.each(data, function(o, index, a) {
                         if (o.id == cEl.id) {
                             a[index] = Y.merge(o, cEl);
@@ -72,10 +45,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     if (!loaded) data.push(cEl);
                         
                 }
-            //}
-            //this._data = this._data.concat(e.response.results);
             }
-	    
             e.response.results = data;
         },
         getCachedVariables: function() {
@@ -144,13 +114,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             });
         },
-        put: function(data) {
-            var host = this.get('host'),
-            request = (data.id)?"/"+data.id:"";
-              
-            if (data['@class'] == 'StringVariableInstance' || data['@class'] == 'NumberVariableInstance') {
-                request = '/1/varinst/'+data.id;
-            }
+        put: function(data, request) {
+            var host = this.get('host');
+            
+            request = request || ((data.id)?"/"+data.id:"")
             
             host.sendRequest({
                 request: request,
@@ -191,7 +158,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         // host.sendRequest('/');
         },
         _failureHandler: function(e){
-            //alert("Error sending REST post request!");
+            alert("Error sending REST post request!");
             var errorMsg = "";
 	    
             if (e.response.results) {
@@ -212,33 +179,63 @@ YUI.add('wegas-datasourcerest', function(Y) {
     Y.namespace('Plugin').DataSourceREST = DataSourceREST;
     
     
-    DataSourceVariableDescriptorREST = function() {
-        DataSourceVariableDescriptorREST.superclass.constructor.apply(this, arguments);
+    VariableDescriptorDataSourceREST = function() {
+        VariableDescriptorDataSourceREST.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(DataSourceVariableDescriptorREST, {
+    Y.mix(VariableDescriptorDataSourceREST, {
         NS: "rest",
-        NAME: "DataSourceVariableDescriptorREST"
+        NAME: "VariableDescriptorDataSourceREST"
     });
 
-    Y.extend(DataSourceVariableDescriptorREST, DataSourceREST, {
+    Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
         
-        /* getRequest: function(request) {
-            DataSourceVariableDescriptorREST.superclass.getRequest.call(this, request);
-           // "rs/gm/1/vardesc
-        },*/
-        post: function(data) {
-            /* switch (data['@class']) {
-                case 'ListVariableDescriptor':
-                    data['defaultVariableInstance'] = data.defaultListVariableInstance;
+        _beforeDefResponseFn: function(e) {
+            var data = this.get('host').data;                                        // Treat reply
+            for (var i=0;i<e.response.results.length;i++) {
+                var cEl = e.response.results[i];
+                if (!cEl) {
+                } else if (cEl['@class'] == "StringVariableInstance" ||
+                    cEl['@class'] == "NumberVariableInstance"||
+                    cEl['@class'] == "MCQVariableInstance")  {
+                        
+                    Y.Array.each(data, function(o, index, a) {
+                        for (var i in o.scope.variableInstances) {
+                            if (o.scope.variableInstances[i].id == cEl.id) {
+                                o.scope.variableInstances[i] = Y.merge(o.scope.variableInstances[i], cEl);                                
+                            }
+                        }
+                    });
+                } else {
+                    var loaded = false;
+                    Y.Array.each(data, function(o, index, a) {
+                        if (o.id == cEl.id) {
+                            a[index] = Y.merge(o, cEl);
+                            loaded = true
+                        }
+                    });
+                    if (!loaded) data.push(cEl);
+                        
+                }
+            }
+            e.response.results = data;
+        },
+        put: function(data) {
+            var request = (data.id)?"/"+data.id:"";
+            
+            switch (data['@class']) {
+                case 'StringVariableInstance' :
+                case 'MCQVariableInstance' :
+                case 'NumberVariableInstance' :
+                    
+                    request = '/1/varinst/'+data.id;
                     break;
-                case 'StringVariableDescriptor':
-                    data['defaultVariableInstance'] = data.defaultStringVariableInstance;
-                    break;
-            };
-            delete data.defaultListVariableInstance;
-            delete data.defaultStringVariableInstance;*/
-            DataSourceVariableDescriptorREST.superclass.post.call(this, data);
+            }
+            
+            GameModelDataSourceREST.superclass.put.call(this, data, request);
+        },
+        getInstanceById: function(id) {
+            return this.getInstanceBy('id', id);
         },
         getInstanceBy: function(key, val) {
             var el = this.getCachedVariableBy(key, val);
@@ -258,11 +255,62 @@ YUI.add('wegas-datasourcerest', function(Y) {
         }
     });
     
-    Y.namespace('Plugin').DataSourceVariableDescriptorREST = DataSourceVariableDescriptorREST;
+    Y.namespace('Plugin').VariableDescriptorDataSourceREST = VariableDescriptorDataSourceREST;
+    
+    
+    GameModelDataSourceREST = function() {
+        GameModelDataSourceREST.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(GameModelDataSourceREST, {
+        NS: "rest",
+        NAME: "GameModelDataSourceREST"
+    });
+
+    Y.extend(GameModelDataSourceREST, DataSourceREST, {
+        _beforeDefResponseFn: function(e) {
+            var data = this.get('host').data;                                        // Treat reply
+            for (var i=0;i<e.response.results.length;i++) {
+                var cEl = e.response.results[i];
+                if (!cEl) {
+                    
+                } else  if (cEl['@class'] == "Team" )  {
+                    Y.Array.each(data, function(o, index, a) {
+                        for (var i in o.teams) {
+                            if (o.teams[i].id == cEl.id) {
+                                o.teams[i] = Y.merge(o.teams, cEl);                                
+                            }
+                        }
+                    });
+                } else {
+                    var loaded = false;
+                    Y.Array.each(data, function(o, index, a) {
+                        if (o.id == cEl.id) {
+                            a[index] = Y.merge(o, cEl);
+                            loaded = true
+                        }
+                    });
+                    if (!loaded) data.push(cEl);
+                        
+                }
+            }
+            e.response.results = data;
+        },
+        put: function(data) {
+              
+            if (data['@class'] == 'Team' ) {
+                request = '/1/team/'+data.id;
+            }
+            
+            GameModelDataSourceREST.superclass.put.call(this, data, request);
+        }
+    });
+    
+    Y.namespace('Plugin').GameModelDataSourceREST = GameModelDataSourceREST;
     	
     /** 
- * FIXME We redefine this so we can use a "." selector and a "@..." field name
- */
+         * FIXME We redefine this so we can use a "." selector and a "@..." field name
+         */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],
@@ -326,7 +374,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         return e.tId;
     }
     
-    // FIXME we rewrite this function, needs to be overriden
+    // @FIXME We rewrite this function, should be overriden
     Y.DataSchema.JSON._parseResults = function(schema, json_in, data_out) {
         var results = [],
         path,

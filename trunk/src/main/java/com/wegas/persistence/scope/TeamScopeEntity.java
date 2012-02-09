@@ -9,6 +9,7 @@
  */
 package com.wegas.persistence.scope;
 
+import com.wegas.ejb.AnonymousEntityManager;
 import com.wegas.persistence.AnonymousEntity;
 import com.wegas.persistence.GameModelEntity;
 import com.wegas.persistence.TeamEntity;
@@ -16,7 +17,6 @@ import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -84,7 +84,7 @@ public class TeamScopeEntity extends ScopeEntity {
      * 
      */
     @Override
-    public void reset() {
+    public void reset(AnonymousEntityManager aem) {
         this.propagateDefaultVariableInstance(true);
         //        throw new UnsupportedOperationException("Not supported yet.");
     }

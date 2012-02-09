@@ -64,7 +64,7 @@ YUI.add('wegas-app', function(Y) {
         _requestDataSources: function() {
             for (var k in this.dataSources) {
                 this.dataSources[k].sendRequest({
-                    request: "/"
+                    request: ""
                 });
             }
         },

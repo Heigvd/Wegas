@@ -9,6 +9,7 @@
  */
 package com.wegas.persistence.scope;
 
+import com.wegas.ejb.AnonymousEntityManager;
 import com.wegas.persistence.AnonymousEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
@@ -44,7 +45,7 @@ public class GameModelScopeEntity extends ScopeEntity {
      */
     @Override
     @XmlTransient
-    public void reset() {
+    public void reset(AnonymousEntityManager aem) {
         this.propagateDefaultVariableInstance(true);
     }
 

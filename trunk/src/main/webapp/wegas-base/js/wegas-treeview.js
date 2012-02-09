@@ -5,7 +5,6 @@
 YUI.add('wegas-treeview', function(Y) {
     
     var CONTENTBOX = 'contentBox',
-    BOUNDINGBOX = 'boundingBox',
     YAHOO = Y.YUI2,
     WTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 	
@@ -48,7 +47,7 @@ YUI.add('wegas-treeview', function(Y) {
                 Y.Wegas.editor.edit(node.data, function(cfg) {
                     this._dataSource.rest.put(cfg);
                 }, null, this);
-                YAHOO.log(node.index + " label was clicked", "info", "example"); 
+                YAHOO.log(node.index + " label was clicked", "info", "Wegas.WTreeView"); 
                 return false;
             }, null, this); 
         },
@@ -68,10 +67,11 @@ YUI.add('wegas-treeview', function(Y) {
                     break;
                     
                 case 'MCQVariableInstance' :
+                    var l = label+((el.replies.length >0)?': '+el.replies[0].name:': unanswered');
                     return {
                         type:'Text',
-                        label: label+': not replied',
-                        title: label+': not replied',
+                        label: l,
+                        title: l,
                         data: el
                     }
                     break;
@@ -85,6 +85,62 @@ YUI.add('wegas-treeview', function(Y) {
                     break;
                     
             }
+        },
+        _genPageTreeViewElements: function(elts) {
+            var type2text = {
+                PMGChoiceDisplay: "Choice displayer"
+            }, ret = [];
+            for (var j=0; j<elts.length;j++) {
+                el = elts[j];
+                var text = (type2text[el.type] || el.type)+': '+(el.label || el.name || el.id || 'unnamed');
+                switch (el.type) {
+                    case 'List':
+                        ret.push( {
+                            type:'Text',
+                            label:'List: '+ (el['label'] || 'unnamed'),
+                            title: 'List: '+ (el['label'] || 'unnamed'), 
+                            data: el,
+                            children:this._genPageTreeViewElements(el.children)
+                        });
+                        break;
+                    case 'VariableDisplay':
+                        var text = 'Variable displayer: '+(el.variable);
+                        ret.push( {
+                            type:'Text',
+                            label:text,
+                            title: text, 
+                            data: el
+                        });
+                        break;
+                    case 'Text':
+                        ret.push( {
+                            type:'Text',
+                            label: 'Text: '+el.content.substring(0, 15)+"...",
+                            title: el.content, 
+                            data: el
+                        });
+                        break;
+                    case 'Button':
+                        ret.push( {
+                            type:'Text',
+                            label:text,
+                            title: text, 
+                            data: el,
+                            children:this._genPageTreeViewElements([el.subpage])
+                        });
+                        break;
+                    default:
+                        ret.push( {
+                            type:'Text',
+                            label:text,
+                            title: text, 
+                            data: el
+                        });
+                        break;
+                            
+                }
+            }
+            return ret;
         },
         _genScopeTreeViewElements: function(el) {
             var children=[];
@@ -124,7 +180,7 @@ YUI.add('wegas-treeview', function(Y) {
                             type:'Text',
                             label:'Team: '+el['name'],
                             title: 'Team: '+el['name'], 
-                            expanded:true, 
+                            expanded:false, 
                             children: this._genTreeViewElements(el.users),
                             data: el
                         })
@@ -140,30 +196,58 @@ YUI.add('wegas-treeview', function(Y) {
                     case 'StringVariableDescriptor':
                     case 'NumberVariableDescriptor':
                     case 'ListVariableDescriptor':
-                    default:
-                        
-                        if (el['@class'] in this.get('includeClasses')) {
+                    case 'MCQVariableDescriptor':
+                        if ((this.get('includeClasses')== null) || (el['@class'] in this.get('includeClasses'))) {
                             var text = (class2text[el['@class']] || el['@class'])+': '+el['name'];
                             ret.push( {
                                 type:'Text',
                                 label: text,
                                 title: text,
-                                expanded:false, 
                                 children: this._genScopeTreeViewElements(el),
                                 data: el
                             });
                         }
                         break;
-                /* case 'StringVariableInstance':
-                        var user = Y.Wegas.app.dataSources.User.rest.getCachedVariableById(i);
-                        
+                    case 'Page':
+                        var text = 'Page: '+el['label'];
                         ret.push( {
                             type:'Text',
-                            label: user.name+': '+el['content'],
-                            title: user.name+': '+el['content'],
+                            label: text,
+                            title: text,
+                            expanded:true, 
+                            children: this._genPageTreeViewElements(el.children),
                             data: el
                         });
-                        break;*/
+                        break;
+                        
+                    case 'GameModel':
+                        var text = 'Game model: '+el['name'];
+                        ret.push( {
+                            type:'Text',
+                            label: text,
+                            title: text,
+                            expanded:true, 
+                            children: [{
+                                type:'Text',
+                                label: "Game: default game",
+                                title: "Game: default game",
+                                expanded:true, 
+                                children: this._genTreeViewElements(el.teams),
+                                data: el
+                            }],
+                            data: el
+                        });
+                        break;
+                        
+                    default:
+                        var text = (class2text[el['@class']] || el['@class'])+': '+el['name'];
+                        ret.push( {
+                            type:'Text',
+                            label: text,
+                            title: text,
+                            data: el
+                        });
+                        break;
                 }
             }
             return ret;
@@ -172,15 +256,14 @@ YUI.add('wegas-treeview', function(Y) {
     }, {
         ATTRS : {
             classTxt: {
-                value: 'rootClass'
+                value: 'TreeView'
             },
             type: {
                 value: "TreeView"
             },
             includeClasses: {
-                value: {}
+                value: null
             },
-            rootClass: {},
             dataSource: {}
         }
     });

@@ -18,8 +18,9 @@ YUI.add('wegas-editor', function(Y) {
         /*********************************************************************** INITIALIZE EDITION TAB */
         edit: function(data, callback, formFields, scope) {
             
-            var widget = Y.Widget.getByNode('#rightTabView')
-            // var widget = Y.Widget.getByNode('#centerTabView'),
+            var widget = Y.Widget.getByNode('#rightTabView');
+            // var widget = Y.Widget.getByNode('#centerTabView');
+            
             if (!this._tab) {
                 this._tab = widget.add({
                     type: "Tab",
@@ -36,8 +37,11 @@ YUI.add('wegas-editor', function(Y) {
             node.setStyle('padding-right', '5px');
             data = data || {};
 	    
-            if (!formFields) {
+            if (!formFields) {                                                  // If no form is provided, we select one based on the @class
                 formFields = Y.Wegas.app.get('forms')[data['@class']]
+            }
+            if (!formFields) {                                                  // Or the type
+                formFields = Y.Wegas.app.get('forms')[data['type']]
             }
 	    
             if (this._form)  this._form.destroy();

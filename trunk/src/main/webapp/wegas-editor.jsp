@@ -67,7 +67,7 @@
             ],
             Config = {
                 base : 'http://localhost:8080/Wegas/',
-                layoutSrc: 'wegas-editor/db/editor-layout.json',
+                layoutSrc: 'wegas-editor/db/wegas-editor-layout.json',
                 lang : 'en-US',
                 debug : true,
                 currentGameModel: 1,
@@ -76,15 +76,29 @@
                 loggedIn : true,
                 css: ['wegas-projectmanagementgame/assets/wegas-projectmanagementgame.css'],
                 dataSources: {
-                    gameModel: {
+                    GameModel: {
                         source: "rs/gm",
                         plugins: [
                             {
                                 fn: "DataSourceJSONSchema", 
                                 cfg: {
                                     schema: {
-                                        resultListLocator: ".",
-                                        resultFields: ["name", "id", "@class", "errors"]
+                                        resultListLocator: "."
+                                       // resultFields: ["name", "id", "@class", "errors"]
+                                    }
+                                }
+                            }, { fn: "GameModelDataSourceREST" }
+                        ]
+                    },
+                    "Page": {
+                        source: "wegas-projectmanagementgame/db/wegas-pmg-pages.json",
+                        plugins: [
+                            {
+                                fn: "DataSourceJSONSchema", 
+                                cfg: {
+                                    schema: {
+                                        resultListLocator: "."
+                                        //resultFields: ["name", "id", "@class"]
                                     }
                                 }
                             }, { fn: "DataSourceREST" }
@@ -126,7 +140,7 @@
                                         resultListLocator: "."
                                     }
                                 }
-                            }, { fn: "DataSourceVariableDescriptorREST" }
+                            }, { fn: "VariableDescriptorDataSourceREST" }
                         ]
                     }
                 },
@@ -201,7 +215,14 @@
                         { name: 'scope', type:'group', fields: ScopeForm},
                         { name: 'name', label:'Name', required: true},
                         { name: 'label', label:'Label'},
-                        { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '100px', autoHeight: true, dompath: false }},
+                        { name: 'allowMultipleReplies', 'label': 'Allow multiple replies', type: 'boolean', value: false},
+                        { name:'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'MCQVariableInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'},
+                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true}
+                            ]},
+                        { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},                                           
+                        //{ name: 'description', 'type': 'text', label:'Description', opts: {"width":"100%", height: '100px', autoHeight: true, dompath: false }},                                           
                         {
                             type: 'list',
                             name: 'replies',
@@ -211,21 +232,76 @@
                                     { name: 'id', type: 'hidden'},
                                     { name: '@class', type: 'hidden', value: 'MCQVariableDescriptorReply'},
                                     { name: 'name', label:'Name', required: true},
-                                    /*    { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},*/
-                                    { name: 'description', 'type': 'text', label:'Description'},
+                                    { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
+                                    { name: 'answer', 'type': 'html', label:'Answer', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
                                     { name: 'impact', 'type': 'text', label:'Impact', rows: 3},  
                                 ]},
                             useButtons: true
-                        },
-                        { name:'defaultVariableInstance', type:'group', fields: [
-                                { name: '@class', value:'MCQVariableInstance', type: 'hidden'},
-                                { name: 'id', type: 'hidden'}
-                            ]}
+                        }
                     ],
                     "MCQVariableInstance": [
                         { name: '@class', value:'MCQVariableInstance', type: 'hidden'},
                         { name: 'id', type: 'hidden'},
-                        { name: 'active', type: 'bool'}
+                        { name: 'active', 'label': 'Active', type: 'boolean', value: true}
+                    ],
+                    
+                    
+
+                    /*********************************************************** Widgets Forms */
+                    List: [
+                        { name: 'label', label: 'Label'},
+                        { name: 'direction', label: 'Direction', type: 'select', choices: [  
+                                { value: 'vertical', label: 'Vertical' }, 
+                                { value: 'horizontal', label: 'Horizontal' } 
+                            ] }, 
+                        { name: 'cssClass', label: 'CSS class'},
+                        { name: 'type', value:'List:', type: 'hidden'}
+                    ],
+                    VariableDisplay: [
+                        { name: 'label', label: 'Label'},
+                        { name: 'variable', label: 'Target variable'},		
+                        { name: 'view', label: 'Display mode', type: 'select', choices: [  
+                                { value: 'text', label: 'Text' }, 
+                                { value: 'button', label: 'Boxes' }, 
+                                { value: 'gauge', label: 'Gauge' } 
+                            ] }, 
+                        { name: 'cssClass', label: 'CSS class'},
+                        { name: 'type', value:'VariableDisplay:', type: 'hidden'}
+                    ],
+                    Button: [
+                        /*{ name: 'name', label: 'Name'},*/
+                        { name: 'label', label: 'Label'},
+                        /*{ name: 'targetArea', label: 'Targeted dynamic area element', metatype: 'widgetselect', targetType: 'AlbaDisplayAreaWidget' },
+                        { name: 'targetSubpageId', label: 'Page fragment to display', metatype: 'subpageselect'},
+                        { name: 'isStoryEvent', label: 'Sends story event', type: 'boolean'},
+                        { name: 'inputAction', label: 'On click', type:'text', rows: 8, cols: 60 },*/
+                        { name: 'view', label: 'Display mode', type: 'select', choices: [  
+                                { value: 'text', label: 'Text' }, 
+                                { value: 'button', label: 'Button' } 
+                            ] }, 
+                        { name: 'cssClass', label: 'CSS class'},
+                        { name: 'type', value:'Button', type: 'hidden'}
+                    ],
+                    Text: [
+                        { name: 'content', 'type': 'html', label:'Description', opts: {width:'100%', height: '250px', autoHeight: true, dompath: false}},
+                        { name: 'cssClass', label: 'CSS class'},
+                        { name: 'type', value:'Text', type: 'hidden'}
+                    ],
+                    DisplayArea:[
+                        { name: 'cssClass', label: 'CSS class'},
+                        { name: 'type', value:'DisplayArea', type: 'hidden'}
+                    ],
+                    TabView: [
+                        { name: 'cssClass', label: 'CSS class'},
+                        { name: 'type', value:'TabView', type: 'hidden'}
+                    ],
+                    Tab: [
+                        { name: 'cssClass', label: 'CSS class'},
+                        { name: 'type', value:'Tab', type: 'hidden'}
+                    ],
+                    PMGChoiceDisplay: [
+                        { name: 'cssClass', label: 'CSS class'},
+                        { name: 'type', value:'PMGChoiceDisplay', type: 'hidden'}
                     ]
                 }
             };

@@ -9,7 +9,6 @@ YUI.add('wegas-widgetloader', function(Y) {
     
     WidgetLoader = Y.Base.create("wegas-widgetloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget], {
         
-        _widgetCfg: null,
         _widget: null,
 	
         initializer: function(cfg) {
@@ -17,31 +16,29 @@ YUI.add('wegas-widgetloader', function(Y) {
         destroyer: function() {
         },
         renderUI: function () {
-            var request = Y.io(Y.Wegas.app.get('base')+this.get('layourUrl')+'?id='+Y.Wegas.App.genId(), {
-                context: this,
-                on: {
-                    success: function(id, o, args) {
-                        Y.log("renderUI().onWidgetReloadContentReceived():"+  o.responseText, 'log', 'Wegas.WidgetLoader');
-                        try {
-                            this._widgetCfg = Y.JSON.parse(o.responseText);				// Process the JSON data returned from the server
-                        } catch (e) {
-                            Y.log("renderUI(): JSON parsing failed: "+e.message, 'error', 'Wegas.WidgetLoader');
-                            return;
-                        }
-                        this._widget = Y.Wegas.Widget.create(this._widgetCfg);
-                        
-                        try {
-                            this._widget.render(this.get(CONTENTBOX));
-                        } catch (e) {
-                            Y.log('renderUI(): Error rendering widget: '+e.stack, 'error', 'Wegas.WidgetLoader');
-                        }
-                    }
-                }
-            });
         },
         bindUI: function() {
+            Y.Wegas.app.dataSources.Page.after("response", function(e) {
+                this.syncUI();
+            }, this);
         },
         syncUI: function() {
+            var widgetCfg = Y.Wegas.app.dataSources.Page.rest.getCachedVariableById(this.get("pageId"));
+            
+            this.get(CONTENTBOX).empty();
+            
+            if (!widgetCfg) {
+                this.get(CONTENTBOX).setContent("No widget to display here.");
+                return;
+            }
+           
+            this._widget = Y.Wegas.Widget.create(widgetCfg);
+                        
+            try {
+                this._widget.render(this.get(CONTENTBOX));
+            } catch (e) {
+                Y.log('renderUI(): Error rendering widget: '+(e.stack || e ), 'error', 'Wegas.WidgetLoader');
+            }
         }
     }, {
         ATTRS : {
@@ -51,7 +48,7 @@ YUI.add('wegas-widgetloader', function(Y) {
             type: {
                 value: "WidgetLoader"
             },
-            layourUrl: {}
+            pageId: {}
         }
     });
      

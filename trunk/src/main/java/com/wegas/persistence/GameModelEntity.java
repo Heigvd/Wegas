@@ -9,6 +9,7 @@
  */
 package com.wegas.persistence;
 
+import com.wegas.ejb.AnonymousEntityManager;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 
 import java.io.Serializable;
@@ -160,9 +161,9 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     /**
      * 
      */
-    public void reset() {
+    public void reset(AnonymousEntityManager aem) {
         for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
-            vd.getScope().reset();
+            vd.getScope().reset(aem);
         }
     }
 }

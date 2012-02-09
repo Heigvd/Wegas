@@ -19,11 +19,6 @@ YUI.add('wegas-datatable', function(Y) {
 	
 	renderUI: function () {
 	    var cb = this.get(CONTENTBOX);
-	  
-	    this._pushButton = new YAHOO.widget.Button({			//Instantiate the "New" button
-		label:"New", 
-		container:cb._node
-	    });
 	    
 	    this._table = new Y.DataTable.Base({				// Instantiate the data table
 		columnset: this.get('columnset'),
@@ -42,14 +37,6 @@ YUI.add('wegas-datatable', function(Y) {
 		    records:e.response.results
 		}));
 	    }, this);
-	    
-	    this._pushButton.on("click", function() {				// New button click event
-		Y.Wegas.editor.edit({
-		    "@class": "GameModel"
-		}, function(cfg) {
-		    that._dataSource.rest.post(cfg);
-		});
-	    }, null, this);
 	    
 	    Y.delegate('click', function(e) {					// Listen for click events on the table  
 		var target = e.currentTarget,

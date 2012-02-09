@@ -60,13 +60,12 @@ public class GameModelManager {
      * @todo security + acl
      * @return  list of game model
      */
-    public Collection<IndexEntry> getGameModels() {
+    public Collection<GameModelEntity> getGameModels() {
         CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
         cq.select(cq.from(GameModelEntity.class));
         Query q = em.createQuery(cq);
-        List<GameModelEntity> resultList = q.getResultList();
-
-        return AlbaHelper.getIndex(resultList);
+        return q.getResultList();
+        //return AlbaHelper.getIndex(resultList);
     }
 
 
@@ -152,7 +151,8 @@ public class GameModelManager {
     public GameModelEntity reset(Long gameModelId) {
         
         GameModelEntity gm = this.getGameModel(gameModelId);
-        gm.reset();
+        gm.reset(aem);
+        aem.update(gm);
         return gm;
     }
 

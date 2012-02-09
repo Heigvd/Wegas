@@ -9,6 +9,7 @@
  */
 package com.wegas.persistence.scope;
 
+import com.wegas.ejb.AnonymousEntityManager;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import com.wegas.persistence.*;
@@ -85,7 +86,7 @@ public abstract class ScopeEntity extends AnonymousEntity implements Serializabl
      * 
      */
     @XmlTransient
-    abstract public void reset();
+    abstract public void reset(AnonymousEntityManager aem);
 
     /*@OneToOne
     @JoinColumn(name = "variabledescriptor_id")
