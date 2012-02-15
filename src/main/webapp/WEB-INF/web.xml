@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <module-name>Wegas</module-name>
+    <description>Web Game Authoring System</description>
+    <display-name>Web Game Authoring System</display-name>
+    <distributable/>
+    
+    <!-- Apache Shiro Listener -->
+    <listener>
+        <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+    </listener>
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    <filter>
+        <filter-name>ShiroFilter</filter-name>
+        <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ShiroFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- REST Servlet -->
+    <servlet>
+        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey Web Application</servlet-name>
+        <url-pattern>/rs/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Login page -->
+    <servlet>
+        <servlet-name>Wegas Login</servlet-name>
+        <jsp-file>/wegas-app/jsp/wegas-login.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Wegas Login</servlet-name>
+        <url-pattern>/wegas-login</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Lobby page -->
+    <servlet>
+        <servlet-name>Wegas Lobby</servlet-name>
+        <jsp-file>/wegas-app/jsp/wegas-lobby.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Wegas Lobby</servlet-name>
+        <url-pattern>/wegas-lobby</url-pattern>
+    </servlet-mapping>
+    
+    <!-- App page -->
+    <servlet>
+        <servlet-name>Wegas App</servlet-name>
+        <jsp-file>/wegas-app/jsp/wegas-app.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Wegas App</servlet-name>
+        <url-pattern>/wegas-app</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Editor page -->
+    <servlet>
+        <servlet-name>Wegas Editor</servlet-name>
+        <jsp-file>/wegas-editor/jsp/wegas-editor.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Wegas Editor</servlet-name>
+        <url-pattern>/wegas-editor</url-pattern>
+    </servlet-mapping>
+    
+    
+    <!-- Atmosphere Servlet -->
+   <!-- <servlet>
+        <description>AtmosphereServlet</description>
+        <servlet-name>AtmosphereServlet</servlet-name>
+        <servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class>
+        <init-param>
+            <param-name>org.atmosphere.useWebSocket</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.useNative</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.cpr.broadcastFilterClasses</param-name>
+            <param-value>org.atmosphere.client.JSONPTransportFilter</param-value>
+        </init-param>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AtmosphereServlet</servlet-name>
+        <url-pattern>/atmosphere/*</url-pattern>
+    </servlet-mapping>-->
+     
+    <!-- Wegas Listener -->
+    <!--<listener>
+        <listener-class>com.wegas.tools.RequestListener</listener-class>
+    </listener>-->   
+    
+    <!--
+    <servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>com.albasim.wegas.admin.AdminServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/admin</url-pattern>
+    </servlet-mapping>-->
+    <!-- <filter>
+        <filter-name>FacebookUserFilter</filter-name>
+        <filter-class>com.albasim.session.facebook.FacebookUserFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>FacebookUserFilter</filter-name>
+        <url-pattern>/facebooktest/*</url-pattern>
+    </filter-mapping>-->
+    <!-- <security-role-mapping>
+        <role-name>loginUser</role-name>
+        <group-name>admin</group-name>
+    </security-role-mapping>-->
+</web-app>

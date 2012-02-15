@@ -1,7 +1,8 @@
 # Compiled source #
 ###################
 *.class
-trunk/target/*
-trunk/catalog.xml
-trunk/nb-configuration.xml
+target/*
+!target/Wegas.war
+catalog.xml
+nb-configuration.xml
 **Thumbs.db
