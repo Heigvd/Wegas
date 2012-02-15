@@ -1,1 +1,0 @@
-YUI.add("inputex-panel",function(a){a.inputEx.Panel=a.Base.create("panel",a.Panel,[a.inputEx.Base])},"3.0.0a",{requires:["inputex","panel","inputex-base"]});
