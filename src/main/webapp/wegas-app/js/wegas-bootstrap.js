@@ -113,7 +113,7 @@ var Y = YUI({
                 'wegas-editor': {
                     path: 'wegas-editor/js/wegas-editor.js',
                     requires: [
-                    'wegas-inputex', 'wegas-app', 'wegas-treeview', 'wegas-logger', 'wegas-csseditor',
+                    'wegas-inputex', 'wegas-app', 'wegas-treeview', 'wegas-logger', 'wegas-csseditor', 'wegas-editmenu'
                     /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                     //'wegas-editorcss'
                     ]
@@ -139,6 +139,11 @@ var Y = YUI({
                 'wegas-csseditor': {
                     path: 'wegas-editor/js/wegas-csseditor.js'
                 },
+                'wegas-editmenu': {
+                    path: 'wegas-editor/js/wegas-editmenu.js',
+                    requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack']
+                },
+                
                 
                 /************************************************************** PMG */
                 'wegas-projectmanagementgame': {

@@ -39,7 +39,7 @@ import javax.ws.rs.core.Response;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("gm/{gameModelId : [1-9][0-9]*}/game/{gameId : [1-9][0-9]*}/team")
+@Path("gm/{gameModelId : [1-9][0-9]*}/game/{gameId : [1-9][0-9]*}/Team")
 public class TeamController {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM");
@@ -84,10 +84,8 @@ public class TeamController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public TeamEntity create(@PathParam("gameModelId") Long gameModelId, TeamEntity team) {
-        GameModelEntity gm = gmm.getGameModel(gameModelId);
-//        team.setGameModel(gm);
-        te.createTeam(team);
+    public TeamEntity create(@PathParam("gameId") Long gameId, TeamEntity team) {
+        te.createTeam(gameId, team);
         return team;
     }
 
@@ -118,7 +116,7 @@ public class TeamController {
     public TeamEntity addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long userId) {
         return te.addUser(teamId, userId);
     }
-    
+
     /**
      * 
      * @param teamId 

@@ -72,13 +72,14 @@
                 }
             ],
             Config = {
-                base : 'http://localhost:8080/Wegas/',
+                base : 'http://localhost:8080/com.albasim_wegas_war_0.2',
                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                 lang : 'en-US',
                 debug : true,
                 currentGameModel: 1,
-                currentTeamId: 1,
-                currentUserId: 1,
+                currentGame: 1,
+                currentTeam: 1,
+                currentPlayer: 1,
                 loggedIn : true,
                 css: ['wegas-projectmanagementgame/assets/wegas-projectmanagementgame.css'],
                 dataSources: {
@@ -124,7 +125,7 @@
                         ]
                     },
                     "Team": {
-                        source: "rs/gm/1/team",
+                        source: "rs/gm/1/Team",
                         plugins: [
                             {
                                 fn: "DataSourceJSONSchema", 

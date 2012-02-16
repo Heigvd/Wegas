@@ -6,6 +6,8 @@ YUI.add('wegas-treeview', function(Y) {
     
     var CONTENTBOX = 'contentBox',
     YAHOO = Y.YUI2,
+    EDITBUTTONTPL = "<span class=\"yui3-wegas-treeview-editmenubutton\"></span>",
+    
     WTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 	
         _dataSource: null,
@@ -21,14 +23,12 @@ YUI.add('wegas-treeview', function(Y) {
 	
         renderUI: function () {  
             var cb = this.get(CONTENTBOX),
-            el = new Y.Node.create('<div></div>');
+            node = cb.append('<div></div>');
                 
-            cb.appendChild(el);
             
-            this._treeView = new YAHOO.widget.TreeView(el._node);
             
+            this._treeView = new YAHOO.widget.TreeView(node._node);
             this._treeView.singleNodeHighlight = true; 
-            this._treeView.subscribe('clickEvent', this._treeView.onEventToggleHighlight); 
             this._treeView.render();
         },
         
@@ -46,19 +46,23 @@ YUI.add('wegas-treeview', function(Y) {
                 //return false;
             });*/
             
-            this._treeView.subscribe("labelClick", function(node) { 
-                YAHOO.log(node.index + " label was clicked", "info", "Wegas.WTreeView"); 
-                Y.Wegas.editor.edit(node.data, function(cfg) {
-                    this._dataSource.rest.put(cfg);
-                }, null, this);
-                
-                var _parentTab = Y.Widget.getByNode(this.get(CONTENTBOX).ancestor(".yui3-tabview-content")).get("selection");
-                console.log(this._parentTab);
-            //  return false;
+            this._treeView.subscribe("clickEvent", function(e) { 
+                YAHOO.log(e.node.index + " label was clicked", "info", "Wegas.WTreeView");    
+                if (e.event.target.className == "yui3-wegas-treeview-editmenubutton") {
+                    Y.Wegas.editor.showEditMenu(e.node.data, this._dataSource);
+                    Y.Wegas.editor._editMenu.get("boundingBox").appendTo(e.event.target.parentNode);
+                    Y.Wegas.editor._editMenu.set("align", {node:e.event.target, points:["tr", "br"]});
+                }else {
+                    Y.Wegas.editor.edit(e.node.data, function(cfg) {
+                        this._dataSource.rest.put(cfg);
+                    }, null, this);
+                }
             }, null, this);
+            this._treeView.subscribe('clickEvent', this._treeView.onEventToggleHighlight); 
             
-           // this._parentTab = Y.Widget.getByNode(this.get(CONTENTBOX).ancestor(".yui3-tabview-content")).get;
-           // console.log(this._parentTab);
+            this.get(CONTENTBOX).delegate('mouseleave', function(){
+                 Y.Wegas.editor._editMenu.hide();
+            }, '.ygtvrow');
         },
         syncUI: function() {
         },
@@ -228,30 +232,33 @@ YUI.add('wegas-treeview', function(Y) {
                     case 'Game':
                         text = 'Game: '+el['name']+' (token:'+el.token+')';
                         ret.push( {
-                            type:'Text',
-                            label: text,
+                            type: 'html',
+                            html: text+EDITBUTTONTPL,
                             title: text,
                             expanded:true, 
                             children: this._genTreeViewElements(el.teams),
-                            data: el
+                            data: el,
+                            contentStyle: this.getClassName('icon-game')
                         });
                         break;
                     case 'Team':
                         ret.push( {
-                            type:'Text',
-                            label:'Team: '+el['name'],
+                            type:'html',
+                            html:'Team: '+el['name'],
                             title: 'Team: '+el['name'], 
                             expanded:false, 
                             children: this._genTreeViewElements(el.players),
-                            data: el
+                            data: el,
+                            contentStyle: this.getClassName('icon-team')
                         })
                         break;
                     case 'Player':
                         ret.push( {
-                            type:'Text',
-                            label:'Player: '+el['name'],
+                            type:'html',
+                            html:'Player: '+el['name'],
                             title: 'Player: '+el['name'],
-                            data: el
+                            data: el,
+                            contentStyle: this.getClassName('icon-player')
                         })
                         break;
                     default:

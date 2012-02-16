@@ -28,6 +28,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -88,7 +89,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     @Override
     public void merge(AnonymousEntity n) {
         super.merge(n);
-        GameEntity g = (GameEntity)n;
+        GameEntity g = (GameEntity) n;
         this.setToken(g.getToken());
     }
 
@@ -106,6 +107,12 @@ public class GameEntity extends NamedEntity implements Serializable {
     @JsonManagedReference("game-team")
     public void setTeams(List<TeamEntity> teams) {
         this.teams = teams;
+    }
+
+    @XmlTransient
+    public void addTeam(TeamEntity t) {
+        this.teams.add(t);
+        t.setGame(this);
     }
 
     /**

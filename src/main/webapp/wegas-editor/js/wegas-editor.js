@@ -7,15 +7,29 @@ YUI.add('wegas-editor', function(Y) {
 	
         _tab: null,
         _form: null,
+        _editMenu: null,
+        
         initializer: function(){
             Y.Wegas.editor = this;
+            this._editMenu = new Y.Wegas.EditMenu({
+                zIndex: 2, 
+                render: true, 
+                visible: true
+            });
         },
         destructor : function(){
         },
-	
+        showEditMenu: function(data, dataSource) {
+            var menuItems = this.get("editorMenus")[data["@class"]];
+            if (!menuItems) {
+                Y.log('error', 'Menu items are undefined.', "Wegas.Editor");
+                return;
+            }
+            this._editMenu.setMenuItems(data, dataSource);
+            this._editMenu.show();
+        },
         /*********************************************************************** INITIALIZE EDITION TAB */
         edit: function(data, callback, formFields, scope) {
-            
             var widget = Y.Widget.getByNode('#rightTabView'),
             node;
             // var widget = Y.Widget.getByNode('#centerTabView');
@@ -77,6 +91,12 @@ YUI.add('wegas-editor', function(Y) {
                 }
             });
             this._form.setValue(data);
+        }
+    }, {
+        ATTRS: {
+            editorMenus: {
+                value: []
+            }
         }
     });
 	

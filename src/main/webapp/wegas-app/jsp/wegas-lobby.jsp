@@ -36,7 +36,7 @@
             //    Long l = 
             tm.addUser(new Long(request.getParameter("teamwish")), u.getId());
             out.println("teamwish" + request.getParameter("teamwish"));
-%><jsp:forward page="/Wegas/wegas-app" /><%
+%><jsp:forward page="wegas-app" /><%
         } else if (request.getParameter("gametoken") != null) {                 // User has not selected a team
             game = gm.getGameByToken(request.getParameter("gametoken"));
             if (game == null) {

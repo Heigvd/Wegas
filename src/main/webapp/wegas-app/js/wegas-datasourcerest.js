@@ -135,11 +135,12 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             });
         },
-        post: function(data) {
-            var host = this.get('host');
+        post: function(data, parentData) {
+            var host = this.get('host'),
+            request = (parentData)? "/"+parentData.id+"/"+data["@class"] :  "" ;
 	    
             host.sendRequest({
-                //request: (data.id)?"/"+data.id:"",
+                request: request,
                 cfg: {
                     method: "POST",
                     headers: {
@@ -244,10 +245,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
             if (!el) return null;
             switch (el.scope['@class']) {
                 case 'PlayerScope':
-                    return el.scope.variableInstances[Y.Wegas.app.get('currentUserId')];
+                    return el.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
                     break;
                 case 'TeamScope':
-                    return el.scope.variableInstances[Y.Wegas.app.get('currentTeamId')];
+                    return el.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
                     break;
                 case 'GameModelScope':
                 case 'GameScope':
@@ -329,25 +330,28 @@ YUI.add('wegas-datasourcerest', function(Y) {
     Y.extend(GameDataSourceREST, DataSourceREST, {
         _beforeDefResponseFn: function(e) {
             var data = this.get('host').data,                                   // Treat reply
-            cEl, i=0, loaded;
+            cEl, i=0, loaded, game;
             for (;i<e.response.results.length;i++) {
                 cEl = e.response.results[i];
+                loaded = false;
                 if (!cEl) {
                     
                 } else if (cEl['@class'] == "Team" )  {
-                    for (var f=0;f<data.length;f++) {
-                        for (var j=0;j<data[f].teams.length;j++) {
-                            if (data[f].teams[j].id == cEl.id) {
-                                data[f].teams[j] = cEl;
-                            }
+                    game = this.getCachedVariableBy('id', cEl.gameId);
+                    for (var j=0;j<game.teams.length;j++) {
+                        if (game.teams[j].id == cEl.id) {
+                            game.teams[j] = cEl; 
+                            loaded = true;
                         }
                     }
+                    if (!loaded) game.teams.push(cEl);
                 } else if (cEl['@class'] == "Player" )  {
                     for (var f=0;f<data.length;f++) {
                         for (var j=0;j<data[f].teams.length;j++) {
                             for (var k=0;k<data[f].teams[j].players.length;k++) {
                                 if (data[f].teams[j].players[k].id == cEl.id) {
                                     data[f].teams[j].players[k] = cEl;
+                                    loaded = true;
                                 }
                             }
                         }
@@ -370,13 +374,16 @@ YUI.add('wegas-datasourcerest', function(Y) {
               
             if (data['@class'] == 'Team' ) {
                 /* @fixme */
-                request = '/1/team/'+data.id;
+                request = '/'+data.gameId+'/Team/'+data.id;
             } else if (data['@class'] == 'Player' ) {
                 /* @fixme */
                 request = '/1/player/'+data.id;
             }
             
             GameModelDataSourceREST.superclass.put.call(this, data, request);
+        },
+        getCurrentGame: function() {
+            return this.getCachedVariableById(Y.Wegas.app.get('currentGame'));
         }
     });
     

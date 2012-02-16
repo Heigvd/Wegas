@@ -47,8 +47,8 @@
         <script src="lib/inputex/build/loader.js"  type='text/javascript'></script>
 
         <!-- Atmosphere jquery -->
-        <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
-        <script type="text/javascript" src="jquery/jquery.atmosphere.js"></script>
+         <!-- <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
+        <script type="text/javascript" src="jquery/jquery.atmosphere.js"></script>-->
 
 
         <script type="text/javascript" >
@@ -67,14 +67,14 @@
                 }
             ],
             Config = {
-                base : 'http://localhost:8080/Wegas/',
+                base : 'http://localhost:8080/com.albasim_wegas_war_0.2/',
                 layoutSrc: 'wegas-editor/db/wegas-editor-layout.json',
                 lang : 'en-US',
                 debug : true,
                 currentGameModel: 1,
                 currentGame: 1,
-                currentTeamId: 1,
-                currentUserId: 1,
+                currentTeam: 1,
+                currentPlayer: 1,
                 loggedIn : true,
                 css: ['wegas-projectmanagementgame/assets/wegas-projectmanagementgame.css'],
                 dataSources: {
@@ -86,7 +86,7 @@
                                 cfg: {
                                     schema: {
                                         resultListLocator: "."
-                                       // resultFields: ["name", "id", "@class", "errors"]
+                                        // resultFields: ["name", "id", "@class", "errors"]
                                     }
                                 }
                             }, { fn: "GameModelDataSourceREST" }
@@ -100,7 +100,7 @@
                                 cfg: {
                                     schema: {
                                         resultListLocator: "."
-                                       // resultFields: ["name", "id", "@class", "errors"]
+                                        // resultFields: ["name", "id", "@class", "errors"]
                                     }
                                 }
                             }, { fn: "GameDataSourceREST" }
@@ -134,7 +134,7 @@
                         ]
                     },
                     "Team": {
-                        source: "rs/gm/1/team",
+                        source: "rs/gm/1/Team",
                         plugins: [
                             {
                                 fn: "DataSourceJSONSchema", 
@@ -160,8 +160,30 @@
                         ]
                     }
                 },
-                forms: {
+                editorMenus: {
 
+                    /*********************************************************** Entities Admin Menus */
+                    "Game": [
+                        { text: "New team", value: { op:'addChild', childClass: "Team" } }
+                        /*                        {
+                            text: "Edit",
+                            op: 'update',
+                            adminForm: "AlbaListWidget"
+                        },
+                        {
+                            text: "New",
+                            op: "new",
+                            submenu:  {
+                                id: "AlbaListWidgetAdd",
+                                itemdata: [
+                                    
+                                ]
+                            }	
+                        },
+                        { text: "Delete", op: 'delete' }*/
+                    ]
+                },
+                forms: {
                     /*********************************************************** Types Forms */
                     "GameModel" : [ 
                         { name: 'id', type: 'hidden' },
@@ -176,6 +198,7 @@
                     ],
                     "Team" : [ 
                         { name: 'id', type: 'hidden'},
+                        { name: 'gameId', type: 'hidden'},
                         { name: '@class', value:'Team', type: 'hidden'},
                         { name: 'name', label:'Name', required: true},
                         // { name: 'token', label:'Token'},

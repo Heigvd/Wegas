@@ -7,26 +7,25 @@ YUI.add('wegas-tabview', function(Y) {
     
     TabView = Y.Base.create("tabview", Y.TabView , [Y.WidgetChild, Y.Wegas.Widget], {
         
-        }, {
-            ATTRS : {
-                classTxt: {
-                    value: 'Tabview'
-                },
-                type: {
-                    value: "Tabview"
-                }
+    }, {
+        ATTRS : {
+            classTxt: {
+                value: 'Tabview'
+            },
+            type: {
+                value: "Tabview"
             }
-        }),
+        }
+    }),
 	
     Tab = Y.Base.create("tab", Y.Tab , [Y.Wegas.Widget/*, Y.WidgetParent*/], {
+        
         _toolbar: null,
-       
+        
         renderUI: function() {
             Tab.superclass.renderUI.apply(this, arguments);
             
-            // if (this.get('toolbarButtons')) {
             this._renderToolbar();
-            //}
             
             try {
                 var cWidget = new Y.Wegas.List({
@@ -41,17 +40,14 @@ YUI.add('wegas-tabview', function(Y) {
         _renderToolbar: function() {
             var panelNode = this.get('panelNode');
 			
-			
             panelNode.addClass('wegas-tab-hastoolbar');
             panelNode.prepend('<div class="yui-editor-container wegas-tab-toolbar"><div class="first-child"><div></div></div></div><div style="clear:both"></div>');	
-	
-       
         
             this._toolbar = new YAHOO.widget.Toolbar(panelNode.one('.yui-editor-container')._node.firstChild.firstChild, {
                 buttonType: 'advanced',
                 draggable: false,
-                // collapse:, cont:, disabled:,  grouplabels:, titlebar: "test",
                 buttons: this.get('toolbarButtons')
+                // collapse:, cont:, disabled:,  grouplabels:, titlebar: "test",
             });
             if (this.get('toolbarLabel')) {
                 panelNode.one('.yui-toolbar-subcont').setContent('<span class="title">'+this.get('toolbarLabel')+'</span></div>');
@@ -65,42 +61,64 @@ YUI.add('wegas-tabview', function(Y) {
                 // status.innerHTML = 'You clicked on ' + _button.get('label') + ', with the value of ' + ((info.button.color) ? '#' + info.button.color + ' : ' + info.button.colorName : info.button.value);
             
                 switch (button.get('value')) {
-                    case 'selectuser':
-                        newUser = Y.Wegas.app.dataSources.User.rest.getCachedVariableBy('name', e.button.value);
-                        Y.Wegas.app.set('currentUserId', newUser.id )
+                    case 'selectplayer':
+                        nPlayer = Y.Wegas.app.dataSources.Game.rest.getPlayerBy('player');
+                        Y.Wegas.app.set('currentPlayer', nPlayer.id );
                         break;
                     case 'reset':
                         Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest('reset');
                         break;
                     case 'new': {                                               // New button click event
-                        Y.Wegas.editor.edit({
-                            "@class": e.button.data['@class']
-                        }, function(cfg) {
-                            Y.Wegas.app.dataSources[e.button.data['dataSource']].rest.post(cfg);
-                        }, null, this);
-                        break;
-                    }
+                            Y.Wegas.editor.edit({
+                                "@class": e.button.data['@class']
+                            }, function(cfg) {
+                                Y.Wegas.app.dataSources[e.button.data['dataSource']].rest.post(cfg);
+                            }, null, this);
+                            break;
+                        }
                 }
             }, null, this);
             
-            Y.Wegas.app.dataSources.User.after("response", function(e) {
+            Y.Wegas.app.dataSources.Game.after("response", function(e) {
                 var buttons = this._toolbar.getButtons(),
-                menu = [],
-                button, currentUserId, i=0;
+                menu, button, currentPlayerId, i=0, j, k, cGame;
                 if (!buttons) return;
                 
                 for (; i<buttons.length; i++) {
                     button = buttons[i];
                     switch (button.get('value')) {
-                        case 'selectuser':
+                        case 'selectplayer':
                             //if (button.getMenu().getItems().length == 0) return;
-                            currentUserId = Y.Wegas.app.get('currentUserId');
+                            currentPlayerId = Y.Wegas.app.get('currentPlayer');
+                            cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame();
+                            
                             menu = button.getMenu();
-                            k = 0;
-                                
-                            for (;k< menu.getItems().length;k++) {
-                            //  menu.removeItem(0);
+                            menu.clearContent();
+                            for (j=0; cGame.teams && j<cGame.teams.length; j++) {
+                                for (k=0; k<cGame.teams[j].players.length; k++){
+                                    menu.addItem({
+                                        'text': cGame.teams[j].players[k].name
+                                    });
+                                }
                             }
+                            menu.render();
+                            /*menu.addItems([{
+                                    'text':'oo'
+                                }]); 
+                            k = 0;*/
+                            /* button.set('menu', [{
+                                "text": "Francois", 
+                                "checked": true
+                            }])*/
+                            /*
+                            menu.clearContent();
+                            menu.addItems([{
+                                'lable':'oo'
+                            }]);
+                            menu.render();*/
+                            //for (;k< menu.getItems().length;k++) {
+                            //  menu.removeItem(0);
+                            // }
                             /*
                             button.getMenu().addItem( {
                                 "text": "eee",
@@ -120,7 +138,7 @@ YUI.add('wegas-tabview', function(Y) {
                             /*   button.set('type', {
                                 "type": "menu", 
                                 "label": "fx", 
-                                "value": "selectuser", 
+                                "value": "selectplayer", 
                                 "menu": menu
                             });*/
                             //button.getMenu().render();

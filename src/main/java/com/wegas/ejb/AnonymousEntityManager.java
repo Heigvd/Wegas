@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.XmlType;
 public class AnonymousEntityManager {
 
     private static final Logger logger = Logger.getLogger("EJB_GM");
-    
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -60,7 +59,7 @@ public class AnonymousEntityManager {
             StringBuilder builder = new StringBuilder();
             builder.append(name);
             builder.append("[");
-            builder.append(((AnonymousEntity) c.getLeafBean()).getId());
+            builder.append(( (AnonymousEntity) c.getLeafBean() ).getId());
             builder.append("]");
             builder.append(".");
             builder.append(c.getPropertyPath());
@@ -133,12 +132,15 @@ public class AnonymousEntityManager {
         try {
             em.persist(ae);
             flush();
-                commit();
-        } catch (PersistenceException ex) {
+            commit();
+        }
+        catch (PersistenceException ex) {
             processPersistenceException(ae, ex);
-        } catch (ConstraintViolationException ex) {
+        }
+        catch (ConstraintViolationException ex) {
             processConstraintViolationException(ae, ex);
-        } catch (RuntimeException ex) {
+        }
+        catch (RuntimeException ex) {
             logger.log(Level.INFO, "RuntimeException: " + ex);
 //            dispatcher.rollback();
             throw new InvalidContent(ex, ae);
@@ -163,9 +165,11 @@ public class AnonymousEntityManager {
             commit();
             return merge;
 
-        } catch (PersistenceException ex) {
+        }
+        catch (PersistenceException ex) {
             processPersistenceException(ae, ex);
-        } catch (ConstraintViolationException ex) {
+        }
+        catch (ConstraintViolationException ex) {
             processConstraintViolationException(ae, ex);
         }
         return null;

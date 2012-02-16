@@ -149,6 +149,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * @return the games
      */
     @JsonManagedReference("gamemodel-game")
+    @XmlTransient
     public List<GameEntity> getGames() {
         return games;
     }

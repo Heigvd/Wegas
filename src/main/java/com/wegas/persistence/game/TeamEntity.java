@@ -12,12 +12,14 @@ package com.wegas.persistence.game;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -27,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
@@ -39,9 +42,8 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"name"}))
 @Inheritance(strategy = InheritanceType.JOINED)
-@XmlRootElement
-@XmlType(name = "Team", propOrder = {"@class", "id", "name"})
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@XmlType(name = "Team")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TeamEntity extends AnonymousEntity {
 
     private static final Logger logger = Logger.getLogger("GroupEntity");
@@ -55,7 +57,6 @@ public class TeamEntity extends AnonymousEntity {
      * 
      */
     @NotNull
-    // @javax.validation.constraints.Pattern(regexp = "^\\w+$")
     private String name;
     /**
      * 
@@ -64,12 +65,18 @@ public class TeamEntity extends AnonymousEntity {
     @JsonManagedReference(value = "player-team")
     private List<PlayerEntity> players;
     /**
+     * 
+     */
+    @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
+    private int gameId;
+    /**
      * The game model this belongs to
      */
     @ManyToOne
     @NotNull
     @XmlTransient
     @XmlInverseReference(mappedBy = "teams")
+    @JoinColumn(name = "parentgame_id")
     @JsonBackReference(value = "game-team")
     private GameEntity game;
 
@@ -153,5 +160,12 @@ public class TeamEntity extends AnonymousEntity {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the gameId
+     */
+    public int getGameId() {
+        return gameId;
     }
 }

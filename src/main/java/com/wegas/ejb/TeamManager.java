@@ -10,6 +10,7 @@
 package com.wegas.ejb;
 
 import com.wegas.exception.NotFound;
+import com.wegas.persistence.game.GameEntity;
 import com.wegas.persistence.game.PlayerEntity;
 import com.wegas.persistence.game.TeamEntity;
 import com.wegas.persistence.users.GroupEntity;
@@ -28,23 +29,32 @@ import javax.persistence.criteria.CriteriaQuery;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@Stateless(name="TeamManagerBean")
+@Stateless(name = "TeamManagerBean")
 @LocalBean
 public class TeamManager {
 
     private static final Logger logger = Logger.getLogger("EJB_UM");
-
+    /**
+     * 
+     */
     @EJB
     private AnonymousEntityManager aem;
-    
+    /**
+     * 
+     */
     @EJB
     private UserManager ume;
-
-
+    /**
+     * 
+     */
+    @EJB
+    private GameManager gm;
+    /**
+     * 
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
-    
     /**
      * 
      * @return
@@ -56,7 +66,7 @@ public class TeamManager {
 
         return q.getResultList();
     }
-    
+
     /**
      * 
      * @param id
@@ -70,15 +80,18 @@ public class TeamManager {
         }
         return find;
     }
-    
+
     /**
      * 
      * @param u
      */
-    public void createTeam(TeamEntity u) {
-        aem.create(u);
+    public void createTeam(Long gameModelId, TeamEntity t) {   
+        GameEntity g = gm.getGame(gameModelId);
+        g.addTeam(t);
+        em.flush();
+        em.refresh(t);
     }
-    
+
     /**
      * 
      * @param id
@@ -90,7 +103,7 @@ public class TeamManager {
         cTeam.merge(t);
         return cTeam;
     }
-    
+
     /**
      * 
      * @param teamId
@@ -100,17 +113,17 @@ public class TeamManager {
     public TeamEntity addUser(Long teamId, Long userId) {
         UserEntity u = ume.getUser(userId);
         TeamEntity t = this.getTeam(teamId);
-        
-       PlayerEntity p = new PlayerEntity();
-       p.setUser(u);
-       t.addPlayer(p);
-       // p.
-       // t.getPlayers().add
-       // t.getUsers().add(u);
-       // aem.update(t);
+
+        PlayerEntity p = new PlayerEntity();
+        p.setUser(u);
+        t.addPlayer(p);
+        // p.
+        // t.getPlayers().add
+        // t.getUsers().add(u);
+        // aem.update(t);
         return t;
     }
-    
+
     /**
      * 
      * @param id

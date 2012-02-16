@@ -107,26 +107,20 @@ YUI.add('wegas-app', function(Y) {
                 value: []
             },
             currentGameModel: {},
-            currentTeamId: { },
-            currentUserId: { 
+            currentGame: {},
+            currentTeam: { },
+            currentPlayer: { 
                 setter: function(val, name) {
-                    /** @fixme */
-                    if (val == 0 || val == 1) {
-                        this.set('currentTeamId', 1);
-                    }else {
-                        this.set('currentTeamId', 2);
-                    }
-                    /*
-                    var teams = this.dataSources.Team.rest.getCachedVariables(),
+                    var cgame = this.dataSources.Game.rest.getCurrentGame(),
                     j=0, k;
-                    for (;j<teams.length;j++) {
-                        for (k=0;k<teams[j].users.length;k++) {
-                            if (teams[j].users[k].id == val) {
-                                this.set('currentTeamId', teams[j].id);
+                    for (;j<cgame.teams.length;j++) {
+                        for (k=0;k<cgame.teams[j].players.length;k++) {
+                            if (cgame.teams[j].players[k].id == val) {
+                                this.set('currentTeam', cgame.teams[j].id);
                                 return val;
                             }
                         }
-                    }*/
+                    }
                     return val;
                 }
             }

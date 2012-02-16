@@ -24,7 +24,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", function(e) {
                 this.syncUI();
             }, this);
-            Y.Wegas.app.after('currentUserIdChange', function(e) {
+            Y.Wegas.app.after('currentPlayerChange', function(e) {
                 this.syncUI();
             }, this);
         },

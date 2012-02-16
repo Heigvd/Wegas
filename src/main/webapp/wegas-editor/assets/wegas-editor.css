@@ -131,10 +131,10 @@ img.inputEx-ListField-delButton {
     width: 25px;
 }
 
-.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectuser {
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectplayer {
     width:170px;
 }
-.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectuser .first-child a:before {
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectplayer .first-child a:before {
     content: 'Current user: ';
 }
 /*.yui-skin-sam .yui-toolbar-container .yui-toolbar-reset{
@@ -283,4 +283,45 @@ img.inputEx-ListField-delButton {
 }
 .ygtvfocus, .ygtvfocus .ygtvlabel, .ygtvfocus .ygtvlabel:hover {
     background-color:transparent;
+}
+.ygtvcontent .yui3-wegas-treeview-editmenubutton {
+    padding-left: 20px;
+    width:20px;
+    height:20px;
+    cursor:pointer;
+}
+.ygtvcontent:hover .yui3-wegas-treeview-editmenubutton {
+    background: transparent url(wegas-editor-sprite.png) 2px -333px no-repeat;
+}
+/* YUI 2 Treeview icons */ 
+td.yui3-wegas-treeview-icon-game,
+td.yui3-wegas-treeview-icon-gamemodel,
+td.yui3-wegas-treeview-icon-team,
+td.yui3-wegas-treeview-icon-player  {
+    padding-top: 4px;
+    height: 18px;
+    padding-left: 20px;
+    display: block;
+    
+}
+td.yui3-wegas-treeview-icon-gamemodel {
+    background: transparent url(wegas-editor-sprite.png) 0 -514px no-repeat;
+}
+td.yui3-wegas-treeview-icon-game {
+    background: transparent url(wegas-editor-sprite.png) 0 -514px no-repeat;
+}
+td.yui3-wegas-treeview-icon-team {
+    background: transparent url(wegas-editor-sprite.png) 0 -621px no-repeat;
+}
+
+td.yui3-wegas-treeview-icon-player {
+    background: transparent url(wegas-editor-sprite.png) 0 -590px no-repeat;
+}
+
+/* Edit Menu Styles */
+.yui3-wegas-editmenu {
+    position:absolute;
+}
+.yui3-wegas-editmenu-hidden {
+    display: none;
 }

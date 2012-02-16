@@ -108,7 +108,7 @@ public class UserManager {
      * 
      * @param id
      * @param u
-     * @return
+     * @return   
      */
     public UserEntity updateUser(Long id, UserEntity u) {
         UserEntity gm = this.getUser(id);

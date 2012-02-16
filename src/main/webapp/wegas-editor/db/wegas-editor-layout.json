@@ -19,8 +19,7 @@
                     "type": "Chat"		
                 }
                 ]
-            },
-            {
+            }, {
                 "type": "Tab",
                 "label": "CSS",
                 "toolbarLabel": "Edit CSS",
@@ -30,8 +29,7 @@
                     "class": "wegas-csseditor"
                 }
                 ]
-            },
-            {
+            }, {
                 "type": "Tab",
                 "label": "Log",
                 "toolbarLabel": "Log",
@@ -73,8 +71,7 @@
                         "StringVariableDescriptor": true,
                         "NumberVariableDescriptor": true
                     }
-                }         
-                ],
+                }],
                 "toolbarButtons": [{
                     "type": "push", 
                     "label": "New choice", 
@@ -161,23 +158,10 @@
                 "toolbarButtons": [
                 {
                     "type": "select", 
-                    "label": "Francois", 
-                    "value": "selectuser",
-                    "menu": [
-                    {
-                        "text": "Francois", 
-                        "checked": true
-                    },
-                    {
-                        "text": "Roger"
-                    },
-                    {
-                        "text": "Dominique"
-                    },
-                    {
-                        "text": "Marc"
-                    }
-                    ]
+                    "label": "Francois",
+                    "lazyloadmenu": false,
+                    "value": "selectplayer",
+                    "menu": []
                 }
                 ],
                 "children": [{
@@ -202,17 +186,6 @@
                 "toolbarButtons": [{
                     "type": "push", 
                     "label": "New game", 
-                    "value": "new", 
-                    "id": "new",
-                    "data": {
-                        "dataSource":"Game", 
-                        "@class": "Game"
-                    }
-                },
-                {
-                    "type": "push", 
-                    "label": "New team",
-                    "disabled": true,
                     "value": "new", 
                     "id": "new",
                     "data": {

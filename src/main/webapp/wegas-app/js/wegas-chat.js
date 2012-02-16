@@ -10,6 +10,8 @@ YUI.add('wegas-chat', function(Y) {
             //$.atmosphere.unsubscribe();
         },*/
         renderUI: function () {
+            return;
+            
             var atmospherePath = Y.Wegas.app.get('base')+"atmosphere/pubsub/GeneralChat",
             connectedEndpoint,
             cb = this.get(CONTENTBOX), 
