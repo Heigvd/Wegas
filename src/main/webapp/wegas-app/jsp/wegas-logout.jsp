@@ -1,15 +1,30 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Logout</title>
-</head>
-<body>
-<%@include file="/simpleshirosecuredapplication/common/commonformstuff.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
 <%@ page import="org.apache.shiro.SecurityUtils" %>
-<% SecurityUtils.getSubject().logout();%>
-<p>You have successfully logged out. 
-</body>
+<!DOCTYPE html >
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Log In</title>
+        <style type="text/css">
+            .yui-g {
+                width:300px;
+                height:300px;
+                display:inline-block;
+                float:left;
+                padding:10px;
+                margin:10px;
+                border: 1px outset gray;
+                font-family: Arial, Helvetica;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="yui-g">
+            <h1>Logout</h1>
+            <% SecurityUtils.getSubject().logout();%>
+            You have successfully logged out. 
+        </div>
+
+    </body>
 </html>

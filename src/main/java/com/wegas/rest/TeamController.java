@@ -14,6 +14,7 @@ import com.wegas.ejb.TeamManager;
 
 import com.wegas.ejb.UserManager;
 import com.wegas.persistence.game.GameModelEntity;
+import com.wegas.persistence.game.PlayerEntity;
 import com.wegas.persistence.game.TeamEntity;
 
 import com.wegas.persistence.users.UserEntity;
@@ -109,13 +110,13 @@ public class TeamController {
      * @param userId 
      * @return 
      */
-    @PUT
+  /*  @PUT
     @Path("{teamId: [1-9][0-9]*}/addUser/{userId: [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public TeamEntity addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long userId) {
-        return te.addUser(teamId, userId);
-    }
+    public PlayerEntity addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long userId) {
+        return te.createPlayer(teamId, userId);
+    }*/
 
     /**
      * 
@@ -123,14 +124,14 @@ public class TeamController {
      * @param u 
      * @return 
      */
-    @POST
+  /*  @POST
     @Path("{teamId: [1-9][0-9]*}/   ")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public TeamEntity addUser(@PathParam("teamId") Long teamId, UserEntity u) {
         ume.createUser(u);
         return this.addUser(teamId, u.getId());
-    }
+    }*/
 
     /**
      * 

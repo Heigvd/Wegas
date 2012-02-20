@@ -6,6 +6,7 @@ YUI.add('wegas-button', function(Y) {
     
     var CONTENTBOX = 'contentBox',
     BOUNDINGBOX = 'boundingBox',
+    LoginButton,
     
     Button = Y.Base.create("wegas-button", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
        
@@ -36,7 +37,7 @@ YUI.add('wegas-button', function(Y) {
                     }
                 } else {
                     target.append(this._widget.get(BOUNDINGBOX));
-            }
+                }
             }, this);
         },
         syncUI: function() {
@@ -65,4 +66,36 @@ YUI.add('wegas-button', function(Y) {
     });
     
     Y.namespace('Wegas').Button = Button;
+    
+    LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+        bindUI: function() {
+            
+            Y.Wegas.app.dataSources.Game.after("response", this._onDataUpdate, this);
+            Y.Wegas.app.after("currentPlayerChange", this._onDataUpdate, this);
+        },
+        syncUI: function() {
+            var cPlayer = Y.Wegas.app.dataSources.Game.rest.getCurrentPlayer(), 
+            cTeam = Y.Wegas.app.dataSources.Game.rest.getCurrentTeam(), 
+            name = "undefined";
+            
+            if (cPlayer) name = cPlayer.name;
+            if (cTeam) name = cTeam.name+":"+name;
+            
+            this.get(CONTENTBOX).setContent('['+name+'] <a href="wegas-logout">logout</a>');
+        },
+        _onDataUpdate: function(e) {
+            this.syncUI();
+        }
+    }, {
+        ATTRS : {
+            classTxt: {
+                value: 'LoginButton'
+            },
+            type: {
+                value: "LoginButton"
+            }
+        }
+    });
+    
+    Y.namespace('Wegas').LoginButton = LoginButton;
 });

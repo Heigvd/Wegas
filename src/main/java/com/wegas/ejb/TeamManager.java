@@ -112,8 +112,8 @@ public class TeamManager {
      * @param userId
      * @return
      */
-    public TeamEntity addUser(Long teamId, Long userId) {
-        logger.log(Level.INFO, "Adding user "+userId +" to teame: "+teamId+".");
+    public PlayerEntity createPlayer(Long teamId, Long userId) {
+        logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         UserEntity u = ume.getUser(userId);
         TeamEntity t = this.getTeam(teamId);
         PlayerEntity p = new PlayerEntity();
@@ -121,9 +121,8 @@ public class TeamManager {
         t.addPlayer(p);
         em.flush();
         em.refresh(p);
-        
         t.getGame().getGameModel().propagateDefaultVariableInstance(false);
-        return t;
+        return p;
     }
 
     /**

@@ -69,6 +69,14 @@
 .pmg-topbutton span:hover {
     background-color: #DDD;
 }
+/* PMG Login button style */
+.yui3-wegas-list-horizontal .yui3-wegas-login {
+    float: right;
+}
+.yui3-wegas-login-content  {
+    height: 15px;
+    padding: 5px 10px 9px 20px;
+}
 /* PMG BODY STYLES */
 #pmg-body {
     position: absolute;

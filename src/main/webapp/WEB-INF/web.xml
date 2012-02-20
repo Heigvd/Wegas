@@ -40,6 +40,16 @@
         <url-pattern>/wegas-signup</url-pattern>
     </servlet-mapping>
     
+    <!-- Logout page -->
+    <servlet>
+        <servlet-name>Wegas Logout</servlet-name>
+        <jsp-file>/wegas-app/jsp/wegas-logout.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Wegas Logout</servlet-name>
+        <url-pattern>/wegas-logout</url-pattern>
+    </servlet-mapping>
+    
     <!-- Lobby page -->
     <servlet>
         <servlet-name>Wegas Lobby</servlet-name>

@@ -382,6 +382,12 @@ YUI.add('wegas-datasourcerest', function(Y) {
         getCurrentGame: function() {
             return this.getCachedVariableById(Y.Wegas.app.get('currentGame'));
         },
+        getCurrentPlayer: function() {
+            return this.getPlayerById(Y.Wegas.app.get('currentPlayer'));
+        },
+        getCurrentTeam: function() {
+            return this.getTeamById(Y.Wegas.app.get('currentTeam'));
+        },
         getPlayerById: function(playerId) {
             var i=0, j, k,
             data = this.get('host').data;

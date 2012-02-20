@@ -25,6 +25,7 @@
     }
 %>
 <%
+    request.setAttribute("errormsg", "");
     Subject subject = SecurityUtils.getSubject();
     UserEntity u = um.getUserByPrincipal(subject.getPrincipal().toString());
     if (u == null) {                                                            // The current user does not exist, we create one.
@@ -36,15 +37,17 @@
     if (u.getPlayers().isEmpty()) {                                             // The player is not part of any team
         if (request.getParameter("teamwish") != null) {                         // User has not selected a game
             view = "input-teamwish";
-            tm.addUser(new Long(request.getParameter("teamwish")), u.getId());
+            System.out.println(u);
+            cPlayer = tm.createPlayer(new Long(request.getParameter("teamwish")), u.getId());
             out.println("teamwish" + request.getParameter("teamwish"));
             view = "app";
         } else if (request.getParameter("gametoken") != null) {                 // User has not selected a team
             game = gm.getGameByToken(request.getParameter("gametoken"));
             if (game == null) {
-                out.println("This game does not exist. <br /><br />");
+                request.setAttribute("errormsg", "<br />This game does not exist.<br />");
                 view = "input-gametoken";
             } else {
+                request.setAttribute("teams", game.getTeams());
                 view = "input-team";
             }
         } else {
@@ -84,10 +87,10 @@
             </jsp:forward>
             <%    } else if (view.equals("input-team")) {
             %>
-            <jsp:include page="wegas-app/jsp/input-team.jsp"  />
+            <jsp:include page="wegas-app/jsp/wegas-lobby-inputteam.jsp"  />
             <%    } else if (view.equals("input-gametoken")) {
             %>
-            <jsp:include page="wegas-app/jsp/input-gametoken.jsp" />
+            <jsp:include page="wegas-app/jsp/wegas-lobby-inputgametoken.jsp" />
             <%}
             %>
         </div>

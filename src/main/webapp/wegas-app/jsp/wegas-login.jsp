@@ -12,9 +12,9 @@
 
     String op = (String) request.getParameter("submit");
     boolean userCreated = false;
-    if (op != null && op.equals("Create")) {
+    if (op != null && op.equals("CreateUser")) {
         userCreated = true;
-        /*out.println("Creating new user");*/
+        System.out.println("[wegas-login.jsp]Creating new user");
         realm.createUser((String) request.getParameter("createemail"), (String) request.getParameter("createpass"));
     }
 %>
@@ -30,7 +30,7 @@
                 display:inline-block;
                 float:left;
                 padding:10px;
-                margin:10px;
+                margi :10px;
                 border: 1px outset gray;
                 font-family: Arial, Helvetica;
             }
@@ -85,7 +85,7 @@
                         <td><input type="password" name="createpass" maxlength="30"></td>
                     </tr>
                     <tr>
-                        <td colspan="2" align="right"><input type="submit" name="submit" value="Create"></td>
+                        <td colspan="2" align="right"><input type="submit" name="submit" value="CreateUser"></td>
                     </tr>
                 </table>
             </form>

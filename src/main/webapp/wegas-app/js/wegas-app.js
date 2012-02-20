@@ -115,7 +115,8 @@ YUI.add('wegas-app', function(Y) {
             currentPlayer: { 
                 setter: function(val, name) {
                     // When current player is updated, we also update current team
-                    this.set('currentTeam', this.dataSources.Game.rest.getTeamByPlayerId(val));
+                    var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
+                    if (cPlayer) this.set('currentTeam', cPlayer.teamId);
                     return val;
                 }
             }
