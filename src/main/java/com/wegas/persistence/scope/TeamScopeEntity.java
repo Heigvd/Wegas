@@ -81,21 +81,13 @@ public class TeamScopeEntity extends ScopeEntity {
         this.propagateDefaultVariableInstance(false);
     }
 
-    /**
-     * 
-     */
-    @Override
-    public void reset(AnonymousEntityManager aem) {
-        this.propagateDefaultVariableInstance(true);
-        //        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     /**
      * 
      * @param forceUpdate
      */
     @XmlTransient
-    public void propagateDefaultVariableInstance(boolean forceUpdate) {
+    public void propagateDefaultVariableInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
         GameModelEntity gm = vd.getGameModel();
         for (GameEntity g : gm.getGames()) {
@@ -104,7 +96,7 @@ public class TeamScopeEntity extends ScopeEntity {
 
                 if (vi == null) {
                     this.setVariableInstance(t.getId(), vd.getDefaultVariableInstance().clone());
-                } else if (forceUpdate) {
+                } else if (force) {
                     vi.merge(vd.getDefaultVariableInstance());
                 }
             }

@@ -42,12 +42,25 @@ public class PlayerManager {
      * 
      */
     @EJB
-    private UserManager ume;
+    private UserManager um;
+    /**
+     * 
+     */
+    @EJB 
+    private TeamManager tm;
     /**
      * 
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
+    public void create(Long teamId, PlayerEntity p) {
+        TeamEntity te = tm.getTeam(teamId);
+        te.addPlayer(p);
+        em.flush();
+        em.refresh(p);
+        te.getGame().getGameModel().propagateDefaultVariableInstance(false);
+    }
 
     /**
      * 

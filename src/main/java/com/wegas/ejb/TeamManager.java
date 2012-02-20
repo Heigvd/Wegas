@@ -16,6 +16,7 @@ import com.wegas.persistence.game.TeamEntity;
 import com.wegas.persistence.users.GroupEntity;
 import com.wegas.persistence.users.UserEntity;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -85,11 +86,12 @@ public class TeamManager {
      * 
      * @param u
      */
-    public void createTeam(Long gameModelId, TeamEntity t) {   
+    public void createTeam(Long gameModelId, TeamEntity t) {
         GameEntity g = gm.getGame(gameModelId);
         g.addTeam(t);
         em.flush();
         em.refresh(t);
+        g.getGameModel().propagateDefaultVariableInstance(false);
     }
 
     /**
@@ -111,16 +113,16 @@ public class TeamManager {
      * @return
      */
     public TeamEntity addUser(Long teamId, Long userId) {
+        logger.log(Level.INFO, "Adding user "+userId +" to teame: "+teamId+".");
         UserEntity u = ume.getUser(userId);
         TeamEntity t = this.getTeam(teamId);
-
         PlayerEntity p = new PlayerEntity();
         p.setUser(u);
         t.addPlayer(p);
-        // p.
-        // t.getPlayers().add
-        // t.getUsers().add(u);
-        // aem.update(t);
+        em.flush();
+        em.refresh(p);
+        
+        t.getGame().getGameModel().propagateDefaultVariableInstance(false);
         return t;
     }
 

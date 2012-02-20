@@ -46,7 +46,7 @@ public class GameScopeEntity extends ScopeEntity {
     }
 
     @Override
-    public void reset(AnonymousEntityManager aem) {
+    public void propagateDefaultVariableInstance(boolean force) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

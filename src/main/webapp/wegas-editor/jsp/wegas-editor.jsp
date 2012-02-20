@@ -47,8 +47,8 @@
         <script src="lib/inputex/build/loader.js"  type='text/javascript'></script>
 
         <!-- Atmosphere jquery -->
-         <!-- <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
-        <script type="text/javascript" src="jquery/jquery.atmosphere.js"></script>-->
+        <!-- <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
+       <script type="text/javascript" src="jquery/jquery.atmosphere.js"></script>-->
 
 
         <script type="text/javascript" >
@@ -133,7 +133,7 @@
                             }, { fn: "DataSourceREST" }
                         ]
                     },
-                    "Team": {
+                   /* "Team": {
                         source: "rs/gm/1/Team",
                         plugins: [
                             {
@@ -145,7 +145,7 @@
                                 }
                             }, { fn: "DataSourceREST" }
                         ]
-                    },
+                    },*/
                     "VariableDescriptor": {
                         source: "rs/gm/1/vardesc",
                         plugins: [
@@ -165,6 +165,25 @@
                     /*********************************************************** Entities Admin Menus */
                     "Game": [
                         { text: "New team", value: { op:'addChild', childClass: "Team" } }
+                        /*                        {
+                            text: "Edit",
+                            op: 'update',
+                            adminForm: "AlbaListWidget"
+                        },
+                        {
+                            text: "New",
+                            op: "new",
+                            submenu:  {
+                                id: "AlbaListWidgetAdd",
+                                itemdata: [
+                                    
+                                ]
+                            }	
+                        },
+                        { text: "Delete", op: 'delete' }*/
+                    ],
+                    "Team": [
+                        { text: "New player", value: { op:'addChild', childClass: "Player" } }
                         /*                        {
                             text: "Edit",
                             op: 'update',
@@ -205,6 +224,7 @@
                     ],
                     "Player" : [ 
                         { name: 'id', type: 'hidden'},
+                        { name: 'teamId', type: 'hidden'},
                         { name: 'name', label:'Name', required: true},
                         { name: '@class', value:'Player', type: 'hidden'}
                     ],

@@ -134,7 +134,7 @@ public class VariableDescriptorController {
      * @return OK
      */
     @GET
-    @Path("reset/")
+    @Path("reset")
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<VariableDescriptorEntity> reset(@PathParam("gameModelId") Long gameModelId) {
         return gmm.reset(gameModelId).getVariableDescriptors();

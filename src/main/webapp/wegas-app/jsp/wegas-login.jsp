@@ -1,80 +1,96 @@
-<%@ page import="org.apache.shiro.SecurityUtils" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%@page import="com.wegas.security.realm.JNDIAndSaltAwareJdbcRealm, org.apache.shiro.SecurityUtils, org.apache.shiro.mgt.RealmSecurityManager, org.apache.shiro.realm.Realm, java.util.Collection"%>
+<%@page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%!    JNDIAndSaltAwareJdbcRealm realm = null;
+%>
+<%
+    for (Realm r : ( (RealmSecurityManager) SecurityUtils.getSecurityManager() ).getRealms()) {
+        if (r instanceof JNDIAndSaltAwareJdbcRealm) {
+            realm = (JNDIAndSaltAwareJdbcRealm) r;
+        }
+    }
 
+    String op = (String) request.getParameter("submit");
+    boolean userCreated = false;
+    if (op != null && op.equals("Create")) {
+        userCreated = true;
+        /*out.println("Creating new user");*/
+        realm.createUser((String) request.getParameter("createemail"), (String) request.getParameter("createpass"));
+    }
+%>
+<!DOCTYPE html >
 <html>
     <head>
-        <!--  <link type="text/css" rel="stylesheet" href="<c:url value="/style.css"/>"/>-->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Log In</title>
         <style type="text/css">
-            table.sample {
-                border-width: 1px;
-                border-style: outset;
-                border-color: blue;
-                border-collapse: separate;
-                background-color: rgb(255, 255, 240);
-            }
-
-            table.sample th {
-                border-width: 1px;
-                padding: 1px;
-                border-style: none;
-                border-color: blue;
-                background-color: rgb(255, 255, 240);
-            }
-
-            table.sample td {
-                border-width: 1px;
-                padding: 1px;
-                border-style: none;
-                border-color: blue;
-                background-color: rgb(255, 255, 240);
+            .yui-g {
+                width:300px;
+                height:300px;
+                display:inline-block;
+                float:left;
+                padding:10px;
+                margin:10px;
+                border: 1px outset gray;
+                font-family: Arial, Helvetica;
             }
         </style>
     </head>
     <body>
+        <div class="yui-g">
+            <h1>Login</h1>
+            <%
+                String errorDescription = (String) request.getAttribute("shiroLoginFailure");
+                if (errorDescription != null) {
+            %>
+            Login attempt was unsuccessful: <%=errorDescription%>
+            <%
+                }
+            %>
+            <form name="loginform" action="<c:url value="/wegas-login"/>" method="post">
+                <table align="left" border="0" cellspacing="0" cellpadding="3">
+                    <tr>
+                        <td>Email:</td>
+                        <td><input type="text" name="user" maxlength="30"></td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                        <td><input type="password" name="pass" maxlength="30"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="left"><input type="checkbox" name="remember"><font size="2">Remember Me</font></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="right"><input type="submit" name="submit" value="Login"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div class="yui-g">
 
-        <h2>Log in page</h2>
+            <h1>Create an account</h1>
+            <% if (userCreated) {%>
+            You can now login using your new username.
+            <% } else {%>
 
+            <form name="createAccountForm" action="<c:url value="/wegas-signup"/>" method="post">
+                <table align="left" border="0" cellspacing="0" cellpadding="3">
 
-
-
-        <table class="sample">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Password</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>root</td>
-                    <td>secret</td>
-                </tr>
-            </tbody>
-        </table>
-        <br/><br/>
-        <!-- <shiro:guest>-->
-        <!--  </shiro:guest>-->
-
-        <form name="loginform" action="" method="post">
-            <table align="left" border="0" cellspacing="0" cellpadding="3">
-                <tr>
-                    <td>Username:</td>
-                    <td><input type="text" name="username" maxlength="30"></td>
-                </tr>
-                <tr>
-                    <td>Password:</td>
-                    <td><input type="password" name="password" maxlength="30"></td>
-                </tr>
-                <tr>
-                    <td colspan="2" align="left"><input type="checkbox" name="rememberMe"><font size="2">Remember Me</font></td>
-                </tr>
-                <tr>
-                    <td colspan="2" align="right"><input type="submit" name="submit" value="Login"></td>
-                </tr>
-            </table>
-        </form>
+                    <tr>
+                        <td>Email:</td>
+                        <td><input type="text" name="createemail" maxlength="30"></td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                        <td><input type="password" name="createpass" maxlength="30"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="right"><input type="submit" name="submit" value="Create"></td>
+                    </tr>
+                </table>
+            </form>
+            <% }%>
+        </div>
 
     </body>
 </html>

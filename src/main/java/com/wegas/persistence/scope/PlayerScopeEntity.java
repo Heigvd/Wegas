@@ -116,14 +116,6 @@ public class PlayerScopeEntity extends ScopeEntity {
     /**
      * 
      */
-    @Override
-    public void reset(AnonymousEntityManager aem) {
-        this.propagateDefaultVariableInstance(true);
-    }
-
-    /**
-     * 
-     */
     @PrePersist
     public void prePersist() {
         propagateDefaultVariableInstance(false);
@@ -134,7 +126,7 @@ public class PlayerScopeEntity extends ScopeEntity {
      * @param forceUpdate
      */
     @XmlTransient
-    public void propagateDefaultVariableInstance(boolean forceUpdate) {
+    public void propagateDefaultVariableInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
         GameModelEntity gm = vd.getGameModel();
         for (GameEntity g : gm.getGames()) {
@@ -143,9 +135,8 @@ public class PlayerScopeEntity extends ScopeEntity {
                     VariableInstanceEntity vi = this.variableInstances.get(p.getId());
                     if (vi == null) {
                         this.setVariableInstance(p.getId(), vd.getDefaultVariableInstance().clone());
-                    } else if (forceUpdate) {
+                    } else if (force) {
                         vi.merge(vd.getDefaultVariableInstance());
-                        //vi = aem.update(vi);
                     }
                 }
             }

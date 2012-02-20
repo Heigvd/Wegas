@@ -94,7 +94,7 @@ public class ScopeEntity extends AnonymousEntity implements Serializable {
      * @param aem 
      */
     @XmlTransient
-    public void reset(AnonymousEntityManager aem) {
+    public void propagateDefaultVariableInstance(boolean force) {
     }
 
     /**

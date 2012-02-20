@@ -12,12 +12,14 @@ package com.wegas.persistence.game;
 import com.wegas.persistence.users.*;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.validation.constraints.NotNull;
@@ -25,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
@@ -39,6 +42,7 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @XmlRootElement
 @XmlType(name = "Player", propOrder = {"@class", "id", "name"})
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PlayerEntity extends AnonymousEntity {
 
     private static final Logger logger = Logger.getLogger("PlayerEntity");
@@ -77,7 +81,13 @@ public class PlayerEntity extends AnonymousEntity {
     @XmlTransient
     @XmlInverseReference(mappedBy = "players")
     @JsonBackReference(value = "player-team")
+    @JoinColumn(name = "parentteam_id")
     private TeamEntity team;
+    /**
+     * 
+     */
+    @Column(name = "parentteam_id", nullable = false, insertable = false, updatable = false)
+    private int teamId;
 
     /**
      * 
@@ -91,7 +101,9 @@ public class PlayerEntity extends AnonymousEntity {
 
     @PrePersist
     public void prePersist() {
-        if (this.name == null) this.setName(this.user.getName());
+        if (this.name == null) {
+            this.setName(this.user.getName());
+        }
     }
 
     /**
@@ -156,5 +168,12 @@ public class PlayerEntity extends AnonymousEntity {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the teamId
+     */
+    public int getTeamId() {
+        return teamId;
     }
 }

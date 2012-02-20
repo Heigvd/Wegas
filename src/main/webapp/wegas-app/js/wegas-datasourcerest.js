@@ -135,9 +135,9 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             });
         },
-        post: function(data, parentData) {
+        post: function(data, parentData, request) {
             var host = this.get('host'),
-            request = (parentData)? "/"+parentData.id+"/"+data["@class"] :  "" ;
+            request = request || ((parentData)? "/"+parentData.id+"/"+data["@class"] :  "" );
 	    
             host.sendRequest({
                 request: request,
@@ -300,12 +300,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
             e.response.results = data;
         },
-        put: function(data) {
-              
-            if (data['@class'] == 'Team' ) {
-                request = '/1/team/'+data.id;
-            }
-            
+        put: function(data, request) {
             GameModelDataSourceREST.superclass.put.call(this, data, request);
         },
         getGameById: function(gameId) {
@@ -330,7 +325,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
     Y.extend(GameDataSourceREST, DataSourceREST, {
         _beforeDefResponseFn: function(e) {
             var data = this.get('host').data,                                   // Treat reply
-            cEl, i=0, loaded, game;
+            cEl, i=0, loaded, game, team;
             for (;i<e.response.results.length;i++) {
                 cEl = e.response.results[i];
                 loaded = false;
@@ -346,16 +341,14 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     }
                     if (!loaded) game.teams.push(cEl);
                 } else if (cEl['@class'] == "Player" )  {
-                    for (var f=0;f<data.length;f++) {
-                        for (var j=0;j<data[f].teams.length;j++) {
-                            for (var k=0;k<data[f].teams[j].players.length;k++) {
-                                if (data[f].teams[j].players[k].id == cEl.id) {
-                                    data[f].teams[j].players[k] = cEl;
-                                    loaded = true;
-                                }
-                            }
+                    team = this.getTeamById(cEl.teamId);
+                    for (var j=0;j<team.players.length;j++) {
+                        if (team.players[j].id == cEl.id) {
+                            team.players[j] = cEl;
+                            loaded = true;
                         }
                     }
+                    if (!loaded) team.players.push(cEl);
                 } else {
                     loaded = false;
                     Y.Array.each(data, function(o, index, a) {
@@ -373,25 +366,77 @@ YUI.add('wegas-datasourcerest', function(Y) {
         put: function(data, request) {
               
             if (data['@class'] == 'Team' ) {
-                /* @fixme */
                 request = '/'+data.gameId+'/Team/'+data.id;
             } else if (data['@class'] == 'Player' ) {
-                /* @fixme */
-                request = '/1/player/'+data.id;
+                request = "/"+this.getGameByTeamId(data.teamId).id
+                +'/Team/'+data.teamId+'/Player/'+data.id;
             }
-            
-            GameModelDataSourceREST.superclass.put.call(this, data, request);
+            GameDataSourceREST.superclass.put.call(this, data, request);
+        },
+        post: function(data, parentData, request) {
+            if (data['@class'] == 'Player' ) {
+                request = "/"+this.getGameByTeamId(parentData.id).id+"/Team/"+parentData.id+"/Player";
+            }
+            GameDataSourceREST.superclass.post.call(this, data, parentData, request);
         },
         getCurrentGame: function() {
             return this.getCachedVariableById(Y.Wegas.app.get('currentGame'));
+        },
+        getPlayerById: function(playerId) {
+            var i=0, j, k,
+            data = this.get('host').data;
+            for (; i< data.length; i++) {
+                for (j=0; j<data[i].teams.length; j++) {
+                    for (k=0; k < data[i].teams[j].players.length; k++) {
+                        if (data[i].teams[j].players[k].id == playerId)
+                            return data[i].teams[j].players[k];
+                    }
+                }
+            }
+        },
+        getGameByTeamId: function(teamId) {
+            var i=0, j, 
+            data = this.get('host').data;
+            for (; i< data.length; i++) {
+                for (j=0; j<data[i].teams.length; j++) {
+                    if (data[i].teams[j].id == teamId)
+                        return data[i];
+                }
+            }
+            return null;
+        },
+        getTeamById: function(teamId) {
+            var i=0, j, 
+            data = this.get('host').data;
+            for (; i< data.length; i++) {
+                for (j=0; j<data[i].teams.length; j++) {
+                    if (data[i].teams[j].id == teamId)
+                        return data[i].teams[j];
+                }
+            }
+            return null;
+        },
+        getTeamByPlayerId: function(playerId) {
+            var i=0, j, k,
+            data = this.get('host').data;
+            for (; i< data.length; i++) {
+                for (j=0; j<data[i].teams.length; j++) {
+                    for (k=0; k < data[i].teams[j].players.length; k++) {
+                        if (data[i].teams[j].players[k].id == playerId)
+                            return data[i].teams[j];
+                    }
+                }
+            }
         }
+        
+        
     });
     
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
     
     /** 
- * FIXME We redefine this so we can use a "." selector and a "@..." field name
- */
+     * FIXME We redefine this so we can use a "." selector and a "@..." field name
+     */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],

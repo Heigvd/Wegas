@@ -7,16 +7,16 @@ YUI.add('wegas-tabview', function(Y) {
     
     TabView = Y.Base.create("tabview", Y.TabView , [Y.WidgetChild, Y.Wegas.Widget], {
         
-    }, {
-        ATTRS : {
-            classTxt: {
-                value: 'Tabview'
-            },
-            type: {
-                value: "Tabview"
+        }, {
+            ATTRS : {
+                classTxt: {
+                    value: 'Tabview'
+                },
+                type: {
+                    value: "Tabview"
+                }
             }
-        }
-    }),
+        }),
 	
     Tab = Y.Base.create("tab", Y.Tab , [Y.Wegas.Widget/*, Y.WidgetParent*/], {
         
@@ -47,35 +47,31 @@ YUI.add('wegas-tabview', function(Y) {
                 buttonType: 'advanced',
                 draggable: false,
                 buttons: this.get('toolbarButtons')
-                // collapse:, cont:, disabled:,  grouplabels:, titlebar: "test",
+            // collapse:, cont:, disabled:,  grouplabels:, titlebar: "test",
             });
             if (this.get('toolbarLabel')) {
                 panelNode.one('.yui-toolbar-subcont').setContent('<span class="title">'+this.get('toolbarLabel')+'</span></div>');
             }
             this._toolbar.on('buttonClick', function(e) {
-                var button = this._toolbar.getButtonByValue(e.button.value),		// We have a button reference
-                newUser;
-                //button.set('menu', ["test"]);						
-                // toolbar.deselectAllButtons();
-                //toolbar.selectButton(_button);
-                // status.innerHTML = 'You clicked on ' + _button.get('label') + ', with the value of ' + ((info.button.color) ? '#' + info.button.color + ' : ' + info.button.colorName : info.button.value);
-            
+                var button = this._toolbar.getButtonByValue(e.button.value);		// We have a button reference
+               
                 switch (button.get('value')) {
                     case 'selectplayer':
-                        nPlayer = Y.Wegas.app.dataSources.Game.rest.getPlayerBy('player');
-                        Y.Wegas.app.set('currentPlayer', nPlayer.id );
+                        var p = Y.Wegas.app.dataSources.Game.rest.getPlayerById(e.button.value);
+                        button.set('label', p.name);
+                        Y.Wegas.app.set('currentPlayer', e.button.value );
                         break;
                     case 'reset':
                         Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest('reset');
                         break;
                     case 'new': {                                               // New button click event
-                            Y.Wegas.editor.edit({
-                                "@class": e.button.data['@class']
-                            }, function(cfg) {
-                                Y.Wegas.app.dataSources[e.button.data['dataSource']].rest.post(cfg);
-                            }, null, this);
-                            break;
-                        }
+                        Y.Wegas.editor.edit({
+                            "@class": e.button.data['@class']
+                        }, function(cfg) {
+                            Y.Wegas.app.dataSources[e.button.data['dataSource']].rest.post(cfg);
+                        }, null, this);
+                        break;
+                    }
                 }
             }, null, this);
             
@@ -97,67 +93,19 @@ YUI.add('wegas-tabview', function(Y) {
                             for (j=0; cGame.teams && j<cGame.teams.length; j++) {
                                 for (k=0; k<cGame.teams[j].players.length; k++){
                                     menu.addItem({
-                                        'text': cGame.teams[j].players[k].name
+                                        'text': cGame.teams[j].players[k].name, 
+                                        'value': cGame.teams[j].players[k].id
                                     });
                                 }
                             }
                             menu.render();
-                            /*menu.addItems([{
-                                    'text':'oo'
-                                }]); 
-                            k = 0;*/
-                            /* button.set('menu', [{
-                                "text": "Francois", 
-                                "checked": true
-                            }])*/
-                            /*
-                            menu.clearContent();
-                            menu.addItems([{
-                                'lable':'oo'
-                            }]);
-                            menu.render();*/
-                            //for (;k< menu.getItems().length;k++) {
-                            //  menu.removeItem(0);
-                            // }
-                            /*
-                            button.getMenu().addItem( {
-                                "text": "eee",
-                                "value": 1
-                               // "checked": "true"
-                            });*/
-                            /*                            for (var j in e.response.results) {
-                                var u = e.response.results[j];
-                                menu.addItem({
-                                    "text": u.name,
-                                    "value": u.id,
-                                    "checked": false
-                                });
-                            }*/
-                            // button.set('menu', menu);
-                            //for (Y.Wegas.app.dataSources.User.getCached)
-                            /*   button.set('type', {
-                                "type": "menu", 
-                                "label": "fx", 
-                                "value": "selectplayer", 
-                                "menu": menu
-                            });*/
-                            //button.getMenu().render();
-                           
-                                
-                            /*    button.getMenu().addItems([ 
-                            {
-                                text: "Four", 
-                                value: 4
-                            }, 
-                            {
-                                text: "Five", 
-                                value: 5
-                            } 
-                            ]);*/
-                            // button.getMenu().render();
                             break;
                     }
                 }
+                
+                Y.Wegas.app.dataSources.VariableDescriptor.sendRequest({
+                    request: ""
+                });
             }, this);
         }
     }, {

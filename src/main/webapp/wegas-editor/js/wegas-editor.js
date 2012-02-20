@@ -82,7 +82,7 @@ YUI.add('wegas-editor', function(Y) {
                     }
                     this.fire("afterValidation");
                     if (val.valueselector) val = val.valueselector;
-                    callback.call(scope || this, val);
+                    callback.call(scope || this, val, this._oData);
                 /*
                       this._form.destroy();
                     widget.remove(newTab.item(0).get('index'));
@@ -91,6 +91,7 @@ YUI.add('wegas-editor', function(Y) {
                 }
             });
             this._form.setValue(data);
+            this._form._oData = data;
         }
     }, {
         ATTRS: {

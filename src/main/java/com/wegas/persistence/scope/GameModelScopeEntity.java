@@ -43,15 +43,6 @@ public class GameModelScopeEntity extends ScopeEntity {
     /**
      * 
      */
-    @Override
-    @XmlTransient
-    public void reset(AnonymousEntityManager aem) {
-        this.propagateDefaultVariableInstance(true);
-    }
-
-    /**
-     * 
-     */
     @PrePersist
     public void prePersist() {
         this.propagateDefaultVariableInstance(false);
@@ -61,13 +52,14 @@ public class GameModelScopeEntity extends ScopeEntity {
      * 
      * @param forceUpdate
      */
+    @Override
     @XmlTransient
-    public void propagateDefaultVariableInstance(boolean forceUpdate) {
+    public void propagateDefaultVariableInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
         VariableInstanceEntity vi = this.getVariableInstance();
         if (vi == null) {
             this.setVariableInstance(new Long("0"), vd.getDefaultVariableInstance().clone());
-        } else if (forceUpdate) {
+        } else if (force) {
             vi.merge(vd.getDefaultVariableInstance());
         }
     }

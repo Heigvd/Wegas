@@ -21,7 +21,6 @@ YUI.add('wegas-app', function(Y) {
         // TODO Delete datasources
         },
         render: function() {
-            
             this._requestDataSources();
         },
 	
@@ -65,6 +64,10 @@ YUI.add('wegas-app', function(Y) {
                     request: ""
                 });
             }
+            
+            /*this.dataSources.Game.after("response", function() {
+                Y.log("info", "Game has been modified, reloading variable descriptors", "Wegas.Editor");
+            });*/
         },
 	
         _initUI: function() {
@@ -111,16 +114,8 @@ YUI.add('wegas-app', function(Y) {
             currentTeam: { },
             currentPlayer: { 
                 setter: function(val, name) {
-                    var cgame = this.dataSources.Game.rest.getCurrentGame(),
-                    j=0, k;
-                    for (;j<cgame.teams.length;j++) {
-                        for (k=0;k<cgame.teams[j].players.length;k++) {
-                            if (cgame.teams[j].players[k].id == val) {
-                                this.set('currentTeam', cgame.teams[j].id);
-                                return val;
-                            }
-                        }
-                    }
+                    // When current player is updated, we also update current team
+                    this.set('currentTeam', this.dataSources.Game.rest.getTeamByPlayerId(val));
                     return val;
                 }
             }

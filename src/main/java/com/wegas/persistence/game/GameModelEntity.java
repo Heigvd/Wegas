@@ -137,11 +137,10 @@ public class GameModelEntity extends NamedEntity implements Serializable {
 
     /**
      * 
-     * @param aem 
      */
-    public void reset(AnonymousEntityManager aem) {
+    public void propagateDefaultVariableInstance(boolean force) {
         for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
-            vd.getScope().reset(aem);
+            vd.getScope().propagateDefaultVariableInstance(force);
         }
     }
 

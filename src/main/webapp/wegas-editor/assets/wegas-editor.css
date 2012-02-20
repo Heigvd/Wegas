@@ -274,6 +274,9 @@ img.inputEx-ListField-delButton {
 }
 
 /* YUI 2 TreeView Styles */
+.ygtvlabel, .ygtvlabel:link, .ygtvlabel:visited, .ygtvlabel:hover {
+    white-space: nowrap;
+}
 .ygtv-highlight1 .ygtvlabel, .ygtv-highlight1 .ygtvlabel:link, 
 .ygtv-highlight1 .ygtvlabel:visited, .ygtv-highlight1 .ygtvlabel:hover {
     background: transparent;
@@ -302,7 +305,7 @@ td.yui3-wegas-treeview-icon-player  {
     height: 18px;
     padding-left: 20px;
     display: block;
-    
+
 }
 td.yui3-wegas-treeview-icon-gamemodel {
     background: transparent url(wegas-editor-sprite.png) 0 -514px no-repeat;

@@ -1,10 +1,32 @@
-<%@page contentType="text/html" pageEncoding="UTF-8" import="org.apache.shiro.SecurityUtils, org.apache.shiro.subject.Subject"%>
-<!DOCTYPE html >
-<%
-    Subject currentUser = SecurityUtils.getSubject();
-    System.out.println(currentUser.getPrincipal());
-    System.out.println(currentUser.getPrincipals());
+<%@page import="javax.naming.InitialContext"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="com.wegas.ejb.PlayerManager, com.wegas.persistence.game.PlayerEntity"%>
+<%!    private PlayerManager pm = null;
+    private PlayerEntity cPlayer = null;
+
+    public void jspInit() {
+
+        try {
+            InitialContext ic = new InitialContext();
+            pm = (PlayerManager) new InitialContext().lookup("java:module/PlayerManagerBean");
+        }
+        catch (Exception ex) {
+            System.out.println("Error:" + ex.getMessage());
+        }
+
+        // 
+
+    }
+
+    public void jspDestroy() {
+    }
 %>
+<%
+    String playerId = request.getParameter("playerId");
+    if (playerId == null) { playerId = "1"; }
+    cPlayer = pm.getPlayer(Long.parseLong(playerId));
+%>
+<!DOCTYPE html >
 <html lang="en"> 
     <head>   
         <title>Wegas - 0.2</title> 
@@ -52,8 +74,8 @@
         <script src="lib/inputex/build/loader.js"  type='text/javascript'></script>
 
         <!-- Atmosphere jquery -->
-        <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
-        <script type="text/javascript" src="jquery/jquery.atmosphere.js"></script>
+        <!-- <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
+       <script type="text/javascript" src="jquery/jquery.atmosphere.js"></script>-->
 
 
         <script type="text/javascript" >
@@ -72,18 +94,18 @@
                 }
             ],
             Config = {
-                base : 'http://localhost:8080/com.albasim_wegas_war_0.2',
+                base : 'http://localhost:8080/com.albasim_wegas_war_0.2/',
                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                 lang : 'en-US',
                 debug : true,
-                currentGameModel: 1,
-                currentGame: 1,
-                currentTeam: 1,
-                currentPlayer: 1,
+                currentGameModel: <%= cPlayer.getTeam().getGame().getGameModel().getId() %>,
+                currentGame: <%= cPlayer.getTeam().getGame().getId() %>,
+                currentTeam: <%= cPlayer.getTeam().getId() %>,
+                currentPlayer: <%= cPlayer.getId() %>,
                 loggedIn : true,
                 css: ['wegas-projectmanagementgame/assets/wegas-projectmanagementgame.css'],
                 dataSources: {
-                    GameModel: {
+                    "GameModel": {
                         source: "rs/gm",
                         plugins: [
                             {
@@ -95,6 +117,20 @@
                                     }
                                 }
                             }, { fn: "GameModelDataSourceREST" }
+                        ]
+                    },
+                    "Game": {
+                        source: "rs/gm/1/game",
+                        plugins: [
+                            {
+                                fn: "DataSourceJSONSchema", 
+                                cfg: {
+                                    schema: {
+                                        resultListLocator: "."
+                                        // resultFields: ["name", "id", "@class", "errors"]
+                                    }
+                                }
+                            }, { fn: "GameDataSourceREST" }
                         ]
                     },
                     "Page": {
@@ -124,7 +160,7 @@
                             }, { fn: "DataSourceREST" }
                         ]
                     },
-                    "Team": {
+                    /* "Team": {
                         source: "rs/gm/1/Team",
                         plugins: [
                             {
@@ -136,7 +172,7 @@
                                 }
                             }, { fn: "DataSourceREST" }
                         ]
-                    },
+                    },*/
                     "VariableDescriptor": {
                         source: "rs/gm/1/vardesc",
                         plugins: [
@@ -151,19 +187,73 @@
                         ]
                     }
                 },
-                forms: {
+                editorMenus: {
 
+                    /*********************************************************** Entities Admin Menus */
+                    "Game": [
+                        { text: "New team", value: { op:'addChild', childClass: "Team" } }
+                        /*                        {
+                            text: "Edit",
+                            op: 'update',
+                            adminForm: "AlbaListWidget"
+                        },
+                        {
+                            text: "New",
+                            op: "new",
+                            submenu:  {
+                                id: "AlbaListWidgetAdd",
+                                itemdata: [
+                                    
+                                ]
+                            }	
+                        },
+                        { text: "Delete", op: 'delete' }*/
+                    ],
+                    "Team": [
+                        { text: "New player", value: { op:'addChild', childClass: "Player" } }
+                        /*                        {
+                            text: "Edit",
+                            op: 'update',
+                            adminForm: "AlbaListWidget"
+                        },
+                        {
+                            text: "New",
+                            op: "new",
+                            submenu:  {
+                                id: "AlbaListWidgetAdd",
+                                itemdata: [
+                                    
+                                ]
+                            }	
+                        },
+                        { text: "Delete", op: 'delete' }*/
+                    ]
+                },
+                forms: {
                     /*********************************************************** Types Forms */
                     "GameModel" : [ 
-                        { name: 'id', type: 'hidden'/*, required: true*/ },
+                        { name: 'id', type: 'hidden' },
                         { name: 'name', label:'Name', required: true},
                         { name: '@class', value:'GameModel', type: 'hidden'}
+                    ],  
+                    "Game" : [ 
+                        { name: 'id', type: 'hidden' },
+                        { name: 'name', label:'Name', required: true},
+                        { name: 'token', label:'Token', required: true},
+                        { name: '@class', value:'Game', type: 'hidden'}
                     ],
                     "Team" : [ 
                         { name: 'id', type: 'hidden'},
+                        { name: 'gameId', type: 'hidden'},
                         { name: '@class', value:'Team', type: 'hidden'},
                         { name: 'name', label:'Name', required: true},
                         // { name: 'token', label:'Token'},
+                    ],
+                    "Player" : [ 
+                        { name: 'id', type: 'hidden'},
+                        { name: 'teamId', type: 'hidden'},
+                        { name: 'name', label:'Name', required: true},
+                        { name: '@class', value:'Player', type: 'hidden'}
                     ],
                     "User" : [ 
                         { name: 'id', type: 'hidden'},
@@ -171,7 +261,7 @@
                         { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
                         { name: 'password', type: 'password', label: 'New password', showMsg: true,  id: 'firstPassword', strengthIndicator: true, capsLockWarning: true },
                         { type: 'password', label: 'Confirmation', showMsg: true, confirm: 'firstPassword' },
-                        { name: '@class', label:'Class', type: 'hidden'}
+                        { name: '@class', value:'User', type: 'hidden'}
                     ],
                     "StringVariableDescriptor": [
                         { name: 'id', type: 'hidden'},

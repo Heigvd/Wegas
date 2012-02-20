@@ -147,8 +147,9 @@ public class GameModelManager {
     public GameModelEntity reset(Long gameModelId) {
         
         GameModelEntity gm = this.getGameModel(gameModelId);
-        gm.reset(aem);
-        aem.update(gm);
+        gm.propagateDefaultVariableInstance(true);
+        em.flush();
+        em.refresh(gm);
         return gm;
     }
 
