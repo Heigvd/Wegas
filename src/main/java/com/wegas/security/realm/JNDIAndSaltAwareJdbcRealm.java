@@ -63,14 +63,13 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
         ByteSource salt = this.generateSalt();
         String hPassword = JNDIAndSaltAwareJdbcRealm.saltedHash(password, salt);
         Connection conn = this.dataSource.getConnection();
-        try (PreparedStatement userStmt = conn.prepareStatement(JNDIAndSaltAwareJdbcRealm.DEFAULT_CREATEUSER_QUERY)) {
-            userStmt.setString(1, userName);
-            userStmt.setString(2, hPassword);
-            // @fixme dont know why it does not work w/the real salt see above
-            // userStmt.setString(3, salt.toString());
-            userStmt.setString(3, "random_salt_value_" + password);
-            userStmt.executeUpdate();
-        }
+        PreparedStatement userStmt = conn.prepareStatement(JNDIAndSaltAwareJdbcRealm.DEFAULT_CREATEUSER_QUERY);
+        userStmt.setString(1, userName);
+        userStmt.setString(2, hPassword);
+        // @fixme dont know why it does not work w/the real salt see above
+        // userStmt.setString(3, salt.toString());
+        userStmt.setString(3, "random_salt_value_" + password);
+        userStmt.executeUpdate();
     }
 
     private ByteSource generateSalt() {

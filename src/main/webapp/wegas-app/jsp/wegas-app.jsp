@@ -1,6 +1,7 @@
 <%@page import="javax.naming.InitialContext"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.wegas.ejb.PlayerManager, com.wegas.persistence.game.PlayerEntity"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%!    private PlayerManager pm = null;
     private PlayerEntity cPlayer = null;
 
@@ -42,16 +43,16 @@
 
         <!-- YUI -->
         <!-- CDN  -->
-        <!--<link rel="stylesheet" type="text/css" 
-                        href="http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&3.3.0/build/cssreset/reset-min.css&3.3.0/build/cssgrids/grids-min.css&3.3.0/build/cssbase/base-min.css&3.3.0pr3/build/widget/assets/skins/sam/widget.css&3.3.0pr3/build/node-menunav/assets/skins/sam/node-menunav.css&" charset="utf-8" /> 
-            <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/skin.css">   -->
+        <link rel="stylesheet" type="text/css" 
+              href="http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&3.3.0/build/cssreset/reset-min.css&3.3.0/build/cssgrids/grids-min.css&3.3.0/build/cssbase/base-min.css&3.3.0pr3/build/widget/assets/skins/sam/widget.css&3.3.0pr3/build/node-menunav/assets/skins/sam/node-menunav.css&" charset="utf-8" /> 
+        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/skin.css">   
 
         <!-- Self hosted -->
-        <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssfonts/fonts-min.css" />
-        <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssreset/reset-min.css" />
+        <!-- <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssfonts/fonts-min.css" />
+         <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssreset/reset-min.css" />-->
 
         <!-- WireIt -->
-        <link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> 
+        <!--<link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> -->
 
         <!-- InputEx -->
         <!-- <link type='text/css' rel='stylesheet' href='lib/inputex/css/inputEx.css' />-->
@@ -61,14 +62,13 @@
 
     </head> 
     <body class="yui3-skin-sam yui-skin-sam " > 
-
+        
         <!-- YUI Base -->
+        <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.4.1/build/yui/yui-min.js&3.4.1/build/loader/loader-min.js"></script> 
         <!-- CDN -->
-        <!--<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.5.0pr1/build/yui/yui-min.js&3.5.0pr1/build/loader/loader-min.js"></script> 
-        -->
         <!-- Self hosted -->
-        <script type="text/javascript" src="lib/yui3/build/yui/yui.js"></script> 
-        <script type="text/javascript" src="lib/yui3/build/loader/loader.js"></script>
+        <!--<script type="text/javascript" src="lib/yui3/build/yui/yui.js"></script> 
+        <script type="text/javascript" src="lib/yui3/build/loader/loader.js"></script> -->
 
         <!-- inputEx Base -->
         <script src="lib/inputex/build/loader.js"  type='text/javascript'></script>
@@ -94,7 +94,7 @@
                 }
             ],
             Config = {
-                base : 'http://localhost:8080/com.albasim_wegas_war_0.2/',
+                base : "<%= request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()%><c:url value="/" />",
                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                 lang : 'en-US',
                 debug : true,
@@ -415,7 +415,7 @@
             ];
         </script> 
 
-        <script type="text/javascript" src="wegas-app/js/wegas-bootstrap.js"></script>
+        <script type="text/javascript" src="wegas-app/js/wegas-loader.js"></script>
 
     </body>
 </html>

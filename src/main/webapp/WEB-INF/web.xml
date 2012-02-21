@@ -39,7 +39,6 @@
         <url-pattern>/wegas-login</url-pattern>
         <url-pattern>/wegas-signup</url-pattern>
     </servlet-mapping>
-    
     <!-- Logout page -->
     <servlet>
         <servlet-name>Wegas Logout</servlet-name>
@@ -49,7 +48,6 @@
         <servlet-name>Wegas Logout</servlet-name>
         <url-pattern>/wegas-logout</url-pattern>
     </servlet-mapping>
-    
     <!-- Lobby page -->
     <servlet>
         <servlet-name>Wegas Lobby</servlet-name>
@@ -124,18 +122,15 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    
     <!-- liquibase configuration -->
     <context-param>
         <param-name>liquibase.changelog</param-name>
         <param-value>db.changelog.xml</param-value>
     </context-param>
-
     <context-param>
         <param-name>liquibase.datasource</param-name>
         <param-value>jdbc/wegas_dev</param-value>
     </context-param>
-
     <!-- liquibase sevlet listener to check database on start up and apply new changes if needed -->
     <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>

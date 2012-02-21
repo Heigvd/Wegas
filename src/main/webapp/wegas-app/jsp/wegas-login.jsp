@@ -30,7 +30,7 @@
                 display:inline-block;
                 float:left;
                 padding:10px;
-                margi :10px;
+                margin :10px;
                 border: 1px outset gray;
                 font-family: Arial, Helvetica;
             }
