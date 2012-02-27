@@ -9,8 +9,6 @@
  */
 package com.wegas.ejb;
 
-import com.wegas.exception.InvalidContent;
-import com.wegas.exception.NotFound;
 import com.wegas.persistence.game.GameModelEntity;
 import java.util.Collection;
 import java.util.List;
@@ -93,10 +91,6 @@ public class GameModelManager {
      */
     public GameModelEntity getGameModel(Long gmid) {
         GameModelEntity find = em.find(GameModelEntity.class, gmid);
-
-        if (find == null) {
-            throw new NotFound();
-        }
         return find;
     }
 
@@ -118,14 +112,10 @@ public class GameModelManager {
      * @param theGameModel
      * @return  
      */
-    public GameModelEntity updateGameModel(Long gmID, GameModelEntity theGameModel) {
+    public GameModelEntity updateGameModel(Long gmID, GameModelEntity updatedGameModel) {
         GameModelEntity gm = getGameModel(gmID);
-        if (gm.equals(theGameModel)) {
-            GameModelEntity update = aem.update(theGameModel);
-            return update;
-        }
-
-        throw new InvalidContent();
+        gm.merge(updatedGameModel);
+        return gm;
     }
 
 

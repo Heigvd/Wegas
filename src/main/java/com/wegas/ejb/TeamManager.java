@@ -9,7 +9,6 @@
  */
 package com.wegas.ejb;
 
-import com.wegas.exception.NotFound;
 import com.wegas.persistence.game.GameEntity;
 import com.wegas.persistence.game.PlayerEntity;
 import com.wegas.persistence.game.TeamEntity;
@@ -25,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 /**
  *
@@ -64,7 +64,6 @@ public class TeamManager {
         CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
         cq.select(cq.from(GroupEntity.class));
         Query q = em.createQuery(cq);
-
         return q.getResultList();
     }
 
@@ -74,12 +73,7 @@ public class TeamManager {
      * @return
      */
     public TeamEntity getTeam(Long id) {
-        TeamEntity find = em.find(TeamEntity.class, id);
-
-        if (find == null) {
-            throw new NotFound();
-        }
-        return find;
+        return em.find(TeamEntity.class, id);
     }
 
     /**
@@ -103,6 +97,7 @@ public class TeamManager {
     public TeamEntity updateTeam(Long id, TeamEntity t) {
         TeamEntity cTeam = this.getTeam(id);
         cTeam.merge(t);
+        em.flush();
         return cTeam;
     }
 

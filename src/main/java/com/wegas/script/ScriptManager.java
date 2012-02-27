@@ -53,10 +53,10 @@ public class ScriptManager {
     public List<VariableInstanceEntity> runScript(Long gameModelId, Long playerId, ScriptEntity s) {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
-        Invocable invocableEngine = (Invocable) engine;
+       // Invocable invocableEngine = (Invocable) engine;
         GameModelEntity gm = gmm.getGameModel(gameModelId);
         List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
-
+        
         try {
             for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
                 VariableInstanceEntity vi = vd.getVariableInstance(playerId);

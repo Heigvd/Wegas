@@ -27,7 +27,7 @@ var Y = YUI({
             combine: false,
             base: Config.base,
             comboBase: Config.base,
-            root: 'rr',
+          //  root: 'rr',
             modules:  {
                 /*************************************************************** Base */
                 'wegas-app': {
@@ -207,7 +207,6 @@ var Y = YUI({
 	
     }
 }).use('wegas-app', 'wegas-editor', function (Y) {
-    
     Y.on('domready', function() {						// Launch the app as soon as Dom is ready
         var editor = new Y.Wegas.Editor(Config);
         editor.render();

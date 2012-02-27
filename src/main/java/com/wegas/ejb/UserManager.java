@@ -9,8 +9,6 @@
  */
 package com.wegas.ejb;
 
-import com.wegas.exception.InvalidContent;
-import com.wegas.exception.NotFound;
 import com.wegas.persistence.users.UserEntity;
 import com.wegas.persistence.users.UserEntity_;
 
@@ -68,10 +66,6 @@ public class UserManager {
      */
     public UserEntity getUser(Long id) {
         UserEntity find = em.find(UserEntity.class, id);
-
-        if (find == null) {
-            throw new NotFound();
-        }
         return find;
     }
 
@@ -111,13 +105,9 @@ public class UserManager {
      * @return   
      */
     public UserEntity updateUser(Long id, UserEntity u) {
-        UserEntity gm = this.getUser(id);
-        if (gm.equals(u)) {
-            UserEntity update = aem.update(u);
-            return update;
-        }
-
-        throw new InvalidContent();
+        UserEntity ue = this.getUser(id);
+        ue.merge(u);
+        return ue;
     }
 
     /**

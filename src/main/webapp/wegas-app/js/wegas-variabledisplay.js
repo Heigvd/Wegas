@@ -13,7 +13,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
             this._dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
         },
         destroyer: function() {
-            
+            this._dataSource = null;
         },
 	
         renderUI: function () {  

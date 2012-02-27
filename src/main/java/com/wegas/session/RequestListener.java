@@ -4,13 +4,9 @@
  */
 package com.wegas.session;
 
-import com.wegas.exception.InvalidContent;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *

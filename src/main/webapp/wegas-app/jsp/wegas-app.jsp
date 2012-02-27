@@ -1,7 +1,7 @@
 <%@page import="javax.naming.InitialContext"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.wegas.ejb.PlayerManager, com.wegas.persistence.game.PlayerEntity"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<!--< jsp:useBean beanName="java:module/PlayerManagerBean" />-->
 <%!    private PlayerManager pm = null;
     private PlayerEntity cPlayer = null;
 

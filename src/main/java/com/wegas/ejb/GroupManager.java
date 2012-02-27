@@ -9,8 +9,6 @@
  */
 package com.wegas.ejb;
 
-import com.wegas.exception.InvalidContent;
-import com.wegas.exception.NotFound;
 import com.wegas.persistence.users.GroupEntity;
 import java.util.List;
 import java.util.logging.Logger;
@@ -60,10 +58,6 @@ public class GroupManager {
      */
     public GroupEntity getGroup(Long id) {
         GroupEntity find = em.find(GroupEntity.class, id);
-
-        if (find == null) {
-            throw new NotFound();
-        }
         return find;
     }
     
@@ -81,14 +75,10 @@ public class GroupManager {
      * @param u
      * @return
      */
-    public GroupEntity updateGroup(Long id, GroupEntity u) {
-        GroupEntity gm = this.getGroup(id);
-        if (gm.equals(u)) {
-            GroupEntity update = aem.update(u);
-            return update;
-        }
-
-        throw new InvalidContent();
+    public GroupEntity updateGroup(Long id, GroupEntity updatedGroup) {
+        GroupEntity group = this.getGroup(id);
+        group.merge(updatedGroup);
+        return group;
     }
 
 
