@@ -14,7 +14,7 @@ package com.wegas.persistence.game;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-public abstract class NamedEntity extends AnonymousEntity {
+public abstract class NamedEntity extends AbstractEntity {
 
     
     /**
@@ -22,7 +22,7 @@ public abstract class NamedEntity extends AnonymousEntity {
      * @param n
      */
     @Override
-    public void merge(AnonymousEntity n) {
+    public void merge(AbstractEntity n) {
         this.setName(((NamedEntity)n).getName());
     }
     /**

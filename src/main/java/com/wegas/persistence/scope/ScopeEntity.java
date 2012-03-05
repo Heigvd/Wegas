@@ -9,19 +9,12 @@
  */
 package com.wegas.persistence.scope;
 
-import com.wegas.ejb.AnonymousEntityManager;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
-import com.wegas.persistence.game.*;
 import java.io.Serializable;
 import java.util.Map;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -44,26 +37,26 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "TeamScope", value = TeamScopeEntity.class),
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScopeEntity.class)
 })
-public class ScopeEntity extends AnonymousEntity implements Serializable {
+public class ScopeEntity extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
-     * 
+     *
      */
     @Id
     @XmlID
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scope_seq")
     private Long id;
     //abstract public void getVariableInstance(UserEntity u);
-    /** 
-     * 
+    /**
+     *
      */
     @OneToOne
     @XmlTransient
     private VariableDescriptorEntity variableDescriptor;
 
     /**
-     * 
+     *
      * @param userId
      * @param v
      */
@@ -72,9 +65,9 @@ public class ScopeEntity extends AnonymousEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param userId
-     * @return  
+     * @return
      */
     @XmlTransient
     public VariableInstanceEntity getVariableInstance(Long userId) {
@@ -82,7 +75,7 @@ public class ScopeEntity extends AnonymousEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public Map<Long, VariableInstanceEntity> getVariableInstances() {
@@ -90,15 +83,15 @@ public class ScopeEntity extends AnonymousEntity implements Serializable {
     }
 
     /**
-     * 
-     * @param aem 
+     *
+     * @param force 
      */
     @XmlTransient
     public void propagateDefaultVariableInstance(boolean force) {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @JsonBackReference("variabledescriptor-scope")
@@ -107,7 +100,7 @@ public class ScopeEntity extends AnonymousEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param varDesc
      */
     @JsonBackReference("variabledescriptor-scope")
@@ -116,7 +109,7 @@ public class ScopeEntity extends AnonymousEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -126,7 +119,7 @@ public class ScopeEntity extends AnonymousEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param id
      */
     @Override
@@ -136,8 +129,9 @@ public class ScopeEntity extends AnonymousEntity implements Serializable {
     }
 
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
     }
-    /*@Override
-    public void reset(){}*/
+    /*
+     * @Override public void reset(){}
+     */
 }

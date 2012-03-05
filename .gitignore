@@ -6,3 +6,4 @@ target/*
 catalog.xml
 nb-configuration.xml
 **Thumbs.db
+faces-config.NavData

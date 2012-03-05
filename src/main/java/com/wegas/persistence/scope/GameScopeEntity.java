@@ -9,8 +9,7 @@
  */
 package com.wegas.persistence.scope;
 
-import com.wegas.ejb.AnonymousEntityManager;
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -51,7 +50,7 @@ public class GameScopeEntity extends ScopeEntity {
     }
 
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

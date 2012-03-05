@@ -9,7 +9,7 @@
  */
 package com.wegas.persistence.users;
 
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.game.PlayerEntity;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,7 +36,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @UniqueConstraint(columnNames = "name"))
 @XmlRootElement
 @XmlType(name = "User", propOrder = {"@class", "id", "name"})
-public class UserEntity extends AnonymousEntity {
+public class UserEntity extends AbstractEntity {
     
     private static final Logger logger = Logger.getLogger("UserEntity");
     /**
@@ -105,7 +105,7 @@ public class UserEntity extends AnonymousEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

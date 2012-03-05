@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListPlayerEntityTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{bundle.ListPlayerEntityEmpty}" rendered="#{playerEntityController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{playerEntityController.items.rowCount > 0}">
+                    <h:outputText value="#{playerEntityController.pagination.pageFirstItem + 1}..#{playerEntityController.pagination.pageLastItem + 1}/#{playerEntityController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{playerEntityController.previous}" value="#{bundle.Previous} #{playerEntityController.pagination.pageSize}" rendered="#{playerEntityController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{playerEntityController.next}" value="#{bundle.Next} #{playerEntityController.pagination.pageSize}" rendered="#{playerEntityController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{playerEntityController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPlayerEntityTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPlayerEntityTitle_user}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.user}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPlayerEntityTitle_team}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.team}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPlayerEntityTitle_name}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.name}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListPlayerEntityTitle_teamId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.teamId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{playerEntityController.prepareView}" value="#{bundle.ListPlayerEntityViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{playerEntityController.prepareEdit}" value="#{bundle.ListPlayerEntityEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{playerEntityController.destroy}" value="#{bundle.ListPlayerEntityDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{playerEntityController.prepareCreate}" value="#{bundle.ListPlayerEntityCreateLink}"/>
+                <br />
+                <br />
+                <h:commandLink value="#{bundle.ListPlayerEntityIndexLink}" action="/index" immediate="true" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

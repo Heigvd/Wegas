@@ -50,15 +50,29 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
     public JNDIAndSaltAwareJdbcRealm() {
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getJndiDataSourceName() {
         return jndiDataSourceName;
     }
 
+    /**
+     * 
+     * @param jndiDataSourceName
+     */
     public void setJndiDataSourceName(String jndiDataSourceName) {
         this.jndiDataSourceName = jndiDataSourceName;
         this.dataSource = getDataSourceFromJNDI(jndiDataSourceName);
     }
 
+    /**
+     * 
+     * @param userName
+     * @param password
+     * @throws SQLException
+     */
     public void createUser(String userName, String password) throws SQLException {
         ByteSource salt = this.generateSalt();
         String hPassword = JNDIAndSaltAwareJdbcRealm.saltedHash(password, salt);

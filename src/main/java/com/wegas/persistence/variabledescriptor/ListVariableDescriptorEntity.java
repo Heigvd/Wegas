@@ -9,6 +9,7 @@
  */
 package com.wegas.persistence.variabledescriptor;
 
+import com.wegas.persistence.variableinstance.ListVariableInstanceEntity;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -26,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "ListVariableDescriptor")
-public class ListVariableDescriptorEntity extends VariableDescriptorEntity {
+public class ListVariableDescriptorEntity extends VariableDescriptorEntity<ListVariableInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("ListVariableDescriptorEntity");

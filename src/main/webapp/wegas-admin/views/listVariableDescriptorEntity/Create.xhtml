@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateListVariableDescriptorEntityTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreateListVariableDescriptorEntityLabel_variableInstance}" for="variableInstance" />
+                    <h:inputText id="variableInstance" value="#{listVariableDescriptorEntityController.selected.variableInstance}" title="#{bundle.CreateListVariableDescriptorEntityTitle_variableInstance}" />
+                    <h:outputLabel value="#{bundle.CreateListVariableDescriptorEntityLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{listVariableDescriptorEntityController.selected.id}" title="#{bundle.CreateListVariableDescriptorEntityTitle_id}" />
+                    <h:outputLabel value="#{bundle.CreateListVariableDescriptorEntityLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{listVariableDescriptorEntityController.selected.name}" title="#{bundle.CreateListVariableDescriptorEntityTitle_name}" />
+                    <h:outputLabel value="#{bundle.CreateListVariableDescriptorEntityLabel_gameModel}" for="gameModel" />
+                    <h:selectOneMenu id="gameModel" value="#{listVariableDescriptorEntityController.selected.gameModel}" title="#{bundle.CreateListVariableDescriptorEntityTitle_gameModel}" >
+                        <f:selectItems value="#{gameModelEntityController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.CreateListVariableDescriptorEntityLabel_scope}" for="scope" />
+                    <h:selectOneMenu id="scope" value="#{listVariableDescriptorEntityController.selected.scope}" title="#{bundle.CreateListVariableDescriptorEntityTitle_scope}" >
+                        <f:selectItems value="#{scopeEntityController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.CreateListVariableDescriptorEntityLabel_defaultVariableInstance}" for="defaultVariableInstance" />
+                    <h:selectOneMenu id="defaultVariableInstance" value="#{listVariableDescriptorEntityController.selected.defaultVariableInstance}" title="#{bundle.CreateListVariableDescriptorEntityTitle_defaultVariableInstance}" >
+                        <f:selectItems value="#{variableInstanceEntityController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{listVariableDescriptorEntityController.create}" value="#{bundle.CreateListVariableDescriptorEntitySaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{listVariableDescriptorEntityController.prepareList}" value="#{bundle.CreateListVariableDescriptorEntityShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:commandLink value="#{bundle.CreateListVariableDescriptorEntityIndexLink}" action="/index" immediate="true" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

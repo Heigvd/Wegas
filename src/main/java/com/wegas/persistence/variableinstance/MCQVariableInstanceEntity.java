@@ -9,7 +9,7 @@
  */
 package com.wegas.persistence.variableinstance;
 
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -88,7 +88,7 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     }
 
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         MCQVariableInstanceEntity vi = (MCQVariableInstanceEntity) a;
         this.setActive(vi.getActive());
 

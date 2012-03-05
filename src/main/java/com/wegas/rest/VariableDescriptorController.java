@@ -9,127 +9,65 @@
  */
 package com.wegas.rest;
 
-import com.wegas.ejb.GameModelManager;
-import com.wegas.ejb.VariableDescriptorManager;
+import com.wegas.ejb.GameModelEntityFacade;
+import com.wegas.ejb.VariableDescriptorEntityFacade;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.game.GameModelEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import java.util.Collection;
-
-
 import java.util.logging.Logger;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("gm/{gameModelId : [1-9][0-9]*}/vardesc")
-public class VariableDescriptorController {
+@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor")
+public class VariableDescriptorController extends AbstractRestController<VariableDescriptorEntityFacade> {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM_VariableDescriptor");
+    /**
+     *
+     */
     @EJB
-    private GameModelManager gmm;
+    private VariableDescriptorEntityFacade variableDescriptorFacade;
+    /**
+     *
+     */
     @EJB
-    private VariableDescriptorManager vdm;
+    private GameModelEntityFacade gameModelFacade;
+    /**
+     *
+     */
+    @Context
+    private UriInfo uriInfo;
 
     /**
-     * 
-     * @param gameModelId
+     *
      * @return
      */
+    @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<VariableDescriptorEntity> index(
-            @PathParam("gameModelId") Long gameModelId) {
-        GameModelEntity theGameModel = gmm.getGameModel(gameModelId);
-        //  return AlbaHelper.getIndex(theGameModel.getVariableDescriptors());
-        return theGameModel.getVariableDescriptors();
-    }
-
-    /**
-     * Retrieve the list of game model variable descriptor
-     * 
-     * @param gameModelId game model id
-     * @param variableDescriptorId 
-     * @return OK
-     */
-    @GET
-    @Path("{variableDescriptorId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public VariableDescriptorEntity get(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorId") Long variableDescriptorId) {
-        return vdm.getVariableDescriptor(variableDescriptorId);
-    }
-
-    /**
-     * Create a global variable descriptor
-     * 
-     * @param gameModelId 
-     * @param variableDescriptor 
-     * @return 
-     */
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public VariableDescriptorEntity create(
-            @PathParam("gameModelId") Long gameModelId,
-            VariableDescriptorEntity variableDescriptor) {
-
-        vdm.create(gameModelId, variableDescriptor);
-
-        return variableDescriptor;
-    }
-
-    /**
-     * @param gameModelId
-     * @param variableDescriptorId 
-     * @param variableDescriptor 
-     * @return 
-     */
-    @PUT
-    @Path("{variableDescriptorId : [1-9][0-9]*}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public VariableDescriptorEntity update(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorId") Long variableDescriptorId,
-            VariableDescriptorEntity variableDescriptor) {
-
-        return vdm.update(variableDescriptorId, variableDescriptor);
-    }
-
-    /**
-     * 
-     * @param gameModelId
-     * @param variableDescriptorId 
-     * @return 
-     */
-    @DELETE
-    @Path("{variableDescriptorId : [1-9][0-9]*}")
-    public Response destroy(@PathParam("gameModelId") String gameModelId,
-            @PathParam("variableDescriptorId") String variableDescriptorId) {
-
-        vdm.destroyVariableDescriptor(gameModelId, variableDescriptorId);
-
-        return Response.status(Response.Status.OK).build();
+    public Collection<AbstractEntity> index() {
+        System.out.println("*" + gameModelFacade + "*" + uriInfo);
+        Long gameModelId = this.getGameModelId();
+        GameModelEntity gameModel = gameModelFacade.find(gameModelId);
+        return (Collection) gameModel.getVariableDescriptors();
     }
 
     /**
      * Resets all the variables of a given game model
-     * 
+     *
      * @param gameModelId game model id
      * @return OK
      */
@@ -137,6 +75,19 @@ public class VariableDescriptorController {
     @Path("reset")
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<VariableDescriptorEntity> reset(@PathParam("gameModelId") Long gameModelId) {
-        return gmm.reset(gameModelId).getVariableDescriptors();
+        return gameModelFacade.reset(gameModelId).getVariableDescriptors();
+    }
+
+    private Long getGameModelId() {
+        return new Long(this.uriInfo.getPathParameters().get("gameModelId").get(0));
+    }
+
+    /**
+     * 
+     * @return
+     */
+    @Override
+    protected VariableDescriptorEntityFacade getFacade() {
+        return this.variableDescriptorFacade;
     }
 }

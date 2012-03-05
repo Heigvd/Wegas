@@ -9,7 +9,7 @@
  */
 package com.wegas.persistence.variableinstance;
 
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.scope.ScopeEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import java.util.logging.Logger;
@@ -40,7 +40,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "NumberVariableInstance", value = NumberVariableInstanceEntity.class),
     
 })
-public class VariableInstanceEntity extends AnonymousEntity {
+public class VariableInstanceEntity extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("GMVariableKInstance");
@@ -127,6 +127,6 @@ public class VariableInstanceEntity extends AnonymousEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
     }
 }

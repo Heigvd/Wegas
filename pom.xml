@@ -11,7 +11,7 @@
         <developer>  
             <name>François-Xavier Aeberhard</name>  
             <url>http://www.red-agent.com</url>  
-        </developer>  
+        </developer>
     </developers>  
     <url>http://www.albasim.com/Wegas/</url>
     
@@ -28,6 +28,7 @@
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
         <jersey.version>1.8</jersey.version>
     </properties>
+    
     <reporting>
         <plugins>
             <plugin>
@@ -45,6 +46,7 @@
             </plugin>
         </plugins>
     </reporting>
+    
     <dependencies>
 
         <!-- Common -->
@@ -58,6 +60,8 @@
             <artifactId>commons-logging</artifactId>
             <version>1.1.1</version>
         </dependency>
+        
+        <!-- sl4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -116,6 +120,7 @@
             <version>2.2.0</version>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
@@ -136,7 +141,7 @@
             <version>2.0.3</version>
         </dependency>
         
-        <!-- Apache Shiro Dependencies-->
+        <!-- Apache Shiro -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
@@ -146,6 +151,52 @@
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-web</artifactId>
             <version>${shiro.version}</version>
+        </dependency>
+        
+        <!-- Apache Geronimo -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- HTMLUnit -->
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.6</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- jsf/jsp taglibs -->
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--<dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+            <version>2.1</version>
+        </dependency>-->
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>0.9.24</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>0.9.24</version>
         </dependency>
         
         <!-- Atmosphere Dependencies -->
@@ -171,26 +222,9 @@
             <artifactId>atmosphere-jersey</artifactId>
             <version>${atmosphere.version}</version>
         </dependency>-->
+
         
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_3.0_spec</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>0.9.24</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>0.9.24</version>
-        </dependency>
-          
+        
         <!-- Facebook API Dependencies -->
         <!--<dependency>
           <groupId>com.google.code.facebookapi</groupId>
@@ -206,18 +240,6 @@
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>-->
-        
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>2.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>standard</artifactId>
-            <version>1.1.2</version>
-        </dependency>
         
        <!-- <dependency>
             <groupId>org.mortbay.jetty</groupId>

@@ -9,7 +9,8 @@
  */
 package com.wegas.persistence.variabledescriptor;
 
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
+import com.wegas.persistence.variableinstance.MCQVariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -30,7 +31,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "MCQVariableDescriptor")
-public class MCQVariableDescriptorEntity extends VariableDescriptorEntity {
+public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVariableInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQVariableDescriptorEntity");
@@ -60,7 +61,7 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         super.merge(a);
         MCQVariableDescriptorEntity vd = (MCQVariableDescriptorEntity) a;
         this.setDescription(vd.getDescription());

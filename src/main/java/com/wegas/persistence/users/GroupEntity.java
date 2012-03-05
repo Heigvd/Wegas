@@ -11,7 +11,7 @@
 package com.wegas.persistence.users;
 
 
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.persistence.Entity;
@@ -39,7 +39,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @XmlRootElement
 @XmlType(name = "Group", propOrder = {"@class", "id", "name"})
 
-public class GroupEntity extends AnonymousEntity {
+public class GroupEntity extends AbstractEntity {
 
     private static final Logger logger = Logger.getLogger("GroupEntity");
 
@@ -94,7 +94,7 @@ public class GroupEntity extends AnonymousEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

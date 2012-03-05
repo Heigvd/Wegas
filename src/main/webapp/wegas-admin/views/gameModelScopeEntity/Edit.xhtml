@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditGameModelScopeEntityTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditGameModelScopeEntityLabel_variableInstances}" for="variableInstances" />
+                    <h:inputText id="variableInstances" value="#{gameModelScopeEntityController.selected.variableInstances}" title="#{bundle.EditGameModelScopeEntityTitle_variableInstances}" />
+                    <h:outputLabel value="#{bundle.EditGameModelScopeEntityLabel_variableInstance}" for="variableInstance" />
+                    <h:selectOneMenu id="variableInstance" value="#{gameModelScopeEntityController.selected.variableInstance}" title="#{bundle.EditGameModelScopeEntityTitle_variableInstance}" >
+                        <f:selectItems value="#{variableInstanceEntityController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.EditGameModelScopeEntityLabel_variableInstance}" for="variableInstance" />
+                    <h:selectOneMenu id="variableInstance" value="#{gameModelScopeEntityController.selected.variableInstance}" title="#{bundle.EditGameModelScopeEntityTitle_variableInstance}" >
+                        <f:selectItems value="#{variableInstanceEntityController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.EditGameModelScopeEntityLabel_variableInstance}" for="variableInstance" />
+                    <h:inputText id="variableInstance" value="#{gameModelScopeEntityController.selected.variableInstance}" title="#{bundle.EditGameModelScopeEntityTitle_variableInstance}" />
+                    <h:outputLabel value="#{bundle.EditGameModelScopeEntityLabel_variableInstances}" for="variableInstances" />
+                    <h:inputText id="variableInstances" value="#{gameModelScopeEntityController.selected.variableInstances}" title="#{bundle.EditGameModelScopeEntityTitle_variableInstances}" />
+                    <h:outputLabel value="#{bundle.EditGameModelScopeEntityLabel_variableDescriptor}" for="variableDescriptor" />
+                    <h:selectOneMenu id="variableDescriptor" value="#{gameModelScopeEntityController.selected.variableDescriptor}" title="#{bundle.EditGameModelScopeEntityTitle_variableDescriptor}" >
+                        <f:selectItems value="#{variableDescriptorEntityController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.EditGameModelScopeEntityLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{gameModelScopeEntityController.selected.id}" title="#{bundle.EditGameModelScopeEntityTitle_id}" />
+                </h:panelGrid>
+                <h:commandLink action="#{gameModelScopeEntityController.update}" value="#{bundle.EditGameModelScopeEntitySaveLink}"/>
+                <br />
+                <br />
+                <h:commandLink action="View" value="#{bundle.EditGameModelScopeEntityViewLink}" immediate="true"/>
+                <br />
+                <h:commandLink action="#{gameModelScopeEntityController.prepareList}" value="#{bundle.EditGameModelScopeEntityShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:commandLink value="#{bundle.EditGameModelScopeEntityIndexLink}" action="/index" immediate="true" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

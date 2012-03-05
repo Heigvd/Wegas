@@ -1,0 +1,111 @@
+[{
+        "id": 1,
+        "label": "Initiation Phase",
+        "@class": "Page",
+        "type": "List",
+        "cssClass": "pmg-mainlayout",
+        "children": [{
+                "label": "Indicators",
+                "type": "List",
+                "cssClass": "pmg-indicators",
+                "direction": "horizontal",
+                "children": [{ 
+                        "type": "VariableDisplay",
+                        "label": "Direction",
+                        "view": "gauge",
+                        "variable": "managementApproval",
+                        "dataSource": "VariableDescriptor"
+                    },{ 
+                        "type": "VariableDisplay",
+                        "label": "User",
+                        "view": "gauge",
+                        "variable": "userApproval",
+                        "dataSource": "VariableDescriptor"
+                    },{ 
+                        "type": "VariableDisplay",
+                        "label": "Fixed costs",
+                        "view": "gauge",
+                        "variable": "fixedCosts",
+                        "dataSource": "VariableDescriptor"
+                    },{ 
+                        "type": "VariableDisplay",
+                        "label": "Quality",
+                        "view": "gauge",
+                        "variable": "quality",
+                        "dataSource": "VariableDescriptor"
+                    },{ 
+                        "type": "VariableDisplay",
+                        "label": "Delay",
+                        "view": "gauge",
+                        "variable": "delay",
+                        "dataSource": "VariableDescriptor"
+                    },{ 
+                        "cssClass": "pmg-timevariable",
+                        "type": "VariableDisplay",
+                        "label": "Available time",
+                        "variable": "timeCards",
+                        "view": "box",
+                        "dataSource": "VariableDescriptor"
+                    }]
+            },
+            {
+                "label": "Menu",
+                "type": "List",
+                "cssClass": "pmg-topmenu",
+                "direction": "horizontal",
+                "children": [{ 
+                        "type": "Button",
+                        "label": "Accueil",
+                        "id": "pmg-topbutton",
+                        "cssClass": "pmg-topbutton",
+                        "targetDisplayArea": "pmg-maindisplayarea",
+                        "subpage": {   
+                            "type": "Text",
+                            "content": "Welcome to AlbaSIM."
+                        }
+                    }, { 
+                        "type": "Button",
+                        "label": "Projet",
+                        "id": "pmg-topbutton",
+                        "cssClass": "pmg-topbutton",
+                        "targetDisplayArea": "pmg-maindisplayarea",
+                        "subpage": {   
+                            "type": "Text",
+                            "content": "Your project is looking great.<img style=\"float:right\" src=\"http://ec.europa.eu/europeaid/how/delivering-aid/project-approach/images/graph_project1_6645.gif\" />"   
+                        }
+                    },{ "type": "LoginButton" }]
+            },
+            {
+                "label": "Main area",
+                "type": "List",
+                "id": "pmg-body", 
+                "cssClass": "pmg-body", 
+                "children": [{   
+                        "type": "DisplayArea",
+                        "id": "pmg-maindisplayarea",
+                        "cssClass": "pmg-maindisplayarea"
+                    }, {
+                        "type": "List",
+                        "id": "pmg-rightmenu",
+                        "cssClass": "pmg-rightmenu", 
+                        "children": [{ 
+                                "type": "Button",
+                                "cssClass": "pmg-actionbutton",
+                                "label": "",
+                                "targetDisplayArea": "pmg-maindisplayarea",
+                                "subpage": {   
+                                    "type": "Text",
+                                    "content": "Actions are not available."
+                                }
+                            }, { 
+                                "type": "Button",
+                                "cssClass": "pmg-choicebutton",
+                                "label": "",
+                                "targetDisplayArea": "pmg-maindisplayarea",
+                                "subpage": {   
+                                    "type": "PMGChoiceDisplay"
+                                }
+                            }]
+                    }]
+            }]
+    }]
