@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewScopeEntityTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewScopeEntityLabel_variableInstance}"/>
+                    <h:outputText value="#{scopeEntityController.selected.variableInstance}" title="#{bundle.ViewScopeEntityTitle_variableInstance}"/>
+                    <h:outputText value="#{bundle.ViewScopeEntityLabel_variableInstances}"/>
+                    <h:outputText value="#{scopeEntityController.selected.variableInstances}" title="#{bundle.ViewScopeEntityTitle_variableInstances}"/>
+                    <h:outputText value="#{bundle.ViewScopeEntityLabel_variableDescriptor}"/>
+                    <h:outputText value="#{scopeEntityController.selected.variableDescriptor}" title="#{bundle.ViewScopeEntityTitle_variableDescriptor}"/>
+                    <h:outputText value="#{bundle.ViewScopeEntityLabel_id}"/>
+                    <h:outputText value="#{scopeEntityController.selected.id}" title="#{bundle.ViewScopeEntityTitle_id}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{scopeEntityController.destroyAndView}" value="#{bundle.ViewScopeEntityDestroyLink}"/>
+                <br />
+                <br />
+                <h:commandLink action="Edit" value="#{bundle.ViewScopeEntityEditLink}"/>
+                <br />
+                <h:commandLink action="#{scopeEntityController.prepareCreate}" value="#{bundle.ViewScopeEntityCreateLink}" />
+                <br />
+                <h:commandLink action="#{scopeEntityController.prepareList}" value="#{bundle.ViewScopeEntityShowAllLink}"/>
+                <br />
+                <br />
+                <h:commandLink value="#{bundle.ViewScopeEntityIndexLink}" action="/index" immediate="true" />
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

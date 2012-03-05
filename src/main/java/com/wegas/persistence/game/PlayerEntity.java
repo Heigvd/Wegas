@@ -43,7 +43,7 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @XmlType(name = "Player", propOrder = {"@class", "id", "name"})
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PlayerEntity extends AnonymousEntity {
+public class PlayerEntity extends AbstractEntity {
 
     private static final Logger logger = Logger.getLogger("PlayerEntity");
     @Id
@@ -94,11 +94,14 @@ public class PlayerEntity extends AnonymousEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         PlayerEntity p = (PlayerEntity) a;
         this.setName(p.getName());
     }
 
+    /**
+     * 
+     */
     @PrePersist
     public void prePersist() {
         if (this.name == null) {

@@ -16,13 +16,13 @@
 
         <!-- YUI -->
         <!-- CDN  -->
-        <link rel="stylesheet" type="text/css" 
-              href="http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&3.3.0/build/cssreset/reset-min.css&3.3.0/build/cssgrids/grids-min.css&3.3.0/build/cssbase/base-min.css&3.3.0pr3/build/widget/assets/skins/sam/widget.css&3.3.0pr3/build/node-menunav/assets/skins/sam/node-menunav.css&" charset="utf-8" /> 
-        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/skin.css">   
-
+        <!--   <link rel="stylesheet" type="text/css" 
+                 href="http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&3.3.0/build/cssreset/reset-min.css&3.3.0/build/cssgrids/grids-min.css&3.3.0/build/cssbase/base-min.css&3.3.0pr3/build/widget/assets/skins/sam/widget.css&3.3.0pr3/build/node-menunav/assets/skins/sam/node-menunav.css&" charset="utf-8" /> 
+           <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/skin.css">   
+        --> 
         <!-- Self hosted -->
-        <!-- <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssfonts/fonts-min.css" />
-         <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssreset/reset-min.css" />-->
+        <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssfonts/fonts-min.css" />
+        <link rel="stylesheet" type="text/css" href="lib/yui3/build/cssreset/reset-min.css" />
 
         <!-- WireIt -->
         <!--<link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> -->
@@ -37,11 +37,12 @@
     <body class="yui3-skin-sam yui-skin-sam " > 
 
         <!-- YUI Base -->
-        <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.4.1/build/yui/yui-min.js&3.4.1/build/loader/loader-min.js"></script> 
         <!-- CDN -->
+        <!--<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.4.1/build/yui/yui-min.js&3.4.1/build/loader/loader-min.js"></script> 
+        --> 
         <!-- Self hosted -->
-        <!--<script type="text/javascript" src="lib/yui3/build/yui/yui.js"></script> 
-        <script type="text/javascript" src="lib/yui3/build/loader/loader.js"></script> -->
+        <script type="text/javascript" src="lib/yui3/build/yui/yui.js"></script> 
+        <script type="text/javascript" src="lib/yui3/build/loader/loader.js"></script>
 
 
         <!-- inputEx Base -->
@@ -68,7 +69,7 @@
                 }
             ],
             Config = {
-                base : "<%= request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()%><c:url value="/" />",
+                base : "<%= request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()%><c:url value="/" />",
                 layoutSrc: 'wegas-editor/db/wegas-editor-layout.json',
                 lang : 'en-US',
                 debug : true,
@@ -80,7 +81,7 @@
                 css: ['wegas-projectmanagementgame/assets/wegas-projectmanagementgame.css'],
                 dataSources: {
                     "GameModel": {
-                        source: "rs/gm",
+                        source: "rs/GameModel",
                         plugins: [
                             {
                                 fn: "DataSourceJSONSchema", 
@@ -94,7 +95,7 @@
                         ]
                     },
                     "Game": {
-                        source: "rs/gm/1/game",
+                        source: "rs/GameModel/1/Game",
                         plugins: [
                             {
                                 fn: "DataSourceJSONSchema", 
@@ -122,7 +123,7 @@
                         ]
                     },
                     "User": {
-                        source: "rs/user",
+                        source: "rs/User",
                         plugins: [
                             {
                                 fn: "DataSourceJSONSchema", 
@@ -148,7 +149,7 @@
                         ]
                     },*/
                     "VariableDescriptor": {
-                        source: "rs/gm/1/vardesc",
+                        source: "rs/GameModel/1/VariableDescriptor",
                         plugins: [
                             {
                                 fn: "DataSourceJSONSchema", 

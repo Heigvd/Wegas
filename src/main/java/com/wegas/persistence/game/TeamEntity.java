@@ -42,7 +42,7 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlType(name = "Team")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TeamEntity extends AnonymousEntity {
+public class TeamEntity extends AbstractEntity {
 
     private static final Logger logger = Logger.getLogger("GroupEntity");
     /**
@@ -83,7 +83,7 @@ public class TeamEntity extends AnonymousEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         TeamEntity t = (TeamEntity) a;
         this.setName(t.getName());
     }
@@ -112,6 +112,10 @@ public class TeamEntity extends AnonymousEntity {
         return players;
     }
 
+    /**
+     * 
+     * @param p
+     */
     @XmlTransient
     public void addPlayer(PlayerEntity p) {
         this.players.add(p);

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewGameScopeEntityTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewGameScopeEntityLabel_variableInstance}"/>
+                    <h:outputText value="#{gameScopeEntityController.selected.variableInstance}" title="#{bundle.ViewGameScopeEntityTitle_variableInstance}"/>
+                    <h:outputText value="#{bundle.ViewGameScopeEntityLabel_variableInstances}"/>
+                    <h:outputText value="#{gameScopeEntityController.selected.variableInstances}" title="#{bundle.ViewGameScopeEntityTitle_variableInstances}"/>
+                    <h:outputText value="#{bundle.ViewGameScopeEntityLabel_variableInstance}"/>
+                    <h:outputText value="#{gameScopeEntityController.selected.variableInstance}" title="#{bundle.ViewGameScopeEntityTitle_variableInstance}"/>
+                    <h:outputText value="#{bundle.ViewGameScopeEntityLabel_variableInstances}"/>
+                    <h:outputText value="#{gameScopeEntityController.selected.variableInstances}" title="#{bundle.ViewGameScopeEntityTitle_variableInstances}"/>
+                    <h:outputText value="#{bundle.ViewGameScopeEntityLabel_variableDescriptor}"/>
+                    <h:outputText value="#{gameScopeEntityController.selected.variableDescriptor}" title="#{bundle.ViewGameScopeEntityTitle_variableDescriptor}"/>
+                    <h:outputText value="#{bundle.ViewGameScopeEntityLabel_id}"/>
+                    <h:outputText value="#{gameScopeEntityController.selected.id}" title="#{bundle.ViewGameScopeEntityTitle_id}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{gameScopeEntityController.destroyAndView}" value="#{bundle.ViewGameScopeEntityDestroyLink}"/>
+                <br />
+                <br />
+                <h:commandLink action="Edit" value="#{bundle.ViewGameScopeEntityEditLink}"/>
+                <br />
+                <h:commandLink action="#{gameScopeEntityController.prepareCreate}" value="#{bundle.ViewGameScopeEntityCreateLink}" />
+                <br />
+                <h:commandLink action="#{gameScopeEntityController.prepareList}" value="#{bundle.ViewGameScopeEntityShowAllLink}"/>
+                <br />
+                <br />
+                <h:commandLink value="#{bundle.ViewGameScopeEntityIndexLink}" action="/index" immediate="true" />
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

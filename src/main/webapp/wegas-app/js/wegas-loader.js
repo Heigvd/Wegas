@@ -27,7 +27,7 @@ var Y = YUI({
             combine: false,
             base: Config.base,
             comboBase: Config.base,
-          //  root: 'rr',
+            //  root: 'rr',
             modules:  {
                 /*************************************************************** Base */
                 'wegas-app': {
@@ -150,9 +150,30 @@ var Y = YUI({
                 }
                 
             }
+        },
+        
+        /* Set up local version of yui2 */
+        yui2: {
+            base: Config.base+'lib/yui2in3/build/',
+            // combine: true,
+            // comboBase: 'http://myserver.com/combo?',
+            // root: '/2in3/build/',
+            patterns:  {
+                'yui2-': {
+                    configFn: function(me) {
+                        if(/-skin|reset|fonts|grids|base/.test(me.name)) {
+                            me.type = 'css';
+                            me.path = me.path.replace(/\.js/, '.css');
+                            me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
+                        }
+                    }
+                }
+            }
         }
+	
         
     /* Wire It */
+    /* Desactivated */
     /*wireit: {
             combine: false,
             base: "lib/wireit/",
@@ -186,27 +207,9 @@ var Y = YUI({
             }
         },*/
         
-    /* Set up local version of yui2 */
-    /* yui2: {
-            base: Config.base+'lib/yui2in3/build/',
-            // combine: true,
-            // comboBase: 'http://myserver.com/combo?',
-            // root: '/2in3/build/',
-            patterns:  {
-                'yui2-': {
-                    configFn: function(me) {
-                        if(/-skin|reset|fonts|grids|base/.test(me.name)) {
-                            me.type = 'css';
-                            me.path = me.path.replace(/\.js/, '.css');
-                            me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
-                        }
-                    }
-                }
-            }
-        }*/
-	
     }
 }).use('wegas-app', 'wegas-editor', function (Y) {
+    
     Y.on('domready', function() {						// Launch the app as soon as Dom is ready
         var editor = new Y.Wegas.Editor(Config);
         editor.render();

@@ -9,24 +9,15 @@
  */
 package com.wegas.rest;
 
-import com.wegas.ejb.VariableDescriptorManager;
-import com.wegas.ejb.VariableInstanceManager;
+import com.wegas.ejb.VariableDescriptorEntityFacade;
+import com.wegas.ejb.VariableInstanceEntityFacade;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
-
 import java.util.Collection;
-import java.util.logging.Logger;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -34,50 +25,34 @@ import javax.ws.rs.core.MediaType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("gm/{gameModelId : [1-9][0-9]*}/vardesc/{variableDescriptorId : [1-9][0-9]*}/varinst/")
-public class VariableInstanceController {
-
-    private static final Logger logger = Logger.getLogger("Authoring_GM_VariableInstance");
-    @EJB
-    private VariableDescriptorManager vdm;
-    @EJB
-    private VariableInstanceManager vim;
+@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/{variableDescriptorId : [1-9][0-9]*}/VariableInstance/")
+public class VariableInstanceController extends AbstractRestController<VariableInstanceEntityFacade> {
 
     /**
-     * 
-     * @param gmID
-     * @param variableDescriptorId
+     *
+     */
+    @EJB
+    private VariableInstanceEntityFacade variableInstanceFacade;
+    /**
+     *
+     */
+    @EJB
+    private VariableDescriptorEntityFacade variableDescriptorFacade;
+
+    /**
+     *
      * @return
      */
+    @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<VariableInstanceEntity> index(
-            @PathParam("gmID") Long gmID,
-            @PathParam("variableDescriptorId") Long variableDescriptorId ) {
-        VariableDescriptorEntity vd = vdm.getVariableDescriptor(variableDescriptorId);
-        return vd.getScope().getVariableInstances().values();
+    public Collection<AbstractEntity> index() {
+        VariableDescriptorEntity vd = variableDescriptorFacade.find(this.getPathParam("variableDescriptorId"));
+        return (Collection) vd.getScope().getVariableInstances().values();
     }
 
     /**
-     * 
-     * @param gameModelId
-     * @param variableDescriptorId
-     * @param variableInstanceId
-     * @return
-     */
-    @GET
-    @Path("{variableInstanceId : [1-9][0-9]*}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public VariableInstanceEntity get(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorId") Long variableDescriptorId,
-            @PathParam("variableInstanceId") Long variableInstanceId) {
-
-        return vim.getVariableInstance(variableInstanceId);
-    }
-    
-    /**
-     * 
+     *
      * @param gameModelId
      * @param variableDescriptorId
      * @param userId
@@ -92,27 +67,15 @@ public class VariableInstanceController {
             @PathParam("variableDescriptorId") Long variableDescriptorId,
             @PathParam("userId") Long userId,
             VariableInstanceEntity newInstance) {
-
-        return vim.setVariableInstanceByUserId(gameModelId, variableDescriptorId, userId, newInstance);
+        return variableInstanceFacade.setVariableInstanceByUserId(gameModelId, variableDescriptorId, userId, newInstance);
     }
-    
+
     /**
      * 
-     * @param gameModelId
-     * @param variableDescriptorId
-     * @param variableInstanceId
-     * @param newInstance
      * @return
      */
-    @PUT
-    @Path("{variableInstanceId : [1-9][0-9]*}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public VariableInstanceEntity update(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorId") Long variableDescriptorId,
-            @PathParam("variableInstanceId") Long variableInstanceId,
-            VariableInstanceEntity newInstance) {
-
-        return vim.update(variableInstanceId, newInstance);
+    @Override
+    protected VariableInstanceEntityFacade getFacade() {
+        return this.variableInstanceFacade;
     }
 }

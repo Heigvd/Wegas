@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreatePlayerEntityTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreatePlayerEntityLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{playerEntityController.selected.id}" title="#{bundle.CreatePlayerEntityTitle_id}" />
+                    <h:outputLabel value="#{bundle.CreatePlayerEntityLabel_user}" for="user" />
+                    <h:selectOneMenu id="user" value="#{playerEntityController.selected.user}" title="#{bundle.CreatePlayerEntityTitle_user}" >
+                        <f:selectItems value="#{userEntityController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.CreatePlayerEntityLabel_team}" for="team" />
+                    <h:selectOneMenu id="team" value="#{playerEntityController.selected.team}" title="#{bundle.CreatePlayerEntityTitle_team}" >
+                        <f:selectItems value="#{teamEntityController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.CreatePlayerEntityLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{playerEntityController.selected.name}" title="#{bundle.CreatePlayerEntityTitle_name}" />
+                    <h:outputLabel value="#{bundle.CreatePlayerEntityLabel_teamId}" for="teamId" />
+                    <h:inputText id="teamId" value="#{playerEntityController.selected.teamId}" title="#{bundle.CreatePlayerEntityTitle_teamId}" required="true" requiredMessage="#{bundle.CreatePlayerEntityRequiredMessage_teamId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{playerEntityController.create}" value="#{bundle.CreatePlayerEntitySaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{playerEntityController.prepareList}" value="#{bundle.CreatePlayerEntityShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:commandLink value="#{bundle.CreatePlayerEntityIndexLink}" action="/index" immediate="true" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

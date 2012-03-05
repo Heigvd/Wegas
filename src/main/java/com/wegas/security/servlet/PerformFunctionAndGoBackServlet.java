@@ -15,6 +15,10 @@ import org.apache.shiro.web.servlet.ShiroFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author fx
+ */
 public class PerformFunctionAndGoBackServlet extends HttpServlet implements Servlet {
 
     private static transient final Logger log = LoggerFactory.getLogger(PerformFunctionAndGoBackServlet.class);
@@ -65,6 +69,11 @@ public class PerformFunctionAndGoBackServlet extends HttpServlet implements Serv
         return null;
     }
 
+    /**
+     * 
+     * @param request
+     * @return
+     */
     public String getUrl(HttpServletRequest request) {
         String reqUrl = request.getRequestURL().toString();
         String queryString = request.getQueryString(); // d=789

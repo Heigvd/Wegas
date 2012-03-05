@@ -9,7 +9,7 @@
  */
 package com.wegas.persistence.variableinstance;
 
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.game.NamedEntity;
 import java.util.logging.Logger;
 
@@ -73,7 +73,7 @@ public class MCQVariableInstanceReplyEntity extends NamedEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         super.merge(a);
         MCQVariableInstanceReplyEntity r = (MCQVariableInstanceReplyEntity) a;
         this.setDescription(r.getDescription());

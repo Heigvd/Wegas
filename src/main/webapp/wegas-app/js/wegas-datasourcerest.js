@@ -231,7 +231,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 case 'MCQVariableInstance' :
                 case 'NumberVariableInstance' :
                     
-                    request = '/1/varinst/'+data.id;
+                    request = '/1/VariableInstance/'+data.id;
                     break;
             }
             

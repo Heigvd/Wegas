@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewListVariableInstanceEntityTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewListVariableInstanceEntityLabel_id}"/>
+                    <h:outputText value="#{listVariableInstanceEntityController.selected.id}" title="#{bundle.ViewListVariableInstanceEntityTitle_id}"/>
+                    <h:outputText value="#{bundle.ViewListVariableInstanceEntityLabel_scope}"/>
+                    <h:outputText value="#{listVariableInstanceEntityController.selected.scope}" title="#{bundle.ViewListVariableInstanceEntityTitle_scope}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{listVariableInstanceEntityController.destroyAndView}" value="#{bundle.ViewListVariableInstanceEntityDestroyLink}"/>
+                <br />
+                <br />
+                <h:commandLink action="Edit" value="#{bundle.ViewListVariableInstanceEntityEditLink}"/>
+                <br />
+                <h:commandLink action="#{listVariableInstanceEntityController.prepareCreate}" value="#{bundle.ViewListVariableInstanceEntityCreateLink}" />
+                <br />
+                <h:commandLink action="#{listVariableInstanceEntityController.prepareList}" value="#{bundle.ViewListVariableInstanceEntityShowAllLink}"/>
+                <br />
+                <br />
+                <h:commandLink value="#{bundle.ViewListVariableInstanceEntityIndexLink}" action="/index" immediate="true" />
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

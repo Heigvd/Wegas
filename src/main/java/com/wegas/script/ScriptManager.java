@@ -9,9 +9,9 @@
  */
 package com.wegas.script;
 
-import com.wegas.ejb.GameModelManager;
-import com.wegas.ejb.VariableDescriptorManager;
-import com.wegas.ejb.VariableInstanceManager;
+import com.wegas.ejb.GameModelEntityFacade;
+import com.wegas.ejb.VariableDescriptorEntityFacade;
+import com.wegas.ejb.VariableInstanceEntityFacade;
 import com.wegas.persistence.game.GameModelEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
@@ -36,12 +35,15 @@ import javax.script.ScriptException;
 @LocalBean
 public class ScriptManager {
 
+    /**
+     * 
+     */
     @EJB
-    private GameModelManager gmm;
+    private GameModelEntityFacade gameModelEntityFacade;
     @EJB
-    private VariableInstanceManager vim;
+    private VariableDescriptorEntityFacade variableDescriptorEntityFacade;
     @EJB
-    private VariableDescriptorManager vdm;
+    private VariableInstanceEntityFacade variableInstanceEntityFacade;
 
     /**
      * 
@@ -54,7 +56,7 @@ public class ScriptManager {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
        // Invocable invocableEngine = (Invocable) engine;
-        GameModelEntity gm = gmm.getGameModel(gameModelId);
+        GameModelEntity gm = gameModelEntityFacade.find(gameModelId);
         List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
         
         try {

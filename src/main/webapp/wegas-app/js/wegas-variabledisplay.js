@@ -8,12 +8,12 @@ YUI.add('wegas-variabledisplay', function(Y) {
     VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 	
         _dataSource: null,
+        _handelers: [],
 	
         initializer: function(cfg) {
             this._dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
         },
         destroyer: function() {
-            this._dataSource = null;
         },
 	
         renderUI: function () {  

@@ -9,7 +9,7 @@
  */
 package com.wegas.persistence.variableinstance;
 
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import java.util.logging.Logger;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlTransient;
@@ -46,7 +46,7 @@ public class StringVariableInstanceEntity extends VariableInstanceEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         StringVariableInstanceEntity vi = (StringVariableInstanceEntity) a;
         this.setValue(vi.getValue());
     }

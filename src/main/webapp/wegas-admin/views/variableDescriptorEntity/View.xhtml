@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewVariableDescriptorEntityTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewVariableDescriptorEntityLabel_variableInstance}"/>
+                    <h:outputText value="#{variableDescriptorEntityController.selected.variableInstance}" title="#{bundle.ViewVariableDescriptorEntityTitle_variableInstance}"/>
+                    <h:outputText value="#{bundle.ViewVariableDescriptorEntityLabel_id}"/>
+                    <h:outputText value="#{variableDescriptorEntityController.selected.id}" title="#{bundle.ViewVariableDescriptorEntityTitle_id}"/>
+                    <h:outputText value="#{bundle.ViewVariableDescriptorEntityLabel_name}"/>
+                    <h:outputText value="#{variableDescriptorEntityController.selected.name}" title="#{bundle.ViewVariableDescriptorEntityTitle_name}"/>
+                    <h:outputText value="#{bundle.ViewVariableDescriptorEntityLabel_gameModel}"/>
+                    <h:outputText value="#{variableDescriptorEntityController.selected.gameModel}" title="#{bundle.ViewVariableDescriptorEntityTitle_gameModel}"/>
+                    <h:outputText value="#{bundle.ViewVariableDescriptorEntityLabel_scope}"/>
+                    <h:outputText value="#{variableDescriptorEntityController.selected.scope}" title="#{bundle.ViewVariableDescriptorEntityTitle_scope}"/>
+                    <h:outputText value="#{bundle.ViewVariableDescriptorEntityLabel_defaultVariableInstance}"/>
+                    <h:outputText value="#{variableDescriptorEntityController.selected.defaultVariableInstance}" title="#{bundle.ViewVariableDescriptorEntityTitle_defaultVariableInstance}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{variableDescriptorEntityController.destroyAndView}" value="#{bundle.ViewVariableDescriptorEntityDestroyLink}"/>
+                <br />
+                <br />
+                <h:commandLink action="Edit" value="#{bundle.ViewVariableDescriptorEntityEditLink}"/>
+                <br />
+                <h:commandLink action="#{variableDescriptorEntityController.prepareCreate}" value="#{bundle.ViewVariableDescriptorEntityCreateLink}" />
+                <br />
+                <h:commandLink action="#{variableDescriptorEntityController.prepareList}" value="#{bundle.ViewVariableDescriptorEntityShowAllLink}"/>
+                <br />
+                <br />
+                <h:commandLink value="#{bundle.ViewVariableDescriptorEntityIndexLink}" action="/index" immediate="true" />
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

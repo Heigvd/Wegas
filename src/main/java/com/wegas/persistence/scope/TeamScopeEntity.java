@@ -9,8 +9,7 @@
  */
 package com.wegas.persistence.scope;
 
-import com.wegas.ejb.AnonymousEntityManager;
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.game.GameEntity;
 import com.wegas.persistence.game.GameModelEntity;
 import com.wegas.persistence.game.TeamEntity;
@@ -84,7 +83,7 @@ public class TeamScopeEntity extends ScopeEntity {
 
     /**
      * 
-     * @param forceUpdate
+     * @param force 
      */
     @XmlTransient
     public void propagateDefaultVariableInstance(boolean force) {
@@ -108,6 +107,6 @@ public class TeamScopeEntity extends ScopeEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
     }
 }

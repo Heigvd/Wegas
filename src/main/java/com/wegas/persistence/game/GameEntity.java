@@ -87,7 +87,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     }
 
     @Override
-    public void merge(AnonymousEntity n) {
+    public void merge(AbstractEntity n) {
         super.merge(n);
         GameEntity g = (GameEntity) n;
         this.setToken(g.getToken());
@@ -109,6 +109,10 @@ public class GameEntity extends NamedEntity implements Serializable {
         this.teams = teams;
     }
 
+    /**
+     * 
+     * @param t
+     */
     @XmlTransient
     public void addTeam(TeamEntity t) {
         this.teams.add(t);

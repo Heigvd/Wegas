@@ -9,23 +9,12 @@
  */
 package com.wegas.persistence.game;
 
-import com.wegas.ejb.AnonymousEntityManager;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
@@ -137,6 +126,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
 
     /**
      * 
+     * @param force 
      */
     public void propagateDefaultVariableInstance(boolean force) {
         for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {

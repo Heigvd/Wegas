@@ -9,24 +9,13 @@
  */
 package com.wegas.persistence.scope;
 
-import com.wegas.ejb.AnonymousEntityManager;
-import com.wegas.persistence.game.AnonymousEntity;
-import com.wegas.persistence.game.GameEntity;
-import com.wegas.persistence.game.GameModelEntity;
-import com.wegas.persistence.game.PlayerEntity;
-import com.wegas.persistence.game.TeamEntity;
+import com.wegas.persistence.game.*;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -40,9 +29,6 @@ import javax.xml.bind.annotation.XmlType;
 public class PlayerScopeEntity extends ScopeEntity {
 
     private static final Logger logger = Logger.getLogger(PlayerScopeEntity.class.getName());
-    @EJB
-    @Transient
-    private AnonymousEntityManager aem;
     //@EJB
     //@Transient
     // private WegasEntityManager wem;
@@ -123,7 +109,7 @@ public class PlayerScopeEntity extends ScopeEntity {
 
     /**
      * 
-     * @param forceUpdate
+     * @param force 
      */
     @XmlTransient
     public void propagateDefaultVariableInstance(boolean force) {
@@ -148,7 +134,7 @@ public class PlayerScopeEntity extends ScopeEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
     }
 }
 /*

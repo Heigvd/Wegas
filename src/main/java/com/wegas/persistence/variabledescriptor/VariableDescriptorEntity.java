@@ -9,30 +9,13 @@
  */
 package com.wegas.persistence.variabledescriptor;
 
-import com.wegas.persistence.game.AnonymousEntity;
-import com.wegas.persistence.variableinstance.VariableInstanceEntity;
-
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.game.GameModelEntity;
 import com.wegas.persistence.game.NamedEntity;
 import com.wegas.persistence.scope.ScopeEntity;
-
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
+import com.wegas.persistence.variableinstance.VariableInstanceEntity;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
@@ -41,6 +24,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  *
+ * @param <T> 
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -55,32 +39,37 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQVariableDescriptorEntity.class),
     @JsonSubTypes.Type(name = "NumberVariableDescriptor", value = NumberVariableDescriptorEntity.class)
 })
-public class VariableDescriptorEntity extends NamedEntity {
+public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
     @Id
     @Column(name = "variabledescriptor_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "var_desc_seq")
     private Long id;
     /**
-     * 
+     *
      */
     @NotNull
     //@Pattern(regexp = "^\\w*$")
     private String name;
     /**
-     * 
+     *
      */
     @OneToOne(cascade = {CascadeType.ALL})
-    private VariableInstanceEntity defaultVariableInstance;
-    /*  @OneToOne(cascade = CascadeType.ALL)
-    @NotNull
-    @JoinColumn(name = "SCOPE_ID", unique = true, nullable = false, insertable = true, updatable = true)*/
+    private T defaultVariableInstance;
+    /*
+     * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
+     * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
+     * updatable = true)
+     */
     @OneToOne(cascade = {CascadeType.ALL})
     @JsonManagedReference("variabledescriptor-scope")
     private ScopeEntity scope;
     /**
-     * 
+     *
      */
     @ManyToOne
     @JoinColumn(name = "gamemodel_id")
@@ -88,28 +77,30 @@ public class VariableDescriptorEntity extends NamedEntity {
     private GameModelEntity gameModel;
 
     /**
-     * 
+     *
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
         super.merge(a);
         VariableDescriptorEntity vd = (VariableDescriptorEntity) a;
         this.setName(vd.getName());
         this.scope.merge(vd.getScope());
         this.defaultVariableInstance.merge(vd.getDefaultVariableInstance());
     }
+
     /**
-     * 
+     *
      * @param playerId
      * @return
      */
     @XmlTransient
-    public VariableInstanceEntity getVariableInstance(Long playerId) {
-        return this.scope.getVariableInstance(playerId);
+    public T getVariableInstance(Long playerId) {
+        return (T) this.scope.getVariableInstance(playerId);
     }
+
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -118,7 +109,7 @@ public class VariableDescriptorEntity extends NamedEntity {
     }
 
     /**
-     * 
+     *
      * @param id
      */
     @Override
@@ -127,7 +118,7 @@ public class VariableDescriptorEntity extends NamedEntity {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -136,7 +127,7 @@ public class VariableDescriptorEntity extends NamedEntity {
     }
 
     /**
-     * 
+     *
      * @param name
      */
     @Override
@@ -145,7 +136,7 @@ public class VariableDescriptorEntity extends NamedEntity {
     }
 
     /**
-     * 
+     *
      * @param gameModel
      */
     @JsonBackReference("gamemodel-variabledescriptor")
@@ -154,7 +145,7 @@ public class VariableDescriptorEntity extends NamedEntity {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @JsonBackReference("gamemodel-variabledescriptor")
@@ -178,7 +169,6 @@ public class VariableDescriptorEntity extends NamedEntity {
         this.scope = scope;
     }
 
-
     /**
      * @return the defaultVariableInstance
      */
@@ -189,8 +179,7 @@ public class VariableDescriptorEntity extends NamedEntity {
     /**
      * @param defaultVariableInstance the defaultValue to set
      */
-    public void setDefaultVariableInstance(VariableInstanceEntity defaultVariableInstance) {
+    public void setDefaultVariableInstance(T defaultVariableInstance) {
         this.defaultVariableInstance = defaultVariableInstance;
     }
-
 }

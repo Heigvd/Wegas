@@ -9,8 +9,7 @@
  */
 package com.wegas.persistence.scope;
 
-import com.wegas.ejb.AnonymousEntityManager;
-import com.wegas.persistence.game.AnonymousEntity;
+import com.wegas.persistence.game.AbstractEntity;
 import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
@@ -50,7 +49,7 @@ public class GameModelScopeEntity extends ScopeEntity {
 
     /**
      * 
-     * @param forceUpdate
+     * @param force 
      */
     @Override
     @XmlTransient
@@ -80,7 +79,7 @@ public class GameModelScopeEntity extends ScopeEntity {
      * @param a
      */
     @Override
-    public void merge(AnonymousEntity a) {
+    public void merge(AbstractEntity a) {
     }
 
     /**
