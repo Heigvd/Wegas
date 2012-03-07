@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.users.GroupEntity;
+import com.wegas.core.persistence.users.GroupEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.GroupEntityFacade;
+import com.wegas.core.ejb.GroupEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class GroupEntityController implements Serializable {
     private GroupEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.GroupEntityFacade ejbFacade;
+    private com.wegas.core.ejb.GroupEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

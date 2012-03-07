@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.users.UserEntity;
+import com.wegas.core.persistence.users.UserEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.UserEntityFacade;
+import com.wegas.core.ejb.UserEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class UserEntityController implements Serializable {
     private UserEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.UserEntityFacade ejbFacade;
+    private com.wegas.core.ejb.UserEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
