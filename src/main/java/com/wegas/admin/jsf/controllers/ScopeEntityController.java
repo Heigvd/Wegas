@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.scope.ScopeEntity;
+import com.wegas.core.persistence.scope.ScopeEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.ScopeEntityFacade;
+import com.wegas.core.ejb.ScopeEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class ScopeEntityController implements Serializable {
     private ScopeEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.ScopeEntityFacade ejbFacade;
+    private com.wegas.core.ejb.ScopeEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

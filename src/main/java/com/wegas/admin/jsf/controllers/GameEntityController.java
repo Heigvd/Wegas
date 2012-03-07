@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.game.GameEntity;
+import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.GameEntityFacade;
+import com.wegas.core.ejb.GameEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class GameEntityController implements Serializable {
     private GameEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.GameEntityFacade ejbFacade;
+    private com.wegas.core.ejb.GameEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.variableinstance.NumberVariableInstanceEntity;
+import com.wegas.core.persistence.variableinstance.NumberVariableInstanceEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.NumberVariableInstanceEntityFacade;
+import com.wegas.core.ejb.NumberVariableInstanceEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class NumberVariableInstanceEntityController implements Serializable {
     private NumberVariableInstanceEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.NumberVariableInstanceEntityFacade ejbFacade;
+    private com.wegas.core.ejb.NumberVariableInstanceEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
