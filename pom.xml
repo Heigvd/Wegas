@@ -15,10 +15,12 @@
     </developers>  
     <url>http://www.albasim.com/Wegas/</url>
     
-<!--     <issuemanagement>  
+    <!--
+    <issuemanagement>  
       <system>bugzilla</system>  
       <url>http://ubuntu-vm.localdomain/cgi-bin/bugzilla3/index.cgi</url>  
-    </issuemanagement>-->
+    </issuemanagement>
+    -->
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
