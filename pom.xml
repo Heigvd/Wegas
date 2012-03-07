@@ -277,6 +277,7 @@
                 <configuration>
                     <rulesets> <!-- http://pmd.sourceforge.net/rules/index.html-->
                         <ruleset>/rulesets/braces.xml</ruleset>
+                        <ruleset>/rulesets/basic.xml</ruleset>
                         <ruleset>/rulesets/optimizations.xml</ruleset>
                         <rulesets>/rulesets/imports.xml</rulesets>
                         <rulesets>/rulesets/j2ee.xml</rulesets>
