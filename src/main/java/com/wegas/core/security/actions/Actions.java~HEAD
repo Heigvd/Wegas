@@ -1,16 +1,16 @@
-package com.wegas.security.actions;
+package com.wegas.core.security.actions;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 
 /**
- * 
+ *
  * @author fx
  */
 public enum Actions {
 
     /**
-     * 
+     *
      */
     MANAGE_REPAIRMEN("MANAGE_REPAIRMEN", "functions:manage:repairmen"),
     /**
@@ -22,7 +22,7 @@ public enum Actions {
      */
     MANAGE_SCIENTISTS("MANAGE_SCIENTISTS", "functions:manage:scientists"),
     /**
-     * 
+     *
      */
     REPAIR_REFRIGERATOR("REPAIR_REFRIGERATOR", "functions:repair:refrigerator"),
     /**
@@ -34,7 +34,7 @@ public enum Actions {
      */
     REPAIR_DOOR("REPAIR_DOOR", "functions:repair:door"),
     /**
-     * 
+     *
      */
     SALE_PRODUCT("SALE_PRODUCT", "functions:sale:product"),
     /**
@@ -46,7 +46,7 @@ public enum Actions {
      */
     MEET_CUSTOMER("MEET_CUSTOMER", "functions:sale:meetcustomer"),
     /**
-     * 
+     *
      */
     RESEARCH_NEW_STUFF("RESEARCH_NEW_STUFF", "functions:science:research"),
     /**
@@ -59,14 +59,14 @@ public enum Actions {
     PREPARE_TALK("PREPARE_TALK", "functions:science:preparetalk");
 
     /**
-     * 
+     *
      * @return
      */
     public String doIt() {
 		String neededPermission = getNeededPermission();
 		if (SecurityUtils.getSubject().isPermitted(neededPermission)){
 			return "Function " + getName() + " run succesfully.";
-		
+
                 }throw new UnauthorizedException("Logged user does not have " + neededPermission + " permission");
 	}
 
@@ -75,7 +75,7 @@ public enum Actions {
   }
 
         /**
-         * 
+         *
          * @return
          */
         public String getName() {
