@@ -19,12 +19,11 @@
     </developers>
     <url>http://www.albasim.com/Wegas/</url>
 
-    <!--
-    <issuemanagement>
+    <!--<issuemanagement>
       <system>bugzilla</system>
       <url>http://ubuntu-vm.localdomain/cgi-bin/bugzilla3/index.cgi</url>
-    </issuemanagement>
-    -->
+
+    </issuemanagement>-->
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -275,7 +274,7 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>2.7.1</version>
                 <configuration>
-                    <rulesets> <!-- http://pmd.sourceforge.net/rules/index.html-->
+                    <rulesets> <!-- http://pmd.sourceforge.net/rules/index.html -->
                         <ruleset>/rulesets/braces.xml</ruleset>
                         <ruleset>/rulesets/basic.xml</ruleset>
                         <ruleset>/rulesets/optimizations.xml</ruleset>
