@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.variableinstance.ListVariableInstanceEntity;
+import com.wegas.core.persistence.variableinstance.ListVariableInstanceEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.ListVariableInstanceEntityFacade;
+import com.wegas.core.ejb.ListVariableInstanceEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     private ListVariableInstanceEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.ListVariableInstanceEntityFacade ejbFacade;
+    private com.wegas.core.ejb.ListVariableInstanceEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

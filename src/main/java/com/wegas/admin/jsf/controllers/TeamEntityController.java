@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.game.TeamEntity;
+import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.TeamEntityFacade;
+import com.wegas.core.ejb.TeamEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class TeamEntityController implements Serializable {
     private TeamEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.TeamEntityFacade ejbFacade;
+    private com.wegas.core.ejb.TeamEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

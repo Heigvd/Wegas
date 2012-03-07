@@ -1,0 +1,18 @@
+/*  TabView Styles */
+.yui3-skin-sam .yui3-tabview-panel {
+    border: none;
+    background: none;
+}
+/* Datatable styles */
+.yui3-skin-sam .yui3-datatable caption {
+    padding: 0;
+}
+/* List styles */
+.yui3-wegas-list-horizontal  > div {
+	display:block;
+	float:left;
+	vertical-align:top;
+}
+.yui3-wegas-list-vertical  > div {
+}
+

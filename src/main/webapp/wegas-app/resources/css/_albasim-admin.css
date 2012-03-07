@@ -1,0 +1,146 @@
+/****************************LAYOUT STYLES ***********************************/
+/* Turn off the border on the top unit since Menu has it's own border */
+.yui-skin-sam .yui-layout .yui-layout-unit-top div.yui-layout-bd {
+	border: none;
+}
+/* Change some of the Menu colors */
+.yui-skin-sam .yuimenu .bd {
+	background-color: #F2F2F2;
+}
+/* Hide center panel hd background */
+.yui-skin-sam .yui-layout .yui-layout-hd {
+	background: none;
+	border: none;
+}
+.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-hd h2 {
+	/*display:none;*/
+}
+.yui-skin-sam .yui-layout-unit-right .yui-layout-bd > div{
+	padding:5px;
+}
+.yui-skin-sam .yui-layout .yui-layout-unit-center div.yui-layout-bd-nohd {
+	border-top: none;
+}
+.yui-skin-sam .yui-layout .yui-layout-unit-top div.yui-layout-bd-nohd {
+	border:none;
+}
+.yui-skin-sam .yui-resize .yui-resize-handle {
+	border: 1px solid gray;
+	border-left: none;
+	border-right: none;
+}
+
+/****************************BODY TOOLBAR STYLES ***********************************/
+.yui-toolbar-container .yui-button {
+	overflow: visible;
+}
+
+.yui-skin-sam .yui-toolbar-container .yui-button-selected {
+	background-repeat: repeat-x;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-group h3 {
+	display:none
+}
+
+.yui-editor-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	width: 100%;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont {
+	border-bottom: none;
+	padding:3px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-new span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px 0px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-play span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -192px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-stop span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -172px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-zoomin span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -124px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-zoomout span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -152px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-selecttool span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -244px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-movetool span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -214px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-cut span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -42px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-copy span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -68px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-paste span.yui-toolbar-icon {
+	background: url(albasim-map-sprite.png) no-repeat 0px -271px;
+	left:5px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-view {
+	width: 50px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-filters {
+	width: 60px;
+}
+/****************************FORMS ****************************************/
+input[type="text"], input[type="password"], textarea {
+	width: inherit;
+}
+div.inputEx-Group div.inputEx-label {
+	width: 75px;
+}
+/****************************MAP STYLES ***********************************/
+.albasim-map {
+	width: 100%;
+	height: 100%;	
+}
+
+div.WireIt-Container div.body {
+	padding: 0;
+	border: none;
+	background:none;
+}
+
+div.WireIt-Container div.body  div.albasim-map-state {
+	width: 100px;
+	height: 70px;
+	background-color: lightgray;
+	cursor: move;
+	border:1px solid gray;
+	padding:3px;
+}
+div.WireIt-Container  div.body div.albasim-map-transition {
+	width: 30px;
+	height: 30px;
+	background-color: AliceBlue ;
+	cursor: move;
+	position: absolute;
+	border:1px solid gray;
+	overflow: hidden;
+}
+div.WireIt-Container div.body  div.albasim-map-over {
+	background-color: lightblue;
+}
+div.WireIt-Container  div.body   div.albasim-map-selected   {
+	background-color: CornflowerBlue;
+}
+canvas.WireIt-Wire {
+	/*z-index: 1000;*/
+}
