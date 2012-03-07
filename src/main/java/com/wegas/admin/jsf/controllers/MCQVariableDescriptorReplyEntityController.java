@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.variabledescriptor.MCQVariableDescriptorReplyEntity;
+import com.wegas.core.persistence.variabledescriptor.MCQVariableDescriptorReplyEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.MCQVariableDescriptorReplyEntityFacade;
+import com.wegas.core.ejb.MCQVariableDescriptorReplyEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class MCQVariableDescriptorReplyEntityController implements Serializable 
     private MCQVariableDescriptorReplyEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.MCQVariableDescriptorReplyEntityFacade ejbFacade;
+    private com.wegas.core.ejb.MCQVariableDescriptorReplyEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

@@ -41,7 +41,7 @@ var Y = YUI({
                     ]
                 },
                 'wegas-appcss': {
-                    path: 'wegas-app/assets/wegas-app.css',
+                    path: 'wegas-app/resources/wegas-app.css',
                     type: 'css'
                 },
                 'wegas-datasourcerest': {
@@ -97,7 +97,7 @@ var Y = YUI({
                     ]
                 },
                 'wegas-editorcss': {
-                    path: 'wegas-editor/assets/wegas-editor.css',
+                    path: 'wegas-editor/resources/wegas-editor.css',
                     type: 'css'
                 },
                 
@@ -128,7 +128,7 @@ var Y = YUI({
                 },
                 /* This one is only seful w/ yui3 treeview widget */
                 /* 'wegas-treeviewcss': {
-                    path: 'wegas-app/assets/treeview-classic.css',
+                    path: 'wegas-app/resources/treeview-classic.css',
                     type: 'css'
                 },*/
                 'wegas-datatable': {

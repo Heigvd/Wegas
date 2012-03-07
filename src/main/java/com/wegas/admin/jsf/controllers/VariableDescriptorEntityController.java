@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
-import com.wegas.persistence.variabledescriptor.VariableDescriptorEntity;
+import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.admin.jsf.util.JsfUtil;
 import com.wegas.admin.jsf.util.PaginationHelper;
-import com.wegas.ejb.VariableDescriptorEntityFacade;
+import com.wegas.core.ejb.VariableDescriptorEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -29,7 +29,7 @@ public class VariableDescriptorEntityController implements Serializable {
     private VariableDescriptorEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.ejb.VariableDescriptorEntityFacade ejbFacade;
+    private com.wegas.core.ejb.VariableDescriptorEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
