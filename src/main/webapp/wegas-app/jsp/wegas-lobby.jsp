@@ -1,5 +1,5 @@
 <%@page import="com.wegas.persistence.game.PlayerEntity"%>
-<%@page contentType="text/html;" pageEncoding="UTF-8" import="com.wegas.ejb.TeamManager,java.util.List, com.wegas.ejb.GameManager, com.wegas.persistence.game.TeamEntity, com.wegas.persistence.game.GameEntity, com.wegas.persistence.users.UserEntity, com.wegas.ejb.UserManager, com.wegas.ejb.GameModelManager, javax.naming.*, org.apache.shiro.subject.Subject, org.apache.shiro.SecurityUtils, com.wegas.ejb.UserManager"%>
+<%@page contentType="text/html;" pageEncoding="UTF-8" import="com.wegas.core.ejb.TeamManager,java.util.List, com.wegas.core.ejb.GameManager, com.wegas.persistence.game.TeamEntity, com.wegas.persistence.game.GameEntity, com.wegas.persistence.users.UserEntity, com.wegas.core.ejb.UserEntityFacade, com.wegas.core.ejb.GameModelEntityFacade, javax.naming.*, org.apache.shiro.subject.Subject, org.apache.shiro.SecurityUtils, com.wegas.core.ejb.UserManager"%>
 <%!    private UserManager um = null;
     private GameManager gm = null;
     private TeamManager tm = null;
@@ -83,7 +83,7 @@
                 if (view.equals("app")) {
             %>
             <jsp:forward page="wegas-app" >
-                <jsp:param name="playerId" value="<%= cPlayer.getId() %>" /> 
+                <jsp:param name="playerId" value="<%= cPlayer.getId() %>" />
             </jsp:forward>
             <%    } else if (view.equals("input-team")) {
             %>

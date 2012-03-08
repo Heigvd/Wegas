@@ -1,30 +1,40 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <faces-config version="2.0"
-              xmlns="http://java.sun.com/xml/ns/javaee" 
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
     <application>
+
+        <locale-config>
+            <default-locale>en</default-locale>
+        </locale-config>
+
         <resource-bundle>
-            <base-name>/wegas-admin-bundle</base-name>
-            <var>wegas.admin.bundle</var>
-        </resource-bundle>
-        
-        <resource-bundle>
-            
-            <base-name>/wegas-app/bundle</base-name>
+            <base-name>com.wegas.app.Bundle</base-name>
             <var>wegasAppBundle</var>
         </resource-bundle>
-        
+
         <resource-bundle>
-            <base-name>/Bundle</base-name>
+            <base-name>com.wegas.admin.Bundle</base-name>
             <var>bundle</var>
         </resource-bundle>
+
     </application>
+
     <navigation-rule>
-        <from-view-id>/wegas-app/jsp/wegas-login.jsp</from-view-id>
+        <from-view-id>/wegas-app/templates/lobby.xhtml</from-view-id>
         <navigation-case>
-            <from-outcome>case1</from-outcome>
-            <to-view-id>/index.xhtml</to-view-id>
+            <from-outcome>gameJoined</from-outcome>
+            <to-view-id>/wegas-app/templates/lobby-selectteam.xhtml</to-view-id>
+            <redirect>true</redirect>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <from-view-id>/wegas-app/templates/lobby-selectteam.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>teamJoined</from-outcome>
+            <to-view-id>/wegas-app/templates/game-default.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
 </faces-config>
