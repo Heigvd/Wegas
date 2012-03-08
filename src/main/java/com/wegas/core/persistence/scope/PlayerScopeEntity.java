@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
+ *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.scope;
 
@@ -41,7 +41,7 @@ public class PlayerScopeEntity extends ScopeEntity {
     @MapKeyColumn(name = "id", insertable = false, updatable = false)
     @CollectionTable(
     //schema = "jpa",
-    name = "varinst_map", 
+    name = "varinst_map",
     joinColumns = @JoinColumn(name = "id"))*/
     // @OneToMany(mappedBy = "scope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
    /* @XmlTransient*/
@@ -52,7 +52,7 @@ public class PlayerScopeEntity extends ScopeEntity {
     /*
     @ElementCollection(fetch=FetchType.EAGER)
     @MapKeyColumn(name = "language", insertable = false, updatable = false)
-    @CollectionTable(schema = "jpa", name = "multilingual_string_map", 
+    @CollectionTable(schema = "jpa", name = "multilingual_string_map",
     joinColumns = @JoinColumn(name = "string_id"))
     private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<Long, VariableInstanceEntity>();*/
     /*
@@ -65,7 +65,7 @@ public class PlayerScopeEntity extends ScopeEntity {
      * @return the variableInstance
      */
     /*
-     * FIXME Here we should use UserEntity reference and add a key deserializer module 
+     * FIXME Here we should use UserEntity reference and add a key deserializer module
      */
     //  @OneToMany(mappedBy = "scope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @OneToMany(mappedBy = "scope", cascade = {CascadeType.ALL})
@@ -74,7 +74,7 @@ public class PlayerScopeEntity extends ScopeEntity {
     private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<Long, VariableInstanceEntity>();
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -83,9 +83,9 @@ public class PlayerScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
+     *
      * @param playerId
-     * @return  
+     * @return
      */
     @Override
     public VariableInstanceEntity getVariableInstance(Long playerId) {
@@ -93,8 +93,8 @@ public class PlayerScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
-     * @param playerId 
+     *
+     * @param playerId
      * @param v
      */
     @Override
@@ -104,7 +104,7 @@ public class PlayerScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
+     *
      */
     @PrePersist
     public void prePersist() {
@@ -112,10 +112,11 @@ public class PlayerScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
-     * @param force 
+     *
+     * @param force
      */
     @XmlTransient
+    @Override
     public void propagateDefaultVariableInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
         GameModelEntity gm = vd.getGameModel();
@@ -134,7 +135,7 @@ public class PlayerScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
+     *
      * @param a
      */
     @Override

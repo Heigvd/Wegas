@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="template/page-default.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{wegasAppBundle.LobbyPage_Title}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+
+
+            <style type="text/css">
+                .yui-g {
+                    width:300px;
+                    height:300px;
+                    display:inline-block;
+                    float:left;
+                    padding:10px;
+                    margin :10px;
+                    border: 1px outset gray;
+                    font-family: Arial, Helvetica;
+                }
+            </style>
+
+            <div class="yui-g">
+
+                <h1>#{wegasAppBundle.LobbyPage_ResumeGames_Title}</h1>
+
+                <ui:repeat value="#{lobbyController.players}" var="player" >
+                    #{player.team.game.name} <a href="#">resume</a><br />
+                </ui:repeat>
+
+
+                <h:outputText value="#{wegasAppBundle.LobbyPage_ResumeGames_Empty}" rendered="#{empty lobbyController.players}"/>
+
+            </div>
+            <div class="yui-g">
+
+                <h1>#{wegasAppBundle.LobbyPage_JoinGame_Title}</h1>
+
+                #{wegasAppBundle.LobbyPage_JoinGame_Text}
+
+                <br />
+
+                <h:panelGroup id="messagePanel" layout="block">
+                    <br />
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                    <br />
+                </h:panelGroup>
+
+                <h:form>
+                    <h:inputText id="gameToken" value="#{lobbyController.gameToken}" title="#{wegasAppBundle.LobbyPage_JoinGame_TokenTitle}" />
+                    <h:commandLink action="#{lobbyController.joinGame}" value="#{wegasAppBundle.LobbyPage_JoinGame_Link}" />
+                </h:form>
+            </div>
+        </ui:define>
+
+    </ui:composition>
+
+</html>

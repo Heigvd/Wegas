@@ -47,7 +47,7 @@
             <%
                 }
             %>
-            <form name="loginform" action="<c:url value="/wegas-login"/>" method="post">
+            <form name="loginform" action="#" method="post">
                 <table align="left" border="0" cellspacing="0" cellpadding="3">
                     <tr>
                         <td>Email:</td>
