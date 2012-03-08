@@ -6,16 +6,21 @@ import com.wegas.core.ejb.TeamEntityFacade;
 import com.wegas.core.ejb.UserEntityFacade;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
+import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.users.UserEntity;
 import java.io.Serializable;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 import javax.persistence.NoResultException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -50,7 +55,7 @@ public class LobbyController implements Serializable {
     /*
      *
      */
-    private Long selectedTeamId;
+    private TeamEntity selectedTeam;
     /**
      *
      */
@@ -69,11 +74,24 @@ public class LobbyController implements Serializable {
     public UserEntity getCurrentUser() {
 
         Subject subject = SecurityUtils.getSubject();
-        return userEntityFacade.getUserByPrincipal(subject.getPrincipal().toString());
+        try {
+            return userEntityFacade.getUserByPrincipal(subject.getPrincipal().toString());
+        }
+        catch (EJBException e) {
+            System.out.println(e.getCause()+"*"+e.getCausedByException());
+            if (e.getCausedByException() instanceof NoResultException) {
+                UserEntity u = new UserEntity();
+                u.setName(subject.getPrincipal().toString());
+                userEntityFacade.create(u);
+                return u;
+            } else {
+                throw e;
+            }
+        }
     }
 
-    public DataModel getAvailableGames() {
-        return new ListDataModel(this.getCurrentUser().getPlayers());
+    public List<PlayerEntity> getPlayers() {
+        return this.getCurrentUser().getPlayers();
     }
 
     public String joinGame() {
@@ -91,12 +109,12 @@ public class LobbyController implements Serializable {
         }
     }
 
-    public SelectItem[] getAvailableTeams() {
-        return JsfUtil.getSelectItems(this.currentGame.getTeams(), true);
+    public List<TeamEntity> getAvailableTeams() {
+        return this.currentGame.getTeams();
     }
 
     public String joinTeam() {
-        currentPlayer = teamEntityFacade.createPlayer(this.selectedTeamId, getCurrentUser().getId());
+        setCurrentPlayer(teamEntityFacade.createPlayer(this.getSelectedTeam().getId(), getCurrentUser().getId()));
         return "teamJoined";
     }
 
@@ -115,16 +133,80 @@ public class LobbyController implements Serializable {
     }
 
     /**
-     * @return the selectedTeamId
+     * @return the selectedTeam
      */
-    public Long getSelectedTeamId() {
-        return selectedTeamId;
+    public TeamEntity getSelectedTeam() {
+        return this.selectedTeam;
     }
 
     /**
-     * @param selectedTeamId the selectedTeamId to set
+     * @param selectedTeam the selectedTeam to set
      */
-    public void setSelectedTeamId(Long selectedTeamId) {
-        this.selectedTeamId = selectedTeamId;
+    public void setSelectedTeam(TeamEntity selectedTeam) {
+        this.selectedTeam = selectedTeam;
+    }
+
+    /**
+     * @return the currentPlayer
+     */
+    public PlayerEntity getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    /**
+     * @param currentPlayer the currentPlayer to set
+     */
+    public void setCurrentPlayer(PlayerEntity currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
+    /**
+     *
+     */
+    @FacesConverter(forClass = TeamEntity.class, value = "appTeamConverter")
+    public static class LobbyControllerConverter implements Converter {
+
+        /**
+         *
+         * @param facesContext
+         * @param component
+         * @param value
+         * @return
+         */
+        @Override
+        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+            if (value == null || value.length() == 0) {
+                return null;
+            }
+            LobbyController controller = (LobbyController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "lobbyController");
+            return controller.teamEntityFacade.find(Long.valueOf(value));
+        }
+
+        String getStringKey(Long value) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(value);
+            return sb.toString();
+        }
+
+        /**
+         *
+         * @param facesContext
+         * @param component
+         * @param object
+         * @return
+         */
+        @Override
+        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
+            if (object == null) {
+                return null;
+            }
+            if (object instanceof TeamEntity) {
+                TeamEntity o = (TeamEntity) object;
+                return getStringKey(o.getId());
+            } else {
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + TeamEntity.class.getName());
+            }
+        }
     }
 }

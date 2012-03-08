@@ -1,8 +1,12 @@
-# Compiled source #
-###################
+# Build files #
 *.class
 target/*
-catalog.xml
-nb-configuration.xml
-**Thumbs.db
+
+# NetBean Files #
 faces-config.NavData
+nb-configuration.xml
+nbactions.xml
+catalog.xml
+
+# Windows Files (d'oh) #
+**Thumbs.db

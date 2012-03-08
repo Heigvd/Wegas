@@ -10,6 +10,7 @@
     <developers>
         <developer>
             <name>Francois-Xavier Aeberhard</name>
+            <email>fx@red-agent.com</email>
             <url>http://www.red-agent.com</url>
         </developer>
         <developer>
@@ -176,6 +177,35 @@
             <scope>provided</scope>
         </dependency>
 
+
+        <!-- Jsf -->
+        <!-- For Java EE Application Server -->
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- For Servlet Container like Tomcat -->
+	<!--<dependency>
+	  <groupId>com.sun.faces</groupId>
+	  <artifactId>jsf-api</artifactId>
+	  <version>2.1.0-b03</version>
+	</dependency>
+	<dependency>
+	  <groupId>com.sun.faces</groupId>
+	  <artifactId>jsf-impl</artifactId>
+	  <version>2.1.0-b03</version>
+	</dependency>-->
+
+      <!--  <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.1.2</version>
+        <scope>runtime</scope>
+        </dependency>-->
+
+        <!-- sl4j -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -209,11 +239,6 @@
             <artifactId>htmlunit</artifactId>
             <version>2.6</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>standard</artifactId>
-            <version>1.1.2</version>
         </dependency>
 
        <!-- <dependency>
