@@ -7,29 +7,12 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-    
+
     <welcome-file-list>
         <welcome-file>faces/index.jsp</welcome-file>
     </welcome-file-list>
-    
-    <!-- JSF -->
-    <context-param>
-        <param-name>javax.faces.PROJECT_STAGE</param-name>
-        <param-value>Development</param-value>
-    </context-param>
-    <servlet>
-        <servlet-name>Faces Servlet</servlet-name>
-        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>/faces/*</url-pattern>
-        <url-pattern>*.xhtml</url-pattern>
-        <url-pattern>*.jsf</url-pattern>
-        <url-pattern>*.faces</url-pattern>
-    </servlet-mapping>
-    
+
+
     <!-- Apache Shiro Listener -->
     <listener>
         <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
@@ -42,7 +25,31 @@
         <filter-name>ShiroFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
+
+    <!-- JSF -->
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+    <!--<context-param>
+        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+        <param-value>.xhtml</param-value>
+    </context-param>-->
+
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>/faces/*</url-pattern>
+        <url-pattern>*.html</url-pattern>
+        <url-pattern>*.xhtml</url-pattern>
+        <url-pattern>*.jsf</url-pattern>
+        <url-pattern>*.faces</url-pattern>
+    </servlet-mapping>
+
     <!-- REST Servlet -->
     <servlet>
         <servlet-name>Jersey Web Application</servlet-name>
@@ -53,17 +60,17 @@
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/rs/*</url-pattern>
     </servlet-mapping>
-    <!-- Login page -->
+    <!-- Login page
     <servlet>
         <servlet-name>Wegas Login</servlet-name>
-        <jsp-file>/wegas-app/jsp/wegas-login.jsp</jsp-file>
+        <jsp-file>/wegas-app/templates/wegas-login.jsf</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>Wegas Login</servlet-name>
         <url-pattern>/wegas-login</url-pattern>
         <url-pattern>/wegas-signup</url-pattern>
-    </servlet-mapping>
-    <!-- Logout page -->
+    </servlet-mapping>-->
+    <!-- Logout page
     <servlet>
         <servlet-name>Wegas Logout</servlet-name>
         <jsp-file>/wegas-app/jsp/wegas-logout.jsp</jsp-file>
@@ -71,8 +78,8 @@
     <servlet-mapping>
         <servlet-name>Wegas Logout</servlet-name>
         <url-pattern>/wegas-logout</url-pattern>
-    </servlet-mapping>
-    <!-- Lobby page -->
+    </servlet-mapping> -->
+    <!-- Lobby page
     <servlet>
         <servlet-name>Wegas Lobby</servlet-name>
         <jsp-file>/wegas-app/jsp/wegas-lobby.jsp</jsp-file>
@@ -80,8 +87,8 @@
     <servlet-mapping>
         <servlet-name>Wegas Lobby</servlet-name>
         <url-pattern>/wegas-lobby</url-pattern>
-    </servlet-mapping>
-    <!-- App page -->
+    </servlet-mapping>-->
+    <!-- App page
     <servlet>
         <servlet-name>Wegas App</servlet-name>
         <jsp-file>/wegas-app/jsp/wegas-app.jsp</jsp-file>
@@ -89,8 +96,8 @@
     <servlet-mapping>
         <servlet-name>Wegas App</servlet-name>
         <url-pattern>/wegas-app</url-pattern>
-    </servlet-mapping>
-    <!-- Editor page -->
+    </servlet-mapping>-->
+    <!-- Editor page
     <servlet>
         <servlet-name>Wegas Editor</servlet-name>
         <jsp-file>/wegas-editor/jsp/wegas-editor.jsp</jsp-file>
@@ -98,8 +105,8 @@
     <servlet-mapping>
         <servlet-name>Wegas Editor</servlet-name>
         <url-pattern>/wegas-editor</url-pattern>
-    </servlet-mapping>
-    
+    </servlet-mapping> -->
+
     <!-- Liquibase configuration -->
     <context-param>
         <param-name>liquibase.changelog</param-name>
@@ -113,7 +120,7 @@
     <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
-    
+
     <!-- Atmosphere Servlet -->
     <!-- <servlet>
         <description>AtmosphereServlet</description>
