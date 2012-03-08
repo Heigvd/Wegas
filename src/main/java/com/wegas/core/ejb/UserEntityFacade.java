@@ -5,9 +5,14 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.users.UserEntity;
+import com.wegas.core.persistence.users.UserEntity_;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 /**
  *
@@ -15,6 +20,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class UserEntityFacade extends AbstractFacade<UserEntity> {
+
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -26,5 +32,13 @@ public class UserEntityFacade extends AbstractFacade<UserEntity> {
     public UserEntityFacade() {
         super(UserEntity.class);
     }
-    
+
+    public UserEntity getUserByPrincipal(String principal) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery();
+        Root<UserEntity> user = cq.from(UserEntity.class);
+        cq.where(cb.equal(user.get(UserEntity_.name), principal));
+        Query q = em.createQuery(cq);
+        return (UserEntity) q.getSingleResult();
+    }
 }

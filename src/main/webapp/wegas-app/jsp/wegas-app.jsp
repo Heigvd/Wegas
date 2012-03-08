@@ -1,6 +1,6 @@
 <%@page import="javax.naming.InitialContext"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="com.wegas.ejb.PlayerManager, com.wegas.persistence.game.PlayerEntity"%>
+<%@page import="com.wegas.core.ejb.PlayerManager, com.wegas.persistence.game.PlayerEntity"%>
 <!--< jsp:useBean beanName="java:module/PlayerManagerBean" />-->
 <%!    private PlayerManager pm = null;
     private PlayerEntity cPlayer = null;

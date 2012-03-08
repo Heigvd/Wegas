@@ -1,4 +1,4 @@
-﻿Wegas
+Wegas
 =======================
 Web Game Authoring system is a jee-based framework for multiplayer web-games developement.
 
@@ -17,7 +17,7 @@ Set up server
 **	Add user to project’s persistence.xml file
 * 	Glassfish Server
 **	Install glassfish v>3.1.1
-**	Enable comet support: 
+**	Enable comet support:
 	can be done in netbeans right click on server >> properties >> check enable comet
 ** 	Enable websocket support:
 	asadmin set configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.websockets-support-enabled=true
