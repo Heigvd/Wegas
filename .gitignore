@@ -2,7 +2,6 @@
 ###################
 *.class
 target/*
-!target/Wegas.war
 catalog.xml
 nb-configuration.xml
 **Thumbs.db

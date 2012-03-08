@@ -64,10 +64,10 @@ public enum Actions {
      */
     public String doIt() {
 		String neededPermission = getNeededPermission();
-		if (SecurityUtils.getSubject().isPermitted(neededPermission))
+		if (SecurityUtils.getSubject().isPermitted(neededPermission)){
 			return "Function " + getName() + " run succesfully.";
 		
-		throw new UnauthorizedException("Logged user does not have " + neededPermission + " permission");
+                }throw new UnauthorizedException("Logged user does not have " + neededPermission + " permission");
 	}
 
 	private String getNeededPermission() {
