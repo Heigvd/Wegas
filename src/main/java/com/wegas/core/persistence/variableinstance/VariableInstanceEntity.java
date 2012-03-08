@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
+ *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.variableinstance;
 
@@ -38,22 +38,34 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "ListVariableInstance", value = ListVariableInstanceEntity.class),
     @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQVariableInstanceEntity.class),
     @JsonSubTypes.Type(name = "NumberVariableInstance", value = NumberVariableInstanceEntity.class),
-    
+
 })
 public class VariableInstanceEntity extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("GMVariableKInstance");
+    /**
+     * 
+     */
     @Id
     @Column(name = "variableinstance_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "var_instance_seq")
     private Long id;
+    /**
+     *
+     */
     @ManyToOne
     @XmlTransient
     private ScopeEntity scope;
+    /**
+     *
+     */
     @ManyToOne
     @XmlTransient
     private ScopeEntity teamScope;
+    /**
+     *
+     */
     @OneToOne
     @XmlTransient
     private ScopeEntity gameModelScope;
@@ -110,7 +122,7 @@ public class VariableInstanceEntity extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @param scope
      */
     public void setGameModelScope(ScopeEntity scope) {
@@ -123,7 +135,7 @@ public class VariableInstanceEntity extends AbstractEntity {
     }*/
 
     /**
-     * 
+     *
      * @param a
      */
     @Override

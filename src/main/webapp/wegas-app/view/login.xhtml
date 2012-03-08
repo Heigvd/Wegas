@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="template/page-default.xhtml">
+        <ui:define name="title">#{wegasAppBundle.LoginPage_Title}</ui:define>
+        <ui:define name="body">
+
+
+            <style type="text/css">
+                .yui-g {
+                    width:300px;
+                    height:300px;
+                    display:inline-block;
+                    float:left;
+                    padding:10px;
+                    margin :10px;
+                    border: 1px outset gray;
+                    font-family: Arial, Helvetica;
+                }
+            </style>
+            <div class="yui-g">
+                <h1>#{wegasAppBundle.LoginPage_Title}</h1>
+                <br />
+                <br/>
+                <h:outputText value="#{param['shiroLoginFailure']}" />
+                <form name="loginform" action="#" method="post">
+                    <table align="left" border="0" cellspacing="0" cellpadding="3">
+                        <tr>
+                            <td>#{wegasAppBundle.LoginPage_UserTitle}</td>
+                            <td><input type="text" name="user" maxlength="30" /></td>
+                        </tr>
+                        <tr>
+                            <td>#{wegasAppBundle.LoginPage_PasswordTitle}</td>
+                            <td><input type="password" name="pass" maxlength="30" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" align="left"><input type="checkbox" name="remember" /><font size="2">#{wegasAppBundle.LoginPage_RememberMeTitle}</font></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" align="right"><input type="submit" name="submit" value="#{wegasAppBundle.LoginPage_Link}" /></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="yui-g">
+
+                <h1>#{wegasAppBundle.SignupPage_Link}</h1>
+                #{signupController.msg}
+                <br/>
+                <br/>
+                <h:form>
+                    <table align="left" border="0" cellspacing="0" cellpadding="3">
+                        <tr>
+                            <td>#{wegasAppBundle.LoginPage_UserTitle}</td>
+                            <td>
+                                <h:inputText value="#{signupController.userName}" title="#{wegasAppBundle.LoginPage_UserTitle}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#{wegasAppBundle.LoginPage_PasswordTitle}</td>
+                            <td>
+                                <h:inputSecret value="#{signupController.userPass}" title="#{wegasAppBundle.LoginPage_PasswordTitle}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" align="right">
+                                <h:commandButton action="#{signupController.signup}" value="#{wegasAppBundle.SignupPage_Link}" />
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                </h:form>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

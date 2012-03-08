@@ -8,13 +8,13 @@ import javax.faces.bean.SessionScoped;
  *
  * @author fx
  */
-@ManagedBean
+@ManagedBean(name = "loginController")
 @SessionScoped
-public class GameController implements Serializable {
+public class LoginController implements Serializable {
 
     /**
      *
      */
-    public GameController() {
+    public LoginController() {
     }
 }

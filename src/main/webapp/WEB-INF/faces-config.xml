@@ -5,6 +5,8 @@
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
     <application>
 
+        <!--<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>-->
+
         <locale-config>
             <default-locale>en</default-locale>
         </locale-config>
@@ -22,19 +24,20 @@
     </application>
 
     <navigation-rule>
-        <from-view-id>/wegas-app/templates/lobby.xhtml</from-view-id>
+        <from-view-id>/wegas-app/view/lobby.xhtml</from-view-id>
         <navigation-case>
             <from-outcome>gameJoined</from-outcome>
-            <to-view-id>/wegas-app/templates/lobby-selectteam.xhtml</to-view-id>
-            <redirect>true</redirect>
+            <to-view-id>/wegas-app/view/lobby-selectteam.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
 
     <navigation-rule>
-        <from-view-id>/wegas-app/templates/lobby-selectteam.xhtml</from-view-id>
+        <from-view-id>/wegas-app/view/lobby-selectteam.xhtml</from-view-id>
         <navigation-case>
             <from-outcome>teamJoined</from-outcome>
-            <to-view-id>/wegas-app/templates/game-default.xhtml</to-view-id>
+            <to-view-id>/wegas-app/view/game-default.xhtml</to-view-id>
+            <redirect>true</redirect>
         </navigation-case>
     </navigation-rule>
+
 </faces-config>

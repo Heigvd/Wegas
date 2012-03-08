@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
+ *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.game;
 
@@ -46,24 +46,24 @@ public class TeamEntity extends AbstractEntity {
 
     private static final Logger logger = Logger.getLogger("GroupEntity");
     /**
-     * 
+     *
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_seq")
     private Long id;
     /**
-     * 
+     *
      */
     @NotNull
     private String name;
     /**
-     * 
+     *
      */
     @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL})
     @JsonManagedReference(value = "player-team")
     private List<PlayerEntity> players;
     /**
-     * 
+     *
      */
     @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
     private int gameId;
@@ -79,7 +79,7 @@ public class TeamEntity extends AbstractEntity {
     private GameEntity game;
 
     /**
-     * 
+     *
      * @param a
      */
     @Override
@@ -113,7 +113,7 @@ public class TeamEntity extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @param p
      */
     @XmlTransient
@@ -129,9 +129,16 @@ public class TeamEntity extends AbstractEntity {
     public void setPlayers(List<PlayerEntity> players) {
         this.players = players;
     }
+    /**
+     *
+     */
+    @Override
+    public String toString() {
+        return this.name;
+    }
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -140,7 +147,7 @@ public class TeamEntity extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @param id
      */
     @Override
@@ -149,7 +156,7 @@ public class TeamEntity extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getName() {
@@ -157,7 +164,7 @@ public class TeamEntity extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @param name
      */
     public void setName(String name) {
