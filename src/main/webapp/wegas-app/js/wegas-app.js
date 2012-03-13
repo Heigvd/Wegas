@@ -4,15 +4,15 @@
 
 YUI.add('wegas-app', function(Y) {
     var	App = Y.Base.create("wegas-app", Y.Base, [ ], {
-        
+
         dataSources: [],
-        
+
         _rootWidgetCfg: null,
         _rootWidget: null,
-	
+
         initializer: function(cfg){
             Y.Wegas.app = this;
-	    
+
             this._initDataSources();
             this._initUI();
             this._initCSS();
@@ -23,16 +23,19 @@ YUI.add('wegas-app', function(Y) {
         render: function() {
             this._requestDataSources();
         },
-	
-	
+
+
         _initDataSources: function() {
             var dataSources = this.get('dataSources'),
             k;
-            
+
             // @todo Shall we use browser native parsers
             // Y.JSON.useNativeParse = true;
-                
+
+                base
             for (k in dataSources) {
+                console.log(this.get('base'));
+                dataSources[k].source = this.get("base")+dataSources[k].source;
                 this.dataSources[k] = new Y.DataSource.IO(dataSources[k]);
             }
         },
@@ -64,12 +67,12 @@ YUI.add('wegas-app', function(Y) {
                     request: ""
                 });
             }
-            
+
             /*this.dataSources.Game.after("response", function() {
                 Y.log("info", "Game has been modified, reloading variable descriptors", "Wegas.Editor");
             });*/
         },
-	
+
         _initUI: function() {
             Y.io(this.get('base')+this.get('layoutSrc')+'?id='+App.genId(), {
                 context: this,
@@ -83,7 +86,7 @@ YUI.add('wegas-app', function(Y) {
                             return;
                         }
                         this._rootWidget = Y.Wegas.Widget.create(this._rootWidgetCfg);
-                        
+
                         try {
                             this._rootWidget.render();
                         } catch (e) {
@@ -112,7 +115,7 @@ YUI.add('wegas-app', function(Y) {
             currentGameModel: {},
             currentGame: {},
             currentTeam: { },
-            currentPlayer: { 
+            currentPlayer: {
                 setter: function(val, name) {
                     // When current player is updated, we also update current team
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
@@ -123,9 +126,9 @@ YUI.add('wegas-app', function(Y) {
         },
         genId: function() {
             var now = new Date();
-            return now.getHours()+now.getMinutes()+now.getSeconds();   
-        }		
+            return now.getHours()+now.getMinutes()+now.getSeconds();
+        }
     });
-    
+
     Y.namespace('Wegas').App = App;
 });

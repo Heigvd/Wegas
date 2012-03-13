@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.scope;
 
@@ -32,7 +32,7 @@ public class GameModelScopeEntity extends ScopeEntity {
 
     private static final Logger logger = Logger.getLogger(GameModelScopeEntity.class.getName());
     /*
-     * FIXME Here we should use TeamEntity reference and add a key deserializer module 
+     * FIXME Here we should use TeamEntity reference and add a key deserializer module
      */
     @OneToOne(mappedBy = "gameModelScope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     //@MapKey(name="id")
@@ -40,7 +40,7 @@ public class GameModelScopeEntity extends ScopeEntity {
     private VariableInstanceEntity variableInstance;
 
     /**
-     * 
+     *
      */
     @PrePersist
     public void prePersist() {
@@ -48,8 +48,8 @@ public class GameModelScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
-     * @param force 
+     *
+     * @param force
      */
     @Override
     @XmlTransient
@@ -64,7 +64,7 @@ public class GameModelScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -75,7 +75,7 @@ public class GameModelScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
+     *
      * @param a
      */
     @Override
@@ -83,9 +83,9 @@ public class GameModelScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
+     *
      * @param userId
-     * @return  
+     * @return
      */
     @Override
     public VariableInstanceEntity getVariableInstance(Long userId) {
@@ -93,7 +93,7 @@ public class GameModelScopeEntity extends ScopeEntity {
     }
 
     /**
-     * 
+     *
      * @param userId
      * @param v
      */

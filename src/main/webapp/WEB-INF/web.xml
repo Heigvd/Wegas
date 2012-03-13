@@ -60,52 +60,6 @@
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/rs/*</url-pattern>
     </servlet-mapping>
-    <!-- Login page
-    <servlet>
-        <servlet-name>Wegas Login</servlet-name>
-        <jsp-file>/wegas-app/templates/wegas-login.jsf</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Wegas Login</servlet-name>
-        <url-pattern>/wegas-login</url-pattern>
-        <url-pattern>/wegas-signup</url-pattern>
-    </servlet-mapping>-->
-    <!-- Logout page
-    <servlet>
-        <servlet-name>Wegas Logout</servlet-name>
-        <jsp-file>/wegas-app/jsp/wegas-logout.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Wegas Logout</servlet-name>
-        <url-pattern>/wegas-logout</url-pattern>
-    </servlet-mapping> -->
-    <!-- Lobby page
-    <servlet>
-        <servlet-name>Wegas Lobby</servlet-name>
-        <jsp-file>/wegas-app/jsp/wegas-lobby.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Wegas Lobby</servlet-name>
-        <url-pattern>/wegas-lobby</url-pattern>
-    </servlet-mapping>-->
-    <!-- App page
-    <servlet>
-        <servlet-name>Wegas App</servlet-name>
-        <jsp-file>/wegas-app/jsp/wegas-app.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Wegas App</servlet-name>
-        <url-pattern>/wegas-app</url-pattern>
-    </servlet-mapping>-->
-    <!-- Editor page
-    <servlet>
-        <servlet-name>Wegas Editor</servlet-name>
-        <jsp-file>/wegas-editor/jsp/wegas-editor.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Wegas Editor</servlet-name>
-        <url-pattern>/wegas-editor</url-pattern>
-    </servlet-mapping> -->
 
     <!-- Liquibase configuration -->
     <context-param>

@@ -30,7 +30,12 @@
                 <h1>#{wegasAppBundle.LobbyPage_ResumeGames_Title}</h1>
 
                 <ui:repeat value="#{lobbyController.players}" var="player" >
-                    #{player.team.game.name} <a href="#">resume</a><br />
+                    #{player.team.game.name}
+
+                    <h:commandLink action="#{lobbyController.selectTeam}"  value="#{wegasAppBundle.LobbyPage_ResumeGames_SelectLink}">
+                        <f:setPropertyActionListener target="#{lobbyController.currentPlayer}" value="#{player}"/>
+                    </h:commandLink>
+                    <br />
                 </ui:repeat>
 
 
@@ -53,7 +58,8 @@
 
                 <h:form>
                     <h:inputText id="gameToken" value="#{lobbyController.gameToken}" title="#{wegasAppBundle.LobbyPage_JoinGame_TokenTitle}" />
-                    <h:commandLink action="#{lobbyController.joinGame}" value="#{wegasAppBundle.LobbyPage_JoinGame_Link}" />
+                    <h:commandLink action="#{lobbyController.joinGame}" value="#{wegasAppBundle.LobbyPage_JoinGame_Link}"/>
+
                 </h:form>
             </div>
         </ui:define>

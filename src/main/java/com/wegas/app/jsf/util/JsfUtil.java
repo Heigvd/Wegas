@@ -1,3 +1,12 @@
+/*
+ * Wegas.
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
+ */
 package com.wegas.app.jsf.util;
 
 import com.wegas.admin.jsf.util.*;
@@ -9,13 +18,13 @@ import javax.faces.convert.Converter;
 import javax.faces.model.SelectItem;
 
 /**
- * 
- * @author fx
+ *
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class JsfUtil {
 
     /**
-     * 
+     *
      * @param entities
      * @param selectOne
      * @return
@@ -35,7 +44,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param ex
      * @param defaultMsg
      */
@@ -49,7 +58,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param messages
      */
     public static void addErrorMessages(List<String> messages) {
@@ -59,7 +68,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param msg
      */
     public static void addErrorMessage(String msg) {
@@ -68,7 +77,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param msg
      */
     public static void addSuccessMessage(String msg) {
@@ -77,7 +86,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param key
      * @return
      */
@@ -86,7 +95,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param requestParameterName
      * @param converter
      * @param component

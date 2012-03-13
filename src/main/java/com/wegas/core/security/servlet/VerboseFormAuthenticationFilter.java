@@ -7,7 +7,7 @@ import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 
 /**
  * 
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class VerboseFormAuthenticationFilter extends FormAuthenticationFilter {
 	

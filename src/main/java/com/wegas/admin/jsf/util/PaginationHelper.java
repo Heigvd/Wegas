@@ -4,7 +4,7 @@ import javax.faces.model.DataModel;
 
 /**
  * 
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public abstract class PaginationHelper {
 

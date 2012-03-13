@@ -15,7 +15,7 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  *
- * @param <T> 
+ * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public abstract class AbstractRestController<T extends AbstractFacade> {
@@ -25,7 +25,7 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
      * public AbstractRestController(Class<T> entityClass) { this.entityClass =
      * entityClass; }
      */
-    
+
     /**
      *
      */
@@ -33,7 +33,7 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
     protected UriInfo uriInfo;
 
     /**
-     * 
+     *
      * @return
      */
     protected abstract AbstractFacade getFacade();
@@ -52,7 +52,7 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
     /**
      * Retrieve a specific game model
      *
-     * @param entityId 
+     * @param entityId
      * @return OK
      */
     @GET
@@ -64,7 +64,7 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
 
     /**
      *
-     * @param entity 
+     * @param entity
      * @return
      */
     @POST
@@ -78,8 +78,8 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
 
     /**
      *
-     * @param entityId 
-     * @param entity 
+     * @param entityId
+     * @param entity
      * @return
      */
     @PUT
@@ -87,13 +87,13 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractEntity update(@PathParam("entityId") Long entityId, AbstractEntity entity) {
-        getFacade().edit(entity);
+        getFacade().update(entityId, entity);
         return entity;
     }
 
     /**
      *
-     * @param entityId 
+     * @param entityId
      * @return
      */
     @DELETE
@@ -103,13 +103,13 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
         getFacade().remove(entity);
         return Response.noContent().build();
     }
-    
+
     /**
-     * 
+     *
      * @param name
      * @return
      */
-    protected Long getPathParam(String name) {
-        return new Long(this.uriInfo.getPathParameters().get("name").get(0));
+    protected String getPathParam(String name) {
+        return this.uriInfo.getPathParameters().get(name).get(0);
     }
 }

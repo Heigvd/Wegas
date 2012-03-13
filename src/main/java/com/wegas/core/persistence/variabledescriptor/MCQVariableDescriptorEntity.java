@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.variabledescriptor;
 
@@ -36,28 +36,28 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQVariableDescriptorEntity");
     /**
-     * 
+     *
      */
     private String label;
     /**
-     * 
+     *
      */
     @Column(length = 4096)
     private String description;
     /**
-     * 
+     *
      */
     @JsonManagedReference("question-reply")
     @JoinColumn(name = "variabledescriptor_id")
     @OneToMany(mappedBy = "mCQVariableDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<MCQVariableDescriptorReplyEntity> replies = new ArrayList<MCQVariableDescriptorReplyEntity>();
     /**
-     * 
+     *
      */
     private boolean allowMultipleReplies = false;
 
     /**
-     * 
+     *
      * @param a
      */
     @Override
@@ -115,7 +115,7 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
     }
 
     /**
-     * 
+     *
      * @param reply
      */
     public void addReply(MCQVariableDescriptorReplyEntity reply) {
@@ -145,7 +145,7 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
     }
 
     /**
-     * @param allowMultipleReplies 
+     * @param allowMultipleReplies
      */
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
         this.allowMultipleReplies = allowMultipleReplies;

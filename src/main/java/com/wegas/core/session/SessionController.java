@@ -2,7 +2,7 @@
  * MetAlbasim is super koool. http://www.albasim.com
  * 
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
+ * Media Engineering :: Information Technology Managment :: Comem
  *
  * Copyright (C) 2010, 2011 
  *

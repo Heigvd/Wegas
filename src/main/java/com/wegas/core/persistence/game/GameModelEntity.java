@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.game;
 
@@ -34,7 +34,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     private static final Logger logger = Logger.getLogger("GameModelEntity");
     //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
     /**
-     * 
+     *
      */
     @Id
     @XmlID
@@ -42,26 +42,26 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gamemodel_seq")
     private Long id;
     /**
-     * 
+     *
      */
     @NotNull
     //@Pattern(regexp = "^\\w+$")
     private String name;
     /**
-     * 
+     *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
     @JsonManagedReference("gamemodel-variabledescriptor")
     private List<VariableDescriptorEntity> variableDescriptors;
     /**
-     * 
+     *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
     @JsonManagedReference("gamemodel-game")
     private List<GameEntity> games;
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -70,7 +70,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param id
      */
     @Override
@@ -79,7 +79,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -88,7 +88,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param name
      */
     @Override
@@ -97,7 +97,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @JsonManagedReference("gamemodel-variabledescriptor")
@@ -106,7 +106,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param variableDescriptor
      */
     @XmlTransient
@@ -116,7 +116,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param variableDescriptors
      */
     @JsonManagedReference("gamemodel-variabledescriptor")
@@ -125,8 +125,8 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
-     * @param force 
+     *
+     * @param force
      */
     public void propagateDefaultVariableInstance(boolean force) {
         for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {

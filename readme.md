@@ -35,3 +35,8 @@ Set up Github
 *	cd Wegas
 *	git remote add origin git@github.com:fxaeberhard/Wegas.git
 *	git push -u origin master
+
+Set up Netbeans
+------------------------
+*   Force utf-8:
+    Addn -J-Dfile.encoding=UTF-8 to netbeans_default_options line in netbeans.conf.

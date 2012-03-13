@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.users;
 
@@ -37,23 +37,23 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @XmlRootElement
 @XmlType(name = "User", propOrder = {"@class", "id", "name"})
 public class UserEntity extends AbstractEntity {
-    
+
     private static final Logger logger = Logger.getLogger("UserEntity");
     /**
-     * 
+     *
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     private Long id;
     /**
-     * 
+     *
      */
     @NotNull
     @javax.validation.constraints.Pattern(regexp = "^\\w+$")
     private String name;
     /**
-     * 
-    
+     *
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_player",
     joinColumns = {
@@ -61,39 +61,39 @@ public class UserEntity extends AbstractEntity {
     inverseJoinColumns = {
         @JoinColumn(name = "userId")})
     Collection<TeamEntity> players; */
-    
+
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     @JsonManagedReference(value="player-user")
     private List<PlayerEntity> players;
-    
+
     /**
-     * 
+     *
      * @return
      */
     @Override
     public Long getId() {
         return id;
     }
-    
+
     /**
-     * 
+     *
      * @param id
      */
     @Override
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     /**
-     * 
+     *
      * @return
      */
     public String getName() {
         return name;
     }
-    
+
     /**
-     * 
+     *
      * @param name
      */
     public void setName(String name) {
@@ -101,7 +101,7 @@ public class UserEntity extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @param a
      */
     @Override
@@ -112,7 +112,7 @@ public class UserEntity extends AbstractEntity {
     /**
      * @return the players
      */
-    
+
     @XmlTransient
     @JsonManagedReference(value="player-user")
     public List<PlayerEntity> getPlayers() {

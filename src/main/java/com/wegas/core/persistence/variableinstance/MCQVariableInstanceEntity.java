@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.variableinstance;
 
@@ -32,14 +32,14 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQVariableInstanceEntity");
     /**
-     * 
+     *
      */
     @OneToMany(mappedBy = "mCQVariableInstance", cascade = {CascadeType.ALL}, orphanRemoval = true/*, fetch = FetchType.LAZY*/)
     @JsonManagedReference("question-replyi")
     @JoinColumn(name = "variableinstance_id")
     private List<MCQVariableInstanceReplyEntity> replies = new ArrayList<MCQVariableInstanceReplyEntity>();
     /**
-     * 
+     *
      */
     private boolean active = true;
 
@@ -58,7 +58,7 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     }
 
     /**
-     * @return the replies 
+     * @return the replies
      */
     public List<MCQVariableInstanceReplyEntity> getReplies() {
         return replies;
@@ -79,7 +79,7 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     }
 
     /**
-     * 
+     *
      * @param reply
      */
     public void addReply(MCQVariableInstanceReplyEntity reply) {

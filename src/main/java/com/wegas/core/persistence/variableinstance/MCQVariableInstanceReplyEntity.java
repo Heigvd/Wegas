@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.variableinstance;
 
@@ -36,32 +36,32 @@ public class MCQVariableInstanceReplyEntity extends NamedEntity {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQVariableInstanceReplyEntity");
     /**
-     * 
+     *
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvarinstrep_seq")
     private Long id;
     /**
-     * 
+     *
      */
     private String name;
     /**
-     * 
+     *
      */
     @Column(length = 4096)
     private String description;
     /**
-     * 
+     *
      */
     @Column(length = 4096)
     private String impact;
     /**
-     * 
+     *
      */
     @Column(length = 4096)
     private String answer;
     /**
-     * 
+     *
      */
     @JsonBackReference("question-replyi")
     @ManyToOne(optional = false)
@@ -69,7 +69,7 @@ public class MCQVariableInstanceReplyEntity extends NamedEntity {
     private MCQVariableInstanceEntity mCQVariableInstance;
 
     /**
-     * 
+     *
      * @param a
      */
     @Override
@@ -144,7 +144,7 @@ public class MCQVariableInstanceReplyEntity extends NamedEntity {
     }
 
     /**
-     * @param mCQVariableInstance 
+     * @param mCQVariableInstance
      */
     public void setMCQVariableInstance(MCQVariableInstanceEntity mCQVariableInstance) {
         this.mCQVariableInstance = mCQVariableInstance;

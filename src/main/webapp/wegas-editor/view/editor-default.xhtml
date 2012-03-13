@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <ui:composition template="template/wegas-app.xhtml">
-        <ui:define name="title">
-            <h:outputText value="#{wegasAppBundle.LobbyPage_SelectTeam_Title}"></h:outputText>
+    <ui:composition template="/wegas-app/view/template/app-default.xhtml">
+
+        <ui:define name="jsInculde">'wegas-app', 'wegas-editor'</ui:define>
+
+        <ui:define name="jsInitMethod">
+            Y.on('domready', function() {					// Launch the editor as soon as Dom is ready
+                var editor = new Y.Wegas.Editor(Config);
+                editor.render();
+            });
         </ui:define>
-        <ui:define name="body">
-            lets play
-        </ui:define>
+
     </ui:composition>
-
 </html>

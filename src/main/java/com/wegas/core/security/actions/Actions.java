@@ -5,7 +5,7 @@ import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  * 
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public enum Actions {
 

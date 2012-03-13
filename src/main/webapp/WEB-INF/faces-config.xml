@@ -32,9 +32,9 @@
     </navigation-rule>
 
     <navigation-rule>
-        <from-view-id>/wegas-app/view/lobby-selectteam.xhtml</from-view-id>
+        <from-view-id>/wegas-app/view/*</from-view-id>
         <navigation-case>
-            <from-outcome>teamJoined</from-outcome>
+            <from-outcome>playerSelected</from-outcome>
             <to-view-id>/wegas-app/view/game-default.xhtml</to-view-id>
             <redirect>true</redirect>
         </navigation-case>

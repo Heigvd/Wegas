@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.rest;
 
@@ -45,11 +45,6 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
      */
     @EJB
     private GameModelEntityFacade gameModelFacade;
-    /**
-     *
-     */
-    @Context
-    private UriInfo uriInfo;
 
     /**
      *
@@ -59,8 +54,7 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<AbstractEntity> index() {
-        System.out.println("*" + gameModelFacade + "*" + uriInfo);
-        Long gameModelId = this.getGameModelId();
+         Long gameModelId = this.getGameModelId();
         GameModelEntity gameModel = gameModelFacade.find(gameModelId);
         return (Collection) gameModel.getVariableDescriptors();
     }
@@ -79,11 +73,11 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     }
 
     private Long getGameModelId() {
-        return new Long(this.uriInfo.getPathParameters().get("gameModelId").get(0));
+        return new Long(this.getPathParam("gameModelId"));
     }
 
     /**
-     * 
+     *
      * @return
      */
     @Override

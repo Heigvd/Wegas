@@ -1,32 +1,19 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.game;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -45,7 +32,7 @@ public class GameEntity extends NamedEntity implements Serializable {
 
     private static final Logger logger = Logger.getLogger("GameEntity");
     /**
-     * 
+     *
      */
     @Id
     @XmlID
@@ -53,25 +40,25 @@ public class GameEntity extends NamedEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_seq")
     private Long id;
     /**
-     * 
+     *
      */
     @NotNull
     //@Pattern(regexp = "^\\w+$")
     private String name;
     /**
-     * 
+     *
      */
     @NotNull
-    @Pattern(regexp = "^\\w+$")
+   // @Pattern(regexp = "^\\w+$")
     private String token;
     /**
-     * 
+     *
      */
     @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL})
     @JsonManagedReference("game-team")
     private List<TeamEntity> teams;
     /**
-     * 
+     *
      */
     @ManyToOne
     @JoinColumn(name = "gamemodel_id")
@@ -79,7 +66,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     private GameModelEntity gameModel;
 
     /**
-     * 
+     *
      */
     @PrePersist
     public void prePersist() {
@@ -110,7 +97,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param t
      */
     @XmlTransient
@@ -136,7 +123,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     /*public void reset(AnonymousEntityManager aem) {
     for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
@@ -144,7 +131,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     }
     }*/
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -153,7 +140,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param id
      */
     @Override
@@ -162,7 +149,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -171,7 +158,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param name
      */
     @Override

@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem é
+ *
+ * Copyright (C) 2011
  */
 
 package com.wegas.core.persistence.users;
@@ -53,7 +53,7 @@ public class GroupEntity extends AbstractEntity {
     private String name;
 
     /**
-     * 
+     *
      * @return
      */
     @Override
@@ -63,7 +63,7 @@ public class GroupEntity extends AbstractEntity {
 
 
     /**
-     * 
+     *
      * @param id
      */
     @Override
@@ -73,7 +73,7 @@ public class GroupEntity extends AbstractEntity {
 
 
     /**
-     * 
+     *
      * @return
      */
     public String getName() {
@@ -82,7 +82,7 @@ public class GroupEntity extends AbstractEntity {
 
 
     /**
-     * 
+     *
      * @param name
      */
     public void setName(String name) {
@@ -90,7 +90,7 @@ public class GroupEntity extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @param a
      */
     @Override

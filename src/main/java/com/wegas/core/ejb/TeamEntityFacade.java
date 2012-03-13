@@ -1,6 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas.
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.ejb;
 
@@ -64,7 +69,7 @@ public class TeamEntityFacade extends AbstractFacade<TeamEntity> {
         t.addPlayer(p);
         em.flush();
         em.refresh(p);
-        //t.getGame().getGameModel().propagateDefaultVariableInstance(false);
+        t.getGame().getGameModel().propagateDefaultVariableInstance(false);
         return p;
     }
 
