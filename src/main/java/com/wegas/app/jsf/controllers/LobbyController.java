@@ -1,3 +1,12 @@
+/*
+ * Wegas.
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
+ */
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.app.jsf.util.JsfUtil;
@@ -5,6 +14,7 @@ import com.wegas.core.ejb.GameEntityFacade;
 import com.wegas.core.ejb.TeamEntityFacade;
 import com.wegas.core.ejb.UserEntityFacade;
 import com.wegas.core.persistence.game.GameEntity;
+import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.users.UserEntity;
@@ -19,15 +29,13 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
 import javax.persistence.NoResultException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 
 /**
  *
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @ManagedBean(name = "lobbyController")
 @SessionScoped
@@ -71,6 +79,10 @@ public class LobbyController implements Serializable {
     public LobbyController() {
     }
 
+    /**
+     *
+     * @return
+     */
     public UserEntity getCurrentUser() {
 
         Subject subject = SecurityUtils.getSubject();
@@ -78,7 +90,7 @@ public class LobbyController implements Serializable {
             return userEntityFacade.getUserByPrincipal(subject.getPrincipal().toString());
         }
         catch (EJBException e) {
-            System.out.println(e.getCause()+"*"+e.getCausedByException());
+            System.out.println(e.getCause() + "*" + e.getCausedByException());
             if (e.getCausedByException() instanceof NoResultException) {
                 UserEntity u = new UserEntity();
                 u.setName(subject.getPrincipal().toString());
@@ -90,10 +102,18 @@ public class LobbyController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<PlayerEntity> getPlayers() {
         return this.getCurrentUser().getPlayers();
     }
 
+    /**
+     *
+     * @return
+     */
     public String joinGame() {
         try {
             this.currentGame = gameEntityFacade.getGameByToken(this.gameToken);
@@ -109,14 +129,35 @@ public class LobbyController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<TeamEntity> getAvailableTeams() {
         return this.currentGame.getTeams();
     }
 
+    /**
+     *
+     * @return
+     */
     public String joinTeam() {
         setCurrentPlayer(teamEntityFacade.createPlayer(this.getSelectedTeam().getId(), getCurrentUser().getId()));
-        return "teamJoined";
+        return "playerSelected";
     }
+
+    /**
+     *
+     * @return
+     */
+    public String selectTeam() {
+        return "playerSelected";
+    }
+
+    public GameModelEntity getCurrentGameModel() {
+        return currentPlayer.getTeam().getGame().getGameModel();
+    }
+
 
     /**
      * @return the gameToken

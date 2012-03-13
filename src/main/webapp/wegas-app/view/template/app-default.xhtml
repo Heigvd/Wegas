@@ -1,20 +1,455 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title><ui:insert name="title">Default Title</ui:insert></title>
+        <title><ui:insert name="title">Wegas - 0.2</ui:insert></title>
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index, follow" />
+        <meta name="contact" content="fx@red-agent.com" />
+        <meta name="audience" content="General" />
+        <meta name="distribution" content="Global" />
+        <meta name="revisit-after" content="30 days" />
+        <link rel="icon" type="image/ico" href="/favicon.ico" />
+
+        <!-- YUI -->
+        <!-- CDN  -->
+        <!--<link rel="stylesheet" type="text/css"
+                 href="http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&3.3.0/build/cssreset/reset-min.css&3.3.0/build/cssgrids/grids-min.css&3.3.0/build/cssbase/base-min.css&3.3.0pr3/build/widget/assets/skins/sam/widget.css&3.3.0pr3/build/node-menunav/assets/skins/sam/node-menunav.css&" charset="utf-8" />
+           <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/skin.css">
+        -->
+        <!-- Self hosted -->
+        <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
+        <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />
+
+        <!-- WireIt -->
+        <!--<link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> -->
+
+        <!-- InputEx -->
+        <!-- <link type='text/css' rel='stylesheet' href='lib/inputex/css/inputEx.css' />-->
+
+        <meta id="customstyles" />
+        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/resources/css/wegas-editor.css" />
     </h:head>
 
-    <h:body>
-        <!--<h1>
-            <ui:insert name="title">Default Title</ui:insert>
-        </h1>-->
-        <p>
-            <ui:insert name="body">Default Body</ui:insert>
-        </p>
+    <h:body class="yui3-skin-sam yui-skin-sam">
+
+        <!-- YUI Base -->
+        <!-- CDN -->
+        <!--<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.4.1/build/yui/yui-min.js&3.4.1/build/loader/loader-min.js"></script>-->
+        <!-- Self hosted -->
+        <script type="text/javascript" src="/Wegas/lib/yui3/build/yui/yui.js"></script>
+        <script type="text/javascript" src="/Wegas/lib/yui3/build/loader/loader.js"></script>
+
+
+        <!-- InputEx Loader -->
+        <script src="/Wegas/lib/inputex/build/loader.js"  type='text/javascript'></script>
+
+        <!-- Wegas Loader -->
+        <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
+
+        <!-- Atmosphere jquery -->
+        <!-- <script type="text/javascript" src="jquery/jquery-1.6.4.js"></script>
+        <script type="text/javascript" src="jquery/jquery.atmosphere.js"></script>-->
+
+        <script type="text/javascript">
+            YUI_config.groups.inputex.base = '/Wegas/lib/inputex/build/';		// Hack fix inputex loading path so it uses local files
+            YUI_config.groups.wegas.base = '/Wegas/';                                   // Hack fix inputex loading path so it uses local files
+
+            /**<!--
+     base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
+         { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
+ -->**/
+            var Y = YUI({
+                charset: 'utf-8',
+                lang: Config.lang,
+                loadOptional: true,
+                insertBefore: 'customstyles',
+                gallery: 'gallery-2011.02.18-23-10',
+                throwFail:true,
+                useBrowserConsole: true,
+                //debug: Config.debug,
+                //timeout: 10000,
+                //filter: 'debug',
+                // filter: (Config.debug)?'raw':'min',
+                //filters: { event: 'debug' },
+                //logExclude: { event : true },
+                //logInclude: { event : true },
+                errorFn: function(e) {
+                    Y.log('Uncaught error: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
+                },
+                groups: {
+                    /* Set up local version of yui2 */
+                    yui2: {
+                        base: Config.base+'lib/yui2in3/build/',
+                        // combine: true,
+                        // comboBase: 'http://myserver.com/combo?',
+                        // root: '/2in3/build/',
+                        patterns:  {
+                            'yui2-': {
+                                configFn: function(me) {
+                                    if(/-skin|reset|fonts|grids|base/.test(me.name)) {
+                                        me.type = 'css';
+                                        me.path = me.path.replace(/\.js/, '.css');
+                                        me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }).use(
+                <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
+            function (Y) {
+                var ScopeForm = [
+                    { name: 'id', type: 'hidden'},
+                    { type: 'select',
+                        name: '@class',
+                        label: 'Variable is',
+                        choices: [
+                            { value: "PlayerScope", label: 'different for each user' },
+                            { value: "TeamScope", label: 'different for each team' },
+                            { value: "GameModelScope", label: 'the same for everybody' }
+                        ]
+                    }
+                ],
+                Config = {
+                    base : "/Wegas/",
+                    layoutSrc: 'wegas-editor/db/wegas-editor-layout.json',
+                    lang : 'en-US',
+                    debug : true,
+                    currentGameModel: "#{lobbyController.currentGameModel.id}",
+                    currentGame: "#{lobbyController.currentPlayer.team.game.id}",
+                    currentTeam: "#{lobbyController.currentPlayer.team.id}",
+                    currentPlayer: "#{lobbyController.currentPlayer.id}",
+                    loggedIn : true,
+                    css: ['/Wegas/wegas-projectmanagementgame/resources/css/wegas-projectmanagementgame.css'],
+                    dataSources: {
+                        "GameModel": {
+                            source: "rs/GameModel",
+                            plugins: [
+                                {
+                                    fn: "DataSourceJSONSchema",
+                                    cfg: {
+                                        schema: {
+                                            resultListLocator: "."
+                                            // resultFields: ["name", "id", "@class", "errors"]
+                                        }
+                                    }
+                                }, { fn: "GameModelDataSourceREST" }
+                            ]
+                        },
+                        "Game": {
+                            source: "rs/GameModel/#{lobbyController.currentGameModel.id}/Game",
+                            plugins: [
+                                {
+                                    fn: "DataSourceJSONSchema",
+                                    cfg: {
+                                        schema: {
+                                            resultListLocator: "."
+                                            // resultFields: ["name", "id", "@class", "errors"]
+                                        }
+                                    }
+                                }, { fn: "GameDataSourceREST" }
+                            ]
+                        },
+                        "Page": {
+                            source: "wegas-projectmanagementgame/db/wegas-pmg-pages.json",
+                            plugins: [
+                                {
+                                    fn: "DataSourceJSONSchema",
+                                    cfg: {
+                                        schema: {
+                                            resultListLocator: "."
+                                            //resultFields: ["name", "id", "@class"]
+                                        }
+                                    }
+                                }, { fn: "DataSourceREST" }
+                            ]
+                        },
+                        "User": {
+                            source: "rs/User",
+                            plugins: [
+                                {
+                                    fn: "DataSourceJSONSchema",
+                                    cfg: {
+                                        schema: {
+                                            resultListLocator: "."
+                                        }
+                                    }
+                                }, { fn: "DataSourceREST" }
+                            ]
+                        },
+                        "VariableDescriptor": {
+                            source: "rs/GameModel/#{lobbyController.currentGameModel.id}/VariableDescriptor",
+                            plugins: [
+                                {
+                                    fn: "DataSourceJSONSchema",
+                                    cfg: {
+                                        schema: {
+                                            resultListLocator: "."
+                                        }
+                                    }
+                                }, { fn: "VariableDescriptorDataSourceREST" }
+                            ]
+                        }
+                        /* "Team": {
+                            source: "rs/gm/1/Team",
+                            plugins: [
+                                {
+                                    fn: "DataSourceJSONSchema",
+                                    cfg: {
+                                        schema: {
+                                            resultListLocator: "."
+                                        }
+                                    }
+                                }, { fn: "DataSourceREST" }
+                            ]
+                        },*/
+                    },
+                    editorMenus: {
+
+                        /*********************************************************** Entities Admin Menus */
+                        "Game": [
+                            { text: "New team", value: { op:'addChild', childClass: "Team" } }
+                            /*                        {
+                            text: "Edit",
+                            op: 'update',
+                            adminForm: "AlbaListWidget"
+                        },
+                        {
+                            text: "New",
+                            op: "new",
+                            submenu:  {
+                                id: "AlbaListWidgetAdd",
+                                itemdata: [
+
+                                ]
+                            }
+                        },
+                        { text: "Delete", op: 'delete' }*/
+                        ],
+                        "Team": [
+                            { text: "New player", value: { op:'addChild', childClass: "Player" } }
+                            /*                        {
+                            text: "Edit",
+                            op: 'update',
+                            adminForm: "AlbaListWidget"
+                        },
+                        {
+                            text: "New",
+                            op: "new",
+                            submenu:  {
+                                id: "AlbaListWidgetAdd",
+                                itemdata: [
+
+                                ]
+                            }
+                        },
+                        { text: "Delete", op: 'delete' }*/
+                        ]
+                    },
+                    forms: {
+                        /*********************************************************** Types Forms */
+                        "GameModel" : [
+                            { name: 'id', type: 'hidden' },
+                            { name: 'name', label:'Name', required: true},
+                            { name: '@class', value:'GameModel', type: 'hidden'}
+                        ],
+                        "Game" : [
+                            { name: 'id', type: 'hidden' },
+                            { name: 'name', label:'Name', required: true},
+                            { name: 'token', label:'Token', required: true},
+                            { name: '@class', value:'Game', type: 'hidden'}
+                        ],
+                        "Team" : [
+                            { name: 'id', type: 'hidden'},
+                            { name: 'gameId', type: 'hidden'},
+                            { name: '@class', value:'Team', type: 'hidden'},
+                            { name: 'name', label:'Name', required: true},
+                            // { name: 'token', label:'Token'},
+                        ],
+                        "Player" : [
+                            { name: 'id', type: 'hidden'},
+                            { name: 'teamId', type: 'hidden'},
+                            { name: 'name', label:'Name', required: true},
+                            { name: '@class', value:'Player', type: 'hidden'}
+                        ],
+                        "User" : [
+                            { name: 'id', type: 'hidden'},
+                            { name: 'name', label:'Name', required: true},
+                            { name: 'password', type: 'password', label: 'New password', showMsg: true,  id: 'firstPassword', strengthIndicator: true, capsLockWarning: true },
+                            { type: 'password', label: 'Confirmation', showMsg: true, confirm: 'firstPassword' },
+                            { name: '@class', value:'User', type: 'hidden'}
+                        ],
+                        "StringVariableDescriptor": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'StringVariableDescriptor'},
+                            { name: 'name', label:'Name', required: true},
+                            { name: 'scope', type:'group', fields: ScopeForm},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                    { name: '@class', value:'StringVariableInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: 'value', label: 'Default value'}
+                                ]}
+                        ],
+                        "StringVariableInstance": [
+                            { name: '@class', value:'StringVariableInstance', type: 'hidden'},
+                            { name: 'id', type: 'hidden'},
+                            { name: 'value', label: 'Text'}
+                        ],
+                        "NumberVariableDescriptor": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'NumberVariableDescriptor'},
+                            { name: 'name', label:'Name', required: true},
+                            { name: 'scope', type:'group', fields: ScopeForm},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                    { name: '@class', value:'NumberVariableInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: 'value', label: 'Default value', regexp: /^[0-9]*$/ }
+                                ]}
+                        ],
+                        "NumberVariableInstance": [
+                            { name: '@class', value:'NumberVariableInstance:', type: 'hidden'},
+                            { name: 'id', type: 'hidden'},
+                            { name: 'value', label: 'Value', regexp: /^[0-9]*$/ }
+                        ],
+                        "ListVariableDescriptor": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'ListVariableDescriptor'},
+                            { name: 'name', label:'Name', required: true},
+                            { name: 'scope', type:'group', fields: ScopeForm},
+                            { name:'defaultVariableInstance', type:'group'}
+                        ],
+                        "ListVariableInstance": [
+                            { name: '@class', value:'ListVariableInstance', type: 'hidden'},
+                            { name: 'id', type: 'hidden'}
+                        ],
+                        "MCQVariableDescriptor": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'MCQVariableDescriptor'},
+                            { name: 'scope', type:'group', fields: ScopeForm},
+                            { name: 'name', label:'Name', required: true},
+                            { name: 'label', label:'Label'},
+                            { name: 'allowMultipleReplies', 'label': 'Allow multiple replies', type: 'boolean', value: false},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                    { name: '@class', value:'MCQVariableInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: 'active', 'label': 'Active by default', type: 'boolean', value: true}
+                                ]},
+                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
+                            //{ name: 'description', 'type': 'text', label:'Description', opts: {"width":"100%", height: '100px', autoHeight: true, dompath: false }},
+                            {
+                                type: 'list',
+                                name: 'replies',
+                                label: 'Replies',
+                                elementType: {
+                                    type: 'group', fields: [
+                                        { name: 'id', type: 'hidden'},
+                                        { name: '@class', type: 'hidden', value: 'MCQVariableDescriptorReply'},
+                                        { name: 'name', label:'Name', required: true},
+                                        { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
+                                        { name: 'answer', 'type': 'html', label:'Answer', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
+                                        { name: 'impact', 'type': 'text', label:'Impact', rows: 3},
+                                    ]},
+                                useButtons: true
+                            }
+                        ],
+                        "MCQVariableInstance": [
+                            { name: '@class', value:'MCQVariableInstance', type: 'hidden'},
+                            { name: 'id', type: 'hidden'},
+                            { name: 'active', 'label': 'Active', type: 'boolean', value: true}
+                        ],
+
+
+
+                        /*********************************************************** Widgets Forms */
+                        List: [
+                            { name: 'label', label: 'Label'},
+                            { name: 'direction', label: 'Direction', type: 'select', choices: [
+                                    { value: 'vertical', label: 'Vertical' },
+                                    { value: 'horizontal', label: 'Horizontal' }
+                                ] },
+                            { name: 'cssClass', label: 'CSS class'},
+                            { name: 'type', value:'List:', type: 'hidden'}
+                        ],
+                        VariableDisplay: [
+                            { name: 'label', label: 'Label'},
+                            { name: 'variable', label: 'Target variable'},
+                            { name: 'view', label: 'Display mode', type: 'select', choices: [
+                                    { value: 'text', label: 'Text' },
+                                    { value: 'button', label: 'Boxes' },
+                                    { value: 'gauge', label: 'Gauge' }
+                                ] },
+                            { name: 'cssClass', label: 'CSS class'},
+                            { name: 'type', value:'VariableDisplay:', type: 'hidden'}
+                        ],
+                        Button: [
+                            /*{ name: 'name', label: 'Name'},*/
+                            { name: 'label', label: 'Label'},
+                            /*{ name: 'targetArea', label: 'Targeted dynamic area element', metatype: 'widgetselect', targetType: 'AlbaDisplayAreaWidget' },
+                        { name: 'targetSubpageId', label: 'Page fragment to display', metatype: 'subpageselect'},
+                        { name: 'isStoryEvent', label: 'Sends story event', type: 'boolean'},
+                        { name: 'inputAction', label: 'On click', type:'text', rows: 8, cols: 60 },*/
+                            { name: 'view', label: 'Display mode', type: 'select', choices: [
+                                    { value: 'text', label: 'Text' },
+                                    { value: 'button', label: 'Button' }
+                                ] },
+                            { name: 'cssClass', label: 'CSS class'},
+                            { name: 'type', value:'Button', type: 'hidden'}
+                        ],
+                        Text: [
+                            { name: 'content', 'type': 'html', label:'Description', opts: {width:'100%', height: '250px', autoHeight: true, dompath: false}},
+                            { name: 'cssClass', label: 'CSS class'},
+                            { name: 'type', value:'Text', type: 'hidden'}
+                        ],
+                        DisplayArea:[
+                            { name: 'cssClass', label: 'CSS class'},
+                            { name: 'type', value:'DisplayArea', type: 'hidden'}
+                        ],
+                        TabView: [
+                            { name: 'cssClass', label: 'CSS class'},
+                            { name: 'type', value:'TabView', type: 'hidden'}
+                        ],
+                        Tab: [
+                            { name: 'cssClass', label: 'CSS class'},
+                            { name: 'type', value:'Tab', type: 'hidden'}
+                        ],
+                        PMGChoiceDisplay: [
+                            { name: 'cssClass', label: 'CSS class'},
+                            { name: 'type', value:'PMGChoiceDisplay', type: 'hidden'}
+                        ]
+                    }
+                };
+
+                Config.forms.ListVariableDescriptor.fields = Config.forms.ListVariableInstance
+                Config.forms.VariableDescriptor = [
+                    { name: 'valueselector', label:'Variable is', type: 'keyvalue', availableFields: [
+                            {type: 'group', name: 'StringVariableDescriptor', label: 'a string',fields: Config.forms.StringVariableDescriptor},
+                            {type: 'group', name: 'NumberVariableDescriptor', label: 'a number',fields:  Config.forms.NumberVariableDescriptor },
+                            {type: 'group', name: 'MCQVariableDescriptor', label: 'a choice', fields: Config.forms.MCQVariableDescriptor },
+                            {type: 'group', name: 'ListVariableDescriptor', label: 'a list',fields:  Config.forms.ListVariableDescriptor }
+                        ]
+                    }
+                ];
+
+
+                <ui:insert name="jsInitMethod">
+                Y.on('domready', function() {						// Launch the app as soon as Dom is ready
+                    var app = new Y.Wegas.App(Config);
+                    app.render();
+                });
+                </ui:insert>
+
+            });
+
+
+        </script>
     </h:body>
 
 </html>

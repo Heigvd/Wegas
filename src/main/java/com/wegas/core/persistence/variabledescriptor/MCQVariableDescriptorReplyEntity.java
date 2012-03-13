@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.variabledescriptor;
 
@@ -36,41 +36,41 @@ public class MCQVariableDescriptorReplyEntity extends NamedEntity {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQVariableDescriptorReplyEntity");
     /**
-     * 
+     *
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvardescrep_seq")
     private Long id;
     /**
-     * 
+     *
      */
     private String name;
     /**
-     * 
+     *
      */
     @Column(length = 4096)
     private String description;
     /**
-     * 
+     *
      */
     @Column(length = 4096)
     private String impact;
     /**
-     * 
+     *
      */
     @Column(length = 4096)
     private String answer;
     /**
-     * 
+     *
      */
     @JsonBackReference("question-reply")
     @ManyToOne(optional = false)
     @JoinColumn(name = "variabledescriptor_id", nullable = false)
     private MCQVariableDescriptorEntity mCQVariableDescriptor;
-    
+
 
     /**
-     * 
+     *
      * @param a
      */
     @Override

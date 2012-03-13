@@ -1,11 +1,11 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem⁺
  *
- * Copyright (C) 2011 
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.variabledescriptor;
 
@@ -24,7 +24,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  *
- * @param <T> 
+ * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -43,7 +43,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
 
     private static final long serialVersionUID = 1L;
     /**
-     * 
+     *
      */
     @Id
     @Column(name = "variabledescriptor_id")
@@ -56,10 +56,10 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     //@Pattern(regexp = "^\\w*$")
     private String name;
     /**
-     *
+     * Here we cannot use type T, otherwise
      */
     @OneToOne(cascade = {CascadeType.ALL})
-    private T defaultVariableInstance;
+    private VariableInstanceEntity defaultVariableInstance;
     /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
      * ="SCOPE_ID", unique = true, nullable = false, insertable = true,

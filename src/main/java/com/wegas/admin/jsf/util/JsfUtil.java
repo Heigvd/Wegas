@@ -9,7 +9,7 @@ import javax.faces.model.SelectItem;
 
 /**
  * 
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class JsfUtil {
 

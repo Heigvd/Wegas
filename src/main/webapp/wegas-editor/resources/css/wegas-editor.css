@@ -143,37 +143,37 @@ img.inputEx-ListField-delButton {
 
 
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-reset span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 1px -300px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -300px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-new span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px 0px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-play span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -192px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -192px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-stop span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -172px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -172px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-zoomin span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -124px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -124px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-zoomout span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -152px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -152px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-selecttool span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -244px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -244px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-movetool span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -214px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -214px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-cut span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -42px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -42px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-copy span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -68px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -68px;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-paste span.yui-toolbar-icon {
-    background: url(wegas-editor-sprite.png) no-repeat 0px -271px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -271px;
 }
 
 
@@ -184,7 +184,7 @@ img.inputEx-ListField-delButton {
 .yui3-skin-sam .yui3-console-ft, .yui3-skin-sam .yui3-console-content,
 .yui3-skin-sam .yui3-console-ft .yui3-console-filters-sources,
 .yui3-skin-sam .yui3-console-ft .yui3-console-filters-categories{
-    background: transparent;   
+    background: transparent;
     border: none;
 }
 .yui3-skin-sam .yui3-console-ft .yui3-console-filters-sources,
@@ -277,7 +277,7 @@ img.inputEx-ListField-delButton {
 .ygtvlabel, .ygtvlabel:link, .ygtvlabel:visited, .ygtvlabel:hover {
     white-space: nowrap;
 }
-.ygtv-highlight1 .ygtvlabel, .ygtv-highlight1 .ygtvlabel:link, 
+.ygtv-highlight1 .ygtvlabel, .ygtv-highlight1 .ygtvlabel:link,
 .ygtv-highlight1 .ygtvlabel:visited, .ygtv-highlight1 .ygtvlabel:hover {
     background: transparent;
 }
@@ -294,9 +294,9 @@ img.inputEx-ListField-delButton {
     cursor:pointer;
 }
 .ygtvcontent:hover .yui3-wegas-treeview-editmenubutton {
-    background: transparent url(wegas-editor-sprite.png) 2px -333px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 2px -333px no-repeat;
 }
-/* YUI 2 Treeview icons */ 
+/* YUI 2 Treeview icons */
 td.yui3-wegas-treeview-icon-game,
 td.yui3-wegas-treeview-icon-gamemodel,
 td.yui3-wegas-treeview-icon-team,
@@ -308,17 +308,17 @@ td.yui3-wegas-treeview-icon-player  {
 
 }
 td.yui3-wegas-treeview-icon-gamemodel {
-    background: transparent url(wegas-editor-sprite.png) 0 -514px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -514px no-repeat;
 }
 td.yui3-wegas-treeview-icon-game {
-    background: transparent url(wegas-editor-sprite.png) 0 -514px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -514px no-repeat;
 }
 td.yui3-wegas-treeview-icon-team {
-    background: transparent url(wegas-editor-sprite.png) 0 -621px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -621px no-repeat;
 }
 
 td.yui3-wegas-treeview-icon-player {
-    background: transparent url(wegas-editor-sprite.png) 0 -590px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -590px no-repeat;
 }
 
 /* Edit Menu Styles */
