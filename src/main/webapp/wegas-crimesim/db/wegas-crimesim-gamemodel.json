@@ -1,6 +1,8 @@
 {
     "@class": "GameModel",
     "name": "CrimeSim",
+    "cssUri": "wegas-crimesim/resources/css/wegas-crimesim.css",
+    "widgetsUri": "wegas-crimesim/db/wegas-crimesim-pages.json",
     "games":[{
         "@class":"Game",
         "name":"Test-1",
@@ -24,5 +26,37 @@
             }]
         }]
     }],
-    "variableDescriptors": []
+    "variableDescriptors": [{
+        "@class": "NumberVariableDescriptor",
+        "name": "humanResources",
+        "defaultVariableInstance": {
+            "@class": "NumberVariableInstance",
+            "value":"15"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    },{
+        "@class": "NumberVariableDescriptor",
+        "name": "cost",
+        "defaultVariableInstance": {
+            "@class": "NumberVariableInstance",
+            "value":"0"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    },{
+        "@class": "NumberVariableDescriptor",
+        "name": "period",
+        "minValue": 1,
+        "maxValue": 10,
+        "defaultVariableInstance": {
+            "@class": "NumberVariableInstance",
+            "value":"1"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    }]
 }

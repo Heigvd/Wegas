@@ -3,11 +3,11 @@
  */
 
 YUI.add('wegas-datasourcerest', function(Y) {
-	 
+
     var Lang = Y.Lang,
     VariableDescriptorDataSourceREST,
     GameModelDataSourceREST,
-    
+
     DataSourceREST = function() {
         DataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -18,9 +18,9 @@ YUI.add('wegas-datasourcerest', function(Y) {
     });
 
     Y.extend(DataSourceREST, Y.Plugin.Base, {
-	
+
         _data: [],
-	
+
         initializer: function(config) {
             //this.doBefore("_defRequestFn", this._beforeDefRequestFn);
             this.doBefore("_defResponseFn", this._beforeDefResponseFn, this);
@@ -29,12 +29,12 @@ YUI.add('wegas-datasourcerest', function(Y) {
         _beforeDefRequestFn: function(e) {
         },
         _beforeDefResponseFn: function(e) {
-            var data = this.get('host').data,                                   
+            var data = this.get('host').data,
             cEl, loaded, i=0;
             for (;i<e.response.results.length;i++) {                     // Treat reply
                 cEl = e.response.results[i];
                 if (!cEl) {
-                    
+
                 } else {
                     loaded = false;
                     Y.Array.each(data, function(o, index, a) {
@@ -44,7 +44,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                         }
                     });
                     if (!loaded) data.push(cEl);
-                        
+
                 }
             }
             e.response.results = data;
@@ -81,9 +81,9 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
             return ret;
         },
-        getById: function(id) {  
+        getById: function(id) {
             var host = this.get('host');
-            
+
             host.sendRequest({
                 request: "/"+id,
                 cfg: {
@@ -96,11 +96,11 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     failure: this._failureHandler
                 }
             });
-	    
+
         },
         getRequest: function(request) {
             var host = this.get('host');
-              
+
             host.sendRequest({
                 request: '/'+request,
                 cfg: {
@@ -115,11 +115,14 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             });
         },
+        /**
+         * @fixme the parameters should be (request, data)
+         */
         put: function(data, request) {
             var host = this.get('host');
-            
+
             request = request || ((data.id)?"/"+data.id:"")
-            
+
             host.sendRequest({
                 request: request,
                 cfg: {
@@ -135,10 +138,13 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             });
         },
+        /**
+         * @fixme the parameters should be (request, data, parentData)
+         */
         post: function(data, parentData, request) {
             var host = this.get('host'),
             request = request || ((parentData)? "/"+parentData.id+"/"+data["@class"] :  "" );
-	    
+
             host.sendRequest({
                 request: request,
                 cfg: {
@@ -163,7 +169,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             alert("Error sending REST post request!");
             var errorMsg = "",
             i = 0, j
-	    
+
             if (e.response.results) {
                 for (; i<e.response.results.length;i++) {
                     if (e.response.results[i].errors){
@@ -176,11 +182,11 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 alert(errorMsg);
             } else if (e.error) alert(e.error.message);
         }
-        
+
     });
-    
+
     Y.namespace('Plugin').DataSourceREST = DataSourceREST;
-    
+
     VariableDescriptorDataSourceREST = function() {
         VariableDescriptorDataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -191,7 +197,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
     });
 
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
-        
+
         _beforeDefResponseFn: function(e) {
             var data = this.get('host').data,                                   // Treat reply
             cEl, i=0, loaded;
@@ -201,11 +207,11 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 } else if (cEl['@class'] == "StringVariableInstance" ||
                     cEl['@class'] == "NumberVariableInstance"||
                     cEl['@class'] == "MCQVariableInstance")  {
-                        
+
                     Y.Array.each(data, function(o, index, a) {
                         for (var i in o.scope.variableInstances) {
                             if (o.scope.variableInstances[i].id == cEl.id) {
-                                o.scope.variableInstances[i] = Y.merge(o.scope.variableInstances[i], cEl);                                
+                                o.scope.variableInstances[i] = Y.merge(o.scope.variableInstances[i], cEl);
                             }
                         }
                     });
@@ -218,23 +224,23 @@ YUI.add('wegas-datasourcerest', function(Y) {
                         }
                     });
                     if (!loaded) data.push(cEl);
-                        
+
                 }
             }
             e.response.results = data;
         },
         put: function(data) {
             var request = (data.id)?"/"+data.id:"";
-            
+
             switch (data['@class']) {
                 case 'StringVariableInstance' :
                 case 'MCQVariableInstance' :
                 case 'NumberVariableInstance' :
-                    
+
                     request = '/1/VariableInstance/'+data.id;
                     break;
             }
-            
+
             VariableDescriptorDataSourceREST.superclass.put.call(this, data, request);
         },
         getInstanceById: function(id) {
@@ -253,14 +259,14 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 case 'GameModelScope':
                 case 'GameScope':
                     return el.scope.variableInstances[0];
-                    break;  
+                    break;
             }
         }
     });
-    
+
     Y.namespace('Plugin').VariableDescriptorDataSourceREST = VariableDescriptorDataSourceREST;
-    
-    
+
+
     GameModelDataSourceREST = function() {
         GameModelDataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -277,12 +283,12 @@ YUI.add('wegas-datasourcerest', function(Y) {
             for (;i<e.response.results.length;i++) {
                 cEl = e.response.results[i];
                 if (!cEl) {
-                    
+
                 } else if (cEl['@class'] == "Team" )  {
                     Y.Array.each(data, function(o, index, a) {
                         for (var j in o.teams) {
                             if (o.teams[j].id == cEl.id) {
-                                o.teams[j] = Y.merge(o.teams, cEl);                                
+                                o.teams[j] = Y.merge(o.teams, cEl);
                             }
                         }
                     });
@@ -295,7 +301,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                         }
                     });
                     if (!loaded) data.push(cEl);
-                        
+
                 }
             }
             e.response.results = data;
@@ -306,13 +312,13 @@ YUI.add('wegas-datasourcerest', function(Y) {
         getGameById: function(gameId) {
             this.getCachedVariable
         },
-        
+
         getGameBy: function(key, val) {
         }
     });
-    
+
     Y.namespace('Plugin').GameModelDataSourceREST = GameModelDataSourceREST;
-    
+
     GameDataSourceREST = function() {
         GameDataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -330,12 +336,12 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 cEl = e.response.results[i];
                 loaded = false;
                 if (!cEl) {
-                    
+
                 } else if (cEl['@class'] == "Team" )  {
                     game = this.getCachedVariableBy('id', cEl.gameId);
                     for (var j=0;j<game.teams.length;j++) {
                         if (game.teams[j].id == cEl.id) {
-                            game.teams[j] = cEl; 
+                            game.teams[j] = cEl;
                             loaded = true;
                         }
                     }
@@ -358,13 +364,13 @@ YUI.add('wegas-datasourcerest', function(Y) {
                         }
                     });
                     if (!loaded) data.push(cEl);
-                        
+
                 }
             }
             e.response.results = data;
         },
         put: function(data, request) {
-              
+
             if (data['@class'] == 'Team' ) {
                 request = '/'+data.gameId+'/Team/'+data.id;
             } else if (data['@class'] == 'Player' ) {
@@ -401,7 +407,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
         },
         getGameByTeamId: function(teamId) {
-            var i=0, j, 
+            var i=0, j,
             data = this.get('host').data;
             for (; i< data.length; i++) {
                 for (j=0; j<data[i].teams.length; j++) {
@@ -412,7 +418,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             return null;
         },
         getTeamById: function(teamId) {
-            var i=0, j, 
+            var i=0, j,
             data = this.get('host').data;
             for (; i< data.length; i++) {
                 for (j=0; j<data[i].teams.length; j++) {
@@ -434,13 +440,13 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             }
         }
-        
-        
+
+
     });
-    
+
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
-    
-    /** 
+
+    /**
      * FIXME We redefine this so we can use a "." selector and a "@..." field name
      */
     Y.DataSchema.JSON.getPath = function(locator) {
@@ -450,7 +456,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
 
         if (locator) {
             if (locator == '.') return [];					// MODIFIED !!
-		    
+
             // Strip the ["string keys"] and [1] array indexes
             locator = locator.
             replace(/\[(['"])(.*?)\1\]/g,
@@ -469,13 +475,13 @@ YUI.add('wegas-datasourcerest', function(Y) {
             if (!/[^\w\.\$@]/.test(locator)) {
                 path = locator.split('.');
                 for (i=path.length-1; i >= 0; --i) {
-                /*if (path[i].charAt(0) === '@') {				// MODIFIED !!
+                    /*if (path[i].charAt(0) === '@') {				// MODIFIED !!
 			path[i] = keys[parseInt(path[i].substr(1),10)];
 		    }*/
-                }
+                    }
             }
             else {
-        }
+            }
         }
         return path;
     }
@@ -492,7 +498,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             context: this,
             "arguments": e
         });
-        
+
         // Support for POST transactions
         if(Y.Lang.isString(request)) {
             //if(cfg.method && (cfg.method.toUpperCase() === "POST")) {
@@ -505,7 +511,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         Y.DataSource.Local.transactions[e.tId] = io(uri, cfg);
         return e.tId;
     }
-    
+
     // @FIXME We rewrite this function, should be overriden
     Y.DataSchema.JSON._parseResults = function(schema, json_in, data_out) {
         var results = [],
@@ -555,7 +561,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         }
         return data_out;
     }
-    
+
     //FIXME Hack so plugin host accepts string definition of classes
     Y.DataSource.IO.prototype.plug = function(Plugin, config) {
         var i, ln, ns;
@@ -576,10 +582,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
             // Plugin should be fn by now
             if (Plugin && Plugin.NS) {
                 ns = Plugin.NS;
-        
+
                 config = config || {};
                 config.host = this;
-        
+
                 if (this.hasPlugin(ns)) {
                     // Update config
                     this[ns].setAttrs(config);
@@ -592,5 +598,5 @@ YUI.add('wegas-datasourcerest', function(Y) {
         }
         return this;
     };
-    
+
 });

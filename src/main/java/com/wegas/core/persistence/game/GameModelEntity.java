@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.persistence.layout.WidgetEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import java.io.Serializable;
 import java.util.Collection;
@@ -59,6 +60,31 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
     @JsonManagedReference("gamemodel-game")
     private List<GameEntity> games;
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
+    @JsonManagedReference("gamemodel-widget")
+    private List<WidgetEntity> widgets;
+    /**
+     * @fixme temporary solutions to store pages
+     */
+    private String cssUri;
+    /**
+     *
+     * @fixme temporary solutions to store widgets
+     */
+    private String widgetsUri;
+
+    /**
+     *
+     * @param force
+     */
+    public void propagateDefaultVariableInstance(boolean force) {
+        for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
+            vd.getScope().propagateDefaultVariableInstance(force);
+        }
+    }
 
     /**
      *
@@ -117,21 +143,21 @@ public class GameModelEntity extends NamedEntity implements Serializable {
 
     /**
      *
+     * @param game
+     */
+    @XmlTransient
+    public void addGame(GameEntity game) {
+        this.games.add(game);
+        game.setGameModel(this);
+    }
+
+    /**
+     *
      * @param variableDescriptors
      */
     @JsonManagedReference("gamemodel-variabledescriptor")
     public void setVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
         this.variableDescriptors = variableDescriptors;
-    }
-
-    /**
-     *
-     * @param force
-     */
-    public void propagateDefaultVariableInstance(boolean force) {
-        for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
-            vd.getScope().propagateDefaultVariableInstance(force);
-        }
     }
 
     /**
@@ -149,5 +175,50 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     @JsonManagedReference("gamemodel-game")
     public void setGames(List<GameEntity> games) {
         this.games = games;
+    }
+
+    /**
+     * @return the widgets
+     */
+    @JsonManagedReference("gamemodel-widget")
+    @XmlTransient
+    public List<WidgetEntity> getWidgets() {
+        return widgets;
+    }
+
+    /**
+     * @param widgets the widgets to set
+     */
+    @JsonManagedReference("gamemodel-widget")
+    public void setWidgets(List<WidgetEntity> widgets) {
+        this.widgets = widgets;
+    }
+
+    /**
+     * @return the cssUri
+     */
+    public String getCssUri() {
+        return cssUri;
+    }
+
+    /**
+     * @param cssUri the cssUri to set
+     */
+    public void setCssUri(String cssUri) {
+        this.cssUri = cssUri;
+    }
+
+    /**
+     * @return the widgetsUri
+     */
+    public String getWidgetsUri() {
+        return widgetsUri;
+    }
+
+    /**
+     * @param widgetsUri the widgetsUri to set
+     */
+    public void setWidgetsUri(String widgetsUri) {
+        this.widgetsUri = widgetsUri;
     }
 }

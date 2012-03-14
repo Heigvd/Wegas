@@ -43,11 +43,11 @@ public class TeamEntityFacade extends AbstractFacade<TeamEntity> {
 
     /**
      *
-     * @param gameModelId
+     * @param gameId
      * @param t
      */
-    public void createTeam(Long gameModelId, TeamEntity t) {
-        GameEntity g = gameFacade.find(gameModelId);
+    public void create(Long gameId, TeamEntity t) {
+        GameEntity g = gameFacade.find(gameId);
         g.addTeam(t);
         em.flush();
         em.refresh(t);
@@ -88,4 +88,5 @@ public class TeamEntityFacade extends AbstractFacade<TeamEntity> {
     public TeamEntityFacade() {
         super(TeamEntity.class);
     }
+
 }

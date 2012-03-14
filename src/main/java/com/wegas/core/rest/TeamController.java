@@ -10,12 +10,12 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.TeamEntityFacade;
-import com.wegas.core.persistence.game.PlayerEntity;
+import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.game.TeamEntity;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.Path;
 
 /**
  *
@@ -41,33 +41,38 @@ public class TeamController extends AbstractRestController<TeamEntityFacade> {
         return this.teamFacade;
     }
 
+    @Override
+    public AbstractEntity create(AbstractEntity entity) {
+        this.teamFacade.create(new Long(this.getPathParam("gameId")), (TeamEntity) entity);
+        return entity;
+    }
     /**
      *
      * @param teamId
      * @param userId
      * @return
      */
-   /* @PUT
-    @Path("{teamId: [1-9][0-9]*}/addUser/{userId: [1-9][0-9]*}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public PlayerEntity addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long userId) {
-       // return TeamEntityFacade.createPlayer(teamId, userId);
-        return null;
-    }*/
-
+    /*
+     * @PUT @Path("{teamId: [1-9][0-9]*}/addUser/{userId: [1-9][0-9]*}")
+     * @Consumes(MediaType.APPLICATION_JSON)
+     * @Produces(MediaType.APPLICATION_JSON) public PlayerEntity
+     * addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long
+     * userId) { // return TeamEntityFacade.createPlayer(teamId, userId); return
+     * null;
+    }
+     */
     /**
      *
      * @param teamId
      * @param u
      * @return
      */
-  /*  @POST
-    @Path("{teamId: [1-9][0-9]*}/   ")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public TeamEntity addUser(@PathParam("teamId") Long teamId, UserEntity u) {
-        ume.createUser(u);
-        return this.addUser(teamId, u.getId());
-    }*/
+    /*
+     * @POST @Path("{teamId: [1-9][0-9]*}/ ")
+     * @Consumes(MediaType.APPLICATION_JSON)
+     * @Produces(MediaType.APPLICATION_JSON) public TeamEntity
+     * addUser(@PathParam("teamId") Long teamId, UserEntity u) {
+     * ume.createUser(u); return this.addUser(teamId, u.getId());
+    }
+     */
 }
