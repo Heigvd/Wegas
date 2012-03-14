@@ -1,9 +1,9 @@
-/** 
+/**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 YUI.add('wegas-list', function(Y) {
-    
+
     var BOUNDINGBOX = 'boundingBox',
     CONTENTBOX = 'contentBox',
     List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget ], {
@@ -29,7 +29,7 @@ YUI.add('wegas-list', function(Y) {
 		    descendants: ".yui3-option",
 		    keys: {
 			next: "down:40",    // Down arrow
-			previous: "down:38" // Up arrow 
+			previous: "down:38" // Up arrow
 		    },
 		    circular: true
 		});
@@ -85,7 +85,7 @@ YUI.add('wegas-list', function(Y) {
 	    });
 	}*/
 
-	/*/ Helper Method, to find the correct next sibling, taking into account nested ListBoxes    
+	/*/ Helper Method, to find the correct next sibling, taking into account nested ListBoxes
 	_selectNextSibling : function(item, direction) {
 
 	    var parent = item.get("parent"),
@@ -129,9 +129,9 @@ YUI.add('wegas-list', function(Y) {
 		parent.appendChild(li);
 	    }
 	},*/
-    }, { 
+    }, {
         ATTRS : {
-            defaultChildType: {  
+            defaultChildType: {
                 value: "Text"
             },
             direction: {
@@ -145,6 +145,6 @@ YUI.add('wegas-list', function(Y) {
             }
         }
     });
-    
+
     Y.namespace('Wegas').List = List;
 });

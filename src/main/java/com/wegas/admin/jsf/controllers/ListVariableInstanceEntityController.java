@@ -1,8 +1,8 @@
 package com.wegas.admin.jsf.controllers;
 
+import com.wegas.admin.jsf.controllers.util.JsfUtil;
+import com.wegas.admin.jsf.controllers.util.PaginationHelper;
 import com.wegas.core.persistence.variableinstance.ListVariableInstanceEntity;
-import com.wegas.admin.jsf.util.JsfUtil;
-import com.wegas.admin.jsf.util.PaginationHelper;
 import com.wegas.core.ejb.ListVariableInstanceEntityFacade;
 
 import java.io.Serializable;
@@ -19,7 +19,7 @@ import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
 /**
- * 
+ *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @ManagedBean(name = "listVariableInstanceEntityController")
@@ -34,13 +34,13 @@ public class ListVariableInstanceEntityController implements Serializable {
     private int selectedItemIndex;
 
     /**
-     * 
+     *
      */
     public ListVariableInstanceEntityController() {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public ListVariableInstanceEntity getSelected() {
@@ -56,7 +56,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public PaginationHelper getPagination() {
@@ -78,7 +78,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String prepareList() {
@@ -87,7 +87,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String prepareView() {
@@ -97,7 +97,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String prepareCreate() {
@@ -107,7 +107,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String create() {
@@ -122,7 +122,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String prepareEdit() {
@@ -132,7 +132,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String update() {
@@ -147,7 +147,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String destroy() {
@@ -160,7 +160,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String destroyAndView() {
@@ -201,7 +201,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public DataModel getItems() {
@@ -220,7 +220,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String next() {
@@ -230,7 +230,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String previous() {
@@ -240,7 +240,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public SelectItem[] getItemsAvailableSelectMany() {
@@ -248,7 +248,7 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public SelectItem[] getItemsAvailableSelectOne() {
@@ -256,13 +256,13 @@ public class ListVariableInstanceEntityController implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     @FacesConverter(forClass = ListVariableInstanceEntity.class)
     public static class ListVariableInstanceEntityControllerConverter implements Converter {
 
         /**
-         * 
+         *
          * @param facesContext
          * @param component
          * @param value
@@ -290,7 +290,7 @@ public class ListVariableInstanceEntityController implements Serializable {
         }
 
         /**
-         * 
+         *
          * @param facesContext
          * @param component
          * @param object

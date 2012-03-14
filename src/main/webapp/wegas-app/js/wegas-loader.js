@@ -75,7 +75,8 @@ YUI().use(function(Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-inputex', 'wegas-app', 'wegas-treeview', 'wegas-logger', 'wegas-csseditor', 'wegas-editmenu'
+                        'wegas-inputex', 'wegas-app', 'wegas-treeview', 'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
+                        'wegas-editor-topmenu'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss'
                         ]
@@ -97,6 +98,10 @@ YUI().use(function(Y) {
                         'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
                         'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
                         'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
+                    },
+                    'wegas-editor-topmenu': {
+                        path: 'wegas-editor/js/wegas-editor-topmenu-min.js',
+                        requires: ['yui2-menu']
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js'

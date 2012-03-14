@@ -10,6 +10,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,9 +21,22 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class VariableDescriptorEntityFacade extends AbstractFacade<VariableDescriptorEntity> {
+
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
+    @EJB
+    private GameModelEntityFacade gameModelEntityFacade;
+
+    /**
+     *
+     * @param gameModelId
+     * @param variableDescriptorEntity
+     */
+    public void create(Long gameModelId, VariableDescriptorEntity variableDescriptorEntity) {
+        this.gameModelEntityFacade.find(gameModelId).addVariableDescriptor(variableDescriptorEntity);
+        this.create(variableDescriptorEntity);
+    }
     /**
      *
      * @return
@@ -38,5 +52,4 @@ public class VariableDescriptorEntityFacade extends AbstractFacade<VariableDescr
     public VariableDescriptorEntityFacade() {
         super(VariableDescriptorEntity.class);
     }
-
 }

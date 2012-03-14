@@ -1,4 +1,4 @@
-package com.wegas.admin.jsf.util;
+package com.wegas.admin.jsf.controllers.util;
 
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -8,13 +8,13 @@ import javax.faces.convert.Converter;
 import javax.faces.model.SelectItem;
 
 /**
- * 
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ *
+ * @author fx
  */
 public class JsfUtil {
 
     /**
-     * 
+     *
      * @param entities
      * @param selectOne
      * @return
@@ -34,7 +34,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param ex
      * @param defaultMsg
      */
@@ -48,7 +48,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param messages
      */
     public static void addErrorMessages(List<String> messages) {
@@ -58,7 +58,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param msg
      */
     public static void addErrorMessage(String msg) {
@@ -67,7 +67,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param msg
      */
     public static void addSuccessMessage(String msg) {
@@ -76,7 +76,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param key
      * @return
      */
@@ -85,7 +85,7 @@ public class JsfUtil {
     }
 
     /**
-     * 
+     *
      * @param requestParameterName
      * @param converter
      * @param component

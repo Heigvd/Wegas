@@ -36,6 +36,9 @@ public abstract class AbstractFacade<T extends AbstractEntity> {
      */
     protected abstract EntityManager getEntityManager();
 
+    /**
+     *
+     */
     public void flush() {
         getEntityManager().flush();
     }
@@ -58,10 +61,14 @@ public abstract class AbstractFacade<T extends AbstractEntity> {
     }
     /**
      *
+     * @param entityId
      * @param entity
+     * @return
      */
-    public void update(Long entityId, T entity) {
-        this.find(entityId).merge(entity);
+    public T update(Long entityId, T entity) {
+        T oldEntity = this.find(entityId);
+        oldEntity.merge(entity);
+        return oldEntity;
     }
 
     /**

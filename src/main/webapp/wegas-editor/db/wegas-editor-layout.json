@@ -1,10 +1,10 @@
 {
     "type" : "Layout",
     "right": {
-        "width": 50, 
+        "width": 50,
         "resize": true,
         "collapse": false,
-        "scroll": true, 
+        "scroll": true,
         "animate": true,
         "children": [{
             "type": "TabView",
@@ -16,7 +16,7 @@
                 "toolbarLabel": "Chat",
                 "children": [
                 {
-                    "type": "Chat"		
+                    "type": "Chat"
                 }
                 ]
             }, {
@@ -35,7 +35,7 @@
                 "toolbarLabel": "Log",
                 "children": [
                 {
-                    "type": "Logger"		
+                    "type": "Logger"
                 }
                 ]
             }]
@@ -43,18 +43,15 @@
     },
     "top" : {
         "height": 25,
-        "scroll": null, 
+        "scroll": null,
         "zIndex": 2,
-        "children": [
-        {
-            "type": "Text",
-            "content": "Menu"
-        }
-        ]
+        "children": [{
+            "type": "EditorTopMenu"
+        }]
     },
     "left": {
-        "width": 300, 
-        "resize": true, 
+        "width": 300,
+        "resize": true,
         "scroll": true,
         "animate": true,
         "children": [{
@@ -73,18 +70,18 @@
                     }
                 }],
                 "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New choice", 
-                    "value": "new", 
+                    "type": "push",
+                    "label": "New choice",
+                    "value": "new",
                     "id": "new",
                     "data": {
-                        "dataSource":"VariableDescriptor", 
+                        "dataSource":"VariableDescriptor",
                         "@class": "VariableDescriptor"
                     }
                 },{
-                    "type": "push", 
-                    "label": "Reset this game", 
-                    "value": "reset", 
+                    "type": "push",
+                    "label": "Reset this game",
+                    "value": "reset",
                     "id": "reset"
                 }]
             },{
@@ -97,21 +94,21 @@
                     "includeClasses": {
                         "MCQVariableDescriptor": true
                     }
-                }         
+                }
                 ],
                 "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New choice", 
-                    "value": "new", 
+                    "type": "push",
+                    "label": "New choice",
+                    "value": "new",
                     "id": "new",
                     "data": {
-                        "dataSource":"VariableDescriptor", 
+                        "dataSource":"VariableDescriptor",
                         "@class": "MCQVariableDescriptor"
                     }
                 },{
-                    "type": "push", 
-                    "label": "Reset this game", 
-                    "value": "reset", 
+                    "type": "push",
+                    "label": "Reset this game",
+                    "value": "reset",
                     "id": "reset"
                 }]
             },
@@ -132,10 +129,10 @@
                     "type": "DataTable",
                     "dataSource": "User",
                     "columnset": [ {
-                        "key":"id", 
+                        "key":"id",
                         "sortable": true
                     }, {
-                        "key":"name", 
+                        "key":"name",
                         "sortable": true
                     }, {
                         "key":"@class"
@@ -157,7 +154,7 @@
                 "label": "Preview",
                 "toolbarButtons": [
                 {
-                    "type": "select", 
+                    "type": "select",
                     "label": "Francois",
                     "lazyloadmenu": false,
                     "value": "selectplayer",
@@ -170,26 +167,18 @@
                 }]
             }, {
                 "type": "Tab",
-                "label": "Game models",
-                "children": [{
-                    "type": "WTreeView",
-                    "dataSource": "GameModel"
-                }],
-                "toolbarButtons": []
-            }, {
-                "type": "Tab",
                 "label": "Games",
                 "children": [{
                     "type": "WTreeView",
                     "dataSource": "Game"
                 }],
                 "toolbarButtons": [{
-                    "type": "push", 
-                    "label": "New game", 
-                    "value": "new", 
+                    "type": "push",
+                    "label": "New game",
+                    "value": "new",
                     "id": "new",
                     "data": {
-                        "dataSource":"Game", 
+                        "dataSource":"Game",
                         "@class": "Game"
                     }
                 }]

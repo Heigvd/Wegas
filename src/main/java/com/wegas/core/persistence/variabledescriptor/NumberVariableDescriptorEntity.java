@@ -26,5 +26,41 @@ import javax.xml.bind.annotation.XmlType;
 public class NumberVariableDescriptorEntity extends VariableDescriptorEntity<NumberVariableInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("GMVariableDescriptor");
+    private static final Logger logger = Logger.getLogger("NumberVariableDescriptorEntity");
+    /**
+     *
+     */
+    private Long minValue;
+    /**
+     *
+     */
+    private Long maxValue;
+
+    /**
+     * @return the minValue
+     */
+    public Long getMinValue() {
+        return minValue;
+    }
+
+    /**
+     * @param minValue the minValue to set
+     */
+    public void setMinValue(Long minValue) {
+        this.minValue = minValue;
+    }
+
+    /**
+     * @return the maxValue
+     */
+    public Long getMaxValue() {
+        return maxValue;
+    }
+
+    /**
+     * @param maxValue the maxValue to set
+     */
+    public void setMaxValue(Long maxValue) {
+        this.maxValue = maxValue;
+    }
 }

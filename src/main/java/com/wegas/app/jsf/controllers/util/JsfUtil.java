@@ -7,9 +7,8 @@
  *
  * Copyright (C) 2011
  */
-package com.wegas.app.jsf.util;
+package com.wegas.app.jsf.controllers.util;
 
-import com.wegas.admin.jsf.util.*;
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
