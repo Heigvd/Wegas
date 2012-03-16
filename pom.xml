@@ -7,6 +7,7 @@
     <artifactId>wegas</artifactId>
     <version>0.2</version>
     <packaging>war</packaging>
+    <description>SeriousGame</description>
     <developers>
         <developer>
             <name>Francois-Xavier Aeberhard</name>
@@ -543,5 +544,4 @@ Stop on errors
             <url>http://oss.sonatype.org/content/groups/public</url>
         </pluginRepository>
     </pluginRepositories>
-    <description>SeriousGame</description>
 </project>
