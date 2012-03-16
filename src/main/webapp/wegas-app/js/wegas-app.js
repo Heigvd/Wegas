@@ -31,19 +31,16 @@ YUI.add('wegas-app', function(Y) {
 
             // @todo Shall we use browser native parsers
             // Y.JSON.useNativeParse = true;
-
-                base
             for (k in dataSources) {
-                console.log(this.get('base'));
                 dataSources[k].source = this.get("base")+dataSources[k].source;
                 this.dataSources[k] = new Y.DataSource.IO(dataSources[k]);
             }
         },
         _initCSS: function() {
-            var css = this.get('css'),
+            var css = this.get('cssStylesheets'),
             i=0;
             for (; i<css.length;i++){
-                Y.io(css[i]+'?id='+App.genId(), {				// Load the page css
+                Y.io(this.get('base')+css[i]+'?id='+App.genId(), {				// Load the page css
                     timeout : 3000,
                     context: this,
                     on : {
@@ -68,7 +65,7 @@ YUI.add('wegas-app', function(Y) {
                 });
             }
 
-            /*this.dataSources.Game.after("response", function() {
+        /*this.dataSources.Game.after("response", function() {
                 Y.log("info", "Game has been modified, reloading variable descriptors", "Wegas.Editor");
             });*/
         },
@@ -109,7 +106,7 @@ YUI.add('wegas-app', function(Y) {
             forms: {
                 value: []
             },
-            css: {
+            cssStylesheets: {
                 value: []
             },
             currentGameModel: {},

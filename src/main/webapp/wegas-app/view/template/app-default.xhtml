@@ -34,6 +34,7 @@
         <!-- <link type='text/css' rel='stylesheet' href='lib/inputex/css/inputEx.css' />-->
 
         <meta id="customstyles" />
+
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/resources/css/wegas-editor.css" />
     </h:head>
 
@@ -67,7 +68,7 @@
  -->**/
             var Y = YUI({
                 charset: 'utf-8',
-                lang: Config.lang,
+                lang: 'en',
                 loadOptional: true,
                 insertBefore: 'customstyles',
                 gallery: 'gallery-2011.02.18-23-10',
@@ -86,7 +87,7 @@
                 groups: {
                     /* Set up local version of yui2 */
                     yui2: {
-                        base: Config.base+'lib/yui2in3/build/',
+                        base: '/Wegas/lib/yui2in3/build/',
                         // combine: true,
                         // comboBase: 'http://myserver.com/combo?',
                         // root: '/2in3/build/',
@@ -120,15 +121,14 @@
                 ],
                 Config = {
                     base : "/Wegas/",
-                    layoutSrc: 'wegas-editor/db/wegas-editor-layout.json',
+                    layoutSrc: '<ui:insert name="layoutUri">wegas-app/db/wegas-app-layout.json</ui:insert>',
                     lang : 'en-US',
                     debug : true,
-                    currentGameModel: "#{lobbyController.currentGameModel.id}",
-                    currentGame: "#{lobbyController.currentPlayer.team.game.id}",
-                    currentTeam: "#{lobbyController.currentPlayer.team.id}",
-                    currentPlayer: "#{lobbyController.currentPlayer.id}",
-                    loggedIn : true,
-                    css: ['/Wegas/wegas-projectmanagementgame/resources/css/wegas-projectmanagementgame.css'],
+                    currentGameModel: "#{gameController.currentGameModel.id}",
+                    currentGame: "#{gameController.currentGame.id}",
+                    currentTeam: "#{gameController.currentPlayer.team.id}",
+                    currentPlayer: "#{gameController.currentPlayer.id}",
+                    cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
                     dataSources: {
                         "GameModel": {
                             source: "rs/GameModel",
@@ -145,7 +145,7 @@
                             ]
                         },
                         "Game": {
-                            source: "rs/GameModel/#{lobbyController.currentGameModel.id}/Game",
+                            source: "rs/GameModel/#{gameController.currentGameModel.id}/Game",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -159,7 +159,7 @@
                             ]
                         },
                         "Page": {
-                            source: "wegas-projectmanagementgame/db/wegas-pmg-pages.json",
+                            source: "#{gameController.currentGameModel.widgetsUri}",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -186,7 +186,7 @@
                             ]
                         },
                         "VariableDescriptor": {
-                            source: "rs/GameModel/#{lobbyController.currentGameModel.id}/VariableDescriptor",
+                            source: "rs/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -308,6 +308,8 @@
                             { name: '@class', type: 'hidden', value: 'NumberVariableDescriptor'},
                             { name: 'name', label:'Name', required: true},
                             { name: 'scope', type:'group', fields: ScopeForm},
+                            { name: 'minValue', label:'Minimum' },
+                            { name: 'maxValue', label: "Maximum" },
                             { name:'defaultVariableInstance', type:'group', fields: [
                                     { name: '@class', value:'NumberVariableInstance', type: 'hidden'},
                                     { name: 'id', type: 'hidden'},

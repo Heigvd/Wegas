@@ -7,10 +7,16 @@
 
         <ui:define name="jsInculde">'wegas-app', 'wegas-editor'</ui:define>
 
+        <ui:define name="layoutUri">wegas-editor/db/wegas-editor-layout.json</ui:define>
+
         <ui:define name="jsInitMethod">
             Y.on('domready', function() {					// Launch the editor as soon as Dom is ready
                 var editor = new Y.Wegas.Editor(Config);
                 editor.render();
+
+                Y.Wegas.app.dataSources.Game.after("response", function(e) {    // Reload the variable descriptors as soon as the game is changed
+                    Y.Wegas.app.dataSources.VariableDescriptor.sendRequest({ request: "" });
+                }, this);
             });
         </ui:define>
 

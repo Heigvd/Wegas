@@ -1,0 +1,79 @@
+[{
+        "id": 1,
+        "label": "Main page",
+        "@class": "Page",
+        "type": "List",
+        "cssClass": "layout",
+        "children": [{
+                "label": "Indicators",
+                "type": "List",
+                "cssClass": "header",
+                "direction": "horizontal",
+                "children": [{
+                        "type": "VariableDisplay",
+                        "label": "Period",
+                        "view": "valuebox",
+                        "variable": "period",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "type": "Button",
+                        "label": "Next period",
+                        "view": "button"
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "Costs",
+                        "view": "text",
+                        "variable": "cost",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "Human resources",
+                        "variable": "humanResources",
+                        "view": "box",
+                        "dataSource": "VariableDescriptor"
+                    }]
+            },
+            {
+                "id":"menu",
+                "label": "Menu",
+                "type": "List",
+                "cssClass": "menu",
+                "direction": "horizontal",
+                "children": [{
+                        "type": "Button",
+                        "label": "Accueil",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-button",
+                        "subpage": {
+                            "type": "Text",
+                            "content": "Welcome to CrimeSim."
+                        }
+                    }, {
+                        "type": "Button",
+                        "label": "Pièces",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-button",
+                        "subpage": {
+                            "type": "Text",
+                            "content": "Your project is looking great.<img style=\"float:right\" src=\"http://ec.europa.eu/europeaid/how/delivering-aid/project-approach/images/graph_project1_6645.gif\" />"
+                        }
+                    },{
+                        "type": "Button",
+                        "label": "Planning",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-button",
+                        "subpage": {
+                            "type": "Text",
+                            "content": "Your project is looking great.<img style=\"float:right\" src=\"http://ec.europa.eu/europeaid/how/delivering-aid/project-approach/images/graph_project1_6645.gif\" />"
+                        }
+                    },{
+                        "type": "LoginButton",
+                        "cssClass": "menu-loginbutton"
+                    }]
+            },
+            {
+                "type": "DisplayArea",
+                "id": "maindisplayarea",
+                "cssClass": "body"
+            }]
+    }]

@@ -9,8 +9,9 @@
  */
 package com.wegas.app.jsf.controllers;
 
-import com.wegas.app.jsf.util.JsfUtil;
+import com.wegas.app.jsf.controllers.util.JsfUtil;
 import com.wegas.core.ejb.GameEntityFacade;
+import com.wegas.core.ejb.GameModelEntityFacade;
 import com.wegas.core.ejb.TeamEntityFacade;
 import com.wegas.core.ejb.UserEntityFacade;
 import com.wegas.core.persistence.game.GameEntity;
@@ -56,6 +57,11 @@ public class LobbyController implements Serializable {
      */
     @EJB
     private TeamEntityFacade teamEntityFacade;
+    /**
+     *
+     */
+    @EJB
+    private GameModelEntityFacade gameModelEntityFacade;
     /**
      *
      */
@@ -109,6 +115,13 @@ public class LobbyController implements Serializable {
     public List<PlayerEntity> getPlayers() {
         return this.getCurrentUser().getPlayers();
     }
+    /**
+     * 
+     * @return
+     */
+    public List<GameModelEntity> getGameModels() {
+        return gameModelEntityFacade.findAll();
+    }
 
     /**
      *
@@ -143,21 +156,16 @@ public class LobbyController implements Serializable {
      */
     public String joinTeam() {
         setCurrentPlayer(teamEntityFacade.createPlayer(this.getSelectedTeam().getId(), getCurrentUser().getId()));
-        return "playerSelected";
+        return "teamJoined";
     }
 
     /**
      *
      * @return
      */
-    public String selectTeam() {
-        return "playerSelected";
-    }
-
     public GameModelEntity getCurrentGameModel() {
         return currentPlayer.getTeam().getGame().getGameModel();
     }
-
 
     /**
      * @return the gameToken

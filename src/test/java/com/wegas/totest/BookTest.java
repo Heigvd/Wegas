@@ -1,11 +1,6 @@
 package com.wegas.totest;
 
-import com.sun.xml.rpc.processor.modeler.j2ee.xml.emptyType;
 import com.wegas.core.persistence.AbstractEntityTest;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
-import org.junit.Test;
 
 /**
  *

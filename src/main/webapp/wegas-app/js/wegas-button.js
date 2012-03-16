@@ -1,52 +1,56 @@
-/** 
+/**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 YUI.add('wegas-button', function(Y) {
-    
+
     var CONTENTBOX = 'contentBox',
     BOUNDINGBOX = 'boundingBox',
     LoginButton,
-    
+
     Button = Y.Base.create("wegas-button", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-       
-        initializer: function(cfg) {
-        },
-        destroyer: function() {
-        },
-        renderUI: function () {
-            		
-        },
+
         bindUI: function() {
             this.get(CONTENTBOX).on('click', function() {
                 var widgetCfg = this.get('subpage') || {
-                    'type': 'Text',                     
+                    'type': 'Text',
                     'content': 'Nothing to display'
                 },
-                target= Y.one('#'+this.get('targetDisplayArea')+' div');
-                
-                if (target.one('div')) target.one('div').remove();              // If there is already a widget displayed, we remove it
-                
-                if (!this._widget) {
-                    this._widget = Y.Wegas.Widget.create(widgetCfg);
+                target;
 
-                    try {
-                        this._widget.render(target);
-                    } catch (e) {
-                        Y.log('renderUI(): Error rendering widget: '+(e.stack || e ), 'error', 'Wegas.Button');
+                if (this.get('onClick')) {                                      // If there is an onclick impact, send it to the server
+                    Y.Wegas.app.dataSources.VariableDescriptor.rest.post({
+                        "@class":"Script",
+                        "content": this.get("onClick")
+                    }, null, "Player/"+Y.Wegas.app.get('currentPlayer')+"/Runscript/");
+                }
+
+
+                if (this.get('targetDisplayArea')) {                            // If there is an a target display area, display the children in it
+                    target = Y.one('#'+this.get('targetDisplayArea')+' div');
+                    if (target.one('div')) target.one('div').remove();          // If there is already a widget displayed, we remove it
+
+                    if (!this._widget) {
+                        this._widget = Y.Wegas.Widget.create(widgetCfg);
+
+                        try {
+                            this._widget.render(target);
+                        } catch (e) {
+                            Y.log('renderUI(): Error rendering widget: '+(e.stack || e ), 'error', 'Wegas.Button');
+                        }
+                    } else {
+                        target.append(this._widget.get(BOUNDINGBOX));
                     }
-                } else {
-                    target.append(this._widget.get(BOUNDINGBOX));
                 }
             }, this);
         },
-        syncUI: function() {
+        syncUI: function() {                                                    // Update the button display
             switch (this.get('view')) {
                 case 'button':
                     this.get(CONTENTBOX).setContent('<input type="submit" value="'+this.get('label')+'"></input>');
                     break;
                 case 'text':
-                default:												// Update the button display
+                default:
                     this.get(CONTENTBOX).setContent("<span>"+this.get('label')+"</span>");
             }
         }
@@ -58,30 +62,31 @@ YUI.add('wegas-button', function(Y) {
             type: {
                 value: "Button"
             },
+            onClick: {},
             label: {},
             subpage: {},
             targetDisplayArea: {},
             view: {}
         }
     });
-    
+
     Y.namespace('Wegas').Button = Button;
-    
+
     LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function() {
-            
+
             Y.Wegas.app.dataSources.Game.after("response", this._onDataUpdate, this);
             Y.Wegas.app.after("currentPlayerChange", this._onDataUpdate, this);
         },
         syncUI: function() {
-            var cPlayer = Y.Wegas.app.dataSources.Game.rest.getCurrentPlayer(), 
-            cTeam = Y.Wegas.app.dataSources.Game.rest.getCurrentTeam(), 
+            var cPlayer = Y.Wegas.app.dataSources.Game.rest.getCurrentPlayer(),
+            cTeam = Y.Wegas.app.dataSources.Game.rest.getCurrentTeam(),
             name = "undefined";
-            
+
             if (cPlayer) name = cPlayer.name;
             if (cTeam) name = cTeam.name+":"+name;
-            
-            this.get(CONTENTBOX).setContent('['+name+'] <a href="wegas-logout">logout</a>');
+
+            this.get(CONTENTBOX).setContent('['+name+'] <a href="'+Y.Wegas.app.get('base')+'wegas-app/view/logout.html">logout</a>');
         },
         _onDataUpdate: function(e) {
             this.syncUI();
@@ -96,6 +101,6 @@ YUI.add('wegas-button', function(Y) {
             }
         }
     });
-    
+
     Y.namespace('Wegas').LoginButton = LoginButton;
 });

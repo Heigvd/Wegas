@@ -11,6 +11,8 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameEntity_;
+import com.wegas.core.persistence.game.GameModelEntity;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -27,6 +29,14 @@ import javax.persistence.criteria.Root;
 @Stateless
 public class GameEntityFacade extends AbstractFacade<GameEntity> {
 
+    /**
+     *
+     */
+    @EJB
+    private GameModelEntityFacade gameModelEntityFacade;
+    /**
+     *
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -51,6 +61,17 @@ public class GameEntityFacade extends AbstractFacade<GameEntity> {
 
         Query q = em.createQuery(cq);
         return (GameEntity) q.getSingleResult();
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param game
+     */
+    public void create(Long gameModelId, GameEntity game) {
+        GameModelEntity gameModel = gameModelEntityFacade.find(gameModelId);
+        gameModel.addGame(game);
+        this.create(game);
     }
 
     /**

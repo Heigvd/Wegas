@@ -14,17 +14,14 @@ import com.wegas.core.ejb.VariableDescriptorEntityFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
+import com.wegas.core.script.ScriptEntity;
+import com.wegas.core.script.ScriptManager;
 import java.util.Collection;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 /**
  *
@@ -45,6 +42,11 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
      */
     @EJB
     private GameModelEntityFacade gameModelFacade;
+    /**
+     *
+     */
+    @EJB
+    private ScriptManager scriptManager;
 
     /**
      *
@@ -54,9 +56,15 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<AbstractEntity> index() {
-         Long gameModelId = this.getGameModelId();
+        Long gameModelId = this.getGameModelId();
         GameModelEntity gameModel = gameModelFacade.find(gameModelId);
         return (Collection) gameModel.getVariableDescriptors();
+    }
+
+    @Override
+    public AbstractEntity create(AbstractEntity entity) {
+        this.variableDescriptorFacade.create(new Long(this.getPathParam("gameModelId")), (VariableDescriptorEntity) entity);
+        return entity;
     }
 
     /**
@@ -70,6 +78,21 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<VariableDescriptorEntity> reset(@PathParam("gameModelId") Long gameModelId) {
         return gameModelFacade.reset(gameModelId).getVariableDescriptors();
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param playerId
+     * @param script
+     * @return
+     */
+    @POST
+    @Path("Player/{playerId : [1-9][0-9]*}/RunScript")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<VariableDescriptorEntity> runScript(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("playerId") Long playerId, ScriptEntity script) {
+        return (Collection) this.scriptManager.runScript(gameModelId, playerId, script);
     }
 
     private Long getGameModelId() {

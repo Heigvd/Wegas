@@ -1,9 +1,9 @@
 package com.wegas.admin.jsf.controllers;
 
+import com.wegas.core.persistence.layout.WidgetEntity;
 import com.wegas.admin.jsf.controllers.util.JsfUtil;
 import com.wegas.admin.jsf.controllers.util.PaginationHelper;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.ejb.GameModelEntityFacade;
+import com.wegas.core.ejb.WidgetEntityFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -20,43 +20,43 @@ import javax.faces.model.SelectItem;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author fx
  */
-@ManagedBean(name = "gameModelEntityController")
+@ManagedBean(name = "widgetEntityController")
 @SessionScoped
-public class GameModelEntityController implements Serializable {
+public class WidgetEntityController implements Serializable {
 
-    private GameModelEntity current;
+    private WidgetEntity current;
     private DataModel items = null;
     @EJB
-    private com.wegas.core.ejb.GameModelEntityFacade ejbFacade;
+    private com.wegas.core.ejb.WidgetEntityFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
     /**
      *
      */
-    public GameModelEntityController() {
+    public WidgetEntityController() {
     }
 
     /**
      *
      * @return
      */
-    public GameModelEntity getSelected() {
+    public WidgetEntity getSelected() {
         if (current == null) {
-            current = new GameModelEntity();
+            current = new WidgetEntity();
             selectedItemIndex = -1;
         }
         return current;
     }
 
-    private GameModelEntityFacade getFacade() {
+    private WidgetEntityFacade getFacade() {
         return ejbFacade;
     }
 
     /**
-     *
+     * 
      * @return
      */
     public PaginationHelper getPagination() {
@@ -91,7 +91,7 @@ public class GameModelEntityController implements Serializable {
      * @return
      */
     public String prepareView() {
-        current = (GameModelEntity) getItems().getRowData();
+        current = (WidgetEntity) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "View";
     }
@@ -101,7 +101,7 @@ public class GameModelEntityController implements Serializable {
      * @return
      */
     public String prepareCreate() {
-        current = new GameModelEntity();
+        current = new WidgetEntity();
         selectedItemIndex = -1;
         return "Create";
     }
@@ -113,10 +113,11 @@ public class GameModelEntityController implements Serializable {
     public String create() {
         try {
             getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin-bundle").getString("GameModelEntityCreated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin/Bundle").getString("WidgetEntityCreated"));
             return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin-bundle").getString("PersistenceErrorOccured"));
+        }
+        catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin/Bundle").getString("PersistenceErrorOccured"));
             return null;
         }
     }
@@ -126,7 +127,7 @@ public class GameModelEntityController implements Serializable {
      * @return
      */
     public String prepareEdit() {
-        current = (GameModelEntity) getItems().getRowData();
+        current = (WidgetEntity) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "Edit";
     }
@@ -138,10 +139,11 @@ public class GameModelEntityController implements Serializable {
     public String update() {
         try {
             getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin-bundle").getString("GameModelEntityUpdated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin/Bundle").getString("WidgetEntityUpdated"));
             return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin-bundle").getString("PersistenceErrorOccured"));
+        }
+        catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin/Bundle").getString("PersistenceErrorOccured"));
             return null;
         }
     }
@@ -151,7 +153,7 @@ public class GameModelEntityController implements Serializable {
      * @return
      */
     public String destroy() {
-        current = (GameModelEntity) getItems().getRowData();
+        current = (WidgetEntity) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreatePagination();
@@ -179,9 +181,10 @@ public class GameModelEntityController implements Serializable {
     private void performDestroy() {
         try {
             getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin-bundle").getString("GameModelEntityDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin-bundle").getString("PersistenceErrorOccured"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin/Bundle").getString("WidgetEntityDeleted"));
+        }
+        catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin/Bundle").getString("PersistenceErrorOccured"));
         }
     }
 
@@ -258,8 +261,8 @@ public class GameModelEntityController implements Serializable {
     /**
      *
      */
-    @FacesConverter(forClass = GameModelEntity.class)
-    public static class GameModelEntityControllerConverter implements Converter {
+    @FacesConverter(forClass = WidgetEntity.class)
+    public static class WidgetEntityControllerConverter implements Converter {
 
         /**
          *
@@ -272,8 +275,8 @@ public class GameModelEntityController implements Serializable {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            GameModelEntityController controller = (GameModelEntityController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "gameModelEntityController");
+            WidgetEntityController controller = (WidgetEntityController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "widgetEntityController");
             return controller.ejbFacade.find(getKey(value));
         }
 
@@ -300,11 +303,11 @@ public class GameModelEntityController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof GameModelEntity) {
-                GameModelEntity o = (GameModelEntity) object;
+            if (object instanceof WidgetEntity) {
+                WidgetEntity o = (WidgetEntity) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + GameModelEntityController.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + WidgetEntityController.class.getName());
             }
         }
     }
