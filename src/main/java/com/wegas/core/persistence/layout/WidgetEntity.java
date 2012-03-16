@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.layout;
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.NamedEntity;
 import java.io.Serializable;
