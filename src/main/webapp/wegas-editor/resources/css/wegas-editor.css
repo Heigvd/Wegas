@@ -328,3 +328,26 @@ td.yui3-wegas-treeview-icon-player {
 .yui3-wegas-editmenu-hidden {
     display: none;
 }
+/* Top Menu bar */
+
+.yui-skin-sam #topmenubar {
+    background: #2647A0 url(/Wegas/lib/yui2in3/build/assets/skins/sam/sprite.png) repeat-x left -1400px;
+    border-color: #243356;
+}
+.yui-skin-sam #topmenubar .yuimenubaritemlabel {
+    color: #ccd9ff;
+    border-color: transparent;
+    line-height: 1.9em;
+    font-weight: bold;
+    font-size:11px;
+}
+.yui-skin-sam #topmenubar .yuimenubaritem-selected {
+    background: none;
+}
+.yui-skin-sam #topmenubar .yuimenubaritem-selected .yuimenubaritemlabel {
+    color: white;
+}
+.yui-skin-sam .yuimenubarnav .yuimenubaritem {
+    background: #2647A0 url(/Wegas/lib/yui2in3/build/assets/skins/sam/sprite.png) repeat-x left -1400px;
+    border-right: solid 1px transparent;
+}

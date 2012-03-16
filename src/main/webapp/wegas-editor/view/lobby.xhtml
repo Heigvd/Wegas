@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/wegas-app/view/template/page-default.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{wegasAppBundle.LobbyPage_Title}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+
+
+            <style type="text/css">
+                .yui-g {
+                    width:300px;
+                    height:300px;
+                    display:inline-block;
+                    float:left;
+                    padding:10px;
+                    margin :10px;
+                    border: 1px outset gray;
+                    font-family: Arial, Helvetica;
+                }
+            </style>
+
+            <div class="yui-g">
+
+                <h1>#{wegasAppBundle.EditorLobbyPage_Games_Title}</h1>
+                <h:form>
+                    <ui:repeat value="#{lobbyController.gameModels}" var="game" >
+                        #{game.name}
+
+                        <h:link value="#{wegasAppBundle.LobbyPage_Games_PlayLink}" outcome="playGame"  >
+                            <f:param name="gameId" value="#{game.id}" />
+                        </h:link>&nbsp;
+                        <h:link value="#{wegasAppBundle.LobbyPage_Games_EditLink}" outcome="editGame"  >
+                            <f:param name="gameId" value="#{game.id}" />
+                        </h:link>
+                        <br />
+                    </ui:repeat>
+                </h:form>
+
+                <h:outputText value="#{wegasAppBundle.LobbyPage_Games_NoGames}" rendered="#{empty lobbyController.gameModels}"/>
+
+            </div>
+        </ui:define>
+
+    </ui:composition>
+
+</html>

@@ -27,19 +27,19 @@
 
             <div class="yui-g">
 
-                <h1>#{wegasAppBundle.LobbyPage_ResumeGames_Title}</h1>
+                <h1>#{wegasAppBundle.LobbyPage_Games_Title}</h1>
+                <h:form>
+                    <ui:repeat value="#{lobbyController.players}" var="player" >
+                        #{player.team.game.name}
 
-                <ui:repeat value="#{lobbyController.players}" var="player" >
-                    #{player.team.game.name}
+                        <h:link value="#{wegasAppBundle.LobbyPage_Games_ResumeLink}" outcome="playGame"  >
+                            <f:param name="id" value="#{player.id}" />
+                        </h:link>
+                        <br />
+                    </ui:repeat>
+                </h:form>
 
-                    <h:commandLink action="#{lobbyController.selectTeam}"  value="#{wegasAppBundle.LobbyPage_ResumeGames_SelectLink}">
-                        <f:setPropertyActionListener target="#{lobbyController.currentPlayer}" value="#{player}"/>
-                    </h:commandLink>
-                    <br />
-                </ui:repeat>
-
-
-                <h:outputText value="#{wegasAppBundle.LobbyPage_ResumeGames_Empty}" rendered="#{empty lobbyController.players}"/>
+                <h:outputText value="#{wegasAppBundle.LobbyPage_Games_Empty}" rendered="#{empty lobbyController.players}"/>
 
             </div>
             <div class="yui-g">
@@ -58,8 +58,7 @@
 
                 <h:form>
                     <h:inputText id="gameToken" value="#{lobbyController.gameToken}" title="#{wegasAppBundle.LobbyPage_JoinGame_TokenTitle}" />
-                    <h:commandLink action="#{lobbyController.joinGame}" value="#{wegasAppBundle.LobbyPage_JoinGame_Link}"/>
-
+                    <h:commandButton action="#{lobbyController.joinGame}" value="#{wegasAppBundle.LobbyPage_JoinGame_Link}"/>
                 </h:form>
             </div>
         </ui:define>

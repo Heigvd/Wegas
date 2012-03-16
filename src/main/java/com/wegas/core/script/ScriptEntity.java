@@ -6,14 +6,17 @@ package com.wegas.core.script;
 
 import java.io.Serializable;
 import javax.persistence.Embeddable;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <francois-xavier.aeberhard@red-agent.com>
  */
 @Embeddable
+
+@XmlType(name = "Script")
 public class ScriptEntity implements Serializable {
-    
+
     private String content;
 
     /**
@@ -29,5 +32,5 @@ public class ScriptEntity implements Serializable {
     public void setContent(String content) {
         this.content = content;
     }
-    
+
 }

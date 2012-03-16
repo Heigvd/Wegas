@@ -87,8 +87,7 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractEntity update(@PathParam("entityId") Long entityId, AbstractEntity entity) {
-        getFacade().update(entityId, entity);
-        return entity;
+        return getFacade().update(entityId, entity);
     }
 
     /**

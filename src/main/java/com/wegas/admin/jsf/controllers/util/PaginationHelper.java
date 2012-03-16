@@ -1,10 +1,10 @@
-package com.wegas.admin.jsf.util;
+package com.wegas.admin.jsf.controllers.util;
 
 import javax.faces.model.DataModel;
 
 /**
- * 
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ *
+ * @author fx
  */
 public abstract class PaginationHelper {
 
@@ -12,7 +12,7 @@ public abstract class PaginationHelper {
     private int page;
 
     /**
-     * 
+     *
      * @param pageSize
      */
     public PaginationHelper(int pageSize) {
@@ -20,19 +20,19 @@ public abstract class PaginationHelper {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public abstract int getItemsCount();
 
     /**
-     * 
+     *
      * @return
      */
     public abstract DataModel createPageDataModel();
 
     /**
-     * 
+     *
      * @return
      */
     public int getPageFirstItem() {
@@ -40,7 +40,7 @@ public abstract class PaginationHelper {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public int getPageLastItem() {
@@ -56,15 +56,15 @@ public abstract class PaginationHelper {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isHasNextPage() {
-        return (page + 1) * pageSize + 1 <= getItemsCount();
+        return ( page + 1 ) * pageSize + 1 <= getItemsCount();
     }
 
     /**
-     * 
+     *
      */
     public void nextPage() {
         if (isHasNextPage()) {
@@ -73,7 +73,7 @@ public abstract class PaginationHelper {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isHasPreviousPage() {
@@ -81,7 +81,7 @@ public abstract class PaginationHelper {
     }
 
     /**
-     * 
+     *
      */
     public void previousPage() {
         if (isHasPreviousPage()) {
@@ -90,7 +90,7 @@ public abstract class PaginationHelper {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public int getPageSize() {

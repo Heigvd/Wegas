@@ -1,25 +1,25 @@
-/** 
+/**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 YUI.add('wegas-variabledisplay', function(Y) {
     var CONTENTBOX = 'contentBox',
-    
+
     VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-	
+
         _dataSource: null,
         _handelers: [],
-	
+
         initializer: function(cfg) {
             this._dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
         },
         destroyer: function() {
         },
-	
-        renderUI: function () {  
-            
+
+        renderUI: function () {
+
         },
-        
+
         bindUI: function() {
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", function(e) {
                 this.syncUI();
@@ -29,11 +29,12 @@ YUI.add('wegas-variabledisplay', function(Y) {
             }, this);
         },
         syncUI: function() {
-            var val = this._dataSource.rest.getInstanceBy('name', this.get("variable")) || "undefined", 
+            var variableDescriptor = this._dataSource.rest.getCachedVariableBy('name', this.get("variable")),
+            val = this._dataSource.rest.getInstanceBy('name', this.get("variable")) || "undefined",
             acc, maxVal, minVal, value, ctx, i=0;
             switch (this.get('view'))  {
                 case 'text':
-                    this.get(CONTENTBOX).setContent(this.get('label')+": "+val.value);
+                    this.get(CONTENTBOX).setContent(this.get('label')+": <br />"+val.value);
                     break;
                 case 'box':
                     acc =[];
@@ -42,17 +43,29 @@ YUI.add('wegas-variabledisplay', function(Y) {
                     }
                     this.get(CONTENTBOX).setContent(this.get('label')+": <br />"+acc.join('')+'('+val.value+')');
                     break;
+
+                case 'valuebox':
+                    acc=[];
+                    if (variableDescriptor) {
+                        for (i= variableDescriptor.minValue; i<=variableDescriptor.maxValue; i++) {
+                            acc.push('<div class="yui3-wegas-valuebox-unit '
+                                +((i==val.value)?"yui3-wegas-valuebox-selected":"")
+                                +'">'+i+'</div>');
+                        }
+                    }
+                    this.get(CONTENTBOX).setContent(this.get('label')+": <br />"+acc.join(''));
+                    break;
                 case 'gauge': {
                     maxVal = 145;
                     minVal = 55;
                     value = val.value;
-                        
+
                     this.get(CONTENTBOX).setContent('<canvas width="90" height="51"></canvas><br />'
                         +'<div class="yui3-wegas-variabledisplay-gauge-text">'+val.value+'%</div>'
                         +'<center>'+this.get('label')+"</center>");
-                        
+
                     ctx = this.get(CONTENTBOX).one('canvas')._node.getContext('2d');
-                    
+
                     //G_vmlCanvasManager.initElement(canvas);
                     //var ctx = canvas.getContext('2d');
 
@@ -69,7 +82,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
                     ctx.fill();
                     ctx.stroke();
                     ctx.closePath();
-		
+
                     // LA PARTIE ROUGE
                     ctx.beginPath();
                     ctx.arc(50, 41, 40, Math.PI, Math.PI * 4/3, false);
@@ -81,7 +94,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
                     //}
                     ctx.fill();
                     ctx.closePath();
-	
+
                     // LA PARTIE ORANGE
                     ctx.beginPath();
                     ctx.arc(50, 41, 40, Math.PI * 4/3, Math.PI * 5/3, false);
@@ -93,7 +106,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
                     //}
                     ctx.fill();
                     ctx.closePath();
-		
+
                     // LA PARTIE VERTE
                     ctx.beginPath();
                     ctx.arc(50, 41, 40,  Math.PI * 5/3,  Math.PI * 2, false);
@@ -105,7 +118,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
                     //}
                     ctx.fill();
                     ctx.closePath();
-	
+
                     // LE CENTRE DE L'AIGUILLE
                     ctx.beginPath();
                     ctx.arc(50, 41, 5, 0, Math.PI * 2, false);
@@ -116,8 +129,8 @@ YUI.add('wegas-variabledisplay', function(Y) {
                     //}
                     ctx.fill();
                     ctx.closePath()
-		
-		
+
+
                     // Logique pour aiguille
                     angle_pourcent = 180 / (maxVal - minVal)
                     if (value > maxVal) {
@@ -129,7 +142,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
                     } else {
                         angle_value = (value - minVal) * angle_pourcent
                     }
-		
+
                     if (angle_value > 90) {
                         value_x = 50 + (40 * Math.cos((Math.PI/180)*(180 - angle_value)));
                         value_y = 41 - (40 * Math.sin((Math.PI/180)*(180 - angle_value)));
@@ -140,13 +153,13 @@ YUI.add('wegas-variabledisplay', function(Y) {
                         value_x = 50;
                         value_y = 1;
                     }
-		
+
                     // L'AIGUILLE
                     ctx.beginPath();
                     ctx.moveTo(50,41);
                     ctx.lineTo(value_x,value_y);
                     ctx.stroke();
-                    ctx.closePath();		
+                    ctx.closePath();
                 }
             }
         }
@@ -168,6 +181,6 @@ YUI.add('wegas-variabledisplay', function(Y) {
             }
         }
     });
-    
+
     Y.namespace('Wegas').VariableDisplay = VariableDisplay;
 });
