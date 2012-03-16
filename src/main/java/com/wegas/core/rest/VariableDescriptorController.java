@@ -11,7 +11,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelEntityFacade;
 import com.wegas.core.ejb.VariableDescriptorEntityFacade;
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import java.util.Collection;

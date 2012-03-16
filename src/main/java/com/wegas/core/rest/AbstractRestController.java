@@ -5,7 +5,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.AbstractFacade;
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import java.util.Collection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;

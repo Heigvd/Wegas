@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.variabledescriptor;
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variableinstance.MCQVariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.List;

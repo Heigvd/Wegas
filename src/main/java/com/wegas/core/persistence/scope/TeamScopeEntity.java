@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.scope;
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.TeamEntity;
