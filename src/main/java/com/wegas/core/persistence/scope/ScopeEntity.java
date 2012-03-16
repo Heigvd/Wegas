@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.scope;
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.io.Serializable;

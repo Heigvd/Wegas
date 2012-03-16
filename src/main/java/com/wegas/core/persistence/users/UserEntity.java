@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.users;
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import java.util.List;
 import java.util.logging.Logger;

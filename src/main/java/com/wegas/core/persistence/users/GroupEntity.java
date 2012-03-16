@@ -11,7 +11,7 @@
 package com.wegas.core.persistence.users;
 
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.persistence.Entity;
