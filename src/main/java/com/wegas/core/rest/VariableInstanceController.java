@@ -1,17 +1,17 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
+ *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011 
+ * Copyright (C) 2011
  */
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.VariableDescriptorEntityFacade;
 import com.wegas.core.ejb.VariableInstanceEntityFacade;
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.util.Collection;
@@ -71,7 +71,7 @@ public class VariableInstanceController extends AbstractRestController<VariableI
     }
 
     /**
-     * 
+     *
      * @return
      */
     @Override

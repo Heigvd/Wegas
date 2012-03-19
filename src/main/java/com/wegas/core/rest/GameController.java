@@ -11,7 +11,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameEntityFacade;
 import com.wegas.core.ejb.GameModelEntityFacade;
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import java.util.Collection;

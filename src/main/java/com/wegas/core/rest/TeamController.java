@@ -10,7 +10,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.TeamEntityFacade;
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.TeamEntity;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
