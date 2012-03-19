@@ -12,6 +12,7 @@ package com.wegas.core.persistence.variabledescriptor;
 import com.wegas.core.persistence.game.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.NamedEntity;
+import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.scope.ScopeEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import javax.persistence.*;
@@ -95,8 +96,8 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      * @return
      */
     @XmlTransient
-    public T getVariableInstance(Long playerId) {
-        return (T) this.scope.getVariableInstance(playerId);
+    public T getVariableInstance(PlayerEntity player) {
+        return (T) this.scope.getVariableInstance(player);
     }
 
     /**

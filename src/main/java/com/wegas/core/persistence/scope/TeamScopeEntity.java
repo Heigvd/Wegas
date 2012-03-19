@@ -9,10 +9,7 @@
  */
 package com.wegas.core.persistence.scope;
 
-import com.wegas.core.persistence.game.AbstractEntity;
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.TeamEntity;
+import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
@@ -56,8 +53,8 @@ public class TeamScopeEntity extends ScopeEntity {
      * @return
      */
     @Override
-    public VariableInstanceEntity getVariableInstance(Long userId) {
-        return this.teamVariableInstances.get(userId);
+    public VariableInstanceEntity getVariableInstance(PlayerEntity player) {
+        return this.teamVariableInstances.get(player.getTeam().getId());
     }
 
     /**

@@ -1,16 +1,18 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
+ *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011 
+ * Copyright (C) 2011
  */
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.MCQVariableDescriptorEntityFacade;
 import com.wegas.core.ejb.MCQVariableDescriptorReplyEntityFacade;
+import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variabledescriptor.MCQVariableDescriptorReplyEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.core.persistence.variableinstance.MCQVariableInstanceEntity;
@@ -50,6 +52,11 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
      */
     @EJB
     private ScriptManager sm;
+    /**
+     *
+     */
+    @EJB
+    private PlayerEntityFacade playerEntityFacade;
 
     /**
      *
@@ -59,14 +66,15 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
      * @return p
      */
     @GET
-    @Path("/Player/{playerId : [1-9][0-9]*}/Reply/{replyId : [1-9][0-9]*}/Runscript/")
+    @Path("/Player/{playerId : [1-9][0-9]*}/Reply/{replyId : [1-9][0-9]*}/RunScript")
     @Produces(MediaType.APPLICATION_JSON)
     public List<VariableInstanceEntity> runScript(@PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, @PathParam("replyId") Long replyId) {
         MCQVariableDescriptorReplyEntity reply = mCQVariableDescriptorReplyFacade.find(replyId);
+        PlayerEntity player = playerEntityFacade.find(playerId);
 
         VariableDescriptorEntity vd = reply.getMCQVariableDescriptor();
-        MCQVariableInstanceEntity vi = (MCQVariableInstanceEntity) vd.getVariableInstance(playerId);
+        MCQVariableInstanceEntity vi = (MCQVariableInstanceEntity) vd.getVariableInstance(player);
 
         MCQVariableInstanceReplyEntity viReply = new MCQVariableInstanceReplyEntity();
         viReply.setAnswer(reply.getAnswer());
@@ -81,7 +89,7 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
     }
 
     /**
-     * 
+     *
      * @return
      */
     @Override

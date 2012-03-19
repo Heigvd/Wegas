@@ -1,15 +1,15 @@
-/** 
+/**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 YUI.add('wegas-widgetloader', function(Y) {
-    
+
     var CONTENTBOX = 'contentBox',
-    
+
     WidgetLoader = Y.Base.create("wegas-widgetloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget], {
-        
+
         _widget: null,
-	
+
         initializer: function(cfg) {
         },
         destroyer: function() {
@@ -23,16 +23,16 @@ YUI.add('wegas-widgetloader', function(Y) {
         },
         syncUI: function() {
             var widgetCfg = Y.Wegas.app.dataSources.Page.rest.getCachedVariableById(this.get("pageId"));
-            
-            this.get(CONTENTBOX).empty();
-            
+
+            this.get(CONTENTBOX).setContent("");
+
             if (!widgetCfg) {
                 this.get(CONTENTBOX).setContent("No widget to display here.");
                 return;
             }
-           
+
             this._widget = Y.Wegas.Widget.create(widgetCfg);
-                        
+
             try {
                 this._widget.render(this.get(CONTENTBOX));
             } catch (e) {
@@ -50,7 +50,7 @@ YUI.add('wegas-widgetloader', function(Y) {
             pageId: {}
         }
     });
-     
-    
+
+
     Y.namespace('Wegas').WidgetLoader = WidgetLoader;
 });

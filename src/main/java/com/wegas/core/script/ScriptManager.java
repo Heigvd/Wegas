@@ -1,18 +1,20 @@
 /*
- * Wegas. 
+ * Wegas.
  * http://www.albasim.com/wegas/
- * 
+ *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011 
+ * Copyright (C) 2011
  */
 package com.wegas.core.script;
 
 import com.wegas.core.ejb.GameModelEntityFacade;
+import com.wegas.core.ejb.PlayerEntityFacade;
 import com.wegas.core.ejb.VariableDescriptorEntityFacade;
 import com.wegas.core.ejb.VariableInstanceEntityFacade;
 import com.wegas.core.persistence.game.GameModelEntity;
+import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.util.ArrayList;
@@ -36,104 +38,74 @@ import javax.script.ScriptException;
 public class ScriptManager {
 
     /**
-     * 
+     *
      */
     @EJB
-    private GameModelEntityFacade gameModelEntityFacade;
-    @EJB
-    private VariableDescriptorEntityFacade variableDescriptorEntityFacade;
-    @EJB
-    private VariableInstanceEntityFacade variableInstanceEntityFacade;
+    private PlayerEntityFacade playerEntityFacade;
 
     /**
-     * 
+     *
      * @param gameModelId
      * @param playerId
      * @param s
-     * @return  
+     * @return
      */
     public List<VariableInstanceEntity> runScript(Long gameModelId, Long playerId, ScriptEntity s) {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
-       // Invocable invocableEngine = (Invocable) engine;
-        GameModelEntity gm = gameModelEntityFacade.find(gameModelId);
+        // Invocable invocableEngine = (Invocable) engine;
+        // GameModelEntity gm = gameModelEntityFacade.find(gameModelId);
+        PlayerEntity p = playerEntityFacade.find(playerId);
+        GameModelEntity gm = p.getTeam().getGame().getGameModel();
+
         List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
-        
+
         try {
             for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
-                VariableInstanceEntity vi = vd.getVariableInstance(playerId);
-                engine.put(vd.getName(), vi);                                   
+                VariableInstanceEntity vi = vd.getVariableInstance(p);
+                engine.put(vd.getName(), vi);
                 vis.add(vi);
             }
             engine.eval(s.getContent());                                        // Then we evaluate the script
-        } catch (ScriptException ex) {
+        }
+        catch (ScriptException ex) {
             Logger.getLogger(ScriptManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return vis;
     }
     /*
-    Object invokeFunction = invocableEngine.invokeFunction("sayHello");
-    InputStream is = this.getClass().getResourceAsStream("/scripts/F1.js");
-    try {
-    Reader reader = new InputStreamReader(is);
-    engine.eval(reader);
-    } catch (ScriptException ex) {
-    ex.printStackTrace();
-    }
+     * Object invokeFunction = invocableEngine.invokeFunction("sayHello");
+     * InputStream is = this.getClass().getResourceAsStream("/scripts/F1.js");
+     * try { Reader reader = new InputStreamReader(is); engine.eval(reader); }
+     * catch (ScriptException ex) { ex.printStackTrace(); }
      */
     /*
-    List<String> namesList = new ArrayList<String>();
-    namesList.add("Jill");
-    namesList.add("Bob");
-    namesList.add("Laureen");
-    namesList.add("Ed");
-    engine.put("namesListKey", namesList);
-    System.out.println("Executing in script environment...");
-    try {
-    engine.eval("var x;"
-    + "var names = namesListKey.toArray();"
-    + "for(x in names) {"
-    + "  println(names[x]);"
-    + "}"
-    + "namesListKey.add(\"Dana\");");
-    } catch (ScriptException ex) {
-    ex.printStackTrace();
-    }
-    System.out.println("Executing in Java environment...");
-    for (String name : namesList) {
-    System.out.println(name);
-    }
-    
-    try {
-    engine.eval("function printNames1(namesList) {"
-    + "  var x;"
-    + "  var names = namesList.toArray();"
-    + "  for(x in names) {"
-    + "    println(names[x]);"
-    + "  }"
-    + "}"
-    + "function addName(namesList, name) {"
-    + "  namesList.add(name);"
-    + "}");
-    invocableEngine.invokeFunction("printNames1", namesList);
-    invocableEngine.invokeFunction("addName", namesList, "Dana");
-    } catch (ScriptException ex) {
-    ex.printStackTrace();
-    } catch (NoSuchMethodException ex) {
-    ex.printStackTrace();
-    }
-    
-    try {
-    engine.eval("importPackage(javax.swing);"
-    + "var optionPane = "
-    + "  JOptionPane.showMessageDialog(null, 'Hello, world!');");
-    } catch (ScriptException ex) {
-    ex.printStackTrace();
-    }
+     * List<String> namesList = new ArrayList<String>(); namesList.add("Jill");
+     * namesList.add("Bob"); namesList.add("Laureen"); namesList.add("Ed");
+     * engine.put("namesListKey", namesList); System.out.println("Executing in
+     * script environment..."); try { engine.eval("var x;" + "var names =
+     * namesListKey.toArray();" + "for(x in names) {" + " println(names[x]);" +
+     * "}" + "namesListKey.add(\"Dana\");"); } catch (ScriptException ex) {
+     * ex.printStackTrace(); } System.out.println("Executing in Java
+     * environment..."); for (String name : namesList) {
+     * System.out.println(name); }
+     *
+     * try { engine.eval("function printNames1(namesList) {" + " var x;" + " var
+     * names = namesList.toArray();" + " for(x in names) {" + "
+     * println(names[x]);" + " }" + "}" + "function addName(namesList, name) {"
+     * + " namesList.add(name);" + "}");
+     * invocableEngine.invokeFunction("printNames1", namesList);
+     * invocableEngine.invokeFunction("addName", namesList, "Dana"); } catch
+     * (ScriptException ex) { ex.printStackTrace(); } catch
+     * (NoSuchMethodException ex) { ex.printStackTrace(); }
+     *
+     * try { engine.eval("importPackage(javax.swing);" + "var optionPane = " + "
+     * JOptionPane.showMessageDialog(null, 'Hello, world!');"); } catch
+     * (ScriptException ex) { ex.printStackTrace(); }
      */
 
     /**
-     * 
+     *
      * @param s
      */
     public static void getAvailableScripts(ScriptEntity s) {
@@ -158,16 +130,12 @@ public class ScriptManager {
         }
 
         /*
-        List<ScriptEngineFactory> scriptFactories =
-        mgr.getEngineFactories();
-        for (ScriptEngineFactory factory : scriptFactories) {
-        String langName = factory.getLanguageName();
-        String langVersion = factory.getLanguageVersion();
-        if (langName.equals("ECMAScript")
-        && langVersion.equals("1.6")) {
-        engine = factory.getScriptEngine();
-        break;
-        }
-        }*/
+         * List<ScriptEngineFactory> scriptFactories = mgr.getEngineFactories();
+         * for (ScriptEngineFactory factory : scriptFactories) { String langName
+         * = factory.getLanguageName(); String langVersion =
+         * factory.getLanguageVersion(); if (langName.equals("ECMAScript") &&
+         * langVersion.equals("1.6")) { engine = factory.getScriptEngine();
+         * break; } }
+         */
     }
 }

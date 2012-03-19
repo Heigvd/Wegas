@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.scope;
 
 import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -35,7 +36,7 @@ public class GameScopeEntity extends ScopeEntity {
     }
 
     @Override
-    public VariableInstanceEntity getVariableInstance(Long playerId) {
+    public VariableInstanceEntity getVariableInstance(PlayerEntity player) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

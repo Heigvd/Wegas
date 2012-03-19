@@ -9,19 +9,18 @@ YUI().use(function(Y) {
         groups: {
             'wegas': {
                 combine: false,
-                //  base: Config.base,
-                //    comboBase: Config.base,
                 filter:"raw",
                 modules: {
-                    /*************************************************************** Base */
+
+                    /** Base **/
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: ['stylesheet',
                         'wegas-appcss',  'wegas-datasourcerest', 'wegas-widget', 'wegas-widgetloader',
-                        // FIXME those should be included on the fly
+                        /* @fixme those should be included on the fly*/
                         'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
                         'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat',
-                        'wegas-projectmanagementgame'
+                        'wegas-projectmanagementgame', 'wegas-crimesim'
                         ]
                     },
                     'wegas-appcss': {
@@ -33,7 +32,8 @@ YUI().use(function(Y) {
                         requires: ['plugin', 'json', 'io-base', "datasource-io", "datasource-jsonschema", "datasource-cache", 'array-extras'
                         /*'json-stringify', "datatype-date */]
                     },
-                    /*************************************************************** Widgets */
+
+                    /** Widgets **/
                     'wegas-widget': {
                         path: 'wegas-app/js/wegas-widget-min.js',
                         requires: ['widget', 'widget-parent', 'widget-child']
@@ -71,7 +71,8 @@ YUI().use(function(Y) {
                     'wegas-displayarea': {
                         path: 'wegas-app/js/wegas-displayarea-min.js'
                     },
-                    /*************************************************************** Editor */
+
+                    /** Editor **/
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
@@ -86,7 +87,7 @@ YUI().use(function(Y) {
                         type: 'css'
                     },
 
-                    /************************************************************** Editor Widget's */
+                    /** Editor's Widgets **/
                     'wegas-logger': {
                         path: 'wegas-editor/js/wegas-logger-min.js',
                         requires: ['console', 'console-filters']
@@ -112,31 +113,37 @@ YUI().use(function(Y) {
                     },
                     'wegas-treeview': {
                         path: 'wegas-editor/js/wegas-treeview-min.js',
-                        requires: [ 'yui2-treeview'
-                        /*'gallery-yui3treeview', 'wegas-treeviewcss'*/]
+                        requires: [ 'yui2-treeview' /*'gallery-yui3treeview', 'wegas-treeviewcss'*/]
                     },
+                    'wegas-datatable': {
+                        path: 'wegas-editor/js/wegas-datatable-min.js',
+                        requires: ['datatable', "datatable-datasource", 'yui2-button', /*'datatable-events', 'datatable-sort',*/ ]
+                    },
+
+                    /** Project Management Game */
+                    'wegas-projectmanagementgame': {
+                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
+                    },
+
+                    /** CrimeSim */
+                    'wegas-crimesim': {
+                        path: 'wegas-crimesim/js/wegas-crimesim-min.js',
+                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"]
+                    }
+
                     /* This one is only seful w/ yui3 treeview widget */
                     /* 'wegas-treeviewcss': {
                     path: 'wegas-app/resources/css/treeview-classic.css',
                     type: 'css'
-                },*/
-                    'wegas-datatable': {
-                        path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable', "datatable-datasource", 'yui2-button',
-                        /*'datatable-events', 'datatable-sort',*/ ]
-                    },
+                    },*/
                     /*'wegas-treeble': {
-                    path: 'wegas-app/js/wegas-treeble.js',
-                    requires: ['gallery-treeble', 'yui2-button' ]
-                },
-                'wegas-wireit-container': {
-                    path: 'wegas-admin/js/wegas-wireit-container-min.js',
-                    requires: ['wireit']
-                },*/
-                    /************************************************************** PMG */
-                    'wegas-projectmanagementgame': {
-                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
-                    }
+                        path: 'wegas-app/js/wegas-treeble.js',
+                        requires: ['gallery-treeble', 'yui2-button' ]
+                    },
+                    'wegas-wireit-container': {
+                        path: 'wegas-admin/js/wegas-wireit-container-min.js',
+                        requires: ['wireit']
+                    },*/
                 }
             }
         /* Wire It */

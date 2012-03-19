@@ -229,8 +229,8 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
             e.response.results = data;
         },
-        put: function(data) {
-            var request = (data.id)?"/"+data.id:"";
+        put: function(data, request) {
+            var request = request || ((data.id)?"/"+data.id:"");
 
             switch (data['@class']) {
                 case 'StringVariableInstance' :

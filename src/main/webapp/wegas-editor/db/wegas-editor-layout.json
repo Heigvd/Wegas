@@ -158,7 +158,7 @@
                     "label": "Francois",
                     "lazyloadmenu": false,
                     "value": "selectplayer",
-                    "menu": []
+                    "menu": [{"text": "notloaded", "value": "null"}]
                 }
                 ],
                 "children": [{
