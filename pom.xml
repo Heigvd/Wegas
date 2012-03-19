@@ -286,11 +286,32 @@
                 <configuration>
 
                     <reportPlugins>
-<!--                        <plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <version>2.4</version>
+                            <configuration>
+                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                            </configuration>
+                            <reports>
+                                <report>summary</report>
+                                <report>dependencies</report>
+                                <report>project-team</report>
+                                <report>mailing-list</report>
+                                <report>cim</report>
+                                <report>issue-tracking</report>
+                                <report>license</report>
+                                <report>scm</report>
+                            </reports>
+                        </plugin>
+
+                        <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.8.1</version>
-                        </plugin>-->
+                            <version>2.7</version>
+                        </plugin>
+
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-pmd-plugin</artifactId>
@@ -335,6 +356,7 @@
                                 </check>
                             </configuration>
                         </plugin>
+
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-checkstyle-plugin</artifactId>
@@ -343,6 +365,18 @@
                                 <configLocation>config/sun_checks.xml</configLocation>
                             </configuration>
                         </plugin>
+
+
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jxr-plugin</artifactId>
+                            <version>2.1</version>
+                            <configuration>
+                                <aggregate>true</aggregate>
+                            </configuration>
+                        </plugin>
+
                     </reportPlugins>
                 </configuration>
             </plugin>
