@@ -58,7 +58,7 @@ public class GameController implements Serializable {
 
     /**
      *
-     * @throws IOException 
+     * @throws IOException
      */
     @PostConstruct
     public void init() throws IOException {
@@ -72,6 +72,8 @@ public class GameController implements Serializable {
             if (currentPlayer == null) {
                 FacesContext.getCurrentInstance().getExternalContext().dispatch("/wegas-editor/view/lobby.xhtml");
             }
+        } else {
+            FacesContext.getCurrentInstance().getExternalContext().dispatch("/wegas-editor/view/lobby.xhtml");
         }
     }
 

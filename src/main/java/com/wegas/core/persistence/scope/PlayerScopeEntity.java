@@ -19,7 +19,6 @@ import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.ejb.EJBException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -92,8 +91,8 @@ public class PlayerScopeEntity extends ScopeEntity {
      * @return
      */
     @Override
-    public VariableInstanceEntity getVariableInstance(Long playerId) {
-        return this.variableInstances.get(playerId);
+    public VariableInstanceEntity getVariableInstance(PlayerEntity player) {
+        return this.variableInstances.get(player.getId());
     }
 
     /**

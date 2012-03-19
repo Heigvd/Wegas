@@ -1,28 +1,26 @@
-
-/** 
+/**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 YUI.add('wegas-editmenu', function(Y) {
-    var BOUNDINGBOX = 'boundingBox',
-    CONTENTBOX = 'contentBox',	
+    var CONTENTBOX = 'contentBox',
     YAHOO = Y.YUI2,
     EditMenu = Y.Base.create("wegas-editmenu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
-        
+
         // *** Instance Members *** //
         _currentDataSource: null,
-        _currentData: null,       
-       
+        _currentData: null,
+
         // *** Lifecycle Methods *** //
         renderUI : function() {
             var cb = this.get(CONTENTBOX);
-				
-            this.menu = new YAHOO.widget.Menu("as-editmenu", { 
-                visible: true, 
-                position: 'static',  
+
+            this.menu = new YAHOO.widget.Menu("as-editmenu", {
+                visible: true,
+                position: 'static',
                 hidedelay: 100,
                 shadow: true
-            }); 
+            });
             this.menu.render(cb._node);
         },
         bindUI : function() {
@@ -37,22 +35,22 @@ YUI.add('wegas-editmenu', function(Y) {
         },
         setMenuItems: function( data, dataSource ) {
             var menuItems = Y.Wegas.editor.get("editorMenus")[data["@class"]];
-            
+
             if (!menuItems) Y.log('error', 'Menu items are undefined.', "Wegas.Editor")
-            
+
             this._currentDataSource = dataSource;
             this._currentData = data;
-            
+
             this.menu.clearContent();
             this.menu.addItems(menuItems);
             this.menu.render();
         },
-        
+
         // *** Private Methods *** //
-        _onMenuClick: function(p_sType, args) { 
+        _onMenuClick: function(p_sType, args) {
             var menuItem = args[1],
             action = menuItem.value;
-			
+
             switch (action.op) {
                 case "addChild":
                     Y.Wegas.editor.edit({
@@ -65,6 +63,6 @@ YUI.add('wegas-editmenu', function(Y) {
             this.hide();
         }
     });
-    
+
     Y.namespace('Wegas').EditMenu = EditMenu;
 });

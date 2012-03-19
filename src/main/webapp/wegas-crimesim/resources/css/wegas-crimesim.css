@@ -1,4 +1,4 @@
-/* PMG GENERAL STYLES */
+/* CrimeSim GENERAL STYLES */
 .layout {
     width:100%;
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -54,4 +54,52 @@
     border: 1px solid gray;
     border-top:none;
     min-height:200px;
+}
+
+/* CrimeSim Analyisis table styles */
+.schedule-table {
+    width: 100%;
+    table-layout: fixed;
+}
+.schedule-table th, .schedule-table td {
+    padding: 2px;
+    border: 1px solid gray;
+    text-align: center;
+}
+.schedule-table th {
+    background:steelBlue;
+    color:white;
+}
+.schedule-table .schedule-leftcolum {
+    width:150px;
+    text-align: left;
+}
+.schedule-table td > div {
+    height:30px;
+}
+.schedule-table td div.finishedtask {
+    width: 200px;
+    background: pink;
+}
+.schedule-table .schedule-available > div {
+    cursor:pointer;
+}
+
+.schedule-table .schedule-available > div:hover {
+    background: transparent url(/Wegas/wegas-editor/resources/images/wegas-editor-sprite.png) no-repeat 25px 7px;
+}
+.schedule-table .schedule-available > div > * {
+    display:none;
+}
+.schedule-table .schedule-available > div:hover > * {
+    display:block;
+}
+.schedule-table .schedule-past {
+    background:lightgray;
+}
+.yui3-scheduledisplay-menu {
+    position: absolute;
+}
+.yui3-scheduledisplay-menu-hidden {
+    display: none;
 }

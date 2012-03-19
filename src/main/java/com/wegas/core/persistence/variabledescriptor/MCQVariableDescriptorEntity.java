@@ -14,14 +14,7 @@ import com.wegas.core.persistence.variableinstance.MCQVariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
@@ -44,6 +37,10 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
      */
     @Column(length = 4096)
     private String description;
+    /**
+     *
+     */
+    private String tag;
     /**
      *
      */
@@ -149,5 +146,19 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
      */
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
         this.allowMultipleReplies = allowMultipleReplies;
+    }
+
+    /**
+     * @return the tag
+     */
+    public String getTag() {
+        return tag;
+    }
+
+    /**
+     * @param tag the tag to set
+     */
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }

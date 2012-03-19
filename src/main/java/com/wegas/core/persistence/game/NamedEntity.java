@@ -13,9 +13,7 @@ package com.wegas.core.persistence.game;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 public abstract class NamedEntity extends AbstractEntity {
-
 
     /**
      *
@@ -23,13 +21,15 @@ public abstract class NamedEntity extends AbstractEntity {
      */
     @Override
     public void merge(AbstractEntity n) {
-        this.setName(((NamedEntity)n).getName());
+        this.setName(( (NamedEntity) n ).getName());
     }
+
     /**
      *
      * @return
      */
     public abstract String getName();
+
     /**
      *
      * @param name
@@ -44,5 +44,4 @@ public abstract class NamedEntity extends AbstractEntity {
     public String toString() {
         return this.getClass().getName().toString() + " [" + getName() + ", " + getId() + " ]";
     }
-
 }

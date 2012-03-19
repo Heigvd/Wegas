@@ -12,7 +12,6 @@ package com.wegas.core.persistence.variableinstance;
 import com.wegas.core.persistence.game.AbstractEntity;
 import java.util.logging.Logger;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**

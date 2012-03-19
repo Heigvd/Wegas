@@ -1,3 +1,8 @@
+/* Default style */
+input[type="submit"], input[type="reset"] {
+    padding:2px 4px;
+}
+
 /*  TabView Styles */
 .yui3-skin-sam .yui3-tabview-panel {
     border: none;

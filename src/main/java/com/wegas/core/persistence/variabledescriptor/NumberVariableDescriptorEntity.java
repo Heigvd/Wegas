@@ -11,10 +11,7 @@ package com.wegas.core.persistence.variabledescriptor;
 
 import com.wegas.core.persistence.variableinstance.NumberVariableInstanceEntity;
 import java.util.logging.Logger;
-
 import javax.persistence.Entity;
-
-
 import javax.xml.bind.annotation.XmlType;
 
 /**

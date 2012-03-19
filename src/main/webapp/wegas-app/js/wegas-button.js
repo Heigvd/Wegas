@@ -19,10 +19,10 @@ YUI.add('wegas-button', function(Y) {
                 target;
 
                 if (this.get('onClick')) {                                      // If there is an onclick impact, send it to the server
-                    Y.Wegas.app.dataSources.VariableDescriptor.rest.post({
+                    Y.Wegas.app.dataSources.VariableDescriptor.rest.put({
                         "@class":"Script",
                         "content": this.get("onClick")
-                    }, null, "Player/"+Y.Wegas.app.get('currentPlayer')+"/Runscript/");
+                    }, "/Player/"+Y.Wegas.app.get('currentPlayer')+"/RunScript");
                 }
 
 

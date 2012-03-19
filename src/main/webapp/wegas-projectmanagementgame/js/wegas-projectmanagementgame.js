@@ -4,42 +4,42 @@
 
 YUI.add('wegas-projectmanagementgame', function(Y) {
     var CONTENTBOX = 'contentBox',
-    
+
     PMGChoiceDisplay = Y.Base.create("wegas-pmgchoicedisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         _tabView: null,
-        
+
         _genTabs: function() {
-            
+
         },
-        
+
         bindUI: function() {
-            this.get(CONTENTBOX).delegate("click", function(e) {    
-                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariableDescriptor/Player/"+Y.Wegas.app.get('currentPlayer')+"/Reply/"+e.target.get('id')+"/Runscript/");
+            this.get(CONTENTBOX).delegate("click", function(e) {
+                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariableDescriptor/Player/"+Y.Wegas.app.get('currentPlayer')+"/Reply/"+e.target.get('id')+"/RunScript/");
             }, "input[type=submit]", this);
-            
+
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", function(e) {
                 this.syncUI();
             }, this);
-            
+
             Y.Wegas.app.after('currentPlayerChange', function(e) {
                 this.syncUI();
             }, this);
         },
-        
-        syncUI: function() {            
+
+        syncUI: function() {
             var questions = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQVariableDescriptor"),
             selectedTab = this._tabView.get('selection'),
             lastSelection = (selectedTab)?selectedTab.get('index'):0,
             i=0, j, cReplyLabel,cQuestion, ret, cQuestionInstance, firstChild;
-            
+
             this._tabView.removeAll();
-            
+
             for (; i<questions.length; i++) {
                 cQuestion = questions[i];
                 ret = [];
                 cQuestionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(cQuestion.id),
                 firstChild = true;
-                
+
                 if (cQuestionInstance.active) {
                     if (cQuestionInstance.replies.length == 0 || cQuestion.allowMultipleReplies) {
                         ret.push('<div class="h4">Answers</div>'+
@@ -104,6 +104,6 @@ YUI.add('wegas-projectmanagementgame', function(Y) {
             }
         }
     });
-    
+
     Y.namespace('Wegas').PMGChoiceDisplay = PMGChoiceDisplay;
 });

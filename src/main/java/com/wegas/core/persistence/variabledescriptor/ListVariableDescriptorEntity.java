@@ -10,15 +10,8 @@
 package com.wegas.core.persistence.variabledescriptor;
 
 import com.wegas.core.persistence.variableinstance.ListVariableInstanceEntity;
-import java.util.List;
 import java.util.logging.Logger;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-
-
-import javax.persistence.OneToMany;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**

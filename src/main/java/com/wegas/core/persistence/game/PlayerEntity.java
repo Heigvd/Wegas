@@ -46,15 +46,10 @@ public class PlayerEntity extends AbstractEntity {
      *
      */
     /*
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_player",
-    joinColumns = {
-    @JoinColumn(name = "userId")
-    },
-    inverseJoinColumns = {
-    @JoinColumn(name = "playerId")
-    })
-    private Collection<UserEntity> users;*/
+     * @ManyToMany(cascade = CascadeType.ALL) @JoinTable(name = "user_player",
+     * joinColumns = { @JoinColumn(name = "userId") }, inverseJoinColumns = {
+     * @JoinColumn(name = "playerId") }) private Collection<UserEntity> users;
+     */
     /**
      *
      */

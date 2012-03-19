@@ -12,15 +12,7 @@ package com.wegas.core.persistence.variabledescriptor;
 import com.wegas.core.persistence.game.AbstractEntity;
 import com.wegas.core.persistence.game.NamedEntity;
 import java.util.logging.Logger;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
@@ -67,7 +59,10 @@ public class MCQVariableDescriptorReplyEntity extends NamedEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "variabledescriptor_id", nullable = false)
     private MCQVariableDescriptorEntity mCQVariableDescriptor;
-
+    /**
+     *
+     */
+    private Long duration;
 
     /**
      *
@@ -163,5 +158,19 @@ public class MCQVariableDescriptorReplyEntity extends NamedEntity {
      */
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    /**
+     * @return the duration
+     */
+    public Long getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 }

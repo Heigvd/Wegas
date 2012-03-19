@@ -58,5 +58,33 @@
         "scope": {
             "@class": "TeamScope"
         }
+    }, {
+        "@class": "MCQVariableDescriptor",
+        "name": "Couteau",
+        "label": "Couteau",
+        "description": "Un couteau qui traine, plein de sang.",
+        "replies": [
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Analyse ADN",
+            "description":"Costs: 1000CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "duration":1
+        },
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Empreintees digitales",
+            "description":"Costs: 500CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "duration":2
+        }],
+        "defaultVariableInstance": {
+            "@class": "MCQVariableInstance"
+        },
+        "scope": {
+            "@class": "PlayerScope"
+        }
     }]
 }

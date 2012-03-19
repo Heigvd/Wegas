@@ -87,7 +87,7 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
      * @param script
      * @return
      */
-    @POST
+    @PUT
     @Path("Player/{playerId : [1-9][0-9]*}/RunScript")
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<VariableDescriptorEntity> runScript(@PathParam("gameModelId") Long gameModelId,

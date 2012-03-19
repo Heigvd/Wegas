@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.scope;
 
 import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.io.Serializable;
@@ -70,7 +71,7 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
      * @return
      */
     @XmlTransient
-    public VariableInstanceEntity getVariableInstance(Long userId) {
+    public VariableInstanceEntity getVariableInstance(PlayerEntity player) {
         throw new NotImplementedException();
     }
 

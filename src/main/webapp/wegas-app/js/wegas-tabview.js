@@ -43,7 +43,7 @@ YUI.add('wegas-tabview', function(Y) {
             panelNode.addClass('wegas-tab-hastoolbar');
             panelNode.prepend('<div class="yui-editor-container wegas-tab-toolbar"><div class="first-child"><div></div></div></div><div style="clear:both"></div>');
 
-            this._toolbar = new YAHOO.widget.Toolbar(panelNode.one('.yui-editor-container')._node.firstChild.firstChild, {
+            this._toolbar = new YAHOO.widget.Toolbar(panelNode.one('.yui-editor-container div div')._node, {
                 buttonType: 'advanced',
                 draggable: false,
                 buttons: this.get('toolbarButtons')
@@ -87,18 +87,24 @@ YUI.add('wegas-tabview', function(Y) {
                             //if (button.getMenu().getItems().length == 0) return;
                             currentPlayerId = Y.Wegas.app.get('currentPlayer');
                             cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame();
+                            var players = [];
 
-                            menu = button.getMenu();
-                            menu.clearContent();
                             for (j=0; cGame.teams && j<cGame.teams.length; j++) {
                                 for (k=0; k<cGame.teams[j].players.length; k++){
-                                    menu.addItem({
-                                        'text': cGame.teams[j].players[k].name,
-                                        'value': cGame.teams[j].players[k].id
+                                    players.push({
+                                        text: cGame.teams[j].players[k].name,
+                                        value: ""+cGame.teams[j].players[k].id
                                     });
                                 }
                             }
-                            menu.render();
+                            menu = button.getMenu();
+                            menu.clearContent();
+                            menu.addItems(players);
+                            try {
+                                menu.render();
+                            } catch (e) {
+                                Y.log('renderUI(): Error rendering widget: '+(e.stack || e ), 'error', 'Wegas.WidgetLoader');
+                            }
                             break;
                     }
                 }
