@@ -38,7 +38,7 @@ Set up Github
 
 Set up Netbeans
 ------------------------
-*  Force utf-8:
+*  Force utf-8
    Addn -J-Dfile.encoding=UTF-8 to netbeans_default_options line in netbeans.conf.
 	
 
