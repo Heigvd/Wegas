@@ -12,7 +12,7 @@
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.user" value="user"/>
             <property name="javax.persistence.jdbc.password" value="123"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/test"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/wegas_test"/>
             <property name="eclipselink.weaving" value="static" />
             <property name="eclipselink.ddl-generation.output-mode" value="database" />
             <property name="eclipselink.debug" value="ALL"/>
