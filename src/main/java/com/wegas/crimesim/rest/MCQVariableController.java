@@ -7,17 +7,18 @@
  *
  * Copyright (C) 2011
  */
-package com.wegas.core.rest;
+package com.wegas.crimesim.rest;
 
-import com.wegas.core.ejb.MCQVariableDescriptorEntityFacade;
-import com.wegas.core.ejb.MCQVariableDescriptorReplyEntityFacade;
+import com.wegas.crimesim.ejb.MCQVariableDescriptorEntityFacade;
+import com.wegas.crimesim.ejb.MCQVariableDescriptorReplyEntityFacade;
 import com.wegas.core.ejb.PlayerEntityFacade;
 import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variabledescriptor.MCQVariableDescriptorReplyEntity;
+import com.wegas.crimesim.persistence.variable.MCQVariableDescriptorReplyEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
-import com.wegas.core.persistence.variableinstance.MCQVariableInstanceEntity;
-import com.wegas.core.persistence.variableinstance.MCQVariableInstanceReplyEntity;
+import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQVariableInstanceReplyEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
+import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.script.ScriptEntity;
 import com.wegas.core.script.ScriptManager;
 import java.util.List;

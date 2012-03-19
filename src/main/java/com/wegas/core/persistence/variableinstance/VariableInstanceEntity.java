@@ -9,7 +9,8 @@
  */
 package com.wegas.core.persistence.variableinstance;
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.scope.ScopeEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import java.util.logging.Logger;

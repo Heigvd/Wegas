@@ -1,11 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.wegas.totest;
 
+import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
@@ -13,12 +11,33 @@ import javax.persistence.Id;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-public class Book implements java.io.Serializable{
+public class Book extends AbstractEntity{
 
     @Id
-    @GeneratedValue
-    private long id;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String title;
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public void merge(AbstractEntity a) {
+        this.title = ((Book)a).getTitle();
+    }
 }

@@ -9,14 +9,20 @@
  */
 package com.wegas.core.persistence.scope;
 
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameEntity;
+import com.wegas.core.persistence.game.GameModelEntity;
+import com.wegas.core.persistence.game.PlayerEntity;
+import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.ejb.EJBException;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 

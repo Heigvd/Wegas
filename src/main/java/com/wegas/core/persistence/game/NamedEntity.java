@@ -9,6 +9,8 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.persistence.AbstractEntity;
+
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>

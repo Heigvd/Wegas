@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
 import javax.persistence.EntityManager;
 

@@ -7,9 +7,9 @@
  *
  * Copyright (C) 2011
  */
-package com.wegas.core.persistence.variabledescriptor;
+package com.wegas.crimesim.persistence.variable;
 
-import com.wegas.core.persistence.game.AbstractEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.NamedEntity;
 import java.util.logging.Logger;
 import javax.persistence.*;

@@ -7,8 +7,12 @@
  *
  * Copyright (C) 2011
  */
-package com.wegas.core.persistence.game;
+package com.wegas.core.persistence;
 
+import com.wegas.core.persistence.game.GameEntity;
+import com.wegas.core.persistence.game.GameModelEntity;
+import com.wegas.core.persistence.game.PlayerEntity;
+import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import java.io.ByteArrayOutputStream;
