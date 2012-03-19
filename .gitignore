@@ -1,6 +1,8 @@
 # Build files #
 *.class
 target/*
+#!target/site*
+#!target/Wegas.war
 
 # NetBean Files #
 faces-config.NavData
