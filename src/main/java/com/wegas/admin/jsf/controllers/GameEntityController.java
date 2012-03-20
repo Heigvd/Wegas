@@ -115,7 +115,8 @@ public class GameEntityController implements Serializable {
             getFacade().create(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin-bundle").getString("GameEntityCreated"));
             return prepareCreate();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin-bundle").getString("PersistenceErrorOccured"));
             return null;
         }
@@ -140,7 +141,8 @@ public class GameEntityController implements Serializable {
             getFacade().edit(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin-bundle").getString("GameEntityUpdated"));
             return "View";
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin-bundle").getString("PersistenceErrorOccured"));
             return null;
         }
@@ -180,7 +182,8 @@ public class GameEntityController implements Serializable {
         try {
             getFacade().remove(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/wegas-admin-bundle").getString("GameEntityDeleted"));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/wegas-admin-bundle").getString("PersistenceErrorOccured"));
         }
     }

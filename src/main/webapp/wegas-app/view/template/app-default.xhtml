@@ -19,33 +19,32 @@
 
         <!-- YUI -->
         <!-- CDN  -->
-        <!--<link rel="stylesheet" type="text/css"
-                 href="http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&3.3.0/build/cssreset/reset-min.css&3.3.0/build/cssgrids/grids-min.css&3.3.0/build/cssbase/base-min.css&3.3.0pr3/build/widget/assets/skins/sam/widget.css&3.3.0pr3/build/node-menunav/assets/skins/sam/node-menunav.css&" charset="utf-8" />
-           <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/skin.css">
-        -->
-        <!-- Self hosted -->
-        <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
-        <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />
+        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.3.0/build/cssfonts/fonts-min.css&amp;3.3.0/build/cssreset/reset-min.css&amp;3.3.0/build/cssgrids/grids-min.css&amp;3.3.0/build/cssbase/base-min.css&amp;3.3.0pr3/build/widget/assets/skins/sam/widget.css&amp;3.3.0pr3/build/node-menunav/assets/skins/sam/node-menunav.css" />
+        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/assets/skins/sam/skin.css" />
 
-        <!-- WireIt -->
-        <!--<link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> -->
+            <!-- Self hosted -->
+            <!--<link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
+            <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />  -->
 
-        <!-- InputEx -->
-        <!-- <link type='text/css' rel='stylesheet' href='lib/inputex/css/inputEx.css' />-->
+            <!-- WireIt -->
+            <!--<link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> -->
 
-        <meta id="customstyles" />
+            <!-- InputEx -->
+            <!-- <link type='text/css' rel='stylesheet' href='lib/inputex/css/inputEx.css' />-->
 
-        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/resources/css/wegas-editor.css" />
+            <meta id="customstyles" />
+
+            <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/resources/css/wegas-editor.css" />
     </h:head>
 
     <h:body class="yui3-skin-sam yui-skin-sam">
 
         <!-- YUI Base -->
         <!-- CDN -->
-        <!--<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.4.1/build/yui/yui-min.js&3.4.1/build/loader/loader-min.js"></script>-->
+        <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.4.1/build/yui/yui-min.js&amp;3.4.1/build/loader/loader-min.js"></script>
         <!-- Self hosted -->
-        <script type="text/javascript" src="/Wegas/lib/yui3/build/yui/yui.js"></script>
-        <script type="text/javascript" src="/Wegas/lib/yui3/build/loader/loader.js"></script>
+        <!--<script type="text/javascript" src="/Wegas/lib/yui3/build/yui/yui.js"></script>
+        <script type="text/javascript" src="/Wegas/lib/yui3/build/loader/loader.js"></script>-->
 
 
         <!-- InputEx Loader -->
@@ -76,7 +75,7 @@
                 useBrowserConsole: true,
                 //debug: Config.debug,
                 //timeout: 10000,
-                filter: 'raw',
+                //filter: 'raw',
                 // filter: (Config.debug)?'raw':'min',
                 //filters: { event: 'debug' },
                 //logExclude: { event : true },
@@ -441,14 +440,14 @@
                 ];
 
 
-                <ui:insert name="jsInitMethod">
-                Y.on('domready', function() {						// Launch the app as soon as Dom is ready
+                    <ui:insert name="jsInitMethod">
+                    Y.on('domready', function() {						// Launch the app as soon as Dom is ready
                     var app = new Y.Wegas.App(Config);
                     app.render();
                 });
-                </ui:insert>
+                    </ui:insert>
 
-            });
+                });
 
 
         </script>

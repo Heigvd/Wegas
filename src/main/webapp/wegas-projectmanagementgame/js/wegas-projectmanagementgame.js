@@ -14,7 +14,7 @@ YUI.add('wegas-projectmanagementgame', function(Y) {
 
         bindUI: function() {
             this.get(CONTENTBOX).delegate("click", function(e) {
-                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariableDescriptor/Player/"+Y.Wegas.app.get('currentPlayer')+"/Reply/"+e.target.get('id')+"/RunScript/");
+                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariable/SelectReply/"+e.target.get('id')+"/Player/"+Y.Wegas.app.get('currentPlayer'));
             }, "input[type=submit]", this);
 
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", function(e) {

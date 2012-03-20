@@ -35,7 +35,7 @@ import javax.ws.rs.core.MediaType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/MCQVariableDescriptor/")
+@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/MCQVariable/")
 public class MCQVariableController extends AbstractRestController<MCQVariableDescriptorEntityFacade> {
     /*
      *
@@ -67,21 +67,38 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
      * @return p
      */
     @GET
-    @Path("/Player/{playerId : [1-9][0-9]*}/Reply/{replyId : [1-9][0-9]*}/RunScript")
+    @Path("/SelectReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<VariableInstanceEntity> runScript(@PathParam("gameModelId") Long gameModelId,
+    public List<VariableInstanceEntity> selectReply(@PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, @PathParam("replyId") Long replyId) {
+        return this.selectReply(gameModelId, playerId, replyId, new Long(0));
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param playerId
+     * @param replyId
+     * @return p
+     */
+    @GET
+    @Path("/SelectReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<VariableInstanceEntity> selectReply(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("playerId") Long playerId, @PathParam("replyId") Long replyId, @PathParam("startTime") Long startTime) {
         MCQVariableDescriptorReplyEntity reply = mCQVariableDescriptorReplyFacade.find(replyId);
         PlayerEntity player = playerEntityFacade.find(playerId);
 
         VariableDescriptorEntity vd = reply.getMCQVariableDescriptor();
         MCQVariableInstanceEntity vi = (MCQVariableInstanceEntity) vd.getVariableInstance(player);
 
-        MCQVariableInstanceReplyEntity viReply = new MCQVariableInstanceReplyEntity();
-        viReply.setAnswer(reply.getAnswer());
-        viReply.setDescription(reply.getDescription());
-        viReply.setName(reply.getName());
-        vi.addReply(viReply);
+        MCQVariableInstanceReplyEntity replyInstance = new MCQVariableInstanceReplyEntity();
+        replyInstance.setAnswer(reply.getAnswer());
+        replyInstance.setDescription(reply.getDescription());
+        replyInstance.setName(reply.getName());
+        replyInstance.setStartTime(startTime);
+        replyInstance.setDuration(reply.getDuration());
+        vi.addReply(replyInstance);
 
         ScriptEntity s = new ScriptEntity();                                    // Run the impact
         s.setContent(reply.getImpact());
