@@ -8,8 +8,8 @@
     height:50px;
     background:lightsteelblue;
     width:100%;
-    border: 1px solid gray;
-    border-bottom:none;
+    /* border-top: 1px solid gray;
+     border-bottom:none;*/
 
 }
 .yui3-wegas-variabledisplay {
@@ -35,7 +35,7 @@
 }
 #menu {
     background:lightgray;
-    border: 1px solid gray;
+    border-top: 1px solid gray;
 }
 .menu-button {
     padding: 5px 10px;
@@ -51,51 +51,101 @@
     cursor: pointer;
 }
 .body {
-    border: 1px solid gray;
-    border-top:none;
+    border-top: 1px solid gray;
+    border-bottom:1 px solid gray;
     min-height:200px;
 }
-
+/* Schedule display Widget style */
+.yui3-wegas-crimesim-scheduledisplay-content {
+    position:relative;
+}
+/* Schedule detail style */
+.schedule-detail {
+    background: white;
+    border: 1px solid gray;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 800px;
+    min-height: 140px;
+    border-right: none;
+    border-top: none;
+    display: none;
+    box-shadow: 5px 4px 5px #888;
+  /*  bottom: 0;*/
+}
+.schedule-detail .schedule-icon-close {
+    float: right;
+    margin-top:4px;
+    margin-right:3px;
+    background:white;
+    width:  15px;
+    height: 15px;
+    border: 1px solid gray;
+    cursor: pointer;
+}
+.schedule-detail h1,
+.schedule-detail h2 {
+    background: lightSteelBlue;
+    padding: 4px 5px;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    font-weight: bold;
+    margin: 0;
+}
+.schedule-detail h3 {
+    padding: 5px 5px 1px;
+    font-style: italic;
+    margin: 0;
+    font-weight: normal;
+}
+.schedule-detail .content {
+    padding: 2px 5px 15px;
+}
 /* CrimeSim Analyisis table styles */
 .schedule-table {
     width: 100%;
     table-layout: fixed;
 }
 .schedule-table th, .schedule-table td {
-    padding: 2px;
+    padding: 4px;
     border: 1px solid gray;
+    border-left: none;
     text-align: center;
 }
 .schedule-table th {
     background:steelBlue;
     color:white;
 }
+.schedule-table td {
+    /*  height: 30px;*/
+}
+.schedule-table tfoot td {
+    font-size: 7pt;
+    border-bottom: none;
+}
 .schedule-table .schedule-leftcolum {
-    width:150px;
+    /*width:150px;*/
     text-align: left;
 }
-.schedule-table td > div {
-    height:30px;
+.schedule-table td.schedule-leftcolum {
+    /*width:150px;*/
+    cursor: pointer;
 }
-.schedule-table td div.finishedtask {
-    width: 200px;
-    background: pink;
+.schedule-table .schedule-maincolum {
+    width:80px;
 }
-.schedule-table .schedule-available > div {
-    cursor:pointer;
+.schedule-table td .icon {
+    height:26px;
 }
 
-.schedule-table .schedule-available > div:hover {
-    background: transparent url(/Wegas/wegas-editor/resources/images/wegas-editor-sprite.png) no-repeat 25px 7px;
-}
-.schedule-table .schedule-available > div > * {
-    display:none;
-}
-.schedule-table .schedule-available > div:hover > * {
-    display:block;
-}
 .schedule-table .schedule-past {
     background:lightgray;
+}
+
+.schedule-table .schedule-available div:hover .icon {
+    background: transparent url(/Wegas/wegas-editor/resources/images/wegas-editor-sprite.png) no-repeat 25px 3px;
+    cursor:pointer;
 }
 .yui3-scheduledisplay-menu {
     position: absolute;
@@ -103,3 +153,56 @@
 .yui3-scheduledisplay-menu-hidden {
     display: none;
 }
+
+.schedule-table .schedule-unavailablestart > div {
+    position:relative;
+}
+.schedule-table .schedule-unavailablestart .icon {
+    background: yellow;
+    position: absolute;
+    top: -13px;
+    height:15px;
+}
+.schedule-table .schedule-unavailablestart.schedule-future .icon {
+    background: green;
+}
+.schedule-table .schedule-unavailablestart.schedule-past .icon {
+    background: darkgrey;
+}
+.schedule-table .schedule-unavailable-0 .icon {
+    width: 20px;
+}
+.schedule-table .schedule-unavailable-1 .icon {
+    width: 71px;
+}
+.schedule-table .schedule-unavailable-2 .icon {
+    width: 151px;
+}
+.schedule-table .schedule-unavailable-3 .icon {
+    width: 231px;
+}
+.schedule-table .schedule-unavailable-4 .icon {
+    width: 231px;
+}
+.schedule-table .schedule-unavailable-5 .icon {
+    width: 311px;
+}
+.schedule-table .schedule-unavailable-6 .icon {
+    width: 391px;
+}
+.schedule-table .schedule-unavailable-7 .icon {
+    width: 471px;
+}
+.schedule-table .schedule-unavailable-8 .icon {
+    width: 551px;
+}
+.schedule-table .schedule-unavailable-9 .icon {
+    width: 631px;
+}
+/*
+.schedule-table .schedule-available > div > * {
+    display:none;
+}
+.schedule-table .schedule-available > div:hover > * {
+    display:block;
+}*/

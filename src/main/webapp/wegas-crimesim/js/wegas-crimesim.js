@@ -4,6 +4,7 @@
 
 YUI.add('wegas-crimesim', function(Y) {
     var CONTENTBOX = 'contentBox',
+    BOUNDINGBOX = 'boundingBox',
     YAHOO = Y.YUI2,
     ScheduleDisplay,
     Menu = Y.Base.create("scheduledisplay-menu", Y.Widget,                      // Helper to display the menu in a positionable box
@@ -31,21 +32,23 @@ YUI.add('wegas-crimesim', function(Y) {
                 //bb.on('click', this.hide, this);
                 this.menu.subscribe("click", this._onMenuClick, null, this);
             },
-            // *** Private Methods *** //
-            _onMenuClick: function(p_sType, args) {
-                console.log("mm");
-            },
+
             // *** Methods *** /
             setMenuItems: function( menuItems ) {
                 this.menu.clearContent();
                 this.menu.addItems(menuItems);
                 this.menu.render();
+            },
+
+            // *** Private Methods *** //
+            _onMenuClick: function(p_sType, args) {
+                console.log("mm");
             }
         });
 
     /**
-    *  The schedule display class.
-    */
+     *  The schedule display class.
+     */
     ScheduleDisplay = Y.Base.create("wegas-crimesim-scheduledisplay", Y.Widget,
         [Y.WidgetChild, Y.Wegas.Widget], {
 
@@ -59,96 +62,177 @@ YUI.add('wegas-crimesim', function(Y) {
                     render: true,
                     visible: true
                 });
+                this.get(CONTENTBOX).setContent('<div class="schedule-questions"></div><div class="schedule-detail"></div>');
             },
             bindUI: function() {
+                var cb = this.get(CONTENTBOX);
 
-                this.get(CONTENTBOX).delegate("click", function(e) {            // Show the "action available" menu on cell click
+                cb.delegate("click", function (e) {                             // Show the "action available" menu on cell click
                     var questionId =  e.target.ancestor("tr").getAttribute("data-questionid"),
+                    startTime = e.target.ancestor("td").getAttribute("data-startTime"),
                     question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("id", questionId);
-                    this._menu.setMenuItems(this._genMenuItems(question));
-                    this._menu.get("boundingBox").appendTo(e.target);
+
+                    this._menu.setMenuItems(this._genMenuItems(question, startTime));
+                    this._menu.get("boundingBox").appendTo(e.target.get('parentNode'));
                     this._menu.set("align", {
                         node:e.target,
                         points:["tr", "br"]
                     });
                     this._menu.show();
-                }, ".schedule-available", this);
+                }, ".schedule-available .icon", this);
 
-                this._menu.after('render', function(){
-                    this._menu.menu.subscribe("click", this._onMenuClick, null, this);   // Handele the "action available" menu click event
-                }, this)
+                this._menu.menu.subscribe("click", this._onMenuClick,           // Listen for the choice menu click event
+                    null, this);
+
+                cb.delegate("click", function(e) {                              // Show the question detail on left label click
+                    var questionId =  e.target.ancestor("tr").getAttribute("data-questionid");
+                    this._syncDetailsPanel(questionId);
+                }, "td.schedule-leftcolum", this);
+
+                cb.delegate("click", this._hideDetails,                         // Hide the question detail on close icon click
+                    ".schedule-icon-close", this);
 
                 Y.Wegas.app.dataSources.VariableDescriptor.after("response",    // If data changes, refresh
-                    function(e) {
-                        this.syncUI();
-                    }, this);
+                    this.syncUI, this);
 
-                Y.Wegas.app.after('currentPlayerChange', function(e) {          // If current user changes, refresh (editor only)
-                    this.syncUI();
-                }, this);
+                Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);    // If current user changes, refresh (editor only)
+
             },
+
             syncUI: function() {
-                var questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQVariableDescriptor"),
+                this._syncSchedule();
+                if ( this._currentQuestionId ) this._syncDetailsPanel(this._currentQuestionId);
+            },
+
+            _syncSchedule: function () {
+                var perPeriodBudget = 15,
+                questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQVariableDescriptor"),
                 period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
                 i, j, acc= ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
-                cb = this.get(CONTENTBOX);
+                cb = this.get(CONTENTBOX).one(".schedule-questions"),
+                perPeriodLoad = [];
 
                 if (!period) return;
 
                 for (i=period.minValue; i<=period.maxValue; i++){
-                    acc.push('<th class="schedule-maincolum"><div>'+i+'</div></th>');
+                    acc.push('<th class="schedule-maincolum"><div>'+i+'</div></th>'); // Generate table header
+                    perPeriodLoad.push(0);                                      // Default value for perPeriodLoad calculation
                 }
                 acc.push("</tr>")
 
-                for (i=0; i<questionsVarDesc.length; i++) {
+                for (i=0; i<questionsVarDesc.length; i++) {                     // Generate table body
                     question = questionsVarDesc[i];
-                    acc.push('<tr data-questionId="'+question.id+'"><td class="schedule-leftcolum">'+(question.label || question.name || "undefined" )+"</td>");
+                    acc.push('<tr data-questionId="'+question.id+'"><td class="schedule-leftcolum" >'+(question.label || question.name || "undefined" )+"</td>");
 
-                    var cols = this._genTabColums(question, period);
+                    var cols = [],
+                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
+                    periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period"),
+                    reply, k;
+
+                    for (j=period.minValue; j<=period.maxValue; j++){           // Initially, all time slots are available
+                        if (j>=periodInstance.value) cols.push( ["schedule-item", "schedule-available"] );
+                        else cols.push( ["schedule-item"] );
+                    }
+
+                    for (j=0; j<questionInstance.replies.length; j++) {
+                        reply = questionInstance.replies[j]
+                        perPeriodLoad[reply.startTime-period.minValue] += reply.duration;
+                        cols[reply.startTime-period.minValue] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-"+reply.duration];
+                        for (k=1; k<reply.duration; k++) {
+                            cols[reply.startTime+k-period.minValue] = ["schedule-unavailable"];
+                        }
+                    }
+
+                    for (j=period.minValue; j<=period.maxValue; j++){
+                        if (j>periodInstance.value) {
+                            cols[j-period.minValue].push("schedule-future");    // Mark cells in the future
+                        }else if (j<periodInstance.value) {
+                            cols[j-period.minValue].push("schedule-past");      // Mark cells in the past
+                        }
+                    }
 
                     for (j=0; j<cols.length; j++){
-                        acc.push('<td class="'+cols[j]+'"><div></div></td>');
+                        acc.push('<td data-startTime="'+(period.minValue+j)+'" class="'+cols[j].join(" ")+'"><div><div class="icon"></div></div></td>');
                     }
 
                     acc.push("</tr>");
                 }
-                acc.push("</table>");
-                cb.setContent(acc.join(""));
+
+                acc.push('<tfoot><tr>',                                         // Generate table footer
+                    '<td class="schedule-leftcolum">Available human resources</td>');
+                for (i=0; i<perPeriodLoad.length; i++){
+                    acc.push('<td>'+(perPeriodBudget-perPeriodLoad[i])+'/'+perPeriodBudget+'</td>');
+                }
+                acc.push("</tr></tfoot></table>");
+
+                cb.setContent(acc.join(""));                                    // Update ContentBox
             },
 
+            _currentQuestionId: null,
+            _syncDetailsPanel: function (questionId) {
+                var targetNode = this.get(CONTENTBOX).one(".schedule-detail"),
+                question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("id", questionId),
+                period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
+                questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
+                i=0, reply,
+                acc = ['<div class="schedule-icon-close"></div><h1>',
+                question.label || question.name || "undefined",
+                '</h1><div class="content">', question.description, '</div>'];
+
+                this._currentQuestionId = questionId;
+
+                if (questionInstance.replies.length > 0) {
+                    acc.push('<h2>Anaylses</h2>');
+                }
+                for (; i < questionInstance.replies.length; i++) {
+                    reply = questionInstance.replies[i];
+                    acc.push('<div class="schedule-detail-reply"><h3>Period ',
+                        reply.startTime, ': ', reply.name || "undefined",
+                        '</h3><div class="content">');
+                    if ((reply.startTime+reply.duration)<=period.value) {
+                        acc.push(reply.answer);
+                    } else if (reply.startTime<=period.value) {
+                        acc.push("analysis in progress")
+                    } else {
+                        acc.push("analysis planified")
+                    }
+                    acc.push("</div>");
+                }
+
+                targetNode.setContent(acc.join(""));
+                targetNode.setStyles( {
+                    position: 'display',
+                    display:"block"
+                });
+            },
+            _hideDetails: function() {
+                var targetNode = this.get(CONTENTBOX).one(".schedule-detail");
+                targetNode.setStyles( {
+                    position: 'display',
+                    display:"none"
+                });
+                this._currentQuestionId = null;
+            },
 
             // *** Private Methods *** /
             _onMenuClick: function(e, args) {
                 var menuItem = args[1],
-                reply = menuItem.value;
+                reply = menuItem.value.reply;
 
-                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariableDescriptor/Player/"+Y.Wegas.app.get('currentPlayer')+"/Reply/"+reply.id+"/RunScript/");
+                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariable/SelectReply/"+reply.id+"/Player/"+Y.Wegas.app.get('currentPlayer')+"/StartTime/"+menuItem.value.startTime+"/");
             },
-            _genMenuItems: function(question) {
+            _genMenuItems: function(question, startTime) {
                 var ret = [], i=0, reply;
                 for (; i<question.replies.length; i++) {
                     reply = question.replies[i];
                     ret.push({
                         text: reply.label || reply.name || "undefined",
-                        value: reply
+                        value: {
+                            reply: reply,
+                            startTime: startTime
+                        }
                     });
                 }
-                return ret;
-            },
-            _genTabColums: function(question, period) {
-                var ret=[], j,
-                questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id)
-                periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period");
-
-                for (j=period.minValue; j<=period.maxValue; j++){                   // Initially, all time slots are available
-                    if (j>=periodInstance.value)
-                        ret.push( "schedule-available" );
-                    else ret.push( "schedule-past")
-                }
-
-                for (j=0; j<questionInstance.replies.length; j++) {
-                    // @todo here we fill with the replies
-                    }
                 return ret;
             }
         }, {

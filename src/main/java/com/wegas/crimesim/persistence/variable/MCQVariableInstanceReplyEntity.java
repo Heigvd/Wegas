@@ -67,6 +67,10 @@ public class MCQVariableInstanceReplyEntity extends NamedEntity {
     /**
      *
      */
+    private Long duration;
+    /**
+     *
+     */
     @JsonBackReference("question-replyi")
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
@@ -180,5 +184,19 @@ public class MCQVariableInstanceReplyEntity extends NamedEntity {
      */
     public void setStartTime(Long startTime) {
         this.startTime = startTime;
+    }
+
+    /**
+     * @return the duration
+     */
+    public Long getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 }
