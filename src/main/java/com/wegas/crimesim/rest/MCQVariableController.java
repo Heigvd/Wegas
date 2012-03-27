@@ -10,13 +10,13 @@
 package com.wegas.crimesim.rest;
 
 import com.wegas.crimesim.ejb.MCQVariableDescriptorEntityFacade;
-import com.wegas.crimesim.ejb.MCQVariableDescriptorReplyEntityFacade;
+import com.wegas.crimesim.ejb.MCQReplyVariableDescriptorEntityFacade;
 import com.wegas.core.ejb.PlayerEntityFacade;
 import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.crimesim.persistence.variable.MCQVariableDescriptorReplyEntity;
+import com.wegas.crimesim.persistence.variable.MCQReplyVariableDescriptorEntity;
 import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
 import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
-import com.wegas.crimesim.persistence.variable.MCQVariableInstanceReplyEntity;
+import com.wegas.crimesim.persistence.variable.MCQReplyVariableInstanceEntity;
 import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.script.ScriptEntity;
@@ -47,7 +47,7 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
      *
      */
     @EJB
-    private MCQVariableDescriptorReplyEntityFacade mCQVariableDescriptorReplyFacade;
+    private MCQReplyVariableDescriptorEntityFacade mCQReplyVariableDescriptorEntityFacade;
     /**
      *
      */
@@ -69,9 +69,9 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
     @GET
     @Path("/SelectReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<VariableInstanceEntity> selectReply(@PathParam("gameModelId") Long gameModelId,
+    public MCQReplyVariableInstanceEntity selectReply(@PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, @PathParam("replyId") Long replyId) {
-        return this.selectReply(gameModelId, playerId, replyId, new Long(0));
+        return mCQReplyVariableDescriptorEntityFacade.selectReply(replyId, playerId, new Long(0));
     }
 
     /**
@@ -82,28 +82,13 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
      * @return p
      */
     @GET
-    @Path("/SelectReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [1-9][0-9]*}")
+    @Path("/SelectReply/{replyDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<VariableInstanceEntity> selectReply(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId, @PathParam("replyId") Long replyId, @PathParam("startTime") Long startTime) {
-        MCQVariableDescriptorReplyEntity reply = mCQVariableDescriptorReplyFacade.find(replyId);
-        PlayerEntity player = playerEntityFacade.find(playerId);
+            @PathParam("playerId") Long playerId, @PathParam("replyDescriptorId") Long replyDescriptorId, @PathParam("startTime") Long startTime) {
 
-        VariableDescriptorEntity vd = reply.getMCQVariableDescriptor();
-        MCQVariableInstanceEntity vi = (MCQVariableInstanceEntity) vd.getVariableInstance(player);
-
-        MCQVariableInstanceReplyEntity replyInstance = new MCQVariableInstanceReplyEntity();
-        replyInstance.setAnswer(reply.getAnswer());
-        replyInstance.setDescription(reply.getDescription());
-        replyInstance.setName(reply.getName());
-        replyInstance.setStartTime(startTime);
-        replyInstance.setDuration(reply.getDuration());
-        vi.addReply(replyInstance);
-
-        ScriptEntity s = new ScriptEntity();                                    // Run the impact
-        s.setContent(reply.getImpact());
-
-        return sm.runScript(gameModelId, playerId, s);
+        MCQReplyVariableInstanceEntity replyInstance = mCQReplyVariableDescriptorEntityFacade.selectReply(replyDescriptorId, playerId, startTime);
+        return mCQReplyVariableDescriptorEntityFacade.validateReply(replyInstance.getId(), playerId);
     }
 
     /**

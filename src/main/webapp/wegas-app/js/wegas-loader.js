@@ -4,12 +4,14 @@
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI().use(function(Y) {
+YUI().use(function (Y) {
+    "use strict";
+
     var CONFIG = {
         groups: {
             'wegas': {
                 combine: false,
-                filter:"raw",
+                filter: "raw",
                 modules: {
 
                     /** Base **/
@@ -117,7 +119,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable', "datatable-datasource", 'yui2-button', /*'datatable-events', 'datatable-sort',*/ ]
+                        requires: ['datatable', "datatable-datasource", 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
                     },
 
                     /** Project Management Game */
@@ -131,12 +133,12 @@ YUI().use(function(Y) {
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"]
                     }
 
-                    /* This one is only seful w/ yui3 treeview widget */
-                    /* 'wegas-treeviewcss': {
+                /* This one is only seful w/ yui3 treeview widget */
+                /* 'wegas-treeviewcss': {
                     path: 'wegas-app/resources/css/treeview-classic.css',
                     type: 'css'
                     },*/
-                    /*'wegas-treeble': {
+                /*'wegas-treeble': {
                         path: 'wegas-app/js/wegas-treeble.js',
                         requires: ['gallery-treeble', 'yui2-button' ]
                     },
@@ -181,27 +183,28 @@ YUI().use(function(Y) {
             }
         },*/
         }
-    };
+    },
+    modules,
+    allModules = [],
+    modulesByType = {},
+    moduleName;
 
-    if(typeof YUI_config === 'undefined') {
+    if (typeof YUI_config === 'undefined') {
         YUI_config = {
             groups: {}
         };
     }
     Y.mix(YUI_config.groups, CONFIG.groups);
+    modules = YUI_config.groups.wegas.modules;
 
-    // Loop through all modules
-    var modules = YUI_config.groups.wegas.modules,
-    allModules = [],
-    modulesByType = {};
-    for(var moduleName in modules) {
-        if (modules.hasOwnProperty(moduleName) ) {
+    for (moduleName in modules) {                                           // Loop through all modules
+        if (modules.hasOwnProperty(moduleName)) {
 
             // Build a list of all Wegas modules
             allModules.push(moduleName);
 
             // Build a reverse index on which module provides what type
-            if(modules[moduleName].ix_provides) {
+            if (modules[moduleName].ix_provides) {
                 modulesByType[modules[moduleName].ix_provides] = moduleName;
             }
 

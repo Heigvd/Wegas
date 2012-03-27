@@ -37,7 +37,7 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     @OneToMany(mappedBy = "mCQVariableInstance", cascade = {CascadeType.ALL}, orphanRemoval = true/*, fetch = FetchType.LAZY*/)
     @JsonManagedReference("question-replyi")
     @JoinColumn(name = "variableinstance_id")
-    private List<MCQVariableInstanceReplyEntity> replies = new ArrayList<MCQVariableInstanceReplyEntity>();
+    private List<MCQReplyVariableInstanceEntity> replies = new ArrayList<MCQReplyVariableInstanceEntity>();
     /**
      *
      */
@@ -60,19 +60,19 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     /**
      * @return the replies
      */
-    public List<MCQVariableInstanceReplyEntity> getReplies() {
+    public List<MCQReplyVariableInstanceEntity> getReplies() {
         return replies;
     }
 
     /**
      * @param replies the replies to set
      */
-    public void setReplies(List<MCQVariableInstanceReplyEntity> replies) {
+    public void setReplies(List<MCQReplyVariableInstanceEntity> replies) {
 //        this.replies.clear();
         this.replies = replies;
 
         //  if (replies != null) {
-        for (MCQVariableInstanceReplyEntity r : replies) {
+        for (MCQReplyVariableInstanceEntity r : replies) {
             r.setMCQVariableInstance(this);
         }
         //  }
@@ -82,7 +82,7 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
      *
      * @param reply
      */
-    public void addReply(MCQVariableInstanceReplyEntity reply) {
+    public void addReply(MCQReplyVariableInstanceEntity reply) {
         this.replies.add(reply);
         reply.setMCQVariableInstance(this);
     }
@@ -92,14 +92,14 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
         MCQVariableInstanceEntity vi = (MCQVariableInstanceEntity) a;
         this.setActive(vi.getActive());
 
-        List<MCQVariableInstanceReplyEntity> newReplies = new ArrayList<MCQVariableInstanceReplyEntity>();
+        List<MCQReplyVariableInstanceEntity> newReplies = new ArrayList<MCQReplyVariableInstanceEntity>();
         //newReplies.addAll(vd.getReplies());
-        for (MCQVariableInstanceReplyEntity nReply : vi.getReplies()) {
+        for (MCQReplyVariableInstanceEntity nReply : vi.getReplies()) {
             int pos = this.replies.indexOf(nReply);
             if (pos == -1) {
                 newReplies.add(nReply);
             } else {
-                MCQVariableInstanceReplyEntity oReply = this.replies.get(pos);
+                MCQReplyVariableInstanceEntity oReply = this.replies.get(pos);
                 oReply.merge(nReply);
                 newReplies.add(oReply);
             }

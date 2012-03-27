@@ -35,7 +35,28 @@
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
         <jersey.version>1.8</jersey.version>
         <jdk.version>1.7</jdk.version>
+
+        <skipTests>true</skipTests>
     </properties>
+
+    <profiles>
+        <profile >
+            <id>release</id>
+            <activation>
+               <!-- <activeByDefault>true</activeByDefault>-->
+            </activation>
+            <build></build>
+            <properties>
+              <!--  <skipTests>false</skipTests>
+                <skipITs>true</skipITs>
+                <skipEmbeddedDeploy>false</skipEmbeddedDeploy>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+                <wamSkip>true</wamSkip>
+                <db.skipDBTool>true</db.skipDBTool>
+                <skipFTs>true</skipFTs>-->
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
 

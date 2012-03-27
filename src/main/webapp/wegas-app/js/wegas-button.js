@@ -2,16 +2,18 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-button', function(Y) {
+YUI.add('wegas-button', function (Y) {
+    "use strict";
 
     var CONTENTBOX = 'contentBox',
     BOUNDINGBOX = 'boundingBox',
     LoginButton,
+    Button;
 
     Button = Y.Base.create("wegas-button", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
-        bindUI: function() {
-            this.get(CONTENTBOX).on('click', function() {
+        bindUI: function () {
+            this.get(CONTENTBOX).on('click', function () {
                 var widgetCfg = this.get('subpage') || {
                     'type': 'Text',
                     'content': 'Nothing to display'
@@ -20,15 +22,17 @@ YUI.add('wegas-button', function(Y) {
 
                 if (this.get('onClick')) {                                      // If there is an onclick impact, send it to the server
                     Y.Wegas.app.dataSources.VariableDescriptor.rest.put({
-                        "@class":"Script",
+                        "@class": "Script",
                         "content": this.get("onClick")
-                    }, "/Player/"+Y.Wegas.app.get('currentPlayer')+"/RunScript");
+                    }, "/Player/" + Y.Wegas.app.get('currentPlayer') + "/RunScript");
                 }
 
 
                 if (this.get('targetDisplayArea')) {                            // If there is an a target display area, display the children in it
-                    target = Y.one('#'+this.get('targetDisplayArea')+' div');
-                    if (target.one('div')) target.one('div').remove();          // If there is already a widget displayed, we remove it
+                    target = Y.one('#' + this.get('targetDisplayArea') + ' div');
+                    if (target.one('div')) {
+                        target.one('div').remove();
+                    }      // If there is already a widget displayed, we remove it
 
                     if (!this._widget) {
                         this._widget = Y.Wegas.Widget.create(widgetCfg);
@@ -44,14 +48,14 @@ YUI.add('wegas-button', function(Y) {
                 }
             }, this);
         },
-        syncUI: function() {                                                    // Update the button display
+        syncUI: function () {                                                    // Update the button display
             switch (this.get('view')) {
                 case 'button':
-                    this.get(CONTENTBOX).setContent('<input type="submit" value="'+this.get('label')+'"></input>');
+                    this.get(CONTENTBOX).setContent('<input type="submit" value="' + this.get('label') + '"></input>');
                     break;
                 case 'text':
                 default:
-                    this.get(CONTENTBOX).setContent("<span>"+this.get('label')+"</span>");
+                    this.get(CONTENTBOX).setContent("<span>" + this.get('label') + "</span>");
             }
         }
     }, {
@@ -73,23 +77,20 @@ YUI.add('wegas-button', function(Y) {
     Y.namespace('Wegas').Button = Button;
 
     LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        bindUI: function() {
+        bindUI: function () {
 
-            Y.Wegas.app.dataSources.Game.after("response", this._onDataUpdate, this);
-            Y.Wegas.app.after("currentPlayerChange", this._onDataUpdate, this);
+            Y.Wegas.app.dataSources.Game.after("response", this.syncUI, this);
+            Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
         },
-        syncUI: function() {
+        syncUI: function () {
             var cPlayer = Y.Wegas.app.dataSources.Game.rest.getCurrentPlayer(),
             cTeam = Y.Wegas.app.dataSources.Game.rest.getCurrentTeam(),
             name = "undefined";
 
-            if (cPlayer) name = cPlayer.name;
-            if (cTeam) name = cTeam.name+":"+name;
+            if (cPlayer) { name = cPlayer.name; }
+            if (cTeam) { name = cTeam.name + ":" + name; }
 
-            this.get(CONTENTBOX).setContent('['+name+'] <a href="'+Y.Wegas.app.get('base')+'wegas-app/view/logout.html">logout</a>');
-        },
-        _onDataUpdate: function(e) {
-            this.syncUI();
+            this.get(CONTENTBOX).setContent('[' + name + '] <a href="' + Y.Wegas.app.get('base') + 'wegas-app/view/logout.html">logout</a>');
         }
     }, {
         ATTRS : {

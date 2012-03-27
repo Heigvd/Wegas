@@ -2,7 +2,9 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-app', function(Y) {
+YUI.add('wegas-app', function (Y) {
+    "use strict";
+
     var	App = Y.Base.create("wegas-app", Y.Base, [ ], {
 
         dataSources: [],
@@ -10,59 +12,68 @@ YUI.add('wegas-app', function(Y) {
         _rootWidgetCfg: null,
         _rootWidget: null,
 
-        initializer: function(cfg){
+        initializer: function (cfg) {
             Y.Wegas.app = this;
 
             this._initDataSources();
             this._initUI();
             this._initCSS();
         },
-        destructor : function(){
+        destructor : function () {
         // TODO Delete datasources
         },
-        render: function() {
+        render: function () {
             this._requestDataSources();
         },
 
 
-        _initDataSources: function() {
+        _initDataSources: function () {
             var dataSources = this.get('dataSources'),
             k;
 
             // @todo Shall we use browser native parsers
             // Y.JSON.useNativeParse = true;
             for (k in dataSources) {
-                dataSources[k].source = this.get("base")+dataSources[k].source;
-                this.dataSources[k] = new Y.DataSource.IO(dataSources[k]);
+                if (dataSources.hasOwnProperty(k)) {
+                    dataSources[k].source = this.get("base") + dataSources[k].source;
+                    this.dataSources[k] = new Y.DataSource.IO(dataSources[k]);
+                }
             }
         },
         _initCSS: function() {
             var css = this.get('cssStylesheets'),
-            i=0;
-            for (; i<css.length;i++){
-                Y.io(this.get('base')+css[i]+'?id='+App.genId(), {				// Load the page css
-                    timeout : 3000,
-                    context: this,
-                    on : {
-                        success : function (x,o) {
-                            this._customCSSText = o.responseText;
-                            this._customCSSStyleSheet = new Y.StyleSheet(o.responseText);
-                            //Y.log("RAW JSON DATA: " + o.responseText);
-                            //this.updateCustomCSS(o.responseText);
-                            if ( this._customCSSForm ) this._customCSSForm.inputs[0].setValue(o.responseText);
-                        },
-                        failure : function (x,o) {
-                            Y.log("_initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
+            i,
+            callback = {
+                timeout : 3000,
+                context: this,
+                on : {
+                    success : function (x, o) {
+                        this._customCSSText = o.responseText;
+                        this._customCSSStyleSheet = new Y.StyleSheet(o.responseText);
+                        //Y.log("RAW JSON DATA: " + o.responseText);
+                        //this.updateCustomCSS(o.responseText);
+                        if (this._customCSSForm) {
+                            this._customCSSForm.inputs[0].setValue(o.responseText);
                         }
+                    },
+                    failure : function (x, o) {
+                        Y.log("_initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
                     }
-                })
+                }
             };
+
+            for (i = 0; i < css.length; i += 1) {
+                Y.io(this.get('base') + css[i] + '?id=' + App.genId(), callback);   // Load the page css
+            }
         },
-        _requestDataSources: function() {
-            for (var k in this.dataSources) {
-                this.dataSources[k].sendRequest({
-                    request: ""
-                });
+        _requestDataSources: function () {
+            var k;
+            for (k in this.dataSources) {
+                if (this.dataSources.hasOwnProperty(k)) {
+                    this.dataSources[k].sendRequest({
+                        request: ""
+                    });
+                }
             }
 
         /*this.dataSources.Game.after("response", function() {
@@ -71,14 +82,14 @@ YUI.add('wegas-app', function(Y) {
         },
 
         _initUI: function() {
-            Y.io(this.get('base')+this.get('layoutSrc')+'?id='+App.genId(), {
+            Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + App.genId(), {
                 context: this,
                 on: {
-                    success: function(id, o, args) {
+                    success: function (id, o, args) {
                         //Y.log("RedCMS.onWidgetReloadContentReceived():"+  o.responseText, 'log');
                         try {
                             this._rootWidgetCfg = Y.JSON.parse(o.responseText);				// Process the JSON data returned from the server
-                        } catch (e) {
+                        } catch (jsonException) {
                             alert("Wegas.App._initUI(): JSON Parse failed!");
                             return;
                         }
@@ -86,8 +97,8 @@ YUI.add('wegas-app', function(Y) {
 
                         try {
                             this._rootWidget.render();
-                        } catch (e) {
-                            Y.log('_initUI(): Error rendering UI: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
+                        } catch (renderException) {
+                            Y.log('_initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
                         }
                     }
                 }
@@ -113,17 +124,16 @@ YUI.add('wegas-app', function(Y) {
             currentGame: {},
             currentTeam: { },
             currentPlayer: {
-                setter: function(val, name) {
-                    // When current player is updated, we also update current team
+                setter: function (val) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
-                    if (cPlayer) this.set('currentTeam', cPlayer.teamId);
+                    if (cPlayer) { this.set('currentTeam', cPlayer.teamId); }   // When current player is updated, we also update current team
                     return val;
                 }
             }
         },
-        genId: function() {
+        genId: function () {
             var now = new Date();
-            return now.getHours()+now.getMinutes()+now.getSeconds();
+            return now.getHours() + now.getMinutes() + now.getSeconds();
         }
     });
 

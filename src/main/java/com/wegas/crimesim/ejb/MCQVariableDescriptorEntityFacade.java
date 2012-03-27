@@ -10,7 +10,14 @@
 package com.wegas.crimesim.ejb;
 
 import com.wegas.core.ejb.AbstractFacade;
+import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.persistence.game.PlayerEntity;
+import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
+import com.wegas.core.script.ScriptEntity;
 import com.wegas.crimesim.persistence.variable.MCQVariableDescriptorEntity;
+import com.wegas.crimesim.persistence.variable.MCQReplyVariableDescriptorEntity;
+import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQReplyVariableInstanceEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +28,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class MCQVariableDescriptorEntityFacade extends AbstractFacade<MCQVariableDescriptorEntity> {
+
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -39,5 +47,4 @@ public class MCQVariableDescriptorEntityFacade extends AbstractFacade<MCQVariabl
     public MCQVariableDescriptorEntityFacade() {
         super(MCQVariableDescriptorEntity.class);
     }
-
 }

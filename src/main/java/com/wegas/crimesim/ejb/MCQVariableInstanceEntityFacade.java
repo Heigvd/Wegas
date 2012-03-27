@@ -21,8 +21,16 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class MCQVariableInstanceEntityFacade extends AbstractFacade<MCQVariableInstanceEntity> {
+
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
+    /**
+     *
+     */
+    public MCQVariableInstanceEntityFacade() {
+        super(MCQVariableInstanceEntity.class);
+    }
 
     /**
      *
@@ -32,12 +40,4 @@ public class MCQVariableInstanceEntityFacade extends AbstractFacade<MCQVariableI
     protected EntityManager getEntityManager() {
         return em;
     }
-
-    /**
-     *
-     */
-    public MCQVariableInstanceEntityFacade() {
-        super(MCQVariableInstanceEntity.class);
-    }
-
 }

@@ -2,27 +2,22 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-widgetloader', function(Y) {
+YUI.add('wegas-widgetloader', function (Y) {
+    "use strict";
 
-    var CONTENTBOX = 'contentBox',
+    var CONTENTBOX = 'contentBox', WidgetLoader;
 
     WidgetLoader = Y.Base.create("wegas-widgetloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget], {
 
-        _widget: null,
+        // *** Lifecycle Methods ***/
+        
+        bindUI: function () {
+            Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
+        },
 
-        initializer: function(cfg) {
-        },
-        destroyer: function() {
-        },
-        renderUI: function () {
-        },
-        bindUI: function() {
-            Y.Wegas.app.dataSources.Page.after("response", function(e) {
-                this.syncUI();
-            }, this);
-        },
-        syncUI: function() {
-            var widgetCfg = Y.Wegas.app.dataSources.Page.rest.getCachedVariableById(this.get("pageId"));
+        syncUI: function () {
+            var widgetCfg = Y.Wegas.app.dataSources.Page.rest.getCachedVariableById(this.get("pageId")),
+            widget;
 
             this.get(CONTENTBOX).setContent("");
 
@@ -31,26 +26,21 @@ YUI.add('wegas-widgetloader', function(Y) {
                 return;
             }
 
-            this._widget = Y.Wegas.Widget.create(widgetCfg);
+            widget = Y.Wegas.Widget.create(widgetCfg);
 
             try {
-                this._widget.render(this.get(CONTENTBOX));
+                widget.render(this.get(CONTENTBOX));
             } catch (e) {
-                Y.log('renderUI(): Error rendering widget: '+(e.stack || e ), 'error', 'Wegas.WidgetLoader');
+                Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.WidgetLoader');
             }
+            this.set("widget", widget);
         }
     }, {
         ATTRS : {
-            classTxt: {
-                value: 'WidgetLoader'
-            },
-            type: {
-                value: "WidgetLoader"
-            },
-            pageId: {}
+            pageId: {},
+            widget: {}
         }
     });
-
 
     Y.namespace('Wegas').WidgetLoader = WidgetLoader;
 });

@@ -2,42 +2,44 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-tabview', function(Y) {
-    var YAHOO = Y.YUI2,
+YUI.add('wegas-tabview', function (Y) {
+    "use strict";
 
-    TabView = Y.Base.create("tabview", Y.TabView , [Y.WidgetChild, Y.Wegas.Widget], {
+    var YAHOO = Y.YUI2, TabView, Tab;
 
-        }, {
-            ATTRS : {
-                classTxt: {
-                    value: 'Tabview'
-                },
-                type: {
-                    value: "Tabview"
-                }
+    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {}, {
+        ATTRS : {
+            classTxt: {
+                value: 'Tabview'
+            },
+            type: {
+                value: "Tabview"
             }
-        }),
+        }
+    });
 
-    Tab = Y.Base.create("tab", Y.Tab , [Y.Wegas.Widget/*, Y.WidgetParent*/], {
+    Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget], {
 
         _toolbar: null,
 
-        renderUI: function() {
+        // *** Lifecycle Methods *** //
+
+        renderUI: function () {
             Tab.superclass.renderUI.apply(this, arguments);
 
             this._renderToolbar();
 
             try {
                 var cWidget = new Y.Wegas.List({
-                    children:this.get('children')
+                    children: this.get('children')
                 });
                 cWidget.render(this.get('panelNode'));
             } catch (e) {
-                Y.log('Error rendering tab '+this.get('label')+': '+((e.stack)?e.stack:e), 'error', 'Wegas.TabView');
+                Y.log('Error rendering tab ' + this.get('label') + ': ' + (e.stack || e), 'error', 'Wegas.TabView');
             }
 
         },
-        _renderToolbar: function() {
+        _renderToolbar: function () {
             var panelNode = this.get('panelNode');
 
             panelNode.addClass('wegas-tab-hastoolbar');
@@ -50,62 +52,64 @@ YUI.add('wegas-tabview', function(Y) {
             // collapse:, cont:, disabled:,  grouplabels:, titlebar: "test",
             });
             if (this.get('toolbarLabel')) {
-                panelNode.one('.yui-toolbar-subcont').setContent('<span class="title">'+this.get('toolbarLabel')+'</span></div>');
+                panelNode.one('.yui-toolbar-subcont').setContent('<span class="title">' + this.get('toolbarLabel') + '</span></div>');
             }
-            this._toolbar.on('buttonClick', function(e) {
-                var button = this._toolbar.getButtonByValue(e.button.value);		// We have a button reference
-
+            this._toolbar.on('buttonClick', function (e) {
+                var button = this._toolbar.getButtonByValue(e.button.value),    // We have a button reference
+                    p;
                 switch (button.get('value')) {
-                    case 'selectplayer':
-                        var p = Y.Wegas.app.dataSources.Game.rest.getPlayerById(e.button.value);
-                        button.set('label', p.name);
-                        Y.Wegas.app.set('currentPlayer', e.button.value );
-                        break;
-                    case 'reset':
-                        Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest('reset');
-                        break;
-                    case 'new': {                                               // New button click event
-                        Y.Wegas.editor.edit({
-                            "@class": e.button.data['@class']
-                        }, function(cfg) {
-                            Y.Wegas.app.dataSources[e.button.data['dataSource']].rest.post(cfg);
-                        }, null, this);
-                        break;
-                    }
+                case 'selectplayer':
+                    p = Y.Wegas.app.dataSources.Game.rest.getPlayerById(parseInt(e.button.value, 10));
+                    button.set('label', p.name);
+                    Y.Wegas.app.set('currentPlayer', e.button.value);
+                    break;
+                case 'reset':
+                    Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest('reset');
+                    break;
+                case 'new':                                                     // New button click event
+                    Y.Wegas.editor.edit({
+                        "@class": e.button.data['@class']
+                    }, function (cfg) {
+                        Y.Wegas.app.dataSources[e.button.data.dataSource].rest.post(cfg);
+                    }, null, this);
+                    break;
                 }
             }, null, this);
 
-            Y.Wegas.app.dataSources.Game.after("response", function(e) {
-                var buttons = this._toolbar.getButtons(),
-                menu, button, currentPlayerId, i=0, j, k, cGame;
-                if (!buttons) return;
+            Y.Wegas.app.dataSources.Game.after("response", function (e) {
+                var menu, button, i, j, k, cGame, players,
+                    buttons = this._toolbar.getButtons();
 
-                for (; i<buttons.length; i++) {
+                if (!buttons) {
+                    return;
+                }
+
+                for (i = 0; i < buttons.length; i += 1) {
                     button = buttons[i];
                     switch (button.get('value')) {
-                        case 'selectplayer':
-                            //if (button.getMenu().getItems().length == 0) return;
-                            currentPlayerId = Y.Wegas.app.get('currentPlayer');
-                            cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame();
-                            var players = [];
+                    case 'selectplayer':
+                        //if (button.getMenu().getItems().length == 0) return;
+                        //currentPlayerId = Y.Wegas.app.get('currentPlayer');
+                        cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame();
+                        players = [];
 
-                            for (j=0; cGame.teams && j<cGame.teams.length; j++) {
-                                for (k=0; k<cGame.teams[j].players.length; k++){
-                                    players.push({
-                                        text: cGame.teams[j].players[k].name,
-                                        value: ""+cGame.teams[j].players[k].id
-                                    });
-                                }
+                        for (j = 0; cGame.teams && j < cGame.teams.length; j += 1) {
+                            for (k = 0; k < cGame.teams[j].players.length; k += 1) {
+                                players.push({
+                                    text: cGame.teams[j].players[k].name,
+                                    value: String(cGame.teams[j].players[k].id)
+                                });
                             }
-                            menu = button.getMenu();
-                            menu.clearContent();
-                            menu.addItems(players);
-                            try {
-                                menu.render();
-                            } catch (e) {
-                                Y.log('renderUI(): Error rendering widget: '+(e.stack || e ), 'error', 'Wegas.WidgetLoader');
-                            }
-                            break;
+                        }
+                        menu = button.getMenu();
+                        menu.clearContent();
+                        menu.addItems(players);
+                        try {
+                            menu.render();
+                        } catch (e) {
+                            Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.WidgetLoader');
+                        }
+                        break;
                     }
                 }
             }, this);

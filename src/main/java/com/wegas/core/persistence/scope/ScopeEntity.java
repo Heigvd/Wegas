@@ -63,6 +63,7 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
      */
     @XmlTransient
     public void setVariableInstance(Long userId, VariableInstanceEntity v) {
+        throw new NotImplementedException();
     }
 
     /**

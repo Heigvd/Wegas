@@ -1,5 +1,3 @@
-com.wegas.admin.jsf.controllers
-com.wegas.admin.jsf.controllers.util
 com.wegas.app.jsf.controllers
 com.wegas.app.jsf.controllers.util
 com.wegas.core.ejb
@@ -13,6 +11,7 @@ com.wegas.core.persistence.variableinstance
 com.wegas.core.rest
 com.wegas.core.script
 com.wegas.core.security.actions
+com.wegas.core.security.facebook
 com.wegas.core.security.realm
 com.wegas.core.security.servlet
 com.wegas.core.session
