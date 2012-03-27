@@ -25,7 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * CRUD testunit for Entities<br/> Setup embedded-glassfish
+ * CRUD testunit for Entities (Integration test)<br/> Setup embedded-glassfish
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
@@ -132,7 +132,7 @@ public abstract class AbstractEntityTest<T extends AbstractEntity> {
     }
 
     /**
-     * merge method to implemente in test class
+     * merge method to implement in test class
      */
     abstract public void merge();
 }
