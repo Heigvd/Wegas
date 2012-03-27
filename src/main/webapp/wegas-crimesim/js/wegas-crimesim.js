@@ -2,11 +2,13 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-crimesim', function(Y) {
+YUI.add('wegas-crimesim', function (Y) {
+    "use strict";
+
     var CONTENTBOX = 'contentBox',
-    BOUNDINGBOX = 'boundingBox',
     YAHOO = Y.YUI2,
-    ScheduleDisplay,
+    ScheduleDisplay, Menu;
+
     Menu = Y.Base.create("scheduledisplay-menu", Y.Widget,                      // Helper to display the menu in a positionable box
         [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
 
@@ -14,7 +16,7 @@ YUI.add('wegas-crimesim', function(Y) {
             menu: null,
 
             // *** Lifecycle Methods *** //
-            renderUI : function() {
+            renderUI : function () {
                 var cb = this.get(CONTENTBOX);
 
                 this.menu = new YAHOO.widget.Menu("scheduledisplay-menu", {
@@ -26,24 +28,14 @@ YUI.add('wegas-crimesim', function(Y) {
                 this.menu.render(cb._node);
             },
 
-            bindUI : function() {
-                //var bb = this.get(BOUNDINGBOX);
-                //bb.on('mouseupoutside', this.hide, this);
-                //bb.on('click', this.hide, this);
-                this.menu.subscribe("click", this._onMenuClick, null, this);
-            },
-
             // *** Methods *** /
-            setMenuItems: function( menuItems ) {
+            setMenuItems: function (menuItems) {
                 this.menu.clearContent();
                 this.menu.addItems(menuItems);
                 this.menu.render();
-            },
-
-            // *** Private Methods *** //
-            _onMenuClick: function(p_sType, args) {
-                console.log("mm");
             }
+
+        // *** Private Methods *** //
         });
 
     /**
@@ -56,15 +48,15 @@ YUI.add('wegas-crimesim', function(Y) {
             _menu: null,
 
             // *** Lifecycle Methods *** //
-            renderUI: function() {
-                this._menu = new Menu( {
+            renderUI: function () {
+                this._menu = new Menu({
                     zIndex: 2,
                     render: true,
                     visible: true
                 });
                 this.get(CONTENTBOX).setContent('<div class="schedule-questions"></div><div class="schedule-detail"></div>');
             },
-            bindUI: function() {
+            bindUI: function () {
                 var cb = this.get(CONTENTBOX);
 
                 cb.delegate("click", function (e) {                             // Show the "action available" menu on cell click
@@ -75,8 +67,8 @@ YUI.add('wegas-crimesim', function(Y) {
                     this._menu.setMenuItems(this._genMenuItems(question, startTime));
                     this._menu.get("boundingBox").appendTo(e.target.get('parentNode'));
                     this._menu.set("align", {
-                        node:e.target,
-                        points:["tr", "br"]
+                        node: e.target,
+                        points: ["tr", "br"]
                     });
                     this._menu.show();
                 }, ".schedule-available .icon", this);
@@ -99,9 +91,11 @@ YUI.add('wegas-crimesim', function(Y) {
 
             },
 
-            syncUI: function() {
+            syncUI: function () {
                 this._syncSchedule();
-                if ( this._currentQuestionId ) this._syncDetailsPanel(this._currentQuestionId);
+                if (this._currentQuestionId) {
+                    this._syncDetailsPanel(this._currentQuestionId);
+                }
             },
 
             _syncSchedule: function () {
@@ -110,49 +104,59 @@ YUI.add('wegas-crimesim', function(Y) {
                 period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
                 i, j, acc= ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
                 cb = this.get(CONTENTBOX).one(".schedule-questions"),
-                perPeriodLoad = [];
+                perPeriodLoad = [], question, cols = [],
+                questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
+                periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period"),
+                reply,
+                k;
 
-                if (!period) return;
+                if (!period) {
+                    return;
+                }
 
-                for (i=period.minValue; i<=period.maxValue; i++){
-                    acc.push('<th class="schedule-maincolum"><div>'+i+'</div></th>'); // Generate table header
+                for (i = period.minValue; i <= period.maxValue; i += 1) {
+                    acc.push('<th class="schedule-maincolum"><div>' + i + '</div></th>'); // Generate table header
                     perPeriodLoad.push(0);                                      // Default value for perPeriodLoad calculation
                 }
-                acc.push("</tr>")
+                acc.push("</tr>");
 
-                for (i=0; i<questionsVarDesc.length; i++) {                     // Generate table body
+                for (i = 0; i < questionsVarDesc.length; i += 1) {                     // Generate table body
                     question = questionsVarDesc[i];
-                    acc.push('<tr data-questionId="'+question.id+'"><td class="schedule-leftcolum" >'+(question.label || question.name || "undefined" )+"</td>");
+                    acc.push('<tr data-questionId="' + question.id + '"><td class="schedule-leftcolum" >' +
+                        (question.label || question.name || "undefined") + "</td>");
 
-                    var cols = [],
-                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
-                    periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period"),
-                    reply, k;
+                    cols = [];
+                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id);
+                    periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period");
 
-                    for (j=period.minValue; j<=period.maxValue; j++){           // Initially, all time slots are available
-                        if (j>=periodInstance.value) cols.push( ["schedule-item", "schedule-available"] );
-                        else cols.push( ["schedule-item"] );
-                    }
-
-                    for (j=0; j<questionInstance.replies.length; j++) {
-                        reply = questionInstance.replies[j]
-                        perPeriodLoad[reply.startTime-period.minValue] += reply.duration;
-                        cols[reply.startTime-period.minValue] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-"+reply.duration];
-                        for (k=1; k<reply.duration; k++) {
-                            cols[reply.startTime+k-period.minValue] = ["schedule-unavailable"];
+                    for (j = period.minValue; j <= period.maxValue; j += 1) {   // Initially, all time slots are available
+                        if (j >= periodInstance.value) {
+                            cols.push(["schedule-item", "schedule-available"]);
+                        } else {
+                            cols.push(["schedule-item"]);
                         }
                     }
 
-                    for (j=period.minValue; j<=period.maxValue; j++){
-                        if (j>periodInstance.value) {
-                            cols[j-period.minValue].push("schedule-future");    // Mark cells in the future
-                        }else if (j<periodInstance.value) {
-                            cols[j-period.minValue].push("schedule-past");      // Mark cells in the past
+                    for (j = 0; j < questionInstance.replies.length; j += 1) {
+                        reply = questionInstance.replies[j];
+                        perPeriodLoad[reply.startTime - period.minValue] += reply.duration;
+                        cols[reply.startTime - period.minValue] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-" + reply.duration];
+                        for (k = 1; k < reply.duration; k += 1) {
+                            cols[reply.startTime + k - period.minValue] = ["schedule-unavailable"];
                         }
                     }
 
-                    for (j=0; j<cols.length; j++){
-                        acc.push('<td data-startTime="'+(period.minValue+j)+'" class="'+cols[j].join(" ")+'"><div><div class="icon"></div></div></td>');
+                    for (j = period.minValue; j <= period.maxValue; j += 1) {
+                        if (j > periodInstance.value) {
+                            cols[j - period.minValue].push("schedule-future");    // Mark cells in the future
+                        } else if (j < periodInstance.value) {
+                            cols[j - period.minValue].push("schedule-past");      // Mark cells in the past
+                        }
+                    }
+
+                    for (j = 0; j < cols.length; j += 1) {
+                        acc.push('<td data-startTime="' + (period.minValue + j) +
+                            '" class="' + cols[j].join(" ") + '"><div><div class="icon"></div></div></td>');
                     }
 
                     acc.push("</tr>");
@@ -160,8 +164,8 @@ YUI.add('wegas-crimesim', function(Y) {
 
                 acc.push('<tfoot><tr>',                                         // Generate table footer
                     '<td class="schedule-leftcolum">Available human resources</td>');
-                for (i=0; i<perPeriodLoad.length; i++){
-                    acc.push('<td>'+(perPeriodBudget-perPeriodLoad[i])+'/'+perPeriodBudget+'</td>');
+                for (i = 0; i < perPeriodLoad.length; i += 1) {
+                    acc.push('<td>' + (perPeriodBudget - perPeriodLoad[i]) + '/' + perPeriodBudget + '</td>');
                 }
                 acc.push("</tr></tfoot></table>");
 
@@ -171,30 +175,31 @@ YUI.add('wegas-crimesim', function(Y) {
             _currentQuestionId: null,
             _syncDetailsPanel: function (questionId) {
                 var targetNode = this.get(CONTENTBOX).one(".schedule-detail"),
-                question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("id", questionId),
-                period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
-                questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
-                i=0, reply,
-                acc = ['<div class="schedule-icon-close"></div><h1>',
-                question.label || question.name || "undefined",
-                '</h1><div class="content">', question.description, '</div>'];
+                    question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("id", questionId),
+                    period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
+                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
+                    i,
+                    reply,
+                    acc = ['<div class="schedule-icon-close"></div><h1>',
+                        question.label || question.name || "undefined",
+                        '</h1><div class="content">', question.description, '</div>'];
 
                 this._currentQuestionId = questionId;
 
                 if (questionInstance.replies.length > 0) {
                     acc.push('<h2>Anaylses</h2>');
                 }
-                for (; i < questionInstance.replies.length; i++) {
+                for (i = 0; i < questionInstance.replies.length; i += 1) {
                     reply = questionInstance.replies[i];
                     acc.push('<div class="schedule-detail-reply"><h3>Period ',
                         reply.startTime, ': ', reply.name || "undefined",
                         '</h3><div class="content">');
-                    if ((reply.startTime+reply.duration)<=period.value) {
+                    if ((reply.startTime + reply.duration) <= period.value) {
                         acc.push(reply.answer);
                     } else if (reply.startTime<=period.value) {
-                        acc.push("analysis in progress")
+                        acc.push("analysis in progress");
                     } else {
-                        acc.push("analysis planified")
+                        acc.push("analysis planified");
                     }
                     acc.push("</div>");
                 }
@@ -205,9 +210,9 @@ YUI.add('wegas-crimesim', function(Y) {
                     display:"block"
                 });
             },
-            _hideDetails: function() {
+            _hideDetails: function () {
                 var targetNode = this.get(CONTENTBOX).one(".schedule-detail");
-                targetNode.setStyles( {
+                targetNode.setStyles({
                     position: 'display',
                     display:"none"
                 });
@@ -215,15 +220,16 @@ YUI.add('wegas-crimesim', function(Y) {
             },
 
             // *** Private Methods *** /
-            _onMenuClick: function(e, args) {
+            _onMenuClick: function (e, args) {
                 var menuItem = args[1],
                 reply = menuItem.value.reply;
 
-                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariable/SelectReply/"+reply.id+"/Player/"+Y.Wegas.app.get('currentPlayer')+"/StartTime/"+menuItem.value.startTime+"/");
+                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariable/SelectReply/" + reply.id
+                    + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + menuItem.value.startTime + "/");
             },
-            _genMenuItems: function(question, startTime) {
-                var ret = [], i=0, reply;
-                for (; i<question.replies.length; i++) {
+            _genMenuItems: function (question, startTime) {
+                var ret = [], i, reply;
+                for (i = 0; i < question.replies.length; i += 1) {
                     reply = question.replies[i];
                     ret.push({
                         text: reply.label || reply.name || "undefined",

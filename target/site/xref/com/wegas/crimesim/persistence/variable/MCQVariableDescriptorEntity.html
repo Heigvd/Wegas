@@ -57,7 +57,7 @@
 <a name="47" href="#47">47</a>      @JsonManagedReference(<span class="jxr_string">"question-reply"</span>)
 <a name="48" href="#48">48</a>      @JoinColumn(name = <span class="jxr_string">"variabledescriptor_id"</span>)
 <a name="49" href="#49">49</a>      @OneToMany(mappedBy = <span class="jxr_string">"mCQVariableDescriptor"</span>, cascade = {CascadeType.ALL}, orphanRemoval = <strong class="jxr_keyword">true</strong>)
-<a name="50" href="#50">50</a>      <strong class="jxr_keyword">private</strong> List&lt;MCQVariableDescriptorReplyEntity&gt; replies = <strong class="jxr_keyword">new</strong> ArrayList&lt;MCQVariableDescriptorReplyEntity&gt;();
+<a name="50" href="#50">50</a>      <strong class="jxr_keyword">private</strong> List&lt;MCQReplyVariableDescriptorEntity&gt; replies = <strong class="jxr_keyword">new</strong> ArrayList&lt;MCQReplyVariableDescriptorEntity&gt;();
 <a name="51" href="#51">51</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="52" href="#52">52</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="53" href="#53">53</a>  <em class="jxr_javadoccomment">     */</em>
@@ -75,14 +75,14 @@
 <a name="65" href="#65">65</a>          <strong class="jxr_keyword">this</strong>.setLabel(vd.getLabel());
 <a name="66" href="#66">66</a>          <strong class="jxr_keyword">this</strong>.setAllowMultipleReplies(vd.getAllowMultipleReplies());
 <a name="67" href="#67">67</a>  
-<a name="68" href="#68">68</a>          List&lt;MCQVariableDescriptorReplyEntity&gt; newReplies = <strong class="jxr_keyword">new</strong> ArrayList&lt;MCQVariableDescriptorReplyEntity&gt;();
+<a name="68" href="#68">68</a>          List&lt;MCQReplyVariableDescriptorEntity&gt; newReplies = <strong class="jxr_keyword">new</strong> ArrayList&lt;MCQReplyVariableDescriptorEntity&gt;();
 <a name="69" href="#69">69</a>          <em class="jxr_comment">//newReplies.addAll(vd.getReplies());</em>
-<a name="70" href="#70">70</a>          <strong class="jxr_keyword">for</strong> (MCQVariableDescriptorReplyEntity nReply : vd.getReplies()) {
+<a name="70" href="#70">70</a>          <strong class="jxr_keyword">for</strong> (MCQReplyVariableDescriptorEntity nReply : vd.getReplies()) {
 <a name="71" href="#71">71</a>              <strong class="jxr_keyword">int</strong> pos = <strong class="jxr_keyword">this</strong>.replies.indexOf(nReply);
 <a name="72" href="#72">72</a>              <strong class="jxr_keyword">if</strong> (pos == -1) {
 <a name="73" href="#73">73</a>                  newReplies.add(nReply);
 <a name="74" href="#74">74</a>              } <strong class="jxr_keyword">else</strong> {
-<a name="75" href="#75">75</a>                  <a href="../../../../../com/wegas/crimesim/persistence/variable/MCQVariableDescriptorReplyEntity.html">MCQVariableDescriptorReplyEntity</a> oReply = <strong class="jxr_keyword">this</strong>.replies.get(pos);
+<a name="75" href="#75">75</a>                  <a href="../../../../../com/wegas/crimesim/persistence/variable/MCQReplyVariableDescriptorEntity.html">MCQReplyVariableDescriptorEntity</a> oReply = <strong class="jxr_keyword">this</strong>.replies.get(pos);
 <a name="76" href="#76">76</a>                  oReply.merge(nReply);
 <a name="77" href="#77">77</a>                  newReplies.add(oReply);
 <a name="78" href="#78">78</a>              }
@@ -107,16 +107,16 @@
 <a name="97" href="#97">97</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="98" href="#98">98</a>  <em class="jxr_javadoccomment">     * @return the replies</em>
 <a name="99" href="#99">99</a>  <em class="jxr_javadoccomment">     */</em>
-<a name="100" href="#100">100</a>     <strong class="jxr_keyword">public</strong> List&lt;MCQVariableDescriptorReplyEntity&gt; getReplies() {
+<a name="100" href="#100">100</a>     <strong class="jxr_keyword">public</strong> List&lt;MCQReplyVariableDescriptorEntity&gt; getReplies() {
 <a name="101" href="#101">101</a>         <strong class="jxr_keyword">return</strong> replies;
 <a name="102" href="#102">102</a>     }
 <a name="103" href="#103">103</a> 
 <a name="104" href="#104">104</a>     <em class="jxr_javadoccomment">/**</em>
 <a name="105" href="#105">105</a> <em class="jxr_javadoccomment">     * @param replies the replies to set</em>
 <a name="106" href="#106">106</a> <em class="jxr_javadoccomment">     */</em>
-<a name="107" href="#107">107</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setReplies(List&lt;MCQVariableDescriptorReplyEntity&gt; replies) {
+<a name="107" href="#107">107</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setReplies(List&lt;MCQReplyVariableDescriptorEntity&gt; replies) {
 <a name="108" href="#108">108</a>         <strong class="jxr_keyword">this</strong>.replies = replies;
-<a name="109" href="#109">109</a>         <strong class="jxr_keyword">for</strong> (MCQVariableDescriptorReplyEntity r : replies) {
+<a name="109" href="#109">109</a>         <strong class="jxr_keyword">for</strong> (MCQReplyVariableDescriptorEntity r : replies) {
 <a name="110" href="#110">110</a>             r.setMCQVariableDescriptor(<strong class="jxr_keyword">this</strong>);
 <a name="111" href="#111">111</a>         }
 <a name="112" href="#112">112</a>     }
@@ -125,7 +125,7 @@
 <a name="115" href="#115">115</a> <em class="jxr_javadoccomment">     *</em>
 <a name="116" href="#116">116</a> <em class="jxr_javadoccomment">     * @param reply</em>
 <a name="117" href="#117">117</a> <em class="jxr_javadoccomment">     */</em>
-<a name="118" href="#118">118</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addReply(<a href="../../../../../com/wegas/crimesim/persistence/variable/MCQVariableDescriptorReplyEntity.html">MCQVariableDescriptorReplyEntity</a> reply) {
+<a name="118" href="#118">118</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addReply(<a href="../../../../../com/wegas/crimesim/persistence/variable/MCQReplyVariableDescriptorEntity.html">MCQReplyVariableDescriptorEntity</a> reply) {
 <a name="119" href="#119">119</a>         <strong class="jxr_keyword">this</strong>.replies.add(reply);
 <a name="120" href="#120">120</a>         reply.setMCQVariableDescriptor(<strong class="jxr_keyword">this</strong>);
 <a name="121" href="#121">121</a>     }

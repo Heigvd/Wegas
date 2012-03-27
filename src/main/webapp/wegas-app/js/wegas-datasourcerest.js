@@ -2,13 +2,16 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-datasourcerest', function(Y) {
+YUI.add('wegas-datasourcerest', function (Y) {
+    "use strict";
 
     var Lang = Y.Lang,
-    VariableDescriptorDataSourceREST,
-    GameModelDataSourceREST,
+        DataSourceREST,
+        VariableDescriptorDataSourceREST,
+        GameModelDataSourceREST,
+        GameDataSourceREST;
 
-    DataSourceREST = function() {
+    DataSourceREST = function () {
         DataSourceREST.superclass.constructor.apply(this, arguments);
     };
 
@@ -19,73 +22,70 @@ YUI.add('wegas-datasourcerest', function(Y) {
 
     Y.extend(DataSourceREST, Y.Plugin.Base, {
 
-        _data: [],
-
-        initializer: function(config) {
+        initializer: function () {
             //this.doBefore("_defRequestFn", this._beforeDefRequestFn);
             this.doBefore("_defResponseFn", this._beforeDefResponseFn, this);
             this.get('host').data = [];
         },
-        _beforeDefRequestFn: function(e) {
-        },
-        _beforeDefResponseFn: function(e) {
-            var data = this.get('host').data,
-            cEl, loaded, i=0;
-            for (;i<e.response.results.length;i++) {                     // Treat reply
-                cEl = e.response.results[i];
-                if (!cEl) {
 
-                } else {
+        _beforeDefResponseFn: function (e) {
+            var cEl, loaded, i,
+                data = this.get('host').data;
+
+            for (i = 0; i < e.response.results.length; i += 1) {                // Treat reply
+                cEl = e.response.results[i];
+                if (cEl) {
                     loaded = false;
-                    Y.Array.each(data, function(o, index, a) {
-                        if (o.id == cEl.id) {
+                    Y.Array.each(data, function (o, index, a) {
+                        if (o.id === cEl.id) {
                             a[index] = Y.merge(o, cEl);
-                            loaded = true
+                            loaded = true;
                         }
                     });
-                    if (!loaded) data.push(cEl);
+                    if (!loaded) {
+                        data.push(cEl);
+                    }
 
                 }
             }
             e.response.results = data;
         },
-        getCachedVariables: function() {
+        getCachedVariables: function () {
             var host = this.get('host');
             return host.data;
         },
-        getCachedVariableById: function(id) {
+        getCachedVariableById: function (id) {
             var host = this.get('host'), i;
             for (i in host.data) {                                          // We first check in the cache if the data is available
-                if (host.data[i].id == id) {
+                if (host.data.hasOwnProperty(i) && host.data[i].id === id) {
                     return host.data[i];
                 }
             }
             return null;
         },
-        getCachedVariableBy: function(key, val) {
+        getCachedVariableBy: function (key, val) {
             var host = this.get('host'), i;
-            for (i in host.data) {                                          // We first check in the cache if the data is available
-                if (host.data[i][key] == val) {
+            for (i in host.data) {                                              // We first check in the cache if the data is available
+                if (host.data.hasOwnProperty(i) && host.data[i][key] === val) {
                     return host.data[i];
                 }
             }
             return null;
         },
-        getCachedVariablesBy: function(key, val) {
-            var host = this.get('host'),
-            ret = [], i;
-            for (i in host.data) {                                          // We first check in the cache if the data is available
-                if (host.data[i][key] == val) {
+        getCachedVariablesBy: function (key, val) {
+            var host = this.get('host'), ret = [], i;
+            for (i in host.data) {                                              // We first check in the cache if the data is available
+                if (host.data.hasOwnProperty(i) && host.data[i][key] === val) {
                     ret.push(host.data[i]);
                 }
             }
             return ret;
         },
-        getById: function(id) {
+        getById: function (id) {
             var host = this.get('host');
 
             host.sendRequest({
-                request: "/"+id,
+                request: "/" + id,
                 cfg: {
                     headers: {
                         'Content-Type': 'application/json; charset=utf-8'
@@ -98,11 +98,11 @@ YUI.add('wegas-datasourcerest', function(Y) {
             });
 
         },
-        getRequest: function(request) {
+        getRequest: function (request) {
             var host = this.get('host');
 
             host.sendRequest({
-                request: '/'+request,
+                request: '/' + request,
                 cfg: {
                     method: "GET",
                     headers: {
@@ -118,10 +118,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
         /**
          * @fixme the parameters should be (request, data)
          */
-        put: function(data, request) {
+        put: function (data, request) {
             var host = this.get('host');
 
-            request = request || ((data.id)?"/"+data.id:"")
+            request = request || ((data.id) ? "/" + data.id : "");
 
             host.sendRequest({
                 request: request,
@@ -141,9 +141,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
         /**
          * @fixme the parameters should be (request, data, parentData)
          */
-        post: function(data, parentData, request) {
-            var host = this.get('host'),
-            request = request || ((parentData)? "/"+parentData.id+"/"+data["@class"] :  "" );
+        post: function (data, parentData, request) {
+            var host = this.get('host');
+
+            request = request || ((parentData) ? "/" + parentData.id + "/" + data["@class"] :  "");
 
             host.sendRequest({
                 request: request,
@@ -160,34 +161,35 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             });
         },
-        _successHandler: function(e){
-            Y.log("Datasource reply:"+ e.response, 'log', 'Wegas.DataSourceRest');
+        _successHandler: function (e) {
+            Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
         //data = Y.JSON.stringify(e.response, null, 2);
         // host.sendRequest('/');
         },
-        _failureHandler: function(e){
+        _failureHandler: function (e) {
             alert("Error sending REST post request!");
-            var errorMsg = "",
-            i = 0, j
+            var errorMsg = "", i, j;
 
             if (e.response.results) {
-                for (; i<e.response.results.length;i++) {
+                for (i = 0; i < e.response.results.length; i += 1) {
                     if (e.response.results[i].errors){
-                        for (j=0; j<e.response.results[i].errors.length;j++) {
+                        for (j = 0; j < e.response.results[i].errors.length; j += 1) {
                             errorMsg += e.response.results[i].errors[j];
                         //   e.response.results[i].errors = null;
                         }
                     }
                 }
                 alert(errorMsg);
-            } else if (e.error) alert(e.error.message);
+            } else if (e.error) {
+                alert(e.error.message);
+            }
         }
 
     });
 
     Y.namespace('Plugin').DataSourceREST = DataSourceREST;
 
-    VariableDescriptorDataSourceREST = function() {
+    VariableDescriptorDataSourceREST = function () {
         VariableDescriptorDataSourceREST.superclass.constructor.apply(this, arguments);
     };
 
@@ -198,68 +200,72 @@ YUI.add('wegas-datasourcerest', function(Y) {
 
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
 
-        _beforeDefResponseFn: function(e) {
-            var data = this.get('host').data,                                   // Treat reply
-            cEl, i=0, loaded;
-            for (;i<e.response.results.length;i++) {
+        _beforeDefResponseFn: function (e) {
+            var cEl, i, loaded,
+                data = this.get('host').data;                                   // Treat reply
+
+            Y.log("Response received", "info", "Y.Wegas.VariableDescriptorDataSourceREST");
+
+            for (i = 0; i < e.response.results.length; i += 1) {
                 cEl = e.response.results[i];
                 if (!cEl) {
-                } else if (cEl['@class'] == "StringVariableInstance" ||
-                    cEl['@class'] == "NumberVariableInstance"||
-                    cEl['@class'] == "MCQVariableInstance")  {
+                } else if (cEl['@class'] === "StringVariableInstance" ||
+                    cEl['@class'] === "NumberVariableInstance" ||
+                    cEl['@class'] === "MCQVariableInstance") {
 
-                    Y.Array.each(data, function(o, index, a) {
-                        for (var i in o.scope.variableInstances) {
-                            if (o.scope.variableInstances[i].id == cEl.id) {
+                    Y.Array.each(data, function (o, index, a) {
+                        var i;
+                        for (i in o.scope.variableInstances) {
+                            if (o.scope.variableInstances.hasOwnProperty(i) && o.scope.variableInstances[i].id === cEl.id) {
                                 o.scope.variableInstances[i] = Y.merge(o.scope.variableInstances[i], cEl);
                             }
                         }
                     });
                 } else {
                     loaded = false;
-                    Y.Array.each(data, function(o, index, a) {
-                        if (o.id == cEl.id) {
+                    Y.Array.each(data, function (o, index, a) {
+                        if (o.id === cEl.id) {
                             a[index] = Y.merge(o, cEl);
-                            loaded = true
+                            loaded = true;
                         }
                     });
-                    if (!loaded) data.push(cEl);
+                    if (!loaded) {
+                        data.push(cEl);
+                    }
 
                 }
             }
             e.response.results = data;
         },
-        put: function(data, request) {
-            var request = request || ((data.id)?"/"+data.id:"");
+        put: function (data, request) {
+            request = request || ((data.id) ? "/" + data.id : "");
 
             switch (data['@class']) {
-                case 'StringVariableInstance' :
-                case 'MCQVariableInstance' :
-                case 'NumberVariableInstance' :
-
-                    request = '/1/VariableInstance/'+data.id;
-                    break;
+            case 'StringVariableInstance':
+            case 'MCQVariableInstance':
+            case 'NumberVariableInstance':
+                request = '/1/VariableInstance/' + data.id;
+                break;
             }
 
             VariableDescriptorDataSourceREST.superclass.put.call(this, data, request);
         },
-        getInstanceById: function(id) {
+        getInstanceById: function (id) {
             return this.getInstanceBy('id', id);
         },
-        getInstanceBy: function(key, val) {
+        getInstanceBy: function (key, val) {
             var el = this.getCachedVariableBy(key, val);
-            if (!el) return null;
+            if (!el) {
+                return null;
+            }
             switch (el.scope['@class']) {
-                case 'PlayerScope':
-                    return el.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
-                    break;
-                case 'TeamScope':
-                    return el.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
-                    break;
-                case 'GameModelScope':
-                case 'GameScope':
-                    return el.scope.variableInstances[0];
-                    break;
+            case 'PlayerScope':
+                return el.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
+            case 'TeamScope':
+                return el.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
+            case 'GameModelScope':
+            case 'GameScope':
+                return el.scope.variableInstances[0];
             }
         }
     });
@@ -267,7 +273,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
     Y.namespace('Plugin').VariableDescriptorDataSourceREST = VariableDescriptorDataSourceREST;
 
 
-    GameModelDataSourceREST = function() {
+    GameModelDataSourceREST = function () {
         GameModelDataSourceREST.superclass.constructor.apply(this, arguments);
     };
 
@@ -277,49 +283,47 @@ YUI.add('wegas-datasourcerest', function(Y) {
     });
 
     Y.extend(GameModelDataSourceREST, DataSourceREST, {
-        _beforeDefResponseFn: function(e) {
-            var data = this.get('host').data,                                   // Treat reply
-            cEl, i=0, loaded;
-            for (;i<e.response.results.length;i++) {
+        _beforeDefResponseFn: function (e) {
+            var cEl, i, loaded,
+                data = this.get('host').data;                                   // Treat reply
+
+            for (i = 0; i < e.response.results.length; i += 1) {
                 cEl = e.response.results[i];
                 if (!cEl) {
 
-                } else if (cEl['@class'] == "Team" )  {
-                    Y.Array.each(data, function(o, index, a) {
-                        for (var j in o.teams) {
-                            if (o.teams[j].id == cEl.id) {
+                } else if (cEl['@class'] === "Team") {
+                    Y.Array.each(data, function (o, index, a) {
+                        var j;
+                        for (j in o.teams) {
+                            if (o.teams[j].id === cEl.id) {
                                 o.teams[j] = Y.merge(o.teams, cEl);
                             }
                         }
                     });
                 } else {
                     loaded = false;
-                    Y.Array.each(data, function(o, index, a) {
-                        if (o.id == cEl.id) {
+                    Y.Array.each(data, function (o, index, a) {
+                        if (o.id === cEl.id) {
                             a[index] = Y.merge(o, cEl);
-                            loaded = true
+                            loaded = true;
                         }
                     });
-                    if (!loaded) data.push(cEl);
+                    if (!loaded) {
+                        data.push(cEl);
+                    }
 
                 }
             }
             e.response.results = data;
         },
-        put: function(data, request) {
+        put: function (data, request) {
             GameModelDataSourceREST.superclass.put.call(this, data, request);
-        },
-        getGameById: function(gameId) {
-            this.getCachedVariable
-        },
-
-        getGameBy: function(key, val) {
         }
     });
 
     Y.namespace('Plugin').GameModelDataSourceREST = GameModelDataSourceREST;
 
-    GameDataSourceREST = function() {
+    GameDataSourceREST = function () {
         GameDataSourceREST.superclass.constructor.apply(this, arguments);
     };
 
@@ -329,116 +333,127 @@ YUI.add('wegas-datasourcerest', function(Y) {
     });
 
     Y.extend(GameDataSourceREST, DataSourceREST, {
-        _beforeDefResponseFn: function(e) {
-            var data = this.get('host').data,                                   // Treat reply
-            cEl, i=0, loaded, game, team;
-            for (;i<e.response.results.length;i++) {
+        _beforeDefResponseFn: function (e) {
+            var cEl, i, loaded, game, team, j,
+                data = this.get('host').data;                                  // Treat reply
+
+            Y.log("Response received", "info", "Y.Wegas.GameDataSourceREST");
+
+            for (i = 0; i < e.response.results.length; i += 1) {
                 cEl = e.response.results[i];
                 loaded = false;
                 if (!cEl) {
 
-                } else if (cEl['@class'] == "Team" )  {
+                } else if (cEl['@class'] === "Team") {
                     game = this.getCachedVariableBy('id', cEl.gameId);
-                    for (var j=0;j<game.teams.length;j++) {
-                        if (game.teams[j].id == cEl.id) {
+                    for (j = 0; j < game.teams.length; j += 1) {
+                        if (game.teams[j].id === cEl.id) {
                             game.teams[j] = cEl;
                             loaded = true;
                         }
                     }
-                    if (!loaded) game.teams.push(cEl);
-                } else if (cEl['@class'] == "Player" )  {
+                    if (!loaded) {
+                        game.teams.push(cEl);
+                    }
+                } else if (cEl['@class'] === "Player") {
                     team = this.getTeamById(cEl.teamId);
-                    for (var j=0;j<team.players.length;j++) {
-                        if (team.players[j].id == cEl.id) {
+                    for (j = 0; j < team.players.length; j += 1) {
+                        if (team.players[j].id === cEl.id) {
                             team.players[j] = cEl;
                             loaded = true;
                         }
                     }
-                    if (!loaded) team.players.push(cEl);
+                    if (!loaded) {
+                        team.players.push(cEl);
+                    }
                 } else {
                     loaded = false;
-                    Y.Array.each(data, function(o, index, a) {
-                        if (o.id == cEl.id) {
+                    Y.Array.each(data, function (o, index, a) {
+                        if (o.id === cEl.id) {
                             a[index] = Y.merge(o, cEl);
-                            loaded = true
+                            loaded = true;
                         }
                     });
-                    if (!loaded) data.push(cEl);
+                    if (!loaded) {
+                        data.push(cEl);
+                    }
 
                 }
             }
             e.response.results = data;
         },
-        put: function(data, request) {
+        put: function (data, request) {
 
-            if (data['@class'] == 'Team' ) {
-                request = '/'+data.gameId+'/Team/'+data.id;
-            } else if (data['@class'] == 'Player' ) {
-                request = "/"+this.getGameByTeamId(data.teamId).id
-                +'/Team/'+data.teamId+'/Player/'+data.id;
+            if (data['@class'] === 'Team') {
+                request = '/' + data.gameId + '/Team/' + data.id;
+            } else if (data['@class'] === 'Player') {
+                request = "/" + this.getGameByTeamId(data.teamId).id
+                    + '/Team/' + data.teamId + '/Player/' + data.id;
             }
             GameDataSourceREST.superclass.put.call(this, data, request);
         },
-        post: function(data, parentData, request) {
-            if (data['@class'] == 'Player' ) {
-                request = "/"+this.getGameByTeamId(parentData.id).id+"/Team/"+parentData.id+"/Player";
+        post: function (data, parentData, request) {
+            if (data['@class'] === 'Player') {
+                request = "/" + this.getGameByTeamId(parentData.id).id + "/Team/" + parentData.id + "/Player";
             }
             GameDataSourceREST.superclass.post.call(this, data, parentData, request);
         },
-        getCurrentGame: function() {
+        getCurrentGame: function () {
             return this.getCachedVariableById(Y.Wegas.app.get('currentGame'));
         },
-        getCurrentPlayer: function() {
+        getCurrentPlayer: function () {
             return this.getPlayerById(Y.Wegas.app.get('currentPlayer'));
         },
-        getCurrentTeam: function() {
+        getCurrentTeam: function () {
             return this.getTeamById(Y.Wegas.app.get('currentTeam'));
         },
-        getPlayerById: function(playerId) {
-            var i=0, j, k,
-            data = this.get('host').data;
-            for (; i< data.length; i++) {
-                for (j=0; j<data[i].teams.length; j++) {
-                    for (k=0; k < data[i].teams[j].players.length; k++) {
-                        if (data[i].teams[j].players[k].id == playerId)
+        getPlayerById: function (playerId) {
+            var i, j, k, data = this.get('host').data;
+            for (i = 0; i < data.length; i += 1) {
+                for (j = 0; j < data[i].teams.length; j += 1) {
+                    for (k = 0; k < data[i].teams[j].players.length; k += 1) {
+                        if (data[i].teams[j].players[k].id === playerId) {
                             return data[i].teams[j].players[k];
+                        }
                     }
                 }
             }
+            return null;
         },
-        getGameByTeamId: function(teamId) {
-            var i=0, j,
-            data = this.get('host').data;
-            for (; i< data.length; i++) {
-                for (j=0; j<data[i].teams.length; j++) {
-                    if (data[i].teams[j].id == teamId)
+        getGameByTeamId: function (teamId) {
+            var i, j, data = this.get('host').data;
+            for (i = 0; i < data.length; i += 1) {
+                for (j = 0; j < data[i].teams.length; j += 1) {
+                    if (data[i].teams[j].id === teamId) {
                         return data[i];
-                }
-            }
-            return null;
-        },
-        getTeamById: function(teamId) {
-            var i=0, j,
-            data = this.get('host').data;
-            for (; i< data.length; i++) {
-                for (j=0; j<data[i].teams.length; j++) {
-                    if (data[i].teams[j].id == teamId)
-                        return data[i].teams[j];
-                }
-            }
-            return null;
-        },
-        getTeamByPlayerId: function(playerId) {
-            var i=0, j, k,
-            data = this.get('host').data;
-            for (; i< data.length; i++) {
-                for (j=0; j<data[i].teams.length; j++) {
-                    for (k=0; k < data[i].teams[j].players.length; k++) {
-                        if (data[i].teams[j].players[k].id == playerId)
-                            return data[i].teams[j];
                     }
                 }
             }
+            return null;
+        },
+        getTeamById: function (teamId) {
+            var i, j, data = this.get('host').data;
+            for (i = 0; i < data.length; i += 1) {
+                for (j = 0; j < data[i].teams.length; j += 1) {
+                    if (data[i].teams[j].id === teamId) {
+                        return data[i].teams[j];
+                    }
+                }
+            }
+            return null;
+        },
+        getTeamByPlayerId: function (playerId) {
+            var i, j, k, data = this.get('host').data;
+            for (i = 0; i < data.length; i += 1) {
+                for (j = 0; j < data[i].teams.length; j += 1) {
+                    for (k = 0; k < data[i].teams[j].players.length; k += 1) {
+                        if (data[i].teams[j].players[k].id === playerId) {
+                            return data[i].teams[j];
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
 
@@ -451,8 +466,8 @@ YUI.add('wegas-datasourcerest', function(Y) {
      */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
-        keys = [],
-        i = 0;
+            keys = [],
+            i = 0;
 
         if (locator) {
             if (locator == '.') return [];					// MODIFIED !!
