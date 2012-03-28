@@ -24,6 +24,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@EntityListeners(VariableInstancePersistenceListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlType(name = "VariableInstance", propOrder = {"@class", "id"})
 @JsonSubTypes(value = {
