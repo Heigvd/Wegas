@@ -1,7 +1,7 @@
 # Build files #
 target/*
-#!target/site*
-#!target/Wegas.war
+# !target/site*
+# !target/Wegas.war
 
 # Compiled source #
 ###################
