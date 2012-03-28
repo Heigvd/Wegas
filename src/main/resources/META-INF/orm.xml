@@ -6,7 +6,7 @@
     <persistence-unit-defaults>
       <entity-listeners>
 <!--    Default Entity Listener      -->
-<!--        <entity-listener class="com.wegas.core.persistence.variableinstance.EntityUpdateListener" />-->
+<!--        <entity-listener class="com.wegas.core.persistence.variableinstance.VariableInstancePersistenceListener" />-->
       </entity-listeners>
     </persistence-unit-defaults>
   </persistence-unit-metadata>
