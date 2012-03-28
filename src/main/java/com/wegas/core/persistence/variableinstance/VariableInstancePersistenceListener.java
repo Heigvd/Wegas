@@ -16,7 +16,7 @@ import javax.persistence.PostUpdate;
  */
 public class VariableInstancePersistenceListener {
 
-    private static final Logger logger = Logger.getLogger("EntityUpdateListener");
+    private static final Logger logger = Logger.getLogger("VariableInstancePersistenceListener");
 
     @PostPersist
     private void onPersist(VariableInstanceEntity instance) {
