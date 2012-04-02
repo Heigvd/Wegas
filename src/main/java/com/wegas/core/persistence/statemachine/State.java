@@ -14,6 +14,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
@@ -22,6 +24,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "fsm_state")
 @Access(AccessType.FIELD)
+@XmlRootElement
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class State implements Serializable {
 
     @Id
@@ -30,8 +34,7 @@ public class State implements Serializable {
     private String label;
     @Embedded
     private ScriptEntity onEnterEvent;
-    @ElementCollection
-    @CollectionTable(name = "transition")
+    @ElementCollection(fetch = FetchType.EAGER)
     @Embedded
     private List<Transition> transitions = new ArrayList<>();
 
@@ -68,5 +71,10 @@ public class State implements Serializable {
 
     public void setTransitions(List<Transition> transitions) {
         this.transitions = transitions;
+    }
+
+    @Override
+    public String toString() {
+        return "State{" + "id=" + id + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
 }
