@@ -24,9 +24,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
- * Trigger: S1->S2, S2 final (oneShot)<br/> S1->S2->S1 with transition S2->S1
- * not(S1->S2)(opposedTrigger)<br/> else S1->S1 (loop).<br/> Note that oneShot
- * and opposedTrigger will act as oneShot.
+ * Trigger: S1->(T1)->S2, S2 final (oneShot)<br/> S1->(T1)->S2->(!T1)->S1 (opposedTrigger)<br/> else S1->(T1)->S1 (loop).<br/>
+ * OneShot and OpposedTrigger are exclusive. OneShot wins.
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
@@ -52,6 +51,7 @@ public class Trigger extends FiniteStateMachine {
 
     /**
      * Sets the trigger to be triggered only once.
+     *
      * @param oneShot boolean defining a one time trigger
      */
     public void setOneShot(Boolean oneShot) {
@@ -63,7 +63,8 @@ public class Trigger extends FiniteStateMachine {
     }
 
     /**
-     *  Sets the trigger to be rearmed once the trigger is false.
+     * Sets the trigger to be rearmed once the trigger is false.
+     *
      * @param opposedTrigger boolean defining if the trigger shuld be rearmed
      */
     public void setOpposedTrigger(Boolean opposedTrigger) {
@@ -76,6 +77,7 @@ public class Trigger extends FiniteStateMachine {
 
     /**
      * Sets the event executed once the trigger fires.
+     *
      * @param postTriggerEvent a script to execute after this trigger executes
      */
     public void setPostTriggerEvent(ScriptEntity postTriggerEvent) {
@@ -88,6 +90,7 @@ public class Trigger extends FiniteStateMachine {
 
     /**
      * Sets the script which fires the trigger.
+     *
      * @param triggerEvent a script which fires the trigger
      */
     public void setTriggerEvent(ScriptEntity triggerEvent) {
