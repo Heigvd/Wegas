@@ -50,6 +50,10 @@ public class Trigger extends FiniteStateMachine {
         return oneShot;
     }
 
+    /**
+     * Sets the trigger to be triggered only once.
+     * @param oneShot boolean defining a one time trigger
+     */
     public void setOneShot(Boolean oneShot) {
         this.oneShot = oneShot;
     }
@@ -58,6 +62,10 @@ public class Trigger extends FiniteStateMachine {
         return opposedTrigger;
     }
 
+    /**
+     *  Sets the trigger to be rearmed once the trigger is false.
+     * @param opposedTrigger boolean defining if the trigger shuld be rearmed
+     */
     public void setOpposedTrigger(Boolean opposedTrigger) {
         this.opposedTrigger = opposedTrigger;
     }
@@ -66,6 +74,10 @@ public class Trigger extends FiniteStateMachine {
         return postTriggerEvent;
     }
 
+    /**
+     * Sets the event executed once the trigger fires.
+     * @param postTriggerEvent a script to execute after this trigger executes
+     */
     public void setPostTriggerEvent(ScriptEntity postTriggerEvent) {
         this.postTriggerEvent = postTriggerEvent;
     }
@@ -74,6 +86,10 @@ public class Trigger extends FiniteStateMachine {
         return triggerEvent;
     }
 
+    /**
+     * Sets the script which fires the trigger.
+     * @param triggerEvent a script which fires the trigger
+     */
     public void setTriggerEvent(ScriptEntity triggerEvent) {
         this.triggerEvent = triggerEvent;
     }
