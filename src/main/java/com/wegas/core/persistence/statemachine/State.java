@@ -9,7 +9,9 @@
  */
 package com.wegas.core.persistence.statemachine;
 
+import com.wegas.core.script.ScriptEntity;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
@@ -25,11 +27,13 @@ public class State implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
-    private String onEnterEvent;
+    private String label;
+    @Embedded
+    private ScriptEntity onEnterEvent;
     @ElementCollection
     @CollectionTable(name = "transition")
     @Embedded
-    private List<Transition> transitions;
+    private List<Transition> transitions = new ArrayList<>();
 
     public State() {
     }
@@ -42,11 +46,19 @@ public class State implements Serializable {
         this.id = id;
     }
 
-    public String getOnEnterEvent() {
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public ScriptEntity getOnEnterEvent() {
         return onEnterEvent;
     }
 
-    public void setOnEnterEvent(String onEnterEvent) {
+    public void setOnEnterEvent(ScriptEntity onEnterEvent) {
         this.onEnterEvent = onEnterEvent;
     }
 
@@ -57,6 +69,4 @@ public class State implements Serializable {
     public void setTransitions(List<Transition> transitions) {
         this.transitions = transitions;
     }
-    
-    
 }
