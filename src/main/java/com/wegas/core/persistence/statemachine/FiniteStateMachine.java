@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.statemachine;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
 
@@ -18,18 +19,19 @@ import javax.persistence.*;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@Table(name="state_machine")
+@Table(name = "state_machine")
 public class FiniteStateMachine implements Serializable {
 
     @Id
     @GeneratedValue
     private Long id;
+    private String label;
     @ElementCollection
     @CollectionTable(name = "state")
     @MapKeyColumn(name = "state_id")
-    private Map<Integer, State> states;
+    private Map<Integer, State> states = new HashMap<>();
     private Integer currentStateId;
-    private Integer defaultState;
+    private Integer defaultStateId;
 
     public FiniteStateMachine() {
     }
@@ -42,12 +44,12 @@ public class FiniteStateMachine implements Serializable {
         this.currentStateId = currentStateId;
     }
 
-    public Integer getDefaultState() {
-        return defaultState;
+    public Integer getDefaultStateId() {
+        return defaultStateId;
     }
 
-    public void setDefaultState(Integer defaultState) {
-        this.defaultState = defaultState;
+    public void setDefaultStateId(Integer defaultState) {
+        this.defaultStateId = defaultState;
     }
 
     public Long getId() {
@@ -58,11 +60,19 @@ public class FiniteStateMachine implements Serializable {
         this.id = id;
     }
 
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
     public Map<Integer, State> getStates() {
         return states;
     }
 
-    public void setStates(Map<Integer, State> states) {
+    public void setStates(HashMap<Integer, State> states) {
         this.states = states;
     }
 }

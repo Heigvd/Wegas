@@ -9,10 +9,12 @@
  */
 package com.wegas.core.persistence.statemachine;
 
+import com.wegas.core.script.ScriptEntity;
 import java.io.Serializable;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 
 /**
  *
@@ -22,7 +24,8 @@ import javax.persistence.Embeddable;
 @Access(AccessType.FIELD)
 public class Transition implements Serializable {
 
-    private String triggerCondition;
+    @Embedded
+    private ScriptEntity triggerCondition;
     private Integer nextState;
 
     public Transition() {
@@ -36,11 +39,11 @@ public class Transition implements Serializable {
         this.nextState = nextState;
     }
 
-    public String getTriggerCondition() {
+    public ScriptEntity getTriggerCondition() {
         return triggerCondition;
     }
 
-    public void setTriggerCondition(String triggerCondition) {
+    public void setTriggerCondition(ScriptEntity triggerCondition) {
         this.triggerCondition = triggerCondition;
     }
 }
