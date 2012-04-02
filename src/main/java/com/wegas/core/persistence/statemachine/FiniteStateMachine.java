@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
@@ -20,14 +22,16 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "state_machine")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@XmlRootElement
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class FiniteStateMachine implements Serializable {
 
     @Id
     @GeneratedValue
     private Long id;
     private String label;
-    @ElementCollection
-    @CollectionTable(name = "state")
+    @ElementCollection(fetch= FetchType.EAGER)
     @MapKeyColumn(name = "state_id")
     private Map<Integer, State> states = new HashMap<>();
     private Integer currentStateId;
@@ -74,5 +78,10 @@ public class FiniteStateMachine implements Serializable {
 
     public void setStates(HashMap<Integer, State> states) {
         this.states = states;
+    }
+
+    @Override
+    public String toString() {
+        return "FiniteStateMachine{" + "id=" + id + ", label=" + label + ", states=" + states + ", currentStateId=" + currentStateId + ", defaultStateId=" + defaultStateId + '}';
     }
 }
