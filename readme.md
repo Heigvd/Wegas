@@ -34,7 +34,7 @@ Set up Github
 *  git config --global user.email YourMail
 *  mkdir Wegas
 *  cd Wegas
-*  clone git@github.com:fxaeberhard/Wegas.git
+*  clone git@github.com:Heigvd/Wegas.git
 
 Set up Netbeans
 ------------------------
