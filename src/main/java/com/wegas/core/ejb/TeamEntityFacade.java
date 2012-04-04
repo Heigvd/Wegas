@@ -12,7 +12,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.game.TeamEntity;
-import com.wegas.core.persistence.users.UserEntity;
+import com.wegas.core.persistence.user.UserEntity;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

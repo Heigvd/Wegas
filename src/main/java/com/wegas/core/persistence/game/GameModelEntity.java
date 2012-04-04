@@ -10,7 +10,7 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.layout.WidgetEntity;
-import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
+import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;

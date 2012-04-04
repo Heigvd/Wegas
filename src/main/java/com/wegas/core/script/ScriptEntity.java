@@ -18,6 +18,13 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ScriptEntity implements Serializable {
 
+    /**
+     *
+     */
+    private String language;
+    /**
+     *
+     */
     private String content;
 
     /**
@@ -32,5 +39,19 @@ public class ScriptEntity implements Serializable {
      */
     public void setContent(String content) {
         this.content = content;
+    }
+
+    /**
+     * @return the language
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

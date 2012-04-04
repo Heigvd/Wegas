@@ -1,5 +1,6 @@
 # Build files #
 target/*
+doc/Wegas.uml~
 #!target/site*
 #!target/Wegas.war
 

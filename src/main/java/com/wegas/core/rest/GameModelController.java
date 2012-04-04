@@ -30,7 +30,6 @@ import javax.ws.rs.core.MediaType;
 public class GameModelController extends AbstractRestController<GameModelEntityFacade> {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM");
-
     /**
      *
      */
@@ -54,8 +53,9 @@ public class GameModelController extends AbstractRestController<GameModelEntityF
     @GET
     @Path("{gameModelId : [1-9][0-9]*}/Widget/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<WidgetEntity> getWidgets(@PathParam("gameModelId") Long gameModelId) {
+    public List<WidgetEntity> getWidgets(
+            @PathParam("gameModelId") Long gameModelId) {
+        
         return gameModelFacade.find(gameModelId).getWidgets();
     }
-
 }

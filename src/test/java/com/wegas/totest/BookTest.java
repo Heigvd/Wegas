@@ -2,6 +2,7 @@ package com.wegas.totest;
 
 import com.wegas.core.persistence.AbstractEntityTest;
 
+
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>

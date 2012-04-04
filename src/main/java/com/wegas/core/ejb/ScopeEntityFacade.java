@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.scope.ScopeEntity;
+import com.wegas.core.persistence.variable.scope.ScopeEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

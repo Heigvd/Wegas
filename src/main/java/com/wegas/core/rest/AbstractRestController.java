@@ -12,6 +12,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,6 +21,9 @@ import javax.ws.rs.core.UriInfo;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public abstract class AbstractRestController<T extends AbstractFacade> {
+
+    Logger logger = LoggerFactory.getLogger(AbstractRestController.class);
+
     /*
      * private Class<T> entityClass;
      *

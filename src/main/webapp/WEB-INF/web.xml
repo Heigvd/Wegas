@@ -75,6 +75,18 @@
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
 
+    <!-- Facebook Servlet -->
+    <servlet>
+        <servlet-name>Facebook Servlet</servlet-name>
+        <servlet-class>com.wegas.core.security.facebook.FacebookLoginServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Facebook Servlet</servlet-name>
+        <url-pattern>/FacebookServlet</url-pattern>
+    </servlet-mapping>
+
     <!-- Atmosphere Servlet -->
     <!-- <servlet>
         <description>AtmosphereServlet</description>

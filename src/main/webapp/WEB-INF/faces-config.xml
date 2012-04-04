@@ -15,17 +15,7 @@
             <base-name>com.wegas.app.Bundle</base-name>
             <var>wegasAppBundle</var>
         </resource-bundle>
-
-        <resource-bundle>
-            <base-name>com.wegas.admin.Bundle</base-name>
-            <var>bundle</var>
-        </resource-bundle>
-
-        <!--<resource-bundle>
-            <base-name>/wegas-admin/Bundle</base-name>
-            <var>bundle</var>
-        </resource-bundle>
-        -->
+        
     </application>
 
     <navigation-rule>

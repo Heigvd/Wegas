@@ -21,6 +21,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 /**
@@ -35,7 +36,7 @@ public class GameController implements Serializable {
      *
      */
     @ManagedProperty(value = "#{param.id}")
-    private Long id;
+    private Long playerId;
     /**
      *
      */
@@ -45,12 +46,12 @@ public class GameController implements Serializable {
      *
      */
     @EJB
-    private PlayerEntityFacade playerEntityFacade;
+    private PlayerEntityFacade playerFacade;
     /**
      *
      */
     @EJB
-    private GameModelEntityFacade gameModelEntityFacade;
+    private GameModelEntityFacade gameModeFacade;
     /**
      *
      */
@@ -58,28 +59,25 @@ public class GameController implements Serializable {
 
     /**
      *
-     * @throws IOException
+     * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
     public void init() throws IOException {
-        if (this.id != null) {
-            currentPlayer = playerEntityFacade.find(getId());
-            if (currentPlayer == null) {
-                FacesContext.getCurrentInstance().getExternalContext().dispatch("/wegas-app/view/lobby.xhtml");
-            }
-        } else if (this.gameId != null) {
-            currentPlayer = gameModelEntityFacade.find(this.gameId).getGames().get(0).getTeams().get(0).getPlayers().get(0);
-            if (currentPlayer == null) {
-                FacesContext.getCurrentInstance().getExternalContext().dispatch("/wegas-editor/view/lobby.xhtml");
-            }
-        } else {
-            FacesContext.getCurrentInstance().getExternalContext().dispatch("/wegas-editor/view/lobby.xhtml");
+        final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        if (this.playerId != null) {                                            // If a playerId is provided, we use it
+            currentPlayer = playerFacade.find(this.getPlayerId());
+        } else if (this.gameId != null) {                                       // If we only have a gameModel id, we select the 1st player of the 1st team of the 1st game
+            final GameModelEntity gameModel = gameModeFacade.find(this.gameId);
+            currentPlayer = gameModel.getGames().get(0).getTeams().get(0).getPlayers().get(0);
+        }
+        if (currentPlayer == null) {                                            // If no player could be found, we redirect to the lobby
+            externalContext.dispatch("/wegas-editor/view/lobby.xhtml");
         }
     }
 
     /**
      *
-     * @return
+     * @return the game the game the current player belongs to.
      */
     public GameEntity getCurrentGame() {
         return this.getCurrentPlayer().getTeam().getGame();
@@ -103,15 +101,15 @@ public class GameController implements Serializable {
     /**
      * @return the id
      */
-    public Long getId() {
-        return id;
+    public Long getPlayerId() {
+        return playerId;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setPlayerId(final Long playerId) {
+        this.playerId = playerId;
     }
 
     /**
@@ -124,7 +122,7 @@ public class GameController implements Serializable {
     /**
      * @param gameId the gameId to set
      */
-    public void setGameId(Long gameId) {
+    public void setGameId(final Long gameId) {
         this.gameId = gameId;
     }
 }

@@ -12,6 +12,24 @@
             "children": [
             {
                 "type": "Tab",
+                "label": "Console",
+                "toolbarButtons": [
+                {
+                    "type": "select",
+                    "label": "Francois",
+                    "lazyloadmenu": false,
+                    "value": "selectplayer",
+                    "menu": [{"text": "notloaded", "value": "null"}]
+                }],
+                "children": [
+                {
+                    "type": "Console",
+                    "class": "wegas-console"
+                }
+                ]
+            },
+            {
+                "type": "Tab",
                 "label": "Chat",
                 "toolbarLabel": "Chat",
                 "children": [
@@ -64,9 +82,8 @@
                 {
                     "type": "WTreeView",
                     "dataSource": "VariableDescriptor",
-                    "includeClasses": {
-                        "StringVariableDescriptor": true,
-                        "NumberVariableDescriptor": true
+                    "excludeClasses": {
+                        "MCQVariableDescriptor": true
                     }
                 }],
                 "toolbarButtons": [{

@@ -9,8 +9,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.users.UserEntity;
-import com.wegas.core.persistence.users.UserEntity_;
+import com.wegas.core.persistence.user.UserEntity;
+import com.wegas.core.persistence.user.UserEntity_;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;

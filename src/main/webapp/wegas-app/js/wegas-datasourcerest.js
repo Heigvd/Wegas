@@ -54,15 +54,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
             var host = this.get('host');
             return host.data;
         },
-        getCachedVariableById: function (id) {
-            var host = this.get('host'), i;
-            for (i in host.data) {                                          // We first check in the cache if the data is available
-                if (host.data.hasOwnProperty(i) && host.data[i].id === id) {
-                    return host.data[i];
-                }
-            }
-            return null;
-        },
         getCachedVariableBy: function (key, val) {
             var host = this.get('host'), i;
             for (i in host.data) {                                              // We first check in the cache if the data is available
@@ -81,6 +72,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return ret;
         },
+        getCachedVariableById: function (id) {
+            return this.getCachedVariableBy("id", id  * 1);                     // Cast to number
+        },
+
         getById: function (id) {
             var host = this.get('host');
 
@@ -211,6 +206,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 if (!cEl) {
                 } else if (cEl['@class'] === "StringVariableInstance" ||
                     cEl['@class'] === "NumberVariableInstance" ||
+                    cEl['@class'] === "InboxInstance"||
                     cEl['@class'] === "MCQVariableInstance") {
 
                     Y.Array.each(data, function (o, index, a) {
@@ -244,6 +240,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             case 'StringVariableInstance':
             case 'MCQVariableInstance':
             case 'NumberVariableInstance':
+            case 'InboxInstance':
                 request = '/1/VariableInstance/' + data.id;
                 break;
             }
@@ -292,7 +289,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 if (!cEl) {
 
                 } else if (cEl['@class'] === "Team") {
-                    Y.Array.each(data, function (o, index, a) {
+                    Y.Array.each(data, function (o) {
                         var j;
                         for (j in o.teams) {
                             if (o.teams[j].id === cEl.id) {
@@ -409,6 +406,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         getPlayerById: function (playerId) {
             var i, j, k, data = this.get('host').data;
+
+            playerId = playerId * 1;                                            // Convert to number
+
             for (i = 0; i < data.length; i += 1) {
                 for (j = 0; j < data[i].teams.length; j += 1) {
                     for (k = 0; k < data[i].teams[j].players.length; k += 1) {
@@ -422,6 +422,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         getGameByTeamId: function (teamId) {
             var i, j, data = this.get('host').data;
+
+            teamId = teamId * 1;                                                // Convert to number
+
             for (i = 0; i < data.length; i += 1) {
                 for (j = 0; j < data[i].teams.length; j += 1) {
                     if (data[i].teams[j].id === teamId) {
@@ -433,6 +436,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         getTeamById: function (teamId) {
             var i, j, data = this.get('host').data;
+
+            teamId = teamId * 1;                                                // Convert to number
+
             for (i = 0; i < data.length; i += 1) {
                 for (j = 0; j < data[i].teams.length; j += 1) {
                     if (data[i].teams[j].id === teamId) {

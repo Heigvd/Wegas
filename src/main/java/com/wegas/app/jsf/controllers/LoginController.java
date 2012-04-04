@@ -27,3 +27,4 @@ public class LoginController implements Serializable {
     public LoginController() {
     }
 }
+

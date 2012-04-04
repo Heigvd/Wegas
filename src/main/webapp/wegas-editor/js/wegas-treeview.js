@@ -38,7 +38,7 @@ YUI.add('wegas-treeview', function (Y) {
                     this._treeView.removeChildren(this._treeView.getRoot());
                     this._treeView.buildTreeFromObject(treeViewElements);
                     this._treeView.render();
-                };
+                }
             }, this);
 
             // When a leaf is clicked
@@ -67,7 +67,7 @@ YUI.add('wegas-treeview', function (Y) {
             this.get(CONTENTBOX).delegate('mouseleave', Y.Wegas.editor._editMenu.hide, '.ygtvrow');
         },
 
-        syncUI: function() {
+        syncUI: function () {
         },
 
         destroyer: function () {
@@ -91,6 +91,26 @@ YUI.add('wegas-treeview', function (Y) {
                     label: l,
                     title: l,
                     data: el
+                };
+
+            case 'InboxInstance':
+                var k, children = [];
+
+                label += "(" + el.messages.length + ")";
+
+                for (k = 0; k < el.messages.length; k += 1) {
+                    children.push({
+                        type: 'Text',
+                        label: el.messages[k].subject,
+                        title: el.messages[k].subject
+                    });
+                }
+                return {
+                    type: 'Text',
+                    label: label,
+                    title: label,
+                    data: el,
+                    children: children
                 };
 
             default:
@@ -170,11 +190,11 @@ YUI.add('wegas-treeview', function (Y) {
                     label = '';
                     switch (el.scope['@class']) {
                     case 'PlayerScope':
-                        player = Y.Wegas.app.dataSources.Game.rest.getPlayerById(parseInt(i));
+                        player = Y.Wegas.app.dataSources.Game.rest.getPlayerById(i);
                         label = (player) ? player.name : "undefined";
                         break;
                     case 'TeamScope':
-                        team = Y.Wegas.app.dataSources.Game.rest.getTeamById(parseInt(i));
+                        team = Y.Wegas.app.dataSources.Game.rest.getTeamById(i);
                         label = (team) ? team.name : "undefined";
                         break;
                     case 'GameModelScope':
@@ -202,7 +222,12 @@ YUI.add('wegas-treeview', function (Y) {
                     case 'NumberVariableDescriptor':
                     case 'ListVariableDescriptor':
                     case 'MCQVariableDescriptor':
-                        if ((this.get('includeClasses') === null) || this.get('includeClasses').hasOwnProperty(el['@class'])) {
+                    case 'InboxDescriptor':
+
+                        if ((this.get("excludeClasses") === null
+                                || !this.get('excludeClasses').hasOwnProperty(el['@class']))
+                                && (this.get('includeClasses') === null
+                                || this.get('includeClasses').hasOwnProperty(el['@class']))) {
 
                         // if (el.scope.variableInstances.hasOwnProperty(i)) {
                             text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
@@ -296,6 +321,9 @@ YUI.add('wegas-treeview', function (Y) {
                 value: "TreeView"
             },
             includeClasses: {
+                value: null
+            },
+            excludeClasses: {
                 value: null
             },
             dataSource: {}
