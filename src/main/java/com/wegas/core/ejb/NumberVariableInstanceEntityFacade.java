@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.variableinstance.NumberVariableInstanceEntity;
+import com.wegas.core.persistence.variable.primitive.NumberVariableInstanceEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

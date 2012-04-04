@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.scope.GameModelScopeEntity;
+import com.wegas.core.persistence.variable.scope.GameModelScopeEntity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 

@@ -209,7 +209,24 @@ img.inputEx-ListField-delButton {
     left: 0;
     right: 0;
 }
+/* Console Styles */
+.yui3-wegas-console  div.inputEx-fieldWrapper {
+    padding:0;
+}
+.yui3-wegas-console div.inputEx-Field {
+    float:none;
+}
 
+.yui3-wegas-console div.inputEx-Field textarea {
+    width:96%;
+    padding: 2% 2%;
+    border: none;
+    border-bottom:1px solid lightgray;
+}
+.yui3-wegas-console div.inputEx-Form-buttonBar {
+    margin: 0;
+    float: right;
+}
 
 /* CSSEditor Styles */
 .yui3-wegas-csseditor  div.inputEx-fieldWrapper {

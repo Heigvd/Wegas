@@ -39,13 +39,14 @@ Set up Github
 Set up Netbeans
 ------------------------
 In the NetBeans installation directory (e.g. C:\Program Files\NetBeans 7.x), edit the etc\netbeans.conf startup configuration. (On both Windows 7 and Linux, you will need to edit the permissions on this file to grant your user the rights to modify it.)
-*  Force utf-8
-   Addn -J-Dfile.encoding=UTF-8 to netbeans_default_options line in netbeans.conf.
-*  To increase the heap memory available to the IDE, replace the -J-Xms32m JVM parameter with the following:
-   -J-Xms384m
-*  To increase the IDE's permanent generation space (memory used for classes and static instances), replace the -J-XX:PermSize=32m JVM parameter with the following:
-   -J-XX:PermSize=128m
-*  Add the following parameters to improve garbage collection performance:
-   -J-XX:+UseConcMarkSweepGC -J-XX:+CMSClassUnloadingEnabled -J-XX:+CMSPermGenSweepingEnabled
-*  If you ever connect through a VPN, the following JVM setting will prevent connection refusals when accessing network resources (e.g. SVN and Maven repositories) through the IDE:
-   -J-Djava.net.preferIPv4Stack=true
+
+*   To force utf-8
+    "-J-Dfile.encoding=UTF-8"
+*   To increase the heap memory available to the IDE, replace the -J-Xms32m JVM parameter with the following:
+    "-J-Xms384m"
+*   To increase the IDE's permanent generation space (memory used for classes and static instances), replace the -J-XX:PermSize=32m JVM parameter with the following:
+    "-J-XX:PermSize=128m"
+*   Add the following parameters to improve garbage collection performance:
+    "-J-XX:+UseConcMarkSweepGC -J-XX:+CMSClassUnloadingEnabled -J-XX:+CMSPermGenSweepingEnabled"
+*   If you ever connect through a VPN, the following JVM setting will prevent connection refusals when accessing network resources (e.g. SVN and Maven repositories) through the IDE:
+    "-J-Djava.net.preferIPv4Stack=true"

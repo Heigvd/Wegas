@@ -72,8 +72,8 @@
                         "targetDisplayArea": "maindisplayarea",
                         "cssClass": "menu-button",
                         "subpage": {
-                            "type": "Text",
-                            "content": "Your project is looking great.<img style=\"float:right\" src=\"http://ec.europa.eu/europeaid/how/delivering-aid/project-approach/images/graph_project1_6645.gif\" />"
+                            "type": "InboxDisplay",
+                            "variable": "inbox"
                         }
                     },{
                         "type": "LoginButton",

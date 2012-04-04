@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.variabledescriptor.ListVariableDescriptorEntity;
+import com.wegas.core.persistence.variable.primitive.ListVariableDescriptorEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

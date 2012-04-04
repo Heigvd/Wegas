@@ -10,7 +10,7 @@
 package com.wegas.crimesim.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;

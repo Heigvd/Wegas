@@ -43,7 +43,8 @@ public class TeamController extends AbstractRestController<TeamEntityFacade> {
 
     @Override
     public AbstractEntity create(AbstractEntity entity) {
-        this.teamFacade.create(new Long(this.getPathParam("gameId")), (TeamEntity) entity);
+        this.teamFacade.create(new Long(this.getPathParam("gameId")),
+                (TeamEntity) entity);
         return entity;
     }
     /**
@@ -58,8 +59,7 @@ public class TeamController extends AbstractRestController<TeamEntityFacade> {
      * @Produces(MediaType.APPLICATION_JSON) public PlayerEntity
      * addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long
      * userId) { // return TeamEntityFacade.createPlayer(teamId, userId); return
-     * null;
-    }
+     * null; }
      */
     /**
      *
@@ -72,7 +72,6 @@ public class TeamController extends AbstractRestController<TeamEntityFacade> {
      * @Consumes(MediaType.APPLICATION_JSON)
      * @Produces(MediaType.APPLICATION_JSON) public TeamEntity
      * addUser(@PathParam("teamId") Long teamId, UserEntity u) {
-     * ume.createUser(u); return this.addUser(teamId, u.getId());
-    }
+     * ume.createUser(u); return this.addUser(teamId, u.getId()); }
      */
 }

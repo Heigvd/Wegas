@@ -78,7 +78,7 @@ public class SignupController implements Serializable {
     /**
      * @param msg the msg to set
      */
-    public void setMsg(String msg) {
+    public void setMsg(final String msg) {
         this.msg = msg;
     }
 
@@ -92,7 +92,7 @@ public class SignupController implements Serializable {
     /**
      * @param userName the userName to set
      */
-    public void setUserName(String userName) {
+    public void setUserName(final String userName) {
         this.userName = userName;
     }
 
@@ -106,7 +106,8 @@ public class SignupController implements Serializable {
     /**
      * @param userPass the userPass to set
      */
-    public void setUserPass(String userPass) {
+    public void setUserPass(final String userPass) {
         this.userPass = userPass;
     }
 }
+

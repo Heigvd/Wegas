@@ -66,6 +66,7 @@
             <artifactId>commons-lang</artifactId>
             <version>2.3</version>
         </dependency>
+        <!-- SL4J -->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -81,6 +82,18 @@
             <artifactId>log4j</artifactId>
             <version>1.2.16</version>
         </dependency>
+
+        <!-- sl4j
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>0.9.24</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>0.9.24</version>
+        </dependency>-->
 
         <!-- Postgresql Driver -->
         <dependency>
@@ -234,25 +247,12 @@
         <scope>runtime</scope>
         </dependency>-->
 
-        <!-- sl4j -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>0.9.24</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>0.9.24</version>
-        </dependency>
-
         <!-- Facebook API Dependencies -->
-        <!--<dependency>
+        <dependency>
           <groupId>com.google.code.facebookapi</groupId>
           <artifactId>facebook-java-api</artifactId>
           <version>2.0.5</version>
-        </dependency>-->
+        </dependency>
 
         <!-- YUI -->
         <!--<dependency>

@@ -1,0 +1,187 @@
+{
+    "@class": "GameModel",
+    "name": "CrimeSim",
+    "cssUri": "wegas-crimesim/resources/css/wegas-crimesim.css",
+    "widgetsUri": "wegas-crimesim/db/wegas-crimesim-pages.json",
+    "games":[{
+        "@class":"Game",
+        "name":"Test-1",
+        "teams":[{
+            "@class": "Team",
+            "name":"Les experts",
+            "players": [ {
+                "@class": "Player",
+                "name": "Tom",
+                "user": {
+                    "@class": "User",
+                    "name": "Tom"
+                }
+            }]
+        },{
+            "@class": "Team",
+            "name":"Les autres",
+            "players": [ {
+                "@class": "Player",
+                "name": "Jo",
+                "user": {
+                    "@class": "User",
+                    "name": "Jo"
+                }
+            }]
+        }]
+    }],
+    "variableDescriptors": [{
+        "@class": "NumberVariableDescriptor",
+        "name": "humanResources",
+        "defaultVariableInstance": {
+            "@class": "NumberVariableInstance",
+            "value":"15"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    },{
+        "@class": "NumberVariableDescriptor",
+        "name": "cost",
+        "defaultVariableInstance": {
+            "@class": "NumberVariableInstance",
+            "value":"0"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    },{
+        "@class": "NumberVariableDescriptor",
+        "name": "period",
+        "minValue": 1,
+        "maxValue": 10,
+        "defaultVariableInstance": {
+            "@class": "NumberVariableInstance",
+            "value":"1"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    },{
+        "@class": "InboxDescriptor",
+        "name": "inbox",
+        "defaultVariableInstance": {
+            "@class": "InboxInstance"
+        },
+        "scope": {
+            "@class": "PlayerScope"
+        }
+    }, {
+        "@class": "MCQVariableDescriptor",
+        "name": "Couteau",
+        "label": "Couteau",
+        "description": "Un couteau qui traine, plein de sang.",
+        "replies": [
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Analyse ADN",
+            "description":"Costs: 1000CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "duration":1
+        },
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Empreintees digitales",
+            "description":"Costs: 500CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "duration":2
+        }],
+        "defaultVariableInstance": {
+            "@class": "MCQVariableInstance"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    }, {
+        "@class": "MCQVariableDescriptor",
+        "name": "Le cadavre",
+        "label": "Le cadavre",
+        "description": "Un cadavre qui traine, plein de sang.",
+        "replies": [
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Analyse ADN",
+            "description":"Costs: 1000CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "duration":1
+        },
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Empreintees digitales",
+            "description":"Costs: 500CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "duration":2
+        }],
+        "defaultVariableInstance": {
+            "@class": "MCQVariableInstance"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    }, {
+        "@class": "MCQVariableDescriptor",
+        "name": "Le chapeau",
+        "label": "Le chapeau",
+        "description": "Un chapeau qui traine, plein de sang.",
+        "replies": [
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Analyse ADN",
+            "description":"Costs: 1000CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "duration":1
+        },
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Empreintees digitales",
+            "description":"Costs: 500CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "duration":2
+        }],
+        "defaultVariableInstance": {
+            "@class": "MCQVariableInstance"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    }, {
+        "@class": "MCQVariableDescriptor",
+        "name": "La botte",
+        "label": "La botte",
+        "description": "Une botte qui traine, pleine de sang.",
+        "replies": [
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Analyse ADN",
+            "description":"Costs: 1000CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "duration":1
+        },
+        {
+            "@class": "MCQVariableDescriptorReply",
+            "name":"Empreintees digitales",
+            "description":"Costs: 500CHF; HR: 2;",
+            "answer":"nice work here",
+            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "duration":2
+        }],
+        "defaultVariableInstance": {
+            "@class": "MCQVariableInstance"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    }]
+}

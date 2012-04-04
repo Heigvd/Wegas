@@ -18,12 +18,12 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: ['stylesheet',
-                        'wegas-appcss',  'wegas-datasourcerest', 'wegas-widget', 'wegas-widgetloader',
-                        /* @fixme those should be included on the fly*/
-                        'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
-                        'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat',
-                        'wegas-projectmanagementgame', 'wegas-crimesim'
-                        ]
+                            'wegas-appcss', 'wegas-datasourcerest', 'wegas-widget', 'wegas-widgetloader',
+                            /* @fixme those should be included on the fly*/
+                            'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
+                            'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 'wegas-inbox',
+                            'wegas-projectmanagementgame', 'wegas-crimesim'
+                            ]
                     },
                     'wegas-appcss': {
                         path: 'wegas-app/resources/css/wegas-app.css',
@@ -46,18 +46,14 @@ YUI().use(function (Y) {
                     'wegas-button': {
                         path: 'wegas-app/js/wegas-button-min.js'
                     },
-                    'wegas-variabledisplay': {
-                        path: 'wegas-app/js/wegas-variabledisplay-min.js',
-                        requires: ['excanvas']
-                    },
                     'wegas-chat': {
                         path: 'wegas-app/js/wegas-chat-min.js'
                     },
                     'wegas-layout': {
                         path: 'wegas-app/js/wegas-layout-min.js',
-                        requires: ['yui2-layout','yui2-event-mouseenter', 'yui2-event-delegate','yui2-yahoo', 'yui2-dom',
-                        'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector', 'yui2-resize',
-                        'yui2-containercore', 'yui2-menu', 'yui2-calendar']
+                        requires: ['yui2-layout', 'yui2-event-mouseenter', 'yui2-event-delegate', 'yui2-yahoo', 'yui2-dom',
+                            'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector', 'yui2-resize',
+                            'yui2-containercore', 'yui2-menu', 'yui2-calendar']
                     },
                     'wegas-list': {
                         path: 'wegas-app/js/wegas-list-min.js',
@@ -74,12 +70,21 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/wegas-displayarea-min.js'
                     },
 
+                    'wegas-variabledisplay': {
+                        path: 'wegas-app/js/wegas-variabledisplay-min.js',
+                        requires: ['excanvas']
+                    },
+                    'wegas-inbox': {
+                        path: 'wegas-app/js/wegas-inbox-min.js'
+                    },
+
                     /** Editor **/
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-inputex', 'wegas-app', 'wegas-treeview', 'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
-                        'wegas-editor-topmenu'
+                            'wegas-inputex', 'wegas-app', 'wegas-treeview',
+                            'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
+                            'wegas-editor-topmenu', "wegas-console"
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss'
                         ]
@@ -94,13 +99,13 @@ YUI().use(function (Y) {
                         path: 'wegas-editor/js/wegas-logger-min.js',
                         requires: ['console', 'console-filters']
                     },
-                    'wegas-inputex':{
+                    'wegas-inputex': {
                         path: 'wegas-app/js/wegas-inputex-min.js',
                         requires: [
-                        'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
-                        'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
-                        'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
-                        'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
+                            'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
+                            'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
+                            'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
+                            'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
                     },
                     'wegas-editor-topmenu': {
                         path: 'wegas-editor/js/wegas-editor-topmenu-min.js',
@@ -108,6 +113,9 @@ YUI().use(function (Y) {
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js'
+                    },
+                    'wegas-console': {
+                        path: 'wegas-editor/js/wegas-console-min.js'
                     },
                     'wegas-editmenu': {
                         path: 'wegas-editor/js/wegas-editmenu-min.js',
@@ -184,10 +192,10 @@ YUI().use(function (Y) {
         },*/
         }
     },
-    modules,
-    allModules = [],
-    modulesByType = {},
-    moduleName;
+        modules,
+        allModules = [],
+        modulesByType = {},
+        moduleName;
 
     if (typeof YUI_config === 'undefined') {
         YUI_config = {

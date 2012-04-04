@@ -18,7 +18,7 @@ import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.game.TeamEntity;
-import com.wegas.core.persistence.users.UserEntity;
+import com.wegas.core.persistence.user.UserEntity;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -46,12 +46,12 @@ public class LobbyController implements Serializable {
      *
      */
     @EJB
-    private UserEntityFacade userEntityFacade;
+    private UserEntityFacade userFacade;
     /**
      *
      */
     @EJB
-    private GameEntityFacade gameEntityFacade;
+    private GameEntityFacade gameFacade;
     /**
      *
      */
@@ -61,7 +61,7 @@ public class LobbyController implements Serializable {
      *
      */
     @EJB
-    private GameModelEntityFacade gameModelEntityFacade;
+    private GameModelEntityFacade gameModelFacade;
     /**
      *
      */
@@ -91,17 +91,18 @@ public class LobbyController implements Serializable {
      */
     public UserEntity getCurrentUser() {
 
-        Subject subject = SecurityUtils.getSubject();
+        final Subject subject = SecurityUtils.getSubject();
         try {
-            return userEntityFacade.getUserByPrincipal(subject.getPrincipal().toString());
+
+            return userFacade.getUserByPrincipal(subject.getPrincipal().toString());
+
         }
-        catch (EJBException e) {
-            System.out.println(e.getCause() + "*" + e.getCausedByException());
-            if (e.getCausedByException() instanceof NoResultException) {
-                UserEntity u = new UserEntity();
-                u.setName(subject.getPrincipal().toString());
-                userEntityFacade.create(u);
-                return u;
+        catch (EJBException e) {                                              // If the user is logged in but we cannot find a
+            if (e.getCausedByException() instanceof NoResultException) {        // corresponding account, that means we need to create one.
+                UserEntity newUser = new UserEntity();
+                newUser.setName(subject.getPrincipal().toString());
+                userFacade.create(newUser);
+                return newUser;
             } else {
                 throw e;
             }
@@ -115,12 +116,13 @@ public class LobbyController implements Serializable {
     public List<PlayerEntity> getPlayers() {
         return this.getCurrentUser().getPlayers();
     }
+
     /**
-     * 
+     *
      * @return
      */
     public List<GameModelEntity> getGameModels() {
-        return gameModelEntityFacade.findAll();
+        return gameModelFacade.findAll();
     }
 
     /**
@@ -129,7 +131,7 @@ public class LobbyController implements Serializable {
      */
     public String joinGame() {
         try {
-            this.currentGame = gameEntityFacade.getGameByToken(this.gameToken);
+            this.currentGame = gameFacade.getGameByToken(this.gameToken);
             return "gameJoined";
         }
         catch (EJBException e) {
@@ -177,7 +179,7 @@ public class LobbyController implements Serializable {
     /**
      * @param gameToken the gameToken to set
      */
-    public void setGameToken(String gameToken) {
+    public void setGameToken(final String gameToken) {
         this.gameToken = gameToken;
     }
 
@@ -191,7 +193,7 @@ public class LobbyController implements Serializable {
     /**
      * @param selectedTeam the selectedTeam to set
      */
-    public void setSelectedTeam(TeamEntity selectedTeam) {
+    public void setSelectedTeam(final TeamEntity selectedTeam) {
         this.selectedTeam = selectedTeam;
     }
 
@@ -205,7 +207,7 @@ public class LobbyController implements Serializable {
     /**
      * @param currentPlayer the currentPlayer to set
      */
-    public void setCurrentPlayer(PlayerEntity currentPlayer) {
+    public void setCurrentPlayer(final PlayerEntity currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
@@ -223,16 +225,16 @@ public class LobbyController implements Serializable {
          * @return
          */
         @Override
-        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+        public Object getAsObject(final FacesContext facesContext, final UIComponent component, final String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            LobbyController controller = (LobbyController) facesContext.getApplication().getELResolver().
+            final LobbyController controller = (LobbyController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "lobbyController");
             return controller.teamEntityFacade.find(Long.valueOf(value));
         }
 
-        String getStringKey(Long value) {
+        String getStringKey(final Long value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -246,12 +248,12 @@ public class LobbyController implements Serializable {
          * @return
          */
         @Override
-        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
+        public String getAsString(final FacesContext facesContext, final UIComponent component, final Object object) {
             if (object == null) {
                 return null;
             }
             if (object instanceof TeamEntity) {
-                TeamEntity o = (TeamEntity) object;
+                final TeamEntity o = (TeamEntity) object;
                 return getStringKey(o.getId());
             } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + TeamEntity.class.getName());

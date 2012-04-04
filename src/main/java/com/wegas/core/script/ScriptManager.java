@@ -9,14 +9,12 @@
  */
 package com.wegas.core.script;
 
-import com.wegas.core.ejb.GameModelEntityFacade;
 import com.wegas.core.ejb.PlayerEntityFacade;
-import com.wegas.core.ejb.VariableDescriptorEntityFacade;
-import com.wegas.core.ejb.VariableInstanceEntityFacade;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variabledescriptor.VariableDescriptorEntity;
-import com.wegas.core.persistence.variableinstance.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.messaging.ejb.MessagingManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,6 +40,11 @@ public class ScriptManager {
      */
     @EJB
     private PlayerEntityFacade playerEntityFacade;
+    /**
+     *
+     */
+    @EJB
+    private MessagingManager messagingManager;
 
     /**
      *
@@ -61,11 +64,15 @@ public class ScriptManager {
         List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
 
         try {
+            engine.put("self", p);                                              // Inject the constants
+            engine.put("messaging", messagingManager);
+
             for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
                 VariableInstanceEntity vi = vd.getVariableInstance(p);
                 engine.put(vd.getName(), vi);
                 vis.add(vi);
             }
+
             engine.eval(s.getContent());                                        // Then we evaluate the script
         }
         catch (ScriptException ex) {
