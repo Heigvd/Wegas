@@ -9,14 +9,13 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
-import com.wegas.core.persistence.variable.scope.ScopeEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.ListVariableInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.NumberVariableInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.StringVariableInstanceEntity;
+import com.wegas.core.persistence.variable.scope.ScopeEntity;
+import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
+import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
@@ -28,6 +27,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@EntityListeners(VariableInstancePersistenceListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlType(name = "VariableInstance", propOrder = {"@class", "id"})
 @JsonSubTypes(value = {
