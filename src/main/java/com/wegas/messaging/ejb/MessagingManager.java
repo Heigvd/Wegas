@@ -89,7 +89,7 @@ public class MessagingManager {
 
     public void send(String type, PlayerEntity p, MessageEntity msg) {
         if (type.equals("important")) {
-            this.sendMail(p, type, type, type);
+            this.sendMail(p, msg);
         }
         this.sendInGameMessage(p, msg);
     }
