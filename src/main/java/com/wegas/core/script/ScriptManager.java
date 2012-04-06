@@ -55,7 +55,7 @@ public class ScriptManager {
      */
     public List<VariableInstanceEntity> runScript(Long gameModelId, Long playerId, ScriptEntity s) {
         ScriptEngineManager mgr = new ScriptEngineManager();
-        ScriptEngine engine = mgr.getEngineByName("JavaScript");
+        ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
         // GameModelEntity gm = gameModelEntityFacade.find(gameModelId);
         PlayerEntity p = playerEntityFacade.find(playerId);

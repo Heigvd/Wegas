@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.crimesim.persistence.variable.MCQVariableDescriptorEntity;
+import com.wegas.crimesim.persistence.variable.MCQDescriptorEntity;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.NamedEntity;
@@ -41,7 +41,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringVariableDescriptor", value = StringVariableDescriptorEntity.class),
     @JsonSubTypes.Type(name = "ListVariableDescriptor", value = ListVariableDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQVariableDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQDescriptorEntity.class),
     @JsonSubTypes.Type(name = "NumberVariableDescriptor", value = NumberVariableDescriptorEntity.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class)
 })

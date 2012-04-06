@@ -58,7 +58,6 @@ public class GameEntityFacade extends AbstractFacade<GameEntity> {
         CriteriaQuery cq = cb.createQuery();
         Root<GameEntity> game = cq.from(GameEntity.class);
         cq.where(cb.equal(game.get(GameEntity_.name), token));
-
         Query q = em.createQuery(cq);
         return (GameEntity) q.getSingleResult();
     }

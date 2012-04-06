@@ -14,7 +14,7 @@ import com.wegas.core.persistence.variable.primitive.ListVariableInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.NumberVariableInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.StringVariableInstanceEntity;
 import com.wegas.core.persistence.variable.scope.ScopeEntity;
-import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
 import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
 import java.util.logging.Logger;
 import javax.persistence.*;
@@ -33,7 +33,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringVariableInstance", value = StringVariableInstanceEntity.class),
     @JsonSubTypes.Type(name = "ListVariableInstance", value = ListVariableInstanceEntity.class),
-    @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQVariableInstanceEntity.class),
+    @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQInstanceEntity.class),
     @JsonSubTypes.Type(name = "NumberVariableInstance", value = NumberVariableInstanceEntity.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstanceEntity.class)
 })
