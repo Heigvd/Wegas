@@ -6,7 +6,7 @@ YUI.add('wegas-inbox', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-        InboxDisplay;
+    InboxDisplay;
 
     InboxDisplay = Y.Base.create("wegas-inbox", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
@@ -36,6 +36,14 @@ YUI.add('wegas-inbox', function (Y) {
                         + '<div class="body">' + msg.body + '</div>'
                 });
             }
+
+            if (inboxVariable.messages.length === 0) {
+                this._tabView.add({
+                    label: '',
+                    content: '<center><em>You have no messages</em></center>'
+                });
+            }
+
             /* @fixme */
             Y.later(100, this, function () {
                 this._tabView.selectChild(lastSelection);

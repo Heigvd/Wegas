@@ -14,10 +14,10 @@ import com.wegas.core.ejb.PlayerEntityFacade;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.script.ScriptEntity;
-import com.wegas.crimesim.persistence.variable.MCQVariableDescriptorEntity;
-import com.wegas.crimesim.persistence.variable.MCQReplyVariableDescriptorEntity;
-import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
-import com.wegas.crimesim.persistence.variable.MCQReplyVariableInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQDescriptorEntity;
+import com.wegas.crimesim.persistence.variable.MCQReplyDescriptorEntity;
+import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQReplyInstanceEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,7 +27,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class MCQVariableDescriptorEntityFacade extends AbstractFacade<MCQVariableDescriptorEntity> {
+public class MCQDescriptorFacade extends AbstractFacade<MCQDescriptorEntity> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -44,7 +44,7 @@ public class MCQVariableDescriptorEntityFacade extends AbstractFacade<MCQVariabl
     /**
      *
      */
-    public MCQVariableDescriptorEntityFacade() {
-        super(MCQVariableDescriptorEntity.class);
+    public MCQDescriptorFacade() {
+        super(MCQDescriptorEntity.class);
     }
 }

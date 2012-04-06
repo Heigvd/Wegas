@@ -11,6 +11,7 @@ package com.wegas.crimesim.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.NamedEntity;
+import com.wegas.core.script.ScriptEntity;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
@@ -22,16 +23,16 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQVariableDescriptorReply")
-public class MCQReplyVariableDescriptorEntity extends NamedEntity {
+@XmlType(name = "MCQVariableInstanceReply")
+public class MCQReplyInstanceEntity extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQVariableDescriptorReplyEntity");
+    private static final Logger logger = Logger.getLogger("MCQVariableInstanceReplyEntity");
     /**
      *
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvardescrep_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvarinstrep_seq")
     private Long id;
     /**
      *
@@ -45,8 +46,11 @@ public class MCQReplyVariableDescriptorEntity extends NamedEntity {
     /**
      *
      */
-    @Column(length = 4096)
-    private String impact;
+    @Embedded
+    private ScriptEntity impact;
+
+    //@Column(length = 4096)
+   // private Ja impact;
     /**
      *
      */
@@ -55,14 +59,18 @@ public class MCQReplyVariableDescriptorEntity extends NamedEntity {
     /**
      *
      */
-    @JsonBackReference("question-reply")
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "variabledescriptor_id", nullable = false)
-    private MCQVariableDescriptorEntity mCQVariableDescriptor;
+    private Long startTime;
     /**
      *
      */
     private Long duration;
+    /**
+     *
+     */
+    @JsonBackReference("question-replyi")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "variableinstance_id", nullable = false)
+    private MCQInstanceEntity mCQVariableInstance;
 
     /**
      *
@@ -71,7 +79,7 @@ public class MCQReplyVariableDescriptorEntity extends NamedEntity {
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
-        MCQReplyVariableDescriptorEntity r = (MCQReplyVariableDescriptorEntity) a;
+        MCQReplyInstanceEntity r = (MCQReplyInstanceEntity) a;
         this.setDescription(r.getDescription());
         this.setAnswer(r.getAnswer());
         this.setImpact(r.getImpact());
@@ -79,7 +87,7 @@ public class MCQReplyVariableDescriptorEntity extends NamedEntity {
 
     @Override
     public boolean equals(Object o) {
-        MCQReplyVariableDescriptorEntity vd = (MCQReplyVariableDescriptorEntity) o;
+        MCQReplyInstanceEntity vd = (MCQReplyInstanceEntity) o;
         return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
     }
 
@@ -100,14 +108,14 @@ public class MCQReplyVariableDescriptorEntity extends NamedEntity {
     /**
      * @return the impact
      */
-    public String getImpact() {
+    public ScriptEntity getImpact() {
         return impact;
     }
 
     /**
      * @param impact the impact to set
      */
-    public void setImpact(String impact) {
+    public void setImpact(ScriptEntity impact) {
         this.impact = impact;
     }
 
@@ -132,18 +140,18 @@ public class MCQReplyVariableDescriptorEntity extends NamedEntity {
     }
 
     /**
-     * @return the mCQVariableDescriptor
+     * @return the mcqVariableDescriptor
      */
     @XmlTransient
-    public MCQVariableDescriptorEntity getMCQVariableDescriptor() {
-        return mCQVariableDescriptor;
+    public MCQInstanceEntity getMCQVariableInstance() {
+        return mCQVariableInstance;
     }
 
     /**
-     * @param mCQVariableDescriptor the mCQVariableDescriptor to set
+     * @param mCQVariableInstance
      */
-    public void setMCQVariableDescriptor(MCQVariableDescriptorEntity mCQVariableDescriptor) {
-        this.mCQVariableDescriptor = mCQVariableDescriptor;
+    public void setMCQVariableInstance(MCQInstanceEntity mCQVariableInstance) {
+        this.mCQVariableInstance = mCQVariableInstance;
     }
 
     /**
@@ -158,6 +166,20 @@ public class MCQReplyVariableDescriptorEntity extends NamedEntity {
      */
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    /**
+     * @return the startTime
+     */
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * @param startTime the startTime to set
+     */
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
     }
 
     /**

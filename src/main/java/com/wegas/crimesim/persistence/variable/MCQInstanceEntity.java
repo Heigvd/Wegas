@@ -27,7 +27,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "MCQVariableInstance")
-public class MCQVariableInstanceEntity extends VariableInstanceEntity {
+public class MCQInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQVariableInstanceEntity");
@@ -37,7 +37,7 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     @OneToMany(mappedBy = "mCQVariableInstance", cascade = {CascadeType.ALL}, orphanRemoval = true/*, fetch = FetchType.LAZY*/)
     @JsonManagedReference("question-replyi")
     @JoinColumn(name = "variableinstance_id")
-    private List<MCQReplyVariableInstanceEntity> replies = new ArrayList<MCQReplyVariableInstanceEntity>();
+    private List<MCQReplyInstanceEntity> replies = new ArrayList<MCQReplyInstanceEntity>();
     /**
      *
      */
@@ -60,19 +60,19 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     /**
      * @return the replies
      */
-    public List<MCQReplyVariableInstanceEntity> getReplies() {
+    public List<MCQReplyInstanceEntity> getReplies() {
         return replies;
     }
 
     /**
      * @param replies the replies to set
      */
-    public void setReplies(List<MCQReplyVariableInstanceEntity> replies) {
+    public void setReplies(List<MCQReplyInstanceEntity> replies) {
 //        this.replies.clear();
         this.replies = replies;
 
         //  if (replies != null) {
-        for (MCQReplyVariableInstanceEntity r : replies) {
+        for (MCQReplyInstanceEntity r : replies) {
             r.setMCQVariableInstance(this);
         }
         //  }
@@ -82,24 +82,24 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
      *
      * @param reply
      */
-    public void addReply(MCQReplyVariableInstanceEntity reply) {
+    public void addReply(MCQReplyInstanceEntity reply) {
         this.replies.add(reply);
         reply.setMCQVariableInstance(this);
     }
 
     @Override
     public void merge(AbstractEntity a) {
-        MCQVariableInstanceEntity vi = (MCQVariableInstanceEntity) a;
+        MCQInstanceEntity vi = (MCQInstanceEntity) a;
         this.setActive(vi.getActive());
 
-        List<MCQReplyVariableInstanceEntity> newReplies = new ArrayList<MCQReplyVariableInstanceEntity>();
+        List<MCQReplyInstanceEntity> newReplies = new ArrayList<MCQReplyInstanceEntity>();
         //newReplies.addAll(vd.getReplies());
-        for (MCQReplyVariableInstanceEntity nReply : vi.getReplies()) {
+        for (MCQReplyInstanceEntity nReply : vi.getReplies()) {
             int pos = this.replies.indexOf(nReply);
             if (pos == -1) {
                 newReplies.add(nReply);
             } else {
-                MCQReplyVariableInstanceEntity oReply = this.replies.get(pos);
+                MCQReplyInstanceEntity oReply = this.replies.get(pos);
                 oReply.merge(nReply);
                 newReplies.add(oReply);
             }
@@ -108,8 +108,8 @@ public class MCQVariableInstanceEntity extends VariableInstanceEntity {
     }
     /*
     @Override
-    public MCQVariableInstanceEntity clone() {
-    MCQVariableInstanceEntity c = (MCQVariableInstanceEntity) super.clone();
+    public MCQInstanceEntity clone() {
+    MCQInstanceEntity c = (MCQInstanceEntity) super.clone();
     //  List<MCQVariableInstanceReplyEntity> replies = new ArrayList<MCQVariableInstanceReplyEntity>();
     //  c.setReplies(replies);
     return c;

@@ -10,7 +10,7 @@
 package com.wegas.crimesim.ejb;
 
 import com.wegas.core.ejb.AbstractFacade;
-import com.wegas.crimesim.persistence.variable.MCQReplyVariableInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,7 +20,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class MCQReplyVariableInstanceEntityFacade extends AbstractFacade<MCQReplyVariableInstanceEntity> {
+public class MCQInstanceFacade extends AbstractFacade<MCQInstanceEntity> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -28,10 +28,9 @@ public class MCQReplyVariableInstanceEntityFacade extends AbstractFacade<MCQRepl
     /**
      *
      */
-    public MCQReplyVariableInstanceEntityFacade() {
-        super(MCQReplyVariableInstanceEntity.class);
+    public MCQInstanceFacade() {
+        super(MCQInstanceEntity.class);
     }
-
 
     /**
      *

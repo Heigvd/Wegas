@@ -24,7 +24,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "MCQVariableDescriptor")
-public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVariableInstanceEntity> {
+public class MCQDescriptorEntity extends VariableDescriptorEntity<MCQInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQVariableDescriptorEntity");
@@ -47,7 +47,7 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
     @JsonManagedReference("question-reply")
     @JoinColumn(name = "variabledescriptor_id")
     @OneToMany(mappedBy = "mCQVariableDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<MCQReplyVariableDescriptorEntity> replies = new ArrayList<MCQReplyVariableDescriptorEntity>();
+    private List<MCQReplyDescriptorEntity> replies = new ArrayList<MCQReplyDescriptorEntity>();
     /**
      *
      */
@@ -60,19 +60,19 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
-        MCQVariableDescriptorEntity vd = (MCQVariableDescriptorEntity) a;
+        MCQDescriptorEntity vd = (MCQDescriptorEntity) a;
         this.setDescription(vd.getDescription());
         this.setLabel(vd.getLabel());
         this.setAllowMultipleReplies(vd.getAllowMultipleReplies());
 
-        List<MCQReplyVariableDescriptorEntity> newReplies = new ArrayList<MCQReplyVariableDescriptorEntity>();
+        List<MCQReplyDescriptorEntity> newReplies = new ArrayList<MCQReplyDescriptorEntity>();
         //newReplies.addAll(vd.getReplies());
-        for (MCQReplyVariableDescriptorEntity nReply : vd.getReplies()) {
+        for (MCQReplyDescriptorEntity nReply : vd.getReplies()) {
             int pos = this.replies.indexOf(nReply);
             if (pos == -1) {
                 newReplies.add(nReply);
             } else {
-                MCQReplyVariableDescriptorEntity oReply = this.replies.get(pos);
+                MCQReplyDescriptorEntity oReply = this.replies.get(pos);
                 oReply.merge(nReply);
                 newReplies.add(oReply);
             }
@@ -97,16 +97,16 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
     /**
      * @return the replies
      */
-    public List<MCQReplyVariableDescriptorEntity> getReplies() {
+    public List<MCQReplyDescriptorEntity> getReplies() {
         return replies;
     }
 
     /**
      * @param replies the replies to set
      */
-    public void setReplies(List<MCQReplyVariableDescriptorEntity> replies) {
+    public void setReplies(List<MCQReplyDescriptorEntity> replies) {
         this.replies = replies;
-        for (MCQReplyVariableDescriptorEntity r : replies) {
+        for (MCQReplyDescriptorEntity r : replies) {
             r.setMCQVariableDescriptor(this);
         }
     }
@@ -115,7 +115,7 @@ public class MCQVariableDescriptorEntity extends VariableDescriptorEntity<MCQVar
      *
      * @param reply
      */
-    public void addReply(MCQReplyVariableDescriptorEntity reply) {
+    public void addReply(MCQReplyDescriptorEntity reply) {
         this.replies.add(reply);
         reply.setMCQVariableDescriptor(this);
     }

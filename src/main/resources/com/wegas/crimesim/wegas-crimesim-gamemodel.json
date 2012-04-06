@@ -82,7 +82,11 @@
             "name":"Analyse ADN",
             "description":"Costs: 1000CHF; HR: 2;",
             "answer":"nice work here",
-            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "impact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "cost.value+=1000;\nhumanResources.value-=2;"
+            },
             "duration":1
         },
         {
@@ -90,7 +94,11 @@
             "name":"Empreintees digitales",
             "description":"Costs: 500CHF; HR: 2;",
             "answer":"nice work here",
-            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "impact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "cost.value+=500;\nhumanResources.value-=2;"
+            },
             "duration":2
         }],
         "defaultVariableInstance": {
@@ -110,7 +118,11 @@
             "name":"Analyse ADN",
             "description":"Costs: 1000CHF; HR: 2;",
             "answer":"nice work here",
-            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "impact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "cost.value+=1000;\nhumanResources.value-=2;"
+            },
             "duration":1
         },
         {
@@ -118,7 +130,11 @@
             "name":"Empreintees digitales",
             "description":"Costs: 500CHF; HR: 2;",
             "answer":"nice work here",
-            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "impact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "cost.value+=500;\nhumanResources.value-=2;"
+            },
             "duration":2
         }],
         "defaultVariableInstance": {
@@ -138,7 +154,11 @@
             "name":"Analyse ADN",
             "description":"Costs: 1000CHF; HR: 2;",
             "answer":"nice work here",
-            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "impact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "cost.value+=1000;\nhumanResources.value-=2;"
+            },
             "duration":1
         },
         {
@@ -146,7 +166,11 @@
             "name":"Empreintees digitales",
             "description":"Costs: 500CHF; HR: 2;",
             "answer":"nice work here",
-            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "impact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "cost.value+=500;\nhumanResources.value-=2;"
+            },
             "duration":2
         }],
         "defaultVariableInstance": {
@@ -166,7 +190,11 @@
             "name":"Analyse ADN",
             "description":"Costs: 1000CHF; HR: 2;",
             "answer":"nice work here",
-            "impact":"cost.value+=1000;\nhumanResources.value-=2;",
+            "impact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "cost.value+=1000;\nhumanResources.value-=2;"
+            },
             "duration":1
         },
         {
@@ -174,7 +202,11 @@
             "name":"Empreintees digitales",
             "description":"Costs: 500CHF; HR: 2;",
             "answer":"nice work here",
-            "impact":"cost.value+=500;\nhumanResources.value-=2;",
+            "impact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "cost.value+=500;\nhumanResources.value-=2;"
+            },
             "duration":2
         }],
         "defaultVariableInstance": {

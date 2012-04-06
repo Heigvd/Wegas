@@ -10,7 +10,6 @@
 package com.wegas.core.persistence.statemachine;
 
 import com.wegas.core.persistence.variable.statemachine.Trigger;
-import com.wegas.core.script.JavascriptEntity;
 import com.wegas.core.script.ScriptEntity;
 import org.junit.*;
 
@@ -37,8 +36,9 @@ public class TriggerTest {
     public void setUp() {
         this.trigger = new Trigger();
         this.trigger.setLabel("testTrigger");
-        ScriptEntity scriptEntity = new JavascriptEntity();
-        scriptEntity.setContent("Test trigger");
+        ScriptEntity scriptEntity = new ScriptEntity();
+        scriptEntity.setLanguage("JavaScript");
+        scriptEntity.setContent("var x=10; x+=2;");
         this.trigger.setTriggerEvent(scriptEntity);
         this.trigger.setPostTriggerEvent(scriptEntity);
     }
@@ -75,8 +75,7 @@ public class TriggerTest {
     }
 
     /**
-     * Test of generateTrigger method, of class Trigger.<br/>
-     * Loop Trigger
+     * Test of generateTrigger method, of class Trigger.<br/> Loop Trigger
      */
     @Test
     public void testGenerateLoopTrigger() {
