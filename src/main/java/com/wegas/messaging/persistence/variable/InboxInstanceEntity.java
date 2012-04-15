@@ -48,7 +48,7 @@ public class InboxInstanceEntity extends VariableInstanceEntity {
     }
 
     /**
-     * @param replies the replies to set
+     * @param messages
      */
     public void setMessages(List<MessageEntity> messages) {
         this.messages = messages;
@@ -60,7 +60,7 @@ public class InboxInstanceEntity extends VariableInstanceEntity {
 
     /**
      *
-     * @param reply
+     * @param message
      */
     public void addMessage(MessageEntity message) {
         this.messages.add(message);

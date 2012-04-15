@@ -23,18 +23,18 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class TeamEntityFacade extends AbstractFacade<TeamEntity> {
+public class TeamFacade extends AbstractFacade<TeamEntity> {
 
     /**
      *
      */
     @EJB
-    private UserEntityFacade userFacade;
+    private UserFacade userFacade;
     /**
      *
      */
     @EJB
-    private GameEntityFacade gameFacade;
+    private GameFacade gameFacade;
     /**
      *
      */
@@ -85,7 +85,7 @@ public class TeamEntityFacade extends AbstractFacade<TeamEntity> {
     /**
      *
      */
-    public TeamEntityFacade() {
+    public TeamFacade() {
         super(TeamEntity.class);
     }
 

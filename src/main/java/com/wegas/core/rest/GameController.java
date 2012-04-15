@@ -9,8 +9,8 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.GameEntityFacade;
-import com.wegas.core.ejb.GameModelEntityFacade;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
@@ -25,18 +25,18 @@ import javax.ws.rs.Path;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/")
-public class GameController extends AbstractRestController<GameEntityFacade> {
-
+public class GameController extends AbstractRestController<GameFacade> {
+1
     /**
      *
      */
     @EJB
-    private GameModelEntityFacade gameModelEntityFacade;
+    private GameModelFacade gameModelEntityFacade;
     /**
      *
      */
     @EJB
-    private GameEntityFacade gameFacade;
+    private GameFacade gameFacade;
 
     @Override
     public Collection<AbstractEntity> index() {
@@ -55,7 +55,7 @@ public class GameController extends AbstractRestController<GameEntityFacade> {
      * @return
      */
     @Override
-    protected GameEntityFacade getFacade() {
+    protected GameFacade getFacade() {
         return gameFacade;
     }
 }

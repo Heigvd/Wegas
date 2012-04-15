@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.variable.scope.TeamScopeEntity;
+import com.wegas.core.persistence.game.GameModelEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,9 +19,30 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class TeamScopeEntityFacade extends AbstractFacade<TeamScopeEntity> {
+public class GameModelFacade extends AbstractFacade<GameModelEntity> {
+
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
+    /**
+     *
+     * @param gameModelId
+     * @return
+     */
+    public GameModelEntity reset(Long gameModelId) {
+        GameModelEntity gm = this.find(gameModelId);
+        gm.propagateDefaultVariableInstance(true);
+        em.flush();
+        em.refresh(gm);
+        return gm;
+    }
+
+    /**
+     *
+     */
+    public GameModelFacade() {
+        super(GameModelEntity.class);
+    }
 
     /**
      *
@@ -31,12 +52,4 @@ public class TeamScopeEntityFacade extends AbstractFacade<TeamScopeEntity> {
     protected EntityManager getEntityManager() {
         return em;
     }
-
-    /**
-     *
-     */
-    public TeamScopeEntityFacade() {
-        super(TeamScopeEntity.class);
-    }
-
 }

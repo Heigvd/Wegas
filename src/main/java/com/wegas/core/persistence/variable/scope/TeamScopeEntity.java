@@ -19,10 +19,7 @@ import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -39,10 +36,15 @@ public class TeamScopeEntity extends ScopeEntity {
      * FIXME Here we should use TeamEntity reference and add a key deserializer
      * module
      */
-    @OneToMany(mappedBy = "teamScope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    //@MapKey(name="id")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    /*
+     * @JoinTable(joinColumns = @JoinColumn(name = "teamscope_id",
+     * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
+     * "variableinstance_id", referencedColumnName = "variableinstance_id"))
+     */
+    @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @XmlTransient
-    private Map<Long, VariableInstanceEntity> teamVariableInstances = new HashMap<Long, VariableInstanceEntity>();
+    private Map<Long, VariableInstanceEntity> teamVariableInstances = new HashMap<>();
 
     /**
      *
@@ -55,7 +57,7 @@ public class TeamScopeEntity extends ScopeEntity {
 
     /**
      *
-     * @param userId
+     * @param player
      * @return
      */
     @Override
@@ -71,7 +73,7 @@ public class TeamScopeEntity extends ScopeEntity {
     @Override
     public void setVariableInstance(Long userId, VariableInstanceEntity v) {
         this.teamVariableInstances.put(userId, v);
-        v.setTeamScope(this);
+        v.setScope(this);
     }
 
     /**
@@ -93,12 +95,12 @@ public class TeamScopeEntity extends ScopeEntity {
         GameModelEntity gm = vd.getGameModel();
         for (GameEntity g : gm.getGames()) {
             for (TeamEntity t : g.getTeams()) {
-                    VariableInstanceEntity vi = this.teamVariableInstances.get(t.getId());
-                    if (vi == null) {
-                        this.setVariableInstance(t.getId(), vd.getDefaultVariableInstance().clone());
-                    } else if ( force ) {
-                        vi.merge(vd.getDefaultVariableInstance());
-                    }
+                VariableInstanceEntity vi = this.teamVariableInstances.get(t.getId());
+                if (vi == null) {
+                    this.setVariableInstance(t.getId(), vd.getDefaultVariableInstance().clone());
+                } else if (force) {
+                    vi.merge(vd.getDefaultVariableInstance());
+                }
             }
         }
     }

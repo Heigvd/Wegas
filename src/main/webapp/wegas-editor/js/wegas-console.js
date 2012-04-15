@@ -27,7 +27,7 @@ YUI.add('wegas-console', function (Y) {
                     {
                         name: 'language',
                         type: 'hidden',
-                        value: "Javascript"
+                        value: "JavaScript"
                     },
                     {
                         name: 'content',

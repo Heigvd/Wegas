@@ -6,11 +6,19 @@ package com.wegas.core.security.facebook;
 
 import org.apache.shiro.authc.AuthenticationToken;
 
+/**
+ *
+ * @author fx
+ */
 public class FacebookToken implements AuthenticationToken {
 
     private static final long serialVersionUID = 1L;
     private String code;
 
+    /**
+     *
+     * @param code
+     */
     public FacebookToken(String code) {
         this.code = code;
     }
@@ -25,10 +33,18 @@ public class FacebookToken implements AuthenticationToken {
         return null;// credentials handled by facebook - we don't need them
     }
 
+    /**
+     *
+     * @return
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     *
+     * @param code
+     */
     public void setCode(String code) {
         this.code = code;
     }

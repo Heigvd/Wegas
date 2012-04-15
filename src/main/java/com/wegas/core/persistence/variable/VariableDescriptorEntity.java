@@ -59,8 +59,14 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      *
      */
     @NotNull
-    //@Pattern(regexp = "^\\w*$")
     private String name;
+    /**
+     *
+     */
+    @ManyToOne
+    @JoinColumn(name = "gamemodel_id")
+    //@JsonBackReference("gamemodel-variabledescriptor")
+    private GameModelEntity gameModel;
     /**
      * Here we cannot use type T, otherwise
      */
@@ -74,14 +80,10 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     @OneToOne(cascade = {CascadeType.ALL})
     @JsonManagedReference("variabledescriptor-scope")
     private ScopeEntity scope;
+
     /**
      *
      */
-    @ManyToOne
-    @JoinColumn(name = "gamemodel_id")
-    //@JsonBackReference("gamemodel-variabledescriptor")
-    private GameModelEntity gameModel;
-
     /**
      *
      * @param a
@@ -96,7 +98,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
 
     /**
      *
-     * @param playerId
+     * @param player
      * @return
      */
     @XmlTransient

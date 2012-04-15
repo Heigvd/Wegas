@@ -90,10 +90,18 @@ public class MessageEntity extends NamedEntity {
         return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
     }
 
+    /**
+     *
+     * @return
+     */
     public String getSubject() {
         return this.subject;
     }
 
+    /**
+     *
+     * @param subject
+     */
     public void setSubject(String subject) {
         this.subject = subject;
     }
@@ -142,7 +150,7 @@ public class MessageEntity extends NamedEntity {
     }
 
     /**
-     * @param mCQVariableInstance
+     * @param mailboxInstanceEntity
      */
     public void setMailboxInstanceEntity(InboxInstanceEntity mailboxInstanceEntity) {
         this.inboxInstanceEntity = mailboxInstanceEntity;
@@ -156,7 +164,7 @@ public class MessageEntity extends NamedEntity {
     }
 
     /**
-     * @param startTime the startTime to set
+     * @param time
      */
     public void setTime(Long time) {
         this.sentTime = time;

@@ -8,6 +8,10 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 
+/**
+ * 
+ * @author fx
+ */
 public class FacebookCredentialsMatcher implements CredentialsMatcher {
 
     /**

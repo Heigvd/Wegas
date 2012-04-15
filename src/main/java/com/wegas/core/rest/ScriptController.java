@@ -38,7 +38,7 @@ public class ScriptController {
      *
      * @param gameModelId
      * @param playerId
-     * @param replyId
+     * @param script 
      * @return p
      */
     @POST

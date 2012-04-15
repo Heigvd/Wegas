@@ -25,7 +25,7 @@ import javax.persistence.criteria.Root;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class UserEntityFacade extends AbstractFacade<UserEntity> {
+public class UserFacade extends AbstractFacade<UserEntity> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -42,7 +42,7 @@ public class UserEntityFacade extends AbstractFacade<UserEntity> {
     /**
      *
      */
-    public UserEntityFacade() {
+    public UserFacade() {
         super(UserEntity.class);
     }
 

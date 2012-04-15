@@ -19,7 +19,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class ScopeEntityFacade extends AbstractFacade<ScopeEntity> {
+public class ScopeFacade extends AbstractFacade<ScopeEntity> {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -35,7 +35,7 @@ public class ScopeEntityFacade extends AbstractFacade<ScopeEntity> {
     /**
      *
      */
-    public ScopeEntityFacade() {
+    public ScopeFacade() {
         super(ScopeEntity.class);
     }
 

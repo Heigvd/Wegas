@@ -9,7 +9,7 @@
  */
 package com.wegas.core.script;
 
-import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
@@ -39,7 +39,7 @@ public class ScriptManager {
      *
      */
     @EJB
-    private PlayerEntityFacade playerEntityFacade;
+    private PlayerFacade playerEntityFacade;
     /**
      *
      */

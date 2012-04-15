@@ -10,7 +10,7 @@
 package com.wegas.crimesim.ejb;
 
 import com.wegas.core.ejb.AbstractFacade;
-import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.script.ScriptEntity;

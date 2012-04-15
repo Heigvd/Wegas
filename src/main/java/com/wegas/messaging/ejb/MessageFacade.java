@@ -10,7 +10,6 @@
 package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.AbstractFacade;
-import com.wegas.crimesim.persistence.variable.MCQReplyInstanceEntity;
 import com.wegas.messaging.persistence.variable.MessageEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

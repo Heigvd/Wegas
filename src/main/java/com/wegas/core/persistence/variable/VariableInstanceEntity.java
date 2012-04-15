@@ -54,26 +54,11 @@ public class VariableInstanceEntity extends AbstractEntity {
     @ManyToOne
     @XmlTransient
     private ScopeEntity scope;
-    /**
-     *
-     */
-    @ManyToOne
-    @XmlTransient
-    private ScopeEntity teamScope;
-    /**
-     *
-     */
-    @OneToOne
-    @XmlTransient
-    private ScopeEntity gameModelScope;
-    /*
-     * This attribute is only present when the variable is used as a
-     * devaultVariableD
-     */
-    @OneToOne
-    @XmlTransient
-    private VariableDescriptorEntity variableDescriptor;
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     @Override
     public VariableInstanceEntity clone() {
@@ -111,26 +96,6 @@ public class VariableInstanceEntity extends AbstractEntity {
     public void setScope(ScopeEntity scope) {
         this.scope = scope;
     }
-
-    /**
-     * @param scope the scope to set
-     */
-    public void setTeamScope(ScopeEntity scope) {
-        this.teamScope = scope;
-    }
-
-    /**
-     *
-     * @param scope
-     */
-    public void setGameModelScope(ScopeEntity scope) {
-        this.gameModelScope = scope;
-    }
-    /*
-     * @Override public VariableInstanceEntity clone() { VariableInstanceEntity
-     * vi = new VariableInstanceEntity(); return vi;
-    }
-     */
 
     /**
      *

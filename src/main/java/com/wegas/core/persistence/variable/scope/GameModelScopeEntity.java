@@ -32,11 +32,10 @@ import javax.xml.bind.annotation.XmlType;
 public class GameModelScopeEntity extends ScopeEntity {
 
     private static final Logger logger = Logger.getLogger(GameModelScopeEntity.class.getName());
-    /*
-     * FIXME Here we should use TeamEntity reference and add a key deserializer module
+    /**
+     *
      */
-    @OneToOne(mappedBy = "gameModelScope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    //@MapKey(name="id")
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @XmlTransient
     private VariableInstanceEntity variableInstance;
 
@@ -85,7 +84,7 @@ public class GameModelScopeEntity extends ScopeEntity {
 
     /**
      *
-     * @param userId
+     * @param player
      * @return
      */
     @Override
@@ -101,7 +100,7 @@ public class GameModelScopeEntity extends ScopeEntity {
     @Override
     public void setVariableInstance(Long userId, VariableInstanceEntity v) {
         this.setVariableInstance(v);
-        v.setGameModelScope(this);
+        v.setScope(this);
     }
 
     /**
