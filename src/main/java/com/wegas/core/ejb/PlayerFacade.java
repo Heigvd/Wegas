@@ -22,7 +22,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class PlayerEntityFacade extends AbstractFacade<PlayerEntity> {
+public class PlayerFacade extends AbstractFacade<PlayerEntity> {
 
     /**
      *
@@ -33,7 +33,7 @@ public class PlayerEntityFacade extends AbstractFacade<PlayerEntity> {
      *
      */
     @EJB
-    private TeamEntityFacade teamEntityFacade;
+    private TeamFacade teamEntityFacade;
 
     /**
      *
@@ -61,7 +61,7 @@ public class PlayerEntityFacade extends AbstractFacade<PlayerEntity> {
     /**
      *
      */
-    public PlayerEntityFacade() {
+    public PlayerFacade() {
         super(PlayerEntity.class);
     }
 }

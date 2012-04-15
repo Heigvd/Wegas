@@ -22,13 +22,13 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class VariableInstanceEntityFacade extends AbstractFacade<VariableInstanceEntity> {
+public class VariableInstanceFacade extends AbstractFacade<VariableInstanceEntity> {
 
     /**
      *
      */
     @EJB
-    private VariableDescriptorEntityFacade variableDescriptorFacade;
+    private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
      */
@@ -75,7 +75,7 @@ public class VariableInstanceEntityFacade extends AbstractFacade<VariableInstanc
     /**
      *
      */
-    public VariableInstanceEntityFacade() {
+    public VariableInstanceFacade() {
         super(VariableInstanceEntity.class);
     }
 }

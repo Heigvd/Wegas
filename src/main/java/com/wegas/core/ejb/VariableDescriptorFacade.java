@@ -26,7 +26,7 @@ import javax.persistence.criteria.Root;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class VariableDescriptorEntityFacade extends AbstractFacade<VariableDescriptorEntity> {
+public class VariableDescriptorFacade extends AbstractFacade<VariableDescriptorEntity> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -34,7 +34,7 @@ public class VariableDescriptorEntityFacade extends AbstractFacade<VariableDescr
      *
      */
     @EJB
-    private GameModelEntityFacade gameModelEntityFacade;
+    private GameModelFacade gameModelEntityFacade;
 
     /**
      *
@@ -46,13 +46,17 @@ public class VariableDescriptorEntityFacade extends AbstractFacade<VariableDescr
         this.create(variableDescriptorEntity);
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public VariableDescriptorEntity findByName(String name) {
-
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<UserEntity> variableDescriptor = cq.from(VariableDescriptorEntity.class);
-        cq.where(cb.equal(variableDescriptor.get("name"), name));
         //cq.where(cb.equal(variableDescriptor.get(VariableDescriptorEntity_.name), name));
+        cq.where(cb.equal(variableDescriptor.get("name"), name));
         Query q = em.createQuery(cq);
         return (VariableDescriptorEntity) q.getSingleResult();
     }
@@ -69,7 +73,7 @@ public class VariableDescriptorEntityFacade extends AbstractFacade<VariableDescr
     /**
      *
      */
-    public VariableDescriptorEntityFacade() {
+    public VariableDescriptorFacade() {
         super(VariableDescriptorEntity.class);
     }
 }

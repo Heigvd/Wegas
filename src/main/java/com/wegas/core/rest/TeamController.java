@@ -9,7 +9,7 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.TeamEntityFacade;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.TeamEntity;
 import java.util.logging.Logger;
@@ -23,21 +23,21 @@ import javax.ws.rs.Path;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/{gameId : [1-9][0-9]*}/Team")
-public class TeamController extends AbstractRestController<TeamEntityFacade> {
+public class TeamController extends AbstractRestController<TeamFacade> {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM");
     /**
      *
      */
     @EJB
-    private TeamEntityFacade teamFacade;
+    private TeamFacade teamFacade;
 
     /**
      *
      * @return
      */
     @Override
-    protected TeamEntityFacade getFacade() {
+    protected TeamFacade getFacade() {
         return this.teamFacade;
     }
 
@@ -58,7 +58,7 @@ public class TeamController extends AbstractRestController<TeamEntityFacade> {
      * @Consumes(MediaType.APPLICATION_JSON)
      * @Produces(MediaType.APPLICATION_JSON) public PlayerEntity
      * addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long
-     * userId) { // return TeamEntityFacade.createPlayer(teamId, userId); return
+     * userId) { // return TeamFacade.createPlayer(teamId, userId); return
      * null; }
      */
     /**

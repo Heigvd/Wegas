@@ -9,7 +9,7 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -24,14 +24,14 @@ import javax.ws.rs.Path;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/{gameId : [1-9][0-9]*}/Team/{teamId : [1-9][0-9]*}/Player")
-public class PlayerController extends AbstractRestController<PlayerEntityFacade> {
+public class PlayerController extends AbstractRestController<PlayerFacade> {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM");
     /**
      *
      */
     @EJB
-    private PlayerEntityFacade playerFacade;
+    private PlayerFacade playerFacade;
 
     /**
      *
@@ -49,7 +49,7 @@ public class PlayerController extends AbstractRestController<PlayerEntityFacade>
      * @return
      */
     @Override
-    protected PlayerEntityFacade getFacade() {
+    protected PlayerFacade getFacade() {
         return this.playerFacade;
     }
 }

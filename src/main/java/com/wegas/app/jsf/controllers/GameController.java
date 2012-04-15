@@ -9,8 +9,8 @@
  */
 package com.wegas.app.jsf.controllers;
 
-import com.wegas.core.ejb.GameModelEntityFacade;
-import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -46,12 +46,12 @@ public class GameController implements Serializable {
      *
      */
     @EJB
-    private PlayerEntityFacade playerFacade;
+    private PlayerFacade playerFacade;
     /**
      *
      */
     @EJB
-    private GameModelEntityFacade gameModeFacade;
+    private GameModelFacade gameModeFacade;
     /**
      *
      */
@@ -106,7 +106,7 @@ public class GameController implements Serializable {
     }
 
     /**
-     * @param id the id to set
+     * @param playerId
      */
     public void setPlayerId(final Long playerId) {
         this.playerId = playerId;

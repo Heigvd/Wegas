@@ -9,7 +9,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.variable.primitive.StringVariableInstanceEntity;
+import com.wegas.core.persistence.user.GroupEntity;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -17,7 +18,8 @@ import javax.persistence.PersistenceContext;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class StringVariableInstanceEntityFacade extends AbstractFacade<StringVariableInstanceEntity> {
+@Stateless
+public class GroupFacade extends AbstractFacade<GroupEntity> {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -33,8 +35,8 @@ public class StringVariableInstanceEntityFacade extends AbstractFacade<StringVar
     /**
      *
      */
-    public StringVariableInstanceEntityFacade() {
-        super(StringVariableInstanceEntity.class);
+    public GroupFacade() {
+        super(GroupEntity.class);
     }
 
 }

@@ -11,11 +11,20 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 
+/**
+ *
+ * @author fx
+ */
 public class FacebookAuthenticationInfo implements AuthenticationInfo {
 
     private static final long serialVersionUID = 1L;
     private PrincipalCollection principalCollection;
 
+    /**
+     *
+     * @param facebookUserDetails
+     * @param realmName
+     */
     public FacebookAuthenticationInfo(FacebookUserDetails facebookUserDetails, String realmName) {
         Collection<String> principals = new ArrayList<String>();
         principals.add(facebookUserDetails.getId());

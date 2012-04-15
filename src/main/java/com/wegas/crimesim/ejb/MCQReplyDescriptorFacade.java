@@ -10,7 +10,7 @@
 package com.wegas.crimesim.ejb;
 
 import com.wegas.core.ejb.AbstractFacade;
-import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
@@ -38,7 +38,7 @@ public class MCQReplyDescriptorFacade extends AbstractFacade<MCQReplyDescriptorE
      *
      */
     @EJB
-    private PlayerEntityFacade playerEntityFacade;
+    private PlayerFacade playerEntityFacade;
     /**
      *
      */
@@ -57,6 +57,13 @@ public class MCQReplyDescriptorFacade extends AbstractFacade<MCQReplyDescriptorE
         super(MCQReplyDescriptorEntity.class);
     }
 
+    /**
+     *
+     * @param replyVariableDescriptorId
+     * @param playerId
+     * @param startTime
+     * @return
+     */
     public MCQReplyInstanceEntity selectReply(Long replyVariableDescriptorId, Long playerId, Long startTime) {
         MCQReplyDescriptorEntity reply = this.find(replyVariableDescriptorId);
         PlayerEntity player = playerEntityFacade.find(playerId);
@@ -75,6 +82,12 @@ public class MCQReplyDescriptorFacade extends AbstractFacade<MCQReplyDescriptorE
         return replyInstance;
     }
 
+    /**
+     *
+     * @param replyVariableInstanceId
+     * @param playerId
+     * @return
+     */
     public List<VariableInstanceEntity> validateReply(Long replyVariableInstanceId, Long playerId) {
         MCQReplyInstanceEntity reply = this.mCQReplyVariableInstanceEntityFacade.find(replyVariableInstanceId);
 

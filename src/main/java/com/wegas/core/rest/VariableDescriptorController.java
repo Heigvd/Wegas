@@ -9,8 +9,8 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.GameModelEntityFacade;
-import com.wegas.core.ejb.VariableDescriptorEntityFacade;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
@@ -29,19 +29,19 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor")
-public class VariableDescriptorController extends AbstractRestController<VariableDescriptorEntityFacade> {
+public class VariableDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
 
     private static final Logger logger = Logger.getLogger("VariableDescriptorController");
     /**
      *
      */
     @EJB
-    private VariableDescriptorEntityFacade variableDescriptorFacade;
+    private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
      */
     @EJB
-    private GameModelEntityFacade gameModelFacade;
+    private GameModelFacade gameModelFacade;
     /**
      *
      */
@@ -108,7 +108,7 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
      * @return
      */
     @Override
-    protected VariableDescriptorEntityFacade getFacade() {
+    protected VariableDescriptorFacade getFacade() {
         return this.variableDescriptorFacade;
     }
 }

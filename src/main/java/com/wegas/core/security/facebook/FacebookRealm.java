@@ -19,6 +19,10 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
+/**
+ *
+ * @author fx
+ */
 public class FacebookRealm extends AuthorizingRealm {
 
     private static final ResourceBundle props = ResourceBundle.getBundle("com.wegas.app.Wegas");

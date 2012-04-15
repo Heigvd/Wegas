@@ -27,13 +27,13 @@ import javax.persistence.criteria.Root;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class GameEntityFacade extends AbstractFacade<GameEntity> {
+public class GameFacade extends AbstractFacade<GameEntity> {
 
     /**
      *
      */
     @EJB
-    private GameModelEntityFacade gameModelEntityFacade;
+    private GameModelFacade gameModelEntityFacade;
     /**
      *
      */
@@ -43,7 +43,7 @@ public class GameEntityFacade extends AbstractFacade<GameEntity> {
     /**
      *
      */
-    public GameEntityFacade() {
+    public GameFacade() {
         super(GameEntity.class);
     }
 

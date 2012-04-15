@@ -17,6 +17,7 @@ Set up server
     By default, Wegas will look for wegas_dev and wegas_test databases, using the username "user" and password "123"
 *   Glassfish Server
     - Install glassfish v>3.1.1
+    - Download Postgresql driver (most likely 9.1-901 JDBC 4) from http://jdbc.postgresql.org/download.html and place it in domains/YOURDOMAIN/lib/
     - Enable comet support:
       can be done in netbeans right click on server >> properties >> check enable comet
     - Enable websocket support:

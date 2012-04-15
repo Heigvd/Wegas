@@ -9,7 +9,7 @@
  */
 package com.wegas.crimesim.rest;
 
-import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.script.ScriptManager;
@@ -69,7 +69,8 @@ public class MCQVariableController extends AbstractRestController<MCQDescriptorF
      *
      * @param gameModelId
      * @param playerId
-     * @param replyId
+     * @param replyDescriptorId
+     * @param startTime
      * @return p
      */
     @GET
