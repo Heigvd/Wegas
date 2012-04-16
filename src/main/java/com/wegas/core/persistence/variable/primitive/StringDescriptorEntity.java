@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.persistence.variable.primitive;
 
@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 @Entity
 
 @XmlType(name = "StringVariableDescriptor")
-public class StringVariableDescriptorEntity extends VariableDescriptorEntity<StringVariableInstanceEntity> {
+public class StringDescriptorEntity extends VariableDescriptorEntity<StringInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
 

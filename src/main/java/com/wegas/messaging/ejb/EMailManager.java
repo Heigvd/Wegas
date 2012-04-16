@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.messaging.ejb;
 
@@ -57,7 +57,7 @@ public class EMailManager {
 
         Properties props = System.getProperties();
 
-        ResourceBundle res = ResourceBundle.getBundle("com.wegas.app.Wegas");
+        ResourceBundle res = ResourceBundle.getBundle("wegas");
         props.put("mail.smtp.host", res.getString("mail.smtp.host"));           // Attaching to default Session, or we could start a new one
 
         Session session = Session.getDefaultInstance(props, null);

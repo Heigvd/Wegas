@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.persistence.variable;
 
@@ -16,9 +16,9 @@ import com.wegas.core.persistence.game.NamedEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.messaging.persistence.variable.InboxDescriptorEntity;
 import com.wegas.core.persistence.variable.scope.ScopeEntity;
-import com.wegas.core.persistence.variable.primitive.ListVariableDescriptorEntity;
-import com.wegas.core.persistence.variable.primitive.NumberVariableDescriptorEntity;
-import com.wegas.core.persistence.variable.primitive.StringVariableDescriptorEntity;
+import com.wegas.core.persistence.variable.primitive.ListDescriptorEntity;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptorEntity;
+import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -39,10 +39,10 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @UniqueConstraint(columnNames = {"gamemodel_id", "name", "scope_id"}))
 @XmlType(name = "VariableDescriptor", propOrder = {"@class", "id", "name", "scope", "defaultVariableInstance"})
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "StringVariableDescriptor", value = StringVariableDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "ListVariableDescriptor", value = ListVariableDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "StringVariableDescriptor", value = StringDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "ListVariableDescriptor", value = ListDescriptorEntity.class),
     @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "NumberVariableDescriptor", value = NumberVariableDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "NumberVariableDescriptor", value = NumberDescriptorEntity.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class)
 })
 public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends NamedEntity {

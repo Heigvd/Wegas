@@ -1,6 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas.
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
  */
 package com.wegas.core.security.facebook;
 
@@ -8,7 +13,7 @@ import org.apache.shiro.authc.AuthenticationToken;
 
 /**
  *
- * @author fx
+* @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class FacebookToken implements AuthenticationToken {
 
