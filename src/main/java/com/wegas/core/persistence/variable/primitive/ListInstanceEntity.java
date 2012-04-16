@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *                                                                                                 m                                                                                                                                                                                                                                                                                                                                    mm
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.persistence.variable.primitive;
 
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "ListVariableInstance")
-public class ListVariableInstanceEntity extends VariableInstanceEntity {
+public class ListInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("StringVariableInstanceEntity");

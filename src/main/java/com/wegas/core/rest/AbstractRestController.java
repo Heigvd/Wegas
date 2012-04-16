@@ -24,13 +24,6 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
 
     Logger logger = LoggerFactory.getLogger(AbstractRestController.class);
 
-    /*
-     * private Class<T> entityClass;
-     *
-     * public AbstractRestController(Class<T> entityClass) { this.entityClass =
-     * entityClass; }
-     */
-
     /**
      *
      */
@@ -102,10 +95,11 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
-    public Response delete(@PathParam("entityId") Long entityId) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public AbstractEntity delete(@PathParam("entityId") Long entityId) {
         AbstractEntity entity = getFacade().find(entityId);
         getFacade().remove(entity);
-        return Response.noContent().build();
+        return entity;
     }
 
     /**

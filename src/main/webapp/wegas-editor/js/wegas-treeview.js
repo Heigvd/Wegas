@@ -229,16 +229,15 @@ YUI.add('wegas-treeview', function (Y) {
                                 && (this.get('includeClasses') === null
                                 || this.get('includeClasses').hasOwnProperty(el['@class']))) {
 
-                        // if (el.scope.variableInstances.hasOwnProperty(i)) {
                             text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
                             ret.push({
-                                type: 'Text',
-                                label: text,
+                                type: 'html',
+                                html: text + EDITBUTTONTPL,
                                 title: text,
                                 children: this.genScopeTreeViewElements(el),
-                                data: el
+                                data: el,
+                                contentStyle: this.getClassName('icon-game')
                             });
-                        // }
                         }
                         break;
                     case 'Page':
@@ -291,7 +290,7 @@ YUI.add('wegas-treeview', function (Y) {
                     case 'Player':
                         ret.push({
                             type: 'html',
-                            html: 'Player: ' + el.name,
+                            html: 'Player: ' + el.name + EDITBUTTONTPL,
                             title: 'Player: ' + el.name,
                             data: el,
                             contentStyle: this.getClassName('icon-player')

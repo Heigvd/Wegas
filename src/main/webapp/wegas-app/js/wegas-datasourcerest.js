@@ -9,7 +9,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
         DataSourceREST,
         VariableDescriptorDataSourceREST,
         GameModelDataSourceREST,
-        GameDataSourceREST;
+        GameDataSourceREST,
+        DEFAULTHEADERS = {
+            'Content-Type': 'application/json; charset=utf-8'
+        };
 
     DataSourceREST = function () {
         DataSourceREST.superclass.constructor.apply(this, arguments);
@@ -28,31 +31,41 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.get('host').data = [];
         },
 
+        applyOperation: function (method, needle, stack) {
+            var i;
+            for (i = 0; i < stack.length; i += 1) {
+                if (stack[i].id === needle.id) {
+                    switch (method) {
+                    case "DELETE":
+                        //@fixme is there a memory leak here ??
+                        stack.splice(i, 1);
+                        //delete stack[i];
+                        return;
+                    default:
+                        //stack[i] = Y.merge(stack[i], needle);
+                        delete stack[i];
+                        stack[i] = needle;
+                        return;
+                    }
+                }
+            }
+            stack.push(needle);
+        },
+
         _beforeDefResponseFn: function (e) {
-            var cEl, loaded, i,
-                data = this.get('host').data;
+            var cEl, i,
+                data =  this.get('host').data;
 
             for (i = 0; i < e.response.results.length; i += 1) {                // Treat reply
                 cEl = e.response.results[i];
                 if (cEl) {
-                    loaded = false;
-                    Y.Array.each(data, function (o, index, a) {
-                        if (o.id === cEl.id) {
-                            a[index] = Y.merge(o, cEl);
-                            loaded = true;
-                        }
-                    });
-                    if (!loaded) {
-                        data.push(cEl);
-                    }
-
+                    this.applyOperation(e.cfg.method, cEl, data);
                 }
             }
             e.response.results = data;
         },
         getCachedVariables: function () {
-            var host = this.get('host');
-            return host.data;
+            return this.get('host').data;
         },
         getCachedVariableBy: function (key, val) {
             var host = this.get('host'), i;
@@ -82,9 +95,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             host.sendRequest({
                 request: "/" + id,
                 cfg: {
-                    headers: {
-                        'Content-Type': 'application/json; charset=utf-8'
-                    }
+                    headers: DEFAULTHEADERS
                 },
                 callback: {
                     success: this._successHandler,
@@ -92,74 +103,53 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             });
 
+        },
+
+        sendRequest: function (request, cfg, data, callback) {
+            callback = callback || {
+                success: this._successHandler,
+                failure: this._failureHandler
+            };
+            cfg = cfg || {};
+            cfg.headers =  cfg.headers || DEFAULTHEADERS;
+            if (data) {
+                cfg.data = Y.JSON.stringify(data);
+            }
+            this.get('host').sendRequest({
+                request: request,
+                cfg: cfg,
+                callback: callback
+            });
         },
         getRequest: function (request) {
-            var host = this.get('host');
-
-            host.sendRequest({
-                request: '/' + request,
-                cfg: {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json; charset=utf-8'
-                    }
-                },
-                callback: {
-                    success: this._successHandler,
-                    failure: this._failureHandler
-                }
-            });
-        },
-        /**
-         * @fixme the parameters should be (request, data)
-         */
-        put: function (data, request) {
-            var host = this.get('host');
-
-            request = request || ((data.id) ? "/" + data.id : "");
-
-            host.sendRequest({
-                request: request,
-                cfg: {
-                    method: "PUT",
-                    headers: {
-                        'Content-Type': 'application/json; charset=utf-8'
-                    },
-                    data: Y.JSON.stringify(data)
-                },
-                callback: {
-                    success: this._successHandler,
-                    failure: this._failureHandler
-                }
-            });
+            this.sendRequest('/' + request);
         },
         /**
          * @fixme the parameters should be (request, data, parentData)
          */
         post: function (data, parentData, request) {
-            var host = this.get('host');
-
             request = request || ((parentData) ? "/" + parentData.id + "/" + data["@class"] :  "");
 
-            host.sendRequest({
-                request: request,
-                cfg: {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json; charset=utf-8'
-                    },
-                    data: Y.JSON.stringify(data)
-                },
-                callback: {
-                    success: this._successHandler,
-                    failure: this._failureHandler
-                }
+            this.sendRequest(request, {
+                method: "POST"
+            }, data);
+        },
+        generateRequest: function (data) {
+            return "/" + data.id;
+        },
+        put: function (data) {
+            this.sendRequest(this.generateRequest(data), {
+                method: "PUT"
+            }, data);
+        },
+        deleteObject: function (data) {
+            this.sendRequest(this.generateRequest(data), {
+                method: "DELETE"
             });
         },
         _successHandler: function (e) {
             Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
-        //data = Y.JSON.stringify(e.response, null, 2);
-        // host.sendRequest('/');
+            //data = Y.JSON.stringify(e.response, null, 2);
         },
         _failureHandler: function (e) {
             alert("Error sending REST post request!");
@@ -196,7 +186,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
 
         _beforeDefResponseFn: function (e) {
-            var cEl, i, loaded,
+            var cEl, i,
                 data = this.get('host').data;                                   // Treat reply
 
             Y.log("Response received", "info", "Y.Wegas.VariableDescriptorDataSourceREST");
@@ -209,26 +199,16 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     cEl['@class'] === "InboxInstance"||
                     cEl['@class'] === "MCQVariableInstance") {
 
-                    Y.Array.each(data, function (o, index, a) {
-                        var i;
-                        for (i in o.scope.variableInstances) {
-                            if (o.scope.variableInstances.hasOwnProperty(i) && o.scope.variableInstances[i].id === cEl.id) {
-                                o.scope.variableInstances[i] = Y.merge(o.scope.variableInstances[i], cEl);
+                    Y.Array.each(data, function (o) {
+                        var j;
+                        for (j in o.scope.variableInstances) {
+                            if (o.scope.variableInstances.hasOwnProperty(j) && o.scope.variableInstances[j].id === cEl.id) {
+                                o.scope.variableInstances[j] = Y.merge(o.scope.variableInstances[i], cEl);
                             }
                         }
                     });
                 } else {
-                    loaded = false;
-                    Y.Array.each(data, function (o, index, a) {
-                        if (o.id === cEl.id) {
-                            a[index] = Y.merge(o, cEl);
-                            loaded = true;
-                        }
-                    });
-                    if (!loaded) {
-                        data.push(cEl);
-                    }
-
+                    this.applyOperation(e.cfg.method, cEl, data);
                 }
             }
             e.response.results = data;
@@ -256,13 +236,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 return null;
             }
             switch (el.scope['@class']) {
-            case 'PlayerScope':
-                return el.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
-            case 'TeamScope':
-                return el.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
-            case 'GameModelScope':
-            case 'GameScope':
-                return el.scope.variableInstances[0];
+                case 'PlayerScope':
+                    return el.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
+                case 'TeamScope':
+                    return el.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
+                case 'GameModelScope':
+                case 'GameScope':
+                    return el.scope.variableInstances[0];
             }
         }
     });
@@ -281,7 +261,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(GameModelDataSourceREST, DataSourceREST, {
         _beforeDefResponseFn: function (e) {
-            var cEl, i, loaded,
+            var cEl, i,
                 data = this.get('host').data;                                   // Treat reply
 
             for (i = 0; i < e.response.results.length; i += 1) {
@@ -289,26 +269,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 if (!cEl) {
 
                 } else if (cEl['@class'] === "Team") {
-                    Y.Array.each(data, function (o) {
-                        var j;
-                        for (j in o.teams) {
-                            if (o.teams[j].id === cEl.id) {
-                                o.teams[j] = Y.merge(o.teams, cEl);
-                            }
-                        }
-                    });
+                    //@TODO is this case still in use ??
                 } else {
-                    loaded = false;
-                    Y.Array.each(data, function (o, index, a) {
-                        if (o.id === cEl.id) {
-                            a[index] = Y.merge(o, cEl);
-                            loaded = true;
-                        }
-                    });
-                    if (!loaded) {
-                        data.push(cEl);
-                    }
-
+                    this.applyOperation(e.cfg.method, cEl, data);
                 }
             }
             e.response.results = data;
@@ -330,70 +293,61 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(GameDataSourceREST, DataSourceREST, {
+
         _beforeDefResponseFn: function (e) {
-            var cEl, i, loaded, game, team, j,
+            var cEl, i, game, team,
                 data = this.get('host').data;                                  // Treat reply
 
             Y.log("Response received", "info", "Y.Wegas.GameDataSourceREST");
 
             for (i = 0; i < e.response.results.length; i += 1) {
                 cEl = e.response.results[i];
-                loaded = false;
+
                 if (!cEl) {
 
                 } else if (cEl['@class'] === "Team") {
                     game = this.getCachedVariableBy('id', cEl.gameId);
-                    for (j = 0; j < game.teams.length; j += 1) {
-                        if (game.teams[j].id === cEl.id) {
-                            game.teams[j] = cEl;
-                            loaded = true;
-                        }
-                    }
-                    if (!loaded) {
-                        game.teams.push(cEl);
-                    }
+                    this.applyOperation(e.cfg.method, cEl, game.teams);
+
                 } else if (cEl['@class'] === "Player") {
                     team = this.getTeamById(cEl.teamId);
-                    for (j = 0; j < team.players.length; j += 1) {
-                        if (team.players[j].id === cEl.id) {
-                            team.players[j] = cEl;
-                            loaded = true;
-                        }
-                    }
-                    if (!loaded) {
-                        team.players.push(cEl);
-                    }
-                } else {
-                    loaded = false;
-                    Y.Array.each(data, function (o, index, a) {
-                        if (o.id === cEl.id) {
-                            a[index] = Y.merge(o, cEl);
-                            loaded = true;
-                        }
-                    });
-                    if (!loaded) {
-                        data.push(cEl);
-                    }
+                    this.applyOperation(e.cfg.method, cEl, team.players);
 
+                } else {
+                    this.applyOperation(e.cfg.method, cEl, data);
                 }
             }
             e.response.results = data;
         },
-        put: function (data, request) {
-
+        generateRequest: function (data) {
             if (data['@class'] === 'Team') {
-                request = '/' + data.gameId + '/Team/' + data.id;
+                return '/' + data.gameId + '/Team/' + data.id;
             } else if (data['@class'] === 'Player') {
-                request = "/" + this.getGameByTeamId(data.teamId).id
+                return "/" + this.getGameByTeamId(data.teamId).id
                     + '/Team/' + data.teamId + '/Player/' + data.id;
+            } else {
+                return "/" + data.id;
             }
-            GameDataSourceREST.superclass.put.call(this, data, request);
         },
         post: function (data, parentData, request) {
             if (data['@class'] === 'Player') {
                 request = "/" + this.getGameByTeamId(parentData.id).id + "/Team/" + parentData.id + "/Player";
             }
             GameDataSourceREST.superclass.post.call(this, data, parentData, request);
+        },
+
+        deleteObject: function (data, callback) {
+            if (data['@class'] === 'Team') {
+                this.sendRequest('/' + data.gameId + '/Team/' + data.id, {
+                    method: "DELETE"
+                });
+            } else if (data['@class'] === 'Player') {
+                this.sendRequest("/" + data.id, {
+                    method: "DELETE"
+                });
+            } else {
+                GameDataSourceREST.superclass.deleteObject.call(this, data, callback);
+            }
         },
         getCurrentGame: function () {
             return this.getCachedVariableById(Y.Wegas.app.get('currentGame'));
@@ -472,8 +426,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
      */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
-            keys = [],
-            i = 0;
+        keys = [],
+        i = 0;
 
         if (locator) {
             if (locator == '.') return [];					// MODIFIED !!

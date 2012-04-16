@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.rest;
 
@@ -26,7 +26,7 @@ import javax.ws.rs.Path;
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/")
 public class GameController extends AbstractRestController<GameFacade> {
-1
+
     /**
      *
      */

@@ -1,6 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas.
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
  */
 package com.wegas.core.security.facebook;
 
@@ -21,11 +26,11 @@ import org.apache.shiro.subject.PrincipalCollection;
 
 /**
  *
- * @author fx
+* @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class FacebookRealm extends AuthorizingRealm {
 
-    private static final ResourceBundle props = ResourceBundle.getBundle("com.wegas.app.Wegas");
+    private static final ResourceBundle props = ResourceBundle.getBundle("wegas");
     private static final String APP_SECRET = props.getString("facebook.appSecret").toString();
     private static final String APP_ID = props.getString("facebook.appId").toString();
     private static final String REDIRECT_URL = props.getString("facebook.redirectUrl").toString();

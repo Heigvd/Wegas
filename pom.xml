@@ -24,7 +24,6 @@
     <!--<issuemanagement>
       <system>bugzilla</system>
       <url>http://ubuntu-vm.localdomain/cgi-bin/bugzilla3/index.cgi</url>
-
     </issuemanagement>-->
 
     <properties>
@@ -64,8 +63,9 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.3</version>
+            <version>2.6</version>
         </dependency>
+
         <!-- SL4J -->
         <dependency>
             <groupId>commons-logging</groupId>
@@ -83,25 +83,6 @@
             <version>1.2.16</version>
         </dependency>
 
-        <!-- sl4j
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>0.9.24</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>0.9.24</version>
-        </dependency>-->
-
-        <!-- Postgresql Driver -->
-        <!--<dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
-        </dependency>
-        -->
         <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
@@ -116,7 +97,7 @@
             <version>1.9.0</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
+        <!--<dependency>
             <groupId>com.bm</groupId>
             <artifactId>ejb3unit</artifactId>
             <version>2.0.0</version>
@@ -188,30 +169,7 @@
             <version>${shiro.version}</version>
         </dependency>
 
-        <!-- Atmosphere Dependencies -->
-        <!--
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-runtime</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-annotations</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-jquery</artifactId>
-            <version>${atmosphere.version}</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-jersey</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>-->
-
+        <!-- Geronimo -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_3.0_spec</artifactId>
@@ -246,13 +204,52 @@
             <version>1.1.2</version>
         <scope>runtime</scope>
         </dependency>-->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>6.0</version>
+            <type>jar</type>
+        </dependency>
 
-        <!-- Facebook API Dependencies -->
+        <!-- Facebook API dependencies -->
         <dependency>
             <groupId>com.google.code.facebookapi</groupId>
             <artifactId>facebook-java-api</artifactId>
             <version>2.0.5</version>
         </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.6</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- Atmosphere Dependencies -->
+        <!--
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-runtime</artifactId>
+            <version>${atmosphere.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-annotations</artifactId>
+            <version>${atmosphere.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-jquery</artifactId>
+            <version>${atmosphere.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-jersey</artifactId>
+            <version>${atmosphere.version}</version>
+        </dependency>-->
 
         <!-- YUI -->
         <!--<dependency>
@@ -262,19 +259,25 @@
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>-->
+          <!-- sl4j -->
+        <!--<dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>0.9.24</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>0.9.24</version>
+        </dependency>-->
 
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>2.6</version>
-            <scope>test</scope>
+        <!-- Postgresql Driver -->
+        <!--<dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
         </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
-            <type>jar</type>
-        </dependency>
+        -->
 
        <!-- <dependency>
             <groupId>org.mortbay.jetty</groupId>
