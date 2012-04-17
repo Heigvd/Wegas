@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud
  * Media Engineering :: Institute for Information and Communications Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.persistence;
 

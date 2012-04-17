@@ -5,12 +5,11 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.AbstractFacade;
-import com.wegas.crimesim.persistence.variable.MCQReplyVariableInstanceEntity;
 import com.wegas.messaging.persistence.variable.MessageEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

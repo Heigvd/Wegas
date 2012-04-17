@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.security.facebook;
 
@@ -45,6 +45,8 @@ public class FacebookLoginServlet extends HttpServlet {
     }
 
     /**
+     * @param request
+     * @param response
      * @see HttpServlet.Post(HttpServletRequest request, HttpServletResponse)
      */
     @Override

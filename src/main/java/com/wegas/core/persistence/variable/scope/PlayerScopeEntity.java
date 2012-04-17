@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.persistence.variable.scope;
 
@@ -33,48 +33,14 @@ import javax.xml.bind.annotation.XmlType;
 public class PlayerScopeEntity extends ScopeEntity {
 
     private static final Logger logger = Logger.getLogger(PlayerScopeEntity.class.getName());
-    //@EJB
-    //@Transient
-    // private WegasEntityManager wem;
-    /*
-     * @ElementCollection(fetch=FetchType.EAGER) @MapKeyColumn(name = "id",
-     * insertable = false, updatable = false) @CollectionTable( //schema =
-     * "jpa", name = "varinst_map", joinColumns = @JoinColumn(name = "id"))
-     */
-    // @OneToMany(mappedBy = "scope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-   /*
-     * @XmlTransient
-     */
-    //@MapKey
-    // @JsonDeserialize(keyUsing = UserDeserializer.class)
-    //private Map<UserEntity, VariableInstanceEntity> variableInstances= new HashMap<UserEntity, VariableInstanceEntity>();
-    //  private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<Long, VariableInstanceEntity>();
-    /*
-     * @ElementCollection(fetch=FetchType.EAGER) @MapKeyColumn(name =
-     * "language", insertable = false, updatable = false)
-     * @CollectionTable(schema = "jpa", name = "multilingual_string_map",
-     * joinColumns = @JoinColumn(name = "string_id")) private Map<Long,
-     * VariableInstanceEntity> variableInstances = new HashMap<Long,
-     * VariableInstanceEntity>();
-     */
-    /*
-     * @ElementCollection @MapKeyColumn(name="name") @Column(name="value")
-     * @CollectionTable(name="example_attributes",
-     * joinColumns=@JoinColumn(name="PlayerScopeEntity_id")) Map<String, String>
-     * attributes = new HashMap<String, String>();
-     */
-    /**
-     * @return the variableInstance
-     */
     /*
      * FIXME Here we should use UserEntity reference and add a key deserializer
      * module
      */
-    //  @OneToMany(mappedBy = "scope", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    @OneToMany(mappedBy = "scope", cascade = {CascadeType.ALL})
-    //@MapKey(name="id")
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
     @XmlTransient
-    private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<Long, VariableInstanceEntity>();
+    private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<>();
 
     /**
      *
@@ -87,7 +53,7 @@ public class PlayerScopeEntity extends ScopeEntity {
 
     /**
      *
-     * @param playerId
+     * @param player
      * @return
      */
     @Override

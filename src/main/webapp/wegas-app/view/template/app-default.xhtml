@@ -212,50 +212,44 @@
                             ]
                         },*/
                     },
+                    /**  Entities admin menus **/
                     editorMenus: {
-
-                        /*********************************************************** Entities Admin Menus */
                         "Game": [
-                            { text: "New team", value: { op:'addChild', childClass: "Team" } }
-                            /*                        {
-                            text: "Edit",
-                            op: 'update',
-                            adminForm: "AlbaListWidget"
-                        },
-                        {
-                            text: "New",
-                            op: "new",
-                            submenu:  {
-                                id: "AlbaListWidgetAdd",
-                                itemdata: [
-
-                                ]
-                            }
-                        },
-                        { text: "Delete", op: 'delete' }*/
+                            { text: "New team", value: { op:'addChild', childClass: "Team" } },
+                            { text: "Delete", value: { op:'delete' } }
                         ],
                         "Team": [
-                            { text: "New player", value: { op:'addChild', childClass: "Player" } }
-                            /*                        {
-                            text: "Edit",
-                            op: 'update',
-                            adminForm: "AlbaListWidget"
-                        },
-                        {
-                            text: "New",
-                            op: "new",
-                            submenu:  {
-                                id: "AlbaListWidgetAdd",
-                                itemdata: [
-
-                                ]
-                            }
-                        },
-                        { text: "Delete", op: 'delete' }*/
+                            { text: "New player", value: { op:'addChild', childClass: "Player" } },
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "Player": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "StringVariableDescriptor": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "NumberVariableDescriptor": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "ListVariableDescriptor": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "MCQVariableDescriptor": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "InboxDescriptor": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "Player": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "Player": [
+                            { text: "Delete", value: { op:'delete' } }
                         ]
                     },
+
+                    /** Entities admin Forms **/
                     forms: {
-                        /*********************************************************** Types Forms */
                         "GameModel" : [
                             { name: 'id', type: 'hidden' },
                             { name: 'name', label:'Name', required: true},

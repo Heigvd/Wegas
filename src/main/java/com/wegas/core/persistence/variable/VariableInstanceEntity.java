@@ -5,16 +5,16 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.primitive.ListVariableInstanceEntity;
-import com.wegas.core.persistence.variable.primitive.NumberVariableInstanceEntity;
-import com.wegas.core.persistence.variable.primitive.StringVariableInstanceEntity;
+import com.wegas.core.persistence.variable.primitive.ListInstanceEntity;
+import com.wegas.core.persistence.variable.primitive.NumberInstanceEntity;
+import com.wegas.core.persistence.variable.primitive.StringInstanceEntity;
 import com.wegas.core.persistence.variable.scope.ScopeEntity;
-import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
 import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
 import java.util.logging.Logger;
 import javax.persistence.*;
@@ -31,10 +31,10 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlType(name = "VariableInstance", propOrder = {"@class", "id"})
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "StringVariableInstance", value = StringVariableInstanceEntity.class),
-    @JsonSubTypes.Type(name = "ListVariableInstance", value = ListVariableInstanceEntity.class),
-    @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQVariableInstanceEntity.class),
-    @JsonSubTypes.Type(name = "NumberVariableInstance", value = NumberVariableInstanceEntity.class),
+    @JsonSubTypes.Type(name = "StringVariableInstance", value = StringInstanceEntity.class),
+    @JsonSubTypes.Type(name = "ListVariableInstance", value = ListInstanceEntity.class),
+    @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQInstanceEntity.class),
+    @JsonSubTypes.Type(name = "NumberVariableInstance", value = NumberInstanceEntity.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstanceEntity.class)
 })
 public class VariableInstanceEntity extends AbstractEntity {
@@ -54,26 +54,11 @@ public class VariableInstanceEntity extends AbstractEntity {
     @ManyToOne
     @XmlTransient
     private ScopeEntity scope;
-    /**
-     *
-     */
-    @ManyToOne
-    @XmlTransient
-    private ScopeEntity teamScope;
-    /**
-     *
-     */
-    @OneToOne
-    @XmlTransient
-    private ScopeEntity gameModelScope;
-    /*
-     * This attribute is only present when the variable is used as a
-     * devaultVariableD
-     */
-    @OneToOne
-    @XmlTransient
-    private VariableDescriptorEntity variableDescriptor;
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     @Override
     public VariableInstanceEntity clone() {
@@ -111,26 +96,6 @@ public class VariableInstanceEntity extends AbstractEntity {
     public void setScope(ScopeEntity scope) {
         this.scope = scope;
     }
-
-    /**
-     * @param scope the scope to set
-     */
-    public void setTeamScope(ScopeEntity scope) {
-        this.teamScope = scope;
-    }
-
-    /**
-     *
-     * @param scope
-     */
-    public void setGameModelScope(ScopeEntity scope) {
-        this.gameModelScope = scope;
-    }
-    /*
-     * @Override public VariableInstanceEntity clone() { VariableInstanceEntity
-     * vi = new VariableInstanceEntity(); return vi;
-    }
-     */
 
     /**
      *

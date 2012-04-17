@@ -5,11 +5,11 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.script;
 
-import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
@@ -39,7 +39,7 @@ public class ScriptManager {
      *
      */
     @EJB
-    private PlayerEntityFacade playerEntityFacade;
+    private PlayerFacade playerEntityFacade;
     /**
      *
      */
@@ -55,7 +55,7 @@ public class ScriptManager {
      */
     public List<VariableInstanceEntity> runScript(Long gameModelId, Long playerId, ScriptEntity s) {
         ScriptEngineManager mgr = new ScriptEngineManager();
-        ScriptEngine engine = mgr.getEngineByName("JavaScript");
+        ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
         // GameModelEntity gm = gameModelEntityFacade.find(gameModelId);
         PlayerEntity p = playerEntityFacade.find(playerId);

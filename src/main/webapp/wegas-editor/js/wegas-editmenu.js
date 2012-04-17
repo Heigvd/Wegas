@@ -4,7 +4,9 @@
 
 YUI.add('wegas-editmenu', function(Y) {
     var CONTENTBOX = 'contentBox',
-    YAHOO = Y.YUI2,
+        YAHOO = Y.YUI2,
+        EditMenu;
+
     EditMenu = Y.Base.create("wegas-editmenu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
 
         // *** Instance Members *** //
@@ -23,7 +25,7 @@ YUI.add('wegas-editmenu', function(Y) {
             });
             this.menu.render(cb._node);
         },
-        bindUI : function() {
+        bindUI : function () {
             //var bb = this.get(BOUNDINGBOX);
             //bb.on('mouseupoutside', this.hide, this);
             //bb.on('click', this.hide, this);
@@ -33,10 +35,12 @@ YUI.add('wegas-editmenu', function(Y) {
             //this.move(mouseEvent.clientX + Y.DOM.docScrollX(), mouseEvent.clientY + Y.DOM.docScrollY());
             this.show();
         },
-        setMenuItems: function( data, dataSource ) {
+        setMenuItems: function(data, dataSource) {
             var menuItems = Y.Wegas.editor.get("editorMenus")[data["@class"]];
 
-            if (!menuItems) Y.log('error', 'Menu items are undefined.', "Wegas.Editor")
+            if (!menuItems) {
+                Y.log('error', 'Menu items are undefined.', "Wegas.Editor");
+            }
 
             this._currentDataSource = dataSource;
             this._currentData = data;
@@ -47,18 +51,21 @@ YUI.add('wegas-editmenu', function(Y) {
         },
 
         // *** Private Methods *** //
-        _onMenuClick: function(p_sType, args) {
+        _onMenuClick: function (p_sType, args) {
             var menuItem = args[1],
             action = menuItem.value;
 
             switch (action.op) {
-                case "addChild":
-                    Y.Wegas.editor.edit({
-                        '@class': action.childClass
-                    }, function(value) {
-                        this._currentDataSource.rest.post(value, this._currentData);
-                    }, null, this);
-                    break;
+            case "addChild":
+                Y.Wegas.editor.edit({
+                    '@class': action.childClass
+                }, function (value) {
+                    this._currentDataSource.rest.post(value, this._currentData);
+                }, null, this);
+                break;
+            case "delete":
+                this._currentDataSource.rest.deleteObject(this._currentData);
+                break;
             }
             this.hide();
         }

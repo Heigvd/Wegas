@@ -5,7 +5,7 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.persistence.variable.scope;
 
@@ -48,7 +48,6 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
     @XmlID
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scope_seq")
     private Long id;
-    //abstract public void getVariableInstance(UserEntity u);
     /**
      *
      */
@@ -68,7 +67,7 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
 
     /**
      *
-     * @param userId
+     * @param player
      * @return
      */
     @XmlTransient
