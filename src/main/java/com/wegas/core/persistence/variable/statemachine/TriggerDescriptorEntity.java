@@ -17,7 +17,6 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
@@ -25,7 +24,6 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  */
 @XmlRootElement
 @XmlType(name="TriggerDescriptor")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class TriggerDescriptorEntity extends FiniteStateMachineDescriptorEntity {
 
     private Boolean oneShot;
@@ -133,5 +131,5 @@ public class TriggerDescriptorEntity extends FiniteStateMachineDescriptorEntity 
     public String toString() {
         return "TriggerDescriptorEntity{id=" + this.getId() + ", oneShot=" + oneShot + ", opposedTrigger=" + opposedTrigger + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
     }
-    
+
 }

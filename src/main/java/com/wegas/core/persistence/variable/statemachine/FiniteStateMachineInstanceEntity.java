@@ -15,7 +15,6 @@ import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
@@ -25,7 +24,6 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @Table(name = "state_machine")
 @XmlRootElement
 @XmlType(name = "FSMInstance")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class FiniteStateMachineInstanceEntity extends VariableInstanceEntity implements Serializable {
 
     @Id

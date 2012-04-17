@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
@@ -17,7 +16,6 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  */
 @Entity
 @XmlType(name = "FSMDescriptor")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class FiniteStateMachineDescriptorEntity extends VariableDescriptorEntity<FiniteStateMachineInstanceEntity> {
 
     @Id
