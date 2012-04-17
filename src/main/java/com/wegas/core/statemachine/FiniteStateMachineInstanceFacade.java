@@ -13,6 +13,6 @@ package com.wegas.core.statemachine;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class FiniteStateMachineFacade {
+public class FiniteStateMachineInstanceFacade {
 
 }
