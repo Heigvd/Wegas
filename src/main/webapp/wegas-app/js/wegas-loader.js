@@ -37,50 +37,58 @@ YUI().use(function (Y) {
 
                     /** Widgets **/
                     'wegas-widget': {
-                        path: 'wegas-app/js/wegas-widget-min.js',
+                        path: 'wegas-app/js/widget/wegas-widget-min.js',
                         requires: ['widget', 'widget-parent', 'widget-child']
                     },
                     'wegas-widgetloader': {
-                        path: 'wegas-app/js/wegas-widgetloader-min.js'
+                        path: 'wegas-app/js/widget/wegas-widgetloader-min.js'
                     },
                     'wegas-button': {
-                        path: 'wegas-app/js/wegas-button-min.js'
+                        path: 'wegas-app/js/widget/wegas-button-min.js'
                     },
                     'wegas-chat': {
-                        path: 'wegas-app/js/wegas-chat-min.js'
+                        path: 'wegas-app/js/widget/wegas-chat-min.js'
                     },
                     'wegas-layout': {
-                        path: 'wegas-app/js/wegas-layout-min.js',
+                        path: 'wegas-app/js/widget/wegas-layout-min.js',
                         requires: ['yui2-layout', 'yui2-event-mouseenter', 'yui2-event-delegate', 'yui2-yahoo', 'yui2-dom',
                             'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector', 'yui2-resize',
                             'yui2-containercore', 'yui2-menu', 'yui2-calendar']
                     },
                     'wegas-list': {
-                        path: 'wegas-app/js/wegas-list-min.js',
+                        path: 'wegas-app/js/widget/wegas-list-min.js',
                         requires: ["substitute", "node-focusmanager"]
                     },
                     'wegas-text': {
-                        path: 'wegas-app/js/wegas-text-min.js'
+                        path: 'wegas-app/js/widget/wegas-text-min.js'
                     },
                     'wegas-tabview': {
-                        path: 'wegas-app/js/wegas-tabview-min.js',
+                        path: 'wegas-app/js/widget/wegas-tabview-min.js',
                         requires: ['tabview', 'yui2-editor']
                     },
                     'wegas-displayarea': {
-                        path: 'wegas-app/js/wegas-displayarea-min.js'
+                        path: 'wegas-app/js/widget/wegas-displayarea-min.js'
                     },
 
                     'wegas-variabledisplay': {
-                        path: 'wegas-app/js/wegas-variabledisplay-min.js',
+                        path: 'wegas-app/js/widget/wegas-variabledisplay-min.js',
                         requires: ['excanvas']
                     },
                     'wegas-inbox': {
-                        path: 'wegas-app/js/wegas-inbox-min.js'
+                        path: 'wegas-app/js/widget/wegas-inbox-min.js'
+                    },
+                    'wegas-inputex': {
+                        path: 'wegas-app/js/widget/wegas-inputex-min.js',
+                        requires: [
+                            'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
+                            'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
+                            'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
+                            'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
                     },
 
                     /** Editor **/
                     'wegas-editor': {
-                        path: 'wegas-editor/js/wegas-editor-min.js',
+                        path: 'wegas-editor/js/widget/wegas-editor-min.js',
                         requires: [
                             'wegas-inputex', 'wegas-app', 'wegas-treeview',
                             'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
@@ -98,14 +106,6 @@ YUI().use(function (Y) {
                     'wegas-logger': {
                         path: 'wegas-editor/js/wegas-logger-min.js',
                         requires: ['console', 'console-filters']
-                    },
-                    'wegas-inputex': {
-                        path: 'wegas-app/js/wegas-inputex-min.js',
-                        requires: [
-                            'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
-                            'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
-                            'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
-                            'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
                     },
                     'wegas-editor-topmenu': {
                         path: 'wegas-editor/js/wegas-editor-topmenu-min.js',
