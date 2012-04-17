@@ -5,35 +5,28 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2012
+ * Copyright (C) 2011
  */
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.script.ScriptEntity;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
-import javax.persistence.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
- * Trigger: S1->(T1)->S2, S2 final (oneShot)<br/> S1->(T1)->S2->(!T1)->S1 (opposedTrigger)<br/> else S1->(T1)->S1 (loop).<br/>
- * OneShot and OpposedTrigger are exclusive. OneShot wins.
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@Entity
-@Table(name = "statemachine_trigger")
 @XmlRootElement
+@XmlType(name="TriggerDescriptor")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class Trigger extends FiniteStateMachine {
+public class TriggerDescriptorEntity extends FiniteStateMachineDescriptorEntity {
 
     private Boolean oneShot;
     private Boolean opposedTrigger;
@@ -42,7 +35,7 @@ public class Trigger extends FiniteStateMachine {
     @Transient
     private ScriptEntity postTriggerEvent;
 
-    public Trigger() {
+    public TriggerDescriptorEntity() {
     }
 
     public Boolean isOneShot() {
@@ -99,16 +92,16 @@ public class Trigger extends FiniteStateMachine {
 
     @PrePersist
     @PreUpdate
-    public void generateTrigger() {
+    public void generateTriggerDescriptor() {
         State initialState = new State(), finalState = new State();
         Transition transition = new Transition();
         transition.setTriggerCondition(triggerEvent);
         List<Transition> transitions = initialState.getTransitions();
         transitions.add(transition);
         initialState.setTransitions(transitions);
-        this.setDefaultStateId(1);
-        if (this.getCurrentStateId() == null) {
-            this.setCurrentStateId(1);
+        // this.setDefaultStateId(1);
+        if (this.getInitialStateId() == null) {
+            this.setInitialStateId(1);
         }
         HashMap<Integer, State> states = new HashMap<>();
         if (this.oneShot) {
@@ -138,21 +131,7 @@ public class Trigger extends FiniteStateMachine {
 
     @Override
     public String toString() {
-        return "Trigger{" + "id=" + this.getId() + ", label=" + this.getLabel() + ", states=" + this.getStates() + ", currentStateId=" + this.getCurrentStateId() + ", defaultStateId=" + this.getDefaultStateId() + ", oneShot=" + oneShot + ", opposedTrigger=" + opposedTrigger + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
+        return "TriggerDescriptorEntity{id=" + this.getId() + ", oneShot=" + oneShot + ", opposedTrigger=" + opposedTrigger + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
     }
-
-    /**
-     *
-     * @param ps
-     * @return
-     * @throws IOException
-     */
-    @XmlTransient
-    public String toJson(Providers ps) throws IOException {
-        // Marshall new version
-        OutputStream os = new ByteArrayOutputStream();
-        MessageBodyWriter mbw = ps.getMessageBodyWriter(this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.APPLICATION_JSON_TYPE);
-        mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
-        return os.toString();
-    }
+    
 }
