@@ -5,15 +5,15 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.app.jsf.controllers.util.JsfUtil;
-import com.wegas.core.ejb.GameEntityFacade;
-import com.wegas.core.ejb.GameModelEntityFacade;
-import com.wegas.core.ejb.TeamEntityFacade;
-import com.wegas.core.ejb.UserEntityFacade;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.UserFacade;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -46,22 +46,22 @@ public class LobbyController implements Serializable {
      *
      */
     @EJB
-    private UserEntityFacade userFacade;
+    private UserFacade userFacade;
     /**
      *
      */
     @EJB
-    private GameEntityFacade gameFacade;
+    private GameFacade gameFacade;
     /**
      *
      */
     @EJB
-    private TeamEntityFacade teamEntityFacade;
+    private TeamFacade teamEntityFacade;
     /**
      *
      */
     @EJB
-    private GameModelEntityFacade gameModelFacade;
+    private GameModelFacade gameModelFacade;
     /**
      *
      */

@@ -18,6 +18,9 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ScriptEntity implements Serializable {
 
+    enum Languages {
+        JavaScript
+    };
     /**
      *
      */
@@ -45,11 +48,12 @@ public class ScriptEntity implements Serializable {
      * @return the language
      */
     public String getLanguage() {
-        return language;
+        return this.language;
     }
 
     /**
-     * @param language the language to set
+     *
+     * @param language
      */
     public void setLanguage(String language) {
         this.language = language;

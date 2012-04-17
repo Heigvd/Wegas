@@ -11,7 +11,7 @@ import javax.persistence.PersistenceContext;
 
 /**
  *
- * @author fx
+* @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
 public class WidgetEntityFacade extends AbstractFacade<WidgetEntity> {

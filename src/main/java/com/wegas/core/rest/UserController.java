@@ -5,12 +5,12 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.AbstractFacade;
-import com.wegas.core.ejb.UserEntityFacade;
+import com.wegas.core.ejb.UserFacade;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
@@ -21,13 +21,13 @@ import javax.ws.rs.Path;
  */
 @Stateless
 @Path("User")
-public class UserController extends AbstractRestController<UserEntityFacade> {
+public class UserController extends AbstractRestController<UserFacade> {
 
     /**
      *
      */
     @EJB
-    private UserEntityFacade userFacade;
+    private UserFacade userFacade;
 
     /**
      *

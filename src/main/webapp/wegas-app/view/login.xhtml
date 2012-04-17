@@ -81,9 +81,10 @@
                 <br />
                 <br/>
                 <div id="fb-root"></div>
-                <div id="fb-user">
-                    <a href="https://www.facebook.com/dialog/oauth?client_id=214143398685715&amp;redirect_uri=http://wegas.dyndns.org:8080/Wegas/FacebookServlet">login</a>
-                </div>
+                <div id="fb-user"></div>
+                <br />
+                <a href="https://www.facebook.com/dialog/oauth?client_id=214143398685715&amp;redirect_uri=http://wegas.dyndns.org:8080/Wegas/FacebookServlet">login</a>
+                <br />
                 <h:outputScript escape="false">
                     window.fbAsyncInit = function() {
                         FB.init({appId: '214143398685715', status: true, cookie: true, xfbml: true, oauth : true});
@@ -118,7 +119,7 @@
                     }(document));
 
                 </h:outputScript>
-                    <!--<div class="fb-login-button">#{wegasAppBundle.ThirdPartyLogin_Facebook_Title}</div>-->
+                <div class="fb-login-button">#{wegasAppBundle.ThirdPartyLogin_Facebook_Title}</div>
 
 
             </div>

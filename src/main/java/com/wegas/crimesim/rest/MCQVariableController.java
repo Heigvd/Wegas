@@ -5,18 +5,18 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.crimesim.rest;
 
-import com.wegas.core.ejb.PlayerEntityFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.script.ScriptManager;
-import com.wegas.crimesim.ejb.MCQReplyVariableDescriptorEntityFacade;
-import com.wegas.crimesim.ejb.MCQVariableDescriptorEntityFacade;
-import com.wegas.crimesim.persistence.variable.MCQReplyVariableInstanceEntity;
-import com.wegas.crimesim.persistence.variable.MCQVariableInstanceEntity;
+import com.wegas.crimesim.ejb.MCQReplyDescriptorFacade;
+import com.wegas.crimesim.ejb.MCQDescriptorFacade;
+import com.wegas.crimesim.persistence.variable.MCQReplyInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -32,18 +32,18 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/MCQVariable/")
-public class MCQVariableController extends AbstractRestController<MCQVariableDescriptorEntityFacade> {
+public class MCQVariableController extends AbstractRestController<MCQDescriptorFacade> {
     /*
      *
      */
 
     @EJB
-    private MCQVariableDescriptorEntityFacade mCQVariableDescriptorFacade;
+    private MCQDescriptorFacade mCQVariableDescriptorFacade;
     /**
      *
      */
     @EJB
-    private MCQReplyVariableDescriptorEntityFacade mCQReplyDescriptorFacade;
+    private MCQReplyDescriptorFacade mCQReplyDescriptorFacade;
 
     /**
      *
@@ -60,7 +60,7 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
             @PathParam("playerId") Long playerId,
             @PathParam("replyId") Long replyId) {
 
-        MCQReplyVariableInstanceEntity replyInstance =
+        MCQReplyInstanceEntity replyInstance =
                 mCQReplyDescriptorFacade.selectReply(replyId, playerId, new Long(0));
         return mCQReplyDescriptorFacade.validateReply(replyInstance.getId(), playerId);
     }
@@ -69,19 +69,20 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
      *
      * @param gameModelId
      * @param playerId
-     * @param replyId
+     * @param replyDescriptorId
+     * @param startTime
      * @return p
      */
     @GET
     @Path("/SelectReply/{replyDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public MCQVariableInstanceEntity selectReply(
+    public MCQInstanceEntity selectReply(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId,
             @PathParam("replyDescriptorId") Long replyDescriptorId,
             @PathParam("startTime") Long startTime) {
 
-        MCQReplyVariableInstanceEntity replyInstance =
+        MCQReplyInstanceEntity replyInstance =
                 mCQReplyDescriptorFacade.selectReply(replyDescriptorId, playerId, startTime);
         return replyInstance.getMCQVariableInstance();
     }
@@ -91,7 +92,7 @@ public class MCQVariableController extends AbstractRestController<MCQVariableDes
      * @return
      */
     @Override
-    protected MCQVariableDescriptorEntityFacade getFacade() {
+    protected MCQDescriptorFacade getFacade() {
         return this.mCQVariableDescriptorFacade;
     }
 }

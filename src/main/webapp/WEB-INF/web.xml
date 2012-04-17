@@ -64,7 +64,7 @@
     <!-- Liquibase configuration -->
     <context-param>
         <param-name>liquibase.changelog</param-name>
-        <param-value>db.changelog.xml</param-value>
+        <param-value>META-INF/db.changelog.xml</param-value>
     </context-param>
     <context-param>
         <param-name>liquibase.datasource</param-name>
