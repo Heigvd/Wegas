@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.statemachine;
 
-import com.wegas.core.persistence.variable.statemachine.Trigger;
+import com.wegas.core.persistence.variable.statemachine.TriggerInstanceEntity;
 import com.wegas.core.script.JavascriptEntity;
 import com.wegas.core.script.ScriptEntity;
 import org.junit.*;
@@ -20,7 +20,7 @@ import org.junit.*;
  */
 public class TriggerTest {
 
-    private Trigger trigger;
+    private TriggerInstanceEntity trigger;
 
     public TriggerTest() {
     }
@@ -35,8 +35,8 @@ public class TriggerTest {
 
     @Before
     public void setUp() {
-        this.trigger = new Trigger();
-        this.trigger.setLabel("testTrigger");
+        this.trigger = new TriggerInstanceEntity();
+       // this.trigger.setLabel("testTrigger");
         ScriptEntity scriptEntity = new JavascriptEntity();
         scriptEntity.setContent("Test trigger");
         this.trigger.setTriggerEvent(scriptEntity);
