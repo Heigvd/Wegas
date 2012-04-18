@@ -9,14 +9,8 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -26,27 +20,14 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+@Table(name="TriggerInstance")
 @XmlRootElement
 @XmlType(name = "TriggerInstance")
-public class TriggerInstanceEntity extends FiniteStateMachineInstanceEntity {
+public class TriggerInstanceEntity extends StateMachineInstanceEntity {
 
     @Override
     public String toString() {
-        return "TriggerInstanceEntity{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';
+        return "TriggerInstanceEntity{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentState() + '}';
     }
 
-    /**
-     *
-     * @param ps
-     * @return
-     * @throws IOException
-     */
-    @XmlTransient
-    public String toJson(Providers ps) throws IOException {
-        // Marshall new version
-        OutputStream os = new ByteArrayOutputStream();
-        MessageBodyWriter mbw = ps.getMessageBodyWriter(this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.APPLICATION_JSON_TYPE);
-        mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
-        return os.toString();
-    }
 }
