@@ -31,16 +31,16 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlType(name = "VariableInstance", propOrder = {"@class", "id"})
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "StringVariableInstance", value = StringInstanceEntity.class),
-    @JsonSubTypes.Type(name = "ListVariableInstance", value = ListInstanceEntity.class),
-    @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQInstanceEntity.class),
-    @JsonSubTypes.Type(name = "NumberVariableInstance", value = NumberInstanceEntity.class),
+    @JsonSubTypes.Type(name = "StringInstance", value = StringInstanceEntity.class),
+    @JsonSubTypes.Type(name = "ListInstance", value = ListInstanceEntity.class),
+    @JsonSubTypes.Type(name = "MCQInstance", value = MCQInstanceEntity.class),
+    @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstanceEntity.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstanceEntity.class)
 })
 public class VariableInstanceEntity extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("GMVariableKInstance");
+    private static final Logger logger = Logger.getLogger("VariableInstanceEntity");
     /**
      *
      */

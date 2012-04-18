@@ -23,11 +23,11 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQVariableDescriptor")
+@XmlType(name = "MCQDescriptor")
 public class MCQDescriptorEntity extends VariableDescriptorEntity<MCQInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQVariableDescriptorEntity");
+    private static final Logger logger = Logger.getLogger("MCQDescriptorEntity");
     /**
      *
      */
@@ -46,7 +46,7 @@ public class MCQDescriptorEntity extends VariableDescriptorEntity<MCQInstanceEnt
      */
     @JsonManagedReference("question-reply")
     @JoinColumn(name = "variabledescriptor_id")
-    @OneToMany(mappedBy = "mCQVariableDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "MCQDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<MCQReplyDescriptorEntity> replies = new ArrayList<MCQReplyDescriptorEntity>();
     /**
      *
@@ -107,7 +107,7 @@ public class MCQDescriptorEntity extends VariableDescriptorEntity<MCQInstanceEnt
     public void setReplies(List<MCQReplyDescriptorEntity> replies) {
         this.replies = replies;
         for (MCQReplyDescriptorEntity r : replies) {
-            r.setMCQVariableDescriptor(this);
+            r.setMCQDescriptor(this);
         }
     }
 
@@ -117,7 +117,7 @@ public class MCQDescriptorEntity extends VariableDescriptorEntity<MCQInstanceEnt
      */
     public void addReply(MCQReplyDescriptorEntity reply) {
         this.replies.add(reply);
-        reply.setMCQVariableDescriptor(this);
+        reply.setMCQDescriptor(this);
     }
 
     /**

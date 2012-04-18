@@ -27,7 +27,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
 public class MessageEntity extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQVariableInstanceReplyEntity");
+    private static final Logger logger = Logger.getLogger("MCQReplyInstanceEntity");
     /**
      *
      */
@@ -142,7 +142,7 @@ public class MessageEntity extends NamedEntity {
     }
 
     /**
-     * @return the mcqVariableDescriptor
+     * @return the MCQDescriptor
      */
     @XmlTransient
     public InboxInstanceEntity getMailboxInstanceEntity() {

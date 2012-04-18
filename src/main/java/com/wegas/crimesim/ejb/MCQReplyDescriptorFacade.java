@@ -68,7 +68,7 @@ public class MCQReplyDescriptorFacade extends AbstractFacade<MCQReplyDescriptorE
         MCQReplyDescriptorEntity reply = this.find(replyVariableDescriptorId);
         PlayerEntity player = playerEntityFacade.find(playerId);
 
-        VariableDescriptorEntity vd = reply.getMCQVariableDescriptor();
+        VariableDescriptorEntity vd = reply.getMCQDescriptor();
         MCQInstanceEntity vi = (MCQInstanceEntity) vd.getVariableInstance(player);
         MCQReplyInstanceEntity replyInstance = new MCQReplyInstanceEntity();
 
@@ -91,7 +91,7 @@ public class MCQReplyDescriptorFacade extends AbstractFacade<MCQReplyDescriptorE
     public List<VariableInstanceEntity> validateReply(Long replyVariableInstanceId, Long playerId) {
         MCQReplyInstanceEntity reply = this.mCQReplyVariableInstanceEntityFacade.find(replyVariableInstanceId);
 
-        return scriptManager.runScript(reply.getMCQVariableInstance().getScope().getVariableDescriptor().getGameModel().getId(),
+        return scriptManager.runScript(reply.getMCQInstance().getScope().getVariableDescriptor().getGameModel().getId(),
                 playerId, reply.getImpact());
     }
 

@@ -23,11 +23,11 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQVariableInstanceReply")
+@XmlType(name = "MCQReplyInstance")
 public class MCQReplyInstanceEntity extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQVariableInstanceReplyEntity");
+    private static final Logger logger = Logger.getLogger("MCQReplyInstanceEntity");
     /**
      *
      */
@@ -70,7 +70,7 @@ public class MCQReplyInstanceEntity extends NamedEntity {
     @JsonBackReference("question-replyi")
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
-    private MCQInstanceEntity mCQVariableInstance;
+    private MCQInstanceEntity MCQInstance;
 
     /**
      *
@@ -140,18 +140,18 @@ public class MCQReplyInstanceEntity extends NamedEntity {
     }
 
     /**
-     * @return the mcqVariableDescriptor
+     * @return the MCQDescriptor
      */
     @XmlTransient
-    public MCQInstanceEntity getMCQVariableInstance() {
-        return mCQVariableInstance;
+    public MCQInstanceEntity getMCQInstance() {
+        return MCQInstance;
     }
 
     /**
-     * @param mCQVariableInstance
+     * @param MCQInstance
      */
-    public void setMCQVariableInstance(MCQInstanceEntity mCQVariableInstance) {
-        this.mCQVariableInstance = mCQVariableInstance;
+    public void setMCQInstance(MCQInstanceEntity MCQInstance) {
+        this.MCQInstance = MCQInstance;
     }
 
     /**
