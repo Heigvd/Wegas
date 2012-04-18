@@ -31,32 +31,32 @@
         }]
     }],
     "variableDescriptors": [{
-        "@class": "NumberVariableDescriptor",
+        "@class": "NumberDescriptor",
         "name": "humanResources",
         "defaultVariableInstance": {
-            "@class": "NumberVariableInstance",
+            "@class": "NumberInstance",
             "value":"15"
         },
         "scope": {
             "@class": "TeamScope"
         }
     },{
-        "@class": "NumberVariableDescriptor",
+        "@class": "NumberDescriptor",
         "name": "cost",
         "defaultVariableInstance": {
-            "@class": "NumberVariableInstance",
+            "@class": "NumberInstance",
             "value":"0"
         },
         "scope": {
             "@class": "TeamScope"
         }
     },{
-        "@class": "NumberVariableDescriptor",
+        "@class": "NumberDescriptor",
         "name": "period",
         "minValue": 1,
         "maxValue": 10,
         "defaultVariableInstance": {
-            "@class": "NumberVariableInstance",
+            "@class": "NumberInstance",
             "value":"1"
         },
         "scope": {
@@ -72,13 +72,13 @@
             "@class": "PlayerScope"
         }
     }, {
-        "@class": "MCQVariableDescriptor",
+        "@class": "MCQDescriptor",
         "name": "Couteau",
         "label": "Couteau",
         "description": "Un couteau qui traine, plein de sang.",
         "replies": [
         {
-            "@class": "MCQVariableDescriptorReply",
+            "@class": "MCQReplyDescriptor",
             "name":"Analyse ADN",
             "description":"Costs: 1000CHF; HR: 2;",
             "answer":"nice work here",
@@ -90,7 +90,7 @@
             "duration":1
         },
         {
-            "@class": "MCQVariableDescriptorReply",
+            "@class": "MCQReplyDescriptor",
             "name":"Empreintees digitales",
             "description":"Costs: 500CHF; HR: 2;",
             "answer":"nice work here",
@@ -102,19 +102,19 @@
             "duration":2
         }],
         "defaultVariableInstance": {
-            "@class": "MCQVariableInstance"
+            "@class": "MCQInstance"
         },
         "scope": {
             "@class": "TeamScope"
         }
     }, {
-        "@class": "MCQVariableDescriptor",
+        "@class": "MCQDescriptor",
         "name": "Le cadavre",
         "label": "Le cadavre",
         "description": "Un cadavre qui traine, plein de sang.",
         "replies": [
         {
-            "@class": "MCQVariableDescriptorReply",
+            "@class": "MCQReplyDescriptor",
             "name":"Analyse ADN",
             "description":"Costs: 1000CHF; HR: 2;",
             "answer":"nice work here",
@@ -126,7 +126,7 @@
             "duration":1
         },
         {
-            "@class": "MCQVariableDescriptorReply",
+            "@class": "MCQReplyDescriptor",
             "name":"Empreintees digitales",
             "description":"Costs: 500CHF; HR: 2;",
             "answer":"nice work here",
@@ -138,19 +138,19 @@
             "duration":2
         }],
         "defaultVariableInstance": {
-            "@class": "MCQVariableInstance"
+            "@class": "MCQInstance"
         },
         "scope": {
             "@class": "TeamScope"
         }
     }, {
-        "@class": "MCQVariableDescriptor",
+        "@class": "MCQDescriptor",
         "name": "Le chapeau",
         "label": "Le chapeau",
         "description": "Un chapeau qui traine, plein de sang.",
         "replies": [
         {
-            "@class": "MCQVariableDescriptorReply",
+            "@class": "MCQReplyDescriptor",
             "name":"Analyse ADN",
             "description":"Costs: 1000CHF; HR: 2;",
             "answer":"nice work here",
@@ -162,7 +162,7 @@
             "duration":1
         },
         {
-            "@class": "MCQVariableDescriptorReply",
+            "@class": "MCQReplyDescriptor",
             "name":"Empreintees digitales",
             "description":"Costs: 500CHF; HR: 2;",
             "answer":"nice work here",
@@ -174,19 +174,19 @@
             "duration":2
         }],
         "defaultVariableInstance": {
-            "@class": "MCQVariableInstance"
+            "@class": "MCQInstance"
         },
         "scope": {
             "@class": "TeamScope"
         }
     }, {
-        "@class": "MCQVariableDescriptor",
+        "@class": "MCQDescriptor",
         "name": "La botte",
         "label": "La botte",
         "description": "Une botte qui traine, pleine de sang.",
         "replies": [
         {
-            "@class": "MCQVariableDescriptorReply",
+            "@class": "MCQReplyDescriptor",
             "name":"Analyse ADN",
             "description":"Costs: 1000CHF; HR: 2;",
             "answer":"nice work here",
@@ -198,7 +198,7 @@
             "duration":1
         },
         {
-            "@class": "MCQVariableDescriptorReply",
+            "@class": "MCQReplyDescriptor",
             "name":"Empreintees digitales",
             "description":"Costs: 500CHF; HR: 2;",
             "answer":"nice work here",
@@ -207,10 +207,10 @@
                 "language": "JavaScript",
                 "content": "cost.value+=500;\nhumanResources.value-=2;"
             },
-            "duration":2
+            "duration": 2
         }],
         "defaultVariableInstance": {
-            "@class": "MCQVariableInstance"
+            "@class": "MCQInstance"
         },
         "scope": {
             "@class": "TeamScope"

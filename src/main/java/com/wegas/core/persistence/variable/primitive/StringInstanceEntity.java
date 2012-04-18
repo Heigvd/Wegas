@@ -20,11 +20,11 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "StringVariableInstance")
+@XmlType(name = "StringInstance")
 public class StringInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("StringVariableInstanceEntity");
+    private static final Logger logger = Logger.getLogger("StringInstanceEntity");
     private String val;
 
     /**

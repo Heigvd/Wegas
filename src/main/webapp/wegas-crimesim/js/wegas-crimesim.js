@@ -100,7 +100,7 @@ YUI.add('wegas-crimesim', function (Y) {
 
             _syncSchedule: function () {
                 var perPeriodBudget = 15, perPeriodLoad = [], question, cols = [], questionInstance,  reply, i, j, k,
-                    questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQVariableDescriptor"),
+                    questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQDescriptor"),
                     period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
                     acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
                     cb = this.get(CONTENTBOX).one(".schedule-questions"),

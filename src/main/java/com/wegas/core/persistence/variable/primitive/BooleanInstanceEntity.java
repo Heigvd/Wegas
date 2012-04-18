@@ -20,11 +20,11 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "BooleanVariableInstance")
+@XmlType(name = "BooleanInstance")
 public class BooleanInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("BooleanVariableInstanceEntity");
+    private static final Logger logger = Logger.getLogger("BooleanInstanceEntity");
     private boolean val;
 
     /**

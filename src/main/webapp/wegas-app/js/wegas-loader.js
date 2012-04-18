@@ -88,11 +88,11 @@ YUI().use(function (Y) {
 
                     /** Editor **/
                     'wegas-editor': {
-                        path: 'wegas-editor/js/widget/wegas-editor-min.js',
+                        path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
                             'wegas-inputex', 'wegas-app', 'wegas-treeview',
                             'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
-                            'wegas-editor-topmenu', "wegas-console"
+                            'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss'
                         ]
@@ -129,17 +129,24 @@ YUI().use(function (Y) {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
                         requires: ['datatable', "datatable-datasource", 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
                     },
+                    'wegas-fileexplorer': {
+                        path: 'wegas-editor/js/wegas-fileexplorer-min.js',
+                        requires: ['treeview']
+                    },
+
 
                     /** Project Management Game */
                     'wegas-projectmanagementgame': {
                         path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
                     },
 
+
                     /** CrimeSim */
                     'wegas-crimesim': {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"]
                     }
+
 
                 /* This one is only seful w/ yui3 treeview widget */
                 /* 'wegas-treeviewcss': {

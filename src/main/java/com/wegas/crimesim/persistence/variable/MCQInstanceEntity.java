@@ -26,15 +26,15 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQVariableInstance")
+@XmlType(name = "MCQInstance")
 public class MCQInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQVariableInstanceEntity");
+    private static final Logger logger = Logger.getLogger("MCQInstanceEntity");
     /**
      *
      */
-    @OneToMany(mappedBy = "mCQVariableInstance", cascade = {CascadeType.ALL}, orphanRemoval = true/*, fetch = FetchType.LAZY*/)
+    @OneToMany(mappedBy = "MCQInstance", cascade = {CascadeType.ALL}, orphanRemoval = true/*, fetch = FetchType.LAZY*/)
     @JsonManagedReference("question-replyi")
     @JoinColumn(name = "variableinstance_id")
     private List<MCQReplyInstanceEntity> replies = new ArrayList<MCQReplyInstanceEntity>();
@@ -73,7 +73,7 @@ public class MCQInstanceEntity extends VariableInstanceEntity {
 
         //  if (replies != null) {
         for (MCQReplyInstanceEntity r : replies) {
-            r.setMCQVariableInstance(this);
+            r.setMCQInstance(this);
         }
         //  }
     }
@@ -84,7 +84,7 @@ public class MCQInstanceEntity extends VariableInstanceEntity {
      */
     public void addReply(MCQReplyInstanceEntity reply) {
         this.replies.add(reply);
-        reply.setMCQVariableInstance(this);
+        reply.setMCQInstance(this);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class MCQInstanceEntity extends VariableInstanceEntity {
     @Override
     public MCQInstanceEntity clone() {
     MCQInstanceEntity c = (MCQInstanceEntity) super.clone();
-    //  List<MCQVariableInstanceReplyEntity> replies = new ArrayList<MCQVariableInstanceReplyEntity>();
+    //  List<MCQReplyInstanceEntity> replies = new ArrayList<MCQReplyInstanceEntity>();
     //  c.setReplies(replies);
     return c;
     }*/

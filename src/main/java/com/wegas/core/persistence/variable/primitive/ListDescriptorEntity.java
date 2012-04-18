@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "ListVariableDescriptor")
+@XmlType(name = "ListDescriptor")
 public class ListDescriptorEntity extends VariableDescriptorEntity<ListInstanceEntity> {
 
     private static final long serialVersionUID = 1L;

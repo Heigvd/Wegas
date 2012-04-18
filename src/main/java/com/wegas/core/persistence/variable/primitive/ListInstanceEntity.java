@@ -24,11 +24,11 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "ListVariableInstance")
+@XmlType(name = "ListInstance")
 public class ListInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("StringVariableInstanceEntity");
+    private static final Logger logger = Logger.getLogger("StringInstanceEntity");
     @OneToMany(cascade = {CascadeType.ALL})
     private List<VariableDescriptorEntity> variableDescriptors;
 

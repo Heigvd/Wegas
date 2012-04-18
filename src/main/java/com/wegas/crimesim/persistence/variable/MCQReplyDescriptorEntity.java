@@ -23,11 +23,11 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQVariableDescriptorReply")
+@XmlType(name = "MCQReplyDescriptor")
 public class MCQReplyDescriptorEntity extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQVariableDescriptorReplyEntity");
+    private static final Logger logger = Logger.getLogger("MCQReplyDescriptorEntity");
     /**
      *
      */
@@ -59,7 +59,7 @@ public class MCQReplyDescriptorEntity extends NamedEntity {
     @JsonBackReference("question-reply")
     @ManyToOne(optional = false)
     @JoinColumn(name = "variabledescriptor_id", nullable = false)
-    private MCQDescriptorEntity mCQVariableDescriptor;
+    private MCQDescriptorEntity MCQDescriptor;
     /**
      *
      */
@@ -133,18 +133,18 @@ public class MCQReplyDescriptorEntity extends NamedEntity {
     }
 
     /**
-     * @return the mCQVariableDescriptor
+     * @return the MCQDescriptor
      */
     @XmlTransient
-    public MCQDescriptorEntity getMCQVariableDescriptor() {
-        return mCQVariableDescriptor;
+    public MCQDescriptorEntity getMCQDescriptor() {
+        return MCQDescriptor;
     }
 
     /**
-     * @param mCQVariableDescriptor the mCQVariableDescriptor to set
+     * @param MCQDescriptor the MCQDescriptor to set
      */
-    public void setMCQVariableDescriptor(MCQDescriptorEntity mCQVariableDescriptor) {
-        this.mCQVariableDescriptor = mCQVariableDescriptor;
+    public void setMCQDescriptor(MCQDescriptorEntity MCQDescriptor) {
+        this.MCQDescriptor = MCQDescriptor;
     }
 
     /**
