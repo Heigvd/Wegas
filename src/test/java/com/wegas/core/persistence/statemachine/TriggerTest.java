@@ -9,17 +9,19 @@
  */
 package com.wegas.core.persistence.statemachine;
 
-import com.wegas.core.persistence.variable.statemachine.Trigger;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptorEntity;
+import com.wegas.core.persistence.variable.statemachine.TriggerInstanceEntity;
 import com.wegas.core.script.ScriptEntity;
 import org.junit.*;
 
 /**
- *
+ * Testing Triggers, class TriggerInstanceEntity and class TriggerDescriptorEntity
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class TriggerTest {
 
     private TriggerInstanceEntity trigger;
+    private TriggerDescriptorEntity triggerDescriptor;
 
     public TriggerTest() {
     }
@@ -34,13 +36,14 @@ public class TriggerTest {
 
     @Before
     public void setUp() {
-        this.trigger = new Trigger();
-        this.trigger.setLabel("testTrigger");
+        this.trigger = new TriggerInstanceEntity();
+        this.triggerDescriptor = (TriggerDescriptorEntity) this.trigger.getScope().getVariableDescriptor();
+        this.triggerDescriptor.setLabel("testTrigger");
         ScriptEntity scriptEntity = new ScriptEntity();
         scriptEntity.setLanguage("JavaScript");
         scriptEntity.setContent("var x=10; x+=2;");
-        this.trigger.setTriggerEvent(scriptEntity);
-        this.trigger.setPostTriggerEvent(scriptEntity);
+        this.triggerDescriptor.setTriggerEvent(scriptEntity);
+        this.triggerDescriptor.setPostTriggerEvent(scriptEntity);
     }
 
     @After
@@ -48,41 +51,41 @@ public class TriggerTest {
     }
 
     /**
-     * Test of generateTrigger method, of class Trigger.<br/> One shot trigger
+     * Test of generateTriggerDescriptor method, of class TriggerDescriptorEntity.<br/> One shot trigger
      */
     @Test
     public void testGenerateTrigger() {
         System.out.println("OneShotTrigger");
-        this.trigger.setOneShot(true);
-        this.trigger.generateTrigger();
-        assert this.trigger.getStates().get(1).getTransitions().get(0).getNextState() == 2;
-        assert this.trigger.getStates().get(2).getTransitions().isEmpty();
+        this.triggerDescriptor.setOneShot(true);
+        this.triggerDescriptor.generateTriggerDescriptor();
+        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 2;
+        assert this.triggerDescriptor.getStates().get(2).getTransitions().isEmpty();
 
     }
 
     /**
-     * Test of generateTrigger method, of class Trigger.<br/> Opposed Trigger
+     * Test of generateTriggerDescriptor method, of class TriggerDescriptorEntity.<br/> Opposed Trigger
      */
     @Test
     public void testGenerateOpposedTrigger() {
         System.out.println("OpposedTrigger");
-        this.trigger.setOneShot(false);
-        this.trigger.setOpposedTrigger(true);
-        this.trigger.generateTrigger();
-        assert this.trigger.getStates().get(1).getTransitions().get(0).getNextState() == 2;
-        assert this.trigger.getStates().get(2).getTransitions().get(0).getNextState() == 1;
+        this.triggerDescriptor.setOneShot(false);
+        this.triggerDescriptor.setOpposedTrigger(true);
+        this.triggerDescriptor.generateTriggerDescriptor();
+        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 2;
+        assert this.triggerDescriptor.getStates().get(2).getTransitions().get(0).getNextState() == 1;
         //TODO : check reverse condition.
     }
 
     /**
-     * Test of generateTrigger method, of class Trigger.<br/> Loop Trigger
+     * Test of generateTriggerDescriptor method, of class TriggerDescriptorEntity.<br/> Loop Trigger
      */
     @Test
     public void testGenerateLoopTrigger() {
         System.out.println("LoopTrigger");
-        this.trigger.setOneShot(false);
-        this.trigger.setOpposedTrigger(false);
-        this.trigger.generateTrigger();
-        assert this.trigger.getStates().get(1).getTransitions().get(0).getNextState() == 1;
+        this.triggerDescriptor.setOneShot(false);
+        this.triggerDescriptor.setOpposedTrigger(false);
+        this.triggerDescriptor.generateTriggerDescriptor();
+        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 1;
     }
 }
