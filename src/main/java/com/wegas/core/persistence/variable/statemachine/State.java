@@ -29,6 +29,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 public class State implements Serializable {
 
     @Id
+    @Column(name = "state_id")
     @GeneratedValue
     private Long id;
     private String label;

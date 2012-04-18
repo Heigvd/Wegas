@@ -14,7 +14,7 @@ import com.wegas.core.persistence.variable.primitive.ListInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.NumberInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.StringInstanceEntity;
 import com.wegas.core.persistence.variable.scope.ScopeEntity;
-import com.wegas.core.persistence.variable.statemachine.FiniteStateMachineInstanceEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
 import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
 import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
 import java.util.logging.Logger;
@@ -37,7 +37,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "MCQVariableInstance", value = MCQInstanceEntity.class),
     @JsonSubTypes.Type(name = "NumberVariableInstance", value = NumberInstanceEntity.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstanceEntity.class),
-    @JsonSubTypes.Type(name = "FSMInstance", value = FiniteStateMachineInstanceEntity.class)
+    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstanceEntity.class)
 })
 public class VariableInstanceEntity extends AbstractEntity {
 

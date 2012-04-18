@@ -17,7 +17,7 @@ import com.wegas.core.persistence.variable.primitive.ListDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
 import com.wegas.core.persistence.variable.scope.ScopeEntity;
-import com.wegas.core.persistence.variable.statemachine.FiniteStateMachineDescriptorEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.crimesim.persistence.variable.MCQDescriptorEntity;
 import com.wegas.messaging.persistence.variable.InboxDescriptorEntity;
 import javax.persistence.*;
@@ -45,7 +45,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQDescriptorEntity.class),
     @JsonSubTypes.Type(name = "NumberVariableDescriptor", value = NumberDescriptorEntity.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "FSMDescriptor", value = FiniteStateMachineDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class)
 })
 public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends NamedEntity {
 

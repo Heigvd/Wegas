@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -22,9 +23,10 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+@Table(name="TriggerDescriptor")
 @XmlRootElement
 @XmlType(name="TriggerDescriptor")
-public class TriggerDescriptorEntity extends FiniteStateMachineDescriptorEntity {
+public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
 
     private Boolean oneShot;
     private Boolean opposedTrigger;
@@ -87,45 +89,42 @@ public class TriggerDescriptorEntity extends FiniteStateMachineDescriptorEntity 
     public void setTriggerEvent(ScriptEntity triggerEvent) {
         this.triggerEvent = triggerEvent;
     }
-
-    @PrePersist
-    @PreUpdate
-    public void generateTriggerDescriptor() {
-        State initialState = new State(), finalState = new State();
-        Transition transition = new Transition();
-        transition.setTriggerCondition(triggerEvent);
-        List<Transition> transitions = initialState.getTransitions();
-        transitions.add(transition);
-        initialState.setTransitions(transitions);
-        // this.setDefaultStateId(1);
-        if (this.getInitialStateId() == null) {
-            this.setInitialStateId(1);
-        }
-        HashMap<Integer, State> states = new HashMap<>();
-        if (this.oneShot) {
-            this.opposedTrigger = false;
-            transition.setNextState(2);
-            finalState.setOnEnterEvent(postTriggerEvent);
-            states.put(2, finalState);
-        } else if (this.opposedTrigger) {
-            transition.setNextState(2);
-            finalState.setOnEnterEvent(postTriggerEvent);
-            Transition returnTransition = new Transition();
-            returnTransition.setNextState(1);
-            //TODO : Not(triggerEvent)
-            returnTransition.setTriggerCondition(triggerEvent);
-            returnTransition.setNextState(1);
-            List<Transition> returnTransitions = finalState.getTransitions();
-            returnTransitions.add(returnTransition);
-            finalState.setTransitions(returnTransitions);
-            states.put(2, finalState);
-        } else {
-            transition.setNextState(1);
-            initialState.setOnEnterEvent(postTriggerEvent);
-        }
-        states.put(1, initialState);
-        this.setStates(states);
-    }
+//TODO:REVIEW !!!!
+//    @PrePersist
+//    @PreUpdate
+//    public void generateTriggerDescriptor() {
+//        State initialState = new State(), finalState = new State();
+//        Transition transition = new Transition();
+//        transition.setTriggerCondition(triggerEvent);
+//        List<Transition> transitions = initialState.getTransitions();
+//        transitions.add(transition);
+//        initialState.setTransitions(transitions);
+//
+//        HashMap<Long, State> states = new HashMap<>();
+//        if (this.oneShot) {
+//            this.opposedTrigger = false;
+//            transition.setNextState(2L);
+//            finalState.setOnEnterEvent(postTriggerEvent);
+//            states.put(2L, finalState);
+//        } else if (this.opposedTrigger) {
+//            transition.setNextState(2L);
+//            finalState.setOnEnterEvent(postTriggerEvent);
+//            Transition returnTransition = new Transition();
+//            returnTransition.setNextState(1L);
+//            //TODO : Not(triggerEvent)
+//            returnTransition.setTriggerCondition(triggerEvent);
+//            returnTransition.setNextState(1L);
+//            List<Transition> returnTransitions = finalState.getTransitions();
+//            returnTransitions.add(returnTransition);
+//            finalState.setTransitions(returnTransitions);
+//            states.put(2L, finalState);
+//        } else {
+//            transition.setNextState(1L);
+//            initialState.setOnEnterEvent(postTriggerEvent);
+//        }
+//        states.put(1L, initialState);
+//        this.setStates(states);
+//    }
 
     @Override
     public String toString() {
