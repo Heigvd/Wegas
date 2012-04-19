@@ -83,7 +83,7 @@
                     "type": "WTreeView",
                     "dataSource": "VariableDescriptor",
                     "excludeClasses": {
-                        "MCQVariableDescriptor": true
+                        "MCQDescriptor": true
                     }
                 }],
                 "toolbarButtons": [{
@@ -109,7 +109,7 @@
                     "type": "WTreeView",
                     "dataSource": "VariableDescriptor",
                     "includeClasses": {
-                        "MCQVariableDescriptor": true
+                        "MCQDescriptor": true
                     }
                 }
                 ],
@@ -120,7 +120,7 @@
                     "id": "new",
                     "data": {
                         "dataSource":"VariableDescriptor",
-                        "@class": "MCQVariableDescriptor"
+                        "@class": "MCQDescriptor"
                     }
                 },{
                     "type": "push",
@@ -198,6 +198,12 @@
                         "dataSource":"Game",
                         "@class": "Game"
                     }
+                }]
+            }, {
+                "type": "Tab",
+                "label": "File explorer",
+                "children": [{
+                    "type": "FileExplorer"
                 }]
             }]
         }]

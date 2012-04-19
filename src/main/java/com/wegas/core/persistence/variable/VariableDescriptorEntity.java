@@ -38,12 +38,12 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"gamemodel_id", "name", "scope_id"}))
-@XmlType(name = "VariableDescriptor", propOrder = {"@class", "id", "name", "scope", "defaultVariableInstance"})
+@XmlType(name = "VariableDescriptor")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "StringVariableDescriptor", value = StringDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "ListVariableDescriptor", value = ListDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "MCQVariableDescriptor", value = MCQDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "NumberVariableDescriptor", value = NumberDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "MCQDescriptor", value = MCQDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptorEntity.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class),
     @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class)
 })

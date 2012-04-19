@@ -194,10 +194,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
             for (i = 0; i < e.response.results.length; i += 1) {
                 cEl = e.response.results[i];
                 if (!cEl) {
-                } else if (cEl['@class'] === "StringVariableInstance" ||
-                    cEl['@class'] === "NumberVariableInstance" ||
+                } else if (cEl['@class'] === "StringInstance" ||
+                    cEl['@class'] === "NumberInstance" ||
                     cEl['@class'] === "InboxInstance"||
-                    cEl['@class'] === "MCQVariableInstance") {
+                    cEl['@class'] === "MCQInstance") {
 
                     Y.Array.each(data, function (o) {
                         var j;
@@ -217,9 +217,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
             request = request || ((data.id) ? "/" + data.id : "");
 
             switch (data['@class']) {
-            case 'StringVariableInstance':
-            case 'MCQVariableInstance':
-            case 'NumberVariableInstance':
+            case 'StringInstance':
+            case 'MCQInstance':
+            case 'NumberInstance':
             case 'InboxInstance':
                 request = '/1/VariableInstance/' + data.id;
                 break;

@@ -75,7 +75,7 @@
                 useBrowserConsole: true,
                 //debug: Config.debug,
                 //timeout: 10000,
-                filter: 'raw',
+                //filter: 'raw',
                 //filters: { event: 'debug' },
                 //logExclude: { event : true },
                 //logInclude: { event : true },
@@ -139,7 +139,9 @@
                                             // resultFields: ["name", "id", "@class", "errors"]
                                         }
                                     }
-                                }, { fn: "GameModelDataSourceREST" }
+                                }, {
+                                    fn: "GameModelDataSourceREST"
+                                }
                             ]
                         },
                         "Game": {
@@ -153,7 +155,9 @@
                                             // resultFields: ["name", "id", "@class", "errors"]
                                         }
                                     }
-                                }, { fn: "GameDataSourceREST" }
+                                }, {
+                                    fn: "GameDataSourceREST"
+                                }
                             ]
                         },
                         "Page": {
@@ -167,7 +171,9 @@
                                             //resultFields: ["name", "id", "@class"]
                                         }
                                     }
-                                }, { fn: "DataSourceREST" }
+                                }, {
+                                    fn: "DataSourceREST"
+                                }
                             ]
                         },
                         "User": {
@@ -180,7 +186,9 @@
                                             resultListLocator: "."
                                         }
                                     }
-                                }, { fn: "DataSourceREST" }
+                                }, {
+                                    fn: "DataSourceREST"
+                                }
                             ]
                         },
                         "VariableDescriptor": {
@@ -193,8 +201,22 @@
                                             resultListLocator: "."
                                         }
                                     }
-                                }, { 
-                                    fn: "VariableDescriptorDataSourceREST" 
+                                }, {
+                                    fn: "VariableDescriptorDataSourceREST"
+                                }
+                            ]
+                        },
+                        "File": {
+                            source: "wegas-app/db/wegas-app-contentrepository.json",
+                            plugins: [
+                                {
+                                    fn: "DataSourceJSONSchema",
+                                    cfg: {
+                                        schema: {
+                                            resultListLocator: "."
+                                            //resultFields: ["name", "id", "@class"]
+                                        }
+                                    }
                                 }
                             ]
                         }
@@ -225,16 +247,16 @@
                         "Player": [
                             { text: "Delete", value: { op:'delete' } }
                         ],
-                        "StringVariableDescriptor": [
+                        "StringDescriptor": [
                             { text: "Delete", value: { op:'delete' } }
                         ],
-                        "NumberVariableDescriptor": [
+                        "NumberDescriptor": [
                             { text: "Delete", value: { op:'delete' } }
                         ],
-                        "ListVariableDescriptor": [
+                        "ListDescriptor": [
                             { text: "Delete", value: { op:'delete' } }
                         ],
-                        "MCQVariableDescriptor": [
+                        "MCQDescriptor": [
                             { text: "Delete", value: { op:'delete' } }
                         ],
                         "InboxDescriptor": [
@@ -281,60 +303,60 @@
                             { type: 'password', label: 'Confirmation', showMsg: true, confirm: 'firstPassword' },
                             { name: '@class', value:'User', type: 'hidden'}
                         ],
-                        "StringVariableDescriptor": [
+                        "StringDescriptor": [
                             { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'StringVariableDescriptor'},
+                            { name: '@class', type: 'hidden', value: 'StringDescriptor'},
                             { name: 'name', label:'Name', required: true},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'StringVariableInstance', type: 'hidden'},
+                                    { name: '@class', value:'StringInstance', type: 'hidden'},
                                     { name: 'id', type: 'hidden'},
                                     { name: 'value', label: 'Default value'}
                                 ]}
                         ],
-                        "StringVariableInstance": [
-                            { name: '@class', value:'StringVariableInstance', type: 'hidden'},
+                        "StringInstance": [
+                            { name: '@class', value:'StringInstance', type: 'hidden'},
                             { name: 'id', type: 'hidden'},
                             { name: 'value', label: 'Text'}
                         ],
-                        "NumberVariableDescriptor": [
+                        "NumberDescriptor": [
                             { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'NumberVariableDescriptor'},
+                            { name: '@class', type: 'hidden', value: 'NumberDescriptor'},
                             { name: 'name', label:'Name', required: true},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'minValue', label:'Minimum' },
                             { name: 'maxValue', label: "Maximum" },
                             { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'NumberVariableInstance', type: 'hidden'},
+                                    { name: '@class', value:'NumberInstance', type: 'hidden'},
                                     { name: 'id', type: 'hidden'},
                                     { name: 'value', label: 'Default value', regexp: /^[0-9]*$/ }
                                 ]}
                         ],
-                        "NumberVariableInstance": [
-                            { name: '@class', value:'NumberVariableInstance:', type: 'hidden'},
+                        "NumberInstance": [
+                            { name: '@class', value:'NumberInstance:', type: 'hidden'},
                             { name: 'id', type: 'hidden'},
                             { name: 'value', label: 'Value', regexp: /^[0-9]*$/ }
                         ],
-                        "ListVariableDescriptor": [
+                        "ListDescriptor": [
                             { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'ListVariableDescriptor'},
+                            { name: '@class', type: 'hidden', value: 'ListDescriptor'},
                             { name: 'name', label:'Name', required: true},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name:'defaultVariableInstance', type:'group'}
                         ],
-                        "ListVariableInstance": [
-                            { name: '@class', value:'ListVariableInstance', type: 'hidden'},
+                        "ListInstance": [
+                            { name: '@class', value:'ListInstance', type: 'hidden'},
                             { name: 'id', type: 'hidden'}
                         ],
-                        "MCQVariableDescriptor": [
+                        "MCQDescriptor": [
                             { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'MCQVariableDescriptor'},
+                            { name: '@class', type: 'hidden', value: 'MCQDescriptor'},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
                             { name: 'label', label:'Label'},
                             { name: 'allowMultipleReplies', 'label': 'Allow multiple replies', type: 'boolean', value: false},
                             { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'MCQVariableInstance', type: 'hidden'},
+                                    { name: '@class', value:'MCQInstance', type: 'hidden'},
                                     { name: 'id', type: 'hidden'},
                                     { name: 'active', 'label': 'Active by default', type: 'boolean', value: true}
                                 ]},
@@ -347,7 +369,7 @@
                                 elementType: {
                                     type: 'group', fields: [
                                         { name: 'id', type: 'hidden'},
-                                        { name: '@class', type: 'hidden', value: 'MCQVariableDescriptorReply'},
+                                        { name: '@class', type: 'hidden', value: 'MCQReplyDescriptor'},
                                         { name: 'name', label:'Name', required: true},
                                         { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
                                         { name: 'answer', 'type': 'html', label:'Answer', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
@@ -356,8 +378,8 @@
                                 useButtons: true
                             }
                         ],
-                        "MCQVariableInstance": [
-                            { name: '@class', value:'MCQVariableInstance', type: 'hidden'},
+                        "MCQInstance": [
+                            { name: '@class', value:'MCQInstance', type: 'hidden'},
                             { name: 'id', type: 'hidden'},
                             { name: 'active', 'label': 'Active', type: 'boolean', value: true}
                         ],
@@ -423,13 +445,13 @@
                     }
                 };
 
-                Config.forms.ListVariableDescriptor.fields = Config.forms.ListVariableInstance
+                Config.forms.ListDescriptor.fields = Config.forms.ListInstance
                 Config.forms.VariableDescriptor = [
                     { name: 'valueselector', label:'Variable is', type: 'keyvalue', availableFields: [
-                            {type: 'group', name: 'StringVariableDescriptor', label: 'a string',fields: Config.forms.StringVariableDescriptor},
-                            {type: 'group', name: 'NumberVariableDescriptor', label: 'a number',fields:  Config.forms.NumberVariableDescriptor },
-                            {type: 'group', name: 'MCQVariableDescriptor', label: 'a choice', fields: Config.forms.MCQVariableDescriptor },
-                            {type: 'group', name: 'ListVariableDescriptor', label: 'a list',fields:  Config.forms.ListVariableDescriptor }
+                            {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Config.forms.StringDescriptor},
+                            {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
+                            {type: 'group', name: 'MCQDescriptor', label: 'a choice', fields: Config.forms.MCQDescriptor },
+                            {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor }
                         ]
                     }
                 ];
