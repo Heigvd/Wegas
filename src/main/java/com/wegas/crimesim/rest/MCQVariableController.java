@@ -38,7 +38,7 @@ public class MCQVariableController extends AbstractRestController<MCQDescriptorF
      */
 
     @EJB
-    private MCQDescriptorFacade mCQVariableDescriptorFacade;
+    private MCQDescriptorFacade MCQDescriptorFacade;
     /**
      *
      */
@@ -84,7 +84,7 @@ public class MCQVariableController extends AbstractRestController<MCQDescriptorF
 
         MCQReplyInstanceEntity replyInstance =
                 mCQReplyDescriptorFacade.selectReply(replyDescriptorId, playerId, startTime);
-        return replyInstance.getMCQVariableInstance();
+        return replyInstance.getMCQInstance();
     }
 
     /**
@@ -93,6 +93,6 @@ public class MCQVariableController extends AbstractRestController<MCQDescriptorF
      */
     @Override
     protected MCQDescriptorFacade getFacade() {
-        return this.mCQVariableDescriptorFacade;
+        return this.MCQDescriptorFacade;
     }
 }

@@ -13,40 +13,42 @@ YUI.add('wegas-treeview', function (Y) {
 
     WTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
-        _dataSource: null,
-        _pushButton: null,
-        _treeView: null,
+        // *** Private fields ** //
+        dataSource: null,
+        pushButton: null,
+        treeView: null,
 
+        // ** Lifecycle methods ** //
         initializer: function () {
-            this._dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
+            this.dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
         },
 
         renderUI: function () {
             var node = this.get(CONTENTBOX).append('<div></div>');
 
             // Render YUI2 TreeView widget
-            this._treeView = new YAHOO.widget.TreeView(node._node);
-            this._treeView.singleNodeHighlight = true;
-            this._treeView.render();
+            this.treeView = new YAHOO.widget.TreeView(node.getDOMNode());
+            this.treeView.singleNodeHighlight = true;
+            this.treeView.render();
         },
 
         bindUI: function () {
             // Listen updates on the target datasource
-            this._dataSource.after("response", function (e) {
+            this.dataSource.after("response", function (e) {
                 if (e.response.results && !e.response.error) {
                     var treeViewElements = this.genTreeViewElements(e.response.results);
-                    this._treeView.removeChildren(this._treeView.getRoot());
-                    this._treeView.buildTreeFromObject(treeViewElements);
-                    this._treeView.render();
+                    this.treeView.removeChildren(this.treeView.getRoot());
+                    this.treeView.buildTreeFromObject(treeViewElements);
+                    this.treeView.render();
                 }
             }, this);
 
             // When a leaf is clicked
-            this._treeView.subscribe("clickEvent", function (e) {
+            this.treeView.subscribe("clickEvent", function (e) {
                 YAHOO.log(e.node.index + " label was clicked", "info", "Wegas.WTreeView");
                 // Either show the edit menu
                 if (e.event.target.className === "yui3-wegas-treeview-editmenubutton") {
-                    Y.Wegas.editor.showEditMenu(e.node.data, this._dataSource);
+                    Y.Wegas.editor.showEditMenu(e.node.data, this.dataSource);
                     Y.Wegas.editor._editMenu.get("boundingBox").appendTo(e.event.target.parentNode);
                     Y.Wegas.editor._editMenu.set("align", {
                         node: e.event.target,
@@ -55,13 +57,13 @@ YUI.add('wegas-treeview', function (Y) {
                 // Or display the edit tab
                 } else {
                     Y.Wegas.editor.edit(e.node.data, function (cfg) {
-                        this._dataSource.rest.put(cfg);
+                        this.dataSource.rest.put(cfg);
                     }, null, this);
                 }
             }, null, this);
 
             // Turn tree element selection on
-            this._treeView.subscribe('clickEvent', this._treeView.onEventToggleHighlight);
+            this.treeView.subscribe('clickEvent', this.treeView.onEventToggleHighlight);
 
             // Hide the menu as soon as user mouses out
             this.get(CONTENTBOX).delegate('mouseleave', Y.Wegas.editor._editMenu.hide, '.ygtvrow');
@@ -71,20 +73,21 @@ YUI.add('wegas-treeview', function (Y) {
         },
 
         destroyer: function () {
-            this._treeView.destroy();
+            this.treeView.destroy();
         },
 
+        // ** Private methods ** //
         genVariableInstanceElements: function (label, el) {
             switch (el['@class']) {
-            case 'StringVariableInstance':
-            case 'NumberVariableInstance':
+            case 'StringInstance':
+            case 'NumberInstance':
                 return {
                     label: label + ': ' + el.value,
                     title: label + ': ' + el.value,
                     data: el
                 };
 
-            case 'MCQVariableInstance':
+            case 'MCQInstance':
                 var l = label + ((el.replies.length > 0) ? ': ' + el.replies[0].name : ': unanswered');
                 return {
                     type: 'Text',
@@ -208,9 +211,9 @@ YUI.add('wegas-treeview', function (Y) {
         },
         genTreeViewElements: function (elements) {
             var class2text = {
-                MCQVariableDescriptor: "Choice",
-                StringVariableDescriptor: "String",
-                NumberVariableDescriptor: "Number"
+                MCQDescriptor: "Choice",
+                StringDescriptor: "String",
+                NumberDescriptor: "Number"
             }, ret = [], i, el, text;
 
             for (i in elements) {
@@ -218,10 +221,10 @@ YUI.add('wegas-treeview', function (Y) {
                     el = elements[i];
 
                     switch (el['@class']) {
-                    case 'StringVariableDescriptor':
-                    case 'NumberVariableDescriptor':
+                    case 'StringDescriptor':
+                    case 'NumberDescriptor':
                     case 'ListVariableDescriptor':
-                    case 'MCQVariableDescriptor':
+                    case 'MCQDescriptor':
                     case 'InboxDescriptor':
 
                         if ((this.get("excludeClasses") === null

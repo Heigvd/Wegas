@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 public class InboxDescriptorEntity extends VariableDescriptorEntity<InboxInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQVariableDescriptorEntity");
+    private static final Logger logger = Logger.getLogger("MCQDescriptorEntity");
     /**
      *
      */

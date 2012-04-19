@@ -69,7 +69,7 @@ public class InboxInstanceEntity extends VariableInstanceEntity {
 
     @Override
     public void merge(AbstractEntity a) {
-        //@fixme todo
-        super.merge(a);
+        throw new UnsupportedOperationException("Not supported yet.");
     }
+
 }

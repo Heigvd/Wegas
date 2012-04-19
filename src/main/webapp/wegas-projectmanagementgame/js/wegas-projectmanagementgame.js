@@ -25,7 +25,7 @@ YUI.add('wegas-projectmanagementgame', function (Y) {
         },
 
         syncUI: function () {
-            var questions = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQVariableDescriptor"),
+            var questions = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQDescriptor"),
                 selectedTab = this._tabView.get('selection'),
                 lastSelection = (selectedTab) ? selectedTab.get('index') : 0,
                 i,
