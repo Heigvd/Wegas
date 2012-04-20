@@ -19,12 +19,12 @@ import javax.persistence.PersistenceContext;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class FiniteStateMachineInstanceFacade extends AbstractFacade<StateMachineInstanceEntity> {
+public class StateMachineInstanceFacade extends AbstractFacade<StateMachineInstanceEntity> {
 
     @PersistenceContext(unitName="wegasPU")
     EntityManager em;
 
-    public FiniteStateMachineInstanceFacade() {
+    public StateMachineInstanceFacade() {
         super(StateMachineInstanceEntity.class);
     }
 
