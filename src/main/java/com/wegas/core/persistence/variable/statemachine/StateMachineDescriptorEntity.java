@@ -4,9 +4,9 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
@@ -52,6 +52,18 @@ public class StateMachineDescriptorEntity extends VariableDescriptorEntity<State
     @Override
     public String toString() {
         return "StateMachineDescriptorEntity{id=" + this.getId() + ", initialStateId=" + initialStateId + ", states=" + states + '}';
+    }
+
+    @Override
+    public void merge(AbstractEntity a) {
+        //TODO: MAP initialState to State
+        StateMachineDescriptorEntity smDescriptor = (StateMachineDescriptorEntity) a;
+//        State initialState = this.getStates().get(smDescriptor.getInitialStateId());
+//        StateMachineInstanceEntity defaultSmInstance = (StateMachineInstanceEntity) this.getDefaultVariableInstance();
+//        defaultSmInstance.setCurrentState(initialState);
+//        smDescriptor.setDefaultVariableInstance(defaultSmInstance);
+        //defaultSmInstance.setCurrentStateId(initialState.getId());
+        super.merge(smDescriptor);
     }
 //    @PostPersist
 //    public void generateInitialState() {

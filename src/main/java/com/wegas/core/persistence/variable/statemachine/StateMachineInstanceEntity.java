@@ -35,21 +35,11 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 })
 public class StateMachineInstanceEntity extends VariableInstanceEntity implements Serializable {
 
-    @Column(name = "currentstate_id", nullable = true, insertable = true, updatable = true)
+    @Column(name = "currentstate_id", nullable = true, insertable = false, updatable = false)
     private Long currentStateId;
-    /**
-     * The game model this belongs to
-     */
-//    @ManyToOne
-//    @NotNull
-//    @XmlTransient
-//    @XmlInverseReference(mappedBy = "teams")
-//    @JoinColumn(name = "parentgame_id")
-//    @JsonBackReference(value = "game-team")
-//    private GameEntity game;
-    @OneToOne(cascade = CascadeType.ALL)
     @XmlTransient
-    @JoinColumn(name = "currentstate_id", insertable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "currentstate_id", referencedColumnName = "state_id", insertable = true, updatable = true)
     private State currentState;
 
     public StateMachineInstanceEntity() {
@@ -65,18 +55,6 @@ public class StateMachineInstanceEntity extends VariableInstanceEntity implement
         this.currentState = currentState;
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        //this.currentState = ((StateMachineInstanceEntity) a).getCurrentState();
-        this.setCurrentStateId(((StateMachineInstanceEntity) a).getCurrentStateId());
-    }
-
-    @Override
-    public String toString() {
-        return "StateMachineInstanceEntity{" + "id=" + this.getId() + ", currentState=" + currentState + '}';
-    }
-
-
     /**
      * @return the currentStateId
      */
@@ -91,6 +69,15 @@ public class StateMachineInstanceEntity extends VariableInstanceEntity implement
         this.currentStateId = currentStateId;
     }
 
+    @Override
+    public void merge(AbstractEntity a) {
+        this.setCurrentState(((StateMachineInstanceEntity) a).getCurrentState());
+    }
+
+    @Override
+    public String toString() {
+        return "StateMachineInstanceEntity{" + "id=" + this.getId() + ", currentState=" + currentState + '}';
+    }
 //    @PrePersist
 //    public void generateInitialState() {
 //        this.currentStateId = ((StateMachineDescriptorEntity) this.getScope().getVariableDescriptor()).getInitialStateId();
