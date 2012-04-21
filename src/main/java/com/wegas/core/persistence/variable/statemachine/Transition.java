@@ -30,16 +30,16 @@ public class Transition implements Serializable {
 
     @Embedded
     private ScriptEntity triggerCondition;
-    private Integer nextState;
+    private Long nextState;
 
     public Transition() {
     }
 
-    public Integer getNextState() {
+    public Long getNextState() {
         return nextState;
     }
 
-    public void setNextState(Integer nextState) {
+    public void setNextState(Long nextState) {
         this.nextState = nextState;
     }
 
