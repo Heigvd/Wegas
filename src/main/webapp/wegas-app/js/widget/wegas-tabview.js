@@ -64,14 +64,12 @@ YUI.add('wegas-tabview', function (Y) {
                     Y.Wegas.app.set('currentPlayer', e.button.value);
                     break;
                 case 'reset':
-                    Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest('reset');
+                    Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({ request: '/reset' });
                     break;
                 case 'new':                                                     // New button click event
-                    Y.Wegas.editor.edit({
+                    Y.Wegas.editor.showAddPanel({
                         "@class": e.button.data['@class']
-                    }, function (cfg) {
-                        Y.Wegas.app.dataSources[e.button.data.dataSource].rest.post(cfg);
-                    }, null, this);
+                    }, null, Y.Wegas.app.dataSources[e.button.data.dataSource]);
                     break;
                 }
             }, null, this);

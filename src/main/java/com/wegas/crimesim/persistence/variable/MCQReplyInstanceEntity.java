@@ -12,11 +12,12 @@ package com.wegas.crimesim.persistence.variable;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.NamedEntity;
 import com.wegas.core.script.ScriptEntity;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,7 +28,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
 public class MCQReplyInstanceEntity extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQReplyInstanceEntity");
+//    private static final Logger logger = LoggerFactory.getLogger(MCQReplyInstanceEntity.class);
     /**
      *
      */
@@ -48,9 +49,6 @@ public class MCQReplyInstanceEntity extends NamedEntity {
      */
     @Embedded
     private ScriptEntity impact;
-
-    //@Column(length = 4096)
-   // private Ja impact;
     /**
      *
      */

@@ -13,13 +13,14 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 public class MCQInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQInstanceEntity");
+  //  private static final Logger logger = LoggerFactory.getLogger(MCQInstanceEntity.class);
     /**
      *
      */

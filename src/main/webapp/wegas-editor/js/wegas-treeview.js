@@ -35,12 +35,10 @@ YUI.add('wegas-treeview', function (Y) {
         bindUI: function () {
             // Listen updates on the target datasource
             this.dataSource.after("response", function (e) {
-                if (e.response.results && !e.response.error) {
-                    var treeViewElements = this.genTreeViewElements(e.response.results);
-                    this.treeView.removeChildren(this.treeView.getRoot());
-                    this.treeView.buildTreeFromObject(treeViewElements);
-                    this.treeView.render();
-                }
+                var treeViewElements = this.genTreeViewElements(e.data);
+                this.treeView.removeChildren(this.treeView.getRoot());
+                this.treeView.buildTreeFromObject(treeViewElements);
+                this.treeView.render();
             }, this);
 
             // When a leaf is clicked
@@ -54,11 +52,8 @@ YUI.add('wegas-treeview', function (Y) {
                         node: e.event.target,
                         points: ["tr", "br"]
                     });
-                // Or display the edit tab
-                } else {
-                    Y.Wegas.editor.edit(e.node.data, function (cfg) {
-                        this.dataSource.rest.put(cfg);
-                    }, null, this);
+                } else {                                                        // Or display the edit tab
+                    Y.Wegas.editor.showEditPanel(e.node.data, this.dataSource);
                 }
             }, null, this);
 

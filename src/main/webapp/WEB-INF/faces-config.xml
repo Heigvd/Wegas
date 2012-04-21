@@ -12,10 +12,10 @@
         </locale-config>
 
         <resource-bundle>
-            <base-name>com.wegas.app.Bundle</base-name>
+            <base-name>wegas-app.Bundle</base-name>
             <var>wegasAppBundle</var>
         </resource-bundle>
-        
+
     </application>
 
     <navigation-rule>

@@ -6,13 +6,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
     "use strict";
 
     var Lang = Y.Lang,
-        DataSourceREST,
-        VariableDescriptorDataSourceREST,
-        GameModelDataSourceREST,
-        GameDataSourceREST,
-        DEFAULTHEADERS = {
-            'Content-Type': 'application/json; charset=utf-8'
-        };
+    DataSourceREST,
+    VariableDescriptorDataSourceREST,
+    GameModelDataSourceREST,
+    GameDataSourceREST,
+    DEFAULTHEADERS = {
+        'Content-Type': 'application/json; charset=utf-8'
+    };
 
     DataSourceREST = function () {
         DataSourceREST.superclass.constructor.apply(this, arguments);
@@ -31,21 +31,32 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.get('host').data = [];
         },
 
+        sendRequest: function (requestCfg) {
+            requestCfg.callback = requestCfg.callback || {
+                success: this._successHandler,
+                failure: this._failureHandler
+            };
+            requestCfg.cfg = requestCfg.cfg || {};
+            requestCfg.cfg.headers =  requestCfg.cfg.headers || DEFAULTHEADERS;
+
+            this.get('host').sendRequest(requestCfg);
+        },
+
         applyOperation: function (method, needle, stack) {
             var i;
             for (i = 0; i < stack.length; i += 1) {
                 if (stack[i].id === needle.id) {
                     switch (method) {
-                    case "DELETE":
-                        //@fixme is there a memory leak here ??
-                        stack.splice(i, 1);
-                        //delete stack[i];
-                        return;
-                    default:
-                        //stack[i] = Y.merge(stack[i], needle);
-                        delete stack[i];
-                        stack[i] = needle;
-                        return;
+                        case "DELETE":
+                            //@fixme is there a memory leak here ??
+                            stack.splice(i, 1);
+                            //delete stack[i];
+                            return;
+                        default:
+                            //stack[i] = Y.merge(stack[i], needle);
+                            delete stack[i];
+                            stack[i] = needle;
+                            return;
                     }
                 }
             }
@@ -53,16 +64,20 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
 
         _beforeDefResponseFn: function (e) {
-            var cEl, i,
-                data =  this.get('host').data;
+            var cEl, i;
+
+            e.data = this.get('host').data;
+
+            if (e.error) {
+                return;
+            }
 
             for (i = 0; i < e.response.results.length; i += 1) {                // Treat reply
                 cEl = e.response.results[i];
                 if (cEl) {
-                    this.applyOperation(e.cfg.method, cEl, data);
+                    this.applyOperation(e.cfg.method, cEl, e.data);
                 }
             }
-            e.response.results = data;
         },
         getCachedVariables: function () {
             return this.get('host').data;
@@ -90,84 +105,53 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
 
         getById: function (id) {
-            var host = this.get('host');
-
-            host.sendRequest({
-                request: "/" + id,
-                cfg: {
-                    headers: DEFAULTHEADERS
-                },
-                callback: {
-                    success: this._successHandler,
-                    failure: this._failureHandler
-                }
-            });
-
-        },
-
-        sendRequest: function (request, cfg, data, callback) {
-            callback = callback || {
-                success: this._successHandler,
-                failure: this._failureHandler
-            };
-            cfg = cfg || {};
-            cfg.headers =  cfg.headers || DEFAULTHEADERS;
-            if (data) {
-                cfg.data = Y.JSON.stringify(data);
-            }
-            this.get('host').sendRequest({
-                request: request,
-                cfg: cfg,
-                callback: callback
+            this.sendRequest({
+                request: "/" + id
             });
         },
-        getRequest: function (request) {
-            this.sendRequest('/' + request);
-        },
-        /**
-         * @fixme the parameters should be (request, data, parentData)
-         */
-        post: function (data, parentData, request) {
-            request = request || ((parentData) ? "/" + parentData.id + "/" + data["@class"] :  "");
 
-            this.sendRequest(request, {
-                method: "POST"
-            }, data);
-        },
         generateRequest: function (data) {
             return "/" + data.id;
         },
-        put: function (data) {
-            this.sendRequest(this.generateRequest(data), {
-                method: "PUT"
-            }, data);
+
+        post: function (data, parentData, callback) {
+            this.sendRequest({
+                //request: ((parentData) ? "/" + parentData.id + "/" + data["@class"] :  ""),
+                request: ((parentData) ? "/" + parentData.id + "/VariableInstance" : ""),
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify(data)
+                },
+                callback: callback
+            });
+        },
+
+        getObject: function (data) {
+            this.sendRequest(this.generateRequest(data));
+        },
+        put: function (data, callback) {
+            this.sendRequest({
+                request: this.generateRequest(data),
+                cfg: {
+                    method: "PUT",
+                    data: Y.JSON.stringify(data)
+                },
+                callback: callback
+            });
         },
         deleteObject: function (data) {
-            this.sendRequest(this.generateRequest(data), {
-                method: "DELETE"
+            this.sendRequest({
+                request: this.generateRequest(data),
+                cfg: {
+                    method: "DELETE"
+                }
             });
         },
         _successHandler: function (e) {
             Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
-            //data = Y.JSON.stringify(e.response, null, 2);
         },
         _failureHandler: function (e) {
             alert("Error sending REST post request!");
-            var errorMsg = "", i, j;
-
-            if (e.response.results) {
-                for (i = 0; i < e.response.results.length; i += 1) {
-                    if (e.response.results[i].errors){
-                        for (j = 0; j < e.response.results[i].errors.length; j += 1) {
-                            errorMsg += e.response.results[i].errors[j];
-                        //   e.response.results[i].errors = null;
-                        }
-                    }
-                }
-                alert(errorMsg);
-            } else if (e.error) {
-                alert(e.error.message);
-            }
         }
 
     });
@@ -186,9 +170,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
 
         _beforeDefResponseFn: function (e) {
-            var cEl, i,
-                data = this.get('host').data;                                   // Treat reply
+            var cEl, i;
+            e.data = this.get('host').data;                                   // Treat reply
 
+            if (e.error) {
+                return;
+            }
             Y.log("Response received", "info", "Y.Wegas.VariableDescriptorDataSourceREST");
 
             for (i = 0; i < e.response.results.length; i += 1) {
@@ -199,7 +186,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     cEl['@class'] === "InboxInstance"||
                     cEl['@class'] === "MCQInstance") {
 
-                    Y.Array.each(data, function (o) {
+                    Y.Array.each(e.data, function (o) {
                         var j;
                         for (j in o.scope.variableInstances) {
                             if (o.scope.variableInstances.hasOwnProperty(j) && o.scope.variableInstances[j].id === cEl.id) {
@@ -208,24 +195,27 @@ YUI.add('wegas-datasourcerest', function (Y) {
                         }
                     });
                 } else {
-                    this.applyOperation(e.cfg.method, cEl, data);
+                    this.applyOperation(e.cfg.method, cEl, e.data);
                 }
             }
-            e.response.results = data;
         },
-        put: function (data, request) {
-            request = request || ((data.id) ? "/" + data.id : "");
-
+        put: function (data, callback) {
             switch (data['@class']) {
-            case 'StringInstance':
-            case 'MCQInstance':
-            case 'NumberInstance':
-            case 'InboxInstance':
-                request = '/1/VariableInstance/' + data.id;
-                break;
+                case 'StringInstance':
+                case 'MCQInstance':
+                case 'NumberInstance':
+                case 'InboxInstance':
+                    this.sendRequest({
+                        request: '/1/VariableInstance/' + data.id,
+                        cfg: {
+                            method: "PUT",
+                            data: Y.JSON.stringify(data)
+                        },
+                        callback: callback
+                    });
+                    return;
             }
-
-            VariableDescriptorDataSourceREST.superclass.put.call(this, data, request);
+            VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
         },
         getInstanceById: function (id) {
             return this.getInstanceBy('id', id);
@@ -261,23 +251,23 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(GameModelDataSourceREST, DataSourceREST, {
         _beforeDefResponseFn: function (e) {
-            var cEl, i,
-                data = this.get('host').data;                                   // Treat reply
+            var cEl, i;
+            e.data = this.get('host').data;                                   // Treat reply
+
+            if (e.error) {
+                return;
+            }
 
             for (i = 0; i < e.response.results.length; i += 1) {
                 cEl = e.response.results[i];
                 if (!cEl) {
 
                 } else if (cEl['@class'] === "Team") {
-                    //@TODO is this case still in use ??
+                //@TODO is this case still in use ??
                 } else {
-                    this.applyOperation(e.cfg.method, cEl, data);
+                    this.applyOperation(e.cfg.method, cEl, e.data);
                 }
             }
-            e.response.results = data;
-        },
-        put: function (data, request) {
-            GameModelDataSourceREST.superclass.put.call(this, data, request);
         }
     });
 
@@ -295,8 +285,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.extend(GameDataSourceREST, DataSourceREST, {
 
         _beforeDefResponseFn: function (e) {
-            var cEl, i, game, team,
-                data = this.get('host').data;                                  // Treat reply
+            var cEl, i, game, team;                                             // Treat reply
+
+            e.data = this.get('host').data;
+
+            if (e.error) {
+                return;
+            }
 
             Y.log("Response received", "info", "Y.Wegas.GameDataSourceREST");
 
@@ -314,39 +309,33 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     this.applyOperation(e.cfg.method, cEl, team.players);
 
                 } else {
-                    this.applyOperation(e.cfg.method, cEl, data);
+                    this.applyOperation(e.cfg.method, cEl, e.data);
                 }
             }
-            e.response.results = data;
         },
         generateRequest: function (data) {
             if (data['@class'] === 'Team') {
                 return '/' + data.gameId + '/Team/' + data.id;
             } else if (data['@class'] === 'Player') {
                 return "/" + this.getGameByTeamId(data.teamId).id
-                    + '/Team/' + data.teamId + '/Player/' + data.id;
+                + '/Team/' + data.teamId + '/Player/' + data.id;
             } else {
                 return "/" + data.id;
             }
         },
-        post: function (data, parentData, request) {
+        post: function (data, parentData, callback) {
             if (data['@class'] === 'Player') {
-                request = "/" + this.getGameByTeamId(parentData.id).id + "/Team/" + parentData.id + "/Player";
-            }
-            GameDataSourceREST.superclass.post.call(this, data, parentData, request);
-        },
 
-        deleteObject: function (data, callback) {
-            if (data['@class'] === 'Team') {
-                this.sendRequest('/' + data.gameId + '/Team/' + data.id, {
-                    method: "DELETE"
-                });
-            } else if (data['@class'] === 'Player') {
-                this.sendRequest("/" + data.id, {
-                    method: "DELETE"
+                this.sendRequest({
+                    request: "/" + this.getGameByTeamId(parentData.id).id + "/Team/" + parentData.id + "/Player",
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify(data),
+                    },
+                    callback: callback
                 });
             } else {
-                GameDataSourceREST.superclass.deleteObject.call(this, data, callback);
+                GameDataSourceREST.superclass.post.call(this, data, parentData, callback);
             }
         },
         getCurrentGame: function () {
@@ -422,8 +411,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
 
     /**
-     * FIXME We redefine this so we can use a "." selector and a "@..." field name
-     */
+         * FIXME We redefine this so we can use a "." selector and a "@..." field name
+         */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],

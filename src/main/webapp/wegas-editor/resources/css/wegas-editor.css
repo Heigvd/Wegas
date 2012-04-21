@@ -368,3 +368,37 @@ td.yui3-wegas-treeview-icon-player {
     background: #2647A0 url(/Wegas/lib/yui2in3/build/assets/skins/sam/sprite.png) repeat-x left -1400px;
     border-right: solid 1px transparent;
 }
+
+
+/* System messages */
+.yui3-wegas-systemmessage {
+    padding: 10px;
+    margin: 10px;
+    display: none;
+}
+.yui3-wegas-systemmessage  .icon {
+    width: 55px;
+    height: 50px;
+    display: inline-block;
+}
+.yui3-wegas-systemmessage  .content {
+    vertical-align: top;
+    margin-top: 15px;
+    display: inline-block;
+}
+.yui3-wegas-systemmessage.success {
+    border: 1px solid green;
+    background: lightGreen;
+    display:block;
+}
+.yui3-wegas-systemmessage.success .icon {
+    background: url(../images/wegas-icon-success-48.png) no-repeat;
+}
+.yui3-wegas-systemmessage.error {
+    border: 1px solid red;
+    background: lightCoral;
+    display:block;
+}
+.yui3-wegas-systemmessage.error .icon {
+    background: url(../images/wegas-icon-error-48.png) no-repeat;
+}

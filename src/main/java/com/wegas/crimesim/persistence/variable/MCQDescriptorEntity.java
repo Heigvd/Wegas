@@ -13,10 +13,11 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,7 +28,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 public class MCQDescriptorEntity extends VariableDescriptorEntity<MCQInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQDescriptorEntity");
+   // private static final Logger logger = LoggerFactory.getLogger(MCQDescriptorEntity.class);
     /**
      *
      */
