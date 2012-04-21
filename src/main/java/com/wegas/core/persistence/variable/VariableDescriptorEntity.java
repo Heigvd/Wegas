@@ -36,7 +36,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"gamemodel_id", "name", "scope_id"}))
+@UniqueConstraint(columnNames = {"gamemodel_id", "name"}))
 @XmlType(name = "VariableDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptorEntity.class),

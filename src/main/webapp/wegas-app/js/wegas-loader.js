@@ -18,12 +18,12 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: ['stylesheet',
-                            'wegas-appcss', 'wegas-datasourcerest', 'wegas-widget', 'wegas-widgetloader',
-                            /* @fixme those should be included on the fly*/
-                            'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
-                            'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 'wegas-inbox',
-                            'wegas-projectmanagementgame', 'wegas-crimesim'
-                            ]
+                        'wegas-appcss', 'wegas-datasourcerest', 'wegas-widget', 'wegas-widgetloader',
+                        /* @fixme those should be included on the fly*/
+                        'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
+                        'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 'wegas-inbox',
+                        'wegas-projectmanagementgame', 'wegas-crimesim'
+                        ]
                     },
                     'wegas-appcss': {
                         path: 'wegas-app/resources/css/wegas-app.css',
@@ -52,8 +52,8 @@ YUI().use(function (Y) {
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
                         requires: ['yui2-layout', 'yui2-event-mouseenter', 'yui2-event-delegate', 'yui2-yahoo', 'yui2-dom',
-                            'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector', 'yui2-resize',
-                            'yui2-containercore', 'yui2-menu', 'yui2-calendar']
+                        'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector', 'yui2-resize',
+                        'yui2-containercore', 'yui2-menu', 'yui2-calendar']
                     },
                     'wegas-list': {
                         path: 'wegas-app/js/widget/wegas-list-min.js',
@@ -80,21 +80,21 @@ YUI().use(function (Y) {
                     'wegas-inputex': {
                         path: 'wegas-app/js/widget/wegas-inputex-min.js',
                         requires: [
-                            'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
-                            'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
-                            'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
-                            'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
+                        'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
+                        'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
+                        'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
+                        'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
                     },
 
                     /** Editor **/
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                            'wegas-inputex', 'wegas-app', 'wegas-treeview',
-                            'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
-                            'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer'
+                        'wegas-inputex', 'wegas-app', 'wegas-treeview',
+                        'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
+                        'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
-                        //'wegas-editorcss'
+                        //'wegas-editorcss', 'codemirror-xml'
                         ]
                     },
                     'wegas-editorcss': {
@@ -162,47 +162,60 @@ YUI().use(function (Y) {
                         requires: ['wireit']
                     },*/
                 }
-            }
-        /* Wire It */
-        /* Desactivated */
-        /*wireit: {
-            combine: false,
-            base: "lib/wireit/",
-            //comboBase: Config.path+'combo/?',
-            //root: 'dd',
-            modules:  {
-                'wireit': {
-                    path: 'build/wireit.js',
-                    //path: 'js/WireIt.js',
-                    requires: ["yui2-utilities", 'excanvas']
-                },
-                'wire': {
-                    path: 'js/Wire.js',
-                    requires: ['wireit', 'wireit-dd', 'wireit-anim', 'canvaselement', 'terminal']
-                },
-                'canvaselement': {
-                    path: 'js/CanvasElement.js'
-                },
-                'terminal': {
-                    path: 'js/Terminal.js'
-                },
-                'excanvas': {
-                    path: 'lib/excanvas.js'
-                },
-                'wireit-anim': {
-                    path: 'js/util/Anim.js'
-                },
-                'wireit-dd': {
-                    path: 'js/util/DD.js'
+            },
+            /* Code Mirror */
+            codemirror: {
+                combine: false,
+                //base: "lib/CodeMirror/",
+                modules:  {
+                    'codemirror': {
+                        path: 'lib/codemirror.js',
+                        requires: ['codemirror-css']
+                    },
+                    'codemirror-css': {
+                        path: 'lib/codemirror.css"',
+                        type: 'css'
+                    },
+                    'codemirror-xml': {
+                        path: 'mode/xml/xml.js',
+                        requires: ["codemirror"]
+                    }
+                }
+            },
+
+
+            /* Wire It */
+            wireit: {
+                combine: false,
+                base: "lib/wireit/",
+                modules:  {
+                    'wireit': {
+                        path: 'build/wireit.js',
+                        requires: ["yui2-utilities", 'excanvas']
+                    },
+                    'wire': {
+                        path: 'js/Wire.js',
+                        requires: ['wireit', 'wireit-dd', 'wireit-anim', 'canvaselement', 'terminal']
+                    },
+                    'canvaselement': {
+                        path: 'js/CanvasElement.js'
+                    },
+                    'terminal': {
+                        path: 'js/Terminal.js'
+                    },
+                    'excanvas': {
+                        path: 'lib/excanvas.js'
+                    },
+                    'wireit-anim': {
+                        path: 'js/util/Anim.js'
+                    },
+                    'wireit-dd': {
+                        path: 'js/util/DD.js'
+                    }
                 }
             }
-        },*/
         }
-    },
-        modules,
-        allModules = [],
-        modulesByType = {},
-        moduleName;
+    };
 
     if (typeof YUI_config === 'undefined') {
         YUI_config = {
@@ -210,22 +223,27 @@ YUI().use(function (Y) {
         };
     }
     Y.mix(YUI_config.groups, CONFIG.groups);
-    modules = YUI_config.groups.wegas.modules;
 
-    for (moduleName in modules) {                                           // Loop through all modules
-        if (modules.hasOwnProperty(moduleName)) {
+    function loadModules(group) {
+        var modules = group.modules,
+        moduleName,
+        allModules = [],
+        modulesByType = {};
+        for (moduleName in modules) {                                           // Loop through all modules
+            if (modules.hasOwnProperty(moduleName)) {
+                allModules.push(moduleName);                                    // Build a list of all modules
 
-            // Build a list of all Wegas modules
-            allModules.push(moduleName);
+                if (modules[moduleName].ix_provides) {                          // Build a reverse index on which module provides what type
+                    modulesByType[modules[moduleName].ix_provides] = moduleName;
+                }
 
-            // Build a reverse index on which module provides what type
-            if (modules[moduleName].ix_provides) {
-                modulesByType[modules[moduleName].ix_provides] = moduleName;
             }
-
         }
+        group.allModules = allModules;
+        group.modulesByType = modulesByType;
     }
-    YUI_config.groups.wegas.allModules = allModules;
-    YUI_config.groups.wegas.modulesByType = modulesByType;
 
+    loadModules(YUI_config.groups.wegas);
+    loadModules(YUI_config.groups.codemirror);
+    loadModules(YUI_config.groups.wireit);
 });

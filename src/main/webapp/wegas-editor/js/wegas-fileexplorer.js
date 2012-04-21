@@ -6,11 +6,11 @@ YUI.add('wegas-fileexplorer', function (Y) {
     'use strict';
 
     var FileExplorer,
-    CONTENTBOX = 'contentBox',
-    YAHOO = Y.YUI2,
-    DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=utf-8'
-    };
+        CONTENTBOX = 'contentBox',
+        YAHOO = Y.YUI2,
+        DEFAULTHEADERS = {
+            'Content-Type': 'application/json; charset=utf-8'
+        };
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
@@ -32,15 +32,16 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         bindUI: function () {
-            this.loadNodeData(this.treeView.getRoot());     // Load root node content
+            this.loadNodeData(this.treeView.getRoot());                         // Load root node content
         },
+
 
         // *** Private methods *** //
         loadNodeData: function (node, onLoadComplete) {
 
             // @reuben Here we should build the request based on the node data,
-            //  which will be empty for root node, but will contain stuff later on
-            console.log(node.data);
+            // which will be empty for root node, but will contain stuff later on
+            // console.log(node.data);
 
             Y.Wegas.app.dataSources.File.sendRequest({
                 request: "",
@@ -88,8 +89,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         }
 
     }, {
-        ATTRS : {
-        }
+        ATTRS : {}
     });
 
     Y.namespace('Wegas').FileExplorer = FileExplorer;

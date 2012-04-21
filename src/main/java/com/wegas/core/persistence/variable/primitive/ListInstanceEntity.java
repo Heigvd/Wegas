@@ -9,8 +9,9 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
@@ -54,5 +55,10 @@ public class ListInstanceEntity extends VariableInstanceEntity {
     @XmlTransient
     public void addVariableDescriptor(VariableDescriptorEntity vd) {
         this.variableDescriptors.add(vd);
+    }
+
+    @Override
+    public void merge(AbstractEntity a) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

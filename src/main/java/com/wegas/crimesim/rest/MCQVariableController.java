@@ -9,14 +9,12 @@
  */
 package com.wegas.crimesim.rest;
 
-import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.rest.AbstractRestController;
-import com.wegas.core.script.ScriptManager;
-import com.wegas.crimesim.ejb.MCQReplyDescriptorFacade;
 import com.wegas.crimesim.ejb.MCQDescriptorFacade;
-import com.wegas.crimesim.persistence.variable.MCQReplyInstanceEntity;
+import com.wegas.crimesim.ejb.MCQReplyDescriptorFacade;
 import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
+import com.wegas.crimesim.persistence.variable.MCQReplyInstanceEntity;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

@@ -38,13 +38,37 @@ YUI.add('wegas-editor', function(Y) {
             this._editMenu.setMenuItems(data, dataSource);
             this._editMenu.show();
         },
+        showEditPanel: function (data, dataSource) {
+            this.edit(data, function (cfg) {
+                this.rest.put(cfg, {
+                    success: function (e) {
+                        Y.Wegas.editor.showFormMsg("success", "Item has been updated");
+                    },
+                    failure: function (e) {
+                        Y.Wegas.editor.showFormMsg("error", e.response.results[0].message || "Error while update item");
+                    }
+                });
+            }, null, dataSource);
+        },
+        showAddPanel: function (data, parentData, dataSource) {
+            this.edit(data, function (cfg) {
+                this.rest.post(cfg, parentData, {
+                    success: function () {
+                        Y.Wegas.editor.showFormMsg("success", "Item has been added");
+                        Y.Wegas.editor._form.setValue(data);
+                    },
+                    failure: function (e) {
+                        Y.Wegas.editor.showFormMsg("error", e.response.results[0].message || "Error while adding item");
+                    }
+                });
+            }, null, dataSource);
+        },
         /**
          * Show edition form in the target div
          */
         edit: function (data, callback, formFields, scope) {
             var node, widget = Y.Widget.getByNode('#rightTabView');
             // var widget = Y.Widget.getByNode('#centerTabView');
-
 
             if (!this._tab) {
                 this._tab = widget.add({
@@ -71,18 +95,9 @@ YUI.add('wegas-editor', function(Y) {
 
             if (this._form) {
                 this._form.destroy();
-                node.clear();
+                node.empty();
             }
-
-            function showFormMsg(cssClass, msg) {															// Form msgs logic
-                var msgNode = element.one('.yui3-alba-formmsg');
-                if (lastCssClass) msgNode.removeClass('yui3-alba-formmsg-' + lastCssClass);
-                node.addClass('yui3-alba-formmsg-' + cssClass);
-                node.setStyle('display', 'block');
-                node.one('.yui3-alba-formmsg-content').setContent(msg);
-                lastCssClass = cssClass;
-            }
-            node.append('<div class="yui3-alba-formmsg"><span class="yui3-alba-formmsg-icon"></span><span class="yui3-alba-formmsg-content"></span></div>');
+            node.append('<div class="yui3-wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>');
 
             this._form = new Y.inputEx.Form({
                 fields: formFields,
@@ -119,6 +134,14 @@ YUI.add('wegas-editor', function(Y) {
             });
             this._form.setValue(data);
             this._form._oData = data;
+        },
+        showFormMsg: function (level, msg) {													// Form msgs logic
+            var msgNode = this._tab.item(0).get('panelNode').one('.yui3-wegas-systemmessage');
+            msgNode.removeClass("info");
+            msgNode.removeClass("warn");
+            msgNode.removeClass("error");
+            msgNode.addClass(level);
+            msgNode.one('.content').setContent(msg);
         }
     }, {
         ATTRS: {

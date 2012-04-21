@@ -60,10 +60,10 @@ public class SignupController implements Serializable {
         }
         try {
             cRealm.createUser(userName, userPass);
-            this.msg = ResourceBundle.getBundle("com.wegas.app.Bundle").getString("SignupPage_UserCreatedMsg");
+            this.msg = ResourceBundle.getBundle("wegas-app.Bundle").getString("SignupPage_UserCreatedMsg");
         }
         catch (SQLException ex) {
-            this.msg = ResourceBundle.getBundle("com.wegas.app.Bundle").getString("SignupPage_UserCreationErrorMsg");
+            this.msg = ResourceBundle.getBundle("wegas-app.Bundle").getString("SignupPage_UserCreationErrorMsg");
             Logger.getLogger(SignupController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

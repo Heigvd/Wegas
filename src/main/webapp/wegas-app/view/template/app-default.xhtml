@@ -59,12 +59,13 @@
 
         <script type="text/javascript">
             YUI_config.groups.inputex.base = '/Wegas/lib/inputex/build/';		// Hack fix inputex loading path so it uses local files
-            YUI_config.groups.wegas.base = '/Wegas/';                                   // Hack fix inputex loading path so it uses local files
+            YUI_config.groups.wegas.base = '/Wegas/';                                   // Hack fix wegas loading path so it uses local files
+            YUI_config.groups.codemirror.base = '/Wegas/lib/CodeMirror/';                // Hack fix codemirror loading path so it uses local files
 
             /**<!--
-     base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
-         { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
- -->**/
+                base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
+                    { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
+            -->**/
             var Y = YUI({
                 charset: 'utf-8',
                 lang: 'en',
@@ -129,7 +130,7 @@
                     cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
                     dataSources: {
                         "GameModel": {
-                            source: "rs/GameModel",
+                            source: "rest/GameModel",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -145,7 +146,7 @@
                             ]
                         },
                         "Game": {
-                            source: "rs/GameModel/#{gameController.currentGameModel.id}/Game",
+                            source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -177,7 +178,7 @@
                             ]
                         },
                         "User": {
-                            source: "rs/User",
+                            source: "rest/User",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -192,7 +193,7 @@
                             ]
                         },
                         "VariableDescriptor": {
-                            source: "rs/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                            source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -221,7 +222,7 @@
                             ]
                         }
                         /* "Team": {
-                            source: "rs/gm/1/Team",
+                            source: "rest/gm/1/Team",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
