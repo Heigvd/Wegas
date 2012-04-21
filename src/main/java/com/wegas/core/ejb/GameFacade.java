@@ -70,7 +70,7 @@ public class GameFacade extends AbstractFacade<GameEntity> {
     public void create(Long gameModelId, GameEntity game) {
         GameModelEntity gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
-        this.create(game);
+        super.create(game);
     }
 
     /**

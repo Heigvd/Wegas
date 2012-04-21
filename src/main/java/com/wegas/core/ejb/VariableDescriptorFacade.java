@@ -43,7 +43,7 @@ public class VariableDescriptorFacade extends AbstractFacade<VariableDescriptorE
      */
     public void create(Long gameModelId, VariableDescriptorEntity variableDescriptorEntity) {
         this.gameModelEntityFacade.find(gameModelId).addVariableDescriptor(variableDescriptorEntity);
-        this.create(variableDescriptorEntity);
+        super.create(variableDescriptorEntity);
     }
 
     /**

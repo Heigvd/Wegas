@@ -38,7 +38,7 @@ public class TriggerTest {
     public void setUp() {
         this.trigger = new TriggerInstanceEntity();
         this.triggerDescriptor = (TriggerDescriptorEntity) this.trigger.getScope().getVariableDescriptor();
-        this.triggerDescriptor.setLabel("testTrigger");
+        this.triggerDescriptor.setName("testTrigger");
         ScriptEntity scriptEntity = new ScriptEntity();
         scriptEntity.setLanguage("JavaScript");
         scriptEntity.setContent("var x=10; x+=2;");
@@ -57,7 +57,7 @@ public class TriggerTest {
     public void testGenerateTrigger() {
         System.out.println("OneShotTrigger");
         this.triggerDescriptor.setOneShot(true);
-        this.triggerDescriptor.generateTriggerDescriptor();
+//        this.triggerDescriptor.generateTriggerDescriptor();
         assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 2;
         assert this.triggerDescriptor.getStates().get(2).getTransitions().isEmpty();
 
@@ -71,7 +71,7 @@ public class TriggerTest {
         System.out.println("OpposedTrigger");
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.setOpposedTrigger(true);
-        this.triggerDescriptor.generateTriggerDescriptor();
+       // this.triggerDescriptor.generateTriggerDescriptor();
         assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 2;
         assert this.triggerDescriptor.getStates().get(2).getTransitions().get(0).getNextState() == 1;
         //TODO : check reverse condition.
@@ -85,7 +85,7 @@ public class TriggerTest {
         System.out.println("LoopTrigger");
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.setOpposedTrigger(false);
-        this.triggerDescriptor.generateTriggerDescriptor();
+       // this.triggerDescriptor.generateTriggerDescriptor();
         assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 1;
     }
 }

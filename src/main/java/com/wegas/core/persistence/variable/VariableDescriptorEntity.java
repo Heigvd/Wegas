@@ -9,16 +9,17 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.crimesim.persistence.variable.MCQDescriptorEntity;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.NamedEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.messaging.persistence.variable.InboxDescriptorEntity;
-import com.wegas.core.persistence.variable.scope.ScopeEntity;
 import com.wegas.core.persistence.variable.primitive.ListDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
+import com.wegas.core.persistence.variable.scope.ScopeEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
+import com.wegas.crimesim.persistence.variable.MCQDescriptorEntity;
+import com.wegas.messaging.persistence.variable.InboxDescriptorEntity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -36,14 +37,15 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"gamemodel_id", "name"}))
+@UniqueConstraint(columnNames = {"gamemodel_id", "name", "scope_id"}))
 @XmlType(name = "VariableDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptorEntity.class),
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptorEntity.class),
     @JsonSubTypes.Type(name = "MCQDescriptor", value = MCQDescriptorEntity.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class)
 })
 public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends NamedEntity {
 
