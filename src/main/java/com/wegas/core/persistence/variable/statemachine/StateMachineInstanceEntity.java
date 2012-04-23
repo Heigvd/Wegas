@@ -78,8 +78,4 @@ public class StateMachineInstanceEntity extends VariableInstanceEntity implement
     public String toString() {
         return "StateMachineInstanceEntity{" + "id=" + this.getId() + ", currentState=" + currentState + '}';
     }
-//    @PrePersist
-//    public void generateInitialState() {
-//        this.currentStateId = ((StateMachineDescriptorEntity) this.getScope().getVariableDescriptor()).getInitialStateId();
-//    }
 }

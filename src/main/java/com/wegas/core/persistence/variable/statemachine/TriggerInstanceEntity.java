@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -20,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+@Entity
 @Table(name="TriggerInstance")
 @XmlRootElement
 @XmlType(name = "TriggerInstance")
