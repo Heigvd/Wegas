@@ -14,11 +14,10 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
-import com.wegas.core.script.ScriptEntity;
 import com.wegas.core.script.ScriptManager;
+import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
 import com.wegas.crimesim.persistence.variable.MCQReplyDescriptorEntity;
 import com.wegas.crimesim.persistence.variable.MCQReplyInstanceEntity;
-import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -72,9 +71,7 @@ public class MCQReplyDescriptorFacade extends AbstractFacade<MCQReplyDescriptorE
         MCQInstanceEntity vi = (MCQInstanceEntity) vd.getVariableInstance(player);
         MCQReplyInstanceEntity replyInstance = new MCQReplyInstanceEntity();
 
-        replyInstance.setAnswer(reply.getAnswer());
-        replyInstance.setDescription(reply.getDescription());
-        replyInstance.setName(reply.getName());
+        replyInstance.setReplyDescriptor(reply);
         replyInstance.setStartTime(startTime);
         replyInstance.setDuration(reply.getDuration());
         vi.addReply(replyInstance);
@@ -92,7 +89,7 @@ public class MCQReplyDescriptorFacade extends AbstractFacade<MCQReplyDescriptorE
         MCQReplyInstanceEntity reply = this.mCQReplyVariableInstanceEntityFacade.find(replyVariableInstanceId);
 
         return scriptManager.runScript(reply.getMCQInstance().getScope().getVariableDescriptor().getGameModel().getId(),
-                playerId, reply.getImpact());
+                playerId, reply.getReplyDescriptor().getImpact());
     }
 
     /**

@@ -20,6 +20,7 @@ import com.wegas.core.persistence.variable.scope.ScopeEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.crimesim.persistence.variable.MCQDescriptorEntity;
 import com.wegas.messaging.persistence.variable.InboxDescriptorEntity;
+import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -30,14 +31,13 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  *
- * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"gamemodel_id", "name", "scope_id"}))
+@UniqueConstraint(columnNames = {"gamemodel_id", "name"}))
 @XmlType(name = "VariableDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptorEntity.class),
@@ -82,10 +82,16 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     @OneToOne(cascade = {CascadeType.ALL})
     @JsonManagedReference("variabledescriptor-scope")
     private ScopeEntity scope;
-
     /**
      *
      */
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(joinColumns = {
+        @JoinColumn(referencedColumnName = "variabledescriptor_id")},
+    inverseJoinColumns = {
+        @JoinColumn(referencedColumnName = "tag_id")})
+    private List<Tag> tags;
+
     /**
      *
      * @param a
@@ -190,5 +196,19 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     public void setDefaultVariableInstance(T defaultVariableInstance) {
         this.defaultVariableInstance = defaultVariableInstance;
+    }
+
+    /**
+     * @return the tags
+     */
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    /**
+     * @param tags the tags to set
+     */
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }
