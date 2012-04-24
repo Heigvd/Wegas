@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @XmlType(name = "MCQReplyInstance")
-public class MCQReplyInstanceEntity extends NamedEntity {
+public class MCQReplyInstanceEntity extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 //    private static final Logger logger = LoggerFactory.getLogger(MCQReplyInstanceEntity.class);
@@ -38,30 +38,16 @@ public class MCQReplyInstanceEntity extends NamedEntity {
     /**
      *
      */
-    private String name;
-    /**
-     *
-     */
-    @Column(length = 4096)
-    private String description;
-    /**
-     *
-     */
-    @Embedded
-    private ScriptEntity impact;
-    /**
-     *
-     */
-    @Column(length = 4096)
-    private String answer;
-    /**
-     *
-     */
     private Long startTime;
     /**
      *
      */
     private Long duration;
+    /**
+     *
+     */
+    @ManyToOne
+    private MCQReplyDescriptorEntity replyDescriptor;
     /**
      *
      */
@@ -76,55 +62,14 @@ public class MCQReplyInstanceEntity extends NamedEntity {
      */
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
         MCQReplyInstanceEntity r = (MCQReplyInstanceEntity) a;
-        this.setDescription(r.getDescription());
-        this.setAnswer(r.getAnswer());
-        this.setImpact(r.getImpact());
+        this.setReplyDescriptor(r.getReplyDescriptor());
     }
 
     @Override
     public boolean equals(Object o) {
         MCQReplyInstanceEntity vd = (MCQReplyInstanceEntity) o;
         return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return the impact
-     */
-    public ScriptEntity getImpact() {
-        return impact;
-    }
-
-    /**
-     * @param impact the impact to set
-     */
-    public void setImpact(ScriptEntity impact) {
-        this.impact = impact;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
@@ -153,20 +98,6 @@ public class MCQReplyInstanceEntity extends NamedEntity {
     }
 
     /**
-     * @return the answer
-     */
-    public String getAnswer() {
-        return answer;
-    }
-
-    /**
-     * @param answer the answer to set
-     */
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    /**
      * @return the startTime
      */
     public Long getStartTime() {
@@ -192,5 +123,19 @@ public class MCQReplyInstanceEntity extends NamedEntity {
      */
     public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+    /**
+     * @return the replyDescriptor
+     */
+    public MCQReplyDescriptorEntity getReplyDescriptor() {
+        return replyDescriptor;
+    }
+
+    /**
+     * @param replyDescriptor the replyDescriptor to set
+     */
+    public void setReplyDescriptor(MCQReplyDescriptorEntity mCQReplyDescriptorEntity) {
+        this.replyDescriptor = mCQReplyDescriptorEntity;
     }
 }

@@ -6,8 +6,8 @@ YUI.add('wegas-crimesim', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-        YAHOO = Y.YUI2,
-        ScheduleDisplay, Menu;
+    YAHOO = Y.YUI2,
+    ScheduleDisplay, Menu;
 
     Menu = Y.Base.create("scheduledisplay-menu", Y.Widget,                      // Helper to display the menu in a positionable box
         [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
@@ -61,8 +61,8 @@ YUI.add('wegas-crimesim', function (Y) {
 
                 cb.delegate("click", function (e) {                             // Show the "action available" menu on cell click
                     var questionId =  e.target.ancestor("tr").getAttribute("data-questionid"),
-                        startTime = e.target.ancestor("td").getAttribute("data-startTime"),
-                        question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId);
+                    startTime = e.target.ancestor("td").getAttribute("data-startTime"),
+                    question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId);
 
                     this._menu.setMenuItems(this._genMenuItems(question, startTime));
                     this._menu.get("boundingBox").appendTo(e.target.get('parentNode'));
@@ -100,11 +100,11 @@ YUI.add('wegas-crimesim', function (Y) {
 
             _syncSchedule: function () {
                 var perPeriodBudget = 15, perPeriodLoad = [], question, cols = [], questionInstance,  reply, i, j, k,
-                    questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQDescriptor"),
-                    period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
-                    acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
-                    cb = this.get(CONTENTBOX).one(".schedule-questions"),
-                    periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period");
+                questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQDescriptor"),
+                period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
+                acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
+                cb = this.get(CONTENTBOX).one(".schedule-questions"),
+                periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period");
 
                 if (!period) {
                     return;
@@ -174,13 +174,13 @@ YUI.add('wegas-crimesim', function (Y) {
 
             _syncDetailsPanel: function (questionId) {
                 var i, reply,
-                    targetNode = this.get(CONTENTBOX).one(".schedule-detail"),
-                    question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId),
-                    period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
-                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
-                    acc = ['<div class="schedule-icon-close"></div><h1>',
-                        question.label || question.name || "undefined",
-                        '</h1><div class="content">', question.description, '</div>'];
+                targetNode = this.get(CONTENTBOX).one(".schedule-detail"),
+                question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId),
+                period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
+                questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
+                acc = ['<div class="schedule-icon-close"></div><h1>',
+                question.label || question.name || "undefined",
+                '</h1><div class="content">', question.description, '</div>'];
 
                 this._currentQuestionId = questionId;
 
@@ -190,7 +190,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 for (i = 0; i < questionInstance.replies.length; i += 1) {
                     reply = questionInstance.replies[i];
                     acc.push('<div class="schedule-detail-reply"><h3>Period ',
-                        reply.startTime, ': ', reply.name || "undefined",
+                        reply.startTime, ': ', reply.replyname || "undefined",
                         '</h3><div class="content">');
                     if ((reply.startTime + reply.duration) <= period.value) {
                         acc.push(reply.answer);
@@ -220,10 +220,12 @@ YUI.add('wegas-crimesim', function (Y) {
             // *** Private Methods *** /
             _onMenuClick: function (e, args) {
                 var menuItem = args[1],
-                    reply = menuItem.value.reply;
+                reply = menuItem.value.reply;
 
-                Y.Wegas.app.dataSources.VariableDescriptor.rest.getRequest("MCQVariable/SelectReply/" + reply.id
-                    + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + menuItem.value.startTime + "/");
+                Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
+                    request: "/MCQVariable/SelectReply/" + reply.id
+                    + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + menuItem.value.startTime + "/"
+                });
             },
             _genMenuItems: function (question, startTime) {
                 var ret = [], i, reply;

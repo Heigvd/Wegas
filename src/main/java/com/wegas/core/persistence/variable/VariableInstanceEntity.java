@@ -39,7 +39,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstanceEntity.class),
     @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstanceEntity.class)
 })
-public class VariableInstanceEntity extends AbstractEntity {
+abstract public class VariableInstanceEntity extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("VariableInstanceEntity");
@@ -97,13 +97,5 @@ public class VariableInstanceEntity extends AbstractEntity {
      */
     public void setScope(ScopeEntity scope) {
         this.scope = scope;
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
     }
 }
