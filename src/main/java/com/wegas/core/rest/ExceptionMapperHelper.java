@@ -10,8 +10,12 @@
 package com.wegas.core.rest;
 
 import java.sql.SQLException;
+import java.util.Iterator;
+import javax.ejb.TransactionRolledbackLocalException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -26,26 +30,39 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ExceptionMapperHelper {
 
-    final static private Logger logger = LoggerFactory.getLogger(ExceptionMapperHelper.class);
+    final private Logger logger = LoggerFactory.getLogger(ExceptionMapperHelper.class);
 
     public static Response processException(Throwable exception) {
 
 
-        if (exception instanceof RollbackException) {
-            return ExceptionMapperHelper.processException(exception.getCause());
-
-        } else if (exception instanceof TransactionRolledbackException) {
+        if (exception instanceof RollbackException
+                || exception instanceof TransactionRolledbackException
+                || exception instanceof TransactionRolledbackLocalException) {
             return ExceptionMapperHelper.processException(exception.getCause());
 
         } else if (exception instanceof DatabaseException) {
             DatabaseException dbe = (DatabaseException) exception;
             return ExceptionMapperHelper.processException(dbe.getInternalException());
-            
+
         } else if (exception instanceof SQLException) {
             SQLException sqlException = (SQLException) exception;
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
                     new ExceptionMapperHelper.RestExceptionConverter("400", sqlException.getClass(), sqlException.getLocalizedMessage())).build();
+
+        } else if (exception instanceof ConstraintViolationException) {
+            ConstraintViolationException constraintViolationException = (ConstraintViolationException) exception;
+
+            String msg = "Constraint violation: ";
+            Iterator it = constraintViolationException.getConstraintViolations().iterator();
+            while (it.hasNext()) {
+                ConstraintViolation violation = (ConstraintViolation) it.next();
+                msg += "\n" + violation.getLeafBean() + ":" + violation.getRootBean() + violation.getPropertyPath();
+            }
+            // constraintViolationException.getMessage()
+            return Response.status(
+                    Response.Status.BAD_REQUEST).entity(
+                    new ExceptionMapperHelper.RestExceptionConverter("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
 
         } else {
             return Response.status(

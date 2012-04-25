@@ -7,25 +7,21 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.crimesim.persistence.variable;
+package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.NamedEntity;
-import com.wegas.core.script.ScriptEntity;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQReplyInstance")
-public class MCQReplyInstanceEntity extends AbstractEntity {
+@XmlType(name = "MCQReply")
+public class ReplyEntity extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 //    private static final Logger logger = LoggerFactory.getLogger(MCQReplyInstanceEntity.class);
@@ -47,14 +43,14 @@ public class MCQReplyInstanceEntity extends AbstractEntity {
      *
      */
     @ManyToOne
-    private MCQReplyDescriptorEntity replyDescriptor;
+    private ChoiceDescriptorEntity choiceDescriptor;
     /**
      *
      */
     @JsonBackReference("question-replyi")
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
-    private MCQInstanceEntity MCQInstance;
+    private QuestionInstanceEntity questionInstance;
 
     /**
      *
@@ -62,14 +58,8 @@ public class MCQReplyInstanceEntity extends AbstractEntity {
      */
     @Override
     public void merge(AbstractEntity a) {
-        MCQReplyInstanceEntity r = (MCQReplyInstanceEntity) a;
-        this.setReplyDescriptor(r.getReplyDescriptor());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        MCQReplyInstanceEntity vd = (MCQReplyInstanceEntity) o;
-        return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
+        ReplyEntity r = (ReplyEntity) a;
+        this.setChoiceDescriptor(r.getChoiceDescriptor());
     }
 
     @Override
@@ -86,15 +76,15 @@ public class MCQReplyInstanceEntity extends AbstractEntity {
      * @return the MCQDescriptor
      */
     @XmlTransient
-    public MCQInstanceEntity getMCQInstance() {
-        return MCQInstance;
+    public QuestionInstanceEntity getQuestionInstance() {
+        return questionInstance;
     }
 
     /**
      * @param MCQInstance
      */
-    public void setMCQInstance(MCQInstanceEntity MCQInstance) {
-        this.MCQInstance = MCQInstance;
+    public void setQuestionInstance(QuestionInstanceEntity questionInstance) {
+        this.questionInstance = questionInstance;
     }
 
     /**
@@ -126,16 +116,16 @@ public class MCQReplyInstanceEntity extends AbstractEntity {
     }
 
     /**
-     * @return the replyDescriptor
+     * @return the choiceDescriptor
      */
-    public MCQReplyDescriptorEntity getReplyDescriptor() {
-        return replyDescriptor;
+    public ChoiceDescriptorEntity getChoiceDescriptor() {
+        return choiceDescriptor;
     }
 
     /**
-     * @param replyDescriptor the replyDescriptor to set
+     * @param choiceDescriptor the choiceDescriptor to set
      */
-    public void setReplyDescriptor(MCQReplyDescriptorEntity mCQReplyDescriptorEntity) {
-        this.replyDescriptor = mCQReplyDescriptorEntity;
+    public void setChoiceDescriptor(ChoiceDescriptorEntity choiceDescriptor) {
+        this.choiceDescriptor = choiceDescriptor;
     }
 }

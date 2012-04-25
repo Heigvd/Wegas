@@ -27,11 +27,9 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-// Database serialization
-@Entity
+@Entity                                                                         // Database serialization
 @Inheritance(strategy = InheritanceType.JOINED)
-// JSon Serialisation
-@XmlType(name = "Scope")
+@XmlType(name = "Scope")                                                        // JSon Serialisation
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScopeEntity.class),
     @JsonSubTypes.Type(name = "GameScope", value = GameModelScopeEntity.class),
@@ -46,7 +44,7 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
      */
     @Id
     @XmlID
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scope_seq")
+    @GeneratedValue
     private Long id;
     /**
      *

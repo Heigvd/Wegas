@@ -31,25 +31,13 @@ public class Tag implements Serializable {
      *
      */
     @Id
+    @GeneratedValue
     @Column(name = "tag_id")
     private Long id;
-
     /**
      *
      */
     private String name;
-    /**
-     *
-     * @return
-     */
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     /**
      * @return the id
@@ -63,5 +51,21 @@ public class Tag implements Serializable {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 }

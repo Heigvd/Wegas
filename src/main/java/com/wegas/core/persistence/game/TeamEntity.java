@@ -27,7 +27,7 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
  */
 @Entity
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"name"}))
+@UniqueConstraint(columnNames = {"name", "parentgame_id"}))
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlType(name = "Team")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,7 +38,7 @@ public class TeamEntity extends AbstractEntity {
      *
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_seq")
+    @GeneratedValue
     private Long id;
     /**
      *

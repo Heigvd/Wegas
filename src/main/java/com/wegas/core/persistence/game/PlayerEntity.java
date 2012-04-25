@@ -38,8 +38,11 @@ public class PlayerEntity extends AbstractEntity {
 
     private static final Logger logger = Logger.getLogger("PlayerEntity");
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "player_seq")
+    @GeneratedValue
     private Long id;
+    /**
+     *
+     */
     @NotNull
     // @javax.validation.constraints.Pattern(regexp = "^\\w+$")
     private String name;

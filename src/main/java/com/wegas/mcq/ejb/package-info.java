@@ -7,4 +7,4 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.crimesim.ejb;
+package com.wegas.mcq.ejb;

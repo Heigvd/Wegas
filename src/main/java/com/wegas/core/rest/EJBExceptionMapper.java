@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class EJBExceptionMapper implements ExceptionMapper<EJBException> {
 
-    final static private Logger logger = LoggerFactory.getLogger(EJBExceptionMapper.class);
+    final private Logger logger = LoggerFactory.getLogger(EJBExceptionMapper.class);
 
     @Override
     public Response toResponse(EJBException exception) {

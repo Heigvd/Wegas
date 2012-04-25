@@ -44,7 +44,7 @@ public class GroupEntity extends AbstractEntity {
     private static final Logger logger = Logger.getLogger("GroupEntity");
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "group_seq")
+    @GeneratedValue
     private Long id;
 
 

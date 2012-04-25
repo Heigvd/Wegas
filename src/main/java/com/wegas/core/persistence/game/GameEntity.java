@@ -38,7 +38,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     @Id
     @XmlID
     @Column(name = "game_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_seq")
+    @GeneratedValue
     private Long id;
     /**
      *

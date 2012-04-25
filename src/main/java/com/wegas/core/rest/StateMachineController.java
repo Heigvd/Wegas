@@ -11,21 +11,11 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.core.statemachine.StateMachineDescriptorFacade;
-import com.wegas.crimesim.ejb.MCQDescriptorFacade;
-import com.wegas.crimesim.ejb.MCQReplyDescriptorFacade;
-import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
-import com.wegas.crimesim.persistence.variable.MCQReplyInstanceEntity;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 /**
  *

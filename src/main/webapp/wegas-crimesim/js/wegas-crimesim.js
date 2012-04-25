@@ -100,14 +100,21 @@ YUI.add('wegas-crimesim', function (Y) {
 
             _syncSchedule: function () {
                 var perPeriodBudget = 15, perPeriodLoad = [], question, cols = [], questionInstance,  reply, i, j, k,
-                questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "MCQDescriptor"),
+                questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "QuestionDescriptor"),
                 period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
+                periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period"),
                 acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
-                cb = this.get(CONTENTBOX).one(".schedule-questions"),
-                periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period");
+                cb = this.get(CONTENTBOX).one(".schedule-questions");
 
                 if (!period) {
-                    return;
+                    //return;
+                    period = {
+                        minValue:0,
+                        maxValue:7
+                    }
+                    periodInstance = {
+                        value:4
+                    }
                 }
 
                 for (i = period.minValue; i <= period.maxValue; i += 1) {
@@ -116,16 +123,14 @@ YUI.add('wegas-crimesim', function (Y) {
                 }
                 acc.push("</tr>");
 
-                for (i = 0; i < questionsVarDesc.length; i += 1) {                     // Generate table body
+                for (i = 0; i < questionsVarDesc.length; i += 1) {             // Generate table body
                     question = questionsVarDesc[i];
-                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id);
+                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(question);
 
                     acc.push('<tr data-questionId="' + question.id + '"><td class="schedule-leftcolum" >' +
                         (question.label || question.name || "undefined") + "</td>");
 
                     cols = [];
-                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id);
-                    periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period");
 
                     for (j = period.minValue; j <= period.maxValue; j += 1) {   // Initially, all time slots are available
                         if (j >= periodInstance.value) {
@@ -137,9 +142,9 @@ YUI.add('wegas-crimesim', function (Y) {
 
                     for (j = 0; j < questionInstance.replies.length; j += 1) {
                         reply = questionInstance.replies[j];
-                        perPeriodLoad[reply.startTime - period.minValue] += reply.duration;
-                        cols[reply.startTime - period.minValue] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-" + reply.duration];
-                        for (k = 1; k < reply.duration; k += 1) {
+                        perPeriodLoad[reply.startTime - period.minValue] += reply.choiceDescriptor.duration;
+                        cols[reply.startTime - period.minValue] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-" + reply.choiceDescriptor.duration];
+                        for (k = 1; k < reply.choiceDescriptor.duration; k += 1) {
                             cols[reply.startTime + k - period.minValue] = ["schedule-unavailable"];
                         }
                     }
@@ -192,7 +197,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     acc.push('<div class="schedule-detail-reply"><h3>Period ',
                         reply.startTime, ': ', reply.replyname || "undefined",
                         '</h3><div class="content">');
-                    if ((reply.startTime + reply.duration) <= period.value) {
+                    if ((reply.startTime + reply.choiceDescriptor.duration) <= period.value) {
                         acc.push(reply.answer);
                     } else if (reply.startTime<=period.value) {
                         acc.push("analysis in progress");
@@ -220,21 +225,21 @@ YUI.add('wegas-crimesim', function (Y) {
             // *** Private Methods *** /
             _onMenuClick: function (e, args) {
                 var menuItem = args[1],
-                reply = menuItem.value.reply;
+                choice = menuItem.value.reply;
 
                 Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
-                    request: "/MCQVariable/SelectReply/" + reply.id
+                    request: "/QuestionDescriptor/SelectReply/" + choice.id
                     + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + menuItem.value.startTime + "/"
                 });
             },
             _genMenuItems: function (question, startTime) {
-                var ret = [], i, reply;
-                for (i = 0; i < question.replies.length; i += 1) {
-                    reply = question.replies[i];
+                var ret = [], i, choice;
+                for (i = 0; i < question.items.length; i += 1) {
+                    choice = question.items[i];
                     ret.push({
-                        text: reply.label || reply.name || "undefined",
+                        text: choice.label || choice.name || "undefined",
                         value: {
-                            reply: reply,
+                            reply: choice,
                             startTime: startTime
                         }
                     });
