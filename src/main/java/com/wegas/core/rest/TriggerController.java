@@ -50,23 +50,23 @@ public class TriggerController extends AbstractRestController<TriggerDescriptorF
         HashMap<Long, State> states = new HashMap<>();
         if (trigger.isOneShot()) {
             trigger.setOpposedTrigger(false);
-            transition.setNextState(2L);
+            transition.setNextStateId(2L);
             finalState.setOnEnterEvent(trigger.getPostTriggerEvent());
             states.put(2L, finalState);
         } else if (trigger.isOpposedTrigger()) {
-            transition.setNextState(2L);
+            transition.setNextStateId(2L);
             finalState.setOnEnterEvent(trigger.getPostTriggerEvent());
             Transition returnTransition = new Transition();
-            returnTransition.setNextState(1L);
+            returnTransition.setNextStateId(1L);
             //TODO : Not(triggerEvent)
             returnTransition.setTriggerCondition(trigger.getTriggerEvent());
-            returnTransition.setNextState(1L);
+            returnTransition.setNextStateId(1L);
             List<Transition> returnTransitions = finalState.getTransitions();
             returnTransitions.add(returnTransition);
             finalState.setTransitions(returnTransitions);
             states.put(2L, finalState);
         } else {
-            transition.setNextState(1L);
+            transition.setNextStateId(1L);
             initialState.setOnEnterEvent(trigger.getPostTriggerEvent());
         }
         states.put(1L, initialState);

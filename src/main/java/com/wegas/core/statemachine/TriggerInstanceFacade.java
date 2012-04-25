@@ -22,7 +22,7 @@ public class TriggerInstanceFacade extends AbstractFacade<TriggerInstanceEntity>
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
-    
+
     public TriggerInstanceFacade() {
         super(TriggerInstanceEntity.class);
     }
@@ -31,8 +31,4 @@ public class TriggerInstanceFacade extends AbstractFacade<TriggerInstanceEntity>
     protected EntityManager getEntityManager() {
         return this.em;
     }
-    
-    
-    
-
 }
