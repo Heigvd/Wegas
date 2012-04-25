@@ -26,7 +26,7 @@ public class StateMachineDescriptorEntity extends VariableDescriptorEntity<State
 
     private Long initialStateId;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @MapKey(name = "id")
+    //@MapKey(name = "id")
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
     private Map<Long, State> states = new HashMap<>();
 

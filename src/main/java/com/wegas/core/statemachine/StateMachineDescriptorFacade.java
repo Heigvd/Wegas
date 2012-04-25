@@ -37,7 +37,7 @@ public class StateMachineDescriptorFacade extends AbstractFacade<StateMachineDes
     }
 
     public void create(Long gameModelId, VariableDescriptorEntity smDescriptor) {
-        //TODO: fix initial state in instances
+        //TODO: fix initial state in instances, redo all of this ***
         this.gameModelEntityFacade.find(gameModelId).addVariableDescriptor(smDescriptor);
         em.persist(smDescriptor);
         //create initial State
