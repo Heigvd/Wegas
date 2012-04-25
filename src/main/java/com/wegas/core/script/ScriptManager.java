@@ -74,11 +74,36 @@ public class ScriptManager {
             }
 
             engine.eval(s.getContent());                                        // Then we evaluate the script
-        }
-        catch (ScriptException ex) {
+        } catch (ScriptException ex) {
             Logger.getLogger(ScriptManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return vis;
+    }
+
+    public Object eval(Long gameModelId, Long playerId, ScriptEntity s) {
+        ScriptEngineManager mgr = new ScriptEngineManager();
+        ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
+        // Invocable invocableEngine = (Invocable) engine;
+        // GameModelEntity gm = gameModelEntityFacade.find(gameModelId);
+        PlayerEntity p = playerEntityFacade.find(playerId);
+        GameModelEntity gm = p.getTeam().getGame().getGameModel();
+        Object result = null;
+
+        try {
+            engine.put("self", p);                                              // Inject the constants
+            engine.put("messaging", messagingManager);
+
+            for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
+                VariableInstanceEntity vi = vd.getVariableInstance(p);
+                engine.put(vd.getName(), vi);
+            }
+            result = engine.eval(s.getContent());                    // Then we evaluate the script
+            Logger.getLogger(ScriptManager.class.getName()).log(Level.INFO, "Evaluation result: {0}", result);
+
+        } catch (ScriptException ex) {
+            Logger.getLogger(ScriptManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
     /*
      * Object invokeFunction = invocableEngine.invokeFunction("sayHello");

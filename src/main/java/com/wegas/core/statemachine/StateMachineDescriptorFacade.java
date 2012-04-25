@@ -37,16 +37,19 @@ public class StateMachineDescriptorFacade extends AbstractFacade<StateMachineDes
     }
 
     public void create(Long gameModelId, VariableDescriptorEntity smDescriptor) {
-        //TODO: fix initial state in instances
+        //TODO: fix initial state in instances, redo all of this ***
         this.gameModelEntityFacade.find(gameModelId).addVariableDescriptor(smDescriptor);
-        super.create((StateMachineDescriptorEntity) smDescriptor);
+        em.persist(smDescriptor);
+        //create initial State
         State tmpInitialState = ((StateMachineDescriptorEntity) smDescriptor).getStates().get(((StateMachineDescriptorEntity) smDescriptor).getInitialStateId());
         StateMachineInstanceEntity defaultInstance = (StateMachineInstanceEntity) smDescriptor.getDefaultVariableInstance();
-        defaultInstance.setCurrentState(em.getReference(State.class, tmpInitialState.getId()));
+        defaultInstance.setCurrentState(tmpInitialState);
+        ((StateMachineDescriptorEntity) smDescriptor).setInitialStateId(tmpInitialState.getId());
+        //reset instance
+        smDescriptor.getScope().propagateDefaultVariableInstance(true);
         em.flush();
         em.refresh(smDescriptor);
     }
-
 
     @Override
     protected EntityManager getEntityManager() {
