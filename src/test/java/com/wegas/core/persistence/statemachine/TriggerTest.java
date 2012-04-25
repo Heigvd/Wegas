@@ -58,7 +58,7 @@ public class TriggerTest {
         System.out.println("OneShotTrigger");
         this.triggerDescriptor.setOneShot(true);
 //        this.triggerDescriptor.generateTriggerDescriptor();
-        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 2;
+        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextStateId() == 2;
         assert this.triggerDescriptor.getStates().get(2).getTransitions().isEmpty();
 
     }
@@ -72,8 +72,8 @@ public class TriggerTest {
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.setOpposedTrigger(true);
        // this.triggerDescriptor.generateTriggerDescriptor();
-        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 2;
-        assert this.triggerDescriptor.getStates().get(2).getTransitions().get(0).getNextState() == 1;
+        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextStateId() == 2;
+        assert this.triggerDescriptor.getStates().get(2).getTransitions().get(0).getNextStateId() == 1;
         //TODO : check reverse condition.
     }
 
@@ -86,6 +86,6 @@ public class TriggerTest {
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.setOpposedTrigger(false);
        // this.triggerDescriptor.generateTriggerDescriptor();
-        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextState() == 1;
+        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextStateId() == 1;
     }
 }

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@EntityListeners(VariableInstancePersistenceListener.class)
+@EntityListeners({VariableInstancePersistenceListener.class})
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlType(name = "VariableInstance", propOrder = {"@class", "id"})
 @JsonSubTypes(value = {

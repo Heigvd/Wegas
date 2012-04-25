@@ -10,17 +10,13 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.io.Serializable;
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 /**
  *
@@ -78,8 +74,4 @@ public class StateMachineInstanceEntity extends VariableInstanceEntity implement
     public String toString() {
         return "StateMachineInstanceEntity{" + "id=" + this.getId() + ", currentState=" + currentState + '}';
     }
-//    @PrePersist
-//    public void generateInitialState() {
-//        this.currentStateId = ((StateMachineDescriptorEntity) this.getScope().getVariableDescriptor()).getInitialStateId();
-//    }
 }

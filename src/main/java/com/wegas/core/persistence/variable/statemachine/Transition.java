@@ -30,17 +30,17 @@ public class Transition implements Serializable {
 
     @Embedded
     private ScriptEntity triggerCondition;
-    private Long nextState;
+    private Long nextStateId;
 
     public Transition() {
     }
 
-    public Long getNextState() {
-        return nextState;
+    public Long getNextStateId() {
+        return nextStateId;
     }
 
-    public void setNextState(Long nextState) {
-        this.nextState = nextState;
+    public void setNextStateId(Long nextStateId) {
+        this.nextStateId = nextStateId;
     }
 
     public ScriptEntity getTriggerCondition() {
@@ -53,6 +53,6 @@ public class Transition implements Serializable {
 
     @Override
     public String toString() {
-        return "Transition{" + "triggerCondition=" + triggerCondition + ", nextState=" + nextState + '}';
+        return "Transition{" + "triggerCondition=" + triggerCondition + ", nextState=" + nextStateId + '}';
     }
 }

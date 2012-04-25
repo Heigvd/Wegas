@@ -10,9 +10,17 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
+import com.wegas.core.persistence.variable.statemachine.Transition;
+import com.wegas.core.script.ScriptManager;
 import com.wegas.core.statemachine.StateMachineDescriptorFacade;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
@@ -30,6 +38,13 @@ public class StateMachineController extends AbstractRestController<StateMachineD
 
     @EJB
     private StateMachineDescriptorFacade stateMachineDescriptorFacade;
+    @EJB
+    private VariableInstanceFacade variableInstanceFacade;
+    @EJB
+    private ScriptManager scriptManager;
+    @EJB
+    private PlayerFacade playerFacade;
+
     /**
      *
      * @return
@@ -40,9 +55,32 @@ public class StateMachineController extends AbstractRestController<StateMachineD
     }
 
     @Override
-    public StateMachineDescriptorEntity create(AbstractEntity entity){
+    public StateMachineDescriptorEntity create(AbstractEntity entity) {
         Long gameModelId = new Long(this.getPathParam("gameModelId"));
         this.stateMachineDescriptorFacade.create(gameModelId, (StateMachineDescriptorEntity) entity);
         return (StateMachineDescriptorEntity) entity;
+    }
+
+    @GET
+    @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Step")
+    @Produces(MediaType.APPLICATION_JSON)
+    public StateMachineDescriptorEntity step(
+            @PathParam("gameModelId") Long gameModelId,
+            @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId) {
+        StateMachineDescriptorEntity stateMachineDescriptorEntity = (StateMachineDescriptorEntity) stateMachineDescriptorFacade.find(stateMachineDescriptorId);
+        StateMachineInstanceEntity stateMachineInstanceEntity = (StateMachineInstanceEntity) stateMachineDescriptorEntity.getVariableInstance(playerFacade.find(playerId));
+        State currentState = stateMachineInstanceEntity.getCurrentState();
+        List<Transition> transitions = currentState.getTransitions();
+        List<Transition> passedTransitions = new ArrayList<>();
+        for (Transition transition : transitions) {
+            if ((Boolean) scriptManager.eval(gameModelId, playerId, transition.getTriggerCondition())) {
+                stateMachineInstanceEntity.setCurrentState(stateMachineDescriptorEntity.getStates().get(transition.getNextStateId()));
+                if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
+                    scriptManager.runScript(gameModelId, playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
+                }
+            }
+        }
+        variableInstanceFacade.update(stateMachineInstanceEntity.getId(), stateMachineInstanceEntity);
+        return stateMachineDescriptorEntity;
     }
 }

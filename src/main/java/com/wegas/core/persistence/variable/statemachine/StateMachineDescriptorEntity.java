@@ -26,7 +26,7 @@ public class StateMachineDescriptorEntity extends VariableDescriptorEntity<State
 
     private Long initialStateId;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @MapKey(name = "id")
+    //@MapKey(name = "id")
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
     private Map<Long, State> states = new HashMap<>();
 
@@ -58,22 +58,7 @@ public class StateMachineDescriptorEntity extends VariableDescriptorEntity<State
     public void merge(AbstractEntity a) {
         //TODO: MAP initialState to State
         StateMachineDescriptorEntity smDescriptor = (StateMachineDescriptorEntity) a;
-//        State initialState = this.getStates().get(smDescriptor.getInitialStateId());
-//        StateMachineInstanceEntity defaultSmInstance = (StateMachineInstanceEntity) this.getDefaultVariableInstance();
-//        defaultSmInstance.setCurrentState(initialState);
-//        smDescriptor.setDefaultVariableInstance(defaultSmInstance);
-        //defaultSmInstance.setCurrentStateId(initialState.getId());
         super.merge(smDescriptor);
     }
-//    @PostPersist
-//    public void generateInitialState() {
-//        StateMachineInstanceEntity smInstance = (StateMachineInstanceEntity) this.getDefaultVariableInstance();
-//        if (smInstance.getCurrentStateId() == null) {
-//            Iterator<State> it = this.getStates().values().iterator();
-//            if (it.hasNext()) {
-//                smInstance.setCurrentStateId(it.next().getId());
-//                this.initialStateId = smInstance.getCurrentStateId();
-//            }
-//        }
-//    }
+
 }
