@@ -18,10 +18,11 @@ import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,7 +32,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "TeamScope", propOrder = {"@class", "id", "name"})
 public class TeamScopeEntity extends ScopeEntity {
 
-    private static final Logger logger = Logger.getLogger(TeamScopeEntity.class.getName());
+    @Transient
+    private static final Logger logger = LoggerFactory.getLogger(TeamScopeEntity.class.getName());
     /*
      * FIXME Here we should use TeamEntity reference and add a key deserializer
      * module
@@ -92,7 +94,8 @@ public class TeamScopeEntity extends ScopeEntity {
     @Override
     public void propagateDefaultVariableInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
-        GameModelEntity gm = vd.getGameModel();
+        GameModelEntity gm = vd.getRootGameModel();
+
         for (GameEntity g : gm.getGames()) {
             for (TeamEntity t : g.getTeams()) {
                 VariableInstanceEntity vi = this.teamVariableInstances.get(t.getId());

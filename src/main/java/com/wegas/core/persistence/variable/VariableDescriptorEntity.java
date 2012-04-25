@@ -13,12 +13,12 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.NamedEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.primitive.ListDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
 import com.wegas.core.persistence.variable.scope.ScopeEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
-import com.wegas.crimesim.persistence.variable.MCQDescriptorEntity;
+import com.wegas.mcq.persistence.ChoiceDescriptorEntity;
+import com.wegas.mcq.persistence.QuestionDescriptorEntity;
 import com.wegas.messaging.persistence.variable.InboxDescriptorEntity;
 import java.util.List;
 import javax.persistence.*;
@@ -42,10 +42,11 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptorEntity.class),
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "MCQDescriptor", value = MCQDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "MCQDescriptor", value = QuestionDescriptorEntity.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptorEntity.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptorEntity.class)
 })
 public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends NamedEntity {
 
@@ -55,7 +56,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     @Id
     @Column(name = "variabledescriptor_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "var_desc_seq")
+    @GeneratedValue
     private Long id;
     /**
      *
@@ -67,12 +68,18 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     @ManyToOne
     @JoinColumn(name = "gamemodel_id")
-    //@JsonBackReference("gamemodel-variabledescriptor")
+    @JsonBackReference
     private GameModelEntity gameModel;
+    /**
+     *
+     */
+    @ManyToOne
+    private GameModelEntity rootGameModel;
     /**
      * Here we cannot use type T, otherwise
      */
     @OneToOne(cascade = {CascadeType.ALL})
+    @NotNull
     private VariableInstanceEntity defaultVariableInstance;
     /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
@@ -80,6 +87,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      * updatable = true)
      */
     @OneToOne(cascade = {CascadeType.ALL})
+    @NotNull
     @JsonManagedReference("variabledescriptor-scope")
     private ScopeEntity scope;
     /**
@@ -154,16 +162,17 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      *
      * @param gameModel
      */
-    @JsonBackReference("gamemodel-variabledescriptor")
+    @JsonBackReference
     public void setGameModel(GameModelEntity gameModel) {
         this.gameModel = gameModel;
+        this.setRootGameModel(gameModel);
     }
 
     /**
      *
      * @return
      */
-    @JsonBackReference("gamemodel-variabledescriptor")
+    @JsonBackReference
     public GameModelEntity getGameModel() {
         return this.gameModel;
     }
@@ -210,5 +219,21 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    /**
+     * @return the rootGameModel
+     */
+    @XmlTransient
+    public GameModelEntity getRootGameModel() {
+        return rootGameModel;
+    }
+
+    /**
+     * @param rootGameModel the rootGameModel to set
+     */
+    @XmlTransient
+    public void setRootGameModel(GameModelEntity rootGameModel) {
+        this.rootGameModel = rootGameModel;
     }
 }

@@ -7,4 +7,4 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.crimesim.rest;
+package com.wegas.mcq.persistence;

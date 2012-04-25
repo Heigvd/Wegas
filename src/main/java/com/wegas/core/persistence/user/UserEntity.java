@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -43,7 +44,7 @@ public class UserEntity extends AbstractEntity {
      *
      */
     @NotNull
-    @javax.validation.constraints.Pattern(regexp = "^\\w+$")
+    @Pattern(regexp = "^\\w+$")
     private String name;
     /**
      *

@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.crimesim.persistence.variable;
+package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
@@ -15,34 +15,32 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQInstance")
-public class MCQInstanceEntity extends VariableInstanceEntity {
+@XmlType(name = "QuestionInstance")
+public class QuestionInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
-  //  private static final Logger logger = LoggerFactory.getLogger(MCQInstanceEntity.class);
+    //private static final Logger logger = LoggerFactory.getLogger(QuestionInstanceEntity.class);
     /**
      *
      */
-    @OneToMany(mappedBy = "MCQInstance", cascade = {CascadeType.ALL}, orphanRemoval = true/*, fetch = FetchType.LAZY*/)
+    @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true /*
+     * , fetch = FetchType.LAZY
+     */)
     @JsonManagedReference("question-replyi")
-    @JoinColumn(name = "variableinstance_id")
-    private List<MCQReplyInstanceEntity> replies = new ArrayList<MCQReplyInstanceEntity>();
+    private List<ReplyEntity> replies = new ArrayList<>();
     /**
      *
      */
-    private boolean active = true;
+    private boolean active;
 
     /**
      * @return the active
@@ -61,20 +59,20 @@ public class MCQInstanceEntity extends VariableInstanceEntity {
     /**
      * @return the replies
      */
-    public List<MCQReplyInstanceEntity> getReplies() {
+    public List<ReplyEntity> getReplies() {
         return replies;
     }
 
     /**
      * @param replies the replies to set
      */
-    public void setReplies(List<MCQReplyInstanceEntity> replies) {
+    public void setReplies(List<ReplyEntity> replies) {
 //        this.replies.clear();
         this.replies = replies;
 
         //  if (replies != null) {
-        for (MCQReplyInstanceEntity r : replies) {
-            r.setMCQInstance(this);
+        for (ReplyEntity r : replies) {
+            r.setQuestionInstance(this);
         }
         //  }
     }
@@ -83,24 +81,24 @@ public class MCQInstanceEntity extends VariableInstanceEntity {
      *
      * @param reply
      */
-    public void addReply(MCQReplyInstanceEntity reply) {
+    public void addReply(ReplyEntity reply) {
         this.replies.add(reply);
-        reply.setMCQInstance(this);
+        reply.setQuestionInstance(this);
     }
 
     @Override
     public void merge(AbstractEntity a) {
-        MCQInstanceEntity vi = (MCQInstanceEntity) a;
+        QuestionInstanceEntity vi = (QuestionInstanceEntity) a;
         this.setActive(vi.getActive());
 
-        List<MCQReplyInstanceEntity> newReplies = new ArrayList<MCQReplyInstanceEntity>();
+        List<ReplyEntity> newReplies = new ArrayList<>();
         //newReplies.addAll(vd.getReplies());
-        for (MCQReplyInstanceEntity nReply : vi.getReplies()) {
+        for (ReplyEntity nReply : vi.getReplies()) {
             int pos = this.replies.indexOf(nReply);
             if (pos == -1) {
                 newReplies.add(nReply);
             } else {
-                MCQReplyInstanceEntity oReply = this.replies.get(pos);
+                ReplyEntity oReply = this.replies.get(pos);
                 oReply.merge(nReply);
                 newReplies.add(oReply);
             }
@@ -108,11 +106,10 @@ public class MCQInstanceEntity extends VariableInstanceEntity {
         this.setReplies(newReplies);
     }
     /*
-    @Override
-    public MCQInstanceEntity clone() {
-    MCQInstanceEntity c = (MCQInstanceEntity) super.clone();
-    //  List<MCQReplyInstanceEntity> replies = new ArrayList<MCQReplyInstanceEntity>();
-    //  c.setReplies(replies);
-    return c;
-    }*/
+     * @Override public QuestionInstanceEntity clone() { QuestionInstanceEntity
+     * c = (QuestionInstanceEntity) super.clone(); //
+     * List<MCQReplyInstanceEntity> replies = new
+     * ArrayList<MCQReplyInstanceEntity>(); // c.setReplies(replies); return c;
+     * }
+     */
 }

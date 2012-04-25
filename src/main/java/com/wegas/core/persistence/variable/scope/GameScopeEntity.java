@@ -13,10 +13,11 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @todo Needs to be implemented
@@ -24,11 +25,11 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table()
 @XmlType(name = "GameScope", propOrder = {"@class", "id", "name"})
 public class GameScopeEntity extends ScopeEntity {
 
-    private static final Logger logger = Logger.getLogger(GameScopeEntity.class.getName());
+    @Transient
+    private final Logger logger = LoggerFactory.getLogger(GameScopeEntity.class);
 
     @Override
     public void setVariableInstance(Long userId, VariableInstanceEntity v) {

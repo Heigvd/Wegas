@@ -10,18 +10,19 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.primitive.ListInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.NumberInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.StringInstanceEntity;
 import com.wegas.core.persistence.variable.scope.ScopeEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
-import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
+import com.wegas.mcq.persistence.ChoiceInstanceEntity;
+import com.wegas.mcq.persistence.QuestionInstanceEntity;
 import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,21 +35,22 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstanceEntity.class),
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstanceEntity.class),
-    @JsonSubTypes.Type(name = "MCQInstance", value = MCQInstanceEntity.class),
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstanceEntity.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstanceEntity.class),
-    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstanceEntity.class)
+    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstanceEntity.class),
+    @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstanceEntity.class),
+    @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstanceEntity.class)
 })
 abstract public class VariableInstanceEntity extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("VariableInstanceEntity");
+    private static final Logger logger = LoggerFactory.getLogger(VariableInstanceEntity.class);
     /**
      *
      */
     @Id
     @Column(name = "variableinstance_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "var_instance_seq")
+    @GeneratedValue
     private Long id;
     /**
      *

@@ -9,19 +9,20 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,7 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "PlayerScope", propOrder = {"@class", "id", "name"})
 public class PlayerScopeEntity extends ScopeEntity {
 
-    private static final Logger logger = Logger.getLogger(PlayerScopeEntity.class.getName());
+    @Transient
+    private final Logger logger = LoggerFactory.getLogger(PlayerScopeEntity.class);
     /*
      * FIXME Here we should use UserEntity reference and add a key deserializer
      * module
@@ -77,7 +79,7 @@ public class PlayerScopeEntity extends ScopeEntity {
      */
     @PrePersist
     public void prePersist() {
-        propagateDefaultVariableInstance(false);
+        this.propagateDefaultVariableInstance(false);
     }
 
     /**
@@ -88,7 +90,7 @@ public class PlayerScopeEntity extends ScopeEntity {
     @Override
     public void propagateDefaultVariableInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
-        GameModelEntity gm = vd.getGameModel();
+        GameModelEntity gm = vd.getRootGameModel();
         for (GameEntity g : gm.getGames()) {
             for (TeamEntity t : g.getTeams()) {
                 for (PlayerEntity p : t.getPlayers()) {

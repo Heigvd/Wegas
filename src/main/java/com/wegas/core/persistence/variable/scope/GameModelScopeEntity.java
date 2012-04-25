@@ -15,13 +15,11 @@ import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,7 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "GameModelScope", propOrder = {"@class", "id", "name"})
 public class GameModelScopeEntity extends ScopeEntity {
 
-    private static final Logger logger = Logger.getLogger(GameModelScopeEntity.class.getName());
+    @Transient
+    private final Logger logger = LoggerFactory.getLogger(GameModelScopeEntity.class);
     /**
      *
      */
@@ -69,7 +68,7 @@ public class GameModelScopeEntity extends ScopeEntity {
      */
     @Override
     public Map<Long, VariableInstanceEntity> getVariableInstances() {
-        Map<Long, VariableInstanceEntity> ret = new HashMap<Long, VariableInstanceEntity>();
+        Map<Long, VariableInstanceEntity> ret = new HashMap<>();
         ret.put(new Long("0"), getVariableInstance());
         return ret;
     }
