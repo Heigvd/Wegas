@@ -28,6 +28,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.script.ScriptException;
 
 /**
  *
@@ -67,7 +68,7 @@ public class QuestionDescriptorFacade extends AbstractFacade<ChoiceDescriptorEnt
      * @param player
      * @param time
      */
-    public void setCurrentTime(ListDescriptorEntity questionList, PlayerEntity player, Long time) {
+    public void setCurrentTime(ListDescriptorEntity questionList, PlayerEntity player, Long time) throws ScriptException {
         for (VariableDescriptorEntity question : questionList.getItems()) {
             this.setCurrentTime((QuestionDescriptorEntity) question, player, time);
         }
@@ -79,10 +80,10 @@ public class QuestionDescriptorFacade extends AbstractFacade<ChoiceDescriptorEnt
      * @param player
      * @param time
      */
-    public void setCurrentTime(QuestionDescriptorEntity question, PlayerEntity player, Long time) {
+    public void setCurrentTime(QuestionDescriptorEntity question, PlayerEntity player, Long time) throws ScriptException {
         QuestionInstanceEntity questionInstance = (QuestionInstanceEntity) question.getVariableInstance(player);
         for (ReplyEntity reply : questionInstance.getReplies()) {
-            if (reply.getStartTime().equals(time)) {
+            if (reply.getStartTime() + reply.getChoiceDescriptor().getDuration() == time) {
                 this.validateReply(player, reply);
             }
         }
@@ -122,17 +123,17 @@ public class QuestionDescriptorFacade extends AbstractFacade<ChoiceDescriptorEnt
      * @param playerId
      * @return
      */
-    public List<VariableInstanceEntity> validateReply(PlayerEntity player, ReplyEntity reply) {
+    public List<VariableInstanceEntity> validateReply(PlayerEntity player, ReplyEntity reply) throws ScriptException {
         HashMap<String, AbstractEntity> arguments = new HashMap<>();
         arguments.put("selectedReply", reply);
-        return scriptManager.eval(player, reply.getChoiceDescriptor().getImpact());
+        return scriptManager.eval(player, reply.getChoiceDescriptor().getImpact(), arguments);
     }
 
-    public List<VariableInstanceEntity> validateReply(PlayerEntity player, Long replyVariableInstanceId) {
+    public List<VariableInstanceEntity> validateReply(PlayerEntity player, Long replyVariableInstanceId) throws ScriptException {
         return this.validateReply(player, this.replyFacade.find(replyVariableInstanceId));
     }
 
-    public List<VariableInstanceEntity> validateReply(Long playerId, Long replyVariableInstanceId) {
+    public List<VariableInstanceEntity> validateReply(Long playerId, Long replyVariableInstanceId) throws ScriptException {
         return this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
     }
 

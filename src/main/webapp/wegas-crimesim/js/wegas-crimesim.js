@@ -84,6 +84,9 @@ YUI.add('wegas-crimesim', function (Y) {
                 cb.delegate("click", this._hideDetails,                         // Hide the question detail on close icon click
                     ".schedule-icon-close", this);
 
+                cb.delegate("click", this.onCancelReplyClick,                         // Hide the question detail on close icon click
+                    ".icon .close-icon", this);
+
                 Y.Wegas.app.dataSources.VariableDescriptor.after("response",    // If data changes, refresh
                     this.syncUI, this);
 
@@ -127,6 +130,9 @@ YUI.add('wegas-crimesim', function (Y) {
                     question = questionsVarDesc[i];
                     questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(question);
 
+                    if (!questionInstance.active) {
+                        break;
+                    }
 
                     acc.push('<tr data-questionId="' + question.id + '"><td class="schedule-leftcolum" >' +
                         (question.label || question.name || "undefined") + "</td>");
@@ -166,12 +172,14 @@ YUI.add('wegas-crimesim', function (Y) {
                             cols[j - period.minValue].push("schedule-future");    // Mark cells in the future
                         } else if (j < periodInstance.value) {
                             cols[j - period.minValue].push("schedule-past");      // Mark cells in the past
+                        } else {
+                            cols[j - period.minValue].push("schedule-present");   // Mark cells in the past
                         }
                     }
 
                     for (j = 0; j < cols.length; j += 1) {
                         acc.push('<td data-startTime="' + (period.minValue + j) +
-                            '" class="' + cols[j].join(" ") + '"><div><div class="icon">'+names[j]+'</div></div></td>');
+                            '" class="' + cols[j].join(" ") + '"><div><div class="icon">'+names[j]+'<div class="close-icon"></div></div></div></td>');
                     }
 
                     acc.push("</tr>");
@@ -240,7 +248,11 @@ YUI.add('wegas-crimesim', function (Y) {
             },
 
             // *** Private Methods *** /
-            _onMenuClick: function (e, args) {
+
+            onCancelReplyClick: function(e, args) {
+
+            },
+                       _onMenuClick: function (e, args) {
                 var menuItem = args[1],
                 choice = menuItem.value.reply;
 
@@ -250,15 +262,17 @@ YUI.add('wegas-crimesim', function (Y) {
                 });
             },
             _genMenuItems: function (question, startTime) {
-                var ret = [], i, choice;
+                var ret = [], i, choice, choiceInstance;
                 for (i = 0; i < question.items.length; i += 1) {
                     choice = question.items[i];
+                    choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choice);
                     ret.push({
                         text: choice.label || choice.name || "undefined",
                         value: {
                             reply: choice,
                             startTime: startTime
-                        }
+                        },
+                        disabled: !choiceInstance.active
                     });
                 }
                 return ret;

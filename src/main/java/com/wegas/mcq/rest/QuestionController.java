@@ -17,6 +17,7 @@ import com.wegas.mcq.persistence.ReplyEntity;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -49,7 +50,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
     public List<VariableInstanceEntity> selectReply(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId,
-            @PathParam("replyId") Long replyId) {
+            @PathParam("replyId") Long replyId) throws ScriptException {
 
         ReplyEntity reply =
                 choiceDescriptorFacade.selectChoice(replyId, playerId, new Long(0));

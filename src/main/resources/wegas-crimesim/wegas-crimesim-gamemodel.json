@@ -74,7 +74,24 @@
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
-                    "content":"print(\"traces\")"
+                    "content":"print(\"traces\");\nvar currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name":"Fibres",
+                "description":"",
+                "duration":1,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
                 },
                 "defaultVariableInstance": {
                     "@class": "ChoiceInstance",
@@ -91,7 +108,24 @@
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
-                    "content":"print(\"ADN\")"
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name":"Prélévement ADN",
+                "description":"",
+                "duration":2,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(3).desactivate(self);\nthis[\"Sac poubelle n°5: Prélévement ADN\"].setActive(true);"
                 },
                 "defaultVariableInstance": {
                     "@class": "ChoiceInstance",
@@ -105,6 +139,35 @@
                 "@class": "QuestionInstance",
                 "replies":[],
                 "active":true
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "QuestionDescriptor",
+            "name": "Sac poubelle n°5: Prélévement ADN",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name":"ADN",
+                "description":"",
+                "duration":2,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
+            "defaultVariableInstance": {
+                "@class": "QuestionInstance",
+                "replies":[],
+                "active":false
             },
             "scope": {
                 "@class": "TeamScope"

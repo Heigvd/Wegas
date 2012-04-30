@@ -18,6 +18,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.script.ScriptException;
 
 /**
  *
@@ -41,7 +42,7 @@ public class StateMachineInstanceFacade extends AbstractFacade<StateMachineInsta
         return this.em;
     }
 
-    public void step(StateMachineInstanceEntity entity){
+    public void step(StateMachineInstanceEntity entity) throws ScriptException{
         List<Transition> transitions = entity.getCurrentState().getTransitions();
         for(Transition transition: transitions){
             ScriptEntity script = transition.getTriggerCondition();
