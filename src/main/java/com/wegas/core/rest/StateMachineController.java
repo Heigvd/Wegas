@@ -23,7 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  *
@@ -61,6 +65,13 @@ public class StateMachineController extends AbstractRestController<StateMachineD
         return (StateMachineDescriptorEntity) entity;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param playerId
+     * @param stateMachineDescriptorId
+     * @return
+     */
     @GET
     @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Step")
     @Produces(MediaType.APPLICATION_JSON)
@@ -76,7 +87,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
             if ((Boolean) scriptManager.eval(gameModelId, playerId, transition.getTriggerCondition())) {
                 stateMachineInstanceEntity.setCurrentState(stateMachineDescriptorEntity.getStates().get(transition.getNextStateId()));
                 if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
-                    scriptManager.runScript(gameModelId, playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
+                    scriptManager.eval(playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
                 }
             }
         }

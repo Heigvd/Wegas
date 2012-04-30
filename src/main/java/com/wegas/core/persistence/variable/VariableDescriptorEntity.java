@@ -15,7 +15,7 @@ import com.wegas.core.persistence.game.NamedEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
-import com.wegas.core.persistence.variable.scope.ScopeEntity;
+import com.wegas.core.persistence.variable.scope.AbstractScopeEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.mcq.persistence.ChoiceDescriptorEntity;
 import com.wegas.mcq.persistence.QuestionDescriptorEntity;
@@ -31,6 +31,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  *
+ * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -76,7 +77,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     @ManyToOne
     private GameModelEntity rootGameModel;
     /**
-     * Here we cannot use type T, otherwise
+     * Here we cannot use type T, otherwise jpa won't handle the db ref correctly
      */
     @OneToOne(cascade = {CascadeType.ALL})
     @NotNull
@@ -88,8 +89,8 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     @OneToOne(cascade = {CascadeType.ALL})
     @NotNull
-    @JsonManagedReference("variabledescriptor-scope")
-    private ScopeEntity scope;
+    //@JsonManagedReference
+    private AbstractScopeEntity scope;
     /**
      *
      */
@@ -110,6 +111,14 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
         VariableDescriptorEntity vd = (VariableDescriptorEntity) a;
         this.scope.merge(vd.getScope());
         this.defaultVariableInstance.merge(vd.getDefaultVariableInstance());
+    }
+
+    /**
+     *
+     * @param force
+     */
+    public void propagateDefaultInstance(boolean force) {
+        this.getScope().propagateDefaultInstance(force);
     }
 
     /**
@@ -180,17 +189,18 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     /**
      * @return the scope
      */
-    @JsonManagedReference("variabledescriptor-scope")
-    public ScopeEntity getScope() {
+    public AbstractScopeEntity getScope() {
         return scope;
     }
 
     /**
      * @param scope the scope to set
+     * @fixme here we cannot use managed references since this.class is abstract.
      */
-    @JsonManagedReference("variabledescriptor-scope")
-    public void setScope(ScopeEntity scope) {
+    //@JsonManagedReference
+    public void setScope(AbstractScopeEntity scope) {
         this.scope = scope;
+        scope.setVariableDescscriptor(this);
     }
 
     /**

@@ -344,8 +344,14 @@
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'ListDescriptor'},
                             { name: 'name', label:'Name', required: true},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name:'defaultVariableInstance', type:'group'}
+                            { name: 'scope', type:'group', fields: [
+                                { name: 'id', type: 'hidden'},
+                                { name: '@class', type: 'hidden', value: "GameModelScope" }
+                            ]},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'ListInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'}
+                            ]}
                         ],
                         "ListInstance": [
                             { name: '@class', value:'ListInstance', type: 'hidden'},
@@ -365,7 +371,7 @@
                                 ]},
                             { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
                             //{ name: 'description', 'type': 'text', label:'Description', opts: {"width":"100%", height: '100px', autoHeight: true, dompath: false }},
-                            {
+                            /*{
                                 type: 'list',
                                 name: 'replies',
                                 label: 'Replies',
@@ -379,10 +385,10 @@
                                         { name: 'impact', 'type': 'text', label:'Impact', rows: 3},
                                     ]},
                                 useButtons: true
-                            }
+                            }*/
                         ],
                         "QuestionInstance": [
-                            { name: '@class', value:'MCQInstance', type: 'hidden'},
+                            { name: '@class', value:'QuestionInstance', type: 'hidden'},
                             { name: 'id', type: 'hidden'},
                             { name: 'active', 'label': 'Active', type: 'boolean', value: true}
                         ],
@@ -402,7 +408,7 @@
                             { name:'defaultVariableInstance', type:'group', fields: [
                                 { name: '@class', value:'ChoiceInstance', type: 'hidden'},
                                 { name: 'id', type: 'hidden'},
-                                { name: 'active', label:'Active by default', type: 'boolean'}
+                                { name: 'active', label:'Active by default', type: 'boolean', value: true}
                             ]},
                         ],
                         "ChoiceInstance": [
@@ -474,7 +480,7 @@
                     { name: 'valueselector', label:'Variable is', type: 'keyvalue', availableFields: [
                             {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Config.forms.StringDescriptor},
                             {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
-                            {type: 'group', name: 'MCQDescriptor', label: 'a choice', fields: Config.forms.MCQDescriptor },
+                            {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Config.forms.QuestionDescriptor },
                             {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor }
                         ]
                     }

@@ -46,7 +46,7 @@ public class TriggerDescriptorFacade extends AbstractFacade<TriggerDescriptorEnt
         defaultInstance.setCurrentState(tmpInitialState);
         ((StateMachineDescriptorEntity) triggerDescriptor).setInitialStateId(tmpInitialState.getId());
         //reset instance
-        triggerDescriptor.getScope().propagateDefaultVariableInstance(true);
+        triggerDescriptor.getScope().propagateDefaultInstance(true);
         em.flush();
         em.refresh(triggerDescriptor);
     }

@@ -36,17 +36,15 @@ public class ScriptController {
 
     /**
      *
-     * @param gameModelId
      * @param playerId
-     * @param script 
+     * @param script
      * @return p
      */
     @POST
     @Path("/Run/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<VariableInstanceEntity> selectReply(
-            @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, ScriptEntity script) {
-        return scriptManager.runScript(gameModelId, playerId, script);
+        return scriptManager.eval(playerId, script);
     }
 }

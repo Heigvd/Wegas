@@ -30,20 +30,16 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @XmlType(name = "TeamScope", propOrder = {"@class", "id", "name"})
-public class TeamScopeEntity extends ScopeEntity {
+public class TeamScopeEntity extends AbstractScopeEntity {
 
-    @Transient
     private static final Logger logger = LoggerFactory.getLogger(TeamScopeEntity.class.getName());
     /*
      * FIXME Here we should use TeamEntity reference and add a key deserializer
-     * module
-     */
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    /*
-     * @JoinTable(joinColumns = @JoinColumn(name = "teamscope_id",
+     * module. @JoinTable(joinColumns = @JoinColumn(name = "teamscope_id",
      * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
      * "variableinstance_id", referencedColumnName = "variableinstance_id"))
      */
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @XmlTransient
     private Map<Long, VariableInstanceEntity> teamVariableInstances = new HashMap<>();
@@ -83,7 +79,7 @@ public class TeamScopeEntity extends ScopeEntity {
      */
     @PrePersist
     public void prePersist() {
-        this.propagateDefaultVariableInstance(false);
+        this.propagateDefaultInstance(false);
     }
 
     /**
@@ -92,7 +88,7 @@ public class TeamScopeEntity extends ScopeEntity {
      */
     @XmlTransient
     @Override
-    public void propagateDefaultVariableInstance(boolean force) {
+    public void propagateDefaultInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
         GameModelEntity gm = vd.getRootGameModel();
 

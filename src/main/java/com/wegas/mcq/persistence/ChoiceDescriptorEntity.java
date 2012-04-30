@@ -49,7 +49,7 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
     /**
      *
      */
-    private Long duration;
+    private Long duration = new Long(1); 
 
     /**
      *

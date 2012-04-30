@@ -83,7 +83,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      */
     public void propagateDefaultVariableInstance(boolean force) {
         for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
-            vd.getScope().propagateDefaultVariableInstance(force);
+            vd.propagateDefaultInstance(force);
         }
     }
 

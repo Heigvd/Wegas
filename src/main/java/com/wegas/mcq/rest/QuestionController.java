@@ -11,7 +11,7 @@ package com.wegas.mcq.rest;
 
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.rest.AbstractRestController;
-import com.wegas.mcq.ejb.ChoiceDescriptorFacade;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstanceEntity;
 import com.wegas.mcq.persistence.ReplyEntity;
 import java.util.List;
@@ -29,12 +29,12 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
-public class QuestionController extends AbstractRestController<ChoiceDescriptorFacade> {
+public class QuestionController extends AbstractRestController<QuestionDescriptorFacade> {
     /**
      *
      */
     @EJB
-    private ChoiceDescriptorFacade choiceDescriptorFacade;
+    private QuestionDescriptorFacade choiceDescriptorFacade;
 
     /**
      *
@@ -53,7 +53,7 @@ public class QuestionController extends AbstractRestController<ChoiceDescriptorF
 
         ReplyEntity reply =
                 choiceDescriptorFacade.selectChoice(replyId, playerId, new Long(0));
-        return choiceDescriptorFacade.validateReply(reply.getId(), playerId);
+        return choiceDescriptorFacade.validateReply(playerId,reply.getId());
     }
 
     /**
@@ -83,7 +83,7 @@ public class QuestionController extends AbstractRestController<ChoiceDescriptorF
      * @return
      */
     @Override
-    protected ChoiceDescriptorFacade getFacade() {
+    protected QuestionDescriptorFacade getFacade() {
         return this.choiceDescriptorFacade;
     }
 }
