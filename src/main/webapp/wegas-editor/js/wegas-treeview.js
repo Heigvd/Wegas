@@ -8,8 +8,8 @@ YUI.add('wegas-treeview', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', WTreeView,
-        YAHOO = Y.YUI2,
-        EDITBUTTONTPL = "<span class=\"yui3-wegas-treeview-editmenubutton\"></span>";
+    YAHOO = Y.YUI2,
+    EDITBUTTONTPL = "<span class=\"yui3-wegas-treeview-editmenubutton\"></span>";
 
     WTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
@@ -73,107 +73,110 @@ YUI.add('wegas-treeview', function (Y) {
 
         // ** Private methods ** //
         genVariableInstanceElements: function (label, el) {
+            var l;
+
             switch (el['@class']) {
-            case 'StringInstance':
-            case 'NumberInstance':
-                return {
-                    label: label + ': ' + el.value,
-                    title: label + ': ' + el.value,
-                    data: el
-                };
+                case 'StringInstance':
+                case 'NumberInstance':
+                case 'ListInstance':
+                    return {
+                        label: label + ': ' + el.value,
+                        title: label + ': ' + el.value,
+                        data: el
+                    };
 
-            case 'MCQInstance':
-                var l = label + ((el.replies.length > 0) ? ': ' + el.replies[0].name : ': unanswered');
-                return {
-                    type: 'Text',
-                    label: l,
-                    title: l,
-                    data: el
-                };
-
-            case 'InboxInstance':
-                var k, children = [];
-
-                label += "(" + el.messages.length + ")";
-
-                for (k = 0; k < el.messages.length; k += 1) {
-                    children.push({
+                case 'QuestionInstance':
+                    l = label + ((el.replies.length > 0) ? ': ' + el.replies[0].name : ': unanswered');
+                    return {
                         type: 'Text',
-                        label: el.messages[k].subject,
-                        title: el.messages[k].subject
-                    });
-                }
-                return {
-                    type: 'Text',
-                    label: label,
-                    title: label,
-                    data: el,
-                    children: children
-                };
+                        label: l,
+                        title: l,
+                        data: el
+                    };
 
-            default:
-                return {
-                    type: 'Text',
-                    label: label,
-                    title: label,
-                    data: el
-                };
+                case 'InboxInstance':
+                    var k, children = [];
+
+                    label += "(" + el.messages.length + ")";
+
+                    for (k = 0; k < el.messages.length; k += 1) {
+                        children.push({
+                            type: 'Text',
+                            label: el.messages[k].subject,
+                            title: el.messages[k].subject
+                        });
+                    }
+                    return {
+                        type: 'Text',
+                        label: label,
+                        title: label,
+                        data: el,
+                        children: children
+                    };
+
+                default:
+                    return {
+                        type: 'Text',
+                        label: label,
+                        title: label,
+                        data: el
+                    };
             }
         },
 
         genPageTreeViewElements: function (elts) {
             var ret = [], j, text, el,
-                type2text = {
-                    PMGChoiceDisplay: "Choice displayer"
-                };
+            type2text = {
+                PMGChoiceDisplay: "Choice displayer"
+            };
 
             for (j = 0; j < elts.length; j += 1) {
                 el = elts[j];
                 text = (type2text[el.type] || el.type) + ': ' + (el.label || el.name || el.id || 'unnamed');
                 switch (el.type) {
-                case 'List':
-                    ret.push({
-                        type: 'Text',
-                        label: 'List: ' + (el.label || 'unnamed'),
-                        title: 'List: ' + (el.label || 'unnamed'),
-                        data: el,
-                        children: this.genPageTreeViewElements(el.children)
-                    });
-                    break;
-                case 'VariableDisplay':
-                    text = 'Variable displayer: ' + (el.variable);
-                    ret.push({
-                        type: 'Text',
-                        label: text,
-                        title: text,
-                        data: el
-                    });
-                    break;
-                case 'Text':
-                    ret.push({
-                        type: 'Text',
-                        label: 'Text: ' + el.content.substring(0, 15) + "...",
-                        title: el.content,
-                        data: el
-                    });
-                    break;
-                case 'Button':
-                    ret.push({
-                        type: 'Text',
-                        label: text,
-                        title: text,
-                        data: el,
-                        children: (el.subpage) ? this.genPageTreeViewElements([el.subpage]) : []
-                    });
-                    break;
-                default:
-                    ret.push({
-                        type: 'Text',
-                        label: text,
-                        title: text,
-                        data: el
-                    });
-                    break;
+                    case 'List':
+                        ret.push({
+                            type: 'Text',
+                            label: 'List: ' + (el.label || 'unnamed'),
+                            title: 'List: ' + (el.label || 'unnamed'),
+                            data: el,
+                            children: this.genPageTreeViewElements(el.children)
+                        });
+                        break;
+                    case 'VariableDisplay':
+                        text = 'Variable displayer: ' + (el.variable);
+                        ret.push({
+                            type: 'Text',
+                            label: text,
+                            title: text,
+                            data: el
+                        });
+                        break;
+                    case 'Text':
+                        ret.push({
+                            type: 'Text',
+                            label: 'Text: ' + el.content.substring(0, 15) + "...",
+                            title: el.content,
+                            data: el
+                        });
+                        break;
+                    case 'Button':
+                        ret.push({
+                            type: 'Text',
+                            label: text,
+                            title: text,
+                            data: el,
+                            children: (el.subpage) ? this.genPageTreeViewElements([el.subpage]) : []
+                        });
+                        break;
+                    default:
+                        ret.push({
+                            type: 'Text',
+                            label: text,
+                            title: text,
+                            data: el
+                        });
+                        break;
 
                 }
             }
@@ -187,17 +190,17 @@ YUI.add('wegas-treeview', function (Y) {
                     subEl = el.scope.variableInstances[i];
                     label = '';
                     switch (el.scope['@class']) {
-                    case 'PlayerScope':
-                        player = Y.Wegas.app.dataSources.Game.rest.getPlayerById(i);
-                        label = (player) ? player.name : "undefined";
-                        break;
-                    case 'TeamScope':
-                        team = Y.Wegas.app.dataSources.Game.rest.getTeamById(i);
-                        label = (team) ? team.name : "undefined";
-                        break;
-                    case 'GameModelScope':
-                        label = 'Global';
-                        break;
+                        case 'PlayerScope':
+                            player = Y.Wegas.app.dataSources.Game.rest.getPlayerById(i);
+                            label = (player) ? player.name : "undefined";
+                            break;
+                        case 'TeamScope':
+                            team = Y.Wegas.app.dataSources.Game.rest.getTeamById(i);
+                            label = (team) ? team.name : "undefined";
+                            break;
+                        case 'GameModelScope':
+                            label = 'Global';
+                            break;
                     }
                     children.push(this.genVariableInstanceElements(label, subEl));
                 }
@@ -206,103 +209,117 @@ YUI.add('wegas-treeview', function (Y) {
         },
         genTreeViewElements: function (elements) {
             var class2text = {
-                MCQDescriptor: "Choice",
+                QuestionDescriptor: "Question",
                 StringDescriptor: "String",
-                NumberDescriptor: "Number"
+                NumberDescriptor: "Number",
+                ListDescriptor: "List",
+                ChoiceDescriptor: "Choice"
             }, ret = [], i, el, text;
 
             for (i in elements) {
                 if (elements.hasOwnProperty(i)) {
                     el = elements[i];
 
-                    switch (el['@class']) {
-                    case 'StringDescriptor':
-                    case 'NumberDescriptor':
-                    case 'ListVariableDescriptor':
-                    case 'MCQDescriptor':
-                    case 'InboxDescriptor':
+                    if ((this.get("excludeClasses") === null
+                        || !this.get('excludeClasses').hasOwnProperty(el['@class']))
+                    && (this.get('includeClasses') === null
+                        || this.get('includeClasses').hasOwnProperty(el['@class']))) {
+                        switch (el['@class']) {
+                            case 'StringDescriptor':
+                            case 'NumberDescriptor':
+                            case 'InboxDescriptor':
+                            case 'ChoiceDescriptor':
+                                text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
+                                ret.push({
+                                    type: 'html',
+                                    html: text + EDITBUTTONTPL,
+                                    title: text,
+                                    children: this.genScopeTreeViewElements(el),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-' +el['@class'])
+                                });
 
-                        if ((this.get("excludeClasses") === null
-                                || !this.get('excludeClasses').hasOwnProperty(el['@class']))
-                                && (this.get('includeClasses') === null
-                                || this.get('includeClasses').hasOwnProperty(el['@class']))) {
+                                break;
 
-                            text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
-                            ret.push({
-                                type: 'html',
-                                html: text + EDITBUTTONTPL,
-                                title: text,
-                                children: this.genScopeTreeViewElements(el),
-                                data: el,
-                                contentStyle: this.getClassName('icon-game')
-                            });
+                            case 'ListDescriptor':
+                            case 'QuestionDescriptor':
+                                text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
+                                ret.push({
+                                    type: 'html',
+                                    html: text + EDITBUTTONTPL,
+                                    title: text,
+                                    //children: this.genScopeTreeViewElements(el),
+                                    children: this.genTreeViewElements(el.items),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-'+el['@class'])
+                                });
+                                break;
+                            case 'Page':
+                                text = 'Page: ' + el.label;
+                                ret.push({
+                                    type: 'Text',
+                                    label: text,
+                                    title: text,
+                                    expanded: true,
+                                    children: this.genPageTreeViewElements(el.children),
+                                    data: el
+                                });
+                                break;
+
+                            case 'GameModel':
+                                text = 'Game model: ' + el.name;
+                                ret.push({
+                                    //  type:'Text',
+                                    label: text,
+                                    //  title: text,
+                                    expanded: true,
+                                    children: this.genTreeViewElements(el.games),
+                                    data: el
+                                });
+                                break;
+                            case 'Game':
+                                text = 'Game: ' + el.name + ' (token:' + el.token + ')';
+                                ret.push({
+                                    type: 'html',
+                                    html: text + EDITBUTTONTPL,
+                                    title: text,
+                                    expanded: true,
+                                    children: this.genTreeViewElements(el.teams),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-game')
+                                });
+                                break;
+                            case 'Team':
+                                text = 'Team: ' + el.name;
+                                ret.push({
+                                    type: 'html',
+                                    html: text + EDITBUTTONTPL,
+                                    title: text,
+                                    expanded: false,
+                                    children: this.genTreeViewElements(el.players),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-team')
+                                });
+                                break;
+                            case 'Player':
+                                ret.push({
+                                    type: 'html',
+                                    html: 'Player: ' + el.name + EDITBUTTONTPL,
+                                    title: 'Player: ' + el.name,
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-player')
+                                });
+                                break;
+                            default:
+                                text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
+                                ret.push({
+                                    type: 'Text',
+                                    label: text,
+                                    title: text,
+                                    data: el
+                                });
+                                break;
                         }
-                        break;
-                    case 'Page':
-                        text = 'Page: ' + el.label;
-                        ret.push({
-                            type: 'Text',
-                            label: text,
-                            title: text,
-                            expanded: true,
-                            children: this.genPageTreeViewElements(el.children),
-                            data: el
-                        });
-                        break;
-
-                    case 'GameModel':
-                        text = 'Game model: ' + el.name;
-                        ret.push({
-                            //  type:'Text',
-                            label: text,
-                            //  title: text,
-                            expanded: true,
-                            children: this.genTreeViewElements(el.games),
-                            data: el
-                        });
-                        break;
-                    case 'Game':
-                        text = 'Game: ' + el.name + ' (token:' + el.token + ')';
-                        ret.push({
-                            type: 'html',
-                            html: text + EDITBUTTONTPL,
-                            title: text,
-                            expanded: true,
-                            children: this.genTreeViewElements(el.teams),
-                            data: el,
-                            contentStyle: this.getClassName('icon-game')
-                        });
-                        break;
-                    case 'Team':
-                        text = 'Team: ' + el.name;
-                        ret.push({
-                            type: 'html',
-                            html: text + EDITBUTTONTPL,
-                            title: text,
-                            expanded: false,
-                            children: this.genTreeViewElements(el.players),
-                            data: el,
-                            contentStyle: this.getClassName('icon-team')
-                        });
-                        break;
-                    case 'Player':
-                        ret.push({
-                            type: 'html',
-                            html: 'Player: ' + el.name + EDITBUTTONTPL,
-                            title: 'Player: ' + el.name,
-                            data: el,
-                            contentStyle: this.getClassName('icon-player')
-                        });
-                        break;
-                    default:
-                        text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
-                        ret.push({
-                            type: 'Text',
-                            label: text,
-                            title: text,
-                            data: el
-                        });
-                        break;
                     }
                 }
             }

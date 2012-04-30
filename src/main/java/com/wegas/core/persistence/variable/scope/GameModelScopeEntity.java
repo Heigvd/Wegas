@@ -15,13 +15,14 @@ import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,9 +30,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "GameModelScope", propOrder = {"@class", "id", "name"})
-public class GameModelScopeEntity extends ScopeEntity {
+public class GameModelScopeEntity extends AbstractScopeEntity {
 
-    private static final Logger logger = Logger.getLogger(GameModelScopeEntity.class.getName());
+
+    private static final Logger logger = LoggerFactory.getLogger(GameModelScopeEntity.class);
     /**
      *
      */
@@ -44,7 +46,7 @@ public class GameModelScopeEntity extends ScopeEntity {
      */
     @PrePersist
     public void prePersist() {
-        this.propagateDefaultVariableInstance(false);
+        this.propagateDefaultInstance(false);
     }
 
     /**
@@ -53,7 +55,7 @@ public class GameModelScopeEntity extends ScopeEntity {
      */
     @Override
     @XmlTransient
-    public void propagateDefaultVariableInstance(boolean force) {
+    public void propagateDefaultInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
         VariableInstanceEntity vi = this.getVariableInstance();
         if (vi == null) {
@@ -69,7 +71,7 @@ public class GameModelScopeEntity extends ScopeEntity {
      */
     @Override
     public Map<Long, VariableInstanceEntity> getVariableInstances() {
-        Map<Long, VariableInstanceEntity> ret = new HashMap<Long, VariableInstanceEntity>();
+        Map<Long, VariableInstanceEntity> ret = new HashMap<>();
         ret.put(new Long("0"), getVariableInstance());
         return ret;
     }

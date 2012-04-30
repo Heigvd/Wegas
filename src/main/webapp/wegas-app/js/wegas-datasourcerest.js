@@ -26,8 +26,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.extend(DataSourceREST, Y.Plugin.Base, {
 
         initializer: function () {
-            //this.doBefore("_defRequestFn", this._beforeDefRequestFn);
-            this.doBefore("_defResponseFn", this._beforeDefResponseFn, this);
+            this.doBefore("_defResponseFn", this.beforeResponse, this);
             this.get('host').data = [];
         },
 
@@ -51,26 +50,27 @@ YUI.add('wegas-datasourcerest', function (Y) {
                             //@fixme is there a memory leak here ??
                             stack.splice(i, 1);
                             //delete stack[i];
-                            return;
+                            return true;
                         default:
                             //stack[i] = Y.merge(stack[i], needle);
                             delete stack[i];
                             stack[i] = needle;
-                            return;
+                            return true;
                     }
                 }
             }
             stack.push(needle);
+            return false;
         },
-
-        _beforeDefResponseFn: function (e) {
-            var cEl, i;
-
+        beforeResponse: function (e) {
             e.data = this.get('host').data;
-
             if (e.error) {
                 return;
             }
+            this.updateCache(e);
+        },
+        updateCache: function (e) {
+            var cEl, i;
 
             for (i = 0; i < e.response.results.length; i += 1) {                // Treat reply
                 cEl = e.response.results[i];
@@ -115,9 +115,20 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
 
         post: function (data, parentData, callback) {
+            var request = "";
+            if (parentData) {
+                switch (parentData["@class"]) {
+                    case "ListDescriptor":
+                    case "QuestionDescriptor":
+                        request = "/ListDescriptor/" + parentData.id;
+                        break;
+                    default:
+                        request = "/" + parentData.id + "/VariableInstance/";
+                        break;
+                }
+            }
             this.sendRequest({
-                //request: ((parentData) ? "/" + parentData.id + "/" + data["@class"] :  ""),
-                request: ((parentData) ? "/" + parentData.id + "/VariableInstance" : ""),
+                request: request,
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify(data)
@@ -169,53 +180,100 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
 
-        _beforeDefResponseFn: function (e) {
-            var cEl, i;
-            e.data = this.get('host').data;                                   // Treat reply
+        updateCache: function (e) {
+            var cEl, i, j, k, instances;
 
-            if (e.error) {
-                return;
-            }
             Y.log("Response received", "info", "Y.Wegas.VariableDescriptorDataSourceREST");
 
             for (i = 0; i < e.response.results.length; i += 1) {
                 cEl = e.response.results[i];
                 if (!cEl) {
-                } else if (cEl['@class'] === "StringInstance" ||
-                    cEl['@class'] === "NumberInstance" ||
-                    cEl['@class'] === "InboxInstance"||
-                    cEl['@class'] === "MCQInstance") {
 
-                    Y.Array.each(e.data, function (o) {
-                        var j;
-                        for (j in o.scope.variableInstances) {
-                            if (o.scope.variableInstances.hasOwnProperty(j) && o.scope.variableInstances[j].id === cEl.id) {
-                                o.scope.variableInstances[j] = Y.merge(o.scope.variableInstances[i], cEl);
-                            }
+                // @fixme This is a dirty tricks to catch all instances
+                } else if (cEl['@class'].indexOf("Instance") !== -1) {
+                /* } else ifcEl['@class'] === "StringInstance" ||
+                    cEl['@class'] === "NumberInstance" ||
+                    cEl['@class'] === "InboxInstance" ) { */
+
+                    instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
+                    for (k in instances) {
+                        if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
+                            instances[k] = Y.merge(instances[i], cEl);
                         }
-                    });
+                    }
                 } else {
                     this.applyOperation(e.cfg.method, cEl, e.data);
                 }
             }
         },
-        put: function (data, callback) {
-            switch (data['@class']) {
-                case 'StringInstance':
-                case 'MCQInstance':
-                case 'NumberInstance':
-                case 'InboxInstance':
-                    this.sendRequest({
-                        request: '/1/VariableInstance/' + data.id,
-                        cfg: {
-                            method: "PUT",
-                            data: Y.JSON.stringify(data)
-                        },
-                        callback: callback
-                    });
-                    return;
+        applyOperation: function (method, needle, stack) {
+            function applyOperationInner (method, needle, stack) {
+                var i, ret;
+                for (i = 0; i < stack.length; i += 1) {
+                    if (stack[i].id === needle.id) {
+                        switch (method) {
+                            case "DELETE":
+                                //@fixme is there a memory leak here ??
+                                stack.splice(i, 1);
+                                //delete stack[i];
+                                return true;
+                            default:
+                                //stack[i] = Y.merge(stack[i], needle);
+                                delete stack[i];
+                                stack[i] = needle;
+                                return true;
+                        }
+                    }
+                    //if (stack[i]["@class"] === "ListDescriptor") {                  // We override so the datasource will also look for objects in datasource childs
+                    // @fixme We use this property to detect ListDescriptors
+                    if (stack[i].items) {
+                        if (applyOperationInner(method, needle, stack[i].items)) {
+                            return true;
+                        }
+                    }
+
+                }
+                return false;
             }
-            VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
+            if (!applyOperationInner(method, needle, stack)) {
+                stack.push(needle);
+            }
+        },
+        getCachedVariableBy: function (key, val) {
+            function getCachedVariableByInner(variables) {
+                var i, ret;
+                for (i in variables) {                                              // We first check in the cache if the data is available
+                    if (variables.hasOwnProperty(i)) {
+                        if (variables[i][key] === val) {
+                            return variables[i];
+                        }
+                        if (variables[i].items) {
+                            ret = getCachedVariableByInner(variables[i].items);
+                            if (ret) {
+                                return ret;
+                            }
+                        }
+
+                    }
+                }
+                return null;
+            }
+            return getCachedVariableByInner(this.get("host").data);
+        },
+        put: function (data, callback) {
+            if (data['@class'].indexOf("Instance") !== -1) {
+                this.sendRequest({
+                    request: '/1/VariableInstance/' + data.id,
+                    cfg: {
+                        method: "PUT",
+                        data: Y.JSON.stringify(data)
+                    },
+                    callback: callback
+                });
+                return;
+            } else {
+                VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
+            }
         },
         getInstanceById: function (id) {
             return this.getInstanceBy('id', id);
@@ -225,14 +283,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
             if (!el) {
                 return null;
             }
-            switch (el.scope['@class']) {
+            return this.getDescriptorInstance(el);
+        },
+        getDescriptorInstance: function(descriptor) {
+            switch (descriptor.scope['@class']) {
                 case 'PlayerScope':
-                    return el.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
+                    return descriptor.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
                 case 'TeamScope':
-                    return el.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
+                    return descriptor.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
                 case 'GameModelScope':
                 case 'GameScope':
-                    return el.scope.variableInstances[0];
+                    return descriptor.scope.variableInstances[0];
             }
         }
     });
@@ -250,13 +311,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(GameModelDataSourceREST, DataSourceREST, {
-        _beforeDefResponseFn: function (e) {
+        updateCache: function (e) {
             var cEl, i;
-            e.data = this.get('host').data;                                   // Treat reply
-
-            if (e.error) {
-                return;
-            }
 
             for (i = 0; i < e.response.results.length; i += 1) {
                 cEl = e.response.results[i];
@@ -284,14 +340,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(GameDataSourceREST, DataSourceREST, {
 
-        _beforeDefResponseFn: function (e) {
+        updateCache: function (e) {
             var cEl, i, game, team;                                             // Treat reply
-
-            e.data = this.get('host').data;
-
-            if (e.error) {
-                return;
-            }
 
             Y.log("Response received", "info", "Y.Wegas.GameDataSourceREST");
 
@@ -330,7 +380,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     request: "/" + this.getGameByTeamId(parentData.id).id + "/Team/" + parentData.id + "/Player",
                     cfg: {
                         method: "POST",
-                        data: Y.JSON.stringify(data),
+                        data: Y.JSON.stringify(data)
                     },
                     callback: callback
                 });
@@ -411,8 +461,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
 
     /**
-         * FIXME We redefine this so we can use a "." selector and a "@..." field name
-         */
+     * FIXME We redefine this so we can use a "." selector and a "@..." field name
+     */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],

@@ -10,9 +10,10 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import java.util.logging.Logger;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,7 +24,10 @@ import javax.xml.bind.annotation.XmlType;
 public class StringDescriptorEntity extends VariableDescriptorEntity<StringInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("GMVariableDescriptor");
+    private static final Logger logger = LoggerFactory.getLogger(StringDescriptorEntity.class);
+    /**
+     *
+     */
     //@NotNull
     //@Pattern(regexp = "^\\w*$")
     private String validationPattern;

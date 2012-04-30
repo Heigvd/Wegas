@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.variable.scope.ScopeEntity;
+import com.wegas.core.persistence.variable.scope.AbstractScopeEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,7 +19,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class ScopeFacade extends AbstractFacade<ScopeEntity> {
+public class ScopeFacade extends AbstractFacade<AbstractScopeEntity> {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -36,7 +36,7 @@ public class ScopeFacade extends AbstractFacade<ScopeEntity> {
      *
      */
     public ScopeFacade() {
-        super(ScopeEntity.class);
+        super(AbstractScopeEntity.class);
     }
 
 }

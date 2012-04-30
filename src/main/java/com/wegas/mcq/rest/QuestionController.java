@@ -7,14 +7,13 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.crimesim.rest;
+package com.wegas.mcq.rest;
 
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.rest.AbstractRestController;
-import com.wegas.crimesim.ejb.MCQDescriptorFacade;
-import com.wegas.crimesim.ejb.MCQReplyDescriptorFacade;
-import com.wegas.crimesim.persistence.variable.MCQInstanceEntity;
-import com.wegas.crimesim.persistence.variable.MCQReplyInstanceEntity;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.mcq.persistence.QuestionInstanceEntity;
+import com.wegas.mcq.persistence.ReplyEntity;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -29,19 +28,13 @@ import javax.ws.rs.core.MediaType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/MCQVariable/")
-public class MCQVariableController extends AbstractRestController<MCQDescriptorFacade> {
-    /*
-     *
-     */
-
-    @EJB
-    private MCQDescriptorFacade MCQDescriptorFacade;
+@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
+public class QuestionController extends AbstractRestController<QuestionDescriptorFacade> {
     /**
      *
      */
     @EJB
-    private MCQReplyDescriptorFacade mCQReplyDescriptorFacade;
+    private QuestionDescriptorFacade choiceDescriptorFacade;
 
     /**
      *
@@ -58,9 +51,9 @@ public class MCQVariableController extends AbstractRestController<MCQDescriptorF
             @PathParam("playerId") Long playerId,
             @PathParam("replyId") Long replyId) {
 
-        MCQReplyInstanceEntity replyInstance =
-                mCQReplyDescriptorFacade.selectReply(replyId, playerId, new Long(0));
-        return mCQReplyDescriptorFacade.validateReply(replyInstance.getId(), playerId);
+        ReplyEntity reply =
+                choiceDescriptorFacade.selectChoice(replyId, playerId, new Long(0));
+        return choiceDescriptorFacade.validateReply(playerId,reply.getId());
     }
 
     /**
@@ -74,15 +67,15 @@ public class MCQVariableController extends AbstractRestController<MCQDescriptorF
     @GET
     @Path("/SelectReply/{replyDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public MCQInstanceEntity selectReply(
+    public QuestionInstanceEntity selectReply(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId,
             @PathParam("replyDescriptorId") Long replyDescriptorId,
             @PathParam("startTime") Long startTime) {
 
-        MCQReplyInstanceEntity replyInstance =
-                mCQReplyDescriptorFacade.selectReply(replyDescriptorId, playerId, startTime);
-        return replyInstance.getMCQInstance();
+        ReplyEntity reply =
+                choiceDescriptorFacade.selectChoice(replyDescriptorId, playerId, startTime);
+        return reply.getQuestionInstance();
     }
 
     /**
@@ -90,7 +83,7 @@ public class MCQVariableController extends AbstractRestController<MCQDescriptorF
      * @return
      */
     @Override
-    protected MCQDescriptorFacade getFacade() {
-        return this.MCQDescriptorFacade;
+    protected QuestionDescriptorFacade getFacade() {
+        return this.choiceDescriptorFacade;
     }
 }

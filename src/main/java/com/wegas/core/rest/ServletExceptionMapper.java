@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 @Provider
 public class ServletExceptionMapper implements ExceptionMapper<ServletException> {
 
-    final static private Logger logger = LoggerFactory.getLogger(ServletException.class);
+    final private Logger logger = LoggerFactory.getLogger(ServletException.class);
 
     @Override
     public Response toResponse(ServletException exception) {

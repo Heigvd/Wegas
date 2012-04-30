@@ -12,10 +12,11 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.TeamEntity;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,7 +26,7 @@ import javax.ws.rs.Path;
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/{gameId : [1-9][0-9]*}/Team")
 public class TeamController extends AbstractRestController<TeamFacade> {
 
-    private static final Logger logger = Logger.getLogger("Authoring_GM");
+    private static final Logger logger = LoggerFactory.getLogger(TeamController.class);
     /**
      *
      */

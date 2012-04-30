@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.variable.scope.ScopeEntity;
+import com.wegas.core.persistence.variable.scope.AbstractScopeEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import javax.ejb.EJB;
@@ -47,7 +47,7 @@ public class VariableInstanceFacade extends AbstractFacade<VariableInstanceEntit
             Long variableDescriptorId, Long userId, VariableInstanceEntity variableInstance) {
 
         VariableDescriptorEntity vd = variableDescriptorFacade.find(variableDescriptorId);
-        ScopeEntity s = vd.getScope();
+        AbstractScopeEntity s = vd.getScope();
 
         s.setVariableInstance(userId, variableInstance);
         //  VariableInstanceEntity = vd

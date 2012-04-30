@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.mcq.persistence.ChoiceInstanceEntity;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -67,7 +68,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (getId() != null ? getId().hashCode() : 0);
+        hash += ( getId() != null ? getId().hashCode() : 0 );
         hash += getClass().hashCode();
         return hash;
     }
@@ -78,26 +79,16 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         if (object == null) {
             return false;
         }
-        // First, the two object shall be instances of the same class
-        if (this.getClass() != object.getClass()) {
+
+        if (this.getClass() != object.getClass()) {                             // First, the two object shall be instances of the same class
             return false;
         }
 
-        // Then, object shall be an AbstractEntity
-        if (object instanceof AbstractEntity) {
+        if (object instanceof AbstractEntity) {                                 // Then, object shall be an AbstractEntity
             AbstractEntity other = (AbstractEntity) object;
             return this.getId() != null && this.getId().equals(other.getId());
         }
         return false;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String toString() {
-        return this.getClass().getName().toString() + " [" + getId() + " ]";
     }
 
     /**
@@ -134,5 +125,14 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         AbstractEntity ae = (AbstractEntity) SerializationUtils.clone(this);
         ae.setId(null);
         return ae;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return this.getClass().getName().toString() + " [" + getId() + " ]";
     }
 }

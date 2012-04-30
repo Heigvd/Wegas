@@ -40,7 +40,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     @Id
     @XmlID
     @Column(name = "gamemodel_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gamemodel_seq")
+    @GeneratedValue
     private Long id;
     /**
      *
@@ -52,7 +52,8 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
-    @JsonManagedReference("gamemodel-variabledescriptor")
+    @JsonManagedReference
+    @JoinColumn()
     private List<VariableDescriptorEntity> variableDescriptors;
     /**
      *
@@ -82,7 +83,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      */
     public void propagateDefaultVariableInstance(boolean force) {
         for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
-            vd.getScope().propagateDefaultVariableInstance(force);
+            vd.propagateDefaultInstance(force);
         }
     }
 
@@ -126,9 +127,18 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      * @return
      */
-    @JsonManagedReference("gamemodel-variabledescriptor")
+    @JsonManagedReference
     public Collection<VariableDescriptorEntity> getVariableDescriptors() {
         return variableDescriptors;
+    }
+
+    /**
+     *
+     * @param variableDescriptors
+     */
+    @JsonManagedReference
+    public void setVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
+        this.variableDescriptors = variableDescriptors;
     }
 
     /**
@@ -149,15 +159,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     public void addGame(GameEntity game) {
         this.games.add(game);
         game.setGameModel(this);
-    }
-
-    /**
-     *
-     * @param variableDescriptors
-     */
-    @JsonManagedReference("gamemodel-variabledescriptor")
-    public void setVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
-        this.variableDescriptors = variableDescriptors;
     }
 
     /**

@@ -13,13 +13,14 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.NamedEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.primitive.ListDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
-import com.wegas.core.persistence.variable.scope.ScopeEntity;
+import com.wegas.core.persistence.variable.scope.AbstractScopeEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
-import com.wegas.crimesim.persistence.variable.MCQDescriptorEntity;
+import com.wegas.mcq.persistence.ChoiceDescriptorEntity;
+import com.wegas.mcq.persistence.QuestionDescriptorEntity;
 import com.wegas.messaging.persistence.variable.InboxDescriptorEntity;
+import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -37,15 +38,16 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"gamemodel_id", "name", "scope_id"}))
+@UniqueConstraint(columnNames = {"gamemodel_id", "name"}))
 @XmlType(name = "VariableDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptorEntity.class),
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "MCQDescriptor", value = MCQDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "MCQDescriptor", value = QuestionDescriptorEntity.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptorEntity.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptorEntity.class)
 })
 public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends NamedEntity {
 
@@ -55,7 +57,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     @Id
     @Column(name = "variabledescriptor_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "var_desc_seq")
+    @GeneratedValue
     private Long id;
     /**
      *
@@ -67,12 +69,18 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     @ManyToOne
     @JoinColumn(name = "gamemodel_id")
-    //@JsonBackReference("gamemodel-variabledescriptor")
+    @JsonBackReference
     private GameModelEntity gameModel;
     /**
-     * Here we cannot use type T, otherwise
+     *
+     */
+    @ManyToOne
+    private GameModelEntity rootGameModel;
+    /**
+     * Here we cannot use type T, otherwise jpa won't handle the db ref correctly
      */
     @OneToOne(cascade = {CascadeType.ALL})
+    @NotNull
     private VariableInstanceEntity defaultVariableInstance;
     /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
@@ -80,12 +88,19 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      * updatable = true)
      */
     @OneToOne(cascade = {CascadeType.ALL})
-    @JsonManagedReference("variabledescriptor-scope")
-    private ScopeEntity scope;
-
+    @NotNull
+    //@JsonManagedReference
+    private AbstractScopeEntity scope;
     /**
      *
      */
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(joinColumns = {
+        @JoinColumn(referencedColumnName = "variabledescriptor_id")},
+    inverseJoinColumns = {
+        @JoinColumn(referencedColumnName = "tag_id")})
+    private List<Tag> tags;
+
     /**
      *
      * @param a
@@ -96,6 +111,14 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
         VariableDescriptorEntity vd = (VariableDescriptorEntity) a;
         this.scope.merge(vd.getScope());
         this.defaultVariableInstance.merge(vd.getDefaultVariableInstance());
+    }
+
+    /**
+     *
+     * @param force
+     */
+    public void propagateDefaultInstance(boolean force) {
+        this.getScope().propagateDefaultInstance(force);
     }
 
     /**
@@ -148,16 +171,17 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      *
      * @param gameModel
      */
-    @JsonBackReference("gamemodel-variabledescriptor")
+    @JsonBackReference
     public void setGameModel(GameModelEntity gameModel) {
         this.gameModel = gameModel;
+        this.setRootGameModel(gameModel);
     }
 
     /**
      *
      * @return
      */
-    @JsonBackReference("gamemodel-variabledescriptor")
+    @JsonBackReference
     public GameModelEntity getGameModel() {
         return this.gameModel;
     }
@@ -165,17 +189,18 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     /**
      * @return the scope
      */
-    @JsonManagedReference("variabledescriptor-scope")
-    public ScopeEntity getScope() {
+    public AbstractScopeEntity getScope() {
         return scope;
     }
 
     /**
      * @param scope the scope to set
+     * @fixme here we cannot use managed references since this.class is abstract.
      */
-    @JsonManagedReference("variabledescriptor-scope")
-    public void setScope(ScopeEntity scope) {
+    //@JsonManagedReference
+    public void setScope(AbstractScopeEntity scope) {
         this.scope = scope;
+        scope.setVariableDescscriptor(this);
     }
 
     /**
@@ -190,5 +215,35 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     public void setDefaultVariableInstance(T defaultVariableInstance) {
         this.defaultVariableInstance = defaultVariableInstance;
+    }
+
+    /**
+     * @return the tags
+     */
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    /**
+     * @param tags the tags to set
+     */
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    /**
+     * @return the rootGameModel
+     */
+    @XmlTransient
+    public GameModelEntity getRootGameModel() {
+        return rootGameModel;
+    }
+
+    /**
+     * @param rootGameModel the rootGameModel to set
+     */
+    @XmlTransient
+    public void setRootGameModel(GameModelEntity rootGameModel) {
+        this.rootGameModel = rootGameModel;
     }
 }

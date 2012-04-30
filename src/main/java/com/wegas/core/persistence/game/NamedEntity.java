@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
+import java.util.Objects;
 
 /**
  *
@@ -46,4 +47,14 @@ public abstract class NamedEntity extends AbstractEntity {
     public String toString() {
         return this.getClass().getName().toString() + " [" + getName() + ", " + getId() + " ]";
     }
+
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.getName());
+        hash = 37 * hash + Objects.hashCode(this.getId());
+        return hash;
+    }
+
 }

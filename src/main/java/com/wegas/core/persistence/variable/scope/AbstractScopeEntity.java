@@ -19,7 +19,6 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import org.apache.commons.lang.NotImplementedException;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
@@ -27,18 +26,16 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-// Database serialization
-@Entity
+@Entity                                                                         // Database serialization
 @Inheritance(strategy = InheritanceType.JOINED)
-// JSon Serialisation
-@XmlType(name = "Scope")
+@XmlType(name = "Scope")                                                        // JSon Serialisation
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScopeEntity.class),
     @JsonSubTypes.Type(name = "GameScope", value = GameModelScopeEntity.class),
     @JsonSubTypes.Type(name = "TeamScope", value = TeamScopeEntity.class),
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScopeEntity.class)
 })
-public class ScopeEntity extends AbstractEntity implements Serializable {
+abstract public class AbstractScopeEntity extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -46,13 +43,14 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
      */
     @Id
     @XmlID
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scope_seq")
+    @GeneratedValue
     private Long id;
     /**
      *
      */
     @OneToOne
     @XmlTransient
+    //@JsonBackReference
     private VariableDescriptorEntity variableDescriptor;
 
     /**
@@ -61,9 +59,7 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
      * @param v
      */
     @XmlTransient
-    public void setVariableInstance(Long userId, VariableInstanceEntity v) {
-        throw new NotImplementedException();
-    }
+    abstract public void setVariableInstance(Long userId, VariableInstanceEntity v);
 
     /**
      *
@@ -71,31 +67,28 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
      * @return
      */
     @XmlTransient
-    public VariableInstanceEntity getVariableInstance(PlayerEntity player) {
-        throw new NotImplementedException();
-    }
+    abstract public VariableInstanceEntity getVariableInstance(PlayerEntity player);
 
     /**
      *
      * @return
      */
-    public Map<Long, VariableInstanceEntity> getVariableInstances() {
-        throw new NotImplementedException();
-    }
+    abstract public Map<Long, VariableInstanceEntity> getVariableInstances();
 
     /**
      *
      * @param force
      */
     @XmlTransient
-    public void propagateDefaultVariableInstance(boolean force) {
-    }
+    abstract public void propagateDefaultInstance(boolean force);
 
     /**
      *
      * @return
      */
-    @JsonBackReference("variabledescriptor-scope")
+    // @fixme here we cannot use the back-reference on an abstract reference
+    //@JsonBackReference
+    @XmlTransient
     public VariableDescriptorEntity getVariableDescriptor() {
         return this.variableDescriptor;
     }
@@ -104,7 +97,7 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
      *
      * @param varDesc
      */
-    @JsonBackReference("variabledescriptor-scope")
+    //@JsonBackReference
     public void setVariableDescscriptor(VariableDescriptorEntity varDesc) {
         this.variableDescriptor = varDesc;
     }
@@ -128,11 +121,4 @@ public class ScopeEntity extends AbstractEntity implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
-    @Override
-    public void merge(AbstractEntity a) {
-    }
-    /*
-     * @Override public void reset(){}
-     */
 }
