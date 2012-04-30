@@ -82,23 +82,6 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
         return gameModelFacade.reset(gameModelId).getVariableDescriptors();
     }
 
-    /**
-     *
-     * @param gameModelId
-     * @param playerId
-     * @param script
-     * @return
-     */
-    @PUT
-    @Path("Player/{playerId : [1-9][0-9]*}/RunScript")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Collection<VariableDescriptorEntity> runScript(
-            @PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId, ScriptEntity script) {
-
-        return (Collection) this.scriptManager.runScript(gameModelId, playerId, script);
-    }
-
     private Long getGameModelId() {
         return new Long(this.getPathParam("gameModelId"));
     }

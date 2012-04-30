@@ -29,12 +29,10 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table()
 @XmlType(name = "PlayerScope", propOrder = {"@class", "id", "name"})
-public class PlayerScopeEntity extends ScopeEntity {
+public class PlayerScopeEntity extends AbstractScopeEntity {
 
-    @Transient
-    private final Logger logger = LoggerFactory.getLogger(PlayerScopeEntity.class);
+    private static final Logger logger = LoggerFactory.getLogger(PlayerScopeEntity.class);
     /*
      * FIXME Here we should use UserEntity reference and add a key deserializer
      * module
@@ -79,7 +77,7 @@ public class PlayerScopeEntity extends ScopeEntity {
      */
     @PrePersist
     public void prePersist() {
-        this.propagateDefaultVariableInstance(false);
+        this.propagateDefaultInstance(false);
     }
 
     /**
@@ -88,7 +86,7 @@ public class PlayerScopeEntity extends ScopeEntity {
      */
     @XmlTransient
     @Override
-    public void propagateDefaultVariableInstance(boolean force) {
+    public void propagateDefaultInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
         GameModelEntity gm = vd.getRootGameModel();
         for (GameEntity g : gm.getGames()) {

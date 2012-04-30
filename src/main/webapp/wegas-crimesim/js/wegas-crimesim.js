@@ -98,23 +98,23 @@ YUI.add('wegas-crimesim', function (Y) {
                 }
             },
 
+            // *** Model methods *** //
+            getChoiceDescriptor: function(id) {
+                return Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(id);
+            },
+
+            // *** Rendering methods *** //
             _syncSchedule: function () {
                 var perPeriodBudget = 15, perPeriodLoad = [], question, cols = [], questionInstance,  reply, i, j, k,
-                questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "QuestionDescriptor"),
+                // questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "QuestionDescriptor"),
+                questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "evidences").items,
                 period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
                 periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period"),
                 acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
                 cb = this.get(CONTENTBOX).one(".schedule-questions");
 
                 if (!period) {
-                    //return;
-                    period = {
-                        minValue:0,
-                        maxValue:7
-                    }
-                    periodInstance = {
-                        value:4
-                    }
+                //return;
                 }
 
                 for (i = period.minValue; i <= period.maxValue; i += 1) {
@@ -127,10 +127,12 @@ YUI.add('wegas-crimesim', function (Y) {
                     question = questionsVarDesc[i];
                     questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(question);
 
+
                     acc.push('<tr data-questionId="' + question.id + '"><td class="schedule-leftcolum" >' +
                         (question.label || question.name || "undefined") + "</td>");
 
                     cols = [];
+                    var names = [];
 
                     for (j = period.minValue; j <= period.maxValue; j += 1) {   // Initially, all time slots are available
                         if (j >= periodInstance.value) {
@@ -138,15 +140,25 @@ YUI.add('wegas-crimesim', function (Y) {
                         } else {
                             cols.push(["schedule-item"]);
                         }
+                        names.push("")
                     }
 
                     for (j = 0; j < questionInstance.replies.length; j += 1) {
                         reply = questionInstance.replies[j];
-                        perPeriodLoad[reply.startTime - period.minValue] += reply.choiceDescriptor.duration;
-                        cols[reply.startTime - period.minValue] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-" + reply.choiceDescriptor.duration];
-                        for (k = 1; k < reply.choiceDescriptor.duration; k += 1) {
-                            cols[reply.startTime + k - period.minValue] = ["schedule-unavailable"];
+                        var cIndex = reply.startTime - period.minValue,
+                        choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId),
+                        choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choiceDescriptor);
+
+                        perPeriodLoad[cIndex] += choiceDescriptor.duration;
+                        cols[cIndex] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-" + choiceDescriptor.duration];
+
+                        names[cIndex] = choiceDescriptor.name;
+
+                        for (k = 1; k < choiceDescriptor.duration; k += 1) {
+                            cols[cIndex +k] = ["schedule-unavailable"];
                         }
+
+                        cols[cIndex].push((choiceInstance.active) ? "schedule-active" : "schedule-inactive")
                     }
 
                     for (j = period.minValue; j <= period.maxValue; j += 1) {
@@ -159,7 +171,7 @@ YUI.add('wegas-crimesim', function (Y) {
 
                     for (j = 0; j < cols.length; j += 1) {
                         acc.push('<td data-startTime="' + (period.minValue + j) +
-                            '" class="' + cols[j].join(" ") + '"><div><div class="icon"></div></div></td>');
+                            '" class="' + cols[j].join(" ") + '"><div><div class="icon">'+names[j]+'</div></div></td>');
                     }
 
                     acc.push("</tr>");
@@ -181,8 +193,8 @@ YUI.add('wegas-crimesim', function (Y) {
                 var i, reply,
                 targetNode = this.get(CONTENTBOX).one(".schedule-detail"),
                 question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId),
-                period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
                 questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
+                period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
                 acc = ['<div class="schedule-icon-close"></div><h1>',
                 question.label || question.name || "undefined",
                 '</h1><div class="content">', question.description, '</div>'];
@@ -193,11 +205,16 @@ YUI.add('wegas-crimesim', function (Y) {
                     acc.push('<h2>Anaylses</h2>');
                 }
                 for (i = 0; i < questionInstance.replies.length; i += 1) {
+
                     reply = questionInstance.replies[i];
+
+                    var choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId),
+                    choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choiceDescriptor);
+
                     acc.push('<div class="schedule-detail-reply"><h3>Period ',
                         reply.startTime, ': ', reply.replyname || "undefined",
                         '</h3><div class="content">');
-                    if ((reply.startTime + reply.choiceDescriptor.duration) <= period.value) {
+                    if ((reply.startTime + choiceDescriptor.duration) <= period.value) {
                         acc.push(reply.answer);
                     } else if (reply.startTime<=period.value) {
                         acc.push("analysis in progress");

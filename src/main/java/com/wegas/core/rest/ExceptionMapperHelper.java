@@ -32,6 +32,11 @@ public abstract class ExceptionMapperHelper {
 
     final private Logger logger = LoggerFactory.getLogger(ExceptionMapperHelper.class);
 
+    /**
+     *
+     * @param exception
+     * @return
+     */
     public static Response processException(Throwable exception) {
 
 

@@ -20,7 +20,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MCQReply")
+@XmlType(name = "Reply")
 public class ReplyEntity extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -29,7 +29,7 @@ public class ReplyEntity extends AbstractEntity {
      *
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvarinstrep_seq")
+    @GeneratedValue
     private Long id;
     /**
      *
@@ -38,18 +38,20 @@ public class ReplyEntity extends AbstractEntity {
     /**
      *
      */
-    private Long duration;
-    /**
-     *
-     */
     @ManyToOne
+    @JoinColumn(name = "choicedescriptor_id")
     private ChoiceDescriptorEntity choiceDescriptor;
     /**
      *
      */
-    @JsonBackReference("question-replyi")
+    @Column(name = "choicedescriptor_id", nullable = false, insertable = false, updatable = false)
+    private Long choiceDescriptorId;
+    /**
+     *
+     */
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JsonBackReference
     private QuestionInstanceEntity questionInstance;
 
     /**
@@ -58,8 +60,9 @@ public class ReplyEntity extends AbstractEntity {
      */
     @Override
     public void merge(AbstractEntity a) {
-        ReplyEntity r = (ReplyEntity) a;
-        this.setChoiceDescriptor(r.getChoiceDescriptor());
+        ReplyEntity other = (ReplyEntity) a;
+        this.setChoiceDescriptor(other.getChoiceDescriptor());
+        this.setStartTime(other.getStartTime());
     }
 
     @Override
@@ -76,13 +79,15 @@ public class ReplyEntity extends AbstractEntity {
      * @return the MCQDescriptor
      */
     @XmlTransient
+    @JsonBackReference
     public QuestionInstanceEntity getQuestionInstance() {
         return questionInstance;
     }
 
     /**
-     * @param MCQInstance
+     * @param questionInstance
      */
+    @JsonBackReference
     public void setQuestionInstance(QuestionInstanceEntity questionInstance) {
         this.questionInstance = questionInstance;
     }
@@ -102,22 +107,9 @@ public class ReplyEntity extends AbstractEntity {
     }
 
     /**
-     * @return the duration
-     */
-    public Long getDuration() {
-        return duration;
-    }
-
-    /**
-     * @param duration the duration to set
-     */
-    public void setDuration(Long duration) {
-        this.duration = duration;
-    }
-
-    /**
      * @return the choiceDescriptor
      */
+    @XmlTransient
     public ChoiceDescriptorEntity getChoiceDescriptor() {
         return choiceDescriptor;
     }
@@ -127,5 +119,13 @@ public class ReplyEntity extends AbstractEntity {
      */
     public void setChoiceDescriptor(ChoiceDescriptorEntity choiceDescriptor) {
         this.choiceDescriptor = choiceDescriptor;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Long getChoiceDescriptorId() {
+        return this.choiceDescriptorId;
     }
 }

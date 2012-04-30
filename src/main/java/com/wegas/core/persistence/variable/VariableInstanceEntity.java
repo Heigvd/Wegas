@@ -12,7 +12,7 @@ package com.wegas.core.persistence.variable;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.primitive.NumberInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.StringInstanceEntity;
-import com.wegas.core.persistence.variable.scope.ScopeEntity;
+import com.wegas.core.persistence.variable.scope.AbstractScopeEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
 import com.wegas.mcq.persistence.ChoiceInstanceEntity;
 import com.wegas.mcq.persistence.QuestionInstanceEntity;
@@ -57,7 +57,7 @@ abstract public class VariableInstanceEntity extends AbstractEntity {
      */
     @ManyToOne
     @XmlTransient
-    private ScopeEntity scope;
+    private AbstractScopeEntity scope;
 
     /**
      *
@@ -90,14 +90,33 @@ abstract public class VariableInstanceEntity extends AbstractEntity {
      * @return the scope
      */
     @XmlTransient
-    public ScopeEntity getScope() {
+    public AbstractScopeEntity getScope() {
         return scope;
     }
 
     /**
      * @param scope the scope to set
      */
-    public void setScope(ScopeEntity scope) {
+    public void setScope(AbstractScopeEntity scope) {
         this.scope = scope;
+    }
+    /**
+     * @return the scope
+     */
+    @XmlTransient
+    public VariableDescriptorEntity getDescriptor() {
+        return this.getScope().getVariableDescriptor();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Long getDescriptorId() {
+        if (this.getScope() != null) {
+            return this.getDescriptor().getId();
+        } else {
+            return new Long(-1);
+        }
     }
 }

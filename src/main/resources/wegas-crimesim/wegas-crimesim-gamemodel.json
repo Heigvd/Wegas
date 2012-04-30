@@ -1,6 +1,6 @@
 {
     "@class": "GameModel",
-    "name": "CrimeSi6m",
+    "name": "CrimeSim",
     "cssUri": "wegas-crimesim/resources/css/wegas-crimesim.css",
     "widgetsUri": "wegas-crimesim/db/wegas-crimesim-pages.json",
     "games":[{
@@ -8,13 +8,13 @@
         "name":"Test-16",
         "teams":[{
             "@class": "Team",
-            "name":"Les a6utres",
+            "name":"Les autres",
             "players": [ {
                 "@class": "Player",
-                "name": "J26o",
+                "name": "Jo",
                 "user": {
                     "@class": "User",
-                    "name": "J26o"
+                    "name": "Jo"
                 }
             }]
         }]
@@ -61,37 +61,49 @@
             "@class": "PlayerScope"
         }
     },{
-        "@class": "QuestionDescriptor",
-        "name": "Sac poubelle n°5",
+        "@class": "ListDescriptor",
+        "name": "evidences",
         "items":[{
-            "@class": "ChoiceDescriptor",
-            "name":"Traces ED",
-            "description":"",
-            "duration":1,
-            "impact":{
-                "@class":"Script",
-                "language":"JavaScript",
-                "content":""
-            },
+            "@class": "QuestionDescriptor",
+            "name": "Sac poubelle n°5",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name":"Traces ED",
+                "description":"",
+                "duration":1,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"print(\"traces\")"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name":"ADN",
+                "description":"",
+                "duration":2,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"print(\"ADN\")"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
             "defaultVariableInstance": {
-                "@class": "ChoiceInstance",
-                "active":true
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        },{
-            "@class": "ChoiceDescriptor",
-            "name":"ADN",
-            "description":"",
-            "duration":1,
-            "impact":{
-                "@class":"Script",
-                "language":"JavaScript",
-                "content":""
-            },
-            "defaultVariableInstance": {
-                "@class": "ChoiceInstance",
+                "@class": "QuestionInstance",
+                "replies":[],
                 "active":true
             },
             "scope": {
@@ -99,12 +111,11 @@
             }
         }],
         "defaultVariableInstance": {
-            "@class": "QuestionInstance",
-            "replies":[],
-            "active":true
+            "@class": "NumberInstance",
+            "value": 0
         },
         "scope": {
-            "@class": "TeamScope"
+            "@class": "GameModelScope"
         }
     }]
 }

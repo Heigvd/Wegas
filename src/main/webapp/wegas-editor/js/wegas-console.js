@@ -19,36 +19,33 @@ YUI.add('wegas-console', function (Y) {
             this.form = new Y.inputEx.Form({
                 parentEl: cb._node,
                 fields: [
-                    {
-                        name: '@class',
-                        type: 'hidden',
-                        value: "Script"
-                    },
-                    {
-                        name: 'language',
-                        type: 'hidden',
-                        value: "JavaScript"
-                    },
-                    {
-                        name: 'content',
-                        type: 'text',
-                        typeInvite: 'Enter script here',
-                        rows: 7
-                    }],
+                {
+                    name: '@class',
+                    type: 'hidden',
+                    value: "Script"
+                }, {
+                    name: 'language',
+                    type: 'hidden',
+                    value: "JavaScript"
+                }, {
+                    name: 'content',
+                    type: 'text',
+                    typeInvite: 'Enter script here',
+                    rows: 7
+                }],
                 buttons: [{
                     type: 'submit',
                     value: 'Update',
                     onClick: {
                         scope: this,
-                        fn: function (e) {
-                            //this.get(CONTENTBOX).one("")
-
-                            Y.Wegas.app.dataSources.VariableDescriptor.rest.post(
-                                this.form.getValue(),
-                                null,
-                                "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer')
-                            );
-
+                        fn: function () {
+                            Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
+                                request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                                cfg: {
+                                    method: "POST",
+                                    data: Y.JSON.stringify(this.form.getValue())
+                                }
+                            });
                             this.get(CONTENTBOX).one(".result").append("Script executed<br />");
                             return false;																		// stop clickEvent, to prevent form submitting
                         }

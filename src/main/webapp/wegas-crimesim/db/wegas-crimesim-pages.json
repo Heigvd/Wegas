@@ -19,7 +19,7 @@
                         "type": "Button",
                         "label": "Next period",
                         "view": "button",
-                        "onClick": "period.value+=1;"
+                        "onClick": "importPackage(com.wegas.core.script);\nvar cdf = Factory.lookupBean(\"QuestionDescriptorFacade\");\nperiod.value += 1;\ncdf.setCurrentTime(evidences.descriptor, self, period.value);\nhumanResources.value = 15;"
                     },{
                         "type": "VariableDisplay",
                         "label": "Costs",

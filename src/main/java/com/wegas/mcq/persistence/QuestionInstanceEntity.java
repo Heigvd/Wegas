@@ -32,15 +32,25 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
     /**
      *
      */
-    @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true /*
-     * , fetch = FetchType.LAZY
-     */)
-    @JsonManagedReference("question-replyi")
+    @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
     private List<ReplyEntity> replies = new ArrayList<>();
     /**
      *
      */
     private boolean active;
+
+    /**
+     *
+     * @param a
+     */
+    @Override
+    public void merge(AbstractEntity a) {
+        QuestionInstanceEntity other = (QuestionInstanceEntity) a;
+        this.setActive(other.getActive());
+        this.replies.clear();
+        this.addReplies(other.getReplies());
+    }
 
     /**
      * @return the active
@@ -59,6 +69,7 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
     /**
      * @return the replies
      */
+    @JsonManagedReference
     public List<ReplyEntity> getReplies() {
         return replies;
     }
@@ -66,15 +77,9 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
     /**
      * @param replies the replies to set
      */
+    @JsonManagedReference
     public void setReplies(List<ReplyEntity> replies) {
-//        this.replies.clear();
         this.replies = replies;
-
-        //  if (replies != null) {
-        for (ReplyEntity r : replies) {
-            r.setQuestionInstance(this);
-        }
-        //  }
     }
 
     /**
@@ -86,30 +91,13 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
         reply.setQuestionInstance(this);
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        QuestionInstanceEntity vi = (QuestionInstanceEntity) a;
-        this.setActive(vi.getActive());
-
-        List<ReplyEntity> newReplies = new ArrayList<>();
-        //newReplies.addAll(vd.getReplies());
-        for (ReplyEntity nReply : vi.getReplies()) {
-            int pos = this.replies.indexOf(nReply);
-            if (pos == -1) {
-                newReplies.add(nReply);
-            } else {
-                ReplyEntity oReply = this.replies.get(pos);
-                oReply.merge(nReply);
-                newReplies.add(oReply);
-            }
-        }
-        this.setReplies(newReplies);
-    }
-    /*
-     * @Override public QuestionInstanceEntity clone() { QuestionInstanceEntity
-     * c = (QuestionInstanceEntity) super.clone(); //
-     * List<MCQReplyInstanceEntity> replies = new
-     * ArrayList<MCQReplyInstanceEntity>(); // c.setReplies(replies); return c;
-     * }
+    /**
+     *
+     * @param replies
      */
+    public void addReplies(List<ReplyEntity> replies) {
+        for (ReplyEntity r : replies) {
+            this.addReply(r);
+        }
+    }
 }

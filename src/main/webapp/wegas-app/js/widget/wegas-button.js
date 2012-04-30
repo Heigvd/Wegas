@@ -21,12 +21,18 @@ YUI.add('wegas-button', function (Y) {
                 target;
 
                 if (this.get('onClick')) {                                      // If there is an onclick impact, send it to the server
-                    Y.Wegas.app.dataSources.VariableDescriptor.rest.put({
-                        "@class": "Script",
-                        "content": this.get("onClick")
-                    }, "/Player/" + Y.Wegas.app.get('currentPlayer') + "/RunScript");
+                    Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
+                        request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                        cfg: {
+                            method: "POST",
+                            data: Y.JSON.stringify({
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": this.get("onClick")
+                            })
+                        }
+                    });
                 }
-
 
                 if (this.get('targetDisplayArea')) {                            // If there is an a target display area, display the children in it
                     target = Y.one('#' + this.get('targetDisplayArea') + ' div');
@@ -40,7 +46,7 @@ YUI.add('wegas-button', function (Y) {
                         try {
                             this._widget.render(target);
                         } catch (e) {
-                            Y.log('renderUI(): Error rendering widget: '+(e.stack || e ), 'error', 'Wegas.Button');
+                            Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.Button');
                         }
                     } else {
                         target.append(this._widget.get(BOUNDINGBOX));
@@ -48,7 +54,7 @@ YUI.add('wegas-button', function (Y) {
                 }
             }, this);
         },
-        syncUI: function () {                                                    // Update the button display
+        syncUI: function () {                                                   // Update the button display
             switch (this.get('view')) {
                 case 'button':
                     this.get(CONTENTBOX).setContent('<input type="submit" value="' + this.get('label') + '"></input>');

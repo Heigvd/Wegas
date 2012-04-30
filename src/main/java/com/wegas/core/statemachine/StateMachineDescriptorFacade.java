@@ -46,7 +46,7 @@ public class StateMachineDescriptorFacade extends AbstractFacade<StateMachineDes
         defaultInstance.setCurrentState(tmpInitialState);
         ((StateMachineDescriptorEntity) smDescriptor).setInitialStateId(tmpInitialState.getId());
         //reset instance
-        smDescriptor.getScope().propagateDefaultVariableInstance(true);
+        smDescriptor.getScope().propagateDefaultInstance(true);
         em.flush();
         em.refresh(smDescriptor);
     }
