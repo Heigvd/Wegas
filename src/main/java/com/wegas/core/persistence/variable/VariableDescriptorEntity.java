@@ -39,6 +39,9 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"gamemodel_id", "name"}))
+@NamedQuery(name = "findVariableDescriptorsByRootGameModelId",
+query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptorEntity variableDescriptor LEFT JOIN variableDescriptor.rootGameModel AS gm WHERE gm.id = :gameModelId")
+
 @XmlType(name = "VariableDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptorEntity.class),

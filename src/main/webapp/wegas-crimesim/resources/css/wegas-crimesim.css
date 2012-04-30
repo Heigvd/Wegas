@@ -72,7 +72,7 @@
     border-top: none;
     display: none;
     box-shadow: 5px 4px 5px #888;
-  /*  bottom: 0;*/
+    /*  bottom: 0;*/
 }
 .schedule-detail .schedule-icon-close {
     float: right;
@@ -169,6 +169,10 @@
 .schedule-table .schedule-unavailablestart.schedule-past .icon {
     background: darkgrey;
 }
+.schedule-table .schedule-inactive.schedule-future .icon,
+.schedule-table .schedule-inactive.schedule-present .icon {
+    background: red;
+}
 .schedule-table .schedule-unavailable-0 .icon {
     width: 20px;
 }
@@ -198,6 +202,17 @@
 }
 .schedule-table .schedule-unavailable-9 .icon {
     width: 631px;
+}
+/* Schedule cancel icon */
+.schedule-table .schedule-present.schedule-unavailablestart .icon .close-icon,
+.schedule-table .schedule-future.schedule-unavailablestart .icon .close-icon {
+    background: transparent url(/Wegas/wegas-crimesim/resources/images/close-icon.png) no-repeat 0px 0px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width:16px;
+    height:16px;
+    cursor: pointer;
 }
 /*
 .schedule-table .schedule-available > div > * {
