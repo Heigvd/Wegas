@@ -100,4 +100,13 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
             this.addReply(r);
         }
     }
+
+    // *** Sugar *** //
+    public void activate() {
+        this.setActive(true);
+    }
+
+    public void desactivate() {
+        this.setActive(false);
+    }
 }

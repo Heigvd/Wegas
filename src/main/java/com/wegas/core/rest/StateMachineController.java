@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -77,7 +78,8 @@ public class StateMachineController extends AbstractRestController<StateMachineD
     @Produces(MediaType.APPLICATION_JSON)
     public StateMachineDescriptorEntity step(
             @PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId) {
+            @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId)
+            throws ScriptException {
         StateMachineDescriptorEntity stateMachineDescriptorEntity = (StateMachineDescriptorEntity) stateMachineDescriptorFacade.find(stateMachineDescriptorId);
         StateMachineInstanceEntity stateMachineInstanceEntity = (StateMachineInstanceEntity) stateMachineDescriptorEntity.getVariableInstance(playerFacade.find(playerId));
         State currentState = stateMachineInstanceEntity.getCurrentState();
