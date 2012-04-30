@@ -13,10 +13,10 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @todo Needs to be implemented
@@ -24,11 +24,10 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table()
 @XmlType(name = "GameScope", propOrder = {"@class", "id", "name"})
-public class GameScopeEntity extends ScopeEntity {
+public class GameScopeEntity extends AbstractScopeEntity {
 
-    private static final Logger logger = Logger.getLogger(GameScopeEntity.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(GameScopeEntity.class);
 
     @Override
     public void setVariableInstance(Long userId, VariableInstanceEntity v) {
@@ -46,7 +45,7 @@ public class GameScopeEntity extends ScopeEntity {
     }
 
     @Override
-    public void propagateDefaultVariableInstance(boolean force) {
+    public void propagateDefaultInstance(boolean force) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -54,5 +53,4 @@ public class GameScopeEntity extends ScopeEntity {
     public void merge(AbstractEntity a) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
 }

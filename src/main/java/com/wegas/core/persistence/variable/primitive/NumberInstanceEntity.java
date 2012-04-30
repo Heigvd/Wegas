@@ -9,11 +9,12 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.persistence.AbstractEntity;
-import java.util.logging.Logger;
+import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,7 +25,10 @@ import javax.xml.bind.annotation.XmlType;
 public class NumberInstanceEntity extends VariableInstanceEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("StringInstanceEntity");
+    private static final Logger logger = LoggerFactory.getLogger(NumberInstanceEntity.class);
+    /**
+     *
+     */
     private double val;
 
     /**

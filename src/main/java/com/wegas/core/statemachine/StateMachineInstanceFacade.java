@@ -46,7 +46,7 @@ public class StateMachineInstanceFacade extends AbstractFacade<StateMachineInsta
         for(Transition transition: transitions){
             ScriptEntity script = transition.getTriggerCondition();
             //Get playerId, gameModelId and need an additional evalScript (true|false)
-            scriptManager.runScript(Long.MIN_VALUE, Long.MIN_VALUE, script);
+            scriptManager.eval(Long.MIN_VALUE, script);
 
         }
     }

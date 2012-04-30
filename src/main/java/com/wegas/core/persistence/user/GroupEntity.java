@@ -12,19 +12,12 @@ package com.wegas.core.persistence.user;
 
 
 import com.wegas.core.persistence.AbstractEntity;
-import java.io.Serializable;
-import java.util.logging.Logger;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -35,16 +28,15 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @Entity
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = "name"))
-
 @XmlRootElement
 @XmlType(name = "Group", propOrder = {"@class", "id", "name"})
 
 public class GroupEntity extends AbstractEntity {
 
-    private static final Logger logger = Logger.getLogger("GroupEntity");
+    private static final Logger logger = LoggerFactory.getLogger("GroupEntity");
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "group_seq")
+    @GeneratedValue
     private Long id;
 
 

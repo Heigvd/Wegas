@@ -5,19 +5,8 @@
     "widgetsUri": "wegas-crimesim/db/wegas-crimesim-pages.json",
     "games":[{
         "@class":"Game",
-        "name":"Test-1",
+        "name":"Test-16",
         "teams":[{
-            "@class": "Team",
-            "name":"Les experts",
-            "players": [ {
-                "@class": "Player",
-                "name": "Tom",
-                "user": {
-                    "@class": "User",
-                    "name": "Tom"
-                }
-            }]
-        },{
             "@class": "Team",
             "name":"Les autres",
             "players": [ {
@@ -71,149 +60,62 @@
         "scope": {
             "@class": "PlayerScope"
         }
-    }, {
-        "@class": "MCQDescriptor",
-        "name": "Couteau",
-        "label": "Couteau",
-        "description": "Un couteau qui traine, plein de sang.",
-        "replies": [
-        {
-            "@class": "MCQReplyDescriptor",
-            "name":"Analyse ADN",
-            "description":"Costs: 1000CHF; HR: 2;",
-            "answer":"nice work here",
-            "impact": {
-                "@class": "Script",
-                "language": "JavaScript",
-                "content": "cost.value+=1000;\nhumanResources.value-=2;"
+    },{
+        "@class": "ListDescriptor",
+        "name": "evidences",
+        "items":[{
+            "@class": "QuestionDescriptor",
+            "name": "Sac poubelle n°5",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name":"Traces ED",
+                "description":"",
+                "duration":1,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"print(\"traces\")"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name":"ADN",
+                "description":"",
+                "duration":2,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"print(\"ADN\")"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
+            "defaultVariableInstance": {
+                "@class": "QuestionInstance",
+                "replies":[],
+                "active":true
             },
-            "duration":1
-        },
-        {
-            "@class": "MCQReplyDescriptor",
-            "name":"Empreintees digitales",
-            "description":"Costs: 500CHF; HR: 2;",
-            "answer":"nice work here",
-            "impact": {
-                "@class": "Script",
-                "language": "JavaScript",
-                "content": "cost.value+=500;\nhumanResources.value-=2;"
-            },
-            "duration":2
+            "scope": {
+                "@class": "TeamScope"
+            }
         }],
         "defaultVariableInstance": {
-            "@class": "MCQInstance"
+            "@class": "NumberInstance",
+            "value": 0
         },
         "scope": {
-            "@class": "TeamScope"
-        }
-    }, {
-        "@class": "MCQDescriptor",
-        "name": "Le cadavre",
-        "label": "Le cadavre",
-        "description": "Un cadavre qui traine, plein de sang.",
-        "replies": [
-        {
-            "@class": "MCQReplyDescriptor",
-            "name":"Analyse ADN",
-            "description":"Costs: 1000CHF; HR: 2;",
-            "answer":"nice work here",
-            "impact": {
-                "@class": "Script",
-                "language": "JavaScript",
-                "content": "cost.value+=1000;\nhumanResources.value-=2;"
-            },
-            "duration":1
-        },
-        {
-            "@class": "MCQReplyDescriptor",
-            "name":"Empreintees digitales",
-            "description":"Costs: 500CHF; HR: 2;",
-            "answer":"nice work here",
-            "impact": {
-                "@class": "Script",
-                "language": "JavaScript",
-                "content": "cost.value+=500;\nhumanResources.value-=2;"
-            },
-            "duration":2
-        }],
-        "defaultVariableInstance": {
-            "@class": "MCQInstance"
-        },
-        "scope": {
-            "@class": "TeamScope"
-        }
-    }, {
-        "@class": "MCQDescriptor",
-        "name": "Le chapeau",
-        "label": "Le chapeau",
-        "description": "Un chapeau qui traine, plein de sang.",
-        "replies": [
-        {
-            "@class": "MCQReplyDescriptor",
-            "name":"Analyse ADN",
-            "description":"Costs: 1000CHF; HR: 2;",
-            "answer":"nice work here",
-            "impact": {
-                "@class": "Script",
-                "language": "JavaScript",
-                "content": "cost.value+=1000;\nhumanResources.value-=2;"
-            },
-            "duration":1
-        },
-        {
-            "@class": "MCQReplyDescriptor",
-            "name":"Empreintees digitales",
-            "description":"Costs: 500CHF; HR: 2;",
-            "answer":"nice work here",
-            "impact": {
-                "@class": "Script",
-                "language": "JavaScript",
-                "content": "cost.value+=500;\nhumanResources.value-=2;"
-            },
-            "duration":2
-        }],
-        "defaultVariableInstance": {
-            "@class": "MCQInstance"
-        },
-        "scope": {
-            "@class": "TeamScope"
-        }
-    }, {
-        "@class": "MCQDescriptor",
-        "name": "La botte",
-        "label": "La botte",
-        "description": "Une botte qui traine, pleine de sang.",
-        "replies": [
-        {
-            "@class": "MCQReplyDescriptor",
-            "name":"Analyse ADN",
-            "description":"Costs: 1000CHF; HR: 2;",
-            "answer":"nice work here",
-            "impact": {
-                "@class": "Script",
-                "language": "JavaScript",
-                "content": "cost.value+=1000;\nhumanResources.value-=2;"
-            },
-            "duration":1
-        },
-        {
-            "@class": "MCQReplyDescriptor",
-            "name":"Empreintees digitales",
-            "description":"Costs: 500CHF; HR: 2;",
-            "answer":"nice work here",
-            "impact": {
-                "@class": "Script",
-                "language": "JavaScript",
-                "content": "cost.value+=500;\nhumanResources.value-=2;"
-            },
-            "duration": 2
-        }],
-        "defaultVariableInstance": {
-            "@class": "MCQInstance"
-        },
-        "scope": {
-            "@class": "TeamScope"
+            "@class": "GameModelScope"
         }
     }]
 }
