@@ -10,6 +10,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.script.ScriptEntity;
 import javax.persistence.Column;
@@ -49,7 +50,7 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
     /**
      *
      */
-    private Long duration = new Long(1); 
+    private Long duration = new Long(1);
 
     /**
      *
@@ -129,5 +130,14 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
      */
     public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+
+    // *** Sugar *** //
+    public void activate(PlayerEntity p) {
+       this.getVariableInstance(p).setActive(true);
+    }
+    public void desactivate(PlayerEntity p) {
+       this.getVariableInstance(p).setActive(false);
     }
 }

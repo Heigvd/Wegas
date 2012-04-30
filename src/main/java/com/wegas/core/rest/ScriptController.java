@@ -15,6 +15,7 @@ import com.wegas.core.script.ScriptManager;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.script.ScriptException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -44,7 +45,8 @@ public class ScriptController {
     @Path("/Run/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<VariableInstanceEntity> selectReply(
-            @PathParam("playerId") Long playerId, ScriptEntity script) {
+            @PathParam("playerId") Long playerId, ScriptEntity script)
+            throws ScriptException {
         return scriptManager.eval(playerId, script);
     }
 }

@@ -10,6 +10,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.ListDescriptorEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -93,4 +94,7 @@ public class QuestionDescriptorEntity extends ListDescriptorEntity {
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
         this.allowMultipleReplies = allowMultipleReplies;
     }
+
+
+   
 }

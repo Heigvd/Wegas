@@ -322,6 +322,33 @@
                             { name: 'id', type: 'hidden'},
                             { name: 'value', label: 'Text'}
                         ],
+                        "TriggerDescriptor": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'TriggerDescriptor'},
+                            { name: 'name', label:'Name', required: true},
+                            { name: 'scope', type:'group', fields: ScopeForm},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                    { name: '@class', value:'TriggerInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: 'currentStateId', label: 'Default value', value:"1"}
+                                ]},
+                            { name: 'name', label:'Name', required: true}
+                        ],
+                        "TriggerInstance": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'TriggerInstance'},
+                            { name: 'currentStateId', label: "Value", type: 'text'}
+                        ],
+                        "State": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'State'},
+                            { name: 'label', label:'Name', required: true},
+                            { name:'impact', type:'group', fields: [
+                                    { name: '@class', value:'Script', type: 'hidden'},
+                                    { name: 'language', value:'JavaScript', type: 'hidden'},
+                                    { name: 'content', 'type': 'text', label:'Impact', rows: 3}
+                                ]}
+                        ],
                         "NumberDescriptor": [
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'NumberDescriptor'},
@@ -345,13 +372,13 @@
                             { name: '@class', type: 'hidden', value: 'ListDescriptor'},
                             { name: 'name', label:'Name', required: true},
                             { name: 'scope', type:'group', fields: [
-                                { name: 'id', type: 'hidden'},
-                                { name: '@class', type: 'hidden', value: "GameModelScope" }
-                            ]},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: '@class', type: 'hidden', value: "GameModelScope" }
+                                ]},
                             { name:'defaultVariableInstance', type:'group', fields: [
-                                { name: '@class', value:'ListInstance', type: 'hidden'},
-                                { name: 'id', type: 'hidden'}
-                            ]}
+                                    { name: '@class', value:'ListInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'}
+                                ]}
                         ],
                         "ListInstance": [
                             { name: '@class', value:'ListInstance', type: 'hidden'},
@@ -400,16 +427,16 @@
                             { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
                             { name: 'answer', 'type': 'html', label:'Answer', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
                             { name:'impact', type:'group', fields: [
-                                { name: '@class', value:'Script', type: 'hidden'},
-                                { name: 'language', value:'JavaScript', type: 'hidden'},
-                                { name: 'content', 'type': 'text', label:'Impact', rows: 3}
-                            ]},
+                                    { name: '@class', value:'Script', type: 'hidden'},
+                                    { name: 'language', value:'JavaScript', type: 'hidden'},
+                                    { name: 'content', 'type': 'text', label:'Impact', rows: 3}
+                                ]},
                             { name: 'duration', label:'Duration', required: true},
                             { name:'defaultVariableInstance', type:'group', fields: [
-                                { name: '@class', value:'ChoiceInstance', type: 'hidden'},
-                                { name: 'id', type: 'hidden'},
-                                { name: 'active', label:'Active by default', type: 'boolean', value: true}
-                            ]},
+                                    { name: '@class', value:'ChoiceInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: 'active', label:'Active by default', type: 'boolean', value: true}
+                                ]},
                         ],
                         "ChoiceInstance": [
                             { name: 'id', type: 'hidden'},
@@ -481,7 +508,8 @@
                             {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Config.forms.StringDescriptor},
                             {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
                             {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Config.forms.QuestionDescriptor },
-                            {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor }
+                            {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor },
+                            {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor }
                         ]
                     }
                 ];

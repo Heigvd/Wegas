@@ -11,7 +11,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.user.UserEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity_;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -59,6 +59,17 @@ public class VariableDescriptorFacade extends AbstractFacade<VariableDescriptorE
         cq.where(cb.equal(variableDescriptor.get("name"), name));
         Query q = em.createQuery(cq);
         return (VariableDescriptorEntity) q.getSingleResult();
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @return
+     */
+    public List<VariableDescriptorEntity> findByRootGameModelId(Long gameModelId) {
+        Query findVariableDescriptorsByRootGameModelId = em.createNamedQuery("findVariableDescriptorsByRootGameModelId");
+        findVariableDescriptorsByRootGameModelId.setParameter("gameModelId", gameModelId);
+        return findVariableDescriptorsByRootGameModelId.getResultList();
     }
 
     /**

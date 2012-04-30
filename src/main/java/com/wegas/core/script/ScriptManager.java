@@ -10,6 +10,7 @@
 package com.wegas.core.script;
 
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -38,6 +39,11 @@ import javax.script.ScriptException;
 @Stateless
 @LocalBean
 public class ScriptManager {
+    /**
+     *
+     */
+    @EJB
+    private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      *
@@ -56,7 +62,8 @@ public class ScriptManager {
      * @param s
      * @return
      */
-    public List<VariableInstanceEntity> eval(Long playerId, ScriptEntity s) {
+    public List<VariableInstanceEntity> eval(Long playerId, ScriptEntity s)
+            throws ScriptException {
         return this.eval(playerEntityFacade.find(playerId), s);
     }
 
@@ -67,7 +74,7 @@ public class ScriptManager {
      * @param arguments
      * @return
      */
-    public List<VariableInstanceEntity> eval(PlayerEntity p, ScriptEntity s) {
+    public List<VariableInstanceEntity> eval(PlayerEntity p, ScriptEntity s) throws ScriptException {
         return this.eval(p, s, new HashMap<String, AbstractEntity>());
     }
 
@@ -78,34 +85,28 @@ public class ScriptManager {
      * @param arguments
      * @return
      */
-    public List<VariableInstanceEntity> eval(PlayerEntity p, ScriptEntity s, Map<String, AbstractEntity> arguments) {
+    public List<VariableInstanceEntity> eval(PlayerEntity p, ScriptEntity s, Map<String, AbstractEntity> arguments)
+            throws ScriptException {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
-        // GameModelEntity gm = gameModelEntityFacade.find(gameModelId);
-        //  PlayerEntity p =
         GameModelEntity gm = p.getTeam().getGame().getGameModel();
-
         List<VariableInstanceEntity> vis = new ArrayList<>();
 
-        try {
-            engine.put("self", p);                                              // Inject constants
-            engine.put("messaging", messagingManager);
+        engine.put("self", p);                                              // Inject constants
 
-            for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
-                engine.put(arg.getKey(), arg.getValue());
-            }
-            for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
-                VariableInstanceEntity vi = vd.getVariableInstance(p);
-                engine.put(vd.getName(), vi);
-                vis.add(vi);
-            }
+        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
+            engine.put(arg.getKey(), arg.getValue());
+        }
+        
+       // for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
+          for (VariableDescriptorEntity vd : variableDescriptorFacade.findByRootGameModelId(gm.getId())) {   // We inject the variable instances in the script
+            VariableInstanceEntity vi = vd.getVariableInstance(p);
+            engine.put(vd.getName(), vi);
+            vis.add(vi);
+        }
 
-            engine.eval(s.getContent());                                        // Then we evaluate the script
-        }
-        catch (ScriptException ex) {
-            Logger.getLogger(ScriptManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        engine.eval(s.getContent());
         return vis;
     }
 
@@ -204,7 +205,11 @@ public class ScriptManager {
          * = factory.getLanguageName(); String langVersion =
          * factory.getLanguageVersion(); if (langName.equals("ECMAScript") &&
          * langVersion.equals("1.6")) { engine = factory.getScriptEngine();
-         * break; } }
+         * break; } } * langVersion.equals("1.6")
+         *
+         *
+         * ) { engine = factory.getScriptEngine(); break; } }
+         *
          */
     }
 }
