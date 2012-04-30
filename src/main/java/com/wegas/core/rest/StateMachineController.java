@@ -82,6 +82,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
                 if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
                     scriptManager.runScript(gameModelId, playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
                 }
+                break;                                                          //A valid transition was found
             }
         }
         variableInstanceFacade.update(stateMachineInstanceEntity.getId(), stateMachineInstanceEntity);
