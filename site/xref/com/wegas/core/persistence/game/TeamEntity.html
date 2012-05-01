@@ -6,7 +6,7 @@
 <link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
 </head>
 <body>
-<pre>
+<div id="overview"><a href="../../../../../../../target/site/apidocs/com/wegas/core/persistence/game/TeamEntity.html">View Javadoc</a></div><pre>
 
 <a name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
 <a name="2" href="#2">2</a>   <em class="jxr_comment"> * Wegas.</em>
@@ -15,7 +15,7 @@
 <a name="5" href="#5">5</a>   <em class="jxr_comment"> * School of Business and Engineering Vaud, <a href="http://www.heig-vd.ch/" target="alexandria_uri">http://www.heig-vd.ch/</a></em>
 <a name="6" href="#6">6</a>   <em class="jxr_comment"> * Media Engineering :: Information Technology Managment :: Comem</em>
 <a name="7" href="#7">7</a>   <em class="jxr_comment"> *</em>
-<a name="8" href="#8">8</a>   <em class="jxr_comment"> * Copyright (C) 2011</em>
+<a name="8" href="#8">8</a>   <em class="jxr_comment"> * Copyright (C) 2012</em>
 <a name="9" href="#9">9</a>   <em class="jxr_comment"> */</em>
 <a name="10" href="#10">10</a>  <strong class="jxr_keyword">package</strong> com.wegas.core.persistence.game;
 <a name="11" href="#11">11</a>  
@@ -37,7 +37,7 @@
 <a name="27" href="#27">27</a>  <em class="jxr_javadoccomment"> */</em>
 <a name="28" href="#28">28</a>  @Entity
 <a name="29" href="#29">29</a>  @Table(uniqueConstraints =
-<a name="30" href="#30">30</a>  @UniqueConstraint(columnNames = {<span class="jxr_string">"name"</span>}))
+<a name="30" href="#30">30</a>  @UniqueConstraint(columnNames = {<span class="jxr_string">"name"</span>, <span class="jxr_string">"parentgame_id"</span>}))
 <a name="31" href="#31">31</a>  @Inheritance(strategy = InheritanceType.JOINED)
 <a name="32" href="#32">32</a>  @XmlType(name = <span class="jxr_string">"Team"</span>)
 <a name="33" href="#33">33</a>  @JsonIgnoreProperties(ignoreUnknown = <strong class="jxr_keyword">true</strong>)
@@ -48,7 +48,7 @@
 <a name="38" href="#38">38</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="39" href="#39">39</a>  <em class="jxr_javadoccomment">     */</em>
 <a name="40" href="#40">40</a>      @Id
-<a name="41" href="#41">41</a>      @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = <span class="jxr_string">"team_seq"</span>)
+<a name="41" href="#41">41</a>      @GeneratedValue
 <a name="42" href="#42">42</a>      <strong class="jxr_keyword">private</strong> Long id;
 <a name="43" href="#43">43</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="44" href="#44">44</a>  <em class="jxr_javadoccomment">     *</em>
