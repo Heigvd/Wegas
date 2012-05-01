@@ -6,7 +6,7 @@
 <link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
 </head>
 <body>
-<pre>
+<div id="overview"><a href="../../../../../../target/site/apidocs/com/wegas/core/rest/GameController.html">View Javadoc</a></div><pre>
 
 <a name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
 <a name="2" href="#2">2</a>   <em class="jxr_comment"> * Wegas.</em>
@@ -15,12 +15,12 @@
 <a name="5" href="#5">5</a>   <em class="jxr_comment"> * School of Business and Engineering Vaud, <a href="http://www.heig-vd.ch/" target="alexandria_uri">http://www.heig-vd.ch/</a></em>
 <a name="6" href="#6">6</a>   <em class="jxr_comment"> * Media Engineering :: Information Technology Managment :: Comem</em>
 <a name="7" href="#7">7</a>   <em class="jxr_comment"> *</em>
-<a name="8" href="#8">8</a>   <em class="jxr_comment"> * Copyright (C) 2011</em>
+<a name="8" href="#8">8</a>   <em class="jxr_comment"> * Copyright (C) 2012</em>
 <a name="9" href="#9">9</a>   <em class="jxr_comment"> */</em>
 <a name="10" href="#10">10</a>  <strong class="jxr_keyword">package</strong> com.wegas.core.<strong class="jxr_keyword">rest</strong>;
 <a name="11" href="#11">11</a>  
-<a name="12" href="#12">12</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.GameEntityFacade;
-<a name="13" href="#13">13</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.GameModelEntityFacade;
+<a name="12" href="#12">12</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.GameFacade;
+<a name="13" href="#13">13</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.GameModelFacade;
 <a name="14" href="#14">14</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.AbstractEntity;
 <a name="15" href="#15">15</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.game.GameEntity;
 <a name="16" href="#16">16</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.game.GameModelEntity;
@@ -35,18 +35,18 @@
 <a name="25" href="#25">25</a>  <em class="jxr_javadoccomment"> */</em>
 <a name="26" href="#26">26</a>  @Stateless
 <a name="27" href="#27">27</a>  @Path(<span class="jxr_string">"GameModel/{gameModelId : [1-9][0-9]*}/Game/"</span>)
-<a name="28" href="#28">28</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../com/wegas/core/rest/GameController.html">GameController</a> <strong class="jxr_keyword">extends</strong> AbstractRestController&lt;GameEntityFacade&gt; {
+<a name="28" href="#28">28</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../com/wegas/core/rest/GameController.html">GameController</a> <strong class="jxr_keyword">extends</strong> AbstractRestController&lt;GameFacade&gt; {
 <a name="29" href="#29">29</a>  
 <a name="30" href="#30">30</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="31" href="#31">31</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="32" href="#32">32</a>  <em class="jxr_javadoccomment">     */</em>
 <a name="33" href="#33">33</a>      @EJB
-<a name="34" href="#34">34</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../com/wegas/core/ejb/GameModelEntityFacade.html">GameModelEntityFacade</a> gameModelEntityFacade;
+<a name="34" href="#34">34</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../com/wegas/core/ejb/GameModelFacade.html">GameModelFacade</a> gameModelEntityFacade;
 <a name="35" href="#35">35</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="36" href="#36">36</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="37" href="#37">37</a>  <em class="jxr_javadoccomment">     */</em>
 <a name="38" href="#38">38</a>      @EJB
-<a name="39" href="#39">39</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../com/wegas/core/ejb/GameEntityFacade.html">GameEntityFacade</a> gameFacade;
+<a name="39" href="#39">39</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../com/wegas/core/ejb/GameFacade.html">GameFacade</a> gameFacade;
 <a name="40" href="#40">40</a>  
 <a name="41" href="#41">41</a>      @Override
 <a name="42" href="#42">42</a>      <strong class="jxr_keyword">public</strong> Collection&lt;AbstractEntity&gt; index() {
@@ -65,7 +65,7 @@
 <a name="55" href="#55">55</a>  <em class="jxr_javadoccomment">     * @return</em>
 <a name="56" href="#56">56</a>  <em class="jxr_javadoccomment">     */</em>
 <a name="57" href="#57">57</a>      @Override
-<a name="58" href="#58">58</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../com/wegas/core/ejb/GameEntityFacade.html">GameEntityFacade</a> getFacade() {
+<a name="58" href="#58">58</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../com/wegas/core/ejb/GameFacade.html">GameFacade</a> getFacade() {
 <a name="59" href="#59">59</a>          <strong class="jxr_keyword">return</strong> gameFacade;
 <a name="60" href="#60">60</a>      }
 <a name="61" href="#61">61</a>  }
