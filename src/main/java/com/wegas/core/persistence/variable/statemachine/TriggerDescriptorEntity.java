@@ -9,14 +9,12 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.script.ScriptEntity;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -25,13 +23,12 @@ import javax.xml.bind.annotation.XmlType;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@Table(name="TriggerDescriptor")
+@Table(name = "TriggerDescriptor")
 @XmlRootElement
-@XmlType(name="TriggerDescriptor")
+@XmlType(name = "TriggerDescriptor")
 public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
 
     private Boolean oneShot;
-    private Boolean opposedTrigger;
     @Transient
     private ScriptEntity triggerEvent;
     @Transient
@@ -51,19 +48,6 @@ public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
      */
     public void setOneShot(Boolean oneShot) {
         this.oneShot = oneShot;
-    }
-
-    public Boolean isOpposedTrigger() {
-        return opposedTrigger;
-    }
-
-    /**
-     * Sets the trigger to be rearmed once the trigger is false.
-     *
-     * @param opposedTrigger boolean defining if the trigger shuld be rearmed
-     */
-    public void setOpposedTrigger(Boolean opposedTrigger) {
-        this.opposedTrigger = opposedTrigger;
     }
 
     public ScriptEntity getPostTriggerEvent() {
@@ -88,15 +72,65 @@ public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
      *
      * @param triggerEvent a script which fires the trigger
      */
-
     public void setTriggerEvent(ScriptEntity triggerEvent) {
         this.triggerEvent = triggerEvent;
     }
 
+    @Override
+    public void merge(AbstractEntity a) {
+        TriggerDescriptorEntity entity = (TriggerDescriptorEntity) a;
+        this.oneShot = entity.isOneShot();
+        this.postTriggerEvent = entity.getPostTriggerEvent();
+        this.triggerEvent = entity.getTriggerEvent();
+        this.setStates(null);
+        entity.buildStateMachine();
+        super.merge(entity);
+    }
+
+    @PostLoad
+    public void onLoad() {
+        try {
+            this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
+        } catch (NullPointerException e) {
+            this.triggerEvent = null;
+        }
+        try {
+            if (this.oneShot) {
+                this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
+            } else {
+                this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
+            }
+        } catch (NullPointerException e) {
+            this.postTriggerEvent = null;
+        }
+    }
+
+    @PrePersist
+    public void buildStateMachine() {
+        State initialState = new State();
+        Transition transition = new Transition();
+        transition.setTriggerCondition(this.triggerEvent);
+        List<Transition> transitions = new ArrayList<>(1);
+        transitions.add(transition);
+        initialState.setTransitions(transitions);
+        HashMap<Long, State> states = new HashMap<>();
+        states.put(1L, initialState);
+        if (this.oneShot != null && this.oneShot) {
+            transition.setNextStateId(2L);
+            State finalState = new State();
+            finalState.setOnEnterEvent(this.postTriggerEvent);
+            states.put(2L, finalState);
+        } else {
+            initialState.setOnEnterEvent(this.postTriggerEvent);
+            transition.setNextStateId(1L);
+        }
+        this.setInitialStateId(1L);
+        ((TriggerInstanceEntity)this.getDefaultVariableInstance()).setCurrentStateId(1L);
+        this.setStates(states);
+    }
 
     @Override
     public String toString() {
-        return "TriggerDescriptorEntity{id=" + this.getId() + ", oneShot=" + oneShot + ", opposedTrigger=" + opposedTrigger + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
+        return "TriggerDescriptorEntity{id=" + this.getId() + ", oneShot=" + oneShot + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
     }
-
 }

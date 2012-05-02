@@ -80,28 +80,28 @@ public class ScriptManager {
 
     /**
      *
-     * @param p
+     * @param player
      * @param s
      * @param arguments
      * @return
      */
-    public List<VariableInstanceEntity> eval(PlayerEntity p, ScriptEntity s, Map<String, AbstractEntity> arguments)
+    public List<VariableInstanceEntity> eval(PlayerEntity player, ScriptEntity s, Map<String, AbstractEntity> arguments)
             throws ScriptException {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
-        GameModelEntity gm = p.getTeam().getGame().getGameModel();
+        GameModelEntity gm = player.getTeam().getGame().getGameModel();
         List<VariableInstanceEntity> vis = new ArrayList<>();
 
-        engine.put("self", p);                                              // Inject constants
+        engine.put("self", player);                                              // Inject constants
 
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
         }
-        
+
        // for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
           for (VariableDescriptorEntity vd : variableDescriptorFacade.findByRootGameModelId(gm.getId())) {   // We inject the variable instances in the script
-            VariableInstanceEntity vi = vd.getVariableInstance(p);
+            VariableInstanceEntity vi = vd.getVariableInstance(player);
             engine.put(vd.getName(), vi);
             vis.add(vi);
         }

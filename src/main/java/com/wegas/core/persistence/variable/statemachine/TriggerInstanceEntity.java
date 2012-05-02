@@ -29,7 +29,7 @@ public class TriggerInstanceEntity extends StateMachineInstanceEntity {
 
     @Override
     public String toString() {
-        return "TriggerInstanceEntity{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentState() + '}';
+        return "TriggerInstanceEntity{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';
     }
 
 }

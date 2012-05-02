@@ -59,12 +59,12 @@ public class StateMachineController extends AbstractRestController<StateMachineD
         return this.stateMachineDescriptorFacade;
     }
 
-    @Override
-    public StateMachineDescriptorEntity create(AbstractEntity entity) {
-        Long gameModelId = new Long(this.getPathParam("gameModelId"));
-        this.stateMachineDescriptorFacade.create(gameModelId, (StateMachineDescriptorEntity) entity);
-        return (StateMachineDescriptorEntity) entity;
-    }
+//    @Override
+//    public StateMachineDescriptorEntity create(AbstractEntity entity) {
+//        Long gameModelId = new Long(this.getPathParam("gameModelId"));
+//        this.stateMachineDescriptorFacade.create(gameModelId, (StateMachineDescriptorEntity) entity);
+//        return (StateMachineDescriptorEntity) entity;
+//    }
 
     /**
      *
@@ -87,7 +87,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
         List<Transition> passedTransitions = new ArrayList<>();
         for (Transition transition : transitions) {
             if ((Boolean) scriptManager.eval(gameModelId, playerId, transition.getTriggerCondition())) {
-                stateMachineInstanceEntity.setCurrentState(stateMachineDescriptorEntity.getStates().get(transition.getNextStateId()));
+                stateMachineInstanceEntity.setCurrentStateId(transition.getNextStateId());
                 if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
                     scriptManager.eval(playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
                 }
