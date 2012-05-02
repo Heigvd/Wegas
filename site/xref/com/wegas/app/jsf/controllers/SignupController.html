@@ -6,7 +6,7 @@
 <link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
 </head>
 <body>
-<pre>
+<div id="overview"><a href="../../../../../../../target/site/apidocs/com/wegas/app/jsf/controllers/SignupController.html">View Javadoc</a></div><pre>
 
 <a name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
 <a name="2" href="#2">2</a>   <em class="jxr_comment"> * Wegas.</em>
@@ -15,7 +15,7 @@
 <a name="5" href="#5">5</a>   <em class="jxr_comment"> * School of Business and Engineering Vaud, <a href="http://www.heig-vd.ch/" target="alexandria_uri">http://www.heig-vd.ch/</a></em>
 <a name="6" href="#6">6</a>   <em class="jxr_comment"> * Media Engineering :: Information Technology Managment :: Comem</em>
 <a name="7" href="#7">7</a>   <em class="jxr_comment"> *</em>
-<a name="8" href="#8">8</a>   <em class="jxr_comment"> * Copyright (C) 2011</em>
+<a name="8" href="#8">8</a>   <em class="jxr_comment"> * Copyright (C) 2012</em>
 <a name="9" href="#9">9</a>   <em class="jxr_comment"> */</em>
 <a name="10" href="#10">10</a>  <strong class="jxr_keyword">package</strong> com.wegas.app.jsf.controllers;
 <a name="11" href="#11">11</a>  
@@ -70,10 +70,10 @@
 <a name="60" href="#60">60</a>          }
 <a name="61" href="#61">61</a>          <strong class="jxr_keyword">try</strong> {
 <a name="62" href="#62">62</a>              cRealm.createUser(userName, userPass);
-<a name="63" href="#63">63</a>              <strong class="jxr_keyword">this</strong>.msg = ResourceBundle.getBundle(<span class="jxr_string">"com.wegas.app.Bundle"</span>).getString(<span class="jxr_string">"SignupPage_UserCreatedMsg"</span>);
+<a name="63" href="#63">63</a>              <strong class="jxr_keyword">this</strong>.msg = ResourceBundle.getBundle(<span class="jxr_string">"wegas-app.Bundle"</span>).getString(<span class="jxr_string">"SignupPage_UserCreatedMsg"</span>);
 <a name="64" href="#64">64</a>          }
 <a name="65" href="#65">65</a>          <strong class="jxr_keyword">catch</strong> (SQLException ex) {
-<a name="66" href="#66">66</a>              <strong class="jxr_keyword">this</strong>.msg = ResourceBundle.getBundle(<span class="jxr_string">"com.wegas.app.Bundle"</span>).getString(<span class="jxr_string">"SignupPage_UserCreationErrorMsg"</span>);
+<a name="66" href="#66">66</a>              <strong class="jxr_keyword">this</strong>.msg = ResourceBundle.getBundle(<span class="jxr_string">"wegas-app.Bundle"</span>).getString(<span class="jxr_string">"SignupPage_UserCreationErrorMsg"</span>);
 <a name="67" href="#67">67</a>              Logger.getLogger(SignupController.<strong class="jxr_keyword">class</strong>.getName()).log(Level.SEVERE, <strong class="jxr_keyword">null</strong>, ex);
 <a name="68" href="#68">68</a>          }
 <a name="69" href="#69">69</a>      }
