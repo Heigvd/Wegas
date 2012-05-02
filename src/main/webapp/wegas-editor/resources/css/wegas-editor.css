@@ -345,6 +345,12 @@ td.yui3-wegas-treeview-icon-player {
 .yui3-wegas-editmenu-hidden {
     display: none;
 }
+.ygtvcell > div.yui3-wegas-editmenu{
+    display:none;
+}
+.ygtvcell:hover > div.yui3-wegas-editmenu{
+    display:block;
+}
 /* Top Menu bar */
 
 .yui-skin-sam #topmenubar {
