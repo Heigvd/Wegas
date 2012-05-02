@@ -254,6 +254,9 @@
                         "NumberDescriptor": [
                             { text: "Delete", value: { op:'delete' } }
                         ],
+                        "TriggerDescriptor": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
                         "ListDescriptor": [
                             { text: "Add element", value: { op:'addChild', childClass: "VariableDescriptor" } },
                             { text: "Delete", value: { op:'delete' } }
@@ -327,17 +330,27 @@
                             { name: '@class', type: 'hidden', value: 'TriggerDescriptor'},
                             { name: 'name', label:'Name', required: true},
                             { name: 'scope', type:'group', fields: ScopeForm},
-                            { name:'defaultVariableInstance', type:'group', fields: [
+                            { name:'defaultVariableInstance', disabled:true, type:'group', fields: [
                                     { name: '@class', value:'TriggerInstance', type: 'hidden'},
                                     { name: 'id', type: 'hidden'},
-                                    { name: 'currentStateId', label: 'Default value', value:"1"}
+                                    { name: 'currentStateId', label: 'Initial state'}
                                 ]},
-                            { name: 'name', label:'Name', required: true}
+                            {name:'triggerEvent', type:'group', fields:[
+                                    {name:'@class', value:'Script', type:'hidden'},
+                                    {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
+                                    {name:'content', label:'Trigger',type:'text'}
+                                ]},
+                            {name:'postTriggerEvent', type:'group', fields:[
+                                    {name:'@class', value:'Script', type:'hidden'},
+                                    {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
+                                    {name:'content', label:'Impact',type:'text'}
+                                ]},
+                            { name: 'oneShot', label:'Only once', type:'boolean'}
                         ],
                         "TriggerInstance": [
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'TriggerInstance'},
-                            { name: 'currentStateId', label: "Value", type: 'text'}
+                            { name: 'currentStateId', label: "Trigger state", disabled:true}
                         ],
                         "State": [
                             { name: 'id', type: 'hidden'},
