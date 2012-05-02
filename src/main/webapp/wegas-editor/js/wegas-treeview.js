@@ -213,7 +213,9 @@ YUI.add('wegas-treeview', function (Y) {
                 StringDescriptor: "String",
                 NumberDescriptor: "Number",
                 ListDescriptor: "List",
-                ChoiceDescriptor: "Choice"
+                ChoiceDescriptor: "Choice",
+                InboxDescriptor: "Inbox",
+                TriggerDescriptor: "Trigger"
             }, ret = [], i, el, text;
 
             for (i in elements) {
@@ -229,6 +231,7 @@ YUI.add('wegas-treeview', function (Y) {
                             case 'NumberDescriptor':
                             case 'InboxDescriptor':
                             case 'ChoiceDescriptor':
+                            case 'TriggerDescriptor':
                                 text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
                                 ret.push({
                                     type: 'html',
