@@ -9,11 +9,14 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.persistence.variable.EntityUpdateEvent;
 import com.wegas.core.persistence.variable.scope.AbstractScopeEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -24,6 +27,8 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class VariableInstanceFacade extends AbstractFacade<VariableInstanceEntity> {
 
+    @Inject
+    Event<EntityUpdateEvent> euEvent;
     /**
      *
      */
@@ -61,6 +66,21 @@ public class VariableInstanceFacade extends AbstractFacade<VariableInstanceEntit
          */
         this.create(variableInstance);
         return variableInstance;
+    }
+
+    @Override
+    public VariableInstanceEntity update(final Long entityId, final VariableInstanceEntity entity) {
+        boolean changedEntity = true;
+        VariableInstanceEntity oldEntity = this.find(entityId);
+        //TODO : test equality, really
+        if (oldEntity.equals(entity)) {
+            changedEntity = false;
+        }
+        oldEntity.merge(entity);
+        if (oldEntity instanceof VariableInstanceEntity) {
+            euEvent.fire(new EntityUpdateEvent(oldEntity));
+        }
+        return oldEntity;
     }
 
     /**

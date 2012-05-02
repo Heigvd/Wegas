@@ -26,7 +26,6 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
-import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -39,7 +38,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"gamemodel_id", "name"}))
-@NamedQuery(name = "findVariableDescriptorsByRootGameModelId",
+    @NamedQuery(name = "findVariableDescriptorsByRootGameModelId",
 query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptorEntity variableDescriptor LEFT JOIN variableDescriptor.rootGameModel AS gm WHERE gm.id = :gameModelId")
 
 @XmlType(name = "VariableDescriptor")

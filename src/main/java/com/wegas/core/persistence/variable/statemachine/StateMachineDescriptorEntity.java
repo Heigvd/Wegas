@@ -25,9 +25,10 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 public class StateMachineDescriptorEntity extends VariableDescriptorEntity<StateMachineInstanceEntity> {
 
     private Long initialStateId;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
     //@MapKey(name = "id")
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
+    @MapKeyColumn(name="fsm_statekey")
     private Map<Long, State> states = new HashMap<>();
 
     public StateMachineDescriptorEntity() {
@@ -58,6 +59,8 @@ public class StateMachineDescriptorEntity extends VariableDescriptorEntity<State
     public void merge(AbstractEntity a) {
         //TODO: MAP initialState to State
         StateMachineDescriptorEntity smDescriptor = (StateMachineDescriptorEntity) a;
+        this.setStates((HashMap<Long, State>)smDescriptor.getStates());
+        this.initialStateId = smDescriptor.initialStateId;
         super.merge(smDescriptor);
     }
 
