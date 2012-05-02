@@ -6,7 +6,7 @@
 <link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
 </head>
 <body>
-<pre>
+<div id="overview"><a href="../../../../../../../target/site/apidocs/com/wegas/app/jsf/controllers/LobbyController.html">View Javadoc</a></div><pre>
 
 <a name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
 <a name="2" href="#2">2</a>   <em class="jxr_comment"> * Wegas.</em>
@@ -15,20 +15,20 @@
 <a name="5" href="#5">5</a>   <em class="jxr_comment"> * School of Business and Engineering Vaud, <a href="http://www.heig-vd.ch/" target="alexandria_uri">http://www.heig-vd.ch/</a></em>
 <a name="6" href="#6">6</a>   <em class="jxr_comment"> * Media Engineering :: Information Technology Managment :: Comem</em>
 <a name="7" href="#7">7</a>   <em class="jxr_comment"> *</em>
-<a name="8" href="#8">8</a>   <em class="jxr_comment"> * Copyright (C) 2011</em>
+<a name="8" href="#8">8</a>   <em class="jxr_comment"> * Copyright (C) 2012</em>
 <a name="9" href="#9">9</a>   <em class="jxr_comment"> */</em>
 <a name="10" href="#10">10</a>  <strong class="jxr_keyword">package</strong> com.wegas.app.jsf.controllers;
 <a name="11" href="#11">11</a>  
 <a name="12" href="#12">12</a>  <strong class="jxr_keyword">import</strong> com.wegas.app.jsf.controllers.util.JsfUtil;
-<a name="13" href="#13">13</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.GameEntityFacade;
-<a name="14" href="#14">14</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.GameModelEntityFacade;
-<a name="15" href="#15">15</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.TeamEntityFacade;
-<a name="16" href="#16">16</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.UserEntityFacade;
+<a name="13" href="#13">13</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.GameFacade;
+<a name="14" href="#14">14</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.GameModelFacade;
+<a name="15" href="#15">15</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.TeamFacade;
+<a name="16" href="#16">16</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.ejb.UserFacade;
 <a name="17" href="#17">17</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.game.GameEntity;
 <a name="18" href="#18">18</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.game.GameModelEntity;
 <a name="19" href="#19">19</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.game.PlayerEntity;
 <a name="20" href="#20">20</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.game.TeamEntity;
-<a name="21" href="#21">21</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.users.UserEntity;
+<a name="21" href="#21">21</a>  <strong class="jxr_keyword">import</strong> com.wegas.core.persistence.user.UserEntity;
 <a name="22" href="#22">22</a>  <strong class="jxr_keyword">import</strong> java.io.Serializable;
 <a name="23" href="#23">23</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> java.util.ResourceBundle;
@@ -56,22 +56,22 @@
 <a name="46" href="#46">46</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="47" href="#47">47</a>  <em class="jxr_javadoccomment">     */</em>
 <a name="48" href="#48">48</a>      @EJB
-<a name="49" href="#49">49</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../com/wegas/core/ejb/UserEntityFacade.html">UserEntityFacade</a> userFacade;
+<a name="49" href="#49">49</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../com/wegas/core/ejb/UserFacade.html">UserFacade</a> userFacade;
 <a name="50" href="#50">50</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="51" href="#51">51</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="52" href="#52">52</a>  <em class="jxr_javadoccomment">     */</em>
 <a name="53" href="#53">53</a>      @EJB
-<a name="54" href="#54">54</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../com/wegas/core/ejb/GameEntityFacade.html">GameEntityFacade</a> gameFacade;
+<a name="54" href="#54">54</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../com/wegas/core/ejb/GameFacade.html">GameFacade</a> gameFacade;
 <a name="55" href="#55">55</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="56" href="#56">56</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="57" href="#57">57</a>  <em class="jxr_javadoccomment">     */</em>
 <a name="58" href="#58">58</a>      @EJB
-<a name="59" href="#59">59</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../com/wegas/core/ejb/TeamEntityFacade.html">TeamEntityFacade</a> teamEntityFacade;
+<a name="59" href="#59">59</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../com/wegas/core/ejb/TeamFacade.html">TeamFacade</a> teamEntityFacade;
 <a name="60" href="#60">60</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="61" href="#61">61</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="62" href="#62">62</a>  <em class="jxr_javadoccomment">     */</em>
 <a name="63" href="#63">63</a>      @EJB
-<a name="64" href="#64">64</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../com/wegas/core/ejb/GameModelEntityFacade.html">GameModelEntityFacade</a> gameModelFacade;
+<a name="64" href="#64">64</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../com/wegas/core/ejb/GameModelFacade.html">GameModelFacade</a> gameModelFacade;
 <a name="65" href="#65">65</a>      <em class="jxr_javadoccomment">/**</em>
 <a name="66" href="#66">66</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="67" href="#67">67</a>  <em class="jxr_javadoccomment">     */</em>
@@ -99,176 +99,178 @@
 <a name="89" href="#89">89</a>  <em class="jxr_javadoccomment">     *</em>
 <a name="90" href="#90">90</a>  <em class="jxr_javadoccomment">     * @return</em>
 <a name="91" href="#91">91</a>  <em class="jxr_javadoccomment">     */</em>
-<a name="92" href="#92">92</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../com/wegas/core/persistence/users/UserEntity.html">UserEntity</a> getCurrentUser() {
+<a name="92" href="#92">92</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../com/wegas/core/persistence/user/UserEntity.html">UserEntity</a> getCurrentUser() {
 <a name="93" href="#93">93</a>  
 <a name="94" href="#94">94</a>          <strong class="jxr_keyword">final</strong> Subject subject = SecurityUtils.getSubject();
 <a name="95" href="#95">95</a>          <strong class="jxr_keyword">try</strong> {
-<a name="96" href="#96">96</a>              <strong class="jxr_keyword">return</strong> userFacade.getUserByPrincipal(subject.getPrincipal().toString());
-<a name="97" href="#97">97</a>          } <strong class="jxr_keyword">catch</strong> (EJBException e) {
-<a name="98" href="#98">98</a>              System.out.println(e.getCause() + <span class="jxr_string">"*"</span> + e.getCausedByException());
-<a name="99" href="#99">99</a>              <strong class="jxr_keyword">if</strong> (e.getCausedByException() instanceof NoResultException) {
-<a name="100" href="#100">100</a>                 <a href="../../../../../com/wegas/core/persistence/users/UserEntity.html">UserEntity</a> newUser = <strong class="jxr_keyword">new</strong> <a href="../../../../../com/wegas/core/persistence/users/UserEntity.html">UserEntity</a>();
-<a name="101" href="#101">101</a>                 u.setName(subject.getPrincipal().toString());
-<a name="102" href="#102">102</a>                 userFacade.create(u);
-<a name="103" href="#103">103</a>                 <strong class="jxr_keyword">return</strong> u;
-<a name="104" href="#104">104</a>             } <strong class="jxr_keyword">else</strong> {
-<a name="105" href="#105">105</a>                 <strong class="jxr_keyword">throw</strong> e;
-<a name="106" href="#106">106</a>             }
-<a name="107" href="#107">107</a>         }
-<a name="108" href="#108">108</a>     }
-<a name="109" href="#109">109</a> 
-<a name="110" href="#110">110</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="111" href="#111">111</a> <em class="jxr_javadoccomment">     *</em>
-<a name="112" href="#112">112</a> <em class="jxr_javadoccomment">     * @return</em>
-<a name="113" href="#113">113</a> <em class="jxr_javadoccomment">     */</em>
-<a name="114" href="#114">114</a>     <strong class="jxr_keyword">public</strong> List&lt;PlayerEntity&gt; getPlayers() {
-<a name="115" href="#115">115</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.getCurrentUser().getPlayers();
-<a name="116" href="#116">116</a>     }
-<a name="117" href="#117">117</a> 
-<a name="118" href="#118">118</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="119" href="#119">119</a> <em class="jxr_javadoccomment">     *</em>
-<a name="120" href="#120">120</a> <em class="jxr_javadoccomment">     * @return</em>
-<a name="121" href="#121">121</a> <em class="jxr_javadoccomment">     */</em>
-<a name="122" href="#122">122</a>     <strong class="jxr_keyword">public</strong> List&lt;GameModelEntity&gt; getGameModels() {
-<a name="123" href="#123">123</a>         <strong class="jxr_keyword">return</strong> gameModelFacade.findAll();
-<a name="124" href="#124">124</a>     }
-<a name="125" href="#125">125</a> 
-<a name="126" href="#126">126</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="127" href="#127">127</a> <em class="jxr_javadoccomment">     *</em>
-<a name="128" href="#128">128</a> <em class="jxr_javadoccomment">     * @return</em>
-<a name="129" href="#129">129</a> <em class="jxr_javadoccomment">     */</em>
-<a name="130" href="#130">130</a>     <strong class="jxr_keyword">public</strong> String joinGame() {
-<a name="131" href="#131">131</a>         <strong class="jxr_keyword">try</strong> {
-<a name="132" href="#132">132</a>             <strong class="jxr_keyword">this</strong>.currentGame = gameFacade.getGameByToken(<strong class="jxr_keyword">this</strong>.gameToken);
-<a name="133" href="#133">133</a>             <strong class="jxr_keyword">return</strong> <span class="jxr_string">"gameJoined"</span>;
-<a name="134" href="#134">134</a>         }
-<a name="135" href="#135">135</a>         <strong class="jxr_keyword">catch</strong> (EJBException e) {
-<a name="136" href="#136">136</a>             <strong class="jxr_keyword">if</strong> (e.getCausedByException() instanceof NoResultException) {
-<a name="137" href="#137">137</a>                 JsfUtil.addErrorMessage(e, ResourceBundle.getBundle(<span class="jxr_string">"com.wegas.app.Bundle"</span>).getString(<span class="jxr_string">"LobbyPage_GameNotFound"</span>));
-<a name="138" href="#138">138</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a name="139" href="#139">139</a>             } <strong class="jxr_keyword">else</strong> {
-<a name="140" href="#140">140</a>                 <strong class="jxr_keyword">throw</strong> e;
-<a name="141" href="#141">141</a>             }
-<a name="142" href="#142">142</a>         }
-<a name="143" href="#143">143</a>     }
-<a name="144" href="#144">144</a> 
-<a name="145" href="#145">145</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="146" href="#146">146</a> <em class="jxr_javadoccomment">     *</em>
-<a name="147" href="#147">147</a> <em class="jxr_javadoccomment">     * @return</em>
-<a name="148" href="#148">148</a> <em class="jxr_javadoccomment">     */</em>
-<a name="149" href="#149">149</a>     <strong class="jxr_keyword">public</strong> List&lt;TeamEntity&gt; getAvailableTeams() {
-<a name="150" href="#150">150</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.currentGame.getTeams();
-<a name="151" href="#151">151</a>     }
-<a name="152" href="#152">152</a> 
-<a name="153" href="#153">153</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="154" href="#154">154</a> <em class="jxr_javadoccomment">     *</em>
-<a name="155" href="#155">155</a> <em class="jxr_javadoccomment">     * @return</em>
-<a name="156" href="#156">156</a> <em class="jxr_javadoccomment">     */</em>
-<a name="157" href="#157">157</a>     <strong class="jxr_keyword">public</strong> String joinTeam() {
-<a name="158" href="#158">158</a>         setCurrentPlayer(teamEntityFacade.createPlayer(<strong class="jxr_keyword">this</strong>.getSelectedTeam().getId(), getCurrentUser().getId()));
-<a name="159" href="#159">159</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"teamJoined"</span>;
-<a name="160" href="#160">160</a>     }
-<a name="161" href="#161">161</a> 
-<a name="162" href="#162">162</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="163" href="#163">163</a> <em class="jxr_javadoccomment">     *</em>
-<a name="164" href="#164">164</a> <em class="jxr_javadoccomment">     * @return</em>
-<a name="165" href="#165">165</a> <em class="jxr_javadoccomment">     */</em>
-<a name="166" href="#166">166</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../com/wegas/core/persistence/game/GameModelEntity.html">GameModelEntity</a> getCurrentGameModel() {
-<a name="167" href="#167">167</a>         <strong class="jxr_keyword">return</strong> currentPlayer.getTeam().getGame().getGameModel();
-<a name="168" href="#168">168</a>     }
-<a name="169" href="#169">169</a> 
-<a name="170" href="#170">170</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="171" href="#171">171</a> <em class="jxr_javadoccomment">     * @return the gameToken</em>
-<a name="172" href="#172">172</a> <em class="jxr_javadoccomment">     */</em>
-<a name="173" href="#173">173</a>     <strong class="jxr_keyword">public</strong> String getGameToken() {
-<a name="174" href="#174">174</a>         <strong class="jxr_keyword">return</strong> gameToken;
-<a name="175" href="#175">175</a>     }
-<a name="176" href="#176">176</a> 
-<a name="177" href="#177">177</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="178" href="#178">178</a> <em class="jxr_javadoccomment">     * @param gameToken the gameToken to set</em>
-<a name="179" href="#179">179</a> <em class="jxr_javadoccomment">     */</em>
-<a name="180" href="#180">180</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setGameToken(<strong class="jxr_keyword">final</strong> String gameToken) {
-<a name="181" href="#181">181</a>         <strong class="jxr_keyword">this</strong>.gameToken = gameToken;
-<a name="182" href="#182">182</a>     }
-<a name="183" href="#183">183</a> 
-<a name="184" href="#184">184</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="185" href="#185">185</a> <em class="jxr_javadoccomment">     * @return the selectedTeam</em>
-<a name="186" href="#186">186</a> <em class="jxr_javadoccomment">     */</em>
-<a name="187" href="#187">187</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../com/wegas/core/persistence/game/TeamEntity.html">TeamEntity</a> getSelectedTeam() {
-<a name="188" href="#188">188</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.selectedTeam;
-<a name="189" href="#189">189</a>     }
-<a name="190" href="#190">190</a> 
-<a name="191" href="#191">191</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="192" href="#192">192</a> <em class="jxr_javadoccomment">     * @param selectedTeam the selectedTeam to set</em>
-<a name="193" href="#193">193</a> <em class="jxr_javadoccomment">     */</em>
-<a name="194" href="#194">194</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setSelectedTeam(<strong class="jxr_keyword">final</strong> <a href="../../../../../com/wegas/core/persistence/game/TeamEntity.html">TeamEntity</a> selectedTeam) {
-<a name="195" href="#195">195</a>         <strong class="jxr_keyword">this</strong>.selectedTeam = selectedTeam;
-<a name="196" href="#196">196</a>     }
-<a name="197" href="#197">197</a> 
-<a name="198" href="#198">198</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="199" href="#199">199</a> <em class="jxr_javadoccomment">     * @return the currentPlayer</em>
-<a name="200" href="#200">200</a> <em class="jxr_javadoccomment">     */</em>
-<a name="201" href="#201">201</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../com/wegas/core/persistence/game/PlayerEntity.html">PlayerEntity</a> getCurrentPlayer() {
-<a name="202" href="#202">202</a>         <strong class="jxr_keyword">return</strong> currentPlayer;
-<a name="203" href="#203">203</a>     }
-<a name="204" href="#204">204</a> 
-<a name="205" href="#205">205</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="206" href="#206">206</a> <em class="jxr_javadoccomment">     * @param currentPlayer the currentPlayer to set</em>
-<a name="207" href="#207">207</a> <em class="jxr_javadoccomment">     */</em>
-<a name="208" href="#208">208</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCurrentPlayer(<strong class="jxr_keyword">final</strong> <a href="../../../../../com/wegas/core/persistence/game/PlayerEntity.html">PlayerEntity</a> currentPlayer) {
-<a name="209" href="#209">209</a>         <strong class="jxr_keyword">this</strong>.currentPlayer = currentPlayer;
-<a name="210" href="#210">210</a>     }
-<a name="211" href="#211">211</a> 
-<a name="212" href="#212">212</a>     <em class="jxr_javadoccomment">/**</em>
-<a name="213" href="#213">213</a> <em class="jxr_javadoccomment">     *</em>
-<a name="214" href="#214">214</a> <em class="jxr_javadoccomment">     */</em>
-<a name="215" href="#215">215</a>     @FacesConverter(forClass = TeamEntity.<strong class="jxr_keyword">class</strong>, value = <span class="jxr_string">"appTeamConverter"</span>)
-<a name="216" href="#216">216</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../com/wegas/app/jsf/controllers/LobbyController.html">LobbyControllerConverter</a> implements Converter {
-<a name="217" href="#217">217</a> 
-<a name="218" href="#218">218</a>         <em class="jxr_javadoccomment">/**</em>
-<a name="219" href="#219">219</a> <em class="jxr_javadoccomment">         *</em>
-<a name="220" href="#220">220</a> <em class="jxr_javadoccomment">         * @param facesContext</em>
-<a name="221" href="#221">221</a> <em class="jxr_javadoccomment">         * @param component</em>
-<a name="222" href="#222">222</a> <em class="jxr_javadoccomment">         * @param value</em>
-<a name="223" href="#223">223</a> <em class="jxr_javadoccomment">         * @return</em>
-<a name="224" href="#224">224</a> <em class="jxr_javadoccomment">         */</em>
-<a name="225" href="#225">225</a>         @Override
-<a name="226" href="#226">226</a>         <strong class="jxr_keyword">public</strong> Object getAsObject(<strong class="jxr_keyword">final</strong> FacesContext facesContext, <strong class="jxr_keyword">final</strong> UIComponent component, <strong class="jxr_keyword">final</strong> String value) {
-<a name="227" href="#227">227</a>             <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong> || value.length() == 0) {
-<a name="228" href="#228">228</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a name="229" href="#229">229</a>             }
-<a name="230" href="#230">230</a>             <a href="../../../../../com/wegas/app/jsf/controllers/LobbyController.html">LobbyController</a> controller = (LobbyController) facesContext.getApplication().getELResolver().
-<a name="231" href="#231">231</a>                     getValue(facesContext.getELContext(), <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"lobbyController"</span>);
-<a name="232" href="#232">232</a>             <strong class="jxr_keyword">return</strong> controller.teamEntityFacade.find(Long.valueOf(value));
-<a name="233" href="#233">233</a>         }
-<a name="234" href="#234">234</a> 
-<a name="235" href="#235">235</a>         String getStringKey(<strong class="jxr_keyword">final</strong> Long value) {
-<a name="236" href="#236">236</a>             StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a name="237" href="#237">237</a>             sb.append(value);
-<a name="238" href="#238">238</a>             <strong class="jxr_keyword">return</strong> sb.toString();
-<a name="239" href="#239">239</a>         }
-<a name="240" href="#240">240</a> 
-<a name="241" href="#241">241</a>         <em class="jxr_javadoccomment">/**</em>
-<a name="242" href="#242">242</a> <em class="jxr_javadoccomment">         *</em>
-<a name="243" href="#243">243</a> <em class="jxr_javadoccomment">         * @param facesContext</em>
-<a name="244" href="#244">244</a> <em class="jxr_javadoccomment">         * @param component</em>
-<a name="245" href="#245">245</a> <em class="jxr_javadoccomment">         * @param object</em>
-<a name="246" href="#246">246</a> <em class="jxr_javadoccomment">         * @return</em>
-<a name="247" href="#247">247</a> <em class="jxr_javadoccomment">         */</em>
-<a name="248" href="#248">248</a>         @Override
-<a name="249" href="#249">249</a>         <strong class="jxr_keyword">public</strong> String getAsString(<strong class="jxr_keyword">final</strong> FacesContext facesContext, <strong class="jxr_keyword">final</strong> UIComponent component, <strong class="jxr_keyword">final</strong> Object object) {
-<a name="250" href="#250">250</a>             <strong class="jxr_keyword">if</strong> (object == <strong class="jxr_keyword">null</strong>) {
-<a name="251" href="#251">251</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a name="252" href="#252">252</a>             }
-<a name="253" href="#253">253</a>             <strong class="jxr_keyword">if</strong> (object instanceof TeamEntity) {
-<a name="254" href="#254">254</a>                 <a href="../../../../../com/wegas/core/persistence/game/TeamEntity.html">TeamEntity</a> o = (TeamEntity) object;
-<a name="255" href="#255">255</a>                 <strong class="jxr_keyword">return</strong> getStringKey(o.getId());
-<a name="256" href="#256">256</a>             } <strong class="jxr_keyword">else</strong> {
-<a name="257" href="#257">257</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"object "</span> + object + <span class="jxr_string">" is of type "</span> + object.getClass().getName() + <span class="jxr_string">"; expected type: "</span> + TeamEntity.<strong class="jxr_keyword">class</strong>.getName());
-<a name="258" href="#258">258</a>             }
-<a name="259" href="#259">259</a>         }
-<a name="260" href="#260">260</a>     }
-<a name="261" href="#261">261</a> }
+<a name="96" href="#96">96</a>  
+<a name="97" href="#97">97</a>              <strong class="jxr_keyword">return</strong> userFacade.getUserByPrincipal(subject.getPrincipal().toString());
+<a name="98" href="#98">98</a>  
+<a name="99" href="#99">99</a>          }
+<a name="100" href="#100">100</a>         <strong class="jxr_keyword">catch</strong> (EJBException e) {                                              <em class="jxr_comment">// If the user is logged in but we cannot find a</em>
+<a name="101" href="#101">101</a>             <strong class="jxr_keyword">if</strong> (e.getCausedByException() instanceof NoResultException) {        <em class="jxr_comment">// corresponding account, that means we need to create one.</em>
+<a name="102" href="#102">102</a>                 <a href="../../../../../com/wegas/core/persistence/user/UserEntity.html">UserEntity</a> newUser = <strong class="jxr_keyword">new</strong> <a href="../../../../../com/wegas/core/persistence/user/UserEntity.html">UserEntity</a>();
+<a name="103" href="#103">103</a>                 newUser.setName(subject.getPrincipal().toString());
+<a name="104" href="#104">104</a>                 userFacade.create(newUser);
+<a name="105" href="#105">105</a>                 <strong class="jxr_keyword">return</strong> newUser;
+<a name="106" href="#106">106</a>             } <strong class="jxr_keyword">else</strong> {
+<a name="107" href="#107">107</a>                 <strong class="jxr_keyword">throw</strong> e;
+<a name="108" href="#108">108</a>             }
+<a name="109" href="#109">109</a>         }
+<a name="110" href="#110">110</a>     }
+<a name="111" href="#111">111</a> 
+<a name="112" href="#112">112</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="113" href="#113">113</a> <em class="jxr_javadoccomment">     *</em>
+<a name="114" href="#114">114</a> <em class="jxr_javadoccomment">     * @return</em>
+<a name="115" href="#115">115</a> <em class="jxr_javadoccomment">     */</em>
+<a name="116" href="#116">116</a>     <strong class="jxr_keyword">public</strong> List&lt;PlayerEntity&gt; getPlayers() {
+<a name="117" href="#117">117</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.getCurrentUser().getPlayers();
+<a name="118" href="#118">118</a>     }
+<a name="119" href="#119">119</a> 
+<a name="120" href="#120">120</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="121" href="#121">121</a> <em class="jxr_javadoccomment">     *</em>
+<a name="122" href="#122">122</a> <em class="jxr_javadoccomment">     * @return</em>
+<a name="123" href="#123">123</a> <em class="jxr_javadoccomment">     */</em>
+<a name="124" href="#124">124</a>     <strong class="jxr_keyword">public</strong> List&lt;GameModelEntity&gt; getGameModels() {
+<a name="125" href="#125">125</a>         <strong class="jxr_keyword">return</strong> gameModelFacade.findAll();
+<a name="126" href="#126">126</a>     }
+<a name="127" href="#127">127</a> 
+<a name="128" href="#128">128</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="129" href="#129">129</a> <em class="jxr_javadoccomment">     *</em>
+<a name="130" href="#130">130</a> <em class="jxr_javadoccomment">     * @return</em>
+<a name="131" href="#131">131</a> <em class="jxr_javadoccomment">     */</em>
+<a name="132" href="#132">132</a>     <strong class="jxr_keyword">public</strong> String joinGame() {
+<a name="133" href="#133">133</a>         <strong class="jxr_keyword">try</strong> {
+<a name="134" href="#134">134</a>             <strong class="jxr_keyword">this</strong>.currentGame = gameFacade.getGameByToken(<strong class="jxr_keyword">this</strong>.gameToken);
+<a name="135" href="#135">135</a>             <strong class="jxr_keyword">return</strong> <span class="jxr_string">"gameJoined"</span>;
+<a name="136" href="#136">136</a>         }
+<a name="137" href="#137">137</a>         <strong class="jxr_keyword">catch</strong> (EJBException e) {
+<a name="138" href="#138">138</a>             <strong class="jxr_keyword">if</strong> (e.getCausedByException() instanceof NoResultException) {
+<a name="139" href="#139">139</a>                 JsfUtil.addErrorMessage(e, ResourceBundle.getBundle(<span class="jxr_string">"com.wegas.app.Bundle"</span>).getString(<span class="jxr_string">"LobbyPage_GameNotFound"</span>));
+<a name="140" href="#140">140</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a name="141" href="#141">141</a>             } <strong class="jxr_keyword">else</strong> {
+<a name="142" href="#142">142</a>                 <strong class="jxr_keyword">throw</strong> e;
+<a name="143" href="#143">143</a>             }
+<a name="144" href="#144">144</a>         }
+<a name="145" href="#145">145</a>     }
+<a name="146" href="#146">146</a> 
+<a name="147" href="#147">147</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="148" href="#148">148</a> <em class="jxr_javadoccomment">     *</em>
+<a name="149" href="#149">149</a> <em class="jxr_javadoccomment">     * @return</em>
+<a name="150" href="#150">150</a> <em class="jxr_javadoccomment">     */</em>
+<a name="151" href="#151">151</a>     <strong class="jxr_keyword">public</strong> List&lt;TeamEntity&gt; getAvailableTeams() {
+<a name="152" href="#152">152</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.currentGame.getTeams();
+<a name="153" href="#153">153</a>     }
+<a name="154" href="#154">154</a> 
+<a name="155" href="#155">155</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="156" href="#156">156</a> <em class="jxr_javadoccomment">     *</em>
+<a name="157" href="#157">157</a> <em class="jxr_javadoccomment">     * @return</em>
+<a name="158" href="#158">158</a> <em class="jxr_javadoccomment">     */</em>
+<a name="159" href="#159">159</a>     <strong class="jxr_keyword">public</strong> String joinTeam() {
+<a name="160" href="#160">160</a>         setCurrentPlayer(teamEntityFacade.createPlayer(<strong class="jxr_keyword">this</strong>.getSelectedTeam().getId(), getCurrentUser().getId()));
+<a name="161" href="#161">161</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"teamJoined"</span>;
+<a name="162" href="#162">162</a>     }
+<a name="163" href="#163">163</a> 
+<a name="164" href="#164">164</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="165" href="#165">165</a> <em class="jxr_javadoccomment">     *</em>
+<a name="166" href="#166">166</a> <em class="jxr_javadoccomment">     * @return</em>
+<a name="167" href="#167">167</a> <em class="jxr_javadoccomment">     */</em>
+<a name="168" href="#168">168</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../com/wegas/core/persistence/game/GameModelEntity.html">GameModelEntity</a> getCurrentGameModel() {
+<a name="169" href="#169">169</a>         <strong class="jxr_keyword">return</strong> currentPlayer.getTeam().getGame().getGameModel();
+<a name="170" href="#170">170</a>     }
+<a name="171" href="#171">171</a> 
+<a name="172" href="#172">172</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="173" href="#173">173</a> <em class="jxr_javadoccomment">     * @return the gameToken</em>
+<a name="174" href="#174">174</a> <em class="jxr_javadoccomment">     */</em>
+<a name="175" href="#175">175</a>     <strong class="jxr_keyword">public</strong> String getGameToken() {
+<a name="176" href="#176">176</a>         <strong class="jxr_keyword">return</strong> gameToken;
+<a name="177" href="#177">177</a>     }
+<a name="178" href="#178">178</a> 
+<a name="179" href="#179">179</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="180" href="#180">180</a> <em class="jxr_javadoccomment">     * @param gameToken the gameToken to set</em>
+<a name="181" href="#181">181</a> <em class="jxr_javadoccomment">     */</em>
+<a name="182" href="#182">182</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setGameToken(<strong class="jxr_keyword">final</strong> String gameToken) {
+<a name="183" href="#183">183</a>         <strong class="jxr_keyword">this</strong>.gameToken = gameToken;
+<a name="184" href="#184">184</a>     }
+<a name="185" href="#185">185</a> 
+<a name="186" href="#186">186</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="187" href="#187">187</a> <em class="jxr_javadoccomment">     * @return the selectedTeam</em>
+<a name="188" href="#188">188</a> <em class="jxr_javadoccomment">     */</em>
+<a name="189" href="#189">189</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../com/wegas/core/persistence/game/TeamEntity.html">TeamEntity</a> getSelectedTeam() {
+<a name="190" href="#190">190</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.selectedTeam;
+<a name="191" href="#191">191</a>     }
+<a name="192" href="#192">192</a> 
+<a name="193" href="#193">193</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="194" href="#194">194</a> <em class="jxr_javadoccomment">     * @param selectedTeam the selectedTeam to set</em>
+<a name="195" href="#195">195</a> <em class="jxr_javadoccomment">     */</em>
+<a name="196" href="#196">196</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setSelectedTeam(<strong class="jxr_keyword">final</strong> <a href="../../../../../com/wegas/core/persistence/game/TeamEntity.html">TeamEntity</a> selectedTeam) {
+<a name="197" href="#197">197</a>         <strong class="jxr_keyword">this</strong>.selectedTeam = selectedTeam;
+<a name="198" href="#198">198</a>     }
+<a name="199" href="#199">199</a> 
+<a name="200" href="#200">200</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="201" href="#201">201</a> <em class="jxr_javadoccomment">     * @return the currentPlayer</em>
+<a name="202" href="#202">202</a> <em class="jxr_javadoccomment">     */</em>
+<a name="203" href="#203">203</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../com/wegas/core/persistence/game/PlayerEntity.html">PlayerEntity</a> getCurrentPlayer() {
+<a name="204" href="#204">204</a>         <strong class="jxr_keyword">return</strong> currentPlayer;
+<a name="205" href="#205">205</a>     }
+<a name="206" href="#206">206</a> 
+<a name="207" href="#207">207</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="208" href="#208">208</a> <em class="jxr_javadoccomment">     * @param currentPlayer the currentPlayer to set</em>
+<a name="209" href="#209">209</a> <em class="jxr_javadoccomment">     */</em>
+<a name="210" href="#210">210</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCurrentPlayer(<strong class="jxr_keyword">final</strong> <a href="../../../../../com/wegas/core/persistence/game/PlayerEntity.html">PlayerEntity</a> currentPlayer) {
+<a name="211" href="#211">211</a>         <strong class="jxr_keyword">this</strong>.currentPlayer = currentPlayer;
+<a name="212" href="#212">212</a>     }
+<a name="213" href="#213">213</a> 
+<a name="214" href="#214">214</a>     <em class="jxr_javadoccomment">/**</em>
+<a name="215" href="#215">215</a> <em class="jxr_javadoccomment">     *</em>
+<a name="216" href="#216">216</a> <em class="jxr_javadoccomment">     */</em>
+<a name="217" href="#217">217</a>     @FacesConverter(forClass = TeamEntity.<strong class="jxr_keyword">class</strong>, value = <span class="jxr_string">"appTeamConverter"</span>)
+<a name="218" href="#218">218</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../com/wegas/app/jsf/controllers/LobbyController.html">LobbyControllerConverter</a> implements Converter {
+<a name="219" href="#219">219</a> 
+<a name="220" href="#220">220</a>         <em class="jxr_javadoccomment">/**</em>
+<a name="221" href="#221">221</a> <em class="jxr_javadoccomment">         *</em>
+<a name="222" href="#222">222</a> <em class="jxr_javadoccomment">         * @param facesContext</em>
+<a name="223" href="#223">223</a> <em class="jxr_javadoccomment">         * @param component</em>
+<a name="224" href="#224">224</a> <em class="jxr_javadoccomment">         * @param value</em>
+<a name="225" href="#225">225</a> <em class="jxr_javadoccomment">         * @return</em>
+<a name="226" href="#226">226</a> <em class="jxr_javadoccomment">         */</em>
+<a name="227" href="#227">227</a>         @Override
+<a name="228" href="#228">228</a>         <strong class="jxr_keyword">public</strong> Object getAsObject(<strong class="jxr_keyword">final</strong> FacesContext facesContext, <strong class="jxr_keyword">final</strong> UIComponent component, <strong class="jxr_keyword">final</strong> String value) {
+<a name="229" href="#229">229</a>             <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong> || value.length() == 0) {
+<a name="230" href="#230">230</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a name="231" href="#231">231</a>             }
+<a name="232" href="#232">232</a>             <strong class="jxr_keyword">final</strong> <a href="../../../../../com/wegas/app/jsf/controllers/LobbyController.html">LobbyController</a> controller = (LobbyController) facesContext.getApplication().getELResolver().
+<a name="233" href="#233">233</a>                     getValue(facesContext.getELContext(), <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"lobbyController"</span>);
+<a name="234" href="#234">234</a>             <strong class="jxr_keyword">return</strong> controller.teamEntityFacade.find(Long.valueOf(value));
+<a name="235" href="#235">235</a>         }
+<a name="236" href="#236">236</a> 
+<a name="237" href="#237">237</a>         String getStringKey(<strong class="jxr_keyword">final</strong> Long value) {
+<a name="238" href="#238">238</a>             StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a name="239" href="#239">239</a>             sb.append(value);
+<a name="240" href="#240">240</a>             <strong class="jxr_keyword">return</strong> sb.toString();
+<a name="241" href="#241">241</a>         }
+<a name="242" href="#242">242</a> 
+<a name="243" href="#243">243</a>         <em class="jxr_javadoccomment">/**</em>
+<a name="244" href="#244">244</a> <em class="jxr_javadoccomment">         *</em>
+<a name="245" href="#245">245</a> <em class="jxr_javadoccomment">         * @param facesContext</em>
+<a name="246" href="#246">246</a> <em class="jxr_javadoccomment">         * @param component</em>
+<a name="247" href="#247">247</a> <em class="jxr_javadoccomment">         * @param object</em>
+<a name="248" href="#248">248</a> <em class="jxr_javadoccomment">         * @return</em>
+<a name="249" href="#249">249</a> <em class="jxr_javadoccomment">         */</em>
+<a name="250" href="#250">250</a>         @Override
+<a name="251" href="#251">251</a>         <strong class="jxr_keyword">public</strong> String getAsString(<strong class="jxr_keyword">final</strong> FacesContext facesContext, <strong class="jxr_keyword">final</strong> UIComponent component, <strong class="jxr_keyword">final</strong> Object object) {
+<a name="252" href="#252">252</a>             <strong class="jxr_keyword">if</strong> (object == <strong class="jxr_keyword">null</strong>) {
+<a name="253" href="#253">253</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a name="254" href="#254">254</a>             }
+<a name="255" href="#255">255</a>             <strong class="jxr_keyword">if</strong> (object instanceof TeamEntity) {
+<a name="256" href="#256">256</a>                 <strong class="jxr_keyword">final</strong> <a href="../../../../../com/wegas/core/persistence/game/TeamEntity.html">TeamEntity</a> o = (TeamEntity) object;
+<a name="257" href="#257">257</a>                 <strong class="jxr_keyword">return</strong> getStringKey(o.getId());
+<a name="258" href="#258">258</a>             } <strong class="jxr_keyword">else</strong> {
+<a name="259" href="#259">259</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"object "</span> + object + <span class="jxr_string">" is of type "</span> + object.getClass().getName() + <span class="jxr_string">"; expected type: "</span> + TeamEntity.<strong class="jxr_keyword">class</strong>.getName());
+<a name="260" href="#260">260</a>             }
+<a name="261" href="#261">261</a>         }
+<a name="262" href="#262">262</a>     }
+<a name="263" href="#263">263</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
