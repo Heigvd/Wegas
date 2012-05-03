@@ -9,12 +9,14 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.GameManager;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.script.ScriptEntity;
 import com.wegas.core.script.ScriptManager;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -32,6 +34,7 @@ public class ScriptController {
     /*
      *
      */
+
     @EJB
     private ScriptManager scriptManager;
 
@@ -47,6 +50,8 @@ public class ScriptController {
     public List<VariableInstanceEntity> selectReply(
             @PathParam("playerId") Long playerId, ScriptEntity script)
             throws ScriptException {
-        return scriptManager.eval(playerId, script);
+
+        scriptManager.eval(playerId, script);
+        return scriptManager.getUpdatedEntities();
     }
 }

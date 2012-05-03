@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -9,7 +9,7 @@ YUI.add('io-queue', function(Y) {
 /**
 Extends IO to implement Queue for synchronous
 transaction processing.
-@module io-base
+@module io
 @submodule io-queue
 @for IO
 **/
@@ -159,4 +159,4 @@ _queue.size = function () { io.qSize(); };
 Y.io.queue = _queue;
 
 
-}, '3.5.0pr1' ,{requires:['io-base','queue-promote']});
+}, '3.5.0' ,{requires:['io-base','queue-promote']});

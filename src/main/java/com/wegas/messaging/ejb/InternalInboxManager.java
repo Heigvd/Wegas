@@ -37,6 +37,7 @@ public class InternalInboxManager {
      */
     public void listener(@Observes MessageEvent messageEvent) {
         System.out.println("Event received");
+        //this.send(messageEvent.getMessage())
     }
 
     /**

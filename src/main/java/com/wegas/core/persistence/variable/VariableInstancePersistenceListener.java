@@ -4,10 +4,20 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.ejb.GameManager;
+import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.messaging.ejb.MessageEvent;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.ejb.EJB;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Listen to persistence Events on VariableInstanceEntity
@@ -16,15 +26,19 @@ import javax.persistence.PostUpdate;
  */
 public class VariableInstancePersistenceListener {
 
-    private static final Logger logger = Logger.getLogger("VariableInstancePersistenceListener");
+    private static final Logger logger = LoggerFactory.getLogger("VariableInstancePersistenceListener");
 
+    /**
+     *
+     * @param instance
+     * @throws NamingException
+     */
     @PostPersist
-    private void onPersist(VariableInstanceEntity instance) {
-        logger.log(Level.INFO, "Persisted : {0}(id:{1}) [Scope :{2}]", new Object[]{instance.getClass().getSimpleName(), instance.getId(), instance.getScope()});
-    }
-
     @PostUpdate
-    private void onUpdate(VariableInstanceEntity instance) {
-        logger.log(Level.INFO, "Updated : {0}(id:{1}) [Scope :{2}]", new Object[]{instance.getClass().getSimpleName(), instance.getId(), instance.getScope()});
+    @PostRemove
+    private void onUpdate(VariableInstanceEntity instance) throws NamingException {
+        InitialContext ctx = new InitialContext();
+        VariableInstanceFacade variableInstanceFacade = (VariableInstanceFacade) ctx.lookup("java:module/VariableInstanceFacade");
+        variableInstanceFacade.onVariableInstanceUpdate(instance);
     }
 }

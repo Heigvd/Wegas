@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -42,12 +42,12 @@ Y.mix(Y.namespace("DataType.XML"), {
                 }
                 catch(e) {
                 }
-                    Y.log(ee.message + " (Could not parse data " + Y.dump(data) + " to type XML Document)", "warn", "datatype-xml");
+                    Y.log(ee.message + " (Could not parse data to type XML Document)", "warn", "datatype-xml");
             }
         }
         
         if( (LANG.isNull(xmlDoc)) || (LANG.isNull(xmlDoc.documentElement)) || (xmlDoc.documentElement.nodeName === "parsererror") ) {
-            Y.log("Could not parse data " + Y.dump(data) + " to type XML Document", "warn", "datatype-xml");
+            Y.log("Could not parse data to type XML Document", "warn", "datatype-xml");
         }
         
         return xmlDoc;
@@ -59,4 +59,4 @@ Y.namespace("Parsers").xml = Y.DataType.XML.parse;
 
 
 
-}, '3.5.0pr1' );
+}, '3.5.0' );

@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -9,7 +9,7 @@ YUI.add('io-upload-iframe', function(Y) {
 /**
 Extends the IO  to enable file uploads, with HTML forms 
 using an iframe as the transport medium.
-@module io-base
+@module io
 @submodule io-upload-iframe
 @for IO
 **/
@@ -30,7 +30,7 @@ var w = Y.config.win,
  * @param {Object} io
  */
 function _cFrame(o, c, io) {
-    var i = Y.Node.create('<iframe id="io_iframe' + o.id + '" name="io_iframe' + o.id + '" />');
+    var i = Y.Node.create('<iframe src="#" id="io_iframe' + o.id + '" name="io_iframe' + o.id + '" />');
         i._node.style.position = 'absolute';
         i._node.style.top = '-1000px';
         i._node.style.left = '-1000px';
@@ -294,5 +294,4 @@ Y.mix(Y.IO.prototype, {
 });
 
 
-
-}, '3.5.0pr1' ,{requires:['io-base','node-base']});
+}, '3.5.0' ,{requires:['io-base','node-base']});

@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -24,9 +24,8 @@ if (Y.UA.ie && !Y.HistoryBase.nativeHashChange) {
         GlobalEnv   = YUI.namespace('Env.HistoryHash'),
         HistoryHash = Y.HistoryHash,
 
-        iframe      = GlobalEnv._iframe,
-        win         = Y.config.win,
-        location    = win.location;
+        iframe = GlobalEnv._iframe,
+        win    = Y.config.win;
 
     /**
      * Gets the raw (not decoded) current location hash from the IE iframe,
@@ -138,4 +137,4 @@ if (Y.UA.ie && !Y.HistoryBase.nativeHashChange) {
 }
 
 
-}, '3.5.0pr1' ,{requires:['history-hash', 'node-base']});
+}, '3.5.0' ,{requires:['history-hash', 'node-base']});

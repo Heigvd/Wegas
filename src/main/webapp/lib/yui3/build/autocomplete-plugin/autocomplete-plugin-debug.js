@@ -1,38 +1,32 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
 YUI.add('autocomplete-plugin', function(Y) {
 
 /**
- * Binds an AutoCompleteList instance to a Node instance.
- *
- * @module autocomplete
- * @submodule autocomplete-plugin
- */
+Binds an AutoCompleteList instance to a Node instance.
+
+@module autocomplete
+@submodule autocomplete-plugin
+**/
 
 /**
- * <p>
- * Binds an AutoCompleteList instance to a Node instance.
- * </p>
- *
- * <p>
- * Example:
- * </p>
- *
- * <pre>
- * Y.one('#my-input').plug(Y.Plugin.AutoComplete, {
- * &nbsp;&nbsp;source: 'select * from search.suggest where query="{query}"'
- * });
- * &nbsp;
- * // You can now access the AutoCompleteList instance at Y.one('#my-input').ac
- * </pre>
- *
- * @class Plugin.AutoComplete
- * @extends AutoCompleteList
- */
+Binds an AutoCompleteList instance to a Node instance.
+
+@example
+
+    Y.one('#my-input').plug(Y.Plugin.AutoComplete, {
+        source: 'select * from search.suggest where query="{query}"'
+    });
+
+    // You can now access the AutoCompleteList instance at Y.one('#my-input').ac
+
+@class Plugin.AutoComplete
+@extends AutoCompleteList
+**/
 
 var Plugin = Y.Plugin;
 
@@ -57,4 +51,4 @@ Plugin.AutoComplete     = ACListPlugin;
 Plugin.AutoCompleteList = ACListPlugin;
 
 
-}, '3.5.0pr1' ,{requires:['autocomplete-list', 'node-pluginhost']});
+}, '3.5.0' ,{requires:['autocomplete-list', 'node-pluginhost']});

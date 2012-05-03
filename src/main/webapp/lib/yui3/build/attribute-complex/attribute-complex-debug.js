@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -95,7 +95,7 @@ YUI.add('attribute-complex', function(Y) {
                     valFn = this[valFn];
                 }
                 if (valFn) {
-                    val = valFn.call(this);
+                    val = valFn.call(this, attr);
                 }
             }
 
@@ -125,5 +125,8 @@ YUI.add('attribute-complex', function(Y) {
 
     Y.mix(Y.Attribute, Y.Attribute.Complex, true, null, 1);
 
+    // Consistency with the rest of the Attribute addons for now. 
+    Y.AttributeComplex = Y.Attribute.Complex;
 
-}, '3.5.0pr1' ,{requires:['attribute-base']});
+
+}, '3.5.0' ,{requires:['attribute-base']});

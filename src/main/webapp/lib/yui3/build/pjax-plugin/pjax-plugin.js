@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -9,7 +9,17 @@ YUI.add('pjax-plugin', function(Y) {
 /**
 Node plugin that provides seamless, gracefully degrading pjax functionality.
 
-@module pjax-plugin
+@module pjax
+@submodule pjax-plugin
+@since 3.5.0
+**/
+
+/**
+Node plugin that provides seamless, gracefully degrading pjax functionality.
+
+@class Plugin.Pjax
+@extends Pjax
+@since 3.5.0
 **/
 
 Y.Plugin.Pjax = Y.Base.create('pjaxPlugin', Y.Pjax, [Y.Plugin.Base], {
@@ -22,4 +32,4 @@ Y.Plugin.Pjax = Y.Base.create('pjaxPlugin', Y.Pjax, [Y.Plugin.Base], {
 });
 
 
-}, '3.5.0pr1' ,{requires:['node-pluginhost', 'pjax', 'plugin']});
+}, '3.5.0' ,{requires:['node-pluginhost', 'pjax', 'plugin']});

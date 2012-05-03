@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -28,8 +28,8 @@ Y.Widget.prototype._uiSizeCB = function(expand) {
         cb = this.get(CONTENT_BOX),
         borderBoxSupported = this._bbs;
 
-    if(borderBoxSupported === undefined) {
-        this._bbs = borderBoxSupported = !(IE < 8 && bb.get("ownerDocument").get("compatMode") != "BackCompat"); 
+    if (borderBoxSupported === undefined) {
+        this._bbs = borderBoxSupported = !(IE && IE < 8 && bb.get("ownerDocument").get("compatMode") != "BackCompat"); 
     }
 
     if (borderBoxSupported) {
@@ -52,4 +52,4 @@ Y.Widget.prototype._uiSizeCB = function(expand) {
 };
 
 
-}, '3.5.0pr1' ,{requires:['widget-base']});
+}, '3.5.0' ,{requires:['widget-base']});
