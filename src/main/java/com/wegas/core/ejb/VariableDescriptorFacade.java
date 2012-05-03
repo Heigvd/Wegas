@@ -78,6 +78,17 @@ public class VariableDescriptorFacade extends AbstractFacade<VariableDescriptorE
 
     /**
      *
+     * @param variableDescriptorClass the filtering class
+     * @param gameModelId The Game Model ID
+     * @return All specified classes and subclasses belonging to the game model.
+     */
+    public List<VariableDescriptorEntity> findByClassAndGameModelId(Class variableDescriptorClass, Long gameModelId) {
+        Query findVariableDescriptorsByClass = em.createQuery("SELECT DISTINCT variableDescriptor FROM " + variableDescriptorClass.getSimpleName() + " variableDescriptor LEFT JOIN variableDescriptor.rootGameModel AS gm WHERE gm.id =" + gameModelId, variableDescriptorClass);
+        return findVariableDescriptorsByClass.getResultList();
+    }
+
+    /**
+     *
      * @return
      */
     @Override
