@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -10,7 +10,7 @@ YUI.add('editor-para', function(Y) {
     /**
      * Plugin for Editor to paragraph auto wrapping and correction.
      * @class Plugin.EditorPara
-     * @extends Base
+     * @extends Plugin.EditorParaBase
      * @constructor
      * @module editor
      * @submodule editor-para
@@ -23,31 +23,7 @@ YUI.add('editor-para', function(Y) {
     FIRST_P = BODY + ' > p', P = 'p', BR = '<br>', FC = 'firstChild', LI = 'li';
 
 
-    Y.extend(EditorPara, Y.Base, {
-        /**
-        * Utility method to create an empty paragraph when the document is empty.
-        * @private
-        * @method _fixFirstPara
-        */
-        _fixFirstPara: function() {
-            Y.log('Fix First Paragraph', 'info', 'editor-para');
-            var host = this.get(HOST), inst = host.getInstance(), sel, n,
-                body = inst.config.doc.body,
-                html = body.innerHTML,
-                col = ((html.length) ? true : false);
-
-            if (html === BR) {
-                html = '';
-                col = false;
-            }
-
-            body.innerHTML = '<' + P + '>' + html + inst.Selection.CURSOR + '</' + P + '>';
-
-            n = inst.one(FIRST_P);
-            sel = new inst.Selection();
-
-            sel.selectNode(n, true, col);
-        },
+    Y.extend(EditorPara, Y.Plugin.EditorParaBase, {
         /**
         * nodeChange handler to handle fixing an empty document.
         * @private
@@ -55,7 +31,7 @@ YUI.add('editor-para', function(Y) {
         */
         _onNodeChange: function(e) {
             var host = this.get(HOST), inst = host.getInstance(),
-                html, txt, par , d, sel, btag = inst.Selection.DEFAULT_BLOCK_TAG,
+                html, txt, par , d, sel, btag = inst.EditorSelection.DEFAULT_BLOCK_TAG,
                 inHTML, txt2, childs, aNode, index, node2, top, n, sib,
                 ps, br, item, p, imgs, t, LAST_CHILD = ':last-child';
 
@@ -105,16 +81,6 @@ YUI.add('editor-para', function(Y) {
                     }
                     break;
                 case 'enter':
-                    if (Y.UA.ie) {
-                        if (e.changedNode.test('br')) {
-                            e.changedNode.remove();
-                        } else if (e.changedNode.test('p, span')) {
-                            var b = e.changedNode.one('br.yui-cursor');
-                            if (b) {
-                                b.remove();
-                            }
-                        }
-                    }
                     if (Y.UA.webkit) {
                         //Webkit doesn't support shift+enter as a BR, this fixes that.
                         if (e.changedEvent.shiftKey) {
@@ -123,20 +89,20 @@ YUI.add('editor-para', function(Y) {
                         }
                     }
                     if (e.changedNode.test('li') && !Y.UA.ie) {
-                        html = inst.Selection.getText(e.changedNode);
+                        html = inst.EditorSelection.getText(e.changedNode);
                         if (html === '') {
                             par = e.changedNode.ancestor('ol,ul');
                             var dir = par.getAttribute('dir');
                             if (dir !== '') {
                                 dir = ' dir = "' + dir + '"';
                             }
-                            par = e.changedNode.ancestor(inst.Selection.BLOCKS);
-                            d = inst.Node.create('<p' + dir + '>' + inst.Selection.CURSOR + '</p>');
+                            par = e.changedNode.ancestor(inst.EditorSelection.BLOCKS);
+                            d = inst.Node.create('<p' + dir + '>' + inst.EditorSelection.CURSOR + '</p>');
                             par.insert(d, 'after');
                             e.changedNode.remove();
                             e.changedEvent.halt();
 
-                            sel = new inst.Selection();
+                            sel = new inst.EditorSelection();
                             sel.selectNode(d, true, false);
                         }
                     }
@@ -150,7 +116,7 @@ YUI.add('editor-para', function(Y) {
                             }
                             d = inst.Node.create('<' + btag + '></' + btag + '>');
                             par.insert(d, 'after');
-                            sel = new inst.Selection();
+                            sel = new inst.EditorSelection();
                             if (sel.anchorOffset) {
                                 inHTML = sel.anchorNode.get('textContent');
 
@@ -198,11 +164,11 @@ YUI.add('editor-para', function(Y) {
                             if (d.get(FC)) {
                                 d = d.get(FC);
                             }
-                            d.prepend(inst.Selection.CURSOR);
+                            d.prepend(inst.EditorSelection.CURSOR);
                             sel.focusCursor(true, true);
-                            html = inst.Selection.getText(d);
+                            html = inst.EditorSelection.getText(d);
                             if (html !== '') {
-                                inst.Selection.cleanCursor();
+                                inst.EditorSelection.cleanCursor();
                             }
                             e.changedEvent.preventDefault();
                         }
@@ -232,7 +198,7 @@ YUI.add('editor-para', function(Y) {
                             br.removeAttribute('class');
                         }
 
-                        txt = inst.Selection.getText(item);
+                        txt = inst.EditorSelection.getText(item);
                         txt = txt.replace(/ /g, '').replace(/\n/g, '');
                         imgs = item.all('img');
                         
@@ -255,11 +221,15 @@ YUI.add('editor-para', function(Y) {
                                 if (!p.previous() && p.get(PARENT_NODE) && p.get(PARENT_NODE).test(BODY)) {
                                     Y.log('Stopping the backspace event', 'warn', 'editor-para');
                                     e.changedEvent.frameEvent.halt();
+                                    e.preventDefault();
                                 }
                             }
                         }
                         if (Y.UA.webkit) {
                             if (e.changedNode) {
+                                //All backspace calls in Webkit need a preventDefault to
+                                //stop history navigation #2531299
+                                e.preventDefault();
                                 item = e.changedNode;
                                 if (item.test('li') && (!item.previous() && !item.next())) {
                                     html = item.get('innerHTML').replace(BR, '');
@@ -267,8 +237,7 @@ YUI.add('editor-para', function(Y) {
                                         if (item.get(PARENT_NODE)) {
                                             item.get(PARENT_NODE).replace(inst.Node.create(BR));
                                             e.changedEvent.frameEvent.halt();
-                                            e.preventDefault();
-                                            inst.Selection.filterBlocks();
+                                            inst.EditorSelection.filterBlocks();
                                         }
                                     }
                                 }
@@ -299,45 +268,6 @@ YUI.add('editor-para', function(Y) {
             }
             
         },
-        /**
-        * Performs a block element filter when the Editor is first ready
-        * @private
-        * @method _afterEditorReady
-        */
-        _afterEditorReady: function() {
-            var host = this.get(HOST), inst = host.getInstance(), btag;
-            if (inst) {
-                inst.Selection.filterBlocks();
-                btag = inst.Selection.DEFAULT_BLOCK_TAG;
-                FIRST_P = BODY + ' > ' + btag;
-                P = btag;
-            }
-        },
-        /**
-        * Performs a block element filter when the Editor after an content change
-        * @private
-        * @method _afterContentChange
-        */
-        _afterContentChange: function() {
-            var host = this.get(HOST), inst = host.getInstance();
-            if (inst && inst.Selection) {
-                inst.Selection.filterBlocks();
-            }
-        },
-        /**
-        * Performs block/paste filtering after paste.
-        * @private
-        * @method _afterPaste
-        */
-        _afterPaste: function() {
-            var host = this.get(HOST), inst = host.getInstance(),
-                sel = new inst.Selection();
-
-            Y.later(50, host, function() {
-                inst.Selection.filterBlocks();
-            });
-            
-        },
         initializer: function() {
             var host = this.get(HOST);
             if (host.editorBR) {
@@ -346,11 +276,6 @@ YUI.add('editor-para', function(Y) {
             }
 
             host.on(NODE_CHANGE, Y.bind(this._onNodeChange, this));
-            host.after('ready', Y.bind(this._afterEditorReady, this));
-            host.after('contentChange', Y.bind(this._afterContentChange, this));
-            if (Y.Env.webkit) {
-                host.after('dom:paste', Y.bind(this._afterPaste, this));
-            }
         }
     }, {
         /**
@@ -378,4 +303,4 @@ YUI.add('editor-para', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, requires:['editor-base']});
+}, '3.5.0' ,{skinnable:false, requires:['editor-base']});

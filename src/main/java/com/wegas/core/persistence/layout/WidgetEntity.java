@@ -48,7 +48,7 @@ public class WidgetEntity extends NamedEntity implements Serializable {
      *
      */
     @ManyToOne
-    @JoinColumn(name = "gamemodel_id")
+    @JoinColumn(name = "gamemodelid")
     private GameModelEntity gameModel;
     /**
      *

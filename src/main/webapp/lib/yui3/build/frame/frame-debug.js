@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -270,14 +270,14 @@ YUI.add('frame', function(Y) {
             inst.on('focus', Y.bind(this._onDomEvent, this), inst.config.win);
             inst.on('blur', Y.bind(this._onDomEvent, this), inst.config.win);
 
-            inst._use = inst.use;
+            inst.__use = inst.use;
             inst.use = Y.bind(this.use, this);
             this._iframe.setStyles({
                 visibility: 'inherit'
             });
             inst.one('body').setStyle('display', 'block');
             if (Y.UA.ie) {
-                this._fixIECursors();
+                //this._fixIECursors();
             }
         },
         /**
@@ -341,8 +341,8 @@ YUI.add('frame', function(Y) {
                 //TODO Circle around and deal with CSS loading...
                 args.push(Y.bind(function() {
                     Y.log('Callback from final internal use call', 'info', 'frame');
-                    if (inst.Selection) {
-                        inst.Selection.DEFAULT_BLOCK_TAG = this.get('defaultblock');
+                    if (inst.EditorSelection) {
+                        inst.EditorSelection.DEFAULT_BLOCK_TAG = this.get('defaultblock');
                     }
                     //Moved to here so that the iframe is ready before allowing editing..
                     if (this.get('designMode')) {
@@ -554,7 +554,7 @@ YUI.add('frame', function(Y) {
 
                 });
             }
-            inst._use.apply(inst, args);
+            inst.__use.apply(inst, args);
         },
         /**
         * @method delegate
@@ -653,7 +653,7 @@ YUI.add('frame', function(Y) {
         */
         _handleFocus: function() {
             var inst = this.getInstance(),
-                sel = new inst.Selection();
+                sel = new inst.EditorSelection();
 
             if (sel.anchorNode) {
                 Y.log('_handleFocus being called..', 'info', 'frame');
@@ -704,7 +704,11 @@ YUI.add('frame', function(Y) {
             if (Y.UA.ie && Y.UA.ie < 9) {
                 try {
                     Y.one('win').focus();
-                    this.getInstance().one('win').focus();
+                    if (this.getInstance()) {
+                        if (this.getInstance().one('win')) {
+                            this.getInstance().one('win').focus();
+                        }
+                    }
                 } catch (ierr) {
                     Y.log('Frame focus failed', 'warn', 'frame');
                 }
@@ -718,7 +722,11 @@ YUI.add('frame', function(Y) {
                 try {
                     Y.one('win').focus();
                     Y.later(100, this, function() {
-                        this.getInstance().one('win').focus();
+                        if (this.getInstance()) {
+                            if (this.getInstance().one('win')) {
+                                this.getInstance().one('win').focus();
+                            }
+                        }
                         if (fn === true) {
                             this._handleFocus();
                         }
@@ -745,7 +753,9 @@ YUI.add('frame', function(Y) {
             });
             if (Y.UA.gecko) {
                 try {
-                    this._instance.config.doc.designMode = 'on';
+                    if (this.getInstance()) {
+                        this.getInstance().config.doc.designMode = 'on';
+                    }
                 } catch (e) { }
                 this.focus();
             }           
@@ -824,7 +834,7 @@ YUI.add('frame', function(Y) {
         * @method getDocType
         * @description Parses document.doctype and generates a DocType to match the parent page, if supported.
         * For IE8, it grabs document.all[0].nodeValue and uses that. For IE < 8, it falls back to Frame.DOC_TYPE.
-        * @returns {String} The normalized DocType to apply to the iframe
+        * @return {String} The normalized DocType to apply to the iframe
         */
         getDocType: function() {
             var dt = Y.config.doc.doctype,
@@ -1024,4 +1034,4 @@ YUI.add('frame', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, requires:['base', 'node', 'selector-css3', 'substitute', 'yui-throttle']});
+}, '3.5.0' ,{skinnable:false, requires:['base', 'node', 'selector-css3', 'substitute', 'yui-throttle']});

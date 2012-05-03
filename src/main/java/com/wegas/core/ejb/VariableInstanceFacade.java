@@ -14,8 +14,11 @@ import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,6 +27,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class VariableInstanceFacade extends AbstractFacade<VariableInstanceEntity> {
 
+    static final private Logger logger = LoggerFactory.getLogger(VariableInstanceFacade.class);
     /**
      *
      */
@@ -34,6 +38,11 @@ public class VariableInstanceFacade extends AbstractFacade<VariableInstanceEntit
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+    /**
+     *
+     */
+    @Inject
+    private GameManager requestManager;
 
     /**
      *
@@ -61,6 +70,12 @@ public class VariableInstanceFacade extends AbstractFacade<VariableInstanceEntit
          */
         this.create(variableInstance);
         return variableInstance;
+    }
+
+    public void onVariableInstanceUpdate(VariableInstanceEntity vi) {
+        logger.info("onVariableInstanceUpdate() {}", requestManager);
+        logger.info("onVariableInstanceUpdate() {} {}", requestManager.getCurrentPlayer(), requestManager.getUpdatedInstances());
+        requestManager.addUpdatedInstance(vi);
     }
 
     /**

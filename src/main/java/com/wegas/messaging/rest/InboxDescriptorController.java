@@ -9,8 +9,8 @@
  */
 package com.wegas.messaging.rest;
 
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.rest.AbstractRestController;
-import com.wegas.messaging.ejb.InboxDescriptorFacade;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
@@ -21,20 +21,20 @@ import javax.ws.rs.Path;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/InboxDescriptor/")
-public class InboxDescriptorController extends AbstractRestController<InboxDescriptorFacade> {
+public class InboxDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
     /*
      *
      */
 
     @EJB
-    private InboxDescriptorFacade inboxDescriptorFacade;
+    private VariableDescriptorFacade inboxDescriptorFacade;
 
     /**
      *
      * @return
      */
     @Override
-    protected InboxDescriptorFacade getFacade() {
+    protected VariableDescriptorFacade getFacade() {
         return this.inboxDescriptorFacade;
     }
 }

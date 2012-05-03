@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -20,8 +20,6 @@ var // List of events that comprise the IO event lifecycle.
     XHR_PROPS = ['status', 'statusText', 'responseText', 'responseXML'],
 
     win = Y.config.win,
-    XHR = win.XMLHttpRequest,
-    XDR = win.XDomainRequest,
     uid = 0;
 
 /**
@@ -85,7 +83,7 @@ IO.prototype = {
 
     _init: function(config) {
         var io = this, i, len;
-        
+
         io.cfg = config || {};
 
         Y.augment(io, Y.EventTarget);
@@ -105,7 +103,7 @@ IO.prototype = {
     *
     * @method _create
     * @private
-    * @param {Object} config Configuration object subset to determine if
+    * @param {Object} cfg Configuration object subset to determine if
     *                 the transaction is an XDR or file upload,
     *                 requiring an alternate transport.
     * @param {Number} id Transaction id
@@ -117,57 +115,51 @@ IO.prototype = {
                 id : Y.Lang.isNumber(id) ? id : io._id++,
                 uid: io._uid
             },
-            xdrConfig = config.xdr,
-            use = xdrConfig && xdrConfig.use,
-            ie  = (xdrConfig && xdrConfig.use === 'native' && XDR),
-            transport = io._transport;
+            alt = config.xdr ? config.xdr.use : null,
+            form = config.form && config.form.upload ? 'iframe' : null,
+            use;
 
-        if (!use) {
-            use = (config.form && config.form.upload) ? 'iframe' : 'xhr';
+        if (alt === 'native') {
+            // Non-IE  can use XHR level 2 and not rely on an
+            // external transport.
+            alt = Y.UA.ie ? 'xdr' : null;
         }
 
-        switch (use) {
-            case 'native':
-            case 'xhr':
-                transaction.c = ie ?
-                    new XDR() :
-                    XHR ?
-                        new XHR() :
-                        new ActiveXObject('Microsoft.XMLHTTP');
+        use = alt || form;
+        transaction = use ? Y.merge(Y.IO.customTransport(use), transaction) :
+                            Y.merge(Y.IO.defaultTransport(), transaction);
 
-				if (win && win.FormData && config.data instanceof FormData) {
-					//u = Y.UA.chrome ? transaction.c : transaction.c.upload;
-					transaction.c.upload.onprogress = function (e) {
-						io.progress(transaction, e, config);
-					};
-					transaction.c.onload = function (e) {
-						io.load(transaction, e, config);
-					};
-					transaction.c.onerror = function (e) {
-						io.error(transaction, e, config);
-					};
-					transaction.upload = true;
-				}
+        if (transaction.notify) {
+            config.notify = function (e, t, c) { io.notify(e, t, c); };
+        }
 
-                transaction.transport =  ie ? true : false;
-                break;
-            default:
-                transaction.c = (transport && transport[use]) || {};
-                transaction.transport = true;
+        if (!use) {
+            if (win && win.FormData && config.data instanceof FormData) {
+                transaction.c.upload.onprogress = function (e) {
+                    io.progress(transaction, e, config);
+                };
+                transaction.c.onload = function (e) {
+                    io.load(transaction, e, config);
+                };
+                transaction.c.onerror = function (e) {
+                    io.error(transaction, e, config);
+                };
+                transaction.upload = true;
+            }
         }
 
         return transaction;
     },
 
     _destroy: function(transaction) {
-		if (win && !transaction.transport) {
+        if (win && !transaction.notify && !transaction.xdr) {
             if (XHR && !transaction.upload) {
                 transaction.c.onreadystatechange = null;
             } else if (transaction.upload) {
-				transaction.c.upload.onprogress = null;
-				transaction.c.onload = null;
-				transaction.c.onerror = null;
-			} else if (Y.UA.ie && !transaction.e) {
+                transaction.c.upload.onprogress = null;
+                transaction.c.onload = null;
+                transaction.c.onerror = null;
+            } else if (Y.UA.ie && !transaction.e) {
                 // IE, when using XMLHttpRequest as an ActiveX Object, will throw
                 // a "Type Mismatch" error if the event handler is set to "null".
                 transaction.c.abort();
@@ -193,7 +185,10 @@ IO.prototype = {
             globalEvent = "io:" + eventName,
             trnEvent    = "io-trn:" + eventName;
 
-        if (transaction.e) { 
+        // Workaround for #2532107
+        this.detach(trnEvent);
+
+        if (transaction.e) {
             transaction.c = { status: 0, statusText: transaction.e };
         }
 
@@ -209,22 +204,22 @@ IO.prototype = {
         ];
 
         if (!emitFacade) {
-            if (eventName === EVENTS[0] || eventName === EVENTS[2] && args) {
+            if (eventName === EVENTS[0] || eventName === EVENTS[2]) {
                 if (args) {
                     params.push(args);
                 }
             } else {
                 if (transaction.evt) {
                     params.push(transaction.evt);
-                } else { 
-					params.push(transaction.c);
+                } else {
+                    params.push(transaction.c);
                 }
                 if (args) {
                     params.push(args);
                 }
             }
         }
-        
+
         params.unshift(globalEvent);
         // Fire global events.
         io.fire.apply(io, params);
@@ -337,7 +332,7 @@ IO.prototype = {
     progress: function(transaction, e, config) {
        /**
         * Signals the interactive state during a file upload transaction.
-		* This event fires after io:start and before io:complete.
+        * This event fires after io:start and before io:complete.
         * @event io:progress
         */
         transaction.evt = e;
@@ -450,7 +445,7 @@ IO.prototype = {
     _startTimeout: function(transaction, timeout) {
         var io = this;
 
-        io._timeout[transaction.id] = win.setTimeout(function() {
+        io._timeout[transaction.id] = setTimeout(function() {
             io._abort(transaction, 'timeout');
         }, timeout);
     },
@@ -463,7 +458,7 @@ IO.prototype = {
     * @param {Number} id - Transaction id.
     */
     _clearTimeout: function(id) {
-        win.clearTimeout(this._timeout[id]);
+        clearTimeout(this._timeout[id]);
         delete this._timeout[id];
     },
 
@@ -513,7 +508,7 @@ IO.prototype = {
             }
 
             // Yield in the event of request timeout or abort.
-            win.setTimeout(function() {
+            setTimeout(function() {
                 io.complete(transaction, config);
                 io._result(transaction, config);
             }, 0);
@@ -642,7 +637,7 @@ IO.prototype = {
         var transaction, method, i, len, sync, data,
             io = this,
             u = uri,
-			response = {};
+            response = {};
 
         config = config ? Y.Object(config) : {};
         transaction = io._create(config, id);
@@ -681,16 +676,20 @@ IO.prototype = {
                     // If Content-Type is defined in the configuration object, or
                     // or as a default header, it will be used instead of
                     // 'application/x-www-form-urlencoded; charset=UTF-8'
-					config.headers = Y.merge({
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-					}, config.headers);
+                    config.headers = Y.merge({
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                    }, config.headers);
                     break;
             }
         }
 
-        if (transaction.transport) {
-            // Cross-domain request or custom transport configured.
+        if (transaction.xdr) {
+            // Route data to io-xdr module for flash and XDomainRequest.
             return io.xdr(u, transaction, config);
+        }
+        else if (transaction.notify) {
+            // Route data to custom transport
+            return transaction.c.send(transaction, uri, config);
         }
 
         if (!sync && !transaction.upload) {
@@ -722,9 +721,9 @@ IO.prototype = {
                 // Create a response object for synchronous transactions,
                 // mixing id and arguments properties with the xhr
                 // properties whitelist.
-				for (i = 0, len = XHR_PROPS.length; i < len; ++i) {
-					response[XHR_PROPS[i]] = transaction.c[XHR_PROPS[i]];
-				}
+                for (i = 0, len = XHR_PROPS.length; i < len; ++i) {
+                    response[XHR_PROPS[i]] = transaction.c[XHR_PROPS[i]];
+                }
 
                 response.getAllResponseHeaders = function() {
                     return transaction.c.getAllResponseHeaders();
@@ -733,14 +732,14 @@ IO.prototype = {
                 response.getResponseHeader = function(name) {
                     return transaction.c.getResponseHeader(name);
                 };
-                    
+
                 io.complete(transaction, config);
                 io._result(transaction, config);
 
                 return response;
             }
         } catch(e) {
-            if (transaction.transport) {
+            if (transaction.xdr) {
                 // This exception is usually thrown by browsers
                 // that do not support XMLHttpRequest Level 2.
                 // Retry the request with the XDR transport set
@@ -907,7 +906,96 @@ Y.io.header = function(name, value) {
 Y.IO = IO;
 // Map of all IO instances created.
 Y.io._map = {};
+var XHR = win && win.XMLHttpRequest,
+    XDR = win && win.XDomainRequest,
+    AX = win && win.ActiveXObject;
+
+
+Y.mix(Y.IO, {
+    /**
+    * The ID of the default IO transport, defaults to `xhr`
+    * @property _default
+    * @type {String}
+    * @static
+    */
+    _default: 'xhr',
+    /**
+    *
+    * @method defaultTransport
+    * @static
+    * @param {String} [id] The transport to set as the default, if empty a new transport is created.
+    * @return {Object} The transport object with a `send` method
+    */
+    defaultTransport: function(id) {
+        if (id) {
+            Y.log('Setting default IO to: ' + id, 'info', 'io');
+            Y.IO._default = id;
+        } else {
+            var o = {
+                c: Y.IO.transports[Y.IO._default](),
+                notify: Y.IO._default === 'xhr' ? false : true
+            };
+            Y.log('Creating default transport: ' + Y.IO._default, 'info', 'io');
+            return o;
+        }
+    },
+    /**
+    * An object hash of custom transports available to IO
+    * @property transports
+    * @type {Object}
+    * @static
+    */
+    transports: {
+        xhr: function () {
+            return XHR ? new XMLHttpRequest() :
+                AX ? new ActiveXObject('Microsoft.XMLHTTP') : null;
+        },
+        xdr: function () {
+            return XDR ? new XDomainRequest() : null;
+        },
+        iframe: function () { return {}; },
+        flash: null,
+        nodejs: null
+    },
+    /**
+    * Create a custom transport of type and return it's object
+    * @method customTransport
+    * @param {String} id The id of the transport to create.
+    * @static
+    */
+    customTransport: function(id) {
+        var o = { c: Y.IO.transports[id]() };
+
+        o[(id === 'xdr' || id === 'flash') ? 'xdr' : 'notify'] = true;
+        return o;
+    }
+});
+
+Y.mix(Y.IO.prototype, {
+    /**
+    * Fired from the notify method of the transport which in turn fires
+    * the event on the IO object.
+    * @method notify
+    * @param {String} event The name of the event
+    * @param {Object} transaction The transaction object
+    * @param {Object} config The configuration object for this transaction
+    */
+    notify: function(event, transaction, config) {
+        var io = this;
+
+        switch (event) {
+            case 'timeout':
+            case 'abort':
+            case 'transport error':
+                transaction.c = { status: 0, statusText: event };
+                event = 'failure';
+            default:
+                io[event].apply(io, [transaction, config]);
+        }
+    }
+});
 
 
 
-}, '3.5.0pr1' ,{requires:['event-custom-base', 'querystring-stringify-simple']});
+
+}, '3.5.0' ,{requires:['event-custom-base', 'querystring-stringify-simple']});

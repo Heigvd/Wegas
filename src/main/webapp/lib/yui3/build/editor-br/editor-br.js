@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -36,15 +36,14 @@ YUI.add('editor-br', function(Y) {
             }
             if (e.keyCode == 13) {
                 var host = this.get(HOST), inst = host.getInstance(),
-                    sel = new inst.Selection(),
+                    sel = new inst.EditorSelection(),
                     last = '';
 
                 if (sel) {
                     if (Y.UA.ie) {
                         if (!sel.anchorNode || (!sel.anchorNode.test(LI) && !sel.anchorNode.ancestor(LI))) {
-                            sel._selection.pasteHTML('<br>');
-                            sel._selection.collapse(false);
-                            sel._selection.select();
+                            var host = this.get(HOST);
+                            host.execCommand('inserthtml', inst.EditorSelection.CURSOR);
                             e.halt();
                         }
                     }
@@ -135,4 +134,4 @@ YUI.add('editor-br', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, requires:['editor-base']});
+}, '3.5.0' ,{skinnable:false, requires:['editor-base']});

@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -301,6 +301,9 @@ YUI.add('dd-ddm-base', function(Y) {
         * @return {Node}
         */
         getNode: function(n) {
+            if (n instanceof Y.Node) {
+                return n;
+            }
             if (n && n.get) {
                 if (Y.Widget && (n instanceof Y.Widget)) {
                     n = n.get('boundingBox');
@@ -354,4 +357,4 @@ YUI.add('dd-ddm-base', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, requires:['node', 'base', 'yui-throttle', 'classnamemanager']});
+}, '3.5.0' ,{skinnable:false, requires:['node', 'base', 'yui-throttle', 'classnamemanager']});

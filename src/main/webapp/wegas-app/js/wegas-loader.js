@@ -11,7 +11,7 @@ YUI().use(function (Y) {
         groups: {
             'wegas': {
                 combine: false,
-                //filter: "raw",
+                filter: "raw",
                 modules: {
 
                     /** Base **/
@@ -127,7 +127,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable', "datatable-datasource", 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
+                        requires: ['datatable-deprecated', "datatable-deprecated-datasource", 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
