@@ -10,6 +10,8 @@
 package com.wegas.core.statemachine;
 
 import com.wegas.core.ejb.AbstractFacade;
+import com.wegas.core.persistence.variable.EntityUpdateEvent;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.script.ScriptEntity;
@@ -41,6 +43,17 @@ public class StateMachineInstanceFacade extends AbstractFacade<StateMachineInsta
     protected EntityManager getEntityManager() {
         return this.em;
     }
+
+//    @Override
+//    public StateMachineInstanceEntity update(final Long entityId, final StateMachineInstanceEntity entity){
+//        StateMachineInstanceEntity oldEntity = this.find(entityId);
+//        Long newStateId = entity.getCurrentStateId();
+//        StateMachineDescriptorEntity descriptorEntity = (StateMachineDescriptorEntity)entity.getDescriptor();
+//        entity.setCurrentState(descriptorEntity.getStates().get(newStateId));
+//        oldEntity.merge(entity);
+//
+//        return entity;
+//    }
 
     public void step(StateMachineInstanceEntity entity) throws ScriptException{
         List<Transition> transitions = entity.getCurrentState().getTransitions();

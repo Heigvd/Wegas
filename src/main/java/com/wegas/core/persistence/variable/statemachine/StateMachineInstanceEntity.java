@@ -31,24 +31,21 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 })
 public class StateMachineInstanceEntity extends VariableInstanceEntity implements Serializable {
 
-    @Column(name = "currentstate_id", nullable = true, insertable = false, updatable = false)
+//    @Column(name = "currentstate_id", nullable = true, insertable = false, updatable = false)
+//    private Long currentStateId;
+//    @XmlTransient
+//    @ManyToOne
+//    @JoinColumn(name = "currentstate_id", referencedColumnName = "state_id", insertable = true, updatable = true)
+//    private State currentState;
+    @Column(name = "currentstate_id")
     private Long currentStateId;
-    @XmlTransient
-    @ManyToOne
-    @JoinColumn(name = "currentstate_id", referencedColumnName = "state_id", insertable = true, updatable = true)
-    private State currentState;
 
     public StateMachineInstanceEntity() {
     }
 
     @XmlTransient
     public State getCurrentState() {
-        return currentState;
-    }
-
-    @XmlTransient
-    public void setCurrentState(State currentState) {
-        this.currentState = currentState;
+        return ((StateMachineDescriptorEntity) this.getDescriptor()).getStates().get(this.currentStateId);
     }
 
     /**
@@ -67,11 +64,14 @@ public class StateMachineInstanceEntity extends VariableInstanceEntity implement
 
     @Override
     public void merge(AbstractEntity a) {
-        this.setCurrentState(((StateMachineInstanceEntity) a).getCurrentState());
+        StateMachineInstanceEntity entity = (StateMachineInstanceEntity) a;
+//        if (entity.getCurrentState() != null) {
+//            this.setCurrentState(entity.getCurrentState());
+//        }
     }
 
     @Override
     public String toString() {
-        return "StateMachineInstanceEntity{" + "id=" + this.getId() + ", currentState=" + currentState + '}';
+        return "StateMachineInstanceEntity{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';
     }
 }

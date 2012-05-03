@@ -40,20 +40,20 @@ public class StateMachineDescriptorFacade extends AbstractFacade<StateMachineDes
         super(StateMachineDescriptorEntity.class);
     }
 
-    public void create(Long gameModelId, VariableDescriptorEntity smDescriptor) {
-        //TODO: fix initial state in instances, redo all of this ***
-        this.gameModelEntityFacade.find(gameModelId).addVariableDescriptor(smDescriptor);
-        em.persist(smDescriptor);
-        //create initial State
-        State tmpInitialState = ( (StateMachineDescriptorEntity) smDescriptor ).getStates().get(( (StateMachineDescriptorEntity) smDescriptor ).getInitialStateId());
-        StateMachineInstanceEntity defaultInstance = (StateMachineInstanceEntity) smDescriptor.getDefaultVariableInstance();
-        defaultInstance.setCurrentState(tmpInitialState);
-        ( (StateMachineDescriptorEntity) smDescriptor ).setInitialStateId(tmpInitialState.getId());
-        //reset instance
-        smDescriptor.getScope().propagateDefaultInstance(true);
-        em.flush();
-        em.refresh(smDescriptor);
-    }
+//    public void create(Long gameModelId, VariableDescriptorEntity smDescriptor) {
+//        //TODO: fix initial state in instances, redo all of this ***
+//        this.gameModelEntityFacade.find(gameModelId).addVariableDescriptor(smDescriptor);
+//        em.persist(smDescriptor);
+//        //create initial State
+//        State tmpInitialState = ((StateMachineDescriptorEntity) smDescriptor).getStates().get(((StateMachineDescriptorEntity) smDescriptor).getInitialStateId());
+//        StateMachineInstanceEntity defaultInstance = (StateMachineInstanceEntity) smDescriptor.getDefaultVariableInstance();
+//        defaultInstance.setCurrentState(tmpInitialState);
+//        ((StateMachineDescriptorEntity) smDescriptor).setInitialStateId(tmpInitialState.getId());
+//        //reset instance
+//        smDescriptor.getScope().propagateDefaultInstance(true);
+//        em.flush();
+//        em.refresh(smDescriptor);
+//    }
 
     @Override
     protected EntityManager getEntityManager() {
