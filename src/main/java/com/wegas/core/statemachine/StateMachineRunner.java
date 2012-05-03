@@ -50,7 +50,7 @@ public class StateMachineRunner implements Serializable {
         if (ignorableInstances.contains(entity.getClass())) {
         } else {
             logger.log(Level.INFO, "StateMachineRunner, update: {0}", euEvent.getEntity());
-            Long gmId = entity.getDescriptor().getRootGameModel().getId();
+            Long gmId = entity.getDescriptor().getGameModel().getId();
             List<VariableDescriptorEntity> stateMachineDescriptors = variableDescriptorFacade.findByClassAndGameModelId(StateMachineDescriptorEntity.class, gmId);
             logger.log(Level.INFO, "StateMachineDescriptor(s) found: {0}", stateMachineDescriptors);
             for (VariableDescriptorEntity stateMachineDescriptor : stateMachineDescriptors){
