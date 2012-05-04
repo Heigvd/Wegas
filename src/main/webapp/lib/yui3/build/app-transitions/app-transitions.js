@@ -1,320 +1,242 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
 YUI.add('app-transitions', function(Y) {
 
 /**
-Provides view transitions for `Y.App`.
+Provides view transitions for `Y.App` in browsers which support native CSS3
+transitions.
 
+@module app
 @submodule app-transitions
 @since 3.5.0
 **/
 
-var Lang = Y.Lang;
-
 /**
-Provides view transitions for `Y.App`.
+Provides view transitions for `Y.App` in browsers which support native CSS3
+transitions.
 
-When this module is used, it will automatically mix itself on to `Y.App` adding
-transitions to `activeView` changes.
+View transitions provide an nice way to move from one "page" to the next that is
+both pleasant to the user and helps to communicate a hierarchy between sections
+of an application.
 
-@class AppTransitions
+When this module is used, it will automatically mix itself in to `Y.App` and
+transition between `activeView` changes using the following effects:
+
+  * **`fade`**: Cross-fades between the old an new active views.
+
+  * **`slideLeft`**: The old and new active views are positioned next to each
+    other and both slide to the left.
+
+  * **`slideRight`**: The old and new active views are positioned next to each
+    other and both slide to the right.
+
+**Note:** Transitions are an opt-in feature and are enabled via an app's
+`transitions` attribute.
+
+@class App.Transitions
+@uses App.TransitionsNative
 @since 3.5.0
 **/
 function AppTransitions() {}
+
+AppTransitions.ATTRS = {
+    /**
+    Whether or not this application should use view transitions, and if so then
+    which ones or `true` for the defaults which are specified by the
+    `transitions` prototype property.
+
+    **Note:** Transitions are an opt-in feature and will only be used in
+    browsers which support native CSS3 transitions.
+
+    @attribute transitions
+    @type Boolean|Object
+    @default false
+    @since 3.5.0
+    **/
+    transitions: {
+        setter: '_setTransitions',
+        value : false
+    }
+};
+
+/**
+CSS classes used by `App.Transitions`.
+
+When an app is transitioning between `activeView`s, its `container` node will
+have the "yui3-app-transitioning" CSS class added.
+
+@property CLASS_NAMES
+@type Object
+@static
+@since 3.5.0
+**/
+AppTransitions.CLASS_NAMES = {
+    transitioning: Y.ClassNameManager.getClassName('app', 'transitioning')
+};
+
+/**
+Collect of transitions -> fx.
+
+A transition (e.g. "fade") is a simple name given to a configuration of fx to
+apply, consisting of `viewIn` and `viewOut` properties who's values are names of
+fx registered on `Y.Transition.fx`.
+
+By default transitions: `fade`, `slideLeft`, and `slideRight` have fx defined.
+
+@property FX
+@type Object
+@static
+@since 3.5.0
+**/
+AppTransitions.FX = {
+    fade: {
+        viewIn : 'app:fadeIn',
+        viewOut: 'app:fadeOut'
+    },
+
+    slideLeft: {
+        viewIn : 'app:slideLeft',
+        viewOut: 'app:slideLeft'
+    },
+
+    slideRight: {
+        viewIn : 'app:slideRight',
+        viewOut: 'app:slideRight'
+    }
+};
 
 AppTransitions.prototype = {
     // -- Public Properties ----------------------------------------------------
 
     /**
-    Transitions to use when the `activeView` changes.
+    Default transitions to use when the `activeView` changes.
 
-    Transition configurations contain a two properties: `viewIn` and `viewOut`;
-    there exists three configurations that represent the different scenarios of
-    the `activeView` changing:
+    The following are types of changes for which transitions can be defined that
+    correspond to the relationship between the new and previous `activeView`:
 
-      * `navigate`: The default set of transitions to use when changing the
-        `activeView` of the application.
+      * `navigate`: The default transition to use when changing the `activeView`
+        of the application.
 
-      * `toChild`: The set of transitions to use when the `activeView` changes
-        to a named view who's `parent` property references the metadata of the
-        previously active view.
+      * `toChild`: The transition to use when the new `activeView` is configured
+        as a child of the previously active view via its `parent` property as
+        defined in this app's `views`.
 
-      * `toParent`: The set of transitions to use when the `activeView` changes
-        to a named view who's metadata is referenced by the previously active
-        view's `parent` property.
+      * `toParent`: The transition to use when the new `activeView` is
+        configured as the `parent` of the previously active view as defined in
+        this app's `views`.
 
-    With the current state of `Y.Transition`, it is best to used named
-    transitions that registered on `Y.Transition.fx`. If `transitions` are
-    passed at instantiation time, they will override any transitions set on
-    the prototype.
+    **Note:** Transitions are an opt-in feature and will only be used in
+    browsers which support native CSS3 transitions.
 
     @property transitions
     @type Object
     @default
-
         {
-            navigate: {
-                viewIn : 'app:fadeIn',
-                viewOut: 'app:fadeOut'
-            },
-
-            toChild: {
-                viewIn : 'app:slideLeft',
-                viewOut: 'app:slideLeft'
-            },
-
-            toParent: {
-                viewIn : 'app:slideRight',
-                viewOut: 'app:slideRight'
-            }
+            navigate: 'fade',
+            toChild : 'slideLeft',
+            toParent: 'slideRight'
         }
-
+    @since 3.5.0
     **/
     transitions: {
-        navigate: {
-            viewIn : 'app:fadeIn',
-            viewOut: 'app:fadeOut'
-        },
-
-        toChild: {
-            viewIn : 'app:slideLeft',
-            viewOut: 'app:slideLeft'
-        },
-
-        toParent: {
-            viewIn : 'app:slideRight',
-            viewOut: 'app:slideRight'
-        }
-    },
-
-    // -- Lifecycle Methods ----------------------------------------------------
-    initializer: function (config) {
-        config || (config = {});
-
-        // TODO: Deep merge?
-        this.transitions = config.transitions ?
-            Y.merge(this.transitions, config.transitions) : this.transitions;
+        navigate: 'fade',
+        toChild : 'slideLeft',
+        toParent: 'slideRight'
     },
 
     // -- Public Methods -------------------------------------------------------
 
     /**
-    Sets which view is visible/active within the application.
+    Sets which view is active/visible for the application. This will set the
+    app's `activeView` attribute to the specified `view`.
 
-    This will set the application's `activeView` attribute to the view instance
-    passed-in, or when a view name is provided, the `activeView` attribute will
-    be set to either the preserved instance, or a new view instance will be
-    created using the passed in `config`.
+    When a string-name is provided for a view which has been registered on this
+    app's `views` object, the referenced metadata will be used and the
+    `activeView` will be set to either a preserved view instance, or a new
+    instance of the registered view will be created using the specified `config`
+    object passed-into this method.
 
     A callback function can be specified as either the third or fourth argument,
-    and this function will be called after the new `view` is the `activeView`
-    and ready to use.
+    and this function will be called after the new `view` becomes the
+    `activeView`, is rendered to the `viewContainer`, and is ready to use.
+
+    @example
+        var app = new Y.App({
+            transitions: true,
+
+            views: {
+                users: {
+                    // Imagine that `Y.UsersView` has been defined.
+                    type: Y.UsersView
+                }
+            }
+        });
+
+        app.route('/users/', function () {
+            this.showView('users');
+        });
+
+        app.render();
+        app.navigate('/uses/');
+        // => Creates a new `Y.UsersView` and transitions to it.
 
     @method showView
     @param {String|View} view The name of a view defined in the `views` object,
-      or a view instance.
+        or a view instance.
     @param {Object} [config] Optional configuration to use when creating a new
-      view instance.
+        view instance.
     @param {Object} [options] Optional object containing any of the following
         properties:
+      @param {Function} [options.callback] Optional callback function to call
+        after new `activeView` is ready to use, the function will be passed:
+          @param {View} options.callback.view A reference to the new
+            `activeView`.
       @param {Boolean} [options.prepend] Whether the new view should be
         prepended instead of appended to the `viewContainer`.
-      @param {Object} [options.transitions] An object that contains transition
-          configuration overrides for the following properties:
-        @param {Object} [options.transitions.viewIn] Transition overrides for
-          the view being transitioned-in.
-        @param {Object} [options.transitions.viewOut] Transition overrides for
-          the view being transitioned-out.
+      @param {Boolean|String} [options.transition] Optional transition override.
+        A transition can be specified which will override the default, or
+        `false` for no transition.
     @param {Function} [callback] Optional callback Function to call after the
-        new `activeView` is ready to use, the function will be passed:
-      @param {View} view
+        new `activeView` is ready to use. **Note:** this will override
+        `options.callback`. The function will be passed the following:
+      @param {View} callback.view A reference to the new `activeView`.
     @chainable
+    @see App.Base.showView()
     **/
-    // Does not override `showView()` but does use additional `options`.
+    // Does not override `showView()` but does use `options.transitions`.
+
+    // -- Protected Methods ----------------------------------------------------
 
     /**
-    Transitions a view.
+    Setter for `transitions` attribute.
 
-    @method transitionView
-    @param {View} view The view to transition.
-    @param {String} fx The named transition effect to use which should have be
-      registered on the `Y.Transition.fx` object.
-    @param {Object} [fxConfig] Optional transition overrides to apply.
-    @param {Function} [callback] Optional callback function to call when the
-      transition has completed.
-    **/
-    transitionView: function (view, fx, fxConfig, callback) {
-        var self = this;
+    When specified as `true`, the defaults will be use as specified by the
+    `transitions` prototype property.
 
-        if (Lang.isFunction(fxConfig)) {
-            callback = fxConfig;
-            fxConfig = null;
-        }
-
-        function done() {
-            callback && callback.call(self);
-        }
-
-        if (view) {
-            view.get('container').transition(fx, fxConfig, done);
-        } else {
-            done();
-        }
-    },
-
-    // -- Protected Event Handlers ---------------------------------------------
-
-    /**
-    Handles the application's `activeViewChange` event (which is fired when the
-    `activeView` attribute changes) by detaching the old view, attaching the new
-    view and transitioning between them.
-
-    The `activeView` attribute is read-only, so the public API to change its
-    value is through the `showView()` method.
-
-    TODO: Update docs to talk about transitions.
-
-    @method _afterActiveViewChange
-    @param {EventFacade} e
+    @method _setTransitions
+    @param {Boolean|Object} transitions The new `transitions` attribute value.
+    @return {Mixed} The processed value which represents the new state.
     @protected
+    @since 3.5.0
     **/
-    _afterActiveViewChange: function (e) {
-        var newView   = e.newVal,
-            oldView   = e.prevVal,
-            callback  = e.callback,
-            isChild   = this._isChildView(newView, oldView),
-            isParent  = !isChild && this._isParentView(newView, oldView),
-            prepend   = !!e.prepend || isParent,
-            fx        = this.transitions,
-            fxConfigs = e.transitions || {},
-            fxRemaining;
+    _setTransitions: function (transitions) {
+        var defTransitions = this.transitions;
 
-        // Prevent detaching (thus removing) the view we want to show.
-        // Also hard to animate out and in, the same view.
-        if (newView === oldView) {
-            return callback && callback.call(this, newView);
+        if (transitions && transitions === true) {
+            return Y.merge(defTransitions);
         }
 
-        // Determine transitions to use.
-        if (isChild) {
-            fx = fx.toChild;
-        } else if (isParent) {
-            fx = fx.toParent;
-        } else {
-            fx = fx.navigate;
-        }
-
-        function done() {
-            fxRemaining -= 1;
-
-            if (!fxRemaining) {
-                // Detach and remove the old view from the DOM.
-                this._detachView(oldView);
-                // The view swap has happened, transitions have completed.
-                callback && callback.call(this, newView);
-            }
-        }
-
-        // Attach the new active view, and insert into the DOM so it can be
-        // transitioned in.
-        this._attachView(newView, prepend);
-
-        // Expected to be called-back twice.
-        fxRemaining = 2;
-        this.transitionView(newView, fx.viewIn, fxConfigs.viewIn, done);
-        this.transitionView(oldView, fx.viewOut, fxConfigs.viewOut, done);
+        return transitions;
     }
 };
-
-Y.AppTransitions = AppTransitions;
-
-// -- Transitions --------------------------------------------------------------
-Y.mix(Y.Transition.fx, {
-    'app:fadeIn': {
-        opacity : 1,
-        duration: 0.35,
-
-        on: {
-            start: function () {
-                // TODO: Cross-fade transition that doesn't require a change in
-                // position?
-
-                // var position = this.getStyle('position');
-                // if (position !== 'absolute') {
-                //     this._transitionPosition = position;
-                //     this.setStyle('position', 'absolute');
-                // }
-                this.setStyle('opacity', 0);
-            },
-
-            end: function () {
-                // if (this._transitionPosition) {
-                //     this.setStyle('position', this._transitionPosition);
-                //     delete this._transitionPosition;
-                // }
-            }
-        }
-    },
-
-    'app:fadeOut': {
-        opacity : 0,
-        duration: 0.35,
-
-        on: {
-            start: function () {
-                // TODO: Cross-fade transition that doesn't require a change in
-                // position?
-
-                // var position = this.getStyle('position');
-                // if (position !== 'absolute') {
-                //     this._transitionPosition = position;
-                //     this.setStyle('position', 'absolute');
-                // }
-            },
-
-            end: function () {
-                // if (this._transitionPosition) {
-                //     this.setStyle('position', this._transitionPosition);
-                //     delete this._transitionPosition;
-                // }
-            }
-        }
-    },
-
-    'app:slideLeft': {
-        duration : 0.35,
-        transform: 'translateX(-100%)',
-
-        on: {
-            end: function () {
-                this.setStyle('transform', 'none');
-            }
-        }
-    },
-
-    'app:slideRight': {
-        duration : 0.35,
-        transform: 'translateX(0)',
-
-        on: {
-            start: function () {
-                this.setStyle('transform', 'translateX(-100%)');
-            },
-
-            end: function () {
-                this.setStyle('transform', 'none');
-            }
-        }
-    }
-});
 
 // -- Namespace ----------------------------------------------------------------
 Y.App.Transitions = AppTransitions;
 Y.Base.mix(Y.App, [AppTransitions]);
 
 
-}, '3.5.0pr1' ,{requires:['app-base', 'transition']});
+}, '3.5.0' ,{requires:['app-base']});

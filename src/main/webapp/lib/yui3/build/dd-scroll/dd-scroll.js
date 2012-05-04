@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -316,14 +316,6 @@ YUI.add('dd-scroll', function(Y) {
         end: function(xy) {
             this._dimCache = null;
             this._cancelScroll();
-        },
-        /**
-        * @method toString
-        * @description General toString method for logging
-        * @return String name for the object
-        */
-        toString: function() {
-            return S.NAME + ' #' + this.get('node').get('id');
         }
     });
 
@@ -430,4 +422,4 @@ YUI.add('dd-scroll', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, optional:['dd-proxy'], requires:['dd-drag']});
+}, '3.5.0' ,{skinnable:false, optional:['dd-proxy'], requires:['dd-drag']});

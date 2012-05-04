@@ -117,6 +117,12 @@ public class QuestionDescriptorFacade extends AbstractFacade<ChoiceDescriptorEnt
         return reply;
     }
 
+    public ReplyEntity cancelReply(Long replyId) {
+        ReplyEntity reply = replyFacade.find(replyId);
+        replyFacade.remove(reply);
+        return reply;
+    }
+
     /**
      *
      * @param replyVariableInstanceId
@@ -126,7 +132,8 @@ public class QuestionDescriptorFacade extends AbstractFacade<ChoiceDescriptorEnt
     public List<VariableInstanceEntity> validateReply(PlayerEntity player, ReplyEntity reply) throws ScriptException {
         HashMap<String, AbstractEntity> arguments = new HashMap<>();
         arguments.put("selectedReply", reply);
-        return scriptManager.eval(player, reply.getChoiceDescriptor().getImpact(), arguments);
+        scriptManager.eval(player, reply.getChoiceDescriptor().getImpact(), arguments);
+        return scriptManager.getUpdatedEntities();
     }
 
     public List<VariableInstanceEntity> validateReply(PlayerEntity player, Long replyVariableInstanceId) throws ScriptException {

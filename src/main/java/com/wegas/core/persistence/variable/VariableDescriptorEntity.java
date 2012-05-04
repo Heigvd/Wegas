@@ -25,7 +25,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -37,10 +36,8 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"gamemodel_id", "name"}))
-    @NamedQuery(name = "findVariableDescriptorsByRootGameModelId",
-query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptorEntity variableDescriptor LEFT JOIN variableDescriptor.rootGameModel AS gm WHERE gm.id = :gameModelId")
-
+@UniqueConstraint(columnNames = {"variabledescriptors_gamemodelid", "name"}))
+@NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptorEntity variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
 @XmlType(name = "VariableDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptorEntity.class),
@@ -70,16 +67,13 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      *
      */
     @ManyToOne
-    @JoinColumn(name = "gamemodel_id")
-    @JsonBackReference
+    @JoinColumn(name = "gamemodelid")
+    //@JsonBackReference
+    @XmlTransient
     private GameModelEntity gameModel;
     /**
-     *
-     */
-    @ManyToOne
-    private GameModelEntity rootGameModel;
-    /**
-     * Here we cannot use type T, otherwise jpa won't handle the db ref correctly
+     * Here we cannot use type T, otherwise jpa won't handle the db ref
+     * correctly
      */
     @OneToOne(cascade = {CascadeType.ALL})
     @NotNull
@@ -173,17 +167,15 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      *
      * @param gameModel
      */
-    @JsonBackReference
     public void setGameModel(GameModelEntity gameModel) {
         this.gameModel = gameModel;
-        this.setRootGameModel(gameModel);
     }
 
     /**
      *
      * @return
      */
-    @JsonBackReference
+    @XmlTransient
     public GameModelEntity getGameModel() {
         return this.gameModel;
     }
@@ -196,8 +188,8 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     }
 
     /**
-     * @param scope the scope to set
-     * @fixme here we cannot use managed references since this.class is abstract.
+     * @param scope the scope to set @fixme here we cannot use managed
+     * references since this.class is abstract.
      */
     //@JsonManagedReference
     public void setScope(AbstractScopeEntity scope) {
@@ -231,21 +223,5 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      */
     public void setTags(List<Tag> tags) {
         this.tags = tags;
-    }
-
-    /**
-     * @return the rootGameModel
-     */
-    @XmlTransient
-    public GameModelEntity getRootGameModel() {
-        return rootGameModel;
-    }
-
-    /**
-     * @param rootGameModel the rootGameModel to set
-     */
-    @XmlTransient
-    public void setRootGameModel(GameModelEntity rootGameModel) {
-        this.rootGameModel = rootGameModel;
     }
 }

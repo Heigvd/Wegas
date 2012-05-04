@@ -89,9 +89,10 @@ public class TeamScopeEntity extends AbstractScopeEntity {
     @XmlTransient
     @Override
     public void propagateDefaultInstance(boolean force) {
-        VariableDescriptorEntity vd = this.getVariableDescriptor();
-        GameModelEntity gm = vd.getRootGameModel();
+        logger.debug("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
 
+        VariableDescriptorEntity vd = this.getVariableDescriptor();
+        GameModelEntity gm = vd.getGameModel();
         for (GameEntity g : gm.getGames()) {
             for (TeamEntity t : g.getTeams()) {
                 VariableInstanceEntity vi = this.teamVariableInstances.get(t.getId());

@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -14,14 +14,9 @@ http://yuilibrary.com/license/
 }
 
 .yui3-calendarnav-prevmonth {
-	width:15px;
-	margin-left:-15px;
 	cursor: pointer;
 }
 
 .yui3-calendarnav-nextmonth {
-	width:15px;
-	margin-right:-15px;
 	cursor: pointer;
-	text-align: right;
 }

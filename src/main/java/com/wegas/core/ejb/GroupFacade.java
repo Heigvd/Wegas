@@ -20,6 +20,9 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class GroupFacade extends AbstractFacade<GroupEntity> {
+    /**
+     *
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 

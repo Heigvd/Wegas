@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -10,6 +10,7 @@ YUI.add('arraylist-filter', function(Y) {
  * Collection utilities beyond what is provided in the YUI core
  * @module collection
  * @submodule arraylist-filter
+ * @deprecated Use ModelList or a custom subclass implementation
  */
 
 /*
@@ -28,6 +29,7 @@ Y.mix(Y.ArrayList.prototype, {
      * @param { Function } validator Boolean function to determine in or out.
      * @return { ArrayList } New instance based on who passed the validator.
      * @for ArrayList
+     * @deprecated Use ModelList or a custom subclass implementation
      */
     filter: function(validator) {
         var items = [];
@@ -46,4 +48,4 @@ Y.mix(Y.ArrayList.prototype, {
 });
 
 
-}, '3.5.0pr1' ,{requires:['arraylist']});
+}, '3.5.0' ,{requires:['arraylist']});

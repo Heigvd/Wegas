@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -449,17 +449,19 @@ YUI.add('dial', function(Y) {
             this.after("valueChange", this._afterValueChange);
 
             var boundingBox = this.get("boundingBox"),
-
-            // Looking for a key event which will fire continously across browsers while the key is held down.
-            keyEventSpec = (!Y.UA.opera) ? "down:" : "press:",
-            keyLeftRightSpec = (!Y.UA.opera) ? "down:" : "press:";
-            // 38, 40 = arrow up/down, 33, 34 = page up/down,  35 , 36 = end/home
-            keyEventSpec += "38,40,33,34,35,36";
-            // 37 , 39 = arrow left/right
-            keyLeftRightSpec += "37,39";
+                // Looking for a key event which will fire continously across browsers while the key is held down.
+                keyEvent = (!Y.UA.opera) ? "down:" : "press:",            
+                // 38, 40 = arrow up/down, 33, 34 = page up/down,  35 , 36 = end/home
+                keyEventSpec = keyEvent + "38,40,33,34,35,36",
+                // 37 , 39 = arrow left/right
+                keyLeftRightSpec = keyEvent + "37,39",
+                // 37 , 39 = arrow left/right + meta (command/apple key) for mac
+                keyLeftRightSpecMeta = keyEvent + "37+meta,39+meta";
 
             Y.on("key", Y.bind(this._onDirectionKey, this), boundingBox, keyEventSpec);
             Y.on("key", Y.bind(this._onLeftRightKey, this), boundingBox, keyLeftRightSpec);
+            boundingBox.on("key", this._onLeftRightKeyMeta, keyLeftRightSpecMeta, this);
+
             Y.on('mouseenter', Y.bind(this._handleCenterButtonEnter, this), this._centerButtonNode);
             Y.on('mouseleave', Y.bind(this._handleCenterButtonLeave, this), this._centerButtonNode);
             // Needed to replace mousedown/up with gesturemovestart/end to make behavior on touch devices work the same.
@@ -1041,7 +1043,7 @@ YUI.add('dial', function(Y) {
                     this._decrMinor();
                     break;
                 case 36: // home
-                    this._resetDial();
+                    this._setToMin();
                     break;
                 case 35: // end
                     this._setToMax();
@@ -1070,6 +1072,25 @@ YUI.add('dial', function(Y) {
                     break;
                 case 39: // right
                     this._incrMinor();
+                    break;
+            }
+        },
+
+        /**
+         * sets the Dial's value in response to left or right key events when a meta (mac command/apple) key is also pressed
+         *
+         * @method _onLeftRightKeyMeta
+         * @param e {Event} the key event
+         * @protected
+         */
+        _onLeftRightKeyMeta : function(e) {
+            e.preventDefault();
+            switch (e.charCode) {
+                case 37: // left + meta
+                    this._setToMin();
+                    break;
+                case 39: // right + meta
+                    this._setToMax();
                     break;
             }
         },
@@ -1274,4 +1295,4 @@ YUI.add('dial', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{requires:['widget', 'dd-drag', 'substitute', 'event-mouseenter', 'event-move', 'event-key', 'transition', 'intl'], lang:['en','es' ], skinnable:true});
+}, '3.5.0' ,{requires:['widget', 'dd-drag', 'substitute', 'event-mouseenter', 'event-move', 'event-key', 'transition', 'intl'], lang:['en','es' ], skinnable:true});

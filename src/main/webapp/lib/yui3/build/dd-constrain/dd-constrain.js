@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -203,6 +203,12 @@ YUI.add('dd-constrain', function(Y) {
 	        this.get(HOST).after('drag:align', Y.bind(this.align, this));
 	        this.get(HOST).after('drag:drag', Y.bind(this.drag, this));
 	    },
+        destructor: function() {
+            if (this._cacheHandle) {
+                this._cacheHandle.detach();
+            }
+            this._cacheHandle = null;
+        },
 	    /**
 	    * @private
 	    * @method _createEvents
@@ -250,6 +256,13 @@ YUI.add('dd-constrain', function(Y) {
 	    * @type Object
 	    */
 	    _regionCache: null,
+        /**
+        * Event handle for window resize event.
+        * @private
+        * @property _cacheHandle
+        * @type {Event}
+        */
+        _cacheHandle: null,
 	    /**
 	    * @private
 	    * @method _cacheRegion
@@ -278,7 +291,7 @@ YUI.add('dd-constrain', function(Y) {
 	        if (con) {
 	            if (con instanceof Y.Node) {
 	                if (!this._regionCache) {
-	                    Y.on('resize', Y.bind(this._cacheRegion, this), Y.config.win);
+	                    this._cacheHandle = Y.on('resize', Y.bind(this._cacheRegion, this), Y.config.win);
 	                    this._cacheRegion();
 	                }
 	                region = Y.clone(this._regionCache);
@@ -310,7 +323,7 @@ YUI.add('dd-constrain', function(Y) {
 	    * @method getRegion
 	    * @description Get the active region: viewport, node, custom region
 	    * @param {Boolean} inc Include the node's height and width
-	    * @return {Object}
+	    * @return {Object} The active region.
 	    */
 	    getRegion: function(inc) {
 	        var r = {}, oh = null, ow = null,
@@ -547,4 +560,4 @@ YUI.add('dd-constrain', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, requires:['dd-drag']});
+}, '3.5.0' ,{skinnable:false, requires:['dd-drag']});

@@ -19,7 +19,10 @@
                     "label": "Francois",
                     "lazyloadmenu": false,
                     "value": "selectplayer",
-                    "menu": [{"text": "notloaded", "value": "null"}]
+                    "menu": [{
+                        "text": "notloaded",
+                        "value": "null"
+                    }]
                 }],
                 "children": [
                 {
@@ -88,7 +91,7 @@
                 }],
                 "toolbarButtons": [{
                     "type": "push",
-                    "label": "New choice",
+                    "label": "New variable",
                     "value": "new",
                     "id": "new",
                     "data": {
@@ -101,35 +104,7 @@
                     "value": "reset",
                     "id": "reset"
                 }]
-            },{
-                "type": "Tab",
-                "label": "Choices",
-                "children": [
-                {
-                    "type": "WTreeView",
-                    "dataSource": "VariableDescriptor",
-                    "includeClasses": {
-                        "MCQDescriptor": true
-                    }
-                }
-                ],
-                "toolbarButtons": [{
-                    "type": "push",
-                    "label": "New choice",
-                    "value": "new",
-                    "id": "new",
-                    "data": {
-                        "dataSource":"VariableDescriptor",
-                        "@class": "MCQDescriptor"
-                    }
-                },{
-                    "type": "push",
-                    "label": "Reset this game",
-                    "value": "reset",
-                    "id": "reset"
-                }]
-            },
-            {
+            }, {
                 "type": "Tab",
                 "label": "Pages",
                 "children": [{
@@ -175,7 +150,10 @@
                     "label": "Francois",
                     "lazyloadmenu": false,
                     "value": "selectplayer",
-                    "menu": [{"text": "notloaded", "value": "null"}]
+                    "menu": [{
+                        "text": "notloaded",
+                        "value": "null"
+                    }]
                 }
                 ],
                 "children": [{

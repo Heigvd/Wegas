@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -1369,4 +1369,4 @@ Y.Env.evt.plugins.contentready = {
 };
 
 
-}, '3.5.0pr1' ,{requires:['event-custom-base']});
+}, '3.5.0' ,{requires:['event-custom-base']});

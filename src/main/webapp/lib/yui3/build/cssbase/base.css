@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -77,3 +77,5 @@ p,fieldset,table,pre {
 /* setting a consistent width, 160px; 
    control of type=file still not possible */
 input[type=text],input[type=password],textarea{width:12.25em;*width:11.9em;}
+/* YUI CSS Detection Stamp */
+#yui3-css-stamp.cssbase { display: none; }

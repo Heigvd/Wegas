@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -27,7 +27,31 @@ var COMPARE_DOCUMENT_POSITION = 'compareDocumentPosition',
     OWNER_DOCUMENT = 'ownerDocument';
 
 var Selector = {
+    _types: {
+        esc: {
+            token: '\uE000',
+            re: /\\[:\[\]\(\)#\.\'\>+~"]/gi
+        },
+
+        attr: {
+            token: '\uE001',
+            re: /(\[[^\]]*\])/g
+        },
+
+        pseudo: {
+            token: '\uE002',
+            re: /(\([^\)]*\))/g
+        }
+    },
+
     useNative: true,
+
+    _escapeId: function(id) {
+        if (id) {
+            id = id.replace(/([:\[\]\(\)#\.'<>+~"])/g,'\\$1');
+        }
+        return id;
+    },
 
     _compare: ('sourceIndex' in Y.config.doc.documentElement) ?
         function(nodeA, nodeB) {
@@ -141,19 +165,74 @@ var Selector = {
 
     },
 
+    _replaceSelector: function(selector) {
+        var esc = Y.Selector._parse('esc', selector), // pull escaped colon, brackets, etc. 
+            attrs,
+            pseudos;
+
+        // first replace escaped chars, which could be present in attrs or pseudos
+        selector = Y.Selector._replace('esc', selector);
+
+        // then replace pseudos before attrs to avoid replacing :not([foo])
+        pseudos = Y.Selector._parse('pseudo', selector);
+        selector = Selector._replace('pseudo', selector);
+
+        attrs = Y.Selector._parse('attr', selector);
+        selector = Y.Selector._replace('attr', selector);
+
+        return {
+            esc: esc,
+            attrs: attrs,
+            pseudos: pseudos,
+            selector: selector
+        }
+    },
+
+    _restoreSelector: function(replaced) {
+        var selector = replaced.selector;
+        selector = Y.Selector._restore('attr', selector, replaced.attrs);
+        selector = Y.Selector._restore('pseudo', selector, replaced.pseudos);
+        selector = Y.Selector._restore('esc', selector, replaced.esc);
+        return selector;
+    },
+
+    _replaceCommas: function(selector) {
+        var replaced = Y.Selector._replaceSelector(selector),
+            selector = replaced.selector;
+
+        if (selector) {
+            selector = selector.replace(',', '\uE007', 'g');
+            replaced.selector = selector;
+            selector = Y.Selector._restoreSelector(replaced);
+        }
+        return selector;
+    },
+
     // allows element scoped queries to begin with combinator
     // e.g. query('> p', document.body) === query('body > p')
     _splitQueries: function(selector, node) {
-        var groups = selector.split(','),
+        if (selector.indexOf(',') > -1) {
+            selector = Y.Selector._replaceCommas(selector);
+        }
+
+        var groups = selector.split('\uE007'), // split on replaced comma token
             queries = [],
             prefix = '',
-            i, len;
+            id,
+            i,
+            len;
 
         if (node) {
             // enforce for element scoping
-            if (node.tagName) {
-                node.id = node.id || Y.guid();
-                prefix = '[id="' + node.id + '"] ';
+            if (node.nodeType === 1) { // Elements only
+                id = Y.Selector._escapeId(Y.DOM.getId(node));
+
+                if (!id) {
+                    id = Y.guid();
+                    Y.DOM.setId(node, id);
+                }
+            
+                prefix = '[id="' + id + '"] ';
             }
 
             for (i = 0, len = groups.length; i < len; ++i) {
@@ -205,6 +284,7 @@ var Selector = {
             item,
             items,
             frag,
+            id,
             i, j, group;
 
         if (node && node.tagName) { // only test HTMLElements
@@ -227,11 +307,14 @@ var Selector = {
                 }
                 root = root || node[OWNER_DOCUMENT];
 
-                if (!node.id) {
-                    node.id = Y.guid();
+                id = Y.Selector._escapeId(Y.DOM.getId(node));
+                if (!id) {
+                    id = Y.guid();
+                    Y.DOM.setId(node, id);
                 }
+
                 for (i = 0; (group = groups[i++]);) { // TODO: off-dom test
-                    group += '[id="' + node.id + '"]';
+                    group += '[id="' + id + '"]';
                     items = Y.Selector.query(group, root);
 
                     for (j = 0; item = items[j++];) {
@@ -267,6 +350,26 @@ var Selector = {
         return Y.DOM.ancestor(element, function(n) {
             return Y.Selector.test(n, selector);
         }, testSelf);
+    },
+
+    _parse: function(name, selector) {
+        return selector.match(Y.Selector._types[name].re);
+    },
+
+    _replace: function(name, selector) {
+        var o = Y.Selector._types[name];
+        return selector.replace(o.re, o.token);
+    },
+
+    _restore: function(name, selector, items) {
+        if (items) {
+            var token = Y.Selector._types[name].token,
+                i, len;
+            for (i = 0, len = items.length; i < len; ++i) {
+                selector = selector.replace(token, items[i]);
+            }
+        }
+        return selector;
     }
 };
 
@@ -275,4 +378,4 @@ Y.mix(Y.Selector, Selector, true);
 })(Y);
 
 
-}, '3.5.0pr1' ,{requires:['dom-base']});
+}, '3.5.0' ,{requires:['dom-base']});

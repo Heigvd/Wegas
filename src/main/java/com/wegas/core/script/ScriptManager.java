@@ -10,7 +10,7 @@
 package com.wegas.core.script;
 
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.GameManager;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -22,15 +22,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,12 +43,13 @@ import javax.script.ScriptException;
 @Stateless
 @LocalBean
 public class ScriptManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(ScriptManager.class);
     /**
      *
      */
-    @EJB
-    private VariableDescriptorFacade variableDescriptorFacade;
-
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
     /**
      *
      */
@@ -55,6 +60,58 @@ public class ScriptManager {
      */
     @EJB
     private MessagingManager messagingManager;
+    /**
+     *
+     */
+    @Inject
+    private GameManager gameManager;
+
+    /**
+     *
+     */
+    @PostConstruct
+    public void onConstruct() {
+    }
+
+    /**
+     *
+     * @param player
+     * @param s
+     * @param arguments
+     * @return
+     */
+    public Object eval(PlayerEntity player, ScriptEntity s, Map<String, AbstractEntity> arguments) throws ScriptException {
+        ScriptEngineManager mgr = new ScriptEngineManager();
+        ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
+        // Invocable invocableEngine = (Invocable) engine;
+        GameModelEntity gm = player.getTeam().getGame().getGameModel();
+        List<VariableInstanceEntity> vis = new ArrayList<>();
+
+        gameManager.setCurrentPlayer(player);                                // Set up request execution context
+
+        engine.put("self", player);                                             // Inject constants
+
+        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
+            engine.put(arg.getKey(), arg.getValue());
+        }
+
+        for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {       // We inject the variable instances in the script
+            VariableInstanceEntity vi = vd.getVariableInstance(player);
+            engine.put(vd.getName(), vi);
+        }
+
+        Object result = engine.eval(s.getContent());
+        em.flush();
+
+        gameManager.commit();
+
+        return result;
+    }
+
+    public List<VariableInstanceEntity> getUpdatedEntities() {
+        return gameManager.getUpdatedInstances();
+    }
+    // *** Sugar *** //
 
     /**
      *
@@ -62,7 +119,7 @@ public class ScriptManager {
      * @param s
      * @return
      */
-    public List<VariableInstanceEntity> eval(Long playerId, ScriptEntity s)
+    public Object eval(Long playerId, ScriptEntity s)
             throws ScriptException {
         return this.eval(playerEntityFacade.find(playerId), s);
     }
@@ -74,74 +131,8 @@ public class ScriptManager {
      * @param arguments
      * @return
      */
-    public List<VariableInstanceEntity> eval(PlayerEntity p, ScriptEntity s) throws ScriptException {
+    public Object eval(PlayerEntity p, ScriptEntity s) throws ScriptException {
         return this.eval(p, s, new HashMap<String, AbstractEntity>());
-    }
-
-    /**
-     *
-     * @param player
-     * @param s
-     * @param arguments
-     * @return
-     */
-    public List<VariableInstanceEntity> eval(PlayerEntity player, ScriptEntity s, Map<String, AbstractEntity> arguments)
-            throws ScriptException {
-        ScriptEngineManager mgr = new ScriptEngineManager();
-        ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
-        // Invocable invocableEngine = (Invocable) engine;
-        GameModelEntity gm = player.getTeam().getGame().getGameModel();
-        List<VariableInstanceEntity> vis = new ArrayList<>();
-
-        engine.put("self", player);                                              // Inject constants
-
-        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
-            engine.put(arg.getKey(), arg.getValue());
-        }
-
-       // for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
-          for (VariableDescriptorEntity vd : variableDescriptorFacade.findByRootGameModelId(gm.getId())) {   // We inject the variable instances in the script
-            VariableInstanceEntity vi = vd.getVariableInstance(player);
-            engine.put(vd.getName(), vi);
-            vis.add(vi);
-        }
-
-        engine.eval(s.getContent());
-        return vis;
-    }
-
-    /**
-     *
-     * @param gameModelId
-     * @param playerId
-     * @param s
-     * @return
-     */
-    public Object eval(Long gameModelId, Long playerId, ScriptEntity s) {
-        ScriptEngineManager mgr = new ScriptEngineManager();
-        ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
-        // Invocable invocableEngine = (Invocable) engine;
-        // GameModelEntity gm = gameModelEntityFacade.find(gameModelId);
-        PlayerEntity p = playerEntityFacade.find(playerId);
-        GameModelEntity gm = p.getTeam().getGame().getGameModel();
-        Object result = null;
-
-        try {
-            engine.put("self", p);                                              // Inject the constants
-            engine.put("messaging", messagingManager);
-
-            for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {   // We inject the variable instances in the script
-                VariableInstanceEntity vi = vd.getVariableInstance(p);
-                engine.put(vd.getName(), vi);
-            }
-            result = engine.eval(s.getContent());                    // Then we evaluate the script
-            Logger.getLogger(ScriptManager.class.getName()).log(Level.INFO, "Evaluation result: {0}", result);
-
-        }
-        catch (ScriptException ex) {
-            Logger.getLogger(ScriptManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
     }
     /*
      * Object invokeFunction = invocableEngine.invokeFunction("sayHello");
