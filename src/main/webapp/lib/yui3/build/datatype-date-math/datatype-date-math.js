@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -71,6 +71,34 @@ Y.mix(Y.namespace("DataType.Date"), {
     isGreaterOrEqual : function (aDate, bDate) {
     	return (this.isValidDate(aDate) && this.isValidDate(bDate) && (aDate.getTime() >= bDate.getTime()));
     },
+
+
+    /**
+	 * Checks whether the date is between two other given dates.
+	 * @for DataType.Date
+	 * @method isInRange
+	 * @param aDate {Date} The date to check
+	 * @param bDate {Date} Lower bound of the range.
+	 * @param cDate {Date} Higher bound of the range.
+	 * @return {Boolean} True if the date is between the two other given dates.
+	 */	
+    isInRange : function (aDate, bDate, cDate) {
+    	return (this.isGreaterOrEqual(aDate, bDate) && this.isGreaterOrEqual(cDate, aDate));
+    },
+
+	/**
+	 * Adds a specified number of days to the given date.
+	 * @for DataType.Date
+	 * @method addDays
+	 * @param oDate {Date} The date to add days to.
+	 * @param numMonths {Number} The number of days to add (can be negative)
+	 * @return {Date} A new Date with the specified number of days
+	 * added to the original date.
+	 */	
+	addDays : function (oDate, numDays) {
+		return new Date(oDate.getTime() + 86400000*numDays);
+	},
+
 
 	/**
 	 * Adds a specified number of months to the given date.
@@ -179,4 +207,4 @@ Y.mix(Y.namespace("DataType.Date"), {
 });
 
 
-}, '3.5.0pr1' ,{requires:['yui-base']});
+}, '3.5.0' ,{requires:['yui-base']});

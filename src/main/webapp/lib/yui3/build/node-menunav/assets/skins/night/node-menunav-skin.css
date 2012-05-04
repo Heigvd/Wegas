@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -9,12 +9,12 @@ http://yuilibrary.com/license/
 .yui3-skin-night .yui3-menu-content, 
 .yui3-skin-night .yui3-menu .yui3-menu .yui3-menu-content {
 
-    font-size: 93%;  /* 12px */
-    line-height: 1.5;  /* 18px */
+    font-size: 100%;  
+    line-height: 2.25;  /* 18px 1.5*/
     *line-height: 1.45; /* For IE */
-    border: solid 1px #000;
-    background: #6D6E6E;
-    padding: 3px 0;
+    border: solid 1px #303030;
+    background: #151515;
+    /*padding: 3px 0;*/
 
 }
 
@@ -55,7 +55,7 @@ http://yuilibrary.com/license/
 
 	margin-top: 3px;
 	padding-top: 3px;
-    border-top: solid 1px #5E5E5E;
+    border-top: solid 1px #303030;
 
 }
 
@@ -86,7 +86,7 @@ http://yuilibrary.com/license/
 		"block" by node-menunav-core.css file.
     */
 
-    _border-bottom: solid 1px #6D6E6E;
+    _border-bottom: solid 1px #151515;
 
 }
 
@@ -124,7 +124,15 @@ http://yuilibrary.com/license/
 .yui3-skin-night .yui3-menuitem-content,
 .yui3-skin-night .yui3-menu .yui3-menu .yui3-menuitem-content {
 
-    padding: 0 20px;
+    /*padding: 0 20px;*/
+    padding: 0 1em;
+    /*background-color: #2F3030;*/
+    
+    
+    
+    
+    
+    
     color: #fff;
     text-decoration: none;
     cursor: default;
@@ -228,7 +236,7 @@ http://yuilibrary.com/license/
 .yui3-skin-night .yui3-menu .yui3-menu .yui3-menu-label-active,
 .yui3-skin-night .yui3-menu .yui3-menu .yui3-menu-label-menuvisible {
 
-	background-color: #575858;
+	background-color: #292a2a;
 
 }
 
@@ -236,7 +244,19 @@ http://yuilibrary.com/license/
 .yui3-skin-night .yui3-menu .yui3-menu .yui3-menuitem-active .yui3-menuitem-content {
 
 	background-image: none;
-    background-color: #575858;
+    background-color: #292a2a;
+    background: -moz-linear-gradient(
+		0% 100% 90deg,
+		#252626 0%,
+		#333434 100%
+	);
+    background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(#333434),
+        to(#252626)
+    );
     
     /*
     	Undo values set for "border-left-width" and "margin-left" when the root 

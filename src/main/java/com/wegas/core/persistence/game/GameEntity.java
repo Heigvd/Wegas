@@ -62,8 +62,8 @@ public class GameEntity extends NamedEntity implements Serializable {
      *
      */
     @ManyToOne
-    @JoinColumn(name = "gamemodel_id")
-    // @JsonBackReference("gamemodel-game")
+    @JoinColumn(name = "gamemodelid")
+    // @JsonBackReference
     private GameModelEntity gameModel;
 
     /**
@@ -110,7 +110,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     /**
      * @return the gameModel
      */
-    @JsonBackReference("gamemodel-game")
+    @JsonBackReference
     public GameModelEntity getGameModel() {
         return gameModel;
     }
@@ -118,7 +118,7 @@ public class GameEntity extends NamedEntity implements Serializable {
     /**
      * @param gameModel the gameModel to set
      */
-    @JsonBackReference("gamemodel-game")
+    @JsonBackReference
     public void setGameModel(GameModelEntity gameModel) {
         this.gameModel = gameModel;
     }

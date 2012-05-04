@@ -31,11 +31,12 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
 public class QuestionController extends AbstractRestController<QuestionDescriptorFacade> {
+
     /**
      *
      */
     @EJB
-    private QuestionDescriptorFacade choiceDescriptorFacade;
+    private QuestionDescriptorFacade questionDescriptorFacade;
 
     /**
      *
@@ -45,16 +46,26 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      * @return p
      */
     @GET
-    @Path("/SelectReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
+    @Path("/SelectReply/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<VariableInstanceEntity> selectReply(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId,
-            @PathParam("replyId") Long replyId) throws ScriptException {
+            @PathParam("choiceId") Long choiceId) throws ScriptException {
 
         ReplyEntity reply =
-                choiceDescriptorFacade.selectChoice(replyId, playerId, new Long(0));
-        return choiceDescriptorFacade.validateReply(playerId,reply.getId());
+                questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
+        return questionDescriptorFacade.validateReply(playerId, reply.getId());
+    }
+
+    @GET
+    @Path("/CancelReply/{replyId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public QuestionInstanceEntity cancelReply(
+            @PathParam("gameModelId") Long gameModelId,
+            @PathParam("replyId") Long replyId) throws ScriptException {
+        ReplyEntity reply = questionDescriptorFacade.cancelReply(replyId);
+        return reply.getQuestionInstance();
     }
 
     /**
@@ -66,16 +77,15 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      * @return p
      */
     @GET
-    @Path("/SelectReply/{replyDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [1-9][0-9]*}")
+    @Path("/SelectReply/{choiceDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public QuestionInstanceEntity selectReply(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId,
-            @PathParam("replyDescriptorId") Long replyDescriptorId,
+            @PathParam("choiceDescriptorId") Long choiceDescriptorId,
             @PathParam("startTime") Long startTime) {
 
-        ReplyEntity reply =
-                choiceDescriptorFacade.selectChoice(replyDescriptorId, playerId, startTime);
+        ReplyEntity reply = questionDescriptorFacade.selectChoice(choiceDescriptorId, playerId, startTime);
         return reply.getQuestionInstance();
     }
 
@@ -85,6 +95,6 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      */
     @Override
     protected QuestionDescriptorFacade getFacade() {
-        return this.choiceDescriptorFacade;
+        return this.questionDescriptorFacade;
     }
 }

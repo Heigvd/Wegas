@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -68,7 +68,7 @@ YUI.add('yql', function(Y) {
         * @method send
         * @description The method that executes the YQL Request.
         * @chainable
-        * @returns {YQLRequest}
+        * @return {YQLRequest}
         */
         send: function() {
             var qs = [], url = ((this._opts && this._opts.proto) ? this._opts.proto : Y.YQLRequest.PROTO);
@@ -141,4 +141,4 @@ YUI.add('yql', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{requires:['jsonp', 'jsonp-url']});
+}, '3.5.0' ,{requires:['jsonp', 'jsonp-url']});

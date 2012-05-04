@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -144,7 +144,7 @@ YUI.add('pluginhost-base', function(Y) {
          *
          * @method hasPlugin
          * @param {String} ns The plugin's namespace
-         * @return {boolean} returns true, if the plugin has been plugged into this host, false otherwise.
+         * @return {Plugin} Returns a truthy value (the plugin instance) if present, or undefined if not.
          */
         hasPlugin : function(ns) {
             return (this._plugins[ns] && this[ns]);
@@ -181,4 +181,4 @@ YUI.add('pluginhost-base', function(Y) {
     Y.namespace("Plugin").Host = PluginHost;
 
 
-}, '3.5.0pr1' ,{requires:['yui-base']});
+}, '3.5.0' ,{requires:['yui-base']});

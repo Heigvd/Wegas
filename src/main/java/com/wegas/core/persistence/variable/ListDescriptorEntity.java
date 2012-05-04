@@ -50,23 +50,23 @@ public class ListDescriptorEntity extends VariableDescriptorEntity<VariableInsta
      *
      * @param force
      */
-    @Override
+    /*@Override
     public void propagateDefaultInstance(boolean force) {
         super.propagateDefaultInstance(force);
         for (VariableDescriptorEntity vd: this.getItems()) {
             vd.propagateDefaultInstance(force);
         }
-    }
+    }*/
 
     /**
      *
      * @param gameModel
      */
     @Override
-    public void setRootGameModel(GameModelEntity gameModel) {
-        super.setRootGameModel(gameModel);
+    public void setGameModel(GameModelEntity gameModel) {
+        super.setGameModel(gameModel);
         for (VariableDescriptorEntity item : this.items) {
-            item.setRootGameModel(gameModel);
+            item.setGameModel(gameModel);
         }
     }
 
@@ -91,6 +91,6 @@ public class ListDescriptorEntity extends VariableDescriptorEntity<VariableInsta
     @XmlTransient
     public void addItem(VariableDescriptorEntity item) {
         this.items.add(item);
-        item.setRootGameModel(this.getRootGameModel());
+        item.setGameModel(this.getGameModel());
     }
 }

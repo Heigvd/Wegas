@@ -1,11 +1,15 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
 YUI.add('dom-base', function(Y) {
 
+/**
+* @for DOM
+* @module dom
+*/
 var documentElement = Y.config.doc.documentElement,
     Y_DOM = Y.DOM,
     TAG_NAME = 'tagName',
@@ -81,7 +85,7 @@ Y.mix(Y_DOM, {
 
     /**
      * Provides a normalized attribute interface. 
-     * @method getAttibute
+     * @method getAttribute
      * @param {HTMLElement} el The target element for the attribute.
      * @param {String} attr The attribute to get.
      * @return {String} The current value of the attribute. 
@@ -201,7 +205,7 @@ Y.mix(Y_DOM.VALUE_GETTERS, {
             // TODO: implement multipe select
             if (node.multiple) {
                 Y.log('multiple select normalization not implemented', 'warn', 'DOM');
-            } else {
+            } else if (node.selectedIndex > -1) {
                 val = Y_DOM.getValue(options[node.selectedIndex]);
             }
         }
@@ -338,6 +342,36 @@ Y.mix(Y.DOM, {
         return frag;
     },
 
+    _children: function(node, tag) {
+            var i = 0,
+            children = node.children,
+            childNodes,
+            hasComments,
+            child;
+
+        if (children && children.tags) { // use tags filter when possible
+            if (tag) {
+                children = node.children.tags(tag);
+            } else { // IE leaks comments into children
+                hasComments = children.tags('!').length;
+            }
+        }
+        
+        if (!children || (!children.tags && tag) || hasComments) {
+            childNodes = children || node.childNodes;
+            children = [];
+            while ((child = childNodes[i++])) {
+                if (child.nodeType === 1) {
+                    if (!tag || tag === child.tagName) {
+                        children.push(child);
+                    }
+                }
+            }
+        }
+
+        return children || [];
+    },
+
     /**
      * Creates a new dom node using the provided markup string. 
      * @method create
@@ -380,11 +414,12 @@ Y.mix(Y.DOM, {
                     ret = nodes[0].nextSibling;
                 } else {
                     nodes[0].parentNode.removeChild(nodes[0]); 
-                     ret = Y_DOM._nl2frag(nodes, doc);
+                    ret = Y_DOM._nl2frag(nodes, doc);
                 }
             } else { // return multiple nodes as a fragment
                  ret = Y_DOM._nl2frag(nodes, doc);
             }
+
         }
 
         return ret;
@@ -406,7 +441,6 @@ Y.mix(Y.DOM, {
                 ret.appendChild(nodes[i]); 
             }
         } // else inline with log for minification
-        else { Y.log('unable to convert ' + nodes + ' to fragment', 'warn', 'dom'); }
         return ret;
     },
 
@@ -558,7 +592,7 @@ if (!testFeature('innerhtml', 'table')) {
         // IE adds TBODY when creating TABLE elements (which may share this impl)
     creators.tbody = function(html, doc) {
         var frag = Y_DOM.create(TABLE_OPEN + html + TABLE_CLOSE, doc),
-            tb = frag.children.tags('tbody')[0];
+            tb = Y.DOM._children(frag, 'tbody')[0];
 
         if (frag.children.length > 1 && tb && !re_tbody.test(html)) {
             tb.parentNode.removeChild(tb); // strip extraneous tbody
@@ -618,7 +652,7 @@ Y.mix(Y.DOM, {
      * of box model, border, padding, etc.
      * @method setWidth
      * @param {HTMLElement} element The DOM element. 
-     * @param {String|Int} size The pixel height to size to
+     * @param {String|Number} size The pixel height to size to
      */
 
     setWidth: function(node, size) {
@@ -630,7 +664,7 @@ Y.mix(Y.DOM, {
      * of box model, border, padding, etc.
      * @method setHeight
      * @param {HTMLElement} element The DOM element. 
-     * @param {String|Int} size The pixel height to size to
+     * @param {String|Number} size The pixel height to size to
      */
 
     setHeight: function(node, size) {
@@ -657,4 +691,4 @@ Y.mix(Y.DOM, {
 });
 
 
-}, '3.5.0pr1' ,{requires:['dom-core']});
+}, '3.5.0' ,{requires:['dom-core']});

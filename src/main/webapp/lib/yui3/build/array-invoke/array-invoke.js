@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -34,7 +34,7 @@ Y.Array.invoke = function(items, name) {
         ret = [];
 
     Y.Array.each(Y.Array(items), function(item, i) {
-        if (isFunction(item[name])) {
+        if (item && isFunction(item[name])) {
             ret[i] = item[name].apply(item, args);
         }
     });
@@ -43,4 +43,4 @@ Y.Array.invoke = function(items, name) {
 };
 
 
-}, '3.5.0pr1' ,{requires:['yui-base']});
+}, '3.5.0' ,{requires:['yui-base']});

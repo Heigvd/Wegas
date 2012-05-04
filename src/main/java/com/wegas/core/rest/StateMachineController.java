@@ -86,7 +86,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
         List<Transition> transitions = currentState.getTransitions();
         List<Transition> passedTransitions = new ArrayList<>();
         for (Transition transition : transitions) {
-            if ((Boolean) scriptManager.eval(gameModelId, playerId, transition.getTriggerCondition())) {
+            if ((Boolean) scriptManager.eval(playerId, transition.getTriggerCondition())) {
                 stateMachineInstanceEntity.setCurrentStateId(transition.getNextStateId());
                 if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
                     scriptManager.eval(playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());

@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -1021,6 +1021,13 @@ YUI.add('dd-drag', function(Y) {
             node.detachAll('mouseup');
             node.detachAll('dragstart');
             node.detachAll(Drag.START_EVENT);
+            this.mouseXY = [];
+            this.deltaXY = [0,0];
+            this.startXY = [];
+            this.nodeXY = [];
+            this.lastXY = [];
+            this.actXY = [];
+            this.realXY = [];
         },
         /**
         * @method start
@@ -1256,4 +1263,4 @@ YUI.add('dd-drag', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, requires:['dd-ddm-base']});
+}, '3.5.0' ,{skinnable:false, requires:['dd-ddm-base']});

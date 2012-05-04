@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -47,6 +47,28 @@ Y_DOM = {
     byId: function(id, doc) {
         // handle dupe IDs and IE name collision
         return Y_DOM.allById(id, doc)[0] || null;
+    },
+
+    getId: function(node) {
+        var id;
+        // HTMLElement returned from FORM when INPUT name === "id"
+        // IE < 8: HTMLCollection returned when INPUT id === "id"
+        // via both getAttribute and form.id 
+        if (node.id && !node.id.tagName && !node.id.item) {
+            id = node.id;
+        } else if (node.attributes && node.attributes.id) {
+            id = node.attributes.id.value;
+        }
+
+        return id;
+    },
+
+    setId: function(node, id) {
+        if (node.setAttribute) {
+            node.setAttribute('id', id);
+        } else {
+            node.id = id;
+        }
     },
 
     /*
@@ -354,4 +376,4 @@ Y_DOM = {
 Y.DOM = Y_DOM;
 
 
-}, '3.5.0pr1' ,{requires:['oop','features']});
+}, '3.5.0' ,{requires:['oop','features']});

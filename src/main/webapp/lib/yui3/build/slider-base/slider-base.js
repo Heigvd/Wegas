@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -188,7 +188,18 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
                 thumbAriaLabelId: this.getClassName( 'label', Y.guid()) // get unique id for specifying a label for ARIA
             } ) );
     },
-
+    
+    /**
+     * Gives focus to the thumb enabling keyboard access after clicking thumb
+     *
+     * @method _onThumbClick
+     * @protected
+     */
+    _onThumbClick : function(e){
+        this.thumb.focus();
+    },
+    
+    
     /**
      * Creates the Y.DD.Drag instance used to handle the thumb movement and
      * binds Slider interaction to the configured value model.
@@ -213,6 +224,8 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
         boundingBox.on("key", this._onLeftRightKey, keyLeftRightSpec, this);
         boundingBox.on("key", this._onLeftRightKeyMeta, keyLeftRightSpecMeta, this);
         // End keyboard listeners //////////////////////////////////
+
+        this.thumb.on('click', this._onThumbClick, this);
 
         this._bindThumbDD();
 
@@ -748,4 +761,5 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
 });
 
 
-}, '3.5.0pr1' ,{requires:['widget', 'substitute', 'dd-constrain', 'event-key']});
+
+}, '3.5.0' ,{requires:['widget', 'substitute', 'dd-constrain', 'event-key']});

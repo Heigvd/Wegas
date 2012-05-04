@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -17,6 +17,9 @@ Provides dynamic loading of remote JavaScript and CSS resources.
 **/
 
 var Lang = Y.Lang,
+
+    CUSTOM_ATTRS, // defined lazily in Y.Get.Transaction._createNode()
+
     Get, Transaction;
 
 Y.Get = Get = {
@@ -108,6 +111,9 @@ Y.Get = Get = {
 
     @property {Function} [options.onFailure] Callback to execute after a
         transaction fails, times out, or is aborted.
+
+    @property {Function} [options.onProgress] Callback to execute after each
+        individual request in a transaction either succeeds or fails.
 
     @property {Function} [options.onSuccess] Callback to execute after a
         transaction completes successfully with no errors. Note that in browsers
@@ -517,10 +523,18 @@ Y.Get = Get = {
             async: doc && doc.createElement('script').async === true,
 
             // True if this browser fires an event when a dynamically injected
+            // link node fails to load. This is currently true for Firefox 9+
+            // and WebKit 535.24+.
+            cssFail: ua.gecko >= 9 || ua.webkit >= 535.24,
+
+            // True if this browser fires an event when a dynamically injected
             // link node finishes loading. This is currently true for IE, Opera,
-            // and Firefox 9+. Note that IE versions <9 fire the DOM 0 "onload"
-            // event, but not "load". All versions of IE fire "onload".
-            cssLoad: !!(ua.gecko ? ua.gecko >= 9 : !ua.webkit),
+            // Firefox 9+, and WebKit 535.24+. Note that IE versions <9 fire the
+            // DOM 0 "onload" event, but not "load". All versions of IE fire
+            // "onload".
+            // davglass: Seems that Chrome on Android needs this to be false.
+            cssLoad: ((!ua.gecko && !ua.webkit) || 
+                ua.gecko >= 9 || ua.webkit >= 535.24) && !(ua.chrome && ua.chrome <=18),
 
             // True if this browser preserves script execution order while
             // loading scripts in parallel as long as the script node's `async`
@@ -536,6 +550,12 @@ Y.Get = Get = {
         if (!Lang.isArray(urls)) {
             urls = [urls];
         }
+
+        options = Y.merge(this.options, options);
+
+        // Clone the attributes object so we don't end up modifying it by ref.
+        options.attributes = Y.merge(this.options.attributes,
+                options.attributes);
 
         for (i = 0, len = urls.length; i < len; ++i) {
             url = urls[i];
@@ -557,7 +577,6 @@ Y.Get = Get = {
             }
 
             Y.mix(req, options, false, null, 0, true);
-            Y.mix(req, this.options, false, null, 0, true);
 
             // If we didn't get an explicit type for this URL either in the
             // request options or the URL-specific options, try to determine
@@ -653,6 +672,12 @@ Y.Get = Get = {
             index, node;
 
         while (node = nodes.pop()) { // assignment
+            // Don't purge nodes that haven't finished loading (or errored out),
+            // since this can hang the transaction.
+            if (!node._yuiget_finished) {
+                continue;
+            }
+
             node.parentNode && node.parentNode.removeChild(node);
 
             // If this is a transaction-level purge and this node also exists in
@@ -706,8 +731,8 @@ Get.Transaction = Transaction = function (requests, options) {
     self._waiting   = 0;
 
     // Deprecated pre-3.5.0 properties.
-    self.tId   = self.id; // Use `id` instead.
-    self.win   = options.win || Y.config.win;
+    self.tId = self.id; // Use `id` instead.
+    self.win = options.win || Y.config.win;
 };
 
 /**
@@ -881,11 +906,25 @@ Transaction.prototype = {
     // -- Protected Methods ----------------------------------------------------
     _createNode: function (name, attrs, doc) {
         var node = doc.createElement(name),
-            attr;
+            attr, testEl;
+
+        if (!CUSTOM_ATTRS) {
+            // IE6 and IE7 expect property names rather than attribute names for
+            // certain attributes. Rather than sniffing, we do a quick feature
+            // test the first time _createNode() runs to determine whether we
+            // need to provide a workaround.
+            testEl = doc.createElement('div');
+            testEl.setAttribute('class', 'a');
+
+            CUSTOM_ATTRS = testEl.className === 'a' ? {} : {
+                'for'  : 'htmlFor',
+                'class': 'className'
+            };
+        }
 
         for (attr in attrs) {
             if (attrs.hasOwnProperty(attr)) {
-                node.setAttribute(attr, attrs[attr]);
+                node.setAttribute(CUSTOM_ATTRS[attr] || attr, attrs[attr]);
             }
         }
 
@@ -911,7 +950,7 @@ Transaction.prototype = {
         data = this._getEventData();
 
         if (errors) {
-            if (options.onTimeout && errors[errors.length - 1] === 'Timeout') {
+            if (options.onTimeout && errors[errors.length - 1].error === 'Timeout') {
                 options.onTimeout.call(thisObj, data);
             }
 
@@ -988,7 +1027,7 @@ Transaction.prototype = {
             node         = req.node,
             self         = this,
             ua           = Y.UA,
-            nodeType;
+            cssTimeout, nodeType;
 
         if (!node) {
             if (isScript) {
@@ -1008,8 +1047,13 @@ Transaction.prototype = {
         }
 
         function onLoad() {
+            if (cssTimeout) {
+                clearTimeout(cssTimeout);
+            }
+
             self._progress(null, req);
         }
+
 
         // Deal with script asynchronicity.
         if (isScript) {
@@ -1070,6 +1114,12 @@ Transaction.prototype = {
             // evens the playing field with older IEs.
             node.onerror = onError;
             node.onload  = onLoad;
+
+            // If this browser doesn't fire an event when CSS fails to load,
+            // fail after a timeout to avoid blocking the transaction queue.
+            if (!env.cssFail && !isScript) {
+                cssTimeout = setTimeout(onError, req.timeout || 3000);
+            }
         }
 
         this._waiting += 1;
@@ -1177,7 +1227,7 @@ Transaction.prototype = {
 
         }
 
-        req.finished = true;
+        req.node._yuiget_finished = req.finished = true;
 
         if (options.onProgress) {
             options.onProgress.call(options.context || this,
@@ -1202,4 +1252,4 @@ Transaction.prototype = {
 };
 
 
-}, '3.5.0pr1' ,{requires:['yui-base']});
+}, '3.5.0' ,{requires:['yui-base']});

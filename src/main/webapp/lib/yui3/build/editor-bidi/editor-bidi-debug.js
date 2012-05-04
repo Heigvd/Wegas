@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -44,7 +44,7 @@ YUI.add('editor-bidi', function(Y) {
         _checkForChange: function() {
             var host = this.get(HOST),
                 inst = host.getInstance(),
-                sel = new inst.Selection(),
+                sel = new inst.EditorSelection(),
                 node, direction;
             
             if (sel.isCollapsed) {
@@ -114,15 +114,15 @@ YUI.add('editor-bidi', function(Y) {
         /**
         * More elements may be needed. BODY *must* be in the list to take care of the special case.
         * 
-        * blockParent could be changed to use inst.Selection.BLOCKS
+        * blockParent could be changed to use inst.EditorSelection.BLOCKS
         * instead, but that would make Y.Plugin.EditorBidi.blockParent
         * unusable in non-RTE contexts (it being usable is a nice
         * side-effect).
         * @property BLOCKS
         * @static
         */
-        //BLOCKS: Y.Selection.BLOCKS+',LI,HR,' + BODY,
-        BLOCKS: Y.Selection.BLOCKS,
+        //BLOCKS: Y.EditorSelection.BLOCKS+',LI,HR,' + BODY,
+        BLOCKS: Y.EditorSelection.BLOCKS,
         /**
         * Template for creating a block element
         * @static
@@ -150,7 +150,7 @@ YUI.add('editor-bidi', function(Y) {
                 // we don't want to set the direction of BODY even if that
                 // happens, so we wrap everything in a DIV.
                 
-                // The code is based on YUI3's Y.Selection._wrapBlock function.
+                // The code is based on YUI3's Y.EditorSelection._wrapBlock function.
                 divNode = Y.Node.create(EditorBidi.DIV_WRAPPER);
                 parent.get('children').each(function(node, index) {
                     if (index === 0) {
@@ -273,7 +273,7 @@ YUI.add('editor-bidi', function(Y) {
     //TODO -- This should not add this command unless the plugin is added to the instance..
     Y.Plugin.ExecCommand.COMMANDS.bidi = function(cmd, direction) {
         var inst = this.getInstance(),
-            sel = new inst.Selection(),
+            sel = new inst.EditorSelection(),
             ns = this.get(HOST).get(HOST).editorBidi,
             returnValue, block,
             selected, selectedBlocks, dir;
@@ -283,12 +283,12 @@ YUI.add('editor-bidi', function(Y) {
             return;
         }
 
-        inst.Selection.filterBlocks();
+        inst.EditorSelection.filterBlocks();
 
         if (sel.isCollapsed) { // No selection
             block = EditorBidi.blockParent(sel.anchorNode);
             if (!block) {
-                block = inst.one('body').one(inst.Selection.BLOCKS);
+                block = inst.one('body').one(inst.EditorSelection.BLOCKS);
             }
             //Remove text-align attribute if it exists
             block = EditorBidi.removeTextAlign(block);
@@ -339,4 +339,4 @@ YUI.add('editor-bidi', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, requires:['editor-base']});
+}, '3.5.0' ,{skinnable:false, requires:['editor-base']});

@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -101,11 +101,11 @@ Y.mix(Y.namespace("DataType.Number"), {
         }
         // Not a Number, just return as string
         else {
-            Y.log("Could not format data " + Y.dump(data) + " from type Number", "warn", "datatype-number");
+            Y.log("Could not format data from type Number", "warn", "datatype-number");
             return (LANG.isValue(data) && data.toString) ? data.toString() : "";
         }
     }
 });
 
 
-}, '3.5.0pr1' );
+}, '3.5.0' );

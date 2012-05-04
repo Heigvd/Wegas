@@ -10,13 +10,17 @@
 package com.wegas.core.statemachine;
 
 import com.wegas.core.ejb.AbstractFacade;
+import com.wegas.core.ejb.GameManager;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
+import com.wegas.messaging.ejb.MessageEvent;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -54,5 +58,11 @@ public class StateMachineDescriptorFacade extends AbstractFacade<StateMachineDes
     @Override
     protected EntityManager getEntityManager() {
         return this.em;
+    }
+    @Inject
+    private GameManager gameManager;
+
+    public void listener(@Observes GameManager.PlayerAction playerAction) {
+        System.out.println("Something changed, we should run the fsm. #modified variables:" + gameManager.getUpdatedInstances());
     }
 }

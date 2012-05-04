@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -523,7 +523,7 @@ Parent.prototype = {
             children = this._items;
 
         if (child.get("focused")) {
-            child.set("focused", false);
+            child.blur(); // focused is readOnly, so use the public i/f to unset it
         }
 
         if (child.get("selected")) {
@@ -872,4 +872,4 @@ Y.augment(Parent, Y.ArrayList);
 Y.WidgetParent = Parent;
 
 
-}, '3.5.0pr1' ,{requires:['base-build', 'arraylist', 'widget']});
+}, '3.5.0' ,{requires:['base-build', 'arraylist', 'widget']});

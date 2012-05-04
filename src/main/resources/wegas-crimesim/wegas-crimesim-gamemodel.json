@@ -125,7 +125,7 @@
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
-                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(3).desactivate(self);\nthis[\"Sac poubelle n°5: Prélévement ADN\"].setActive(true);"
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(3).desactivate(self);\nthis[\"Sac poubelle n°5: Prélévement ADN\"].activate();"
                 },
                 "defaultVariableInstance": {
                     "@class": "ChoiceInstance",

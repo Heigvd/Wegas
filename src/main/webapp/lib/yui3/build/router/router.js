@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -9,6 +9,7 @@ YUI.add('router', function(Y) {
 /**
 Provides URL-based routing using HTML5 `pushState()` or the location hash.
 
+@module app
 @submodule router
 @since 3.4.0
 **/
@@ -17,9 +18,7 @@ var HistoryHash = Y.HistoryHash,
     QS          = Y.QueryString,
     YArray      = Y.Array,
 
-    win      = Y.config.win,
-    location = win.location,
-    origin   = location.origin || (location.protocol + '//' + location.host),
+    win = Y.config.win,
 
     // We have to queue up pushState calls to avoid race conditions, since the
     // popstate event doesn't actually provide any info on what URL it's
@@ -146,10 +145,11 @@ Y.Router = Y.extend(Router, Y.Base, {
 
         self._html5  = self.get('html5');
         self._routes = [];
+        self._url    = self._getURL();
 
         // Necessary because setters don't run on init.
-        this._setRoutes(config && config.routes ? config.routes :
-                this.get('routes'));
+        self._setRoutes(config && config.routes ? config.routes :
+                self.get('routes'));
 
         // Set up a history instance or hashchange listener.
         if (self._html5) {
@@ -159,7 +159,7 @@ Y.Router = Y.extend(Router, Y.Base, {
             Y.on('hashchange', self._afterHistoryChange, win, self);
         }
 
-        // Fire a 'ready' event once we're ready to route. We wait first for all
+        // Fire a `ready` event once we're ready to route. We wait first for all
         // subclass initializers to finish, then for window.onload, and then an
         // additional 20ms to allow the browser to fire a useless initial
         // `popstate` event if it wants to (and Chrome always wants to).
@@ -599,7 +599,8 @@ Y.Router = Y.extend(Router, Y.Base, {
     @protected
     **/
     _getOrigin: function () {
-        return origin;
+        var location = Y.getLocation();
+        return location.origin || (location.protocol + '//' + location.host);
     },
 
     /**
@@ -610,7 +611,9 @@ Y.Router = Y.extend(Router, Y.Base, {
     @protected
     **/
     _getPath: function () {
-        var path = (!this._html5 && this._getHashPath()) || location.pathname;
+        var path = (!this._html5 && this._getHashPath()) ||
+                Y.getLocation().pathname;
+
         return this.removeRoot(path);
     },
 
@@ -622,12 +625,15 @@ Y.Router = Y.extend(Router, Y.Base, {
     @protected
     **/
     _getQuery: function () {
+        var location = Y.getLocation(),
+            hash, matches;
+
         if (this._html5) {
             return location.search.substring(1);
         }
 
-        var hash    = HistoryHash.getHash(),
-            matches = hash.match(this._regexUrlQuery);
+        hash    = HistoryHash.getHash();
+        matches = hash.match(this._regexUrlQuery);
 
         return hash && matches ? matches[1] : location.search.substring(1);
     },
@@ -650,7 +656,7 @@ Y.Router = Y.extend(Router, Y.Base, {
 
         // Special case for catchall paths.
         if (path === '*') {
-            return /.*/;
+            return (/.*/);
         }
 
         path = path.replace(this._regexPathParam, function (match, operator, key) {
@@ -724,7 +730,7 @@ Y.Router = Y.extend(Router, Y.Base, {
     @protected
     **/
     _getURL: function () {
-        return location.toString();
+        return Y.getLocation().toString();
     },
 
     /**
@@ -744,7 +750,7 @@ Y.Router = Y.extend(Router, Y.Base, {
 
         // Prepend current scheme to scheme-relative URLs.
         if (origin && origin.indexOf('//') === 0) {
-            origin = location.protocol + origin;
+            origin = Y.getLocation().protocol + origin;
         }
 
         return !origin || origin === this._getOrigin();
@@ -931,12 +937,25 @@ Y.Router = Y.extend(Router, Y.Base, {
     @protected
     **/
     _afterHistoryChange: function (e) {
-        var self = this,
-            src  = e.src;
+        var self       = this,
+            src        = e.src,
+            prevURL    = self._url,
+            currentURL = self._getURL();
 
-        if (self._ready || src !== 'popstate') {
-            self._dispatch(self._getPath(), self._getURL(), src);
+        self._url = currentURL;
+
+        // Handles the awkwardness that is the `popstate` event. HTML5 browsers
+        // fire `popstate` right before they fire `hashchange`, and Chrome fires
+        // `popstate` on page load. If this router is not ready or the previous
+        // and current URLs only differ by their hash, then we want to ignore
+        // this `popstate` event.
+        if (src === 'popstate' &&
+                (!self._ready || prevURL.replace(/#.*$/, '') === currentURL.replace(/#.*$/, ''))) {
+
+            return;
         }
+
+        self._dispatch(self._getPath(), currentURL, src);
     },
 
     // -- Default Event Handlers -----------------------------------------------
@@ -1041,4 +1060,4 @@ version of YUI.
 Y.Controller = Y.Router;
 
 
-}, '3.5.0pr1' ,{optional:['querystring-parse'], requires:['array-extras', 'base-build', 'history']});
+}, '3.5.0' ,{optional:['querystring-parse'], requires:['array-extras', 'base-build', 'history']});

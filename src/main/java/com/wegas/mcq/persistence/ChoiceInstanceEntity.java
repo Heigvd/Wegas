@@ -32,7 +32,6 @@ public class ChoiceInstanceEntity extends VariableInstanceEntity {
      */
     private Boolean unread = true;
 
-
     /**
      *
      * @param a
@@ -73,4 +72,12 @@ public class ChoiceInstanceEntity extends VariableInstanceEntity {
         this.unread = unread;
     }
 
+    // *** Sugar *** //
+    public void activate() {
+        this.setActive(true);
+    }
+
+    public void desactivate() {
+        this.setActive(false);
+    }
 }

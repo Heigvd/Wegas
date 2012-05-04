@@ -1,6 +1,6 @@
 /*
-YUI 3.5.0pr1 (build 4342)
-Copyright 2011 Yahoo! Inc. All rights reserved.
+YUI 3.5.0 (build 5089)
+Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
@@ -115,6 +115,16 @@ YUI.add('dd-drop', function(Y) {
         */        
         groups: {
             value: ['default'],
+            getter: function() {
+                if (!this._groups) {
+                    this._groups = {};
+                }
+                var ret = [];
+                Y.each(this._groups, function(v, k) {
+                    ret[ret.length] = k;
+                });
+                return ret;
+            },            
             setter: function(g) {
                 this._groups = {};
                 Y.each(g, function(v, k) {
@@ -537,8 +547,8 @@ YUI.add('dd-drop', function(Y) {
                     if (DDM.activeDrag) {
                         this.get(NODE).removeClass(DDM.CSS_PREFIX + '-drop-over');
                         DDM.activeDrag.get(NODE).removeClass(DDM.CSS_PREFIX + '-drag-over');
-                        this.fire(EV_DROP_EXIT);
-                        DDM.activeDrag.fire('drag:exit', { drop: this });
+                        this.fire(EV_DROP_EXIT, { drop: this, drag: DDM.activeDrag });
+                        DDM.activeDrag.fire('drag:exit', { drop: this, drag: DDM.activeDrag });
                         delete DDM.otherDrops[this];
                     }
                 }
@@ -551,4 +561,4 @@ YUI.add('dd-drop', function(Y) {
 
 
 
-}, '3.5.0pr1' ,{skinnable:false, requires:['dd-ddm-drop', 'dd-drag']});
+}, '3.5.0' ,{skinnable:false, requires:['dd-ddm-drop', 'dd-drag']});

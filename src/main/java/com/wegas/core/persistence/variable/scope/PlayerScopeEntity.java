@@ -88,7 +88,7 @@ public class PlayerScopeEntity extends AbstractScopeEntity {
     @Override
     public void propagateDefaultInstance(boolean force) {
         VariableDescriptorEntity vd = this.getVariableDescriptor();
-        GameModelEntity gm = vd.getRootGameModel();
+        GameModelEntity gm = vd.getGameModel();
         for (GameEntity g : gm.getGames()) {
             for (TeamEntity t : g.getTeams()) {
                 for (PlayerEntity p : t.getPlayers()) {
