@@ -11,7 +11,7 @@ YUI().use(function (Y) {
         groups: {
             'wegas': {
                 combine: false,
-                //filter: "raw",
+                filter: "raw",
                 modules: {
 
                     /** Base **/
