@@ -51,8 +51,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(referencedColumnName = "gamemodelid")
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @XmlTransient
     private List<VariableDescriptorEntity> variableDescriptors;
     /**
@@ -60,8 +59,9 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * hierarchy (other VariableDescriptor can be placed inside of a
      * ListDescriptor's items List).
      */
-    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
+    @OneToMany( cascade = {CascadeType.ALL})
     @XmlElementWrapper(name = "variableDescriptors")
+    @JoinColumn(name="rootgamemodel_id")
     //@JsonManagedReference
     private List<VariableDescriptorEntity> rootVariableDescriptors;
     /**
@@ -169,7 +169,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
     public void setRootVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
         this.rootVariableDescriptors = variableDescriptors;
         this.variableDescriptors = variableDescriptors;
-        for (VariableDescriptorEntity vd: variableDescriptors) {
+        for (VariableDescriptorEntity vd : variableDescriptors) {
             vd.setGameModel(this);
         }
     }

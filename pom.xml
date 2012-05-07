@@ -35,7 +35,6 @@
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
         <jersey.version>1.8</jersey.version>
         <jdk.version>1.7</jdk.version>
-
         <skipTests>true</skipTests>
     </properties>
 
@@ -163,14 +162,14 @@
             <version>2.2.0</version>
             <scope>provided</scope>
         </dependency>
-
+<!--
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>1.0.CR4</version>
             <type>jar</type>
         </dependency>
-
+-->
         <!-- Liquibase -->
         <dependency>
             <groupId>org.liquibase</groupId>

@@ -71,6 +71,7 @@
                 "name":"Traces ED",
                 "description":"",
                 "duration":1,
+                "cost":1,
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
@@ -88,6 +89,7 @@
                 "name":"Fibres",
                 "description":"",
                 "duration":1,
+                "cost":1,
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
@@ -105,6 +107,7 @@
                 "name":"ADN",
                 "description":"",
                 "duration":2,
+                "cost":2,
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
@@ -122,6 +125,7 @@
                 "name":"Prélévement ADN",
                 "description":"",
                 "duration":2,
+                "cost":2,
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
@@ -151,6 +155,7 @@
                 "name":"ADN",
                 "description":"",
                 "duration":2,
+                "cost":2,
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",

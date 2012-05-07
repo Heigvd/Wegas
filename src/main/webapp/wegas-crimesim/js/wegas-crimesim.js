@@ -76,10 +76,10 @@ YUI.add('wegas-crimesim', function (Y) {
                     this._menu.show();
                 }, ".schedule-available .icon", this);
 
-                this._menu.menu.subscribe("click", this.onMenuClick,           // Listen for the choice menu click event
+                this._menu.menu.subscribe("click", this.onMenuClick,            // Listen for the choice menu click event
                     null, this);
 
-                cb.delegate("click", function(e) {                              // Show the question detail on left label click
+                cb.delegate("click", function (e) {                             // Show the question detail on left label click
                     var questionId = e.target.ancestor("tr").getAttribute("data-questionid");
                     this._syncDetailsPanel(questionId);
                 }, "td.schedule-leftcolum", this);
@@ -111,17 +111,20 @@ YUI.add('wegas-crimesim', function (Y) {
 
             // *** Rendering methods *** //
             _syncSchedule: function () {
-                var perPeriodBudget = 15, perPeriodLoad = [],
+                var perPeriodBudget = 15, perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
                 questionInstance,  reply, i, j, k, question, cols, replies, names,
-                // questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariablesBy('@class', "QuestionDescriptor"),
                 questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "evidences").items,
+                questionInstances = [],
                 period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
                 periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period"),
                 acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
                 cb = this.get(CONTENTBOX).one(".schedule-questions");
 
+
+                this._perPeriodLoad = perPeriodLoad;
+
                 if (!period) {
-                    cb.setContent("No time variable is set.")
+                    cb.setContent("No time variable is set.");
                     return;
                 }
 
@@ -131,9 +134,20 @@ YUI.add('wegas-crimesim', function (Y) {
                 }
                 acc.push("</tr>");
 
-                for (i = 0; i < questionsVarDesc.length; i += 1) {             // Generate table body
+                for (i = 0; i < questionsVarDesc.length; i += 1) {              // First pass to compute remaining time budget per period
                     question = questionsVarDesc[i];
                     questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(question);
+                    for (j = 0; j < questionInstance.replies.length; j += 1) {
+                        reply = questionInstance.replies[j];
+                        choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId);
+                        perPeriodLoad[reply.startTime] += choiceDescriptor.cost;
+                    }
+                    questionInstances.push(questionInstance);
+                }
+
+                for (i = 0; i < questionsVarDesc.length; i += 1) {              // Generate table body
+                    question = questionsVarDesc[i];
+                    questionInstance = questionInstances[i];
 
                     if (!questionInstance.active) {
                         continue;
@@ -146,47 +160,46 @@ YUI.add('wegas-crimesim', function (Y) {
                     names = [];
                     replies = [];
 
-                    for (j = period.minValue; j <= period.maxValue; j += 1) {   // Initially, all time slots are available
-                        if (j >= periodInstance.value) {
+                    for (j = 0; j <= period.maxValue - period.minValue; j += 1) {   // Initially, all time slots are available
+                        if (j >= periodInstance.value - period.minValue) {
                             cols.push(["schedule-item", "schedule-available"]);
                         } else {
                             cols.push(["schedule-item"]);
                         }
-                        replies.push(null)
-                        names.push("")
+                        replies.push(null);
+                        names.push("");
                     }
 
                     for (j = 0; j < questionInstance.replies.length; j += 1) {
                         reply = questionInstance.replies[j];
-                        var cIndex = reply.startTime - period.minValue,
-                        choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId),
+                        cIndex = reply.startTime;
+                        choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId);
                         choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choiceDescriptor);
 
-                        perPeriodLoad[cIndex] += choiceDescriptor.duration;
                         cols[cIndex] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-" + choiceDescriptor.duration];
 
                         names[cIndex] = choiceDescriptor.name;
                         replies[cIndex] = reply;
 
                         for (k = 1; k < choiceDescriptor.duration; k += 1) {
-                            cols[cIndex +k] = ["schedule-unavailable"];
+                            cols[cIndex + k] = ["schedule-unavailable"];
                         }
 
-                        cols[cIndex].push((choiceInstance.active) ? "schedule-active" : "schedule-inactive")
+                        cols[cIndex].push((choiceInstance.active) ? "schedule-active" : "schedule-inactive");
                     }
 
-                    for (j = period.minValue; j <= period.maxValue; j += 1) {
-                        if (j > periodInstance.value) {
-                            cols[j - period.minValue].push("schedule-future");    // Mark cells in the future
-                        } else if (j < periodInstance.value) {
-                            cols[j - period.minValue].push("schedule-past");      // Mark cells in the past
+                    for (j = 0; j <= period.maxValue - period.minValue; j += 1) {
+                        if (j > periodInstance.value - period.minValue) {
+                            cols[j].push("schedule-future");    // Mark cells in the future
+                        } else if (j < periodInstance.value - period.minValue) {
+                            cols[j].push("schedule-past");      // Mark cells in the past
                         } else {
-                            cols[j - period.minValue].push("schedule-present");   // Mark cells in the past
+                            cols[j].push("schedule-present");   // Mark cells in the past
                         }
                     }
 
                     for (j = 0; j < cols.length; j += 1) {
-                        acc.push('<td data-startTime="' + (period.minValue + j) +
+                        acc.push('<td data-startTime="' + j +
                             '" class="' + cols[j].join(" ") + '"><div><div class="icon" data-replyid="' +
                             ((replies[j]) ? replies[j].id : '') + '">' +
                             names[j] + '<div class="close-icon"></div></div></div></td>');
@@ -212,6 +225,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 targetNode = this.get(CONTENTBOX).one(".schedule-detail"),
                 question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId),
                 questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
+                periodDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
                 period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
                 acc = ['<div class="schedule-icon-close"></div><h1>',
                 question.label || question.name || "undefined",
@@ -230,11 +244,11 @@ YUI.add('wegas-crimesim', function (Y) {
                     choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choiceDescriptor);
 
                     acc.push('<div class="schedule-detail-reply"><h3>Period ',
-                        reply.startTime, ': ', choiceDescriptor.name || "undefined",
+                        reply.startTime - periodDesc.minValue, ': ', choiceDescriptor.name || "undefined",
                         '</h3><div class="content">');
-                    if ((reply.startTime + choiceDescriptor.duration) <= period.value) {
+                    if ((reply.startTime + choiceDescriptor.duration) <= period.value - periodDesc.minValue) {
                         acc.push(choiceDescriptor.answer);
-                    } else if (reply.startTime<=period.value) {
+                    } else if (reply.startTime <= period.value - periodDesc.minValue) {
                         acc.push("analysis in progress");
                     } else {
                         acc.push("analysis planified");
@@ -276,7 +290,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 });
             },
             _genMenuItems: function (question, startTime) {
-                var ret = [], i, choice, choiceInstance;
+                var perPeriodBudget = 15, ret = [], i, choice, choiceInstance;
                 for (i = 0; i < question.items.length; i += 1) {
                     choice = question.items[i];
                     choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choice);
@@ -286,7 +300,7 @@ YUI.add('wegas-crimesim', function (Y) {
                             reply: choice,
                             startTime: startTime
                         },
-                        disabled: !choiceInstance.active
+                        disabled: (!choiceInstance.active || this._perPeriodLoad[startTime] + choice.cost  > perPeriodBudget)
                     });
                 }
                 return ret;
