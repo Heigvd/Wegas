@@ -10,10 +10,13 @@
 package com.wegas.core.statemachine;
 
 import com.wegas.core.ejb.AbstractFacade;
+import com.wegas.core.ejb.GameManager;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
