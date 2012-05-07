@@ -76,19 +76,24 @@ public class ScriptManager {
     /**
      *
      * @param player
-     * @param s
+     * @param scripts A list of ScriptEntities to evaluate, all programming
+     * language should be the same
      * @param arguments
      * @return
      */
-    public Object eval(PlayerEntity player, ScriptEntity s, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(PlayerEntity player, List<ScriptEntity> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
+        if (scripts.isEmpty()) {
+            return null;
+        }
+        arguments = (Map<String, AbstractEntity>) (arguments != null ? arguments : new HashMap<>());
         ScriptEngineManager mgr = new ScriptEngineManager();
-        ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
+        ScriptEngine engine = mgr.getEngineByName(scripts.get(0).getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
         GameModelEntity gm = player.getTeam().getGame().getGameModel();
         List<VariableInstanceEntity> vis = new ArrayList<>();
 
         gameManager.setCurrentPlayer(player);                                // Set up request execution context
-
+        gameManager.setGameModel(gm);
         engine.put("self", player);                                             // Inject constants
 
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
@@ -99,8 +104,12 @@ public class ScriptManager {
             VariableInstanceEntity vi = vd.getVariableInstance(player);
             engine.put(vd.getName(), vi);
         }
+        String script = "";
+        for (ScriptEntity scriptEntity : scripts) {
+            script += scriptEntity.getContent() + ";";
+        }
 
-        Object result = engine.eval(s.getContent());
+        Object result = engine.eval(script);
         em.flush();
 
         gameManager.commit();
@@ -111,7 +120,20 @@ public class ScriptManager {
     public List<VariableInstanceEntity> getUpdatedEntities() {
         return gameManager.getUpdatedInstances();
     }
+
     // *** Sugar *** //
+    /**
+     *
+     * @param player
+     * @param s
+     * @param arguments
+     * @return
+     */
+    public Object eval(PlayerEntity player, ScriptEntity s, Map<String, AbstractEntity> arguments) throws ScriptException {
+        List<ScriptEntity> scripts = new ArrayList<>();
+        scripts.add(s);
+        return this.eval(player, scripts, arguments);
+    }
 
     /**
      *
