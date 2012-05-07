@@ -95,10 +95,10 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      *
      * @return
      */
-    @XmlTransient
-    public String getKey() {
-        return this.getClass().getSimpleName() + getId();
-    }
+    //@XmlTransient
+   // public String getKey() {
+    //    return this.getClass().getSimpleName() + getId();
+   // }
 
     /**
      *
@@ -106,14 +106,14 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * @return
      * @throws IOException
      */
-    @XmlTransient
-    public String toJson(Providers ps) throws IOException {
-        // Marshall new version
-        OutputStream os = new ByteArrayOutputStream();
-        MessageBodyWriter mbw = ps.getMessageBodyWriter(this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.APPLICATION_JSON_TYPE);
-        mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
-        return os.toString();
-    }
+  //  @XmlTransient
+  //  public String toJson(Providers ps) throws IOException {
+//        // Marshall new version
+//        OutputStream os = new ByteArrayOutputStream();
+//        MessageBodyWriter mbw = ps.getMessageBodyWriter(this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.APPLICATION_JSON_TYPE);
+//        mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
+//        return os.toString();
+//    }
 
     /**
      *

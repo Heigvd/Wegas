@@ -33,9 +33,10 @@
         <netbeans.hint.license>wegas</netbeans.hint.license>
         <shiro.version>1.2.0</shiro.version>
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
-        <jersey.version>1.8</jersey.version>
+        <jersey.version>1.11</jersey.version>
         <jdk.version>1.7</jdk.version>
-        <skipTests>true</skipTests>
+        <skipTests>false</skipTests>
+       <!-- <glassfish.embedded-static-shell.jar>C:\prog\glassfish-3.1.2\glassfish\lib\embedded\glassfish-embedded-static-shell.jar</glassfish.embedded-static-shell.jar>-->
     </properties>
 
     <profiles>
@@ -58,77 +59,6 @@
     </profiles>
 
     <dependencies>
-
-        <!-- Common -->
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.3</version>
-            <type>jar</type>
-        </dependency>
-
-        <!-- SL4J -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.6.4</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.0.2</version>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <type>jar</type>
-            <version>1.6.4</version>
-        </dependency>
-              <dependency>
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
-            <type>jar</type>
-            <version>1.2.16</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-            <scope>provided</scope>
-        </dependency>-->
-
-        <!-- JUnit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
-            <scope>test</scope>
-        </dependency>
-        <!--<dependency>
-            <groupId>com.bm</groupId>
-            <artifactId>ejb3unit</artifactId>
-            <version>2.0.0</version>
-            <scope>compile</scope>
-        </dependency>-->
-        <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
-            <version>3.1.1</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Jersey -->
         <dependency>
@@ -162,14 +92,7 @@
             <version>2.2.0</version>
             <scope>provided</scope>
         </dependency>
-<!--
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.0.CR4</version>
-            <type>jar</type>
-        </dependency>
--->
+
         <!-- Liquibase -->
         <dependency>
             <groupId>org.liquibase</groupId>
@@ -229,6 +152,7 @@
             <artifactId>javaee-web-api</artifactId>
             <version>6.0</version>
             <type>jar</type>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Facebook API dependencies -->
@@ -239,6 +163,41 @@
         </dependency>
 
         <!-- Test dependencies -->
+
+        <!-- JUnit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!--<dependency>
+            <groupId>com.bm</groupId>
+            <artifactId>ejb3unit</artifactId>
+            <version>2.0.0</version>
+            <scope>compile</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>glassfish-embedded-all</artifactId>
+            <version>3.1.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>glassfish-embedded-static-shell</artifactId>
+            <version>3.1.1</version>
+            <scope>system</scope>
+            <systemPath>${glassfish.embedded-static-shell.jar}</systemPath>
+        </dependency>-->
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
@@ -271,6 +230,43 @@
             <version>${atmosphere.version}</version>
         </dependency>-->
 
+
+        <!-- SL4J -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <type>jar</type>
+            <version>1.6.4</version>
+        </dependency>
+              <dependency>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+            <type>jar</type>
+            <version>1.2.16</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>provided</scope>
+        </dependency>-->
+
         <!-- YUI -->
         <!--<dependency>
             <groupId>com.yahoo.platform.yui</groupId>
@@ -287,6 +283,23 @@
             <version>9.1-901-1.jdbc4</version>
         </dependency>
         -->
+
+        <!--
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.CR4</version>
+            <type>jar</type>
+        </dependency>
+        -->
+
+        <!-- Common -->
+        <!-- <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.3</version>
+            <type>jar</type>
+        </dependency>-->
 
        <!-- <dependency>
             <groupId>org.mortbay.jetty</groupId>
@@ -318,7 +331,6 @@
     <build>
         <plugins>
             <!-- Report -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
