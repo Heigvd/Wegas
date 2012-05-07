@@ -67,7 +67,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      *
      */
     @ManyToOne
-    @JoinColumn(name = "gamemodelid")
+    @JoinColumn
     //@JsonBackReference
     @XmlTransient
     private GameModelEntity gameModel;

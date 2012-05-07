@@ -9,7 +9,7 @@
     </session-config>
 
     <welcome-file-list>
-        <welcome-file>faces/index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
 

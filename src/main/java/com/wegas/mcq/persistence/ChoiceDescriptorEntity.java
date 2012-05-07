@@ -51,6 +51,10 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
      *
      */
     private Long duration = new Long(1);
+    /**
+     *
+     */
+    private Long cost = new Long(1);
 
     /**
      *
@@ -64,6 +68,7 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
         this.setAnswer(other.getAnswer());
         this.setImpact(other.getImpact());
         this.setDuration(other.getDuration());
+        this.setCost(other.getCost());
     }
 
     /**
@@ -133,6 +138,19 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
     }
 
 
+    /**
+     * @return the cost
+     */
+    public Long getCost() {
+        return cost;
+    }
+
+    /**
+     * @param cost the cost to set
+     */
+    public void setCost(Long cost) {
+        this.cost = cost;
+    }
     // *** Sugar *** //
     public void activate(PlayerEntity p) {
        this.getVariableInstance(p).activate();
@@ -140,4 +158,5 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
     public void desactivate(PlayerEntity p) {
        this.getVariableInstance(p).desactivate();
     }
+
 }

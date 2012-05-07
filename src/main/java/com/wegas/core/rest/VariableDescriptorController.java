@@ -14,14 +14,16 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.script.ScriptEntity;
-import com.wegas.core.script.ScriptManager;
 import java.util.Collection;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,7 +33,7 @@ import javax.ws.rs.core.MediaType;
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor")
 public class VariableDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
 
-    private static final Logger logger = Logger.getLogger("VariableDescriptorController");
+    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorController.class);;
     /**
      *
      */
@@ -42,11 +44,6 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
      */
     @EJB
     private GameModelFacade gameModelFacade;
-    /**
-     *
-     */
-    @EJB
-    private ScriptManager scriptManager;
 
     /**
      *
@@ -58,7 +55,7 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     public Collection<AbstractEntity> index() {
         Long gameModelId = this.getGameModelId();
         GameModelEntity gameModel = gameModelFacade.find(gameModelId);
-        return (Collection) gameModel.getVariableDescriptors();
+        return (Collection) gameModel.getRootVariableDescriptors();
     }
 
     @Override

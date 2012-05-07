@@ -77,7 +77,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      * @return p
      */
     @GET
-    @Path("/SelectReply/{choiceDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [1-9][0-9]*}")
+    @Path("/SelectReply/{choiceDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public QuestionInstanceEntity selectReply(
             @PathParam("gameModelId") Long gameModelId,
