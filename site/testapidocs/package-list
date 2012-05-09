@@ -1,4 +1,5 @@
+com.wegas.core.ejb
 com.wegas.core.persistence
 com.wegas.core.persistence.statemachine
-com.wegas.core.persistence.users
+com.wegas.core.rest
 com.wegas.totest

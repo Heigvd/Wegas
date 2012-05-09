@@ -76,4 +76,9 @@ public interface GameModelFacade {
      * @return
      */
     public GameModelEntity reset(Long gameModelId);
+
+    /**
+     *
+     */
+    public void flush();
 }

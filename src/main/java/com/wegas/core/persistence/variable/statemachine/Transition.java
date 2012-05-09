@@ -53,6 +53,6 @@ public class Transition implements Serializable {
 
     @Override
     public String toString() {
-        return "Transition{" + "triggerCondition=" + triggerCondition + ", nextState=" + nextStateId + '}';
+        return "Transition{" + "triggerCondition=" + triggerCondition + ", nextStateId=" + nextStateId + '}';
     }
 }

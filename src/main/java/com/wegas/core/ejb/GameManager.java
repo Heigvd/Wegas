@@ -9,9 +9,9 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
-import com.wegas.messaging.ejb.MessageEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,11 @@ public class GameManager {
     /**
      *
      */
-    private List<VariableInstanceEntity> updatedInstances = new ArrayList<VariableInstanceEntity>();
+    private List<VariableInstanceEntity> updatedInstances = new ArrayList<>();
+    /**
+     *
+     */
+    private GameModelEntity gameModel;
 
     /**
      *
@@ -67,8 +71,18 @@ public class GameManager {
         this.currentPlayer = currentPlayer;
     }
 
+    public GameModelEntity getGameModel() {
+        return gameModel;
+    }
+
+    public void setGameModel(GameModelEntity gameModel) {
+        this.gameModel = gameModel;
+    }
+
     public void addUpdatedInstance(VariableInstanceEntity instance) {
-        this.getUpdatedInstances().add(instance);
+        if (!this.getUpdatedInstances().contains(instance)) {
+            this.getUpdatedInstances().add(instance);
+        }
     }
 
     /**
@@ -83,6 +97,10 @@ public class GameManager {
      */
     public void setUpdatedInstances(List<VariableInstanceEntity> updatedInstances) {
         this.updatedInstances = updatedInstances;
+    }
+
+    public void clearUpdatedInstances() {
+        this.updatedInstances.clear();
     }
 
     public class PlayerAction implements Serializable {
