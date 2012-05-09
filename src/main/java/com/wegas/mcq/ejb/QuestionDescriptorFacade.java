@@ -9,7 +9,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.AbstractFacade;
+import com.wegas.core.ejb.AbstractFacadeBean;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -35,7 +35,7 @@ import javax.script.ScriptException;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class QuestionDescriptorFacade extends AbstractFacade<ChoiceDescriptorEntity> {
+public class QuestionDescriptorFacade extends AbstractFacadeBean<ChoiceDescriptorEntity> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -130,7 +130,7 @@ public class QuestionDescriptorFacade extends AbstractFacade<ChoiceDescriptorEnt
      * @return
      */
     public List<VariableInstanceEntity> validateReply(PlayerEntity player, ReplyEntity reply) throws ScriptException {
-        HashMap<String, AbstractEntity> arguments = new HashMap<>();
+        HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
         arguments.put("selectedReply", reply);
         scriptManager.eval(player, reply.getChoiceDescriptor().getImpact(), arguments);
         return scriptManager.getUpdatedEntities();

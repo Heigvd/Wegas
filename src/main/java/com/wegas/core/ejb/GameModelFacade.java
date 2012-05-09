@@ -10,46 +10,70 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.GameModelEntity;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@Stateless
-public class GameModelFacade extends AbstractFacade<GameModelEntity> {
+public interface GameModelFacade {
 
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+    /**
+     *
+     * @param entity
+     */
+    public void create(GameModelEntity entity);
+
+    /**
+     *
+     * @param entity
+     */
+    public void edit(final GameModelEntity entity);
+
+    /**
+     *
+     * @param entityId
+     * @param entity
+     * @return
+     */
+    public GameModelEntity update(final Long entityId, final GameModelEntity entity);
+
+    /**
+     *
+     * @param entity
+     */
+    public void remove(GameModelEntity entity);
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public GameModelEntity find(final Object id);
+
+    /**
+     *
+     * @return
+     */
+    public int count();
+
+    /**
+     *
+     * @return
+     */
+    public List<GameModelEntity> findAll();
+
+    /**
+     *
+     * @param range
+     * @return
+     */
+    public List<GameModelEntity> findRange(int[] range);
 
     /**
      *
      * @param gameModelId
      * @return
      */
-    public GameModelEntity reset(Long gameModelId) {
-        GameModelEntity gm = this.find(gameModelId);
-        gm.propagateDefaultVariableInstance(true);
-        em.flush();
-        em.refresh(gm);
-        return gm;
-    }
-
-    /**
-     *
-     */
-    public GameModelFacade() {
-        super(GameModelEntity.class);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
+    public GameModelEntity reset(Long gameModelId);
 }

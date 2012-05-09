@@ -34,7 +34,7 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
      */
     @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<ReplyEntity> replies = new ArrayList<>();
+    private List<ReplyEntity> replies = new ArrayList<ReplyEntity>();
     /**
      *
      */

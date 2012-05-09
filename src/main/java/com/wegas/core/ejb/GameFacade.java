@@ -27,7 +27,7 @@ import javax.persistence.criteria.Root;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class GameFacade extends AbstractFacade<GameEntity> {
+public class GameFacade extends AbstractFacadeBean<GameEntity> {
 
     /**
      *

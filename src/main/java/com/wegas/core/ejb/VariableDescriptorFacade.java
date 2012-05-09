@@ -27,7 +27,7 @@ import javax.persistence.criteria.Root;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class VariableDescriptorFacade extends AbstractFacade<VariableDescriptorEntity> {
+public class VariableDescriptorFacade extends AbstractFacadeBean<VariableDescriptorEntity> {
 
     /**
      *

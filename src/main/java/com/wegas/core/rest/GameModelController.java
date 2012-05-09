@@ -10,6 +10,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.GameModelFacadeBean;
 import com.wegas.core.persistence.layout.WidgetEntity;
 import java.util.List;
 import java.util.logging.Logger;
@@ -27,7 +28,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel")
-public class GameModelController extends AbstractRestController<GameModelFacade> {
+public class GameModelController extends AbstractRestController<GameModelFacadeBean> {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM");
     /**
@@ -41,8 +42,8 @@ public class GameModelController extends AbstractRestController<GameModelFacade>
      * @return
      */
     @Override
-    protected GameModelFacade getFacade() {
-        return gameModelFacade;
+    protected GameModelFacadeBean getFacade() {
+        return (GameModelFacadeBean)gameModelFacade;
     }
 
     /**

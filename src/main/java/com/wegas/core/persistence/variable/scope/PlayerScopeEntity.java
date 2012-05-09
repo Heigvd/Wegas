@@ -40,7 +40,7 @@ public class PlayerScopeEntity extends AbstractScopeEntity {
     @OneToMany(cascade = {CascadeType.ALL})
     @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
     @XmlTransient
-    private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<>();
+    private Map<Long, VariableInstanceEntity> variableInstances = new HashMap<Long, VariableInstanceEntity>();
 
     /**
      *

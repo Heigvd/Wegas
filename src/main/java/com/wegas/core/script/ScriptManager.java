@@ -85,7 +85,7 @@ public class ScriptManager {
         ScriptEngine engine = mgr.getEngineByName(s.getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
         GameModelEntity gm = player.getTeam().getGame().getGameModel();
-        List<VariableInstanceEntity> vis = new ArrayList<>();
+        List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
 
         gameManager.setCurrentPlayer(player);                                // Set up request execution context
 

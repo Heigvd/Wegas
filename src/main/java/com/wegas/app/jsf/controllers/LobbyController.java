@@ -10,10 +10,7 @@
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.app.jsf.controllers.util.JsfUtil;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.UserFacade;
+import com.wegas.core.ejb.*;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -136,7 +133,7 @@ public class LobbyController implements Serializable {
         }
         catch (EJBException e) {
             if (e.getCausedByException() instanceof NoResultException) {
-                JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("com.wegas.app.Bundle").getString("LobbyPage_GameNotFound"));
+                JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("wegas-app.Bundle").getString("LobbyPage_GameNotFound"));
                 return null;
             } else {
                 throw e;

@@ -19,7 +19,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class GroupFacade extends AbstractFacade<GroupEntity> {
+public class GroupFacade extends AbstractFacadeBean<GroupEntity> {
     /**
      *
      */

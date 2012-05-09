@@ -71,7 +71,7 @@ public class GameModelScopeEntity extends AbstractScopeEntity {
      */
     @Override
     public Map<Long, VariableInstanceEntity> getVariableInstances() {
-        Map<Long, VariableInstanceEntity> ret = new HashMap<>();
+        Map<Long, VariableInstanceEntity> ret = new HashMap<Long, VariableInstanceEntity>();
         ret.put(new Long("0"), getVariableInstance());
         return ret;
     }

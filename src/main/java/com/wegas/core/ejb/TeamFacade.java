@@ -23,7 +23,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class TeamFacade extends AbstractFacade<TeamEntity> {
+public class TeamFacade extends AbstractFacadeBean<TeamEntity> {
 
     /**
      *

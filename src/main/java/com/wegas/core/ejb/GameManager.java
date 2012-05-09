@@ -40,7 +40,7 @@ public class GameManager {
     /**
      *
      */
-    private List<VariableInstanceEntity> updatedInstances = new ArrayList<>();
+    private List<VariableInstanceEntity> updatedInstances = new ArrayList<VariableInstanceEntity>();
 
     /**
      *

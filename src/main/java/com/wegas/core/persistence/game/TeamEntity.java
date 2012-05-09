@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
-import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+//import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 /**
  *
@@ -62,7 +62,7 @@ public class TeamEntity extends AbstractEntity {
     @ManyToOne
     @NotNull
     @XmlTransient
-    @XmlInverseReference(mappedBy = "teams")
+    //@XmlInverseReference(mappedBy = "teams")
     @JoinColumn(name = "parentgame_id")
     @JsonBackReference(value = "game-team")
     private GameEntity game;

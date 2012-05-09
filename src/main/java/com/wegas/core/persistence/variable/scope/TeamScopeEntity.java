@@ -42,7 +42,7 @@ public class TeamScopeEntity extends AbstractScopeEntity {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @XmlTransient
-    private Map<Long, VariableInstanceEntity> teamVariableInstances = new HashMap<>();
+    private Map<Long, VariableInstanceEntity> teamVariableInstances = new HashMap<Long, VariableInstanceEntity>();
 
     /**
      *
