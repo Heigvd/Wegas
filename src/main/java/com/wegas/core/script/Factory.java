@@ -9,7 +9,7 @@
  */
 package com.wegas.core.script;
 
-import com.wegas.core.ejb.AbstractFacade;
+import com.wegas.core.ejb.AbstractFacadeBean;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -25,8 +25,8 @@ abstract public class Factory {
      * @return
      * @throws NamingException
      */
-    static public AbstractFacade lookupBean(String name) throws NamingException {
+    static public AbstractFacadeBean lookupBean(String name) throws NamingException {
         InitialContext ctx = new InitialContext();
-        return (AbstractFacade) ctx.lookup("java:module/"+name);
+        return (AbstractFacadeBean) ctx.lookup("java:module/"+name);
     }
 }

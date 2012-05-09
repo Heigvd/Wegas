@@ -21,7 +21,7 @@ import javax.persistence.criteria.Root;
  * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public abstract class AbstractFacade<T extends AbstractEntity> {
+public abstract class AbstractFacadeBean<T extends AbstractEntity> {
 
     /**
      *
@@ -32,7 +32,7 @@ public abstract class AbstractFacade<T extends AbstractEntity> {
      *
      * @param entityClass
      */
-    public AbstractFacade(final Class<T> entityClass) {
+    public AbstractFacadeBean(final Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 

@@ -38,7 +38,7 @@ public class InboxInstanceEntity extends VariableInstanceEntity {
     @OneToMany(mappedBy = "inboxInstanceEntity", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("inbox-message")
     @JoinColumn(name = "variableinstance_id")
-    private List<MessageEntity> messages = new ArrayList<>();
+    private List<MessageEntity> messages = new ArrayList<MessageEntity>();
 
     /**
      * @return the replies

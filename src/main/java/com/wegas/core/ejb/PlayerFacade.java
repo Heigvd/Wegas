@@ -22,7 +22,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class PlayerFacade extends AbstractFacade<PlayerEntity> {
+public class PlayerFacade extends AbstractFacadeBean<PlayerEntity> {
 
     /**
      *

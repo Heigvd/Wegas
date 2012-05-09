@@ -7,10 +7,10 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.messaging.ejb;
+package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
-import com.wegas.messaging.persistence.variable.MessageEntity;
+import com.wegas.core.persistence.game.GameModelEntity;
+import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,16 +20,31 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class MessageFacade extends AbstractFacadeBean<MessageEntity> {
+@Local(GameModelFacade.class)
+public class GameModelFacadeBean extends AbstractFacadeBean<GameModelEntity> implements GameModelFacade {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
     /**
      *
+     * @param gameModelId
+     * @return
      */
-    public MessageFacade() {
-        super(MessageEntity.class);
+    @Override
+    public GameModelEntity reset(Long gameModelId) {
+        GameModelEntity gm = this.find(gameModelId);
+        gm.propagateDefaultVariableInstance(true);
+        em.flush();
+        em.refresh(gm);
+        return gm;
+    }
+
+    /**
+     *
+     */
+    public GameModelFacadeBean() {
+        super(GameModelEntity.class);
     }
 
     /**
@@ -40,4 +55,5 @@ public class MessageFacade extends AbstractFacadeBean<MessageEntity> {
     protected EntityManager getEntityManager() {
         return em;
     }
+
 }
