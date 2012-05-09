@@ -10,59 +10,102 @@
  */
 package com.wegas.core.statemachine;
 
+import com.wegas.core.ejb.GameManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.persistence.variable.EntityUpdateEvent;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstanceEntity;
+import com.wegas.core.persistence.variable.statemachine.Transition;
+import com.wegas.core.script.ScriptEntity;
+import com.wegas.core.script.ScriptManager;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.script.ScriptException;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@SessionScoped
+@RequestScoped
 public class StateMachineRunner implements Serializable {
 
-    static final Logger logger = Logger.getLogger("StateMachineRunner");
+    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineRunner.class);
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
-    private HashSet<Class> ignorableInstances = new HashSet<>();
-
+    @EJB
+    private ScriptManager scriptManager;
+    /**
+     * StateMachineRunner is running
+     */
+    private Boolean run = false;
+    private Integer steps = 0;
     private HashSet<StateMachineInstanceEntity> stateMachines = new HashSet<>();
+    private HashSet<Transition> passedTransitions = new HashSet<>();
+    @Inject
+    private GameManager gameManager;
 
     public StateMachineRunner() {
     }
 
-    public void entityUpdateListener(@Observes EntityUpdateEvent euEvent) {
-        VariableInstanceEntity entity = (VariableInstanceEntity) euEvent.getEntity();
-        if (ignorableInstances.contains(entity.getClass())) {
-        } else {
-            logger.log(Level.INFO, "StateMachineRunner, update: {0}", euEvent.getEntity());
-            Long gmId = entity.getDescriptor().getGameModel().getId();
+    public void entityUpdateListener(@Observes GameManager.PlayerAction playerAction) {
+        if (run) {
+            logger.info("Running, received changed {}", gameManager.getUpdatedInstances());
+            return;
+        }
+        //gameManager.clearUpdatedInstances();
+        //TODO: Should Eval without firing Event, lock SMInstance (concurrency)
+        run = true;
+        if (stateMachines.isEmpty()) {                                          // load stateMachines only once
+            Long gmId = gameManager.getGameModel().getId();
             List<VariableDescriptorEntity> stateMachineDescriptors = variableDescriptorFacade.findByClassAndGameModelId(StateMachineDescriptorEntity.class, gmId);
-            logger.log(Level.INFO, "StateMachineDescriptor(s) found: {0}", stateMachineDescriptors);
-            for (VariableDescriptorEntity stateMachineDescriptor : stateMachineDescriptors){
-               stateMachines.addAll((Collection<StateMachineInstanceEntity>)stateMachineDescriptor.getScope().getVariableInstances());
+            for (VariableDescriptorEntity stateMachineDescriptor : stateMachineDescriptors) {
+                stateMachines.add((StateMachineInstanceEntity) stateMachineDescriptor.getScope().getVariableInstance(gameManager.getCurrentPlayer()));
             }
-            //NEEEEEED a player id !
+            logger.info("StateMachineInstance(s) found: {}", stateMachines);
+        }
+        //Put that in the SM Facade
+        ArrayList<ScriptEntity> impacts = new ArrayList<>();
+        for (StateMachineInstanceEntity stateMachine : stateMachines) {
+            List<Transition> transitions = stateMachine.getCurrentState().getTransitions();
+            for (Transition transition : transitions) {
+                Boolean validTransition = false;
+                try {
+                    validTransition = (Boolean) scriptManager.eval(gameManager.getCurrentPlayer(), transition.getTriggerCondition());
+                } catch (ScriptException ex) {
+                    logger.error("Script Failed : {} returned: {}", transition.getTriggerCondition(), ex);
+                }
+                if (validTransition) {
+                    if (passedTransitions.contains(transition)) {
+                        logger.warn("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                    } else {
+                        stateMachine.setCurrentStateId(transition.getNextStateId());
+                        impacts.add(stateMachine.getCurrentState().getOnEnterEvent());
+                        passedTransitions.add(transition);
+                        break;
+                    }
+                }
+
+            }
+        }
+        steps += 1;
+        run = false;
+        try {
+            scriptManager.eval(gameManager.getCurrentPlayer(), impacts, null);
+        } catch (ScriptException ex) {
+            logger.error("Script Failed : {} returned: {}", impacts, ex);
         }
     }
 
-    @PostConstruct
-    public void buildIgnorableInstances() {
-        ignorableInstances.add(StateMachineInstanceEntity.class);
-        ignorableInstances.add(TriggerInstanceEntity.class);
+    @PreDestroy
+    public void logFinalState() {
+        logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", gameManager.getCurrentPlayer().getId(), passedTransitions);
     }
 }

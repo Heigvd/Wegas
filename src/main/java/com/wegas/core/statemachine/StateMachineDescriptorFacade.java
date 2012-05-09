@@ -55,10 +55,5 @@ public class StateMachineDescriptorFacade extends AbstractFacadeBean<StateMachin
     protected EntityManager getEntityManager() {
         return this.em;
     }
-    @Inject
-    private GameManager gameManager;
 
-    public void listener(@Observes GameManager.PlayerAction playerAction) {
-        System.out.println("Something changed, we should run the fsm. #modified variables:" + gameManager.getUpdatedInstances());
-    }
 }
