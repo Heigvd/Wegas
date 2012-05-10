@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>CUSTOM-Run -skip-test</actionName>
+        <displayName>Run -skip-test</displayName>
+        <goals>
+            <goal>package</goal>
+        </goals>
+        <properties>
+            <skipTests>true</skipTests>
+            <netbeans.deploy>true</netbeans.deploy>
+        </properties>
+    </action>
+    <action>
+        <actionName>CUSTOM-Debug -skip-test</actionName>
+        <displayName>Debug -skip-test</displayName>
+        <goals>
+            <goal>package</goal>
+        </goals>
+        <properties>
+            <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
+            <netbeans.deploy>true</netbeans.deploy>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+    <action>
+        <actionName>CUSTOM-Build site</actionName>
+        <displayName>Build site</displayName>
+        <goals>
+            <goal>site</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-Run Cobertura</actionName>
+        <displayName>Run Cobertura</displayName>
+        <goals>
+            <goal>cobertura:cobertura</goal>
+        </goals>
+    </action>
+
+</actions>
