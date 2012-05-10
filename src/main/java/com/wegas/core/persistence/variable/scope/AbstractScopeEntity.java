@@ -42,7 +42,6 @@ abstract public class AbstractScopeEntity extends AbstractEntity implements Seri
      *
      */
     @Id
-    @XmlID
     @GeneratedValue
     private Long id;
     /**
@@ -58,7 +57,6 @@ abstract public class AbstractScopeEntity extends AbstractEntity implements Seri
      * @param userId
      * @param v
      */
-    @XmlTransient
     abstract public void setVariableInstance(Long userId, VariableInstanceEntity v);
 
     /**
@@ -66,7 +64,6 @@ abstract public class AbstractScopeEntity extends AbstractEntity implements Seri
      * @param player
      * @return
      */
-    @XmlTransient
     abstract public VariableInstanceEntity getVariableInstance(PlayerEntity player);
 
     /**
@@ -79,7 +76,6 @@ abstract public class AbstractScopeEntity extends AbstractEntity implements Seri
      *
      * @param force
      */
-    @XmlTransient
     abstract public void propagateDefaultInstance(boolean force);
 
     /**
@@ -117,7 +113,6 @@ abstract public class AbstractScopeEntity extends AbstractEntity implements Seri
      * @param id
      */
     @Override
-    @XmlTransient
     public void setId(Long id) {
         this.id = id;
     }

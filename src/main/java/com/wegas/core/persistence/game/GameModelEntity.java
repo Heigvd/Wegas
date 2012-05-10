@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -29,7 +28,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Entity
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = "name"))
-@XmlType(name = "GameModel", propOrder = {"@class", "id", "name", "teams"})
+@XmlType(name = "GameModel")
 public class GameModelEntity extends NamedEntity implements Serializable {
 
     private static final Logger logger = Logger.getLogger("GameModelEntity");
@@ -38,7 +37,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      */
     @Id
-    @XmlID
     @Column(name = "gamemodelid")
     @GeneratedValue
     private Long id;
@@ -46,6 +44,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      */
     @NotNull
+    //@XmlID
     //@Pattern(regexp = "^\\w+$")
     private String name;
     /**
@@ -60,7 +59,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * ListDescriptor's items List).
      */
     @OneToMany( cascade = {CascadeType.ALL})
-    @XmlElementWrapper(name = "variableDescriptors")
     @JoinColumn(name="rootgamemodel_id")
     //@JsonManagedReference
     private List<VariableDescriptorEntity> rootVariableDescriptors;
@@ -145,7 +143,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      * @param variableDescriptors
      */
-    @XmlTransient
     public void setVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
         this.variableDescriptors = variableDescriptors;
     }
@@ -178,7 +175,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      * @param variableDescriptor
      */
-    @XmlTransient
     public void addVariableDescriptor(VariableDescriptorEntity variableDescriptor) {
         this.rootVariableDescriptors.add(variableDescriptor);
         this.variableDescriptors.add(variableDescriptor);
@@ -206,7 +202,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      * @param game
      */
-    @XmlTransient
     public void addGame(GameEntity game) {
         this.games.add(game);
         game.setGameModel(this);
