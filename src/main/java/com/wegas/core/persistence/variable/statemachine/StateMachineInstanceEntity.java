@@ -33,7 +33,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 })
 public class StateMachineInstanceEntity extends VariableInstanceEntity implements Serializable {
 
-    @Column(name = "currentstate_id")
+    @Column(name = "currentstate_id", nullable=false)
     private Long currentStateId;
 
     public StateMachineInstanceEntity() {
