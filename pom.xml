@@ -86,11 +86,6 @@
         <!-- Apache Shiro Dependencies-->
         <dependency>
             <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-            <version>${shiro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-web</artifactId>
             <version>${shiro.version}</version>
         </dependency>
@@ -116,7 +111,7 @@
 	</dependency>-->
 
         <!-- Facebook api -->
-<!--        <dependency>
+        <!--<dependency>
             <groupId>com.google.code.facebookapi</groupId>
             <artifactId>facebook-java-api</artifactId>
             <version>2.0.5</version>
@@ -165,7 +160,7 @@
             <groupId>org.slf4j</groupId>
             <type>jar</type>
             <version>1.6.4</version>
-<!--            <scope>provided</scope>-->
+        <!-- <scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
