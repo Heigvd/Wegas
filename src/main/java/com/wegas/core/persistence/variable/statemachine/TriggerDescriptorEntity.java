@@ -123,7 +123,6 @@ public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
             initialState.setOnEnterEvent(this.postTriggerEvent);
             transition.setNextStateId(1L);
         }
-        this.setInitialStateId(1L);
         ((TriggerInstanceEntity)this.getDefaultVariableInstance()).setCurrentStateId(1L);
         this.setStates(states);
     }
