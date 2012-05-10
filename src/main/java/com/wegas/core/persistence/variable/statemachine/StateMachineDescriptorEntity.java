@@ -11,9 +11,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -70,19 +68,26 @@ public class StateMachineDescriptorEntity extends VariableDescriptorEntity<State
     }
 
     private void mergeStates(HashMap<Long, State> newStates) {
-        for (Long oldKeys : this.states.keySet()) {
+
+        for (Iterator<Long> it = this.states.keySet().iterator(); it.hasNext();) {
+            Long oldKeys = it.next();
             if (newStates.get(oldKeys) == null) {
-                this.states.remove(oldKeys);
+                it.remove();
             } else {
                 this.states.get(oldKeys).merge(newStates.get(oldKeys));
             }
         }
-        Iterator<Long> it = newStates.keySet().iterator();
-        while (it.hasNext()) {
+
+        Set<Long> keys = new HashSet<>();
+
+        for (Iterator<Long> it = newStates.keySet().iterator(); it.hasNext();) {
             Long newKey = it.next();
             if (this.states.get(newKey) == null) {
-                this.states.put(newKey, newStates.get(newKey));
+                keys.add(newKey);
             }
+        }
+        for (Long modifiedKey : keys) {
+            this.states.put(modifiedKey, newStates.get(modifiedKey));
         }
     }
 }
