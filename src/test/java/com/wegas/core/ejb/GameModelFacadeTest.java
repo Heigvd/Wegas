@@ -46,7 +46,7 @@ public class GameModelFacadeTest {
         System.out.println("[WeGAS Entity Test] Set up context...");
 
         Map<String, Object> properties = new HashMap<>();
-        //properties.put(EJBContainer.MODULES,new File[]{new File("target/classes")});
+        properties.put(EJBContainer.MODULES, new File[]{new File("target/classes")});
         properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
         ejbContainer = EJBContainer.createEJBContainer(properties);
         context = ejbContainer.getContext();
@@ -70,8 +70,7 @@ public class GameModelFacadeTest {
     }
 
     @Test
-    public void createGameModel()  {
-        // logger.debug("createGameModel() {}",this.lookupBy(GameModelFacadeBean.class, null));
+    public void createGameModel() {
         System.out.println("createGameModel()");
         String name = "test";
 
@@ -97,6 +96,7 @@ public class GameModelFacadeTest {
         GameModelEntity gameModel = new GameModelEntity();
         gameModel.setName("test-gamemodel");
         gameModelFacade.create(gameModel);
+        System.out.println(gameModel);
 
         StringDescriptorEntity stringDescriptor = new StringDescriptorEntity();
         stringDescriptor.setDefaultVariableInstance(new StringInstanceEntity());
