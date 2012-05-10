@@ -122,7 +122,6 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      * @param player
      * @return
      */
-    @XmlTransient
     public T getVariableInstance(PlayerEntity player) {
         return (T) this.scope.getVariableInstance(player);
     }
