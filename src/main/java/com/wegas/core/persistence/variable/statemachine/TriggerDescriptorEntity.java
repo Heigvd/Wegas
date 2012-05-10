@@ -82,7 +82,6 @@ public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
         this.oneShot = entity.isOneShot();
         this.postTriggerEvent = entity.getPostTriggerEvent();
         this.triggerEvent = entity.getTriggerEvent();
-        this.setStates(null);
         entity.buildStateMachine();
         super.merge(entity);
     }
@@ -124,7 +123,6 @@ public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
             initialState.setOnEnterEvent(this.postTriggerEvent);
             transition.setNextStateId(1L);
         }
-        this.setInitialStateId(1L);
         ((TriggerInstanceEntity)this.getDefaultVariableInstance()).setCurrentStateId(1L);
         this.setStates(states);
     }
