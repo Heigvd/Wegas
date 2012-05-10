@@ -5,14 +5,16 @@
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
- * Copyright (C) 2011
+ * Copyright (C) 2012
  */
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.io.Serializable;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -31,12 +33,6 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 })
 public class StateMachineInstanceEntity extends VariableInstanceEntity implements Serializable {
 
-//    @Column(name = "currentstate_id", nullable = true, insertable = false, updatable = false)
-//    private Long currentStateId;
-//    @XmlTransient
-//    @ManyToOne
-//    @JoinColumn(name = "currentstate_id", referencedColumnName = "state_id", insertable = true, updatable = true)
-//    private State currentState;
     @Column(name = "currentstate_id")
     private Long currentStateId;
 
@@ -64,10 +60,7 @@ public class StateMachineInstanceEntity extends VariableInstanceEntity implement
 
     @Override
     public void merge(AbstractEntity a) {
-        StateMachineInstanceEntity entity = (StateMachineInstanceEntity) a;
-//        if (entity.getCurrentState() != null) {
-//            this.setCurrentState(entity.getCurrentState());
-//        }
+        this.currentStateId = ((StateMachineInstanceEntity) a).getCurrentStateId();
     }
 
     @Override
