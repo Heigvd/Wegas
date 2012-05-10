@@ -78,4 +78,10 @@ public class State implements Serializable {
     public String toString() {
         return "State{" + "id=" + id + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
+
+    public void merge(State newState) {
+        this.label = newState.getLabel();
+        this.onEnterEvent = newState.getOnEnterEvent();
+        this.transitions = newState.getTransitions();
+    }
 }
