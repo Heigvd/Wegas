@@ -9,7 +9,7 @@
  */
 package com.wegas.core.rest;
 
-import javax.ejb.EJBException;
+import javax.ejb.TransactionRolledbackLocalException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -21,11 +21,11 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Provider
-public class EJBExceptionMapper implements ExceptionMapper<EJBException>{
-    final private Logger logger = LoggerFactory.getLogger(EJBExceptionMapper.class);
+public class TransactionRolledbackLocalExceptionMapper implements ExceptionMapper<TransactionRolledbackLocalException>{
+    final private Logger logger = LoggerFactory.getLogger(TransactionRolledbackLocalExceptionMapper.class);
 
     @Override
-    public Response toResponse(EJBException exception) {
+    public Response toResponse(TransactionRolledbackLocalException exception) {
         logger.error("Caught an error");
         return ExceptionMapperHelper.processException(exception.getCause());
     }

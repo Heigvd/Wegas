@@ -41,8 +41,10 @@ public abstract class ExceptionMapperHelper {
 
 
         if (exception instanceof RollbackException
+                || exception instanceof TransactionRolledbackLocalException
                 || exception instanceof TransactionRolledbackException
-                || exception instanceof TransactionRolledbackLocalException) {
+                || exception instanceof TransactionRolledbackLocalException
+                || exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK) {
             return ExceptionMapperHelper.processException(exception.getCause());
 
         } else if (exception instanceof DatabaseException) {
@@ -64,6 +66,7 @@ public abstract class ExceptionMapperHelper {
                 ConstraintViolation violation = (ConstraintViolation) it.next();
                 msg += "\n" + violation.getLeafBean() + ":" + violation.getRootBean() + violation.getPropertyPath();
             }
+            System.out.println(msg);
             // constraintViolationException.getMessage()
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
@@ -85,6 +88,9 @@ public abstract class ExceptionMapperHelper {
         private String code;
         private Class exception;
         private String message;
+
+        public RestExceptionConverter() {
+        }
 
         public RestExceptionConverter(String code, Class exception, String message) {
             this.code = code;

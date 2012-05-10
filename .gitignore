@@ -17,7 +17,7 @@ doc/Wegas.uml~
 #################
 faces-config.NavData
 nb-configuration.xml
-nbactions.xml
+#nbactions.xml
 catalog.xml
 
 # OS generated files #

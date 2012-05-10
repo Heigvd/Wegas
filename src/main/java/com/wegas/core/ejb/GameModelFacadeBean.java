@@ -10,7 +10,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.GameModelEntity;
-import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,7 +20,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Local(GameModelFacade.class)
+@Remote(GameModelFacade.class)
 public class GameModelFacadeBean extends AbstractFacadeBean<GameModelEntity> implements GameModelFacade {
 
     @PersistenceContext(unitName = "wegasPU")
