@@ -27,8 +27,6 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptorEntity.class)
 })
 public class StateMachineDescriptorEntity extends VariableDescriptorEntity<StateMachineInstanceEntity> {
-
-    private Long initialStateId;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     //@MapKey(name = "id")
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
@@ -36,14 +34,6 @@ public class StateMachineDescriptorEntity extends VariableDescriptorEntity<State
     private Map<Long, State> states = new HashMap<>();
 
     public StateMachineDescriptorEntity() {
-    }
-
-    public Long getInitialStateId() {
-        return initialStateId;
-    }
-
-    public void setInitialStateId(Long initialStateId) {
-        this.initialStateId = initialStateId;
     }
 
     public Map<Long, State> getStates() {
@@ -56,14 +46,13 @@ public class StateMachineDescriptorEntity extends VariableDescriptorEntity<State
 
     @Override
     public String toString() {
-        return "StateMachineDescriptorEntity{id=" + this.getId() + ", initialStateId=" + initialStateId + ", states=" + states + '}';
+        return "StateMachineDescriptorEntity{id=" + this.getId() +  ", states=" + states + '}';
     }
 
     @Override
     public void merge(AbstractEntity a) {
         StateMachineDescriptorEntity smDescriptor = (StateMachineDescriptorEntity) a;
         this.mergeStates((HashMap<Long, State>) smDescriptor.getStates());
-        this.initialStateId = smDescriptor.initialStateId;
         super.merge(smDescriptor);
     }
 
