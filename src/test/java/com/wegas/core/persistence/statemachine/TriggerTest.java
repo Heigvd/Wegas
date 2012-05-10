@@ -15,13 +15,16 @@ import com.wegas.core.script.ScriptEntity;
 import org.junit.*;
 
 /**
- * Testing Triggers, class TriggerInstanceEntity and class TriggerDescriptorEntity
+ * Testing Triggers, class TriggerInstanceEntity and class
+ * TriggerDescriptorEntity
+ *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class TriggerTest {
 
     private TriggerInstanceEntity trigger;
     private TriggerDescriptorEntity triggerDescriptor;
+    private ScriptEntity scriptEntity;
 
     public TriggerTest() {
     }
@@ -37,11 +40,12 @@ public class TriggerTest {
     @Before
     public void setUp() {
         this.trigger = new TriggerInstanceEntity();
-        this.triggerDescriptor = (TriggerDescriptorEntity) this.trigger.getScope().getVariableDescriptor();
+        this.triggerDescriptor = new TriggerDescriptorEntity();
+        this.triggerDescriptor.setDefaultVariableInstance(this.trigger);
         this.triggerDescriptor.setName("testTrigger");
-        ScriptEntity scriptEntity = new ScriptEntity();
-        scriptEntity.setLanguage("JavaScript");
-        scriptEntity.setContent("var x=10; x+=2;");
+        this.scriptEntity = new ScriptEntity();
+        this.scriptEntity.setLanguage("JavaScript");
+        this.scriptEntity.setContent("var x=10; x+=2;");
         this.triggerDescriptor.setTriggerEvent(scriptEntity);
         this.triggerDescriptor.setPostTriggerEvent(scriptEntity);
     }
@@ -51,28 +55,40 @@ public class TriggerTest {
     }
 
     /**
-     * Test of generateTriggerDescriptor method, of class TriggerDescriptorEntity.<br/> One shot trigger
+     * Test of buildStateMachine/onload <br/> oneShot trigger
      */
     @Test
     public void testGenerateTrigger() {
         System.out.println("OneShotTrigger");
         this.triggerDescriptor.setOneShot(true);
-//        this.triggerDescriptor.generateTriggerDescriptor();
-        assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2;
+        this.triggerDescriptor.buildStateMachine();
+        assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L;
         assert this.triggerDescriptor.getStates().get(2L).getTransitions().isEmpty();
-
+        assert ((TriggerInstanceEntity)this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId() == 1L;
+        //testing onLoad method
+        this.triggerDescriptor.setTriggerEvent(null);
+        this.triggerDescriptor.setPostTriggerEvent(null);
+        this.triggerDescriptor.onLoad();
+        assert this.triggerDescriptor.getPostTriggerEvent().equals(this.scriptEntity);
+        assert this.triggerDescriptor.getTriggerEvent().equals(this.scriptEntity);
     }
 
-
-
     /**
-     * Test of generateTriggerDescriptor method, of class TriggerDescriptorEntity.<br/> Loop Trigger
+     * Test of buildStateMachine/onLoad <br/> Loop Trigger
      */
     @Test
     public void testGenerateLoopTrigger() {
         System.out.println("LoopTrigger");
         this.triggerDescriptor.setOneShot(false);
-       // this.triggerDescriptor.generateTriggerDescriptor();
-        assert this.triggerDescriptor.getStates().get(1).getTransitions().get(0).getNextStateId() == 1;
+        this.triggerDescriptor.buildStateMachine();
+        assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 1L;
+        assert this.triggerDescriptor.getStates().size() == 1;
+        assert ((TriggerInstanceEntity)this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId() == 1L;
+        //testing onLoad method
+        this.triggerDescriptor.setTriggerEvent(null);
+        this.triggerDescriptor.setPostTriggerEvent(null);
+        this.triggerDescriptor.onLoad();
+        assert this.triggerDescriptor.getPostTriggerEvent().equals(this.scriptEntity);
+        assert this.triggerDescriptor.getTriggerEvent().equals(this.scriptEntity);
     }
 }
