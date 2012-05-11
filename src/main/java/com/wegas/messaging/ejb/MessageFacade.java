@@ -9,7 +9,7 @@
  */
 package com.wegas.messaging.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.messaging.persistence.variable.MessageEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

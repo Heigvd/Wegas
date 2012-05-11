@@ -7,8 +7,9 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.ejb;
+package com.wegas.core.ejb.implementation;
 
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModelEntity;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -31,7 +32,6 @@ public class GameModelFacadeBean extends AbstractFacadeBean<GameModelEntity> imp
      * @param gameModelId
      * @return
      */
-    @Override
     public GameModelEntity reset(Long gameModelId) {
         GameModelEntity gm = this.find(gameModelId);
         gm.propagateDefaultVariableInstance(true);
@@ -52,7 +52,7 @@ public class GameModelFacadeBean extends AbstractFacadeBean<GameModelEntity> imp
      * @return
      */
     @Override
-    protected EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return em;
     }
 

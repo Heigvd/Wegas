@@ -9,6 +9,10 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.implementation.GameFacadeBean;
+import com.wegas.core.ejb.implementation.GameModelFacadeBean;
+import com.wegas.core.ejb.implementation.TeamFacadeBean;
+import com.wegas.core.ejb.implementation.VariableDescriptorFacadeBean;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -16,8 +20,10 @@ import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.StringInstanceEntity;
 import com.wegas.core.persistence.variable.scope.TeamScopeEntity;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ejb.EJB;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -48,9 +54,10 @@ public class GameModelFacadeTest {
         Map<String, Object> properties = new HashMap<>();
         properties.put(EJBContainer.MODULES, new File[]{new File("target/classes")});
         properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
+
+       // properties.put(EJBContainer.APP_NAME, "wegas");
         ejbContainer = EJBContainer.createEJBContainer(properties);
         context = ejbContainer.getContext();
-
         gameModelFacade = lookupBy(GameModelFacade.class, GameModelFacadeBean.class);
     }
 
@@ -61,16 +68,13 @@ public class GameModelFacadeTest {
     }
 
     public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
-        try {
-            return (T) context.lookup("java:global/classes/" + service.getSimpleName() + "!" + type.getName());
-        }
-        catch (NamingException ex) {
-            return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
-        }
+        return Helper.lookupBy(context, type, service);
     }
+    @EJB
+    private GameModelFacade gameModelFacade2;
 
     @Test
-    public void createGameModel() {
+    public void createGameModel() throws NamingException {
         System.out.println("createGameModel()");
         String name = "test";
 
@@ -88,40 +92,42 @@ public class GameModelFacadeTest {
     }
 
     @Test
-    public void createGame() {
+    public void createGame() throws NamingException {
         System.out.println("createGame()");
-        String name = "test-game";
-        String token = "test-game-token";
+        final String name = "test-game";
+        final String token = "test-game-token";
+        final String VALUE = "test-value";
+
+//        context.bind("inject", this);
 
         GameModelEntity gameModel = new GameModelEntity();
         gameModel.setName("test-gamemodel");
         gameModelFacade.create(gameModel);
-        System.out.println(gameModel);
 
-        StringDescriptorEntity stringDescriptor = new StringDescriptorEntity();
-        stringDescriptor.setDefaultVariableInstance(new StringInstanceEntity());
-        stringDescriptor.setName(name);
-        stringDescriptor.setScope(new TeamScopeEntity());
-
-        gameModel.addVariableDescriptor(stringDescriptor);
-        gameModelFacade.flush();
-
+        GameFacade gf = lookupBy(GameFacade.class, GameFacadeBean.class);
         GameEntity g = new GameEntity();
         g.setName(name);
         g.setToken(token);
+        gf.create(gameModel.getId(), g);
+
+        TeamFacade tf = lookupBy(TeamFacade.class, TeamFacadeBean.class);
         TeamEntity t = new TeamEntity();
         t.setName("test-team");
+        tf.create(g.getId(), t);
+
         PlayerEntity p = new PlayerEntity();
         p.setName("test-player");
+        tf.createPlayer(t.getId(), p);
 
-        gameModel.addGame(g);
-        gameModelFacade.flush();
 
-//        g.addTeam(t);
-//        gameModelFacade.flush();
+        VariableDescriptorFacade vd = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacadeBean.class);
+        StringDescriptorEntity stringDescriptor = new StringDescriptorEntity();
+        stringDescriptor.setDefaultVariableInstance(new StringInstanceEntity(VALUE));
+        stringDescriptor.setName("test-descriptor");
+        stringDescriptor.setScope(new TeamScopeEntity());
+        vd.create(gameModel.getId(), stringDescriptor);
 
-//        t.addPlayer(p);
-//        gameModelFacade.flush();
+        Assert.assertEquals(VALUE, stringDescriptor.getVariableInstance(p).getValue());
 
         gameModelFacade.reset(gameModel.getId());
 

@@ -9,7 +9,6 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
 import com.wegas.core.ejb.UserFacade;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -34,7 +33,7 @@ public class UserController extends AbstractRestController<UserFacade> {
      * @return
      */
     @Override
-    protected AbstractFacadeBean getFacade() {
+    protected UserFacade getFacade() {
         return this.userFacade;
     }
 }

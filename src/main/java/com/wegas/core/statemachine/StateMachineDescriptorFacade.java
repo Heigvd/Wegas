@@ -9,7 +9,7 @@
  */
 package com.wegas.core.statemachine;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.core.ejb.GameManager;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;

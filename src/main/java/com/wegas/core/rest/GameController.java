@@ -10,6 +10,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.implementation.GameFacadeBean;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameEntity;

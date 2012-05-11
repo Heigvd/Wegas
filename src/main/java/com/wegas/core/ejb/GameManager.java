@@ -24,8 +24,8 @@ import javax.inject.Named;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@Named
-@RequestScoped
+//@Named
+//@RequestScoped
 public class GameManager {
 
     /**

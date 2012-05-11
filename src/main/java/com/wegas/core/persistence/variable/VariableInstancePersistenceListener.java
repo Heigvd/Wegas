@@ -5,6 +5,7 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.ejb.GameManager;
+import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.messaging.ejb.MessageEvent;
 import java.util.logging.Level;
@@ -37,8 +38,7 @@ public class VariableInstancePersistenceListener {
     @PostUpdate
     @PostRemove
     private void onUpdate(VariableInstanceEntity instance) throws NamingException {
-        InitialContext ctx = new InitialContext();
-        VariableInstanceFacade variableInstanceFacade = (VariableInstanceFacade) ctx.lookup("java:module/VariableInstanceFacade");
+        VariableInstanceFacade variableInstanceFacade = Helper.lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
         variableInstanceFacade.onVariableInstanceUpdate(instance);
     }
 }

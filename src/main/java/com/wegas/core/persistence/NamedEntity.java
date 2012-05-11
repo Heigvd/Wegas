@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.persistence.game;
+package com.wegas.core.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.Objects;

@@ -79,7 +79,8 @@ public class StateMachineRunner implements Serializable {
                 Boolean validTransition = false;
                 try {
                     validTransition = (Boolean) scriptManager.eval(gameManager.getCurrentPlayer(), transition.getTriggerCondition());
-                } catch (ScriptException ex) {
+                }
+                catch (ScriptException ex) {
                     logger.error("Script Failed : {} returned: {}", transition.getTriggerCondition(), ex);
                 }
                 if (validTransition) {
@@ -99,7 +100,8 @@ public class StateMachineRunner implements Serializable {
         run = false;
         try {
             scriptManager.eval(gameManager.getCurrentPlayer(), impacts, null);
-        } catch (ScriptException ex) {
+        }
+        catch (ScriptException ex) {
             logger.error("Script Failed : {} returned: {}", impacts, ex);
         }
     }

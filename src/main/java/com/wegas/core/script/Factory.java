@@ -9,7 +9,7 @@
  */
 package com.wegas.core.script;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 

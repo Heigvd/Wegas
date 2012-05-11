@@ -9,7 +9,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.PlayerEntity;

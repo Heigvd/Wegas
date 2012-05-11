@@ -9,6 +9,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.game.TeamEntity;

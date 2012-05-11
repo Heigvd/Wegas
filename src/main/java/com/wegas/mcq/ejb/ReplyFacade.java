@@ -9,7 +9,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.mcq.persistence.ReplyEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
