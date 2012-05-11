@@ -154,7 +154,7 @@ public class LobbyController implements Serializable {
      * @return
      */
     public String joinTeam() {
-        setCurrentPlayer(teamEntityFacade.createPlayer(this.getSelectedTeam().getId(), getCurrentUser().getId()));
+        setCurrentPlayer(teamEntityFacade.joinTeam(this.getSelectedTeam().getId(), getCurrentUser().getId()));
         return "teamJoined";
     }
 

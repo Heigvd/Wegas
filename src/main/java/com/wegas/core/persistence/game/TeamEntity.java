@@ -48,7 +48,7 @@ public class TeamEntity extends AbstractEntity {
     /**
      *
      */
-    @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "player-team")
     private List<PlayerEntity> players;
     /**

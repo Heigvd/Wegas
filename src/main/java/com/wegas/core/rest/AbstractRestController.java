@@ -4,7 +4,8 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.AbstractFacade;
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.Collection;
 import javax.ws.rs.*;
@@ -19,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public abstract class AbstractRestController<T extends AbstractFacadeBean> {
+public abstract class AbstractRestController<T extends AbstractFacade> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractRestController.class);
 
@@ -33,7 +34,7 @@ public abstract class AbstractRestController<T extends AbstractFacadeBean> {
      *
      * @return
      */
-    protected abstract AbstractFacadeBean getFacade();
+    protected abstract T getFacade();
 
     /**
      * Index : retrieve the game model list

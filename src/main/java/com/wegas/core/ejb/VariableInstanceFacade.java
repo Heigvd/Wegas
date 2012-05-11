@@ -9,6 +9,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.persistence.variable.scope.AbstractScopeEntity;

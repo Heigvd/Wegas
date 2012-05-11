@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.layout.WidgetEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import java.io.Serializable;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -58,20 +58,20 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * hierarchy (other VariableDescriptor can be placed inside of a
      * ListDescriptor's items List).
      */
-    @OneToMany( cascade = {CascadeType.ALL})
+    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name="rootgamemodel_id")
     //@JsonManagedReference
     private List<VariableDescriptorEntity> rootVariableDescriptors;
     /**
      *
      */
-    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<GameEntity> games;
     /**
      *
      */
-    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("gamemodel-widget")
     private List<WidgetEntity> widgets;
     /**

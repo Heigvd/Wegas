@@ -10,7 +10,7 @@
 package com.wegas.messaging.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.NamedEntity;
+import com.wegas.core.persistence.NamedEntity;
 import java.util.logging.Logger;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.*;

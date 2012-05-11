@@ -9,6 +9,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.core.persistence.user.GroupEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

@@ -11,7 +11,7 @@ package com.wegas.core.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.NamedEntity;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;

@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -56,9 +57,9 @@ public class GameEntity extends NamedEntity implements Serializable {
     /**
      *
      */
-    @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("game-team")
-    private List<TeamEntity> teams = new ArrayList<TeamEntity>();
+    private List<TeamEntity> teams;
     /**
      *
      */
