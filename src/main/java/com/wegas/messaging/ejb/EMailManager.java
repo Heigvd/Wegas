@@ -16,6 +16,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.mail.Message;
@@ -30,6 +31,7 @@ import javax.mail.internet.MimeMessage;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
+@LocalBean
 public class EMailManager {
 
     /**
