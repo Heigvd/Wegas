@@ -14,6 +14,7 @@ import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.persistence.variable.scope.AbstractScopeEntity;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
+@LocalBean
 public class VariableInstanceFacade extends AbstractFacadeBean<VariableInstanceEntity> {
 
     static final private Logger logger = LoggerFactory.getLogger(VariableInstanceFacade.class);

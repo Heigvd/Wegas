@@ -15,6 +15,7 @@ import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
 import com.wegas.messaging.persistence.variable.MessageEntity;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 
@@ -23,6 +24,7 @@ import javax.enterprise.event.Observes;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
+@LocalBean
 public class InternalInboxManager {
 
     /**

@@ -4,15 +4,8 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.ejb.GameManager;
 import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.messaging.ejb.MessageEvent;
-import java.util.logging.Level;
-import javax.ejb.EJB;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;

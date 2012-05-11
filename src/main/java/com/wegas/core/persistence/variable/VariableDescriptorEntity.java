@@ -83,7 +83,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
      * updatable = true)
      */
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval=true)
     @NotNull
     //@JsonManagedReference
     private AbstractScopeEntity scope;
