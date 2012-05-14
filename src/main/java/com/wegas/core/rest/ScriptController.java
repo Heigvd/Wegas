@@ -43,6 +43,7 @@ public class ScriptController {
      * @param playerId
      * @param script
      * @return p
+     * @throws ScriptException
      */
     @POST
     @Path("/Run/Player/{playerId : [1-9][0-9]*}")

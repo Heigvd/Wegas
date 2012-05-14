@@ -5,7 +5,6 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.AbstractFacade;
-import com.wegas.core.ejb.implementation.AbstractFacadeBean;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.Collection;
 import javax.ws.rs.*;

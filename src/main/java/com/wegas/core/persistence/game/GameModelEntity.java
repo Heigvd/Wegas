@@ -13,6 +13,7 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.layout.WidgetEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.*;
@@ -58,16 +59,16 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * hierarchy (other VariableDescriptor can be placed inside of a
      * ListDescriptor's items List).
      */
-    @OneToMany( cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name="rootgamemodel_id")
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JoinColumn(name = "rootgamemodel_id")
     //@JsonManagedReference
-    private List<VariableDescriptorEntity> rootVariableDescriptors;
+    private List<VariableDescriptorEntity> childVariableDescriptors;
     /**
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<GameEntity> games;
+    private List<GameEntity> games = new ArrayList<GameEntity>();
     /**
      *
      */
@@ -83,6 +84,20 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * @fixme temporary solutions to store widgets
      */
     private String widgetsUri;
+
+    /**
+     *
+     */
+    public GameModelEntity() {
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public GameModelEntity(String name) {
+        this.name = name;
+    }
 
     /**
      *
@@ -154,8 +169,8 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * ListDescriptor's items List)
      */
     //@JsonManagedReference
-    public List<VariableDescriptorEntity> getRootVariableDescriptors() {
-        return rootVariableDescriptors;
+    public List<VariableDescriptorEntity> getChildVariableDescriptors() {
+        return childVariableDescriptors;
     }
 
     /**
@@ -163,8 +178,8 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * @param variableDescriptors
      */
     //@JsonManagedReference
-    public void setRootVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
-        this.rootVariableDescriptors = variableDescriptors;
+    public void setChildVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
+        this.childVariableDescriptors = variableDescriptors;
         this.variableDescriptors = variableDescriptors;
         for (VariableDescriptorEntity vd : variableDescriptors) {
             vd.setGameModel(this);
@@ -176,7 +191,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * @param variableDescriptor
      */
     public void addVariableDescriptor(VariableDescriptorEntity variableDescriptor) {
-        this.rootVariableDescriptors.add(variableDescriptor);
+        this.childVariableDescriptors.add(variableDescriptor);
         this.variableDescriptors.add(variableDescriptor);
         variableDescriptor.setGameModel(this);
     }

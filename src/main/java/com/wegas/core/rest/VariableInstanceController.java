@@ -68,7 +68,7 @@ public class VariableInstanceController extends AbstractRestController<VariableI
             @PathParam("variableDescriptorId") Long variableDescriptorId,
             @PathParam("userId") Long userId,
             VariableInstanceEntity newInstance) {
-        return variableInstanceFacade.setVariableInstanceByUserId(gameModelId, variableDescriptorId, userId, newInstance);
+        return variableInstanceFacade.update(variableDescriptorId, userId, newInstance);
     }
 
     /**

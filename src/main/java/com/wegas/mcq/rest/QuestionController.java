@@ -42,8 +42,9 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      *
      * @param gameModelId
      * @param playerId
-     * @param replyId
+     * @param choiceId
      * @return p
+     * @throws ScriptException
      */
     @GET
     @Path("/SelectReply/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
@@ -58,6 +59,13 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
         return questionDescriptorFacade.validateReply(playerId, reply.getId());
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param replyId
+     * @return
+     * @throws ScriptException
+     */
     @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -72,7 +80,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      *
      * @param gameModelId
      * @param playerId
-     * @param replyDescriptorId
+     * @param choiceDescriptorId
      * @param startTime
      * @return p
      */

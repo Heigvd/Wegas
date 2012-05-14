@@ -152,9 +152,17 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
         this.cost = cost;
     }
     // *** Sugar *** //
+    /**
+     *
+     * @param p
+     */
     public void activate(PlayerEntity p) {
        this.getVariableInstance(p).activate();
     }
+    /**
+     *
+     * @param p
+     */
     public void desactivate(PlayerEntity p) {
        this.getVariableInstance(p).desactivate();
     }

@@ -48,7 +48,7 @@ public class InternalInboxManager {
      * @param msg
      */
     public void send(PlayerEntity p, MessageEntity msg) {
-        VariableDescriptorEntity vd = variableDescriptorFacade.findByName("inbox");
+        VariableDescriptorEntity vd = variableDescriptorFacade.findByName(p.getGameModel(), "inbox");
         InboxInstanceEntity inbox = (InboxInstanceEntity) vd.getVariableInstance(p);
         inbox.addMessage(msg);
     }

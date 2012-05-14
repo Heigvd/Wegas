@@ -29,6 +29,13 @@ public class FacebookLoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("FacebookLoginServlet getting..");
@@ -47,6 +54,8 @@ public class FacebookLoginServlet extends HttpServlet {
     /**
      * @param request
      * @param response
+     * @throws ServletException 
+     * @throws IOException
      * @see HttpServlet.Post(HttpServletRequest request, HttpServletResponse)
      */
     @Override

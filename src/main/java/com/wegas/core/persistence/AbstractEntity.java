@@ -125,6 +125,6 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      */
     @Override
     public String toString() {
-        return this.getClass().getName().toString() + " [" + getId() + " ]";
+        return this.getClass().getSimpleName() + "( " + getId() + " )";
     }
 }

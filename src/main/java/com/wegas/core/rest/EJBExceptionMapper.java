@@ -24,6 +24,11 @@ import org.slf4j.LoggerFactory;
 public class EJBExceptionMapper implements ExceptionMapper<EJBException>{
     final private Logger logger = LoggerFactory.getLogger(EJBExceptionMapper.class);
 
+    /**
+     *
+     * @param exception
+     * @return
+     */
     @Override
     public Response toResponse(EJBException exception) {
         logger.error("Caught an error");
