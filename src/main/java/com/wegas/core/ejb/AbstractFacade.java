@@ -10,12 +10,11 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import java.util.List;
-import javax.persistence.EntityManager;
 
 /**
  *
+ * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public interface AbstractFacade<T extends AbstractEntity> {
@@ -30,7 +29,7 @@ public interface AbstractFacade<T extends AbstractEntity> {
      *
      * @param entity
      */
-    public void edit(final T entity);
+//    public void edit(final T entity);
 
     /**
      *

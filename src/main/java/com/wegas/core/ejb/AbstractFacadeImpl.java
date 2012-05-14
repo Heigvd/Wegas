@@ -7,9 +7,8 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.ejb.implementation;
+package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.AbstractFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -22,7 +21,7 @@ import javax.persistence.criteria.Root;
  * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public abstract class AbstractFacadeBean<T extends AbstractEntity> implements AbstractFacade<T> {
+public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements AbstractFacade<T> {
 
     /**
      *
@@ -33,7 +32,7 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> implements Ab
      *
      * @param entityClass
      */
-    public AbstractFacadeBean(final Class<T> entityClass) {
+    public AbstractFacadeImpl(final Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
@@ -61,14 +60,14 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> implements Ab
         getEntityManager().flush();
     }
 
-    /**
-     *
-     * @param entity
-     */
-    @Override
-    public void edit(final T entity) {
-        getEntityManager().merge(entity);
-    }
+//    /**
+//     *
+//     * @param entity
+//     */
+//    @Override
+//    public void edit(final T entity) {
+//        getEntityManager().merge(entity);
+//    }
 
     /**
      *

@@ -39,7 +39,7 @@
         <junit.version>4.8.2</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
         <jar.plugin.version>2.3.1</jar.plugin.version>
-        <war.plugin.version>2.1.1</war.plugin.version>
+<!--        <war.plugin.version>2.1.1</war.plugin.version>-->
         <compiler-plugin-version>2.3.2</compiler-plugin-version>
 
         <skipTests>false</skipTests>
@@ -85,6 +85,11 @@
         </dependency>
 
         <!-- Apache Shiro Dependencies -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-web</artifactId>
@@ -157,7 +162,7 @@
             <groupId>commons-logging</groupId>
             <type>jar</type>
             <version>1.1.1</version>
-            <scope>provided</scope>
+           <!-- <scope>provided</scope>-->
         </dependency>
 
         <dependency>
@@ -261,6 +266,7 @@
     </dependencies>
 
     <build>
+
         <finalName>Wegas</finalName>
 
         <plugins>
@@ -284,7 +290,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
                 <configuration>
-                    <warName>Wegas</warName>
+<!--                    <warName>Wegas</warName>-->
                     <failOnMissingWebXml>false</failOnMissingWebXml>   <!--<overlays>
                         <overlay>
                             <groupId>com.yahoo</groupId>
@@ -523,6 +529,7 @@
             </plugin>-->
 
         </plugins>
+
     </build>
     <repositories>
         <repository>

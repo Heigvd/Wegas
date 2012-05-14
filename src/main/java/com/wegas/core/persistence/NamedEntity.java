@@ -44,7 +44,7 @@ public abstract class NamedEntity extends AbstractEntity {
      */
     @Override
     public String toString() {
-        return this.getClass().getName().toString() + " [" + getName() + ", " + getId() + " ]";
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + getName() + ")";
     }
 
 

@@ -25,4 +25,18 @@ public class BooleanDescriptorEntity extends VariableDescriptorEntity<BooleanIns
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(BooleanDescriptorEntity.class);
+
+    /**
+     *
+     */
+    public BooleanDescriptorEntity() {
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public BooleanDescriptorEntity(String name) {
+        this.name = name;
+    }
 }

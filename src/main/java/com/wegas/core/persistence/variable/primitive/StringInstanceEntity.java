@@ -28,9 +28,16 @@ public class StringInstanceEntity extends VariableInstanceEntity {
     private static final Logger logger = LoggerFactory.getLogger(StringInstanceEntity.class);
     private String val;
 
+    /**
+     *
+     */
     public StringInstanceEntity() {
 
     }
+    /**
+     *
+     * @param value
+     */
     public StringInstanceEntity(String value) {
         this.val = value;
     }

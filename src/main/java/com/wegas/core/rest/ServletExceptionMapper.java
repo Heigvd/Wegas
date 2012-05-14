@@ -25,6 +25,11 @@ public class ServletExceptionMapper implements ExceptionMapper<ServletException>
 
     final private Logger logger = LoggerFactory.getLogger(ServletException.class);
 
+    /**
+     *
+     * @param exception
+     * @return
+     */
     @Override
     public Response toResponse(ServletException exception) {
         logger.error("Caught an error");

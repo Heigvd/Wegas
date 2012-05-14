@@ -9,7 +9,7 @@
  */
 package com.wegas.core.statemachine;
 
-import com.wegas.core.ejb.implementation.AbstractFacadeBean;
+import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.GameManager;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
@@ -25,7 +25,7 @@ import javax.persistence.PersistenceContext;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
-public class StateMachineDescriptorFacade extends AbstractFacadeBean<StateMachineDescriptorEntity> {
+public class StateMachineDescriptorFacade extends AbstractFacadeImpl<StateMachineDescriptorEntity> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;

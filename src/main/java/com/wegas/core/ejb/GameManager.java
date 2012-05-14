@@ -15,10 +15,8 @@ import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  *
@@ -71,14 +69,26 @@ public class GameManager {
         this.currentPlayer = currentPlayer;
     }
 
+    /**
+     *
+     * @return
+     */
     public GameModelEntity getGameModel() {
         return gameModel;
     }
 
+    /**
+     *
+     * @param gameModel
+     */
     public void setGameModel(GameModelEntity gameModel) {
         this.gameModel = gameModel;
     }
 
+    /**
+     *
+     * @param instance
+     */
     public void addUpdatedInstance(VariableInstanceEntity instance) {
         if (!this.getUpdatedInstances().contains(instance)) {
             this.getUpdatedInstances().add(instance);
@@ -99,10 +109,16 @@ public class GameManager {
         this.updatedInstances = updatedInstances;
     }
 
+    /**
+     *
+     */
     public void clearUpdatedInstances() {
         this.updatedInstances.clear();
     }
 
+    /**
+     *
+     */
     public class PlayerAction implements Serializable {
 
         /**

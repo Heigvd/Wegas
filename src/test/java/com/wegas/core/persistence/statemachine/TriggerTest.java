@@ -44,7 +44,7 @@ public class TriggerTest {
         this.trigger = new TriggerInstanceEntity();
         this.trigger.setId(666L);
         this.triggerDescriptor = new TriggerDescriptorEntity();
-        this.triggerDescriptor.setDefaultVariableInstance(this.trigger);
+        this.triggerDescriptor.setDefaultInstance(this.trigger);
         this.triggerDescriptor.setName("testTrigger");
         this.scriptEntity = new ScriptEntity();
         this.scriptEntity.setLanguage("JavaScript");
@@ -120,14 +120,14 @@ public class TriggerTest {
         this.triggerDescriptor.buildStateMachine();
         this.triggerDescriptor.setScope(new TeamScopeEntity());
         TriggerDescriptorEntity newTrigger = new TriggerDescriptorEntity();
-        newTrigger.setDefaultVariableInstance(this.trigger);
+        newTrigger.setDefaultInstance(this.trigger);
         newTrigger.setId(5L);
         newTrigger.setOneShot(true);
         ScriptEntity newTestScript = new ScriptEntity();
         newTestScript.setLanguage("Python");
         newTestScript.setContent("TestScript;");
         newTrigger.setPostTriggerEvent(newTestScript);
-        newTrigger.setDefaultVariableInstance(instanceEntity);
+        newTrigger.setDefaultInstance(instanceEntity);
         newTrigger.setTriggerEvent(newTestScript);
         this.triggerDescriptor.merge(newTrigger);
         assert this.triggerDescriptor.getId() == 4L;

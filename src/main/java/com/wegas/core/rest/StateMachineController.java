@@ -72,6 +72,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
      * @param playerId
      * @param stateMachineDescriptorId
      * @return
+     * @throws ScriptException
      */
     @GET
     @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Step")
