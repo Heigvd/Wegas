@@ -9,7 +9,6 @@
  */
 package com.wegas.core.persistence.statemachine;
 
-import com.wegas.core.persistence.variable.scope.PlayerScopeEntity;
 import com.wegas.core.persistence.variable.scope.TeamScopeEntity;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstanceEntity;
