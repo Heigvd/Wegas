@@ -71,14 +71,26 @@ public class GameManager {
         this.currentPlayer = currentPlayer;
     }
 
+    /**
+     *
+     * @return
+     */
     public GameModelEntity getGameModel() {
         return gameModel;
     }
 
+    /**
+     *
+     * @param gameModel
+     */
     public void setGameModel(GameModelEntity gameModel) {
         this.gameModel = gameModel;
     }
 
+    /**
+     *
+     * @param instance
+     */
     public void addUpdatedInstance(VariableInstanceEntity instance) {
         if (!this.getUpdatedInstances().contains(instance)) {
             this.getUpdatedInstances().add(instance);
@@ -99,10 +111,16 @@ public class GameManager {
         this.updatedInstances = updatedInstances;
     }
 
+    /**
+     *
+     */
     public void clearUpdatedInstances() {
         this.updatedInstances.clear();
     }
 
+    /**
+     *
+     */
     public class PlayerAction implements Serializable {
 
         /**

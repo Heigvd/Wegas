@@ -29,6 +29,19 @@ public class StringInstanceEntity extends VariableInstanceEntity {
     private String val;
 
     /**
+     *
+     */
+    public StringInstanceEntity() {
+
+    }
+    /**
+     *
+     * @param value
+     */
+    public StringInstanceEntity(String value) {
+        this.val = value;
+    }
+    /**
      * @return the value
      */
     public String getValue() {

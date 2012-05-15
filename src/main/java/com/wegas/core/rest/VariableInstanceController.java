@@ -47,7 +47,7 @@ public class VariableInstanceController extends AbstractRestController<VariableI
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<AbstractEntity> index() {
-        VariableDescriptorEntity vd = variableDescriptorFacade.find(this.getPathParam("variableDescriptorId"));
+        VariableDescriptorEntity vd = variableDescriptorFacade.find(new Long(this.getPathParam("variableDescriptorId")));
         return (Collection) vd.getScope().getVariableInstances().values();
     }
 
@@ -68,7 +68,7 @@ public class VariableInstanceController extends AbstractRestController<VariableI
             @PathParam("variableDescriptorId") Long variableDescriptorId,
             @PathParam("userId") Long userId,
             VariableInstanceEntity newInstance) {
-        return variableInstanceFacade.setVariableInstanceByUserId(gameModelId, variableDescriptorId, userId, newInstance);
+        return variableInstanceFacade.update(variableDescriptorId, userId, newInstance);
     }
 
     /**

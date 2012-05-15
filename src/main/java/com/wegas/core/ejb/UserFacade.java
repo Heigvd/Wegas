@@ -11,6 +11,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.user.UserEntity;
 import com.wegas.core.persistence.user.UserEntity_;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -25,10 +26,21 @@ import javax.persistence.criteria.Root;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class UserFacade extends AbstractFacadeBean<UserEntity> {
+@LocalBean
+public class UserFacade extends AbstractFacadeImpl<UserEntity> {
 
+    /**
+     *
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
+    /**
+     *
+     */
+    public UserFacade() {
+        super(UserEntity.class);
+    }
 
     /**
      *
@@ -41,18 +53,11 @@ public class UserFacade extends AbstractFacadeBean<UserEntity> {
 
     /**
      *
-     */
-    public UserFacade() {
-        super(UserEntity.class);
-    }
-
-    /**
-     *
      * @param principal
      * @return
      * @throws NoResultException
      */
-    public UserEntity getUserByPrincipal(String principal) throws NoResultException{
+    public UserEntity getUserByPrincipal(String principal) throws NoResultException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<UserEntity> user = cq.from(UserEntity.class);

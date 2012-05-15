@@ -9,8 +9,8 @@
  */
 package com.wegas.core.script;
 
-import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.GameManager;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -58,8 +58,8 @@ public class ScriptManager {
     /**
      *
      */
-    @EJB
-    private MessagingManager messagingManager;
+//    @EJB
+//    private MessagingManager messagingManager;
     /**
      *
      */
@@ -80,6 +80,7 @@ public class ScriptManager {
      * language should be the same
      * @param arguments
      * @return
+     * @throws ScriptException
      */
     public Object eval(PlayerEntity player, List<ScriptEntity> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
         if (scripts.isEmpty()) {
@@ -89,7 +90,7 @@ public class ScriptManager {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName(scripts.get(0).getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
-        GameModelEntity gm = player.getTeam().getGame().getGameModel();
+        GameModelEntity gm = player.getGameModel();
         List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
 
         gameManager.setCurrentPlayer(player);                                // Set up request execution context
@@ -117,6 +118,10 @@ public class ScriptManager {
         return result;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<VariableInstanceEntity> getUpdatedEntities() {
         return gameManager.getUpdatedInstances();
     }
@@ -128,6 +133,7 @@ public class ScriptManager {
      * @param s
      * @param arguments
      * @return
+     * @throws ScriptException
      */
     public Object eval(PlayerEntity player, ScriptEntity s, Map<String, AbstractEntity> arguments) throws ScriptException {
         List<ScriptEntity> scripts = new ArrayList<>();
@@ -140,6 +146,7 @@ public class ScriptManager {
      * @param playerId
      * @param s
      * @return
+     * @throws ScriptException
      */
     public Object eval(Long playerId, ScriptEntity s)
             throws ScriptException {
@@ -150,8 +157,8 @@ public class ScriptManager {
      *
      * @param p
      * @param s
-     * @param arguments
      * @return
+     * @throws ScriptException
      */
     public Object eval(PlayerEntity p, ScriptEntity s) throws ScriptException {
         return this.eval(p, s, new HashMap<String, AbstractEntity>());

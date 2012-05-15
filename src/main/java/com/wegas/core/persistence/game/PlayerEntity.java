@@ -167,4 +167,10 @@ public class PlayerEntity extends AbstractEntity {
     public int getTeamId() {
         return teamId;
     }
+
+    // *** Sugar *** //
+    @XmlTransient
+    public GameModelEntity getGameModel() {
+        return this.getTeam().getGame().getGameModel();
+    }
 }

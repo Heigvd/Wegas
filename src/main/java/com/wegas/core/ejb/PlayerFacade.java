@@ -9,10 +9,10 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.game.TeamEntity;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,7 +22,8 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class PlayerFacade extends AbstractFacadeBean<PlayerEntity> {
+@LocalBean
+public class PlayerFacade extends AbstractFacadeImpl<PlayerEntity> {
 
     /**
      *

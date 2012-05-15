@@ -21,7 +21,7 @@ import javax.persistence.criteria.Root;
  * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public abstract class AbstractFacadeBean<T extends AbstractEntity> {
+public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements AbstractFacade<T> {
 
     /**
      *
@@ -32,7 +32,7 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
      *
      * @param entityClass
      */
-    public AbstractFacadeBean(final Class<T> entityClass) {
+    public AbstractFacadeImpl(final Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
@@ -45,6 +45,7 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
     /**
      *
      */
+    @Override
     public void flush() {
         getEntityManager().flush();
     }
@@ -53,18 +54,20 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
      *
      * @param entity
      */
+    @Override
     public void create(T entity) {
         getEntityManager().persist(entity);
         getEntityManager().flush();
     }
 
-    /**
-     *
-     * @param entity
-     */
-    public void edit(final T entity) {
-        getEntityManager().merge(entity);
-    }
+//    /**
+//     *
+//     * @param entity
+//     */
+//    @Override
+//    public void edit(final T entity) {
+//        getEntityManager().merge(entity);
+//    }
 
     /**
      *
@@ -72,6 +75,7 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
      * @param entity
      * @return
      */
+    @Override
     public T update(final Long entityId, final T entity) {
         T oldEntity = this.find(entityId);
         oldEntity.merge(entity);
@@ -82,6 +86,7 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
      *
      * @param entity
      */
+    @Override
     public void remove(T entity) {
         getEntityManager().remove(getEntityManager().merge(entity));
     }
@@ -91,7 +96,8 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
      * @param id
      * @return
      */
-    public T find(final Object id) {
+    @Override
+    public T find(final Long id) {
         return getEntityManager().find(entityClass, id);
     }
 
@@ -99,6 +105,7 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
      *
      * @return
      */
+    @Override
     public List<T> findAll() {
         CriteriaQuery cq =
                 getEntityManager().getCriteriaBuilder().createQuery();
@@ -111,6 +118,7 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
      * @param range
      * @return
      */
+    @Override
     public List<T> findRange(int[] range) {
         CriteriaQuery cq =
                 getEntityManager().getCriteriaBuilder().createQuery();
@@ -125,6 +133,7 @@ public abstract class AbstractFacadeBean<T extends AbstractEntity> {
      *
      * @return
      */
+    @Override
     public int count() {
         CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         Root<T> rt = cq.from(entityClass);

@@ -9,6 +9,7 @@
  */
 package com.wegas.core.rest;
 
+import com.sun.jersey.spi.container.ResourceFilters;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor")
+@ResourceFilters(DefaultContainerRequestFilter.class)
 public class VariableDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorController.class);;
@@ -55,7 +57,7 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     public Collection<AbstractEntity> index() {
         Long gameModelId = this.getGameModelId();
         GameModelEntity gameModel = gameModelFacade.find(gameModelId);
-        return (Collection) gameModel.getRootVariableDescriptors();
+        return (Collection) gameModel.getChildVariableDescriptors();
     }
 
     @Override

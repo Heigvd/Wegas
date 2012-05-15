@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class PerformFunctionAndGoBackServlet extends HttpServlet implements Servlet {
@@ -24,11 +24,25 @@ public class PerformFunctionAndGoBackServlet extends HttpServlet implements Serv
     private static transient final Logger log = LoggerFactory.getLogger(PerformFunctionAndGoBackServlet.class);
     private static final long serialVersionUID = -7896114563632467947L;
 
+    /**
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doPost(req, resp);
     }
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -70,7 +84,7 @@ public class PerformFunctionAndGoBackServlet extends HttpServlet implements Serv
     }
 
     /**
-     * 
+     *
      * @param request
      * @return
      */

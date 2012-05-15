@@ -9,7 +9,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.mcq.persistence.ReplyEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -20,7 +20,7 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class ReplyFacade extends AbstractFacadeBean<ReplyEntity> {
+public class ReplyFacade extends AbstractFacadeImpl<ReplyEntity> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;

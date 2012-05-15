@@ -10,8 +10,8 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.NamedEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptorEntity;
 import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
@@ -36,7 +36,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"variabledescriptors_gamemodelid", "name"}))
+@UniqueConstraint(columnNames = {"rootgamemodel_id", "name"}))
 @NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptorEntity variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
 @XmlType(name = "VariableDescriptor")
 @JsonSubTypes(value = {
@@ -51,6 +51,20 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     *
+     */
+    public VariableDescriptorEntity() {
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public VariableDescriptorEntity(String name) {
+        this.name = name;
+    }
     /**
      *
      */
@@ -62,7 +76,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      *
      */
     @NotNull
-    private String name;
+    protected String name;
     /**
      *
      */
@@ -83,7 +97,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
      * updatable = true)
      */
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true)
     @NotNull
     //@JsonManagedReference
     private AbstractScopeEntity scope;
@@ -105,7 +119,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     public void merge(AbstractEntity a) {
         super.merge(a);
         VariableDescriptorEntity vd = (VariableDescriptorEntity) a;
-        this.scope.merge(vd.getScope());
+        //this.scope.merge(vd.getScope());
         this.defaultVariableInstance.merge(vd.getDefaultVariableInstance());
     }
 
@@ -122,7 +136,6 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
      * @param player
      * @return
      */
-    @XmlTransient
     public T getVariableInstance(PlayerEntity player) {
         return (T) this.scope.getVariableInstance(player);
     }
@@ -207,7 +220,7 @@ public class VariableDescriptorEntity<T extends VariableInstanceEntity> extends 
     /**
      * @param defaultVariableInstance the defaultValue to set
      */
-    public void setDefaultVariableInstance(T defaultVariableInstance) {
+    public void setDefaultInstance(T defaultVariableInstance) {
         this.defaultVariableInstance = defaultVariableInstance;
     }
 

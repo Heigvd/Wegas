@@ -15,16 +15,8 @@ import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
-import com.wegas.mcq.persistence.ChoiceInstanceEntity;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.SerializationUtils;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -133,6 +125,6 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      */
     @Override
     public String toString() {
-        return this.getClass().getName().toString() + " [" + getId() + " ]";
+        return this.getClass().getSimpleName() + "( " + getId() + " )";
     }
 }

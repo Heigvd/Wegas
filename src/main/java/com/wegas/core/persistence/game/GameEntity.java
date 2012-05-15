@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = "name"))
+@UniqueConstraint(columnNames = {"game_id", "name"}))
 @XmlType(name = "Game")
 public class GameEntity extends NamedEntity implements Serializable {
 
@@ -51,12 +52,12 @@ public class GameEntity extends NamedEntity implements Serializable {
      *
      */
     @NotNull
-   // @Pattern(regexp = "^\\w+$")
+    // @Pattern(regexp = "^\\w+$")
     private String token;
     /**
      *
      */
-    @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("game-team")
     private List<TeamEntity> teams = new ArrayList<TeamEntity>();
     /**
@@ -70,16 +71,34 @@ public class GameEntity extends NamedEntity implements Serializable {
     /**
      *
      */
+    public GameEntity() {
+    }
+
+    /**
+     *
+     * @param name
+     * @param token
+     */
+    public GameEntity(String name, String token) {
+        this.name = name;
+        this.token = token;
+    }
+
+    /**
+     *
+     */
     @PrePersist
     public void prePersist() {
-        this.setToken(this.getName().replace(" ", ""));
+        if (this.token == null) {
+            this.setToken(this.getName().replace(" ", ""));
+        }
     }
 
     @Override
-    public void merge(AbstractEntity n) {
-        super.merge(n);
-        GameEntity g = (GameEntity) n;
-        this.setToken(g.getToken());
+    public void merge(AbstractEntity a) {
+        super.merge(a);
+        GameEntity other = (GameEntity) a;
+        this.setToken(other.getToken());
     }
 
     /**
@@ -127,11 +146,11 @@ public class GameEntity extends NamedEntity implements Serializable {
     /**
      *
      */
-    /*public void reset(AnonymousEntityManager aem) {
-    for (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
-    vd.getScope().reset(aem);
-    }
-    }*/
+    /*
+     * public void reset(AnonymousEntityManager aem) { for
+     * (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
+     * vd.getScope().reset(aem); } }
+     */
     /**
      *
      * @return

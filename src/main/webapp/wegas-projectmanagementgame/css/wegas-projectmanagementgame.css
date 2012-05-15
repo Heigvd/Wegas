@@ -7,7 +7,7 @@
 .pmg-indicators {
     height: 80px;
     padding: 5px;
-    background: transparent url(/Wegas/wegas-projectmanagementgame/resources/images/header.png) repeat;
+    background: transparent url(/Wegas/wegas-projectmanagementgame/images/header.png) repeat;
     color: white;
     border-bottom: 0;
 }
@@ -52,7 +52,7 @@
 .pmg-topmenu {
     min-height: 29px;
     /*border: 1px solid black;*/
-    background: transparent url(/Wegas/wegas-projectmanagementgame/resources/images/nav_horizontal.png) repeat;
+    background: transparent url(/Wegas/wegas-projectmanagementgame/images/nav_horizontal.png) repeat;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
 }
@@ -64,7 +64,7 @@
     font-size: 1.1em;
     border-right: 1px solid black;
     cursor:pointer;
-    /*   background: transparent url(/Wegas/wegas-projectmanagementgame/resources/images/nav_horizontal.png) repeat;
+    /*   background: transparent url(/Wegas/wegas-projectmanagementgame/images/nav_horizontal.png) repeat;
     */}
 .pmg-topbutton span:hover {
     background-color: #DDD;
@@ -140,7 +140,7 @@
 }
 .pmg-actionbutton,
 .pmg-choicebutton {
-    background: transparent url(/Wegas/wegas-projectmanagementgame/resources/images/nav_vertical.png) repeat;
+    background: transparent url(/Wegas/wegas-projectmanagementgame/images/nav_vertical.png) repeat;
     border-bottom: 1px solid black;
     padding:5px;
     width: 50px;
@@ -152,10 +152,10 @@
     cursor: pointer;
 }
 .pmg-actionbutton span {
-    background: transparent url(/Wegas/wegas-projectmanagementgame/resources/images/available_action.png) no-repeat;
+    background: transparent url(/Wegas/wegas-projectmanagementgame/images/available_action.png) no-repeat;
 }
 .pmg-choicebutton span {
-    background: transparent url(/Wegas/wegas-projectmanagementgame/resources/images/choice.png) no-repeat;
+    background: transparent url(/Wegas/wegas-projectmanagementgame/images/choice.png) no-repeat;
 }
 
 
@@ -243,7 +243,7 @@
 .pmg-maindisplayarea .h2 {
     display: block;
     height: 23px;
-    background: transparent url(/Wegas/wegas-projectmanagementgame/resources/images/h2.png) repeat;
+    background: transparent url(/Wegas/wegas-projectmanagementgame/images/h2.png) repeat;
     border-bottom: 1px solid black;
     padding-left: 5px;
     padding-top: 8px;
@@ -262,7 +262,7 @@
 .pmg-maindisplayarea .h4 {
     display: block;
     height: 16px;
-    background: transparent url(/Wegas/wegas-projectmanagementgame/resources/images/h3.png) repeat;
+    background: transparent url(/Wegas/wegas-projectmanagementgame/images/h3.png) repeat;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     margin-top: -1px;
