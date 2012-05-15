@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
     <action>
+        <actionName>CUSTOM-Build -skip-test</actionName>
+        <displayName>Build -skip-test</displayName>
+        <goals>
+            <goal>install</goal>
+        </goals>
+        <properties>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+    <action>
         <actionName>CUSTOM-Run -skip-test</actionName>
         <displayName>Run -skip-test</displayName>
         <goals>

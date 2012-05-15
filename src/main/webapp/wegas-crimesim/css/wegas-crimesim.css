@@ -144,7 +144,7 @@
 }
 
 .schedule-table .schedule-available div:hover .icon {
-    background: transparent url(/Wegas/wegas-editor/resources/images/wegas-editor-sprite.png) no-repeat 25px 3px;
+    background: transparent url(/Wegas/wegas-editor/images/wegas-editor-sprite.png) no-repeat 25px 3px;
     cursor:pointer;
 }
 .yui3-scheduledisplay-menu {
@@ -206,7 +206,7 @@
 /* Schedule cancel icon */
 .schedule-table .schedule-present.schedule-unavailablestart .icon .close-icon,
 .schedule-table .schedule-future.schedule-unavailablestart .icon .close-icon {
-    background: transparent url(/Wegas/wegas-crimesim/resources/images/close-icon.png) no-repeat 0px 0px;
+    background: transparent url(/Wegas/wegas-crimesim/images/close-icon.png) no-repeat 0px 0px;
     position: absolute;
     top: 0px;
     right: 0px;
@@ -221,3 +221,106 @@
 .schedule-table .schedule-available > div:hover > * {
     display:block;
 }*/
+
+
+/* TabView Styles */
+.yui3-wegas-mcqtabview  .yui3-tabview-content {
+    /*padding-left: 350px;*/
+}
+.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tabview-list {
+    display: inline-block;
+    float:left;
+    /* margin-left: -350px;*/
+    border: none;
+    display: inline-block;
+    border-right: 1px solid lightgray;
+    width: 39.9%;
+}
+
+.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tabview-panel {
+    display:inline-block;
+    width:60%;
+    float:left;
+    overflow:inherit;
+}
+.yui3-wegas-mcqtabview .yui3-tab {
+    display: block;
+    border:none;
+    border-bottom:1px solid #DBDBDB;
+    margin: 0;
+    cursor:pointer;
+    width:100%;
+    padding:0;
+}
+.yui3-wegas-mcqtabview .pmg-subtitle {
+    padding:6px 0;
+    font-size: 1.2em;
+    font-weight: normal;
+    border-bottom: 2px solid #4D4D4D;
+}
+.yui3-skin-sam .yui3-wegas-mcqtabview .pmg-subtitle  .left ,
+.yui3-skin-sam .yui3-wegas-mcqtabview .yui3-tab  .label {
+    float:left;
+    padding-left:8px;
+}
+.yui3-skin-sam .yui3-wegas-mcqtabview .pmg-subtitle .right ,
+.yui3-skin-sam .yui3-wegas-mcqtabview .yui3-tab .status {
+    float:right;
+    padding-right:8px;
+}
+.yui3-skin-sam .yui3-wegas-mcqtabview .yui3-tab a.yui3-tab-label  {
+    background: none;
+    border: none;
+    padding: 6px 0px;
+    width:100%;
+}
+
+.yui3-wegas-mcqtabview {
+    line-height: normal;
+}
+.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tab a:hover {
+    background: #B2D2FF;
+}
+.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tab-selected {
+    background: #CCCCCC;
+}
+.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
+    color:black;
+}
+
+.yui3-wegas-mcqtabview .title {
+    background:lightsteelblue;
+    font-weight: bold;
+    padding: 2px 5px;
+}
+.yui3-wegas-mcqtabview .subtitle {
+    background:lightsteelblue;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-top:1px solid gray;
+    border-bottom:1px solid gray;
+}
+.yui3-wegas-mcqtabview  .description {
+    margin: 5px;
+    margin-bottom: 20px;
+}
+.yui3-wegas-mcqtabview  input {
+    margin: 5px;
+    float: right;
+    padding:5px;
+}
+.yui3-wegas-mcqtabview .replies {
+}
+.yui3-wegas-mcqtabview .reply {
+    margin-bottom: 5px;
+    margin-bottom: 20px;
+/*    margin: 5px;*/
+}
+.yui3-wegas-mcqtabview .reply.first-child {
+    border:none;
+}
+.yui3-wegas-mcqtabview .reply bold {
+    font-weight: bold;
+    display:block;
+    margin-bottom:10px;
+}

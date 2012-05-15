@@ -14,6 +14,7 @@ import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.game.TeamEntity;
 import com.wegas.core.persistence.user.UserEntity;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,7 +24,8 @@ import javax.persistence.PersistenceContext;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class TeamFacade extends AbstractFacadeBean<TeamEntity> {
+@LocalBean
+public class TeamFacade extends AbstractFacadeImpl<TeamEntity>  {
 
     /**
      *
@@ -60,12 +62,27 @@ public class TeamFacade extends AbstractFacadeBean<TeamEntity> {
      * @param userId
      * @return
      */
-    public PlayerEntity createPlayer(Long teamId, Long userId) {
+    public PlayerEntity joinTeam(Long teamId, Long userId) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         UserEntity u = userFacade.find(userId);
         TeamEntity t = this.find(teamId);
         PlayerEntity p = new PlayerEntity();
         p.setUser(u);
+        t.addPlayer(p);
+        em.flush();
+        em.refresh(p);
+        t.getGame().getGameModel().propagateDefaultVariableInstance(false);
+        return p;
+    }
+
+    /**
+     *
+     * @param teamId
+     * @param p
+     * @return
+     */
+    public PlayerEntity createPlayer(Long teamId, PlayerEntity p) {
+        TeamEntity t = this.find(teamId);
         t.addPlayer(p);
         em.flush();
         em.refresh(p);
@@ -88,5 +105,4 @@ public class TeamFacade extends AbstractFacadeBean<TeamEntity> {
     public TeamFacade() {
         super(TeamEntity.class);
     }
-
 }

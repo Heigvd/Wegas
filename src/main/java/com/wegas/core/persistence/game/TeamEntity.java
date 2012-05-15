@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.*;
@@ -48,9 +49,9 @@ public class TeamEntity extends AbstractEntity {
     /**
      *
      */
-    @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "player-team")
-    private List<PlayerEntity> players;
+    private List<PlayerEntity> players = new ArrayList<PlayerEntity>();
     /**
      *
      */
@@ -118,6 +119,7 @@ public class TeamEntity extends AbstractEntity {
     public void setPlayers(List<PlayerEntity> players) {
         this.players = players;
     }
+
     /**
      *
      */

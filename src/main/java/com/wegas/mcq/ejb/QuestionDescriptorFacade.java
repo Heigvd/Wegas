@@ -9,7 +9,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
@@ -35,7 +35,7 @@ import javax.script.ScriptException;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class QuestionDescriptorFacade extends AbstractFacadeBean<ChoiceDescriptorEntity> {
+public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescriptorEntity> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -67,6 +67,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeBean<ChoiceDescripto
      * @param questionList
      * @param player
      * @param time
+     * @throws ScriptException
      */
     public void setCurrentTime(ListDescriptorEntity questionList, PlayerEntity player, Long time) throws ScriptException {
         for (VariableDescriptorEntity question : questionList.getItems()) {
@@ -79,6 +80,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeBean<ChoiceDescripto
      * @param question
      * @param player
      * @param time
+     * @throws ScriptException
      */
     public void setCurrentTime(QuestionDescriptorEntity question, PlayerEntity player, Long time) throws ScriptException {
         QuestionInstanceEntity questionInstance = (QuestionInstanceEntity) question.getVariableInstance(player);
@@ -117,6 +119,11 @@ public class QuestionDescriptorFacade extends AbstractFacadeBean<ChoiceDescripto
         return reply;
     }
 
+    /**
+     *
+     * @param replyId
+     * @return
+     */
     public ReplyEntity cancelReply(Long replyId) {
         ReplyEntity reply = replyFacade.find(replyId);
         replyFacade.remove(reply);
@@ -125,9 +132,10 @@ public class QuestionDescriptorFacade extends AbstractFacadeBean<ChoiceDescripto
 
     /**
      *
-     * @param replyVariableInstanceId
-     * @param playerId
+     * @param player
+     * @param reply
      * @return
+     * @throws ScriptException 
      */
     public List<VariableInstanceEntity> validateReply(PlayerEntity player, ReplyEntity reply) throws ScriptException {
         HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
@@ -136,10 +144,24 @@ public class QuestionDescriptorFacade extends AbstractFacadeBean<ChoiceDescripto
         return scriptManager.getUpdatedEntities();
     }
 
+    /**
+     *
+     * @param player
+     * @param replyVariableInstanceId
+     * @return
+     * @throws ScriptException
+     */
     public List<VariableInstanceEntity> validateReply(PlayerEntity player, Long replyVariableInstanceId) throws ScriptException {
         return this.validateReply(player, this.replyFacade.find(replyVariableInstanceId));
     }
 
+    /**
+     *
+     * @param playerId
+     * @param replyVariableInstanceId
+     * @return
+     * @throws ScriptException
+     */
     public List<VariableInstanceEntity> validateReply(Long playerId, Long replyVariableInstanceId) throws ScriptException {
         return this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
     }

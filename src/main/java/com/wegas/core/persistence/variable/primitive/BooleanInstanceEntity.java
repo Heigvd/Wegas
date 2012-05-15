@@ -32,6 +32,20 @@ public class BooleanInstanceEntity extends VariableInstanceEntity {
     private boolean val;
 
     /**
+     *
+     */
+    public BooleanInstanceEntity() {
+    }
+
+    /**
+     *
+     * @param value
+     */
+    public BooleanInstanceEntity(boolean value) {
+        this.val = value;
+    }
+
+    /**
      * @return the value
      */
     public boolean getValue() {
@@ -51,7 +65,7 @@ public class BooleanInstanceEntity extends VariableInstanceEntity {
      */
     @Override
     public void merge(AbstractEntity a) {
-        BooleanInstanceEntity vi = (BooleanInstanceEntity) a;
-        this.setValue(vi.getValue());
+        BooleanInstanceEntity other = (BooleanInstanceEntity) a;
+        this.setValue(other.getValue());
     }
 }

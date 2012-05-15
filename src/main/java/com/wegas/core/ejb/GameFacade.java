@@ -13,6 +13,7 @@ import com.wegas.core.persistence.game.GameEntity;
 import com.wegas.core.persistence.game.GameEntity_;
 import com.wegas.core.persistence.game.GameModelEntity;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -27,7 +28,8 @@ import javax.persistence.criteria.Root;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-public class GameFacade extends AbstractFacadeBean<GameEntity> {
+@LocalBean
+public class GameFacade extends AbstractFacadeImpl<GameEntity>{
 
     /**
      *
@@ -57,7 +59,7 @@ public class GameFacade extends AbstractFacadeBean<GameEntity> {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<GameEntity> game = cq.from(GameEntity.class);
-        cq.where(cb.equal(game.get(GameEntity_.name), token));
+        cq.where(cb.equal(game.get(GameEntity_.token), token));
         Query q = em.createQuery(cq);
         return (GameEntity) q.getSingleResult();
     }
@@ -78,7 +80,8 @@ public class GameFacade extends AbstractFacadeBean<GameEntity> {
      * @return
      */
     @Override
-    protected EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return em;
     }
+
 }

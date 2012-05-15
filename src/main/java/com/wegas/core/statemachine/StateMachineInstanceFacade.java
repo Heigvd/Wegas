@@ -9,7 +9,7 @@
  */
 package com.wegas.core.statemachine;
 
-import com.wegas.core.ejb.AbstractFacadeBean;
+import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.script.ScriptEntity;
@@ -24,7 +24,7 @@ import javax.script.ScriptException;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class StateMachineInstanceFacade extends AbstractFacadeBean<StateMachineInstanceEntity> {
+public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineInstanceEntity> {
 
     @PersistenceContext(unitName="wegasPU")
     EntityManager em;

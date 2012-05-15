@@ -9,6 +9,7 @@
  */
 package com.wegas.mcq.rest;
 
+import com.wegas.core.ejb.GameManager;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -17,6 +18,7 @@ import com.wegas.mcq.persistence.ReplyEntity;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,13 +39,19 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      */
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
+    /**
+     *
+     */
+    @Inject
+    private GameManager gameManager;
 
     /**
      *
      * @param gameModelId
      * @param playerId
-     * @param replyId
+     * @param choiceId
      * @return p
+     * @throws ScriptException
      */
     @GET
     @Path("/SelectReply/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
@@ -55,9 +63,17 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
 
         ReplyEntity reply =
                 questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
-        return questionDescriptorFacade.validateReply(playerId, reply.getId());
+        questionDescriptorFacade.validateReply(playerId, reply.getId());
+        return gameManager.getUpdatedInstances();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param replyId
+     * @return
+     * @throws ScriptException
+     */
     @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -72,7 +88,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      *
      * @param gameModelId
      * @param playerId
-     * @param replyDescriptorId
+     * @param choiceDescriptorId
      * @param startTime
      * @return p
      */

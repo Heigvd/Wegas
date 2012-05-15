@@ -31,29 +31,60 @@
 
         <shiro.version>1.2.0</shiro.version>
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
-        <jersey.version>1.8</jersey.version>
+        <jersey.version>1.11</jersey.version>
         <jdk.version>1.7</jdk.version>
+        <glassfish.version>3.1.2</glassfish.version>
+        <cdi.version>1.0</cdi.version>
+        <weld.version>1.1.0.Final</weld.version>
+        <junit.version>4.8.2</junit.version>
+        <exec.plugin.version>1.2</exec.plugin.version>
+        <jar.plugin.version>2.3.1</jar.plugin.version>
+<!--        <war.plugin.version>2.1.1</war.plugin.version>-->
+        <compiler-plugin-version>2.3.2</compiler-plugin-version>
+
         <skipTests>false</skipTests>
     </properties>
 
     <dependencies>
-
         <!-- Jersey -->
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
             <version>${jersey.version}</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jersey-core</artifactId>
+                    <groupId>com.sun.jersey</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jaxb-impl</artifactId>
+                    <groupId>com.sun.xml.bind</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jettison</artifactId>
+                    <groupId>org.codehaus.jettison</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-jaxrs</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-core-asl</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-xc</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- Liquibase -->
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>2.0.3</version>
-        </dependency>
-
-        <!-- Apache Shiro Dependencies-->
+        <!-- Apache Shiro Dependencies -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
@@ -65,100 +96,18 @@
             <version>${shiro.version}</version>
         </dependency>
 
-        <!-- Jsf -->
-        <!-- For Java EE Application Server -->
         <dependency>
-            <groupId>javax.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-            <version>2.0</version>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>${cdi.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- For Servlet Container like Tomcat -->
-	<!--<dependency>
-	  <groupId>com.sun.faces</groupId>
-	  <artifactId>jsf-api</artifactId>
-	  <version>2.1.0-b03</version>
-	</dependency>
-	<dependency>
-	  <groupId>com.sun.faces</groupId>
-	  <artifactId>jsf-impl</artifactId>
-	  <version>2.1.0-b03</version>
-	</dependency>-->
-
-        <!-- Facebook api -->
-        <dependency>
-            <groupId>com.google.code.facebookapi</groupId>
-            <artifactId>facebook-java-api</artifactId>
-            <version>2.0.5</version>
-        </dependency>
-
-        <!-- Atmosphere Dependencies -->
-        <!--<dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-runtime</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-annotations</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-jquery</artifactId>
-            <version>${atmosphere.version}</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-jersey</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>-->
-
-        <!-- SL4J -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.4</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.0.2</version>
-<!--            <scope>runtime</scope>-->
-        </dependency>
-<!--        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.6.4</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <type>jar</type>
-            <version>1.6.4</version>
-        </dependency>
-              <dependency>
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
-            <type>jar</type>
-            <version>1.2.16</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-            <scope>provided</scope>
-        </dependency>-->
-
-        <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
@@ -166,7 +115,13 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Embedded Glassfish -->
+        <!-- Liquibase -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+
         <dependency>
             <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
@@ -202,15 +157,102 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Jave web container api -->
-        <!-- Alway after embeded-glassfish -->
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
-            <scope>provided</scope>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+            <type>jar</type>
+            <version>1.1.1</version>
+           <!-- <scope>provided</scope>-->
         </dependency>
 
+        <dependency>
+            <artifactId>commons-lang</artifactId>
+            <groupId>commons-lang</groupId>
+            <type>jar</type>
+            <version>2.2</version>
+        </dependency>
+        <!-- slf4j -->
+        <dependency>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+            <type>jar</type>
+            <version>1.6.4</version>
+        </dependency><!--
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+-->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.2</version>
+<!--            <scope>runtime</scope>-->
+        </dependency>
+<!--         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <type>jar</type>
+            <version>1.6.4</version>
+        </dependency> -->
+<!-- Jsf -->
+        <!-- For Java EE Application Server -->
+        <!--<dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>-->
+        <!-- For Servlet Container like Tomcat -->
+	<!--<dependency>
+	  <groupId>com.sun.faces</groupId>
+	  <artifactId>jsf-api</artifactId>
+	  <version>2.1.0-b03</version>
+	</dependency>
+	<dependency>
+	  <groupId>com.sun.faces</groupId>
+	  <artifactId>jsf-impl</artifactId>
+	  <version>2.1.0-b03</version>
+	</dependency>-->
+
+        <!-- Facebook api -->
+        <!--<dependency>
+            <groupId>com.google.code.facebookapi</groupId>
+            <artifactId>facebook-java-api</artifactId>
+            <version>2.0.5</version>
+        </dependency>-->
+
+        <!-- Atmosphere Dependencies -->
+        <!--<dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-runtime</artifactId>
+            <version>${atmosphere.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-annotations</artifactId>
+            <version>${atmosphere.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-jquery</artifactId>
+            <version>${atmosphere.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-jersey</artifactId>
+            <version>${atmosphere.version}</version>
+        </dependency>-->
+        <!-- Jave web container api -->
+        <!-- Alway after embeded-glassfish -->
+<!--        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
+        </dependency>-->
 
         <!-- YUI -->
         <!--<dependency>
@@ -220,12 +262,15 @@
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>-->
+
     </dependencies>
 
     <build>
+
         <finalName>Wegas</finalName>
 
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -233,9 +278,9 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                    <compilerArguments>
+<!--                    <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
-                    </compilerArguments>
+                    </compilerArguments>-->
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
@@ -245,9 +290,8 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
                 <configuration>
-                    <warName>Wegas</warName>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <!--<overlays>
+<!--                    <warName>Wegas</warName>-->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>   <!--<overlays>
                         <overlay>
                             <groupId>com.yahoo</groupId>
                             <artifactId>yui</artifactId>
@@ -260,6 +304,7 @@
                     </overlays>-->
                 </configuration>
             </plugin>
+
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -411,11 +456,11 @@
                             </dependencies>
                         </plugin>-->
 
-<!--
-                        <plugin>
+                        <!--<plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-jxr-plugin</artifactId>
-                            <version>2.3</version>                     </plugin>-->
+                            <version>2.3</version>
+                        </plugin>-->
 
                     </reportPlugins>
                 </configuration>
@@ -484,8 +529,8 @@
             </plugin>-->
 
         </plugins>
-    </build>
 
+    </build>
     <repositories>
         <repository>
             <id>maven2-repository.dev.java.net</id>

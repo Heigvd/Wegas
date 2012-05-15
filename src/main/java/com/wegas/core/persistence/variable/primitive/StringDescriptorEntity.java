@@ -25,6 +25,20 @@ public class StringDescriptorEntity extends VariableDescriptorEntity<StringInsta
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(StringDescriptorEntity.class);
+
+   /**
+     *
+     */
+    public StringDescriptorEntity() {
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public StringDescriptorEntity(String name) {
+        this.name = name;
+    }
     /**
      *
      */

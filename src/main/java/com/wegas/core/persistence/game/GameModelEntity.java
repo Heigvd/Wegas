@@ -9,15 +9,15 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.layout.WidgetEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -29,7 +29,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Entity
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = "name"))
-@XmlType(name = "GameModel", propOrder = {"@class", "id", "name", "teams"})
+@XmlType(name = "GameModel")
 public class GameModelEntity extends NamedEntity implements Serializable {
 
     private static final Logger logger = Logger.getLogger("GameModelEntity");
@@ -38,7 +38,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      */
     @Id
-    @XmlID
     @Column(name = "gamemodelid")
     @GeneratedValue
     private Long id;
@@ -46,6 +45,7 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      */
     @NotNull
+    //@XmlID
     //@Pattern(regexp = "^\\w+$")
     private String name;
     /**
@@ -59,21 +59,20 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * hierarchy (other VariableDescriptor can be placed inside of a
      * ListDescriptor's items List).
      */
-    @OneToMany( cascade = {CascadeType.ALL})
-    @XmlElementWrapper(name = "variableDescriptors")
-    @JoinColumn(name="rootgamemodel_id")
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JoinColumn(name = "rootgamemodel_id")
     //@JsonManagedReference
-    private List<VariableDescriptorEntity> rootVariableDescriptors;
+    private List<VariableDescriptorEntity> childVariableDescriptors;
     /**
      *
      */
-    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<GameEntity> games;
+    private List<GameEntity> games = new ArrayList<GameEntity>();
     /**
      *
      */
-    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("gamemodel-widget")
     private List<WidgetEntity> widgets;
     /**
@@ -85,6 +84,20 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * @fixme temporary solutions to store widgets
      */
     private String widgetsUri;
+
+    /**
+     *
+     */
+    public GameModelEntity() {
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public GameModelEntity(String name) {
+        this.name = name;
+    }
 
     /**
      *
@@ -145,7 +158,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      * @param variableDescriptors
      */
-    @XmlTransient
     public void setVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
         this.variableDescriptors = variableDescriptors;
     }
@@ -157,8 +169,8 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * ListDescriptor's items List)
      */
     //@JsonManagedReference
-    public List<VariableDescriptorEntity> getRootVariableDescriptors() {
-        return rootVariableDescriptors;
+    public List<VariableDescriptorEntity> getChildVariableDescriptors() {
+        return childVariableDescriptors;
     }
 
     /**
@@ -166,8 +178,8 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      * @param variableDescriptors
      */
     //@JsonManagedReference
-    public void setRootVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
-        this.rootVariableDescriptors = variableDescriptors;
+    public void setChildVariableDescriptors(List<VariableDescriptorEntity> variableDescriptors) {
+        this.childVariableDescriptors = variableDescriptors;
         this.variableDescriptors = variableDescriptors;
         for (VariableDescriptorEntity vd : variableDescriptors) {
             vd.setGameModel(this);
@@ -178,9 +190,8 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      * @param variableDescriptor
      */
-    @XmlTransient
     public void addVariableDescriptor(VariableDescriptorEntity variableDescriptor) {
-        this.rootVariableDescriptors.add(variableDescriptor);
+        this.childVariableDescriptors.add(variableDescriptor);
         this.variableDescriptors.add(variableDescriptor);
         variableDescriptor.setGameModel(this);
     }
@@ -206,7 +217,6 @@ public class GameModelEntity extends NamedEntity implements Serializable {
      *
      * @param game
      */
-    @XmlTransient
     public void addGame(GameEntity game) {
         this.games.add(game);
         game.setGameModel(this);

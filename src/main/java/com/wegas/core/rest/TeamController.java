@@ -59,7 +59,7 @@ public class TeamController extends AbstractRestController<TeamFacade> {
      * @Consumes(MediaType.APPLICATION_JSON)
      * @Produces(MediaType.APPLICATION_JSON) public PlayerEntity
      * addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long
-     * userId) { // return TeamFacade.createPlayer(teamId, userId); return
+     * userId) { // return TeamFacadeBean.joinTeam(teamId, userId); return
      * null; }
      */
     /**

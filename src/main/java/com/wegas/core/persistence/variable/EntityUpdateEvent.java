@@ -20,10 +20,18 @@ public class EntityUpdateEvent {
 
     private AbstractEntity entity;
 
+    /**
+     *
+     * @param entity
+     */
     public EntityUpdateEvent(AbstractEntity entity) {
         this.entity = entity;
     }
 
+    /**
+     * 
+     * @return
+     */
     public AbstractEntity getEntity() {
         return entity;
     }

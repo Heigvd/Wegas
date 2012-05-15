@@ -26,7 +26,7 @@ YUI().use(function (Y) {
                         ]
                     },
                     'wegas-appcss': {
-                        path: 'wegas-app/resources/css/wegas-app.css',
+                        path: 'wegas-app/css/wegas-app.css',
                         type: 'css'
                     },
                     'wegas-datasourcerest': {
@@ -98,7 +98,7 @@ YUI().use(function (Y) {
                         ]
                     },
                     'wegas-editorcss': {
-                        path: 'wegas-editor/resources/css/wegas-editor.css',
+                        path: 'wegas-editor/css/wegas-editor.css',
                         type: 'css'
                     },
 
@@ -127,11 +127,11 @@ YUI().use(function (Y) {
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable-deprecated', "datatable-deprecated-datasource", 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
+                        requires: ['datatable-deprecated', 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
-                        requires: ['treeview']
+                        requires: ['yui2-treeview']
                     },
 
 
@@ -142,15 +142,20 @@ YUI().use(function (Y) {
 
 
                     /** CrimeSim */
+                    'wegas-mcqtabview': {
+                        path: 'wegas-crimesim/js/wegas-mcqtabview-min.js',
+                        requires: ['tabview']
+                    },
                     'wegas-crimesim': {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
-                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"]
+                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
+                        "wegas-mcqtabview"]
                     }
 
 
                 /* This one is only seful w/ yui3 treeview widget */
                 /* 'wegas-treeviewcss': {
-                    path: 'wegas-app/resources/css/treeview-classic.css',
+                    path: 'wegas-app/css/treeview-classic.css',
                     type: 'css'
                     },*/
                 /*'wegas-treeble': {

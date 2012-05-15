@@ -12,6 +12,7 @@ package com.wegas.core.statemachine;
 
 import com.wegas.core.ejb.GameManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
@@ -64,8 +65,8 @@ public class StateMachineRunner implements Serializable {
         //TODO: Should Eval without firing Event, lock SMInstance (concurrency)
         run = true;
         if (stateMachines.isEmpty()) {                                          // load stateMachines only once
-            Long gmId = gameManager.getGameModel().getId();
-            List<VariableDescriptorEntity> stateMachineDescriptors = variableDescriptorFacade.findByClassAndGameModelId(StateMachineDescriptorEntity.class, gmId);
+            GameModelEntity gamemodel = gameManager.getGameModel();
+            List<VariableDescriptorEntity> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel,StateMachineDescriptorEntity.class);
             for (VariableDescriptorEntity stateMachineDescriptor : stateMachineDescriptors) {
                 stateMachines.add((StateMachineInstanceEntity) stateMachineDescriptor.getScope().getVariableInstance(gameManager.getCurrentPlayer()));
             }
@@ -79,7 +80,8 @@ public class StateMachineRunner implements Serializable {
                 Boolean validTransition = false;
                 try {
                     validTransition = (Boolean) scriptManager.eval(gameManager.getCurrentPlayer(), transition.getTriggerCondition());
-                } catch (ScriptException ex) {
+                }
+                catch (ScriptException ex) {
                     logger.error("Script Failed : {} returned: {}", transition.getTriggerCondition(), ex);
                 }
                 if (validTransition) {
@@ -99,7 +101,8 @@ public class StateMachineRunner implements Serializable {
         run = false;
         try {
             scriptManager.eval(gameManager.getCurrentPlayer(), impacts, null);
-        } catch (ScriptException ex) {
+        }
+        catch (ScriptException ex) {
             logger.error("Script Failed : {} returned: {}", impacts, ex);
         }
     }
