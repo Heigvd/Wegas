@@ -15,15 +15,17 @@ import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-//@Named
-//@RequestScoped
+@Named
+@RequestScoped
 public class GameManager {
 
     /**
