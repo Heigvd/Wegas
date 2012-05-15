@@ -1,7 +1,7 @@
 {
     "@class": "GameModel",
     "name": "CrimeSim",
-    "cssUri": "wegas-crimesim/resources/css/wegas-crimesim.css",
+    "cssUri": "wegas-crimesim/css/wegas-crimesim.css",
     "widgetsUri": "wegas-crimesim/db/wegas-crimesim-pages.json",
     "games":[{
         "@class":"Game",
@@ -19,7 +19,7 @@
             }]
         }]
     }],
-    "variableDescriptors": [{
+    "childVariableDescriptors": [{
         "@class": "NumberDescriptor",
         "name": "humanResources",
         "defaultVariableInstance": {
@@ -59,6 +59,113 @@
         },
         "scope": {
             "@class": "PlayerScope"
+        }
+    },{
+        "@class": "ListDescriptor",
+        "name": "questions",
+        "items":[{
+            "@class": "QuestionDescriptor",
+            "name": "Question no 1",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name": "a) [...]",
+                "description":"",
+                "duration":0,
+                "cost":0,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"humanResources.value-=2;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name": "b) [...]",
+                "description":"",
+                "duration":0,
+                "cost":0,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"humanResources.value-=1;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
+            "defaultVariableInstance": {
+                "@class": "QuestionInstance",
+                "replies":[],
+                "active":true
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "QuestionDescriptor",
+            "name": "Question no 2",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name": "a) [...]",
+                "description":"",
+                "duration":0,
+                "cost":0,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"humanResources.value-=2;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name": "b) [...]",
+                "description":"",
+                "duration":0,
+                "cost":0,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"humanResources.value-=1;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
+            "defaultVariableInstance": {
+                "@class": "QuestionInstance",
+                "replies":[],
+                "active":true
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }],
+        "defaultVariableInstance": {
+            "@class": "NumberInstance",
+            "value": 0
+        },
+        "scope": {
+            "@class": "GameModelScope"
         }
     },{
         "@class": "ListDescriptor",

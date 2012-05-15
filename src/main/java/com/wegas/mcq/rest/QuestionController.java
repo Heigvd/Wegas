@@ -9,6 +9,7 @@
  */
 package com.wegas.mcq.rest;
 
+import com.wegas.core.ejb.GameManager;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -17,6 +18,7 @@ import com.wegas.mcq.persistence.ReplyEntity;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,6 +39,11 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      */
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
+    /**
+     *
+     */
+    @Inject
+    private GameManager gameManager;
 
     /**
      *
@@ -56,7 +63,8 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
 
         ReplyEntity reply =
                 questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
-        return questionDescriptorFacade.validateReply(playerId, reply.getId());
+        questionDescriptorFacade.validateReply(playerId, reply.getId());
+        return gameManager.getUpdatedInstances();
     }
 
     /**

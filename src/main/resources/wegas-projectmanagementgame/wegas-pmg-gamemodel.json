@@ -1,7 +1,7 @@
 {
     "@class": "GameModel",
     "name": "Project Management Game",
-    "cssUri": "wegas-projectmanagementgame/resources/css/wegas-projectmanagementgame.css",
+    "cssUri": "wegas-projectmanagementgame/css/wegas-projectmanagementgame.css",
     "widgetsUri": "wegas-projectmanagementgame/db/wegas-pmg-pages.json",
     "games":[{
         "@class":"Game",

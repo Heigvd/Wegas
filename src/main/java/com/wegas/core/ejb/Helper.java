@@ -64,4 +64,15 @@ public class Helper {
     public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
         return lookupBy(new InitialContext(), type, service);
     }
+
+    /**
+     *
+     * @param <T>
+     * @param type
+     * @return
+     * @throws NamingException
+     */
+    public static <T> T lookupBy(Class<T> type) throws NamingException {
+        return lookupBy(type, type);
+    }
 }

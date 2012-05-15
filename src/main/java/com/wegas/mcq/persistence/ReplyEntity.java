@@ -9,7 +9,11 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.wegas.core.ejb.Helper;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -63,6 +67,12 @@ public class ReplyEntity extends AbstractEntity {
         ReplyEntity other = (ReplyEntity) a;
         this.setChoiceDescriptor(other.getChoiceDescriptor());
         this.setStartTime(other.getStartTime());
+    }
+
+    @PostUpdate
+    @PostRemove
+    private void onUpdate() throws NamingException {
+        Helper.lookupBy(VariableInstanceFacade.class).onVariableInstanceUpdate(this.getQuestionInstance());
     }
 
     @Override

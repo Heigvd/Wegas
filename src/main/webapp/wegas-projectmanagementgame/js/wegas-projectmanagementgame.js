@@ -100,15 +100,6 @@ YUI.add('wegas-projectmanagementgame', function (Y) {
                     + '<li class=" yui3-widget pmg-subtitle" role="presentation"><div class="left">Name</div><div class="right">Your choice</div><div style="clear:both"></div></li>'
             );
         }
-    }, {
-        ATTRS : {
-            classTxt: {
-                value: 'PMGChoiceDisplay'
-            },
-            type: {
-                value: "PMGChoiceDisplay"
-            }
-        }
     });
 
     Y.namespace('Wegas').PMGChoiceDisplay = PMGChoiceDisplay;
