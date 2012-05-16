@@ -12,32 +12,31 @@ YUI.add('wegas-mcqtabview', function (Y) {
 
         // *** Private fields *** //
         tabView: null,
+        dataSource: null,
 
         // *** Lifecycle Methods *** //
         renderUI: function () {
-            this.tabView = new Y.TabView({
-                children: []
-            });
-
+            this.dataSource = Y.Wegas.app.dataSources.VariableDescriptor;
+            this.tabView = new Y.TabView();
             this.tabView.render(this.get(CONTENTBOX).append('<div></div>'));
         },
 
         bindUI: function () {
             this.get(CONTENTBOX).delegate("click", function (e) {
-                Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
+                this.dataSource.rest.sendRequest({
                     request: "/QuestionDescriptor/SelectReply/" + e.target.get('id')
                     + "/Player/" + Y.Wegas.app.get('currentPlayer')
                 });
             }, "input[type=submit]", this);
 
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
-
+            this.dataSource.after("response", this.syncUI, this);
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.tabView.after("selectionChange", this.onTabSelected, this)
         },
 
         syncUI: function () {
-            var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel,
-                questions = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "questions").items,
+            var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel, tab,
+                questions = this.dataSource.rest.getCachedVariableBy('name', "questions").items,
                 selectedTab = this.tabView.get('selection'),
                 lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
@@ -46,7 +45,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
             for (i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
                 ret = [];
-                cQuestionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(cQuestion);
+                cQuestionInstance = this.dataSource.rest.getDescriptorInstance(cQuestion);
                 firstChild = "first-child";
                 cQuestionLabel = cQuestion.label || cQuestion.name || "undefined";
                 cReplyLabel = null;
@@ -86,27 +85,43 @@ YUI.add('wegas-mcqtabview', function (Y) {
                             }
                         }
                     }
-
-                    this.tabView.add({
-                        label: '<div class="label">' + cQuestionLabel + '</div><div class="status">' + (cReplyLabel || "unanswered") + '</div>',
+                    tab = new Y.Tab({
+                        label: '<div class="' + ( cQuestionInstance.unread ? "unread" : "" ) + '"><div class="label">' + cQuestionLabel + '</div>'
+                            +'<div class="status">' + (cReplyLabel || "unanswered") + '</div></div>',
                         content: '<div class="title">Details</div>'
                         + '<div class="content">'
                         + '<div class="title">' + cQuestionLabel + '</div>'
                         + '<div class="description">' + cQuestion.description + '</div>'
                         + ret.join('') + '</div>'
                     });
+                    tab.questionInstance = cQuestionInstance;
+                    this.tabView.add(tab);
                 }
             }
-            /* @fixme */
-            Y.later(100, this, function() {
-                this.tabView.selectChild(lastSelection);
-            });
+
+            this.tabView.selectChild(lastSelection);
         },
 
         // *** Private Methods *** //
+        // *** Callbacks *** //
+        onTabSelected: function (e) {
+            if (this.timer) {                                                   // If there is an active unread
+                this.timer.cancel();                                            // question timer, we cancel it.
+            }
+
+            if (e.newVal && e.newVal.questionInstance.unread) {                 // If the question is currently unread,
+               Y.log("Sending question read update", "info",  "MCQTabView");
+               this.questionInstance = e.newVal.questionInstance;
+                this.timer = Y.later(2000, this, function () {
+                    this.questionInstance.unread = false;
+                    this.dataSource.rest.put(this.questionInstance);
+                });
+            }
+        },
+
         // *** Model methods *** //
         getChoiceDescriptor: function(id) {
-            return Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(id);
+            return this.dataSource.rest.getCachedVariableById(id);
         }
     });
 

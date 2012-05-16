@@ -75,7 +75,7 @@
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
-                    "content":"humanResources.value-=2;"
+                    "content":"importPackage(com.wegas.core.script);\nvar mailer = Factory.lookupBean(\"MessagingFacade\");\n\nmailer.send(\"normal\", self, \"test\", \"test\", \"test\");\nhumanResources.value-=2;"
                 },
                 "defaultVariableInstance": {
                     "@class": "ChoiceInstance",
