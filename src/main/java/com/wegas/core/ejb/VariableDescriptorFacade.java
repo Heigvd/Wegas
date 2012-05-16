@@ -12,6 +12,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.user.UserEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.variable.VariableDescriptorEntity_;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -61,10 +62,12 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<UserEntity> variableDescriptor = cq.from(VariableDescriptorEntity.class);
-        //cq.where(cb.equal(variableDescriptor.get(VariableDescriptorEntity_.name), name));
-        cq.where(cb.equal(variableDescriptor.get("name"), name));
-        //cq.where(cb.equal(variableDescriptor.get(VariableDescriptorEntity_.gameModel), gameModel));
-        cq.where(cb.equal(variableDescriptor.get("gameModel"), gameModel));
+//        cq.where(cb.and(
+//                cb.equal(variableDescriptor.get(VariableDescriptorEntity_.gameModel), gameModel),
+//                cb.equal(variableDescriptor.get(VariableDescriptorEntity_.name), name)));
+        cq.where(cb.and(
+                cb.equal(variableDescriptor.get("gameModel"), gameModel),
+                cb.equal(variableDescriptor.get("name"), name)));
         Query q = em.createQuery(cq);
         return (VariableDescriptorEntity) q.getSingleResult();
     }

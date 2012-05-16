@@ -9,6 +9,8 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.ejb.Helper;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.primitive.NumberInstanceEntity;
 import com.wegas.core.persistence.variable.primitive.StringInstanceEntity;
@@ -17,6 +19,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEnti
 import com.wegas.mcq.persistence.ChoiceInstanceEntity;
 import com.wegas.mcq.persistence.QuestionInstanceEntity;
 import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
+import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -29,9 +32,10 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@EntityListeners({VariableInstancePersistenceListener.class})
+//@EntityListeners({VariableInstancePersistenceListener.class})
 @Inheritance(strategy = InheritanceType.JOINED)
-@XmlType(name = "VariableInstance", propOrder = {"@class", "id"})
+@XmlType(name = "VariableInstance")
+//@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstanceEntity.class),
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstanceEntity.class),
@@ -100,6 +104,7 @@ abstract public class VariableInstanceEntity extends AbstractEntity {
     public void setScope(AbstractScopeEntity scope) {
         this.scope = scope;
     }
+
     /**
      * @return the scope
      */
@@ -117,6 +122,21 @@ abstract public class VariableInstanceEntity extends AbstractEntity {
             return this.getDescriptor().getId();
         } else {
             return new Long(-1);
+        }
+    }
+    public void setDescriptorId(Long l) {
+        // Dummy so that jaxb doesnt yell
+    }
+
+    @PostPersist
+    @PostUpdate
+    @PostRemove
+    public void onInstanceUpdate() {
+        try {
+            Helper.lookupBy(VariableInstanceFacade.class).onVariableInstanceUpdate(this);
+        }
+        catch (NamingException ex) {
+            logger.error("Error looking up VariableInstanceFacade");
         }
     }
 }

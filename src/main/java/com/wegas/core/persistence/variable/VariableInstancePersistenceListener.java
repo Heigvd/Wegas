@@ -22,16 +22,16 @@ public class VariableInstancePersistenceListener {
 
     private static final Logger logger = LoggerFactory.getLogger("VariableInstancePersistenceListener");
 
-    /**
-     *
-     * @param instance
-     * @throws NamingException
-     */
-    @PostPersist
-    @PostUpdate
-    @PostRemove
-    private void onUpdate(VariableInstanceEntity instance) throws NamingException {
-        VariableInstanceFacade variableInstanceFacade = Helper.lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
-        variableInstanceFacade.onVariableInstanceUpdate(instance);
-    }
+//    /**
+//     *
+//     * @param instance
+//     * @throws NamingException
+//     */
+//    @PostPersist
+//    @PostUpdate
+//    @PostRemove
+//    private void onUpdate(VariableInstanceEntity instance) throws NamingException {
+//        VariableInstanceFacade variableInstanceFacade = Helper.lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
+//        variableInstanceFacade.onVariableInstanceUpdate(instance);
+//    }
 }

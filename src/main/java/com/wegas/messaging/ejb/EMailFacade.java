@@ -27,12 +27,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
+ * @fixme @important The mail should be sent in an async queue, so they don't hang the reply endlessly
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
 @LocalBean
-public class EMailManager {
+public class EMailFacade {
 
     /**
      *
@@ -40,11 +41,11 @@ public class EMailManager {
      */
     public void listener(@Observes MessageEvent messageEvent) {
         // @fixme remove this hardcoded condition w/ some db values or at least a line in the prop file
-        if (messageEvent.getType().equals("important")) {
+//        if (messageEvent.getType().equals("important")) {
             this.send("fx@red-agent.com", "admin@wegas.com",
                     messageEvent.getMessage().getSubject(),
                     messageEvent.getMessage().getBody());
-        }
+//        }
     }
 
     /**
@@ -82,7 +83,7 @@ public class EMailManager {
             System.out.println("Message sent OK.");
         }
         catch (MessagingException ex) {
-            Logger.getLogger(EMailManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EMailFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

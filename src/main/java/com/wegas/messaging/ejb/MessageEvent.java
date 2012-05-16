@@ -9,6 +9,7 @@
  */
 package com.wegas.messaging.ejb;
 
+import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.messaging.persistence.variable.MessageEntity;
 
 /**
@@ -25,6 +26,10 @@ public class MessageEvent {
      *
      */
     private MessageEntity message;
+    /**
+     *
+     */
+    private PlayerEntity player;
 
     /**
      * @return the type
@@ -52,5 +57,19 @@ public class MessageEvent {
      */
     public void setMessage(MessageEntity message) {
         this.message = message;
+    }
+
+    /**
+     * @return the player
+     */
+    public PlayerEntity getPlayer() {
+        return player;
+    }
+
+    /**
+     * @param player the player to set
+     */
+    public void setPlayer(PlayerEntity player) {
+        this.player = player;
     }
 }
