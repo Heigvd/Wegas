@@ -16,7 +16,6 @@ import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
-import com.wegas.messaging.ejb.MessagingManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

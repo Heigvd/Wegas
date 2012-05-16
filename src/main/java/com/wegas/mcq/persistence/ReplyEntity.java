@@ -69,11 +69,12 @@ public class ReplyEntity extends AbstractEntity {
         this.setStartTime(other.getStartTime());
     }
 
+    @PostPersist
     @PostUpdate
     @PostRemove
-    private void onUpdate() throws NamingException {
-        Helper.lookupBy(VariableInstanceFacade.class).onVariableInstanceUpdate(this.getQuestionInstance());
-    }
+    private void onUpdate() {
+        this.getQuestionInstance().onInstanceUpdate();
+   }
 
     @Override
     public Long getId() {
