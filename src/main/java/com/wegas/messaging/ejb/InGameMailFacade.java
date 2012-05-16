@@ -9,6 +9,7 @@
  */
 package com.wegas.messaging.ejb;
 
+import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
@@ -18,6 +19,10 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,8 +30,14 @@ import javax.enterprise.event.Observes;
  */
 @Stateless
 @LocalBean
-public class InternalInboxManager {
+public class InGameMailFacade extends AbstractFacadeImpl<MessageEntity> {
 
+    final static private Logger logger = LoggerFactory.getLogger(InGameMailFacade.class);
+    /**
+     *
+     */
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
     /**
      *
      */
@@ -35,11 +46,19 @@ public class InternalInboxManager {
 
     /**
      *
+     * @param entityClass
+     */
+    public InGameMailFacade() {
+        super(MessageEntity.class);
+    }
+
+    /**
+     *
      * @param messageEvent
      */
     public void listener(@Observes MessageEvent messageEvent) {
-        System.out.println("Event received");
-        //this.send(messageEvent.getMessage())
+        logger.info("Message received for player {}.", messageEvent.getPlayer());
+        this.send(messageEvent.getPlayer(), messageEvent.getMessage());
     }
 
     /**
@@ -64,5 +83,10 @@ public class InternalInboxManager {
         msg.setName(subject);
         msg.setBody(body);
         this.send(p, msg);
+    }
+
+    @Override
+    protected EntityManager getEntityManager() {
+        return this.em;
     }
 }

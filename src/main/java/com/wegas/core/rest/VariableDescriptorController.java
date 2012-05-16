@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor")
-@ResourceFilters(DefaultContainerRequestFilter.class)
+//@ResourceFilters(VariableDescriptorFilter.class)
 public class VariableDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorController.class);;

@@ -9,10 +9,13 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.wegas.core.ejb.Helper;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import java.util.ArrayList;
 import java.util.List;
+import javax.naming.NamingException;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -38,7 +41,11 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
     /**
      *
      */
-    private boolean active;
+    private Boolean active = true;
+    /**
+     *
+     */
+    private Boolean unread = true;
 
     /**
      *
@@ -48,6 +55,7 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
     public void merge(AbstractEntity a) {
         QuestionInstanceEntity other = (QuestionInstanceEntity) a;
         this.setActive(other.getActive());
+        this.setUnread(other.getUnread());
         this.replies.clear();
         this.addReplies(other.getReplies());
     }
@@ -55,14 +63,14 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
     /**
      * @return the active
      */
-    public boolean getActive() {
+    public Boolean getActive() {
         return active;
     }
 
     /**
      * @param active the active to set
      */
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 
@@ -99,6 +107,20 @@ public class QuestionInstanceEntity extends VariableInstanceEntity {
         for (ReplyEntity r : replies) {
             this.addReply(r);
         }
+    }
+
+    /**
+     * @return the unread
+     */
+    public Boolean getUnread() {
+        return this.unread;
+    }
+
+    /**
+     * @param unread the unread to set
+     */
+    public void setUnread(Boolean unread) {
+        this.unread = unread;
     }
 
     // *** Sugar *** //

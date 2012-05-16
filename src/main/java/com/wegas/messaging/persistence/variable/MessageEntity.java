@@ -12,7 +12,7 @@ package com.wegas.messaging.persistence.variable;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import java.util.logging.Logger;
-import javax.mail.internet.InternetAddress;
+import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -50,14 +50,12 @@ public class MessageEntity extends NamedEntity {
     /**
      *
      */
-    @Column(name = "wread")
-    private Boolean read = false;
+    private Boolean unread = true;
     /**
      *
      */
-    /*
-     * @Column(name="wfrom") private InternetAddress from;
-     */
+    @Column(name = "mfrom")
+    private String from;
     /**
      *
      */
@@ -79,8 +77,22 @@ public class MessageEntity extends NamedEntity {
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
-        MessageEntity r = (MessageEntity) a;
-        this.setBody(r.getBody());
+        MessageEntity other = (MessageEntity) a;
+        this.setBody(other.getBody());
+        this.setUnread(other.getUnread());
+        this.setTime(other.getTime());
+        this.setSubject(other.getSubject());
+    }
+
+    /**
+     *
+     * @throws NamingException
+     */
+    @PostPersist
+    @PostUpdate
+    @PostRemove
+    private void onUpdate() {
+        this.getMailboxInstanceEntity().onInstanceUpdate();
     }
 
     @Override
@@ -171,16 +183,30 @@ public class MessageEntity extends NamedEntity {
     }
 
     /**
-     * @return the read
+     * @return the unread
      */
-    public Boolean getRead() {
-        return read;
+    public Boolean getUnread() {
+        return unread;
     }
 
     /**
-     * @param read the read to set
+     * @param unread the unread to set
      */
-    public void setRead(Boolean read) {
-        this.read = read;
+    public void setUnread(Boolean unread) {
+        this.unread = unread;
+    }
+
+    /**
+     * @return the from
+     */
+    public String getFrom() {
+        return from;
+    }
+
+    /**
+     * @param from the from to set
+     */
+    public void setFrom(String from) {
+        this.from = from;
     }
 }
