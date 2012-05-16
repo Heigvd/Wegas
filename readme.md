@@ -51,3 +51,11 @@ In the NetBeans installation directory (e.g. C:\Program Files\NetBeans 7.x), edi
    -J-XX:+UseConcMarkSweepGC -J-XX:+CMSClassUnloadingEnabled -J-XX:+CMSPermGenSweepingEnabled
 *  If you ever connect through a VPN, the following JVM setting will prevent connection refusals when accessing network resources (e.g. SVN and Maven repositories) through the IDE:
    -J-Djava.net.preferIPv4Stack=true
+
+Setup JCR Jackrabbit (dev)
+--------------------------
+Installing Jackrabbit on Glassfish, development purpose.
+
+* Make http://repo1.maven.org/maven2/javax/jcr/jcr/2.0/jcr-2.0.jar available to Glassfish.
+* Deploy http://www.apache.org/dyn/closer.cgi/jackrabbit/2.4.1/jackrabbit-jca-2.4.1.rar in Glassfish.
+* Copy https://github.com/Heigvd/Wegas/tree/master/src/main/setup/JRFile to your Glassfish's domain (JRFile included).
