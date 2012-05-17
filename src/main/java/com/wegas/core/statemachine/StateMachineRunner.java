@@ -10,7 +10,7 @@
  */
 package com.wegas.core.statemachine;
 
-import com.wegas.core.ejb.GameManager;
+import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModelEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
@@ -18,7 +18,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEn
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.script.ScriptEntity;
-import com.wegas.core.script.ScriptManager;
+import com.wegas.core.script.ScriptFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ public class StateMachineRunner implements Serializable {
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
     @EJB
-    private ScriptManager scriptManager;
+    private ScriptFacade scriptManager;
     /**
      * StateMachineRunner is running
      */
@@ -51,12 +51,12 @@ public class StateMachineRunner implements Serializable {
     private HashSet<StateMachineInstanceEntity> stateMachines = new HashSet<>();
     private HashSet<Transition> passedTransitions = new HashSet<>();
     @Inject
-    private GameManager gameManager;
+    private VariableInstanceManager gameManager;
 
     public StateMachineRunner() {
     }
 
-    public void entityUpdateListener(@Observes GameManager.PlayerAction playerAction) {
+    public void entityUpdateListener(@Observes VariableInstanceManager.PlayerAction playerAction) {
         if (run) {
             logger.info("Running, received changed {}", gameManager.getUpdatedInstances());
             return;

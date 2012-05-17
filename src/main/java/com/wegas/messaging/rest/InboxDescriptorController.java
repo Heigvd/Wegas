@@ -11,15 +11,15 @@ package com.wegas.messaging.rest;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.rest.AbstractRestController;
-import com.wegas.mcq.persistence.QuestionInstanceEntity;
-import com.wegas.mcq.persistence.ReplyEntity;
 import com.wegas.messaging.ejb.InGameMailFacade;
 import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
 import com.wegas.messaging.persistence.variable.MessageEntity;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.script.ScriptException;
-import javax.ws.rs.*;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**

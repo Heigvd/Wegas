@@ -36,7 +36,7 @@ public class ScriptManagerTest extends AbstractEJBTest {
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
         VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
-        ScriptManager sm = lookupBy(ScriptManager.class, ScriptManager.class);
+        ScriptFacade sm = lookupBy(ScriptFacade.class, ScriptFacade.class);
 
         // Create a dummy descriptor
         StringDescriptorEntity stringDescriptor = new StringDescriptorEntity(VARIABLENAME);

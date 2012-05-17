@@ -24,9 +24,9 @@ import javax.inject.Named;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@Named
+@Named("GameManager")
 @RequestScoped
-public class GameManager {
+public class VariableInstanceManager implements Serializable {
 
     /**
      *

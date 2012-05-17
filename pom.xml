@@ -39,10 +39,10 @@
         <junit.version>4.8.2</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
         <jar.plugin.version>2.3.1</jar.plugin.version>
-<!--        <war.plugin.version>2.1.1</war.plugin.version>-->
+        <war.plugin.version>2.1.1</war.plugin.version>
         <compiler-plugin-version>2.3.2</compiler-plugin-version>
 
-        <skipTests>false</skipTests>
+        <skipTests>true</skipTests>
     </properties>
 
     <dependencies>

@@ -51,24 +51,34 @@
         <url-pattern>*.faces</url-pattern>-->
     </servlet-mapping>
 
-    <!-- REST Servlet -->
+    <!-- REST Facade -->
     <servlet>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>Rest Facade</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
             <param-value>true</param-value>
         </init-param>
-<!--        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>path.to.filtering.class</param-value>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>com.wegas.core.rest.DefaultServerResponseFilter</param-value>
+        </init-param>
+        <!--<init-param>
+         <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+         <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
         </init-param>-->
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-name>Rest Facade</servlet-name>
         <url-pattern>/rest/*</url-pattern>
+        <url-pattern>//*</url-pattern>                                          <!-- Just for Cyril -->
     </servlet-mapping>
+
 
     <!-- Liquibase configuration -->
     <context-param>

@@ -13,7 +13,7 @@ import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.script.ScriptEntity;
-import com.wegas.core.script.ScriptManager;
+import com.wegas.core.script.ScriptFacade;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.persistence.EntityManager;
@@ -30,7 +30,7 @@ public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineI
     EntityManager em;
 
     @EJB
-    private ScriptManager scriptManager;
+    private ScriptFacade scriptManager;
 
     public StateMachineInstanceFacade() {
         super(StateMachineInstanceEntity.class);

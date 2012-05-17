@@ -12,12 +12,11 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.script.ScriptManager;
+import com.wegas.core.script.ScriptFacade;
 import com.wegas.core.statemachine.StateMachineDescriptorFacade;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
     @EJB
-    private ScriptManager scriptManager;
+    private ScriptFacade scriptManager;
     @EJB
     private PlayerFacade playerFacade;
 

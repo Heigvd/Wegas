@@ -9,13 +9,13 @@
  */
 package com.wegas.mcq.rest;
 
-import com.wegas.core.ejb.GameManager;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.sun.jersey.spi.container.ResourceFilters;
+import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.rest.AbstractRestController;
+import com.wegas.core.rest.DefaultServerResponseFilter;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstanceEntity;
 import com.wegas.mcq.persistence.ReplyEntity;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -31,6 +31,7 @@ import javax.ws.rs.core.MediaType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
+@ResourceFilters(DefaultServerResponseFilter.class)
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
 public class QuestionController extends AbstractRestController<QuestionDescriptorFacade> {
 
@@ -39,11 +40,6 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      */
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
-    /**
-     *
-     */
-    @Inject
-    private GameManager gameManager;
 
     /**
      *
@@ -56,7 +52,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
     @GET
     @Path("/SelectReply/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<VariableInstanceEntity> selectReply(
+    public void selectReply(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws ScriptException {
@@ -64,7 +60,6 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
         ReplyEntity reply =
                 questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
         questionDescriptorFacade.validateReply(playerId, reply.getId());
-        return gameManager.getUpdatedInstances();
     }
 
     /**
