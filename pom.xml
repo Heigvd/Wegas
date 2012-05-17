@@ -263,6 +263,14 @@
             <scope>runtime</scope>
         </dependency>-->
 
+        <!-- Java Content Repository -->
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -309,27 +317,35 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.1</version>
-       <!--           <executions>
-                  <execution>
-                        <phase>validate</phase>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${endorsed.dir}</outputDirectory>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
                             <silent>true</silent>
                             <artifactItems>
-                                <artifactItem>
+<!--              Jackrabbit connector                  -->
+<!--                                <artifactItem>
+                                    <groupId>org.apache.jackrabbit</groupId>
+                                    <artifactId>jackrabbit-jca</artifactId>
+                                    <version>2.4.1</version>
+                                    <type>rar</type>
+                                </artifactItem>-->
+<!--                                <artifactItem>
                                     <groupId>javax</groupId>
                                     <artifactId>javaee-endorsed-api</artifactId>
                                     <version>6.0</version>
                                     <type>jar</type>
-                                </artifactItem>
+                                </artifactItem>-->
                             </artifactItems>
                         </configuration>
                     </execution>
-                </executions>-->
+                </executions>
             </plugin>
 
 
