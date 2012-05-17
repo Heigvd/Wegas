@@ -19,6 +19,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
@@ -36,8 +37,9 @@ public class InboxInstanceEntity extends VariableInstanceEntity {
      *
      */
     @OneToMany(mappedBy = "inboxInstanceEntity", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference("inbox-message")
     @JoinColumn(name = "variableinstance_id")
+    @OrderBy("sentTime")
+    @JsonManagedReference("inbox-message")
     private List<MessageEntity> messages = new ArrayList<MessageEntity>();
 
     /**
@@ -69,6 +71,7 @@ public class InboxInstanceEntity extends VariableInstanceEntity {
 
     @Override
     public void merge(AbstractEntity a) {
-        InboxInstanceEntity newInboxInstance = (InboxInstanceEntity) a;
+        InboxInstanceEntity other = (InboxInstanceEntity) a;
+        this.setMessages(other.getMessages());
     }
 }

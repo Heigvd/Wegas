@@ -96,4 +96,45 @@ YUI.add('wegas-widget', function (Y) {
         }
         return child;
     };
+
+    /*
+     * FIXME Hack so plugin host accepts string definition of classes
+     */
+    var newPlug = Y.DataSource.IO.prototype.plug = function(Plugin, config) {
+        var i, ln, ns;
+
+        if (Lang.isArray(Plugin)) {
+            for (i = 0, ln = Plugin.length; i < ln; i++) {
+                this.plug(Plugin[i]);
+            }
+        } else {
+            if (Plugin && !Lang.isFunction(Plugin)) {
+                config = Plugin.cfg;
+                Plugin = Plugin.fn;
+            }
+            if (Plugin && !Lang.isFunction(Plugin)) {			// !Added
+                Plugin = Y.Plugin[Plugin];
+            }
+
+            // Plugin should be fn by now
+            if (Plugin && Plugin.NS) {
+                ns = Plugin.NS;
+
+                config = config || {};
+                config.host = this;
+
+                if (this.hasPlugin(ns)) {
+                    // Update config
+                    this[ns].setAttrs(config);
+                } else {
+                    // Create new instance
+                    this[ns] = new Plugin(config);
+                    this._plugins[ns] = Plugin;
+                }
+            }
+        }
+        return this;
+    };
+    Y.Widget.prototype.plug = newPlug;
+    Y.DataSource.IO.prototype.plug = newPlug;
 });

@@ -12,13 +12,15 @@ YUI.add('wegas-button', function (Y) {
 
     Button = Y.Base.create("wegas-button", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
+        // *** Private fields *** //
+        childWidget: null,
+
+        // *** Lifecycle Methods *** //
+        renderUI: function () {
+        },
+
         bindUI: function () {
             this.get(CONTENTBOX).on('click', function () {
-                var widgetCfg = this.get('subpage') || {
-                    'type': 'Text',
-                    'content': 'Nothing to display'
-                },
-                target;
 
                 if (this.get('onClick')) {                                      // If there is an onclick impact, send it to the server
                     Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
@@ -34,22 +36,21 @@ YUI.add('wegas-button', function (Y) {
                     });
                 }
 
-                if (this.get('targetDisplayArea')) {                            // If there is an a target display area, display the children in it
-                    target = Y.one('#' + this.get('targetDisplayArea') + ' div');
+                if (this.get('targetDisplayArea')) {                            // If there is already a widget displayed, we remove it
+                    var target = Y.one('#' + this.get('targetDisplayArea') + ' div');
                     if (target.one('div')) {
                         target.one('div').remove();
-                    }      // If there is already a widget displayed, we remove it
+                    }
 
-                    if (!this._widget) {
-                        this._widget = Y.Wegas.Widget.create(widgetCfg);
-
+                    if (!this.childWidget) {                                    // If there is an a target display area, display the children in it
                         try {
-                            this._widget.render(target);
+                            this.childWidget = Y.Wegas.Widget.create(this.get("subpage"));
+                            this.childWidget.render(target);
                         } catch (e) {
                             Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.Button');
                         }
                     } else {
-                        target.append(this._widget.get(BOUNDINGBOX));
+                        target.append(this.childWidget.get(BOUNDINGBOX));
                     }
                 }
             }, this);
@@ -62,25 +63,89 @@ YUI.add('wegas-button', function (Y) {
                 case 'text':
                 default:
                     this.get(CONTENTBOX).setContent("<span>" + this.get('label') + "</span>");
+                    break;
             }
         }
     }, {
         ATTRS : {
-            classTxt: {
-                value: 'Button'
-            },
-            type: {
-                value: "Button"
-            },
             onClick: {},
             label: {},
-            subpage: {},
+            subpage: {
+                value: {
+                    'type': 'Text',
+                    'content': 'Nothing to display'
+                }
+            },
             targetDisplayArea: {},
             view: {}
         }
     });
 
     Y.namespace('Wegas').Button = Button;
+
+    var UnreadCount = function () {
+        UnreadCount.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(UnreadCount, {
+        NS: "button",
+        NAME: "UnreadCount",
+        ATTRS: {
+            variable: {}
+        }
+    });
+
+    Y.extend(UnreadCount, Y.Plugin.Base, {
+
+        initializer: function () {
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response",        // If data changes, refresh
+                this.syncUI, this);
+        },
+        syncUI: function () {
+            var cb = this.get('host').get(CONTENTBOX),
+                target = cb.one(".unread-count"),
+                unreadCount = this.getUnreadCount();
+
+            if (!target) {                                                      // If the counter span has not been rendered, do it
+                cb.append('<span class="unread-count"></span>');
+                target = cb.one(".unread-count");
+            }
+
+            if (unreadCount > 0) {                                              // Update the content
+                target.setContent(" (" + unreadCount + ")");
+            } else {
+                target.setContent("");
+            }
+        },
+
+        getUnreadCount:  function () {
+            var i, instance,
+                dataSource = Y.Wegas.app.dataSources.VariableDescriptor,
+                descriptor = dataSource.rest.getCachedVariableBy('name', this.get('variable')),
+                count = 0;
+
+            if (!descriptor){
+                return 0;
+            }
+            if (descriptor.items) {                                             // In ListDescriptors, we count the children instance's
+                for (i = 0; i < descriptor.items.length; i = i + 1) {
+                    instance = dataSource.rest.getDescriptorInstance(descriptor.items[i]);
+                    count += instance.unread ? 1 : 0;
+                }
+            }
+
+            instance = dataSource.rest.getDescriptorInstance(descriptor);
+            if (instance.messages) {                                             // In InboxVariableDescriptors, we count the replies
+                for (i = 0; i < instance.messages.length; i = i + 1) {
+                    count += instance.messages[i].unread ? 1 : 0;
+                }
+            }
+
+            return count;
+        }
+    });
+
+    Y.namespace('Plugin').UnreadCount = UnreadCount;
 
     LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
@@ -93,8 +158,12 @@ YUI.add('wegas-button', function (Y) {
             cTeam = Y.Wegas.app.dataSources.Game.rest.getCurrentTeam(),
             name = "undefined";
 
-            if (cPlayer) { name = cPlayer.name; }
-            if (cTeam) { name = cTeam.name + ":" + name; }
+            if (cPlayer) {
+                name = cPlayer.name;
+            }
+            if (cTeam) {
+                name = cTeam.name + ":" + name;
+            }
 
             this.get(CONTENTBOX).setContent('[' + name + '] <a href="' + Y.Wegas.app.get('base') + 'wegas-app/view/logout.html">logout</a>');
         }

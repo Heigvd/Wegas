@@ -34,12 +34,11 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModelEntity> {
      * @param gameModelId
      * @return
      */
-    public GameModelEntity reset(Long gameModelId) {
+    public void reset(Long gameModelId) {
         GameModelEntity gm = this.find(gameModelId);
         gm.propagateDefaultVariableInstance(true);
         em.flush();
         em.refresh(gm);
-        return gm;
     }
 
     /**

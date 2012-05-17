@@ -9,6 +9,7 @@
  */
 package com.wegas.core.rest;
 
+import com.sun.jersey.spi.container.ResourceFilters;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.MediaType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
+@ResourceFilters(DefaultServerResponseFilter.class)
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ListDescriptor/")
 public class ListDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
 

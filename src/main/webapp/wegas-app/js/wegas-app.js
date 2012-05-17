@@ -72,9 +72,11 @@ YUI.add('wegas-app', function (Y) {
             var k;
             for (k in this.dataSources) {
                 if (this.dataSources.hasOwnProperty(k) && k !== "File") {
-                    this.dataSources[k].sendRequest({
-                        request: ""
-                    });
+                    if (this.dataSources[k].rest) {
+                        this.dataSources[k].rest.sendRequest({request: ""});
+                    } else {
+                        this.dataSources[k].sendRequest({request: ""});
+                    }
                 }
             }
 

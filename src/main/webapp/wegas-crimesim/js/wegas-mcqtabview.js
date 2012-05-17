@@ -18,7 +18,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
         renderUI: function () {
             this.dataSource = Y.Wegas.app.dataSources.VariableDescriptor;
             this.tabView = new Y.TabView();
-            this.tabView.render(this.get(CONTENTBOX).append('<div></div>'));
+            this.tabView.render(this.get(CONTENTBOX));
         },
 
         bindUI: function () {

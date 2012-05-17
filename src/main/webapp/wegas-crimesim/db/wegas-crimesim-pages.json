@@ -57,7 +57,13 @@
                         "subpage": {
                             "type": "MCQTabView",
                             "listDescriptorName": "questions"
-                        }
+                        },
+                        "plugins": [{
+                            "fn": "UnreadCount",
+                            "cfg": {
+                                "variable": "questions"
+                            }
+                        }]
                     }, {
                         "type": "Button",
                         "label": "Pièces",
@@ -74,7 +80,13 @@
                         "subpage": {
                             "type": "InboxDisplay",
                             "variable": "inbox"
-                        }
+                        },
+                        "plugins": [{
+                            "fn": "UnreadCount",
+                            "cfg": {
+                                "variable": "inbox"
+                            }
+                        }]
                     },{
                         "type": "LoginButton",
                         "cssClass": "menu-loginbutton"

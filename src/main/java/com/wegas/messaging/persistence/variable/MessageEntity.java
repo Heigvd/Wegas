@@ -11,6 +11,7 @@ package com.wegas.messaging.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
+import java.util.Date;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.persistence.*;
@@ -46,7 +47,8 @@ public class MessageEntity extends NamedEntity {
     /**
      *
      */
-    private Long sentTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date sentTime = new Date();
     /**
      *
      */
@@ -171,14 +173,14 @@ public class MessageEntity extends NamedEntity {
     /**
      * @return the startTime
      */
-    public Long getTime() {
+    public Date getTime() {
         return sentTime;
     }
 
     /**
      * @param time
      */
-    public void setTime(Long time) {
+    public void setTime(Date time) {
         this.sentTime = time;
     }
 

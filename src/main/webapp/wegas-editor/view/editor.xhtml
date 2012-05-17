@@ -15,7 +15,7 @@
                 editor.render();
 
                 Y.Wegas.app.dataSources.Game.after("response", function(e) {    // Reload the variable descriptors as soon as the game is changed
-                    Y.Wegas.app.dataSources.VariableDescriptor.sendRequest({ request: "" });
+                    Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({ request: "" });
                 }, this);
             });
         </ui:define>

@@ -12,6 +12,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -49,7 +50,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstanceE
      *
      */
     @Inject
-    private GameManager requestManager;
+    private VariableInstanceManager variableInstanceManager;
 
     /**
      *
@@ -98,9 +99,12 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstanceE
      * @param vi
      */
     public void onVariableInstanceUpdate(VariableInstanceEntity vi) {
-        logger.info("onVariableInstanceUpdate() {}", requestManager);
+        logger.debug("onVariableInstanceUpdate() {}", variableInstanceManager);
         //  logger.info("onVariableInstanceUpdate() {} {}", requestManager.getCurrentPlayer(), requestManager.getUpdatedInstances());
-        requestManager.addUpdatedInstance(vi);
+        variableInstanceManager.addUpdatedInstance(vi);
+    }
+    public List<VariableInstanceEntity> getUpdatedInstances() {
+        return variableInstanceManager.getUpdatedInstances();
     }
 
     /**

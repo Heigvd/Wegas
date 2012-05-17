@@ -11,7 +11,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     GameModelDataSourceREST,
     GameDataSourceREST,
     DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+        'Managed-Mode': 'true'
     };
 
     DataSourceREST = function () {
@@ -37,6 +38,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             };
             requestCfg.cfg = requestCfg.cfg || {};
             requestCfg.cfg.headers =  requestCfg.cfg.headers || DEFAULTHEADERS;
+            requestCfg.cfg.headers =  DEFAULTHEADERS;
 
             this.get('host').sendRequest(requestCfg);
         },
@@ -70,13 +72,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.updateCache(e);
         },
         updateCache: function (e) {
-            var cEl, i;
+            var i, results = e.response.results.entities || e.response.results;
 
-            for (i = 0; i < e.response.results.length; i += 1) {                // Treat reply
-                cEl = e.response.results[i];
-                if (cEl) {
-                    this.applyOperation(e.cfg.method, cEl, e.data);
-                }
+            for (i = 0; i < results.length; i += 1) {                // Treat reply
+                this.applyOperation(e.cfg.method, results[i], e.data);
             }
         },
         getCachedVariables: function () {
@@ -162,7 +161,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
         },
         _failureHandler: function (e) {
-            alert("Error sending REST post request!");
+           // alert("Error sending REST post request!");
         }
 
     });
@@ -181,28 +180,41 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
 
         updateCache: function (e) {
-            var cEl, i, j, k, instances;
+            var cEl, i, j, k, instances,
+            results = e.response.results;
 
             Y.log("Response received", "info", "Y.Wegas.VariableDescriptorDataSourceREST");
 
-            for (i = 0; i < e.response.results.length; i += 1) {
-                cEl = e.response.results[i];
-                if (!cEl) {
-
-                // @fixme This is a dirty tricks to catch all instances
-                } else if (cEl['@class'].indexOf("Instance") !== -1) {
-                /* } else ifcEl['@class'] === "StringInstance" ||
-                    cEl['@class'] === "NumberInstance" ||
-                    cEl['@class'] === "InboxInstance" ) { */
-
-                    instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
-                    for (k in instances) {
-                        if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
-                            instances[k] = Y.merge(instances[i], cEl);
+            for (i = 0; i < results.entities.length; i += 1) {                  // Update the cache with the entites in the reply
+                cEl = results.entities[i];
+                if (Y.Lang.isObject(cEl)) {
+                    if (cEl['@class'].indexOf("Instance") !== -1) {
+                        instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
+                        for (k in instances) {
+                            if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
+                                instances[k] = Y.merge(instances[i], cEl);
+                            }
                         }
+                    } else {
+                        this.applyOperation(e.cfg.method, cEl, e.data);
                     }
-                } else {
-                    this.applyOperation(e.cfg.method, cEl, e.data);
+                }
+            }
+
+            if (results.events.length > 0 &&
+                results.events[0]['@class'] == "EntityUpdatedEvent") {
+                for (i = 0; i < results.events[0].updatedEntities.length; i += 1) {         // Update the cache with the entites in the reply
+                    cEl = results.events[0].updatedEntities[i];
+                    if (cEl['@class'].indexOf("Instance") !== -1) {
+                        instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
+                        for (k in instances) {
+                            if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
+                                instances[k] = Y.merge(instances[i], cEl);
+                            }
+                        }
+                    } else {
+                        this.applyOperation(e.cfg.method, cEl, e.data);
+                    }
                 }
             }
         },
@@ -314,8 +326,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
         updateCache: function (e) {
             var cEl, i;
 
-            for (i = 0; i < e.response.results.length; i += 1) {
-                cEl = e.response.results[i];
+            for (i = 0; i < e.response.results.entities.length; i += 1) {
+                cEl = e.response.results.entities[i];
                 if (!cEl) {
 
                 } else if (cEl['@class'] === "Team") {
@@ -345,8 +357,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             Y.log("Response received", "info", "Y.Wegas.GameDataSourceREST");
 
-            for (i = 0; i < e.response.results.length; i += 1) {
-                cEl = e.response.results[i];
+            for (i = 0; i < e.response.results.entities.length; i += 1) {
+                cEl = e.response.results.entities[i];
 
                 if (!cEl) {
 
@@ -499,6 +511,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
         }
         return path;
     }
+
+    // @fixme hack on yui apis
     Y.DataSource.IO.prototype._defRequestFn = function(e) {
         var uri = this.get("source"),
         io = this.get("io"),
@@ -556,7 +570,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                             data_out = Y.DataSchema.JSON._getFieldValues.call(this, schema.resultFields, [results], data_out);
                         }
                         else {
-                            data_out.results = [results];
+                            data_out.results = results;
                         }
                     } else {
                         data_out.results = [];
@@ -575,42 +589,4 @@ YUI.add('wegas-datasourcerest', function (Y) {
         }
         return data_out;
     }
-
-    //FIXME Hack so plugin host accepts string definition of classes
-    Y.DataSource.IO.prototype.plug = function(Plugin, config) {
-        var i, ln, ns;
-
-        if (Lang.isArray(Plugin)) {
-            for (i = 0, ln = Plugin.length; i < ln; i++) {
-                this.plug(Plugin[i]);
-            }
-        } else {
-            if (Plugin && !Lang.isFunction(Plugin)) {
-                config = Plugin.cfg;
-                Plugin = Plugin.fn;
-            }
-            if (Plugin && !Lang.isFunction(Plugin)) {			// !Added
-                Plugin = Y.Plugin[Plugin];
-            }
-
-            // Plugin should be fn by now
-            if (Plugin && Plugin.NS) {
-                ns = Plugin.NS;
-
-                config = config || {};
-                config.host = this;
-
-                if (this.hasPlugin(ns)) {
-                    // Update config
-                    this[ns].setAttrs(config);
-                } else {
-                    // Create new instance
-                    this[ns] = new Plugin(config);
-                    this._plugins[ns] = Plugin;
-                }
-            }
-        }
-        return this;
-    };
-
 });

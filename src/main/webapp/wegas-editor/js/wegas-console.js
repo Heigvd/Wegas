@@ -14,7 +14,8 @@ YUI.add('wegas-console', function (Y) {
         },
 
         renderUI: function () {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX),
+            that = this;
 
             this.form = new Y.inputEx.Form({
                 parentEl: cb._node,
@@ -44,9 +45,19 @@ YUI.add('wegas-console', function (Y) {
                                 cfg: {
                                     method: "POST",
                                     data: Y.JSON.stringify(this.form.getValue())
+                                },
+                                callback: {
+                                    scope: this,
+                                    success: function(e) {
+                                        that.get(CONTENTBOX).one(".result").append("Script exectuted. Returned value: "
+                                            + e.response.results.entities[0] + "<br />");
+                                    },
+                                    failure: function(e) {
+                                        that.get(CONTENTBOX).one(".result").append("Error executing script: "
+                                            + e.response.results.entities[0].message + "<br />");
+                                    }
                                 }
                             });
-                            this.get(CONTENTBOX).one(".result").append("Script executed<br />");
                             return false;																		// stop clickEvent, to prevent form submitting
                         }
                     }

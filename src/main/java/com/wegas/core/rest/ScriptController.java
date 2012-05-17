@@ -9,14 +9,12 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.GameManager;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.script.ScriptEntity;
-import com.wegas.core.script.ScriptManager;
+import com.wegas.core.script.ScriptFacade;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -36,7 +34,7 @@ public class ScriptController {
      */
 
     @EJB
-    private ScriptManager scriptManager;
+    private ScriptFacade scriptManager;
 
     /**
      *
@@ -48,11 +46,10 @@ public class ScriptController {
     @POST
     @Path("/Run/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<VariableInstanceEntity> selectReply(
+    public Object selectReply(
             @PathParam("playerId") Long playerId, ScriptEntity script)
             throws ScriptException {
 
-        scriptManager.eval(playerId, script);
-        return scriptManager.getUpdatedEntities();
+        return scriptManager.eval(playerId, script);
     }
 }
