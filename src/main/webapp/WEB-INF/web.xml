@@ -76,7 +76,6 @@
     <servlet-mapping>
         <servlet-name>Rest Facade</servlet-name>
         <url-pattern>/rest/*</url-pattern>
-        <url-pattern>//*</url-pattern>                                          <!-- Just for Cyril -->
     </servlet-mapping>
 
 
