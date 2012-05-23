@@ -9,35 +9,16 @@
     </head>
     <body>
         <h1>Wegas</h1>
+        <h1>File Upload</h1>
 
-        <em>POST the following to /rs/gm</em>
-        <pre>
-{
-    "@class": "GameModel",
-    "name": "Project Management Game","id":"1",
-    "teams":[{
-        "@class": "Team", "name":"Les rouges",
-        "users": [{
-             "@class": "User",
-             "name": "Francois"
-        },
-        {
-             "@class": "User",
-             "name": "Dominique"
-        }]
-    },{
-        "@class": "Team", "name":"Les bleus",
-        "users": [{
-             "@class": "User",
-             "name": "Francois"
-        },
-        {
-             "@class": "User",
-             "name": "Dominique"
-        }]
-    }]
+        name: <form action="rest/File/upload" method="post" enctype="multipart/form-data">
+            <input type="text" name="name" />
+            <p>
+                Select a file : <input type="file" name="file" size="45" />
+            </p>
 
-}
-        </pre>
+            <input type="submit" value="Upload" />
+        </form>
+
     </body>
 </html>
