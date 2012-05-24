@@ -13,6 +13,7 @@ import com.sun.jersey.spi.container.*;
 import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.rest.exception.ExceptionWrapper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
@@ -26,19 +27,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class DefaultServerResponseFilter implements ResourceFilter, ContainerResponseFilter {
+public class ManagedModeResponseFilter implements ContainerResponseFilter, ResourceFilter {
 
-    private final static Logger logger = LoggerFactory.getLogger(DefaultServerResponseFilter.class);
-
-    @Override
-    public ContainerRequestFilter getRequestFilter() {
-        return null;
-    }
-
-    @Override
-    public ContainerResponseFilter getResponseFilter() {
-        return this;
-    }
+    private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
 
     /**
      * This method encapsulates a Jersey response's entities in a ServerResponse
@@ -51,7 +42,10 @@ public class DefaultServerResponseFilter implements ResourceFilter, ContainerRes
      */
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
-        if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))) {
+//        logger.info("++" + response.getEntity());
+        if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))//) {
+                && !( response.getEntity() instanceof ExceptionWrapper )) { // If there was an exception during the request, we forward it without a change
+//            logger.info("++" + response.getEntity());
             ServerResponse serverResponse = new ServerResponse();
             if (response.getEntity() instanceof List) {
                 serverResponse.setEntities((List) response.getEntity());
@@ -74,6 +68,16 @@ public class DefaultServerResponseFilter implements ResourceFilter, ContainerRes
 
         }
         return response;
+    }
+
+    @Override
+    public ContainerRequestFilter getRequestFilter() {
+        return null;
+    }
+
+    @Override
+    public ContainerResponseFilter getResponseFilter() {
+        return this;
     }
 
     @XmlRootElement

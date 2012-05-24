@@ -30,13 +30,13 @@ YUI.add('wegas-console', function (Y) {
                     value: "JavaScript"
                 }, {
                     name: 'content',
-                    type: 'text',
+                    type: 'ace',
                     typeInvite: 'Enter script here',
                     rows: 7
                 }],
                 buttons: [{
                     type: 'submit',
-                    value: 'Update',
+                    value: 'Run',
                     onClick: {
                         scope: this,
                         fn: function () {
@@ -49,12 +49,12 @@ YUI.add('wegas-console', function (Y) {
                                 callback: {
                                     scope: this,
                                     success: function(e) {
-                                        that.get(CONTENTBOX).one(".result").append("Script exectuted. Returned value: "
-                                            + e.response.results.entities[0] + "<br />");
+                                        that.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
+                                            + e.response.results.entities[0] + "</div>");
                                     },
                                     failure: function(e) {
-                                        that.get(CONTENTBOX).one(".result").append("Error executing script: "
-                                            + e.response.results.entities[0].message + "<br />");
+                                        that.get(CONTENTBOX).one(".results").prepend('<div class="result">Error executing script: '
+                                            + e.response.results.message + "</div>");
                                     }
                                 }
                             });
@@ -64,7 +64,7 @@ YUI.add('wegas-console', function (Y) {
                 }]
             });
 
-            cb.append('<div class="result"></div>');
+            cb.append('<div class="results"></div>');
         }
     });
 

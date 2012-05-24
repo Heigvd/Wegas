@@ -45,7 +45,7 @@ YUI.add('wegas-editor', function(Y) {
                         Y.Wegas.editor.showFormMsg("success", "Item has been updated");
                     },
                     failure: function (e) {
-                        Y.Wegas.editor.showFormMsg("error", e.response.results[0].message || "Error while update item");
+                        Y.Wegas.editor.showFormMsg("error", e.response.message || "Error while update item");
                     }
                 });
             }, null, dataSource);
@@ -58,7 +58,7 @@ YUI.add('wegas-editor', function(Y) {
                         Y.Wegas.editor._form.setValue(data);
                     },
                     failure: function (e) {
-                        Y.Wegas.editor.showFormMsg("error", e.response.results[0].message || "Error while adding item");
+                        Y.Wegas.editor.showFormMsg("error", e.response.results.message || "Error while adding item");
                     }
                 });
             }, null, dataSource);

@@ -12,7 +12,6 @@ package com.wegas.core.rest.exception;
 import java.sql.SQLException;
 import java.util.Iterator;
 import javax.ejb.TransactionRolledbackLocalException;
-import javax.script.ScriptException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
 import javax.validation.ConstraintViolation;
@@ -44,23 +43,19 @@ public abstract class AbstractExceptionMapper {
                 || exception instanceof TransactionRolledbackLocalException
                 || exception instanceof TransactionRolledbackException
                 || exception instanceof TransactionRolledbackLocalException
-                || exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK) {
-            return AbstractExceptionMapper.processException(exception.getCause());
+                || exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK
+                || exception instanceof javax.script.ScriptException) {
+            return processException(exception.getCause());
 
-//        } else if (exception instanceof  ScriptException){
-//
-//            ScriptException se = (ScriptException) exception;
-//            se.getMessage()
-
-        }else if (exception instanceof DatabaseException) {
+        } else if (exception instanceof DatabaseException) {
             DatabaseException dbe = (DatabaseException) exception;
-            return AbstractExceptionMapper.processException(dbe.getInternalException());
+            return processException(dbe.getInternalException());
 
         } else if (exception instanceof SQLException) {
             SQLException sqlException = (SQLException) exception;
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
-                    new AbstractExceptionMapper.RestExceptionConverter("400", sqlException.getClass(), sqlException.getLocalizedMessage())).build();
+                    new ExceptionWrapper("400", sqlException.getClass(), sqlException.getLocalizedMessage())).build();
 
         } else if (exception instanceof ConstraintViolationException) {
             ConstraintViolationException constraintViolationException = (ConstraintViolationException) exception;
@@ -75,74 +70,14 @@ public abstract class AbstractExceptionMapper {
             // constraintViolationException.getMessage()
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
-                    new AbstractExceptionMapper.RestExceptionConverter("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
+                    new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
 
         } else {
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
-                    new AbstractExceptionMapper.RestExceptionConverter("400", exception.getClass(), exception.getLocalizedMessage())).build();
-
+                    new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
         }
     }
 
-    @XmlRootElement
-    @XmlType(name = "RestException")
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    private static class RestExceptionConverter {
 
-        private String code;
-        private Class exception;
-        private String message;
-
-        public RestExceptionConverter() {
-        }
-
-        public RestExceptionConverter(String code, Class exception, String message) {
-            this.code = code;
-            this.exception = exception;
-            this.message = message;
-        }
-
-        /**
-         * @return the code
-         */
-        public String getCode() {
-            return code;
-        }
-
-        /**
-         * @param code the code to set
-         */
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        /**
-         * @return the exception
-         */
-        public Class getException() {
-            return exception;
-        }
-
-        /**
-         * @param exception the exception to set
-         */
-        public void setException(Class exception) {
-            this.exception = exception;
-        }
-
-        /**
-         * @return the message
-         */
-        public String getMessage() {
-            return message;
-        }
-
-        /**
-         * @param message the message to set
-         */
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
 }

@@ -31,20 +31,27 @@ YUI.add('wegas-csseditor', function (Y) {
                 parentEl: cb._node,
                 fields: [{
                     name: 'text',
-                    type: 'text',
-                    rows: 30,
-                  //  cols: 120,
+                    type: 'ace',
+                    height: "100%",
+                    language: "css",
                     value: value
                 }],
                 buttons: [{
                     type: 'submit',
-                    value: 'Update',
+                    value: 'Preview',
                     onClick: function (e) {																	// e === clickEvent (inputEx.widget.Button custom event)
                         //FIXME find a way to destroy the style sheet
                         Y.Wegas.app._customCSSStyleSheet.disable();
                         Y.Wegas.app._customCSSStyleSheet = new Y.StyleSheet(form.getValue().text);
 
                         //showFormMsg('success', 'CSS has been updated.');
+                        return false;																		// stop clickEvent, to prevent form submitting
+                    }
+                },{
+                    type: 'submit',
+                    value: 'Save',
+                    onClick: function (e) {
+                        alert("Not yet implemented.");
                         return false;																		// stop clickEvent, to prevent form submitting
                     }
                 }]

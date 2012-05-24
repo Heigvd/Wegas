@@ -216,38 +216,51 @@ img.inputEx-ListField-delButton {
 .yui3-wegas-console div.inputEx-Field {
     float:none;
 }
-
-.yui3-wegas-console div.inputEx-Field textarea {
-    width:96%;
-    padding: 2% 2%;
-    border: none;
-    border-bottom:1px solid lightgray;
-}
 .yui3-wegas-console div.inputEx-Form-buttonBar {
     margin: 0;
     float: right;
 }
+.yui3-wegas-console .results {
+    overflow: auto;
+    position: absolute;
+    top: 180px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
 
+.yui3-wegas-console .results .result {
+    padding:2px 10px;
+    font-size:11px;
+}
 /* CSSEditor Styles */
+
 .yui3-wegas-csseditor  div.inputEx-fieldWrapper {
     padding:0;
 }
 .yui3-wegas-csseditor div.inputEx-Field {
     float:none;
 }
-
-.yui3-wegas-csseditor div.inputEx-Field textarea {
-    width:96%;
-    padding: 2% 2%;
-    border: none;
-    border-bottom:1px solid lightgray;
+.yui3-wegas-csseditor,
+.yui3-wegas-csseditor .yui3-wegas-csseditor-content,
+.yui3-wegas-csseditor .inputEx-Group,
+.yui3-wegas-csseditor .inputEx-Field,
+.yui3-wegas-csseditor .inputEx-fieldWrapper {
+    height: 100%;
 }
+.yui3-wegas-csseditor .inputEx-Group > fieldset {
+    position:absolute;
+    top:0;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+}
+
 .yui3-wegas-csseditor div.inputEx-Form-buttonBar {
-    margin: 0;
-    float: right;
+    position:absolute;
+    bottom: 3px;
+    right: 13px;
 }
-
-
 /* Chat styles */
 .yui3-wegas-chat  div.inputEx-fieldWrapper {
     padding:0;
