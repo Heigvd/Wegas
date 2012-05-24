@@ -129,27 +129,85 @@ YUI.add('wegas-inputex', function(Y) {
         };
 
     };
-/*
-    Y.inputEx.Group.prototype.getFieldById = function(id) {
-        for (var i=0;i<this.inputs.length;i++) {
-            if (this.inputs[i].options.id && this.inputs[i].options.id == id) {
-                return this.inputs[i];
-            }
-        }
-        return null;
+
+    // *** Ace Field *** //
+    var inputEx = Y.inputEx,
+    YAHOO = Y.YUI2,
+    lang = Y.Lang;
+
+    /**
+ * Wrapper for the Rich Text Editor from YUI
+ * @class inputEx.RTEField
+ * @extends inputEx.Field
+ * @constructor
+ * @param {Object} options Added options:
+ * <ul>
+ *   <li>opts: the options to be added when calling the RTE constructor (see YUI RTE)</li>
+ *   <li>editorType: if == 'simple', the field will use the SimpleEditor. Any other value will use the Editor class.</li>
+ * </ul>
+ */
+    inputEx.AceField = function(options) {
+        inputEx.AceField.superclass.constructor.call(this,options);
     };
-    Y.inputEx.Group.prototype.runAction = function(action, triggerValue) {
-        var field;
-        if (action.name) field = this.getFieldByName(action.name);
-        else if (action.id) field = this.getFieldById(action.id);
-        if( Y.Lang.isFunction(field[action.action]) ) {
-            field[action.action].call(field);
+    Y.extend(inputEx.AceField, inputEx.Field, {
+        /**
+        * Set the default values of the options
+        * @param {Object} options Options object as passed to the constructor
+        */
+        setOptions: function (options) {
+            inputEx.AceField.superclass.setOptions.call(this, options);
+
+            this.options.language = options.language || "javascript";
+            this.options.height = options.height || "150px";
+        },
+
+        /**
+	 * Render the field using the YUI Editor widget
+	 */
+        renderComponent: function () {
+            this.el = Y.Node.create('<div style="height: ' + this.options.height +';width: 100%;position: initial;">'
+                + (this.options.value ? this.options.value : "") + '</div>');
+            this.fieldContainer.appendChild(this.el.getDOMNode());
+            this.fieldContainer.style["position"] = "relative";
+
+            this.editor = ace.edit(this.el.getDOMNode());
+            this.editor.setHighlightActiveLine(false);
+            this.editor.renderer.setHScrollBarAlwaysVisible(false);
+            this.session = this.editor.getSession();
+
+            var Mode = require("ace/mode/" + this.options.language).Mode;
+            this.session.setMode(new Mode());
+
+            Y.Wegas.app.on("layout:resize", function() {
+                 Y.on('domready', this.editor.resize, this.editor);
+            }, this);
+        },
+
+        /**
+	 * Set the html content
+	 * @param {String} value The html string
+	 * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
+	 */
+        setValue: function(value, sendUpdatedEvt) {
+            this.session.setValue(value);
+            if(sendUpdatedEvt !== false) {
+                // fire update event
+                this.fireUpdatedEvt();
+            }
+        },
+
+        /**
+	 * Get the ace content
+	 * @return {String} the ace area content string
+	 */
+        getValue: function() {
+            return this.session.getValue();
         }
-        else if( Y.Lang.isFunction(action.action) ) {
-            action.action.call(field, triggerValue);
-        }
-        else {
-            throw new Error("action "+action.action+" is not a valid action for field "+action.name);
-        }
-    };*/
+
+
+    });
+
+    // Register this class as "html" type
+    inputEx.registerType("ace", inputEx.AceField, []);
+
 });

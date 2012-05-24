@@ -7,11 +7,9 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
-
 
     <!-- Apache Shiro Listener -->
     <listener>
@@ -35,7 +33,6 @@
         <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
         <param-value>.xhtml</param-value>
     </context-param>-->
-
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -44,7 +41,7 @@
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.html</url-pattern>
-      <!--
+        <!--
         <url-pattern>/faces/*</url-pattern>
         <url-pattern>*.xhtml</url-pattern>
         <url-pattern>*.jsf</url-pattern>
@@ -61,7 +58,7 @@
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.wegas.core.rest.DefaultServerResponseFilter</param-value>
+            <param-value>com.wegas.core.rest.ManagedModeResponseFilter</param-value>
         </init-param>
         <!--<init-param>
          <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
@@ -76,9 +73,9 @@
     <servlet-mapping>
         <servlet-name>Rest Facade</servlet-name>
         <url-pattern>/rest/*</url-pattern>
+        <url-pattern>/\/*</url-pattern>
+        <!-- Just for Cyril -->
     </servlet-mapping>
-
-
     <!-- Liquibase configuration -->
     <context-param>
         <param-name>liquibase.changelog</param-name>
@@ -92,19 +89,16 @@
     <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
-
     <!-- Facebook Servlet -->
     <servlet>
         <servlet-name>Facebook Servlet</servlet-name>
         <servlet-class>com.wegas.core.security.facebook.FacebookLoginServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>Facebook Servlet</servlet-name>
         <url-pattern>/FacebookServlet</url-pattern>
     </servlet-mapping>
-
     <!-- Atmosphere Servlet -->
     <!-- <servlet>
         <description>AtmosphereServlet</description>
@@ -128,12 +122,10 @@
         <servlet-name>AtmosphereServlet</servlet-name>
         <url-pattern>/atmosphere/*</url-pattern>
     </servlet-mapping>-->
-
     <!-- Wegas Listener -->
     <!--<listener>
         <listener-class>com.wegas.tools.RequestListener</listener-class>
     </listener>-->
-
     <!--Facebook Servlet-->
     <!--
     <servlet>
@@ -152,5 +144,4 @@
         <filter-name>FacebookUserFilter</filter-name>
         <url-pattern>/facebooktest/*</url-pattern>
     </filter-mapping>-->
-
 </web-app>
