@@ -11,7 +11,7 @@ YUI().use(function (Y) {
         groups: {
             'wegas': {
                 combine: false,
-                //filter: "raw",
+                filter: "raw",
                 modules: {
 
                     /** Base **/
@@ -90,11 +90,12 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-inputex', 'wegas-app', 'wegas-treeview',
-                        'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
-                        'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
+                            'wegas-inputex', 'wegas-app', 'wegas-treeview',
+                            'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
+                            'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
+                            'ace-css'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
-                        //'wegas-editorcss', 'codemirror-xml'
+                        //'wegas-editorcss',
                         ]
                     },
                     'wegas-editorcss': {
@@ -134,12 +135,10 @@ YUI().use(function (Y) {
                         requires: ['yui2-treeview']
                     },
 
-
                     /** Project Management Game */
                     'wegas-projectmanagementgame': {
                         path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
                     },
-
 
                     /** CrimeSim */
                     'wegas-mcqtabview': {
@@ -151,14 +150,12 @@ YUI().use(function (Y) {
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
                         "wegas-mcqtabview"]
                     }
-
-
-                /* This one is only seful w/ yui3 treeview widget */
-                /* 'wegas-treeviewcss': {
-                    path: 'wegas-app/css/treeview-classic.css',
-                    type: 'css'
-                    },*/
-                /*'wegas-treeble': {
+                    /* This one is only seful w/ yui3 treeview widget */
+                    /* 'wegas-treeviewcss': {
+                        path: 'wegas-app/css/treeview-classic.css',
+                        type: 'css'
+                        },*/
+                    /*'wegas-treeble': {
                         path: 'wegas-app/js/wegas-treeble.js',
                         requires: ['gallery-treeble', 'yui2-button' ]
                     },
@@ -168,26 +165,25 @@ YUI().use(function (Y) {
                     },*/
                 }
             },
-            /* Code Mirror */
-            codemirror: {
+
+            /* Ace */
+            ace: {
                 combine: false,
                 //base: "lib/CodeMirror/",
                 modules:  {
-                    'codemirror': {
-                        path: 'lib/codemirror.js',
-                        requires: ['codemirror-css']
+                    'ace': {
+                        path: 'src/ace.js'
                     },
-                    'codemirror-css': {
-                        path: 'lib/codemirror.css"',
-                        type: 'css'
+                    'ace-javascript': {
+                        path: 'src/mode-javascript.js',
+                        requires: ['ace']
                     },
-                    'codemirror-xml': {
-                        path: 'mode/xml/xml.js',
-                        requires: ["codemirror"]
+                    'ace-css': {
+                        path: 'src/mode-css.js',
+                        requires: ['ace-javascript']
                     }
                 }
             },
-
 
             /* Wire It */
             wireit: {
@@ -249,6 +245,6 @@ YUI().use(function (Y) {
     }
 
     loadModules(YUI_config.groups.wegas);
-    loadModules(YUI_config.groups.codemirror);
+    loadModules(YUI_config.groups.ace);
     loadModules(YUI_config.groups.wireit);
 });

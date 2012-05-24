@@ -20,11 +20,13 @@
         <!-- YUI -->
         <!-- CDN  -->
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.5.0/build/cssfonts/fonts-min.css&amp;3.5.0/build/cssreset/reset-min.css&amp;3.5.0/build/cssgrids/grids-min.css&amp;3.5.0/build/cssbase/base-min.css&amp;3.5.0/build/widget-base/assets/skins/sam/widget-base.css&amp;3.5.0/build/node-menunav/assets/skins/sam/node-menunav.css" />
-       <!-- <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.2/build/assets/skins/sam/skin.css" />-->
 
         <!-- Self hosted -->
-<!--        <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
+<!--         <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />-->
+
+        <!-- <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.2/build/assets/skins/sam/skin.css" />-->
+
 
         <!-- WireIt -->
         <!--<link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> -->
@@ -54,10 +56,11 @@
         <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
 
         <script type="text/javascript">
-            YUI_config.groups.inputex.base = '/Wegas/lib/inputex/build/';		// Hack fix inputex loading path so it uses local files
-            YUI_config.groups.wegas.base = '/Wegas/';                                   // Hack fix wegas loading path so it uses local files
-            YUI_config.groups.codemirror.base = '/Wegas/lib/CodeMirror/';                // Hack fix codemirror loading path so it uses local files
+            YUI_config.groups.inputex.base = '/Wegas/lib/inputex/build/';	// Hack fix inputex loading path so it uses local files
+            YUI_config.groups.wegas.base = '/Wegas/';                           // Hack fix wegas loading path so it uses local files
+            YUI_config.groups.ace.base = '/Wegas/lib/ace-0.2.0/';               // Hack fix codemirror loading path so it uses local files
             YUI_config.groups.wireit.base = '/Wegas/lib/wireit/'
+            //YUI_config.groups.codemirror.base = '/Wegas/lib/CodeMirror/';       // Hack fix codemirror loading path so it uses local files
             /**<!--
                 base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
                     { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
@@ -204,7 +207,7 @@
                             ]
                         },
                         "File": {
-                            source: "wegas-app/db/wegas-app-contentrepository.json",
+                            source: "",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -327,20 +330,20 @@
                             { name: 'name', label:'Name', required: true},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name:'defaultVariableInstance', disabled:true, type:'group', fields: [
-                                    { name: '@class', value:'TriggerInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'currentStateId', label: 'Initial state'}
-                                ]},
+                                { name: '@class', value:'TriggerInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'},
+                                { name: 'currentStateId', label: 'Initial state'}
+                            ]},
                             {name:'triggerEvent', type:'group', fields:[
-                                    {name:'@class', value:'Script', type:'hidden'},
-                                    {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
-                                    {name:'content', label:'Trigger',type:'text'}
-                                ]},
+                                {name:'@class', value:'Script', type:'hidden'},
+                                {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
+                                {name:'content', label:'Condition',type:'text'}
+                            ]},
                             {name:'postTriggerEvent', type:'group', fields:[
-                                    {name:'@class', value:'Script', type:'hidden'},
-                                    {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
-                                    {name:'content', label:'Impact',type:'text'}
-                                ]},
+                                {name:'@class', value:'Script', type:'hidden'},
+                                {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
+                                {name:'content', label:'Impact',type:'text'}
+                            ]},
                             { name: 'oneShot', label:'Only once', type:'boolean'}
                         ],
                         "TriggerInstance": [

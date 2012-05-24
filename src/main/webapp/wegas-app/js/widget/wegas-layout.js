@@ -21,6 +21,11 @@ YUI.add('wegas-layout', function (Y) {
 
             this._layout = new YAHOO.widget.Layout({units: units});
 	    this._layout.on('render', this._onLayoutRender, null, this);
+
+	    this._layout.on('resize', function()  {
+                console.log("mmmmmm");
+                Y.Wegas.app.fire("layout:resize");
+            }, null, this);
 	    this._layout.render();
 	},
 	_onLayoutRender: function () {

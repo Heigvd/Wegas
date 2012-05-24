@@ -38,7 +38,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
             };
             requestCfg.cfg = requestCfg.cfg || {};
             requestCfg.cfg.headers =  requestCfg.cfg.headers || DEFAULTHEADERS;
-            requestCfg.cfg.headers =  DEFAULTHEADERS;
 
             this.get('host').sendRequest(requestCfg);
         },

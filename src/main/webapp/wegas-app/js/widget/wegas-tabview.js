@@ -7,23 +7,24 @@ YUI.add('wegas-tabview', function (Y) {
 
     var YAHOO = Y.YUI2, TabView, Tab;
 
-    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {}, {
-        ATTRS : {
-            classTxt: {
-                value: 'Tabview'
-            },
-            type: {
-                value: "Tabview"
-            }
+    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
+        bindUI: function () {
+            TabView.superclass.bindUI.apply(this, arguments);
+
+            // @fixme we notify the editor for any change, so widget can be updated
+            // this should be done through wiget-parent, widget-child event bubbling
+            this.after("selectionChange", function() {
+                Y.Wegas.app.fire("layout:resize");
+            });
         }
     });
 
     Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget], {
 
-        _toolbar: null,
+        // *** Private Fields *** //
+        toolbar: null,
 
         // *** Lifecycle Methods *** //
-
         renderUI: function () {
             Tab.superclass.renderUI.apply(this, arguments);
 
@@ -39,13 +40,14 @@ YUI.add('wegas-tabview', function (Y) {
             }
 
         },
+
         _renderToolbar: function () {
             var panelNode = this.get('panelNode');
 
             panelNode.addClass('wegas-tab-hastoolbar');
             panelNode.prepend('<div class="yui-editor-container wegas-tab-toolbar"><div class="first-child"><div></div></div></div><div style="clear:both"></div>');
 
-            this._toolbar = new YAHOO.widget.Toolbar(panelNode.one('.yui-editor-container div div')._node, {
+            this.toolbar = new YAHOO.widget.Toolbar(panelNode.one('.yui-editor-container div div')._node, {
                 buttonType: 'advanced',
                 draggable: false,
                 buttons: this.get('toolbarButtons')
@@ -54,8 +56,8 @@ YUI.add('wegas-tabview', function (Y) {
             if (this.get('toolbarLabel')) {
                 panelNode.one('.yui-toolbar-subcont').setContent('<span class="title">' + this.get('toolbarLabel') + '</span></div>');
             }
-            this._toolbar.on('buttonClick', function (e) {
-                var button = this._toolbar.getButtonByValue(e.button.value),    // We have a button reference
+            this.toolbar.on('buttonClick', function (e) {
+                var button = this.toolbar.getButtonByValue(e.button.value),    // We have a button reference
                     p;
                 switch (button.get('value')) {
                 case 'selectplayer':
@@ -76,7 +78,7 @@ YUI.add('wegas-tabview', function (Y) {
 
             Y.Wegas.app.dataSources.Game.after("response", function (e) {
                 var menu, button, i, j, k, cGame, players,
-                    buttons = this._toolbar.getButtons();
+                    buttons = this.toolbar.getButtons();
 
                 if (!buttons) {
                     return;

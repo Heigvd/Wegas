@@ -124,14 +124,18 @@ abstract public class VariableInstanceEntity extends AbstractEntity {
             return new Long(-1);
         }
     }
+
     public void setDescriptorId(Long l) {
         // Dummy so that jaxb doesnt yell
     }
 
-    @PostPersist
+//    @PostPersist
     @PostUpdate
-    @PostRemove
+//    @PostRemove
     public void onInstanceUpdate() {
+        if (this.getScope() == null) {                                          // If the instance has no scope, it means it's a default
+            return;                                                             // default Instance and the updated event is not sent
+        }
         try {
             Helper.lookupBy(VariableInstanceFacade.class).onVariableInstanceUpdate(this);
         }
