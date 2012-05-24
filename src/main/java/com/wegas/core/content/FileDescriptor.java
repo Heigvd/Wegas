@@ -99,6 +99,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
     @Override
     public void setContentToRepository() throws RepositoryException {
+        connector.save();
     }
 
     @Override

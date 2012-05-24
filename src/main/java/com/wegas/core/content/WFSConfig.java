@@ -40,6 +40,10 @@ final public class WFSConfig {
      */
     protected static final String WFS_LAST_MODIFIED = WeGAS_FILE_SYSTEM_PREFIX + "lastModified";
     /**
+     * WeGAS file system note property name
+     */
+    protected static final String WFS_NOTE = WeGAS_FILE_SYSTEM_PREFIX + "note";
+    /**
      * Custom namespaces registered with JCR.
      */
     protected static final Map<String, String> namespaces = new HashMap<String, String>() {
