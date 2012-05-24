@@ -10,10 +10,7 @@
  */
 package com.wegas.core.content;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import org.slf4j.LoggerFactory;
 
