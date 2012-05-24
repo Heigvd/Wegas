@@ -19,13 +19,11 @@ YUI.add('wegas-fileexplorer', function (Y) {
 
         // *** Lifecycle methods ** //
         renderUI: function () {
-            var cb = this.get(CONTENTBOX),
-            treeNode = cb.append('<div class="' + this.getClassName('tree') + '"></div>'),
-            viewNode = cb.append('<div class="' + this.getClassName('content') + '"></div>');
+            var cb = this.get(CONTENTBOX);
 
             Y.log('renderUI()', 'log', "Wegas.FileExplorer");
 
-            this.treeView = new YAHOO.widget.TreeView(treeNode.getDOMNode());   // Render YUI2 TreeView widget
+            this.treeView = new YAHOO.widget.TreeView(cb.getDOMNode());   // Render YUI2 TreeView widget
             this.treeView.setDynamicLoad(Y.bind(this.loadNodeData, this));
             this.treeView.singleNodeHighlight = true;
             this.treeView.render();
@@ -44,7 +42,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             // console.log(node.data);
 
             Y.Wegas.app.dataSources.File.sendRequest({
-                request: "",
+                request: "wegas-app/db/wegas-app-contentrepository.json",
                 cfg: {
                     headers: DEFAULTHEADERS,
                     node: node,
