@@ -13,7 +13,6 @@ package com.wegas.core.content;
 import java.io.Serializable;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlTransient;
 
