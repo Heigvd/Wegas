@@ -12,6 +12,7 @@ package com.wegas.core.content;
 
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.ResourceBundle;
 import javax.jcr.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -24,7 +25,8 @@ import org.slf4j.LoggerFactory;
 public class ContentConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
-    static final private SimpleCredentials admin = new SimpleCredentials("admin", "admin".toCharArray());
+    final private ResourceBundle resourceBundle = ResourceBundle.getBundle("wegas");
+    final private SimpleCredentials admin = new SimpleCredentials(resourceBundle.getString("jcr.admin.username"), resourceBundle.getString("jcr.admin.password").toCharArray());
     private Repository repo;
     private Session session;
     private String workspace = null;
