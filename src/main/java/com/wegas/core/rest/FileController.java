@@ -49,7 +49,7 @@ public class FileController {
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
-        logger.debug("Trying to write {} to (/{})", name, path);
+        logger.debug("Trying to write {} to ({})", name, path);
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
         if (name.equals("") || name.contains("/")) {
             return null;
@@ -65,6 +65,7 @@ public class FileController {
                 detachedFile = new FileDescriptor(name, path, connector);
             }
             if (!detachedFile.exist()) {                                        //Node should not exist
+                note = note == null ? "" : note;
                 detachedFile.setNote(note);
                 if (detachedFile instanceof FileDescriptor) {
                     //TODO : check allowed mime-types
@@ -81,7 +82,7 @@ public class FileController {
             } else {
                 logger.debug("File already exists");
             }
-        } else{
+        } else {
             logger.debug("Parent Directory does not exist");
         }
         return detachedFile;

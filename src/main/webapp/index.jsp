@@ -9,9 +9,9 @@
     </head>
     <body>
         <h1>Wegas</h1>
-        <h1>File Upload</h1>
+        <h1>File Upload to CrimeSim</h1>
 
-        name: <form action="rest/File/upload" method="post" enctype="multipart/form-data">
+        name: <form action="rest/File/GameModelId/1/upload" method="post" enctype="multipart/form-data">
             <input type="text" name="name" />
             <p>
                 Select a file : <input type="file" name="file" size="45" />

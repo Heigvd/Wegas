@@ -106,6 +106,7 @@ public class ContentConnector {
     }
 
     protected void setNote(String absolutePath, String note) throws RepositoryException {
+        note = note == null ? "" : note;
         this.getNode(absolutePath).setProperty(WFSConfig.WFS_NOTE, note);
 
     }

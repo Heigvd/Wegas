@@ -88,7 +88,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
     }
 
     public void setNote(String note) {
-        this.note = note;
+        this.note = note == null ? "" : note;
     }
 
     @XmlTransient
