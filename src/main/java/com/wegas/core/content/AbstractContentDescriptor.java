@@ -13,7 +13,6 @@ package com.wegas.core.content;
 import java.io.Serializable;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -89,7 +88,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
     }
 
     public void setNote(String note) {
-        this.note = note;
+        this.note = note == null ? "" : note;
     }
 
     @XmlTransient
