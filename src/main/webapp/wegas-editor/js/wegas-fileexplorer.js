@@ -1,94 +1,110 @@
-/**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- */
-
 YUI.add('wegas-fileexplorer', function (Y) {
     'use strict';
 
     var FileExplorer,
-        CONTENTBOX = 'contentBox',
-        YAHOO = Y.YUI2,
-        DEFAULTHEADERS = {
-            'Content-Type': 'application/json; charset=utf-8'
-        };
+    CONTENTBOX = 'contentBox',
+    DEFAULTHEADERS = {
+        'Content-Type': 'application/json; charset=utf-8'
+    },
+    ATTRS = {
+        path: {
+            value: "/",
+            setter: function(val){
+                return "^/.*".test(val) ? val : "/" + val;
+            }
+        }
+    };
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         // ** Private fields ** //
         treeView: null,
+        rootPath:"/",
+        directoryMimeType:"application/wfs-directory",
+        gameModelId: null,
 
         // *** Lifecycle methods ** //
+        initializer: function() {
+            Y.TreeView.prototype.destroyAll = function() {
+                while (this.size() > 0) {
+                        this.item(0).destroy();
+                }
+            }
+            this.gameModelId = Y.Wegas.app.get("currentGameModel");
+        },
         renderUI: function () {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX),
+                contentNode = cb.append("<ul></ul>");
 
             Y.log('renderUI()', 'log', "Wegas.FileExplorer");
-
-            this.treeView = new YAHOO.widget.TreeView(cb.getDOMNode());   // Render YUI2 TreeView widget
-            this.treeView.setDynamicLoad(Y.bind(this.loadNodeData, this));
-            this.treeView.singleNodeHighlight = true;
+            this.treeView = new Y.TreeView({
+                type: "TreeView",
+                srcNode: contentNode
+            });
+            this.treeView.path = this.rootPath;
+            this.treeView.on("toggleTreeState", function(e){
+                var target = Y.Widget.getByNode(e.actionNode);
+                this.listNodeData(target);
+            }, this);
+            this.treeView.on("treeleaf:click", function(e){
+                //TODO: need url path
+               window.open("/Wegas/rest/File/GameModelId/" + this.gameModelId + "/read" +e.target.path, null, null);
+            }, this);
             this.treeView.render();
         },
 
         bindUI: function () {
-            this.loadNodeData(this.treeView.getRoot());                         // Load root node content
+            this.listNodeData(this.treeView);                         // Load root node content
         },
 
 
         // *** Private methods *** //
-        loadNodeData: function (node, onLoadComplete) {
-
-            // @reuben Here we should build the request based on the node data,
-            // which will be empty for root node, but will contain stuff later on
-            // console.log(node.data);
+        listNodeData: function (node) {
 
             Y.Wegas.app.dataSources.File.sendRequest({
-                request: "wegas-app/db/wegas-app-contentrepository.json",
+                request: "list" + node.path,
                 cfg: {
                     headers: DEFAULTHEADERS,
-                    node: node,
-                    onLoadComplete: onLoadComplete
+                    node: node
                 },
-                callback: {
-                    scope: this,
-                    success: this.onRequestSuccess,
+                on: {
+                    success: Y.bind(this.onRequestSuccess, this),
                     failure: this.onRequestFailure
                 }
             });
         },
 
         onRequestSuccess: function (e) {
-            var i, el;
-
+            var i, el, childNode;
+            e.cfg.node.destroyAll();
             for (i = 0; i < e.response.results.length; i += 1) {
                 el = e.response.results[i];
+                if(el.mimeType === this.directoryMimeType){
+                    childNode = new Y.TreeView({
+                        label: el.name
+                    });
+                } else {
+                    childNode = new Y.TreeLeaf({
+                        label: el.name + " [" + el.mimeType + "]"
+                    });
+                }
 
-                new YAHOO.widget.TextNode({                                     // Appends a treeleaf to the target node
-                    type: 'Text',
-                    label: el.name,
-                    title: el.name,
-                    isLeaf: el.type === "file",
-                    data: el
-                }, e.cfg.node);
-            }
-
-            if (e.cfg.onLoadComplete) {
-                e.cfg.onLoadComplete();
-            } else {
-                e.cfg.node.tree.render();
+                childNode.path = el.path + (el.path.match(".*/$") ? "" : "/") + el.name;
+                e.cfg.node.add(childNode);
             }
         },
 
         onRequestFailure: function (e) {
             Y.log("onDataSourceError(): Error retrieving data" + (e.stack || e), "error", "Wegas.FileExplorer");
-
-            if (e.cfg.onLoadComplete) {
-                e.cfg.onLoadComplete();
-            }
         }
 
-    }, {
-        ATTRS : {}
-    });
+    }, ATTRS);
 
     Y.namespace('Wegas').FileExplorer = FileExplorer;
+    //FIXME : load TreeView, remove this from initializer
+//    Y.TreeView.prototype.destroyAll = function() {
+//        while (this.size() > 0) {
+//                this.item(0).destroy();
+//        }
+//    }
 });
