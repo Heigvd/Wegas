@@ -8,6 +8,7 @@
         <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_dev"/>
         <property name="User" value="user"/>
         <property name="Password" value="123"/>
+        <property name="DatabaseName" value="wegas_dev"/>
         <property name="driverClass" value="org.postgresql.Driver"/>
     </jdbc-connection-pool>
     <connector-resource enabled="true" jndi-name="jcr/jackrabbit" pool-name="jackrabbit-connection-pool"></connector-resource>
