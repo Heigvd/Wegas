@@ -15,6 +15,7 @@ import com.sun.jersey.multipart.FormDataParam;
 import com.wegas.core.content.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,41 +43,49 @@ public class FileController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("upload{directory : .*?}")
-    public FileDescriptor upload(@PathParam("gameModelId") String gameModelId,
+    public AbstractContentDescriptor upload(@PathParam("gameModelId") String gameModelId,
             @FormDataParam("name") String name,
+            @FormDataParam("note") String note,
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) {
-        logger.debug("Trying to write to (/{})", path);
-        ContentConnector connector;
-        try {
-            connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
-        } catch (LoginException ex) {
-            logger.error("Need to check those errors", ex);
-            return null;
-        } catch (RepositoryException ex) {
-            logger.error("Need to check those errors", ex);
+            @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
+        logger.debug("Trying to write {} to ({})", name, path);
+        logger.debug("File name: {}", details.getContentDisposition().getFileName());
+        if (name.equals("") || name.contains("/")) {
             return null;
         }
-        try {
-            AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
-            FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
-            if (dir.exist() && !detachedFile.exist()) {                         //Append a node to an existing "directory" only and file should not exist
+        ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
 
-                try {
-                    detachedFile.setBase64Data(file, details.getMediaType().toString());
-                    logger.info(details.getFormDataContentDisposition().getFileName() + "(" + details.getMediaType() + ") uploaded as \"" + name + "\"");
-                    return detachedFile;
-                } catch (IOException ex) {
-                    logger.error("Error reading uploaded file :", ex);
+        AbstractContentDescriptor detachedFile = null;
+        AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
+        if (dir.exist()) {                                                  //directory has to exist
+            if (details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
+                detachedFile = new DirectoryDescriptor(name, path, connector);
+            } else {
+                detachedFile = new FileDescriptor(name, path, connector);
+            }
+            if (!detachedFile.exist()) {                                        //Node should not exist
+                note = note == null ? "" : note;
+                detachedFile.setNote(note);
+                if (detachedFile instanceof FileDescriptor) {
+                    //TODO : check allowed mime-types
+                    try {
+                        ((FileDescriptor) detachedFile).setBase64Data(file, details.getMediaType().toString());
+                        logger.info(details.getFormDataContentDisposition().getFileName() + "(" + details.getMediaType() + ") uploaded as \"" + name + "\"");
+                    } catch (IOException ex) {
+                        logger.error("Error reading uploaded file :", ex);
+                    }
+                } else {
+                    detachedFile.sync();
+                    logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
                 }
             } else {
-                logger.debug("File already exists or parent directory does not exist");
+                logger.debug("File already exists");
             }
-        } catch (RepositoryException ex) {
-            logger.error("Need to check those errors", ex);
+        } else {
+            logger.debug("Parent Directory does not exist");
         }
-        return null;
+        return detachedFile;
     }
 
     @GET
@@ -124,7 +133,7 @@ public class FileController {
         } catch (RepositoryException ex) {
             Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @DELETE

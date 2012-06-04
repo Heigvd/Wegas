@@ -27,6 +27,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
     protected String mimeType;
     private String name;
     private String path;
+    private String note = "";
     @XmlTransient
     protected String fileSystemAbsolutePath;
     @XmlTransient
@@ -39,10 +40,8 @@ abstract public class AbstractContentDescriptor implements Serializable {
     }
 
     protected AbstractContentDescriptor(String absolutePath, ContentConnector contentConnector, String mimeType) {
-        this.connector = contentConnector;
+        this(absolutePath, contentConnector);
         this.mimeType = mimeType;
-        this.parseAbsolutePath(absolutePath);
-        this.buildNamespaceAbsolutePath();
     }
 
     protected AbstractContentDescriptor(String name, String path, ContentConnector contentConnector) {
@@ -84,6 +83,14 @@ abstract public class AbstractContentDescriptor implements Serializable {
         this.buildNamespaceAbsolutePath();
     }
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note == null ? "" : note;
+    }
+
     @XmlTransient
     public boolean isSynched() {
         return synched;
@@ -100,9 +107,10 @@ abstract public class AbstractContentDescriptor implements Serializable {
     }
 
     public void sync() throws RepositoryException {
-        if (this.exist()) {                                                     //check existence
+        if (this.exist()) {                                                     //check existence then load it else create it
             try {
                 this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
+                this.note = connector.getNote(fileSystemAbsolutePath);
             } catch (NullPointerException e) {
                 if (!this.fileSystemAbsolutePath.equals("/")) {                 //Not a rootNode
                     throw e;
@@ -112,6 +120,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
             synched = true;
         } else {
             this.saveToRepository();
+            connector.setNote(fileSystemAbsolutePath, note);
             synched = true;
         }
     }
@@ -121,6 +130,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
         Node parent = connector.getNode(fileSystemAbsolutePath);
         parent.addNode(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + file.getName());
         connector.setMimeType(file.fileSystemAbsolutePath, file.getMimeType());
+        connector.setNote(file.fileSystemAbsolutePath, file.getNote());
         file.setContentToRepository();
         return file;
     }
@@ -130,7 +140,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
         if (this.exist()) {
             if (!this.hasChildren() || force) {
                 connector.deleteFile(fileSystemAbsolutePath);
-            }else{
+            } else {
                 throw new ItemExistsException("Save the children ! Preventing collateral damage !");
             }
         }
