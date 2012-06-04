@@ -13,14 +13,15 @@ Authors
 
 Glassfish setup
 ------------------------
-*   Install glassfish v>3.1.1
+*   Install glassfish v>3.1.1, full profile
 *   PostgreSQL
     - Download and install from http://www.postgresql.org/download/
     - By default, Wegas will look for wegas_dev and wegas_test databases, using the username *user* and password *123*
 *   Download JDBC PostgreSQL driver (most likely 9.1-901 JDBC 4) from http://jdbc.postgresql.org/download.html and place it in *GLASSFISHINSTALL*/domains/*YOURDOMAIN*/lib/
-*   Download Java Content Repository API from http://repo1.maven.org/maven2/javax/jcr/jcr/2.0/jcr-2.0.jar and place it in *GLASSFISHINSTALL*/domains/*YOURDOMAIN*/lib/
+*   Download Java Content Repository API from http://repo1.maven.org/maven2/javax/jcr/jcr/2.0/jcr-2.0.jar, place it in *GLASSFISHINSTALL*/domains/*YOURDOMAIN*/lib/
+*   Restart Glassfish
 *   Apache Jackrabbit
-    - Download  from http://www.apache.org/dyn/closer.cgi/jackrabbit/2.4.1/jackrabbit-jca-2.4.1.rar
+    - Download from http://www.apache.org/dyn/closer.cgi/jackrabbit/2.4.1/jackrabbit-jca-2.4.1.rar
     - Deploy on Glassfish (Go to *http://localhost:4848/* >> *Applications* >> *Deploy...* )
     - Copy *WEGASSRC*/src/main/setup/JRFile to *GLASSFISHINSTALL*/domains/*YOURDOMAIN*/lib/
 *   Enable comet support:
@@ -46,13 +47,13 @@ Netbeans setup
 ------------------------
 In the NetBeans installation directory (e.g. C:\Program Files\NetBeans 7.x), edit the etc\netbeans.conf startup configuration. (On both Windows 7 and Linux, you will need to edit the permissions on this file to grant your user the rights to modify it.)
 
-*  *optional*oFrce utf-8
+*  *optional* Force utf-8
    Addn -J-Dfile.encoding=UTF-8 to netbeans_default_options line in netbeans.conf.
-*  To increase the heap memory available to the IDE, replace the -J-Xms32m JVM parameter with the following:
+*  *optional* To increase the heap memory available to the IDE, replace the -J-Xms32m JVM parameter with the following:
    -J-Xms384m
-*  To increase the IDE's permanent generation space (memory used for classes and static instances), replace the -J-XX:PermSize=32m JVM parameter with the following:
+*  *optional* To increase the IDE's permanent generation space (memory used for classes and static instances), replace the -J-XX:PermSize=32m JVM parameter with the following:
    -J-XX:PermSize=128m
-*  Add the following parameters to improve garbage collection performance:
+*  *optional* Add the following parameters to improve garbage collection performance:
    -J-XX:+UseConcMarkSweepGC -J-XX:+CMSClassUnloadingEnabled -J-XX:+CMSPermGenSweepingEnabled
-*  If you ever connect through a VPN, the following JVM setting will prevent connection refusals when accessing network resources (e.g. SVN and Maven repositories) through the IDE:
+*  *optional* If you ever connect through a VPN, the following JVM setting will prevent connection refusals when accessing network resources (e.g. SVN and Maven repositories) through the IDE:
    -J-Djava.net.preferIPv4Stack=true
