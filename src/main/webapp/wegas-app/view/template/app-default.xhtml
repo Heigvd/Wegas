@@ -19,7 +19,7 @@
 
         <!-- YUI -->
         <!-- CDN  -->
-        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.5.0/build/cssfonts/fonts-min.css&amp;3.5.0/build/cssreset/reset-min.css&amp;3.5.0/build/cssgrids/grids-min.css&amp;3.5.0/build/cssbase/base-min.css&amp;3.5.0/build/widget-base/assets/skins/sam/widget-base.css&amp;3.5.0/build/node-menunav/assets/skins/sam/node-menunav.css" />
+        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.5.0/build/cssfonts/fonts-min.css&amp;3.5.0/build/cssreset/reset-min.css&amp;3.5.0/build/cssgrids/grids-min.css&amp;3.5.0/build/widget-base/assets/skins/sam/widget-base.css&amp;3.5.0/build/node-menunav/assets/skins/sam/node-menunav.css" />
 
         <!-- Self hosted -->
 <!--         <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
@@ -36,6 +36,7 @@
 
         <meta id="customstyles" />
 
+        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/treeview-classic.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
         <link rel="stylesheet" id="yui_3_5_0_3_1337250563303_2" href="/Wegas/wegas-app/css/wegas-app.css" />
     </h:head>
@@ -207,7 +208,7 @@
                             ]
                         },
                         "File": {
-                            source: "",
+                            source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",

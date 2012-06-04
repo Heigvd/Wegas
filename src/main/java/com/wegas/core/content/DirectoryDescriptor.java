@@ -27,7 +27,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
     /**
      * Directory mime-type
      */
-    public static final String MIME_TYPE = "application/x-director";
+    public static final String MIME_TYPE = "application/wfs-directory";
 
     public DirectoryDescriptor(String absolutePath, ContentConnector contentConnector) {
         super(absolutePath, contentConnector);
@@ -40,7 +40,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
     }
 
     @XmlTransient
-    public boolean isRootDirectory(){
+    public boolean isRootDirectory() {
         return this.fileSystemAbsolutePath.equals("/");
     }
 
@@ -60,9 +60,14 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     @Override
     public void setContentToRepository() throws RepositoryException {
-    }
-    @Override
-    public void saveToRepository() throws RepositoryException {
+        connector.save();
     }
 
+    @Override
+    public void saveToRepository() throws RepositoryException {
+        String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
+        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
+        parent.sync();
+        parent.addChild(this);
+    }
 }
