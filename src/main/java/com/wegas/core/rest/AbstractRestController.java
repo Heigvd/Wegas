@@ -11,6 +11,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import org.codehaus.jackson.map.annotate.JsonFilter;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,7 @@ public abstract class AbstractRestController<T extends AbstractFacade> {
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
+    //@JsonView(Views.Export.class)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractEntity get(@PathParam("entityId") Long entityId) {
         return getFacade().find(entityId);

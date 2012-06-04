@@ -113,18 +113,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
 
         post: function (data, parentData, callback) {
-            var request = "";
-            if (parentData) {
-                switch (parentData["@class"]) {
-                    case "ListDescriptor":
-                    case "QuestionDescriptor":
-                        request = "/ListDescriptor/" + parentData.id;
-                        break;
-                    default:
-                        request = "/" + parentData.id + "/VariableInstance/";
-                        break;
-                }
-            }
+
+            var request = (parentData) ? "/" + parentData.id + "/" + data["@class"] : "/";
+
             this.sendRequest({
                 request: request,
                 cfg: {
@@ -285,6 +276,28 @@ YUI.add('wegas-datasourcerest', function (Y) {
             } else {
                 VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
             }
+        },
+         post: function (data, parentData, callback) {
+            var request = "";
+            if (parentData) {
+                switch (parentData["@class"]) {
+                    case "ListDescriptor":
+                    case "QuestionDescriptor":
+                        request = "/ListDescriptor/" + parentData.id;
+                        break;
+                    default:
+                        request = "/" + parentData.id + "/VariableInstance/";
+                        break;
+                }
+            }
+            this.sendRequest({
+                request: request,
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify(data)
+                },
+                callback: callback
+            });
         },
         getInstanceById: function (id) {
             return this.getInstanceBy('id', id);
