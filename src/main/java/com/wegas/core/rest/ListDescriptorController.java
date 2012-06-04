@@ -9,7 +9,6 @@
  */
 package com.wegas.core.rest;
 
-import com.sun.jersey.spi.container.ResourceFilters;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.ListDescriptorEntity;

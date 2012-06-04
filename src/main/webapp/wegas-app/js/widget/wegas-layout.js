@@ -5,7 +5,7 @@
 YUI.add('wegas-layout', function (Y) {
     "use strict";
 
-    var YAHOO = Y.YUI2, Layout;
+    var Layout;
 
     Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.Wegas.Widget], {
 
@@ -19,11 +19,10 @@ YUI.add('wegas-layout', function (Y) {
                     {position: 'center', body: ''}
 		];
 
-            this._layout = new YAHOO.widget.Layout({units: units});
+            this._layout = new Y.YUI2.widget.Layout({units: units});
 	    this._layout.on('render', this._onLayoutRender, null, this);
 
 	    this._layout.on('resize', function()  {
-                console.log("mmmmmm");
                 Y.Wegas.app.fire("layout:resize");
             }, null, this);
 	    this._layout.render();
