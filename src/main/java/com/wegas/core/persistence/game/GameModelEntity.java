@@ -12,6 +12,7 @@ package com.wegas.core.persistence.game;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.layout.WidgetEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.rest.Views;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *

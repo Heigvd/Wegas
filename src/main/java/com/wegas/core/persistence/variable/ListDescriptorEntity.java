@@ -44,6 +44,7 @@ public class ListDescriptorEntity extends VariableDescriptorEntity<VariableInsta
      */
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
+    @OrderBy("id")
     private List<VariableDescriptorEntity> items = new ArrayList<VariableDescriptorEntity>();
 
     /**

@@ -5,7 +5,7 @@
 YUI.add('wegas-tabview', function (Y) {
     "use strict";
 
-    var YAHOO = Y.YUI2, TabView, Tab;
+    var TabView, Tab;
 
     TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
@@ -47,7 +47,7 @@ YUI.add('wegas-tabview', function (Y) {
             panelNode.addClass('wegas-tab-hastoolbar');
             panelNode.prepend('<div class="yui-editor-container wegas-tab-toolbar"><div class="first-child"><div></div></div></div><div style="clear:both"></div>');
 
-            this.toolbar = new YAHOO.widget.Toolbar(panelNode.one('.yui-editor-container div div')._node, {
+            this.toolbar = new Y.YUI2.widget.Toolbar(panelNode.one('.yui-editor-container div div')._node, {
                 buttonType: 'advanced',
                 draggable: false,
                 buttons: this.get('toolbarButtons')
