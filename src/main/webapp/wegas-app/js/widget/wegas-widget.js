@@ -69,7 +69,7 @@ YUI.add('wegas-widget', function (Y) {
     Y.namespace('Wegas').Widget = Widget;
 
     /**
-     * FIXME We override this function so widget are looked for in Wegas ns.
+     * @FIXME We override this function so widget are looked for in Wegas ns.
      */
     Y.WidgetParent.prototype._createChild = function (config) {
         var defaultType = this.get("defaultChildType"),
@@ -79,7 +79,7 @@ YUI.add('wegas-widget', function (Y) {
             FnConstructor;
 
         if (altType) {
-            Fn = Lang.isString(altType) ? Y.Wegas[altType] : altType;
+            Fn = Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;           // @hacked
         }
 
         if (Lang.isFunction(Fn)) {
@@ -112,7 +112,7 @@ YUI.add('wegas-widget', function (Y) {
                 config = Plugin.cfg;
                 Plugin = Plugin.fn;
             }
-            if (Plugin && !Lang.isFunction(Plugin)) {			// !Added
+            if (Plugin && !Lang.isFunction(Plugin)) {			// @hacked
                 Plugin = Y.Plugin[Plugin];
             }
 

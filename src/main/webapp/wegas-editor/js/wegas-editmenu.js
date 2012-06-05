@@ -4,7 +4,6 @@
 
 YUI.add('wegas-editmenu', function(Y) {
     var CONTENTBOX = 'contentBox',
-        YAHOO = Y.YUI2,
         EditMenu;
 
     EditMenu = Y.Base.create("wegas-editmenu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
@@ -17,7 +16,7 @@ YUI.add('wegas-editmenu', function(Y) {
         renderUI : function() {
             var cb = this.get(CONTENTBOX);
 
-            this.menu = new YAHOO.widget.Menu("as-editmenu", {
+            this.menu = new Y.YUI2.widget.Menu("as-editmenu", {
                 visible: true,
                 position: 'static',
                 hidedelay: 100,

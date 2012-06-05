@@ -15,20 +15,20 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.PlayerEntity;
 import com.wegas.core.persistence.variable.ListDescriptorEntity;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
 import com.wegas.core.script.ScriptFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptorEntity;
 import com.wegas.mcq.persistence.QuestionDescriptorEntity;
 import com.wegas.mcq.persistence.QuestionInstanceEntity;
 import com.wegas.mcq.persistence.ReplyEntity;
 import java.util.HashMap;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.script.ScriptException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -36,6 +36,8 @@ import javax.script.ScriptException;
  */
 @Stateless
 public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescriptorEntity> {
+
+    static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -85,7 +87,8 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     public void setCurrentTime(QuestionDescriptorEntity question, PlayerEntity player, Long time) throws ScriptException {
         QuestionInstanceEntity questionInstance = (QuestionInstanceEntity) question.getVariableInstance(player);
         for (ReplyEntity reply : questionInstance.getReplies()) {
-            if (reply.getStartTime() + reply.getChoiceDescriptor().getDuration() == time) {
+           //logger.warn(reply.getStartTime()+"*"+reply.getChoiceDescriptor().getDuration()+"*"+time);
+            if (reply.getStartTime() + reply.getChoiceDescriptor().getDuration() + 1  == time ) {
                 this.validateReply(player, reply);
             }
         }
