@@ -12,8 +12,8 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -47,7 +47,7 @@ public class VariableInstanceController extends AbstractRestController<VariableI
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<AbstractEntity> index() {
-        VariableDescriptorEntity vd = variableDescriptorFacade.find(new Long(this.getPathParam("variableDescriptorId")));
+        VariableDescriptor vd = variableDescriptorFacade.find(new Long(this.getPathParam("variableDescriptorId")));
         return (Collection) vd.getScope().getVariableInstances().values();
     }
 
@@ -63,11 +63,11 @@ public class VariableInstanceController extends AbstractRestController<VariableI
     @Path("user/{userId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public VariableInstanceEntity setVariableInstance(
+    public VariableInstance setVariableInstance(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("variableDescriptorId") Long variableDescriptorId,
             @PathParam("userId") Long userId,
-            VariableInstanceEntity newInstance) {
+            VariableInstance newInstance) {
         return variableInstanceFacade.update(variableDescriptorId, userId, newInstance);
     }
 

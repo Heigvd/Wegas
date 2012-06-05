@@ -11,8 +11,8 @@ package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
 import com.wegas.messaging.persistence.variable.MessageEntity;
 import javax.ejb.EJB;
@@ -66,8 +66,8 @@ public class InGameMailFacade extends AbstractFacadeImpl<MessageEntity> {
      * @param p
      * @param msg
      */
-    public void send(PlayerEntity p, MessageEntity msg) {
-        VariableDescriptorEntity vd = variableDescriptorFacade.findByName(p.getGameModel(), "inbox");
+    public void send(Player p, MessageEntity msg) {
+        VariableDescriptor vd = variableDescriptorFacade.findByName(p.getGameModel(), "inbox");
         InboxInstanceEntity inbox = (InboxInstanceEntity) vd.getVariableInstance(p);
         inbox.addMessage(msg);
     }
@@ -78,7 +78,7 @@ public class InGameMailFacade extends AbstractFacadeImpl<MessageEntity> {
      * @param subject
      * @param body
      */
-    public void send(PlayerEntity p, String subject, String body) {
+    public void send(Player p, String subject, String body) {
         MessageEntity msg = new MessageEntity();
         msg.setName(subject);
         msg.setBody(body);

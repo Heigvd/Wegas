@@ -12,8 +12,8 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -55,14 +55,14 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<AbstractEntity> index() {
         Long gameModelId = this.getGameModelId();
-        GameModelEntity gameModel = gameModelFacade.find(gameModelId);
+        GameModel gameModel = gameModelFacade.find(gameModelId);
         return (Collection) gameModel.getChildVariableDescriptors();
     }
 
     @Override
     public AbstractEntity create(AbstractEntity entity) {
         this.variableDescriptorFacade.create(new Long(this.getPathParam("gameModelId")),
-                (VariableDescriptorEntity) entity);
+                (VariableDescriptor) entity);
         return entity;
     }
 

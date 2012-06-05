@@ -9,7 +9,7 @@
  */
 package com.wegas.messaging.ejb;
 
-import com.wegas.core.persistence.game.PlayerEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.messaging.persistence.variable.MessageEntity;
 import java.util.Date;
 import java.util.Properties;
@@ -94,7 +94,7 @@ public class EMailFacade {
      * @param subject
      * @param body
      */
-    public void send(PlayerEntity p, String from, String subject, String body) {
+    public void send(Player p, String from, String subject, String body) {
         //this.send(p.getUser().getName(), from, subject, body);
         this.send("fx@red-agent.com", from, subject, body);
     }
@@ -104,7 +104,7 @@ public class EMailFacade {
      * @param p
      * @param msg
      */
-    public void send(PlayerEntity p, MessageEntity msg) {
+    public void send(Player p, MessageEntity msg) {
         this.send(p, "admin@wegas.com", msg.getSubject(), msg.getBody());
     }
 }

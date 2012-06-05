@@ -12,10 +12,10 @@ package com.wegas.core.script;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +81,7 @@ public class ScriptFacade {
      * @return
      * @throws ScriptException
      */
-    public Object eval(PlayerEntity player, List<ScriptEntity> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(Player player, List<ScriptEntity> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
         if (scripts.isEmpty()) {
             return null;
         }
@@ -89,8 +89,8 @@ public class ScriptFacade {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName(scripts.get(0).getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
-        GameModelEntity gm = player.getGameModel();
-        List<VariableInstanceEntity> vis = new ArrayList<VariableInstanceEntity>();
+        GameModel gm = player.getGameModel();
+        List<VariableInstance> vis = new ArrayList<VariableInstance>();
 
         variableInstanceManager.setCurrentPlayer(player);                                // Set up request execution context
         variableInstanceManager.setGameModel(gm);
@@ -100,8 +100,8 @@ public class ScriptFacade {
             engine.put(arg.getKey(), arg.getValue());
         }
 
-        for (VariableDescriptorEntity vd : gm.getVariableDescriptors()) {       // We inject the variable instances in the script
-            VariableInstanceEntity vi = vd.getVariableInstance(player);
+        for (VariableDescriptor vd : gm.getVariableDescriptors()) {       // We inject the variable instances in the script
+            VariableInstance vi = vd.getVariableInstance(player);
             engine.put(vd.getName(), vi);
         }
         String script = "";
@@ -126,7 +126,7 @@ public class ScriptFacade {
      * @return
      * @throws ScriptException
      */
-    public Object eval(PlayerEntity player, ScriptEntity s, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(Player player, ScriptEntity s, Map<String, AbstractEntity> arguments) throws ScriptException {
         List<ScriptEntity> scripts = new ArrayList<>();
         scripts.add(s);
         return this.eval(player, scripts, arguments);
@@ -151,7 +151,7 @@ public class ScriptFacade {
      * @return
      * @throws ScriptException
      */
-    public Object eval(PlayerEntity p, ScriptEntity s) throws ScriptException {
+    public Object eval(Player p, ScriptEntity s) throws ScriptException {
         return this.eval(p, s, new HashMap<String, AbstractEntity>());
     }
     /*

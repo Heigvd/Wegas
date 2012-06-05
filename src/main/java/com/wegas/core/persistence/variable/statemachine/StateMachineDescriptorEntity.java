@@ -10,7 +10,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.*;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
@@ -26,7 +26,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptorEntity.class)
 })
-public class StateMachineDescriptorEntity extends VariableDescriptorEntity<StateMachineInstanceEntity> {
+public class StateMachineDescriptorEntity extends VariableDescriptor<StateMachineInstanceEntity> {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     //@MapKey(name = "id")
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")

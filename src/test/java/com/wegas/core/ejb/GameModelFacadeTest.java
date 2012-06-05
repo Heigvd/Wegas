@@ -9,10 +9,10 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.game.TeamEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class GameModelFacadeTest {
         logger.info("createGameModel()");
         String name = "test";
 
-        GameModelEntity gameModel = new GameModelEntity();
+        GameModel gameModel = new GameModel();
         gameModel.setName(name);
 
         gameModelFacade.create(gameModel);
@@ -88,27 +88,27 @@ public class GameModelFacadeTest {
         TeamFacade tf = lookupBy(TeamFacade.class, TeamFacade.class);
 
         // Create a game model
-        GameModelEntity gameModel = new GameModelEntity(GAMENAME);
+        GameModel gameModel = new GameModel(GAMENAME);
         gameModelFacade.create(gameModel);
         Assert.assertEquals(1, gameModelFacade.findAll().size());
 
         // Edit this gam
-        GameModelEntity gm2 = gameModelFacade.update(gameModel.getId(), new GameModelEntity(GAMENAME2));
+        GameModel gm2 = gameModelFacade.update(gameModel.getId(), new GameModel(GAMENAME2));
         Assert.assertEquals(GAMENAME2, gm2.getName());
 
         // Create a game, a team and a player
-        GameEntity g = new GameEntity(NAME, TOKEN);
+        Game g = new Game(NAME, TOKEN);
         gf.create(gameModel.getId(), g);
 
-        GameEntity g2 = gf.getGameByToken(TOKEN);
+        Game g2 = gf.getGameByToken(TOKEN);
         Assert.assertEquals(NAME, g2.getName());
 
-        TeamEntity t = new TeamEntity();
+        Team t = new Team();
         t.setName("test-team");
         tf.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
-        PlayerEntity p = new PlayerEntity();
+        Player p = new Player();
         p.setName("test-player");
         tf.createPlayer(t.getId(), p);
         Assert.assertNotNull(p.getId());

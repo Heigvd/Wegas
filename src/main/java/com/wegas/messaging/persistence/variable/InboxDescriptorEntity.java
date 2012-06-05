@@ -10,7 +10,7 @@
 package com.wegas.messaging.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "InboxDescriptor")
-public class InboxDescriptorEntity extends VariableDescriptorEntity<InboxInstanceEntity> {
+public class InboxDescriptorEntity extends VariableDescriptor<InboxInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQDescriptorEntity");

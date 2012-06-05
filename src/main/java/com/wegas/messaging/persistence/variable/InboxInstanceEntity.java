@@ -10,7 +10,7 @@
 package com.wegas.messaging.persistence.variable;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +29,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "InboxInstance")
-public class InboxInstanceEntity extends VariableInstanceEntity {
+public class InboxInstanceEntity extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("InboxInstanceEntity");

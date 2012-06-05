@@ -9,7 +9,7 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.script.ScriptEntity;
 import com.wegas.core.script.ScriptFacade;
 import java.util.List;

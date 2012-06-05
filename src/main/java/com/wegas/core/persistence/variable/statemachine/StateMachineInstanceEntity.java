@@ -10,7 +10,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,7 +31,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstanceEntity.class)
 })
-public class StateMachineInstanceEntity extends VariableInstanceEntity implements Serializable {
+public class StateMachineInstanceEntity extends VariableInstance implements Serializable {
 
     @Column(name = "currentstate_id", nullable=false)
     private Long currentStateId;

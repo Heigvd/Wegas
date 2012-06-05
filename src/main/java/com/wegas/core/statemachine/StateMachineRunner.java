@@ -12,8 +12,8 @@ package com.wegas.core.statemachine;
 
 import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
 import com.wegas.core.persistence.variable.statemachine.Transition;
@@ -65,9 +65,9 @@ public class StateMachineRunner implements Serializable {
         //TODO: Should Eval without firing Event, lock SMInstance (concurrency)
         run = true;
         if (stateMachines.isEmpty()) {                                          // load stateMachines only once
-            GameModelEntity gamemodel = gameManager.getGameModel();
-            List<VariableDescriptorEntity> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel,StateMachineDescriptorEntity.class);
-            for (VariableDescriptorEntity stateMachineDescriptor : stateMachineDescriptors) {
+            GameModel gamemodel = gameManager.getGameModel();
+            List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel,StateMachineDescriptorEntity.class);
+            for (VariableDescriptor stateMachineDescriptor : stateMachineDescriptors) {
                 stateMachines.add((StateMachineInstanceEntity) stateMachineDescriptor.getScope().getVariableInstance(gameManager.getCurrentPlayer()));
             }
             logger.info("StateMachineInstance(s) found: {}", stateMachines);

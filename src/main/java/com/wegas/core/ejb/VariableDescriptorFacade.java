@@ -9,9 +9,9 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.user.UserEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.user.User;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptorEntity_;
 import java.util.List;
 import javax.ejb.EJB;
@@ -30,7 +30,7 @@ import javax.persistence.criteria.Root;
  */
 @Stateless
 @LocalBean
-public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescriptorEntity> {
+public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescriptor> {
 
     /**
      *
@@ -48,7 +48,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param gameModelId
      * @param variableDescriptorEntity
      */
-    public void create(Long gameModelId, VariableDescriptorEntity variableDescriptorEntity) {
+    public void create(Long gameModelId, VariableDescriptor variableDescriptorEntity) {
         this.gameModelFacade.find(gameModelId).addVariableDescriptor(variableDescriptorEntity);
         //super.create(variableDescriptorEntity);
     }
@@ -58,10 +58,10 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param name
      * @return
      */
-    public VariableDescriptorEntity findByName(GameModelEntity gameModel, String name) {
+    public VariableDescriptor findByName(GameModel gameModel, String name) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
-        Root<UserEntity> variableDescriptor = cq.from(VariableDescriptorEntity.class);
+        Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
 //        cq.where(cb.and(
 //                cb.equal(variableDescriptor.get(VariableDescriptorEntity_.gameModel), gameModel),
 //                cb.equal(variableDescriptor.get(VariableDescriptorEntity_.name), name)));
@@ -69,7 +69,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
                 cb.equal(variableDescriptor.get("gameModel"), gameModel),
                 cb.equal(variableDescriptor.get("name"), name)));
         Query q = em.createQuery(cq);
-        return (VariableDescriptorEntity) q.getSingleResult();
+        return (VariableDescriptor) q.getSingleResult();
     }
 
     /**
@@ -77,7 +77,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param gameModelId
      * @return
      */
-    public List<VariableDescriptorEntity> findByGameModelId(Long gameModelId) {
+    public List<VariableDescriptor> findByGameModelId(Long gameModelId) {
         Query findByRootGameModelId = em.createNamedQuery("findVariableDescriptorsByRootGameModelId");
         findByRootGameModelId.setParameter("gameModelId", gameModelId);
         return findByRootGameModelId.getResultList();
@@ -89,11 +89,11 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param gameModelId The Game Model ID
      * @return All specified classes and subclasses belonging to the game model.
      */
-    public List<VariableDescriptorEntity> findByClass(GameModelEntity gamemodel, Class variableDescriptorClass) {
+    public List<VariableDescriptor> findByClass(GameModel gamemodel, Class variableDescriptorClass) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
-        Root<UserEntity> variableDescriptor = cq.from(variableDescriptorClass);
+        Root<User> variableDescriptor = cq.from(variableDescriptorClass);
         // cq.where(cb.equal(variableDescriptor.get(VariableDescriptorEntity_.gameModel), gameModelId));
         cq.where(cb.equal(variableDescriptor.get("gameModel"), gamemodel));
         Query q = em.createQuery(cq);
@@ -116,6 +116,6 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      *
      */
     public VariableDescriptorFacade() {
-        super(VariableDescriptorEntity.class);
+        super(VariableDescriptor.class);
     }
 }
