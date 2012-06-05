@@ -9,12 +9,12 @@
  */
 package com.wegas.core.persistence;
 
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.game.TeamEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.SerializationUtils;
@@ -28,12 +28,12 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModel", value = GameModelEntity.class),
-    @JsonSubTypes.Type(name = "Game", value = GameEntity.class),
-    @JsonSubTypes.Type(name = "Player", value = PlayerEntity.class),
-    @JsonSubTypes.Type(name = "Team", value = TeamEntity.class),
-    @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstanceEntity.class),})
+    @JsonSubTypes.Type(name = "GameModel", value = GameModel.class),
+    @JsonSubTypes.Type(name = "Game", value = Game.class),
+    @JsonSubTypes.Type(name = "Player", value = Player.class),
+    @JsonSubTypes.Type(name = "Team", value = Team.class),
+    @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
+    @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class),})
 public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
@@ -49,9 +49,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
      *
-     * @param a
+     * @param other
      */
-    public abstract void merge(AbstractEntity a);
+    public abstract void merge(AbstractEntity other);
 
     /**
      *

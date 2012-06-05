@@ -12,7 +12,7 @@ package com.wegas.mcq.persistence;
 import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;

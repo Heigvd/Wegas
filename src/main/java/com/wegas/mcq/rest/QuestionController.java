@@ -11,7 +11,7 @@ package com.wegas.mcq.rest;
 
 import com.sun.jersey.spi.container.ResourceFilters;
 import com.wegas.core.rest.AbstractRestController;
-import com.wegas.core.rest.ManagedModeResponseFilter;
+import com.wegas.core.rest.util.ManagedModeResponseFilter;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstanceEntity;
 import com.wegas.mcq.persistence.ReplyEntity;

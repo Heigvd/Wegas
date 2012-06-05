@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.persistence.game.GameModelEntity;
+import com.wegas.core.persistence.game.GameModel;
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;

@@ -10,8 +10,8 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.script.ScriptEntity;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "ChoiceDescriptor")
-public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInstanceEntity> {
+public class ChoiceDescriptorEntity extends VariableDescriptor<ChoiceInstanceEntity> {
 
     private static final long serialVersionUID = 1L;
     // private static final Logger logger = LoggerFactory.getLogger(ChoiceDescriptorEntity.class);
@@ -156,14 +156,14 @@ public class ChoiceDescriptorEntity extends VariableDescriptorEntity<ChoiceInsta
      *
      * @param p
      */
-    public void activate(PlayerEntity p) {
+    public void activate(Player p) {
        this.getVariableInstance(p).activate();
     }
     /**
      *
      * @param p
      */
-    public void desactivate(PlayerEntity p) {
+    public void desactivate(Player p) {
        this.getVariableInstance(p).desactivate();
     }
 

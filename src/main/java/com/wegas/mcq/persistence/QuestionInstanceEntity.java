@@ -12,7 +12,7 @@ package com.wegas.mcq.persistence;
 import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
@@ -28,7 +28,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "QuestionInstance")
-public class QuestionInstanceEntity extends VariableInstanceEntity {
+public class QuestionInstanceEntity extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstanceEntity.class);

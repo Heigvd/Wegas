@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.statemachine;
 
-import com.wegas.core.persistence.variable.scope.TeamScopeEntity;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptorEntity;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstanceEntity;
 import com.wegas.core.script.ScriptEntity;
@@ -117,7 +117,7 @@ public class TriggerTest {
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.setId(4L);
         this.triggerDescriptor.buildStateMachine();
-        this.triggerDescriptor.setScope(new TeamScopeEntity());
+        this.triggerDescriptor.setScope(new TeamScope());
         TriggerDescriptorEntity newTrigger = new TriggerDescriptorEntity();
         newTrigger.setDefaultInstance(this.trigger);
         newTrigger.setId(5L);
@@ -134,7 +134,7 @@ public class TriggerTest {
         assert this.triggerDescriptor.getTriggerEvent().equals(newTestScript);
         assert (this.triggerDescriptor.getPostTriggerEvent().getContent() == null ? newTestScript.getContent() == null : this.triggerDescriptor.getPostTriggerEvent().getContent().equals(newTestScript.getContent()));
         assert (this.triggerDescriptor.getPostTriggerEvent().getLanguage() == null ? newTestScript.getLanguage() == null : this.triggerDescriptor.getPostTriggerEvent().getLanguage().equals(newTestScript.getLanguage()));
-        assert this.triggerDescriptor.getScope().getClass().equals(TeamScopeEntity.class);
+        assert this.triggerDescriptor.getScope().getClass().equals(TeamScope.class);
         assert ((TriggerInstanceEntity) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId().equals(instanceEntity.getCurrentStateId());
         assert this.triggerDescriptor.getDefaultVariableInstance().getId() == this.trigger.getId();
     }

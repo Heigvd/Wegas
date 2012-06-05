@@ -9,10 +9,10 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.game.TeamEntity;
-import com.wegas.core.persistence.user.UserEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.user.User;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -25,7 +25,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @LocalBean
-public class TeamFacade extends AbstractFacadeImpl<TeamEntity>  {
+public class TeamFacade extends AbstractFacadeImpl<Team>  {
 
     /**
      *
@@ -48,8 +48,8 @@ public class TeamFacade extends AbstractFacadeImpl<TeamEntity>  {
      * @param gameId
      * @param t
      */
-    public void create(Long gameId, TeamEntity t) {
-        GameEntity g = gameFacade.find(gameId);
+    public void create(Long gameId, Team t) {
+        Game g = gameFacade.find(gameId);
         g.addTeam(t);
         em.flush();
         em.refresh(t);
@@ -62,11 +62,11 @@ public class TeamFacade extends AbstractFacadeImpl<TeamEntity>  {
      * @param userId
      * @return
      */
-    public PlayerEntity joinTeam(Long teamId, Long userId) {
+    public Player joinTeam(Long teamId, Long userId) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        UserEntity u = userFacade.find(userId);
-        TeamEntity t = this.find(teamId);
-        PlayerEntity p = new PlayerEntity();
+        User u = userFacade.find(userId);
+        Team t = this.find(teamId);
+        Player p = new Player();
         p.setUser(u);
         t.addPlayer(p);
         em.flush();
@@ -81,8 +81,8 @@ public class TeamFacade extends AbstractFacadeImpl<TeamEntity>  {
      * @param p
      * @return
      */
-    public PlayerEntity createPlayer(Long teamId, PlayerEntity p) {
-        TeamEntity t = this.find(teamId);
+    public Player createPlayer(Long teamId, Player p) {
+        Team t = this.find(teamId);
         t.addPlayer(p);
         em.flush();
         em.refresh(p);
@@ -103,6 +103,6 @@ public class TeamFacade extends AbstractFacadeImpl<TeamEntity>  {
      *
      */
     public TeamFacade() {
-        super(TeamEntity.class);
+        super(Team.class);
     }
 }

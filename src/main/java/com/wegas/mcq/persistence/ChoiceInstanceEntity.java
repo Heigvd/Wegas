@@ -10,7 +10,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
 
@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "ChoiceInstance")
-public class ChoiceInstanceEntity extends VariableInstanceEntity {
+public class ChoiceInstanceEntity extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     /**

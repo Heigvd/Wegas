@@ -10,8 +10,8 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.ListDescriptorEntity;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "QuestionDescriptor")
-public class QuestionDescriptorEntity extends ListDescriptorEntity {
+public class QuestionDescriptorEntity extends ListDescriptor {
 
     private static final long serialVersionUID = 1L;
     // private static final Logger logger = LoggerFactory.getLogger(QuestionDescriptorEntity.class);
@@ -96,5 +96,5 @@ public class QuestionDescriptorEntity extends ListDescriptorEntity {
     }
 
 
-   
+
 }
