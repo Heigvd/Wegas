@@ -6,7 +6,6 @@ YUI.add('wegas-crimesim', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-    YAHOO = Y.YUI2,
     ScheduleDisplay, Menu;
 
     /**
@@ -22,7 +21,7 @@ YUI.add('wegas-crimesim', function (Y) {
             renderUI : function () {
                 var cb = this.get(CONTENTBOX);
 
-                this.menu = new YAHOO.widget.Menu("scheduledisplay-menu", {
+                this.menu = new Y.YUI2.widget.Menu("scheduledisplay-menu", {
                     visible: true,
                     position: 'static',
                     hidedelay: 100,
@@ -118,7 +117,9 @@ YUI.add('wegas-crimesim', function (Y) {
                 period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
                 periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period"),
                 acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
-                cb = this.get(CONTENTBOX).one(".schedule-questions");
+                cb = this.get(CONTENTBOX).one(".schedule-questions"),
+
+                currentTime = periodInstance.value - period.minValue;
 
 
                 this._perPeriodLoad = perPeriodLoad;
@@ -161,7 +162,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     replies = [];
 
                     for (j = 0; j <= period.maxValue - period.minValue; j += 1) {   // Initially, all time slots are available
-                        if (j >= periodInstance.value - period.minValue) {
+                        if (j >= currentTime) {
                             cols.push(["schedule-item", "schedule-available"]);
                         } else {
                             cols.push(["schedule-item"]);
@@ -176,7 +177,12 @@ YUI.add('wegas-crimesim', function (Y) {
                         choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId);
                         choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choiceDescriptor);
 
-                        cols[cIndex] = ["schedule-unavailable", "schedule-unavailablestart", "schedule-unavailable-" + choiceDescriptor.duration];
+                        cols[cIndex] = ["schedule-unavailable", "schedule-task",
+                            "schedule-unavailable-" + choiceDescriptor.duration];
+
+                        if (currentTime >= reply.startTime && currentTime < reply.startTime + choiceDescriptor.duration) {
+                            cols[cIndex].push("schedule-ongoingtask");
+                        }
 
                         names[cIndex] = choiceDescriptor.name;
                         replies[cIndex] = reply;
@@ -189,9 +195,9 @@ YUI.add('wegas-crimesim', function (Y) {
                     }
 
                     for (j = 0; j <= period.maxValue - period.minValue; j += 1) {
-                        if (j > periodInstance.value - period.minValue) {
+                        if (j > currentTime) {
                             cols[j].push("schedule-future");    // Mark cells in the future
-                        } else if (j < periodInstance.value - period.minValue) {
+                        } else if (j < currentTime) {
                             cols[j].push("schedule-past");      // Mark cells in the past
                         } else {
                             cols[j].push("schedule-present");   // Mark cells in the past
