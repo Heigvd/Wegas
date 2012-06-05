@@ -154,20 +154,23 @@
     display: none;
 }
 
-.schedule-table .schedule-unavailablestart > div {
+.schedule-table .schedule-task > div {
     position:relative;
 }
-.schedule-table .schedule-unavailablestart .icon {
-    background: yellow;
+.schedule-table .schedule-task .icon {
     position: absolute;
     top: -13px;
     height:15px;
 }
-.schedule-table .schedule-unavailablestart.schedule-future .icon {
+.schedule-table .schedule-task.schedule-future .icon {
     background: green;
 }
-.schedule-table .schedule-unavailablestart.schedule-past .icon {
+.schedule-table .schedule-task.schedule-past .icon {
     background: darkgrey;
+}
+
+.schedule-table .schedule-task.schedule-ongoingtask .icon {
+    background: yellow;
 }
 .schedule-table .schedule-inactive.schedule-future .icon,
 .schedule-table .schedule-inactive.schedule-present .icon {
@@ -204,8 +207,8 @@
     width: 631px;
 }
 /* Schedule cancel icon */
-.schedule-table .schedule-present.schedule-unavailablestart .icon .close-icon,
-.schedule-table .schedule-future.schedule-unavailablestart .icon .close-icon {
+.schedule-table .schedule-present.schedule-task .icon .close-icon,
+.schedule-table .schedule-future.schedule-task .icon .close-icon {
     background: transparent url(/Wegas/wegas-crimesim/images/close-icon.png) no-repeat 0px 0px;
     position: absolute;
     top: 0px;

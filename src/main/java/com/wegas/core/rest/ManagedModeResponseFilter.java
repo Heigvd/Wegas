@@ -42,13 +42,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
      */
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
-//        logger.info("++" + response.getEntity());
         if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))//) {
                 && !( response.getEntity() instanceof ExceptionWrapper )) { // If there was an exception during the request, we forward it without a change
-//            logger.info("++" + response.getEntity());
+
             ServerResponse serverResponse = new ServerResponse();
+
             if (response.getEntity() instanceof List) {
                 serverResponse.setEntities((List) response.getEntity());
+
             } else {
                 ArrayList entities = new ArrayList();
                 entities.add(response.getEntity());
