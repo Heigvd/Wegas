@@ -136,7 +136,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer.js',
-                        requires: ['treeview']
+                        requires: ['treeview', 'uploader-html5']
                     },
 
                     /** Project Management Game */

@@ -34,9 +34,10 @@ YUI.add('treeview', function (Y) {
         CONTENT_TEMPLATE: "<ul></ul>",
 
         labelNode: null,
+        menuNode: null,
         eventInstances: {},
 
-        initializer : function (config) {
+        initializer : function () {
             this.publish("nodeClick",{
                 bubbles: false,
                 broadcast: false,
@@ -48,7 +49,25 @@ YUI.add('treeview', function (Y) {
             this.publish("nodeCollapsed", {
                 broadcast: true
             });
-            this.labelNode = Y.Node.create("<span class='" + this.getClassName("content") + "-label'>" + this.get("label") + "</span>");
+        },
+
+        renderUI : function() {
+            var cb = this.get(CONTENT_BOX);
+            if(this.get("label")){
+                this.labelNode = Y.Node.create("<span class='" + this.getClassName("content", "label") + "'>" + this.get("label") + "</span>");
+                cb.append(this.labelNode);
+            }
+            if(this.get("rightWidget")){
+                this.menuNode = this.get("rightWidget");
+                cb.append("<div id=\"" + this.get("id") + "_right\" class=\"" + this.getClassName("content", "rightwidget") + "\">");
+                this.menuNode.render("#" + this.get("id") + "_right");
+            }
+            if(this.get('collapsed') && !cb.hasClass(classNames.collapsed)){
+                cb.addClass(classNames.collapsed);
+            }
+        },
+
+        bindUI: function() {
             this.eventInstances.click = this.labelNode.on("click", function(e){
                 e.stopImmediatePropagation();
                 this.fire("nodeClick", {
@@ -58,26 +77,15 @@ YUI.add('treeview', function (Y) {
             this);
         },
 
-        renderUI : function() {
-
-            if(this.get("label")){
-                this.get(CONTENT_BOX).append(this.labelNode);
-            }
-            if(this.get("menu")){
-                this.get(CONTENT_BOX).append("<div class='" + getClassName("treenode", "content") + "-menu'>menu</div>");
-
-            }
-            if(this.get('collapsed') && !this.get(CONTENT_BOX).hasClass(classNames.collapsed)){
-                this.get(CONTENT_BOX).addClass(classNames.collapsed);
-            }
-        },
-
-        bindUI: function() {
-        },
-
         destructor: function() {
             for(var event in this.eventInstances){
                 this.eventInstances[event].detach();
+            }
+            if(this.menuNode){
+                this.menuNode.destroy();
+            }
+            if(this.labelNode){
+                this.labelNode.destroy();
             }
         },
 
@@ -98,6 +106,7 @@ YUI.add('treeview', function (Y) {
             while (this.size() > 0) {
                 this.item(0).destroy();
             }
+
         }
     },
 
@@ -110,6 +119,12 @@ YUI.add('treeview', function (Y) {
             collapsed : {
                 value : true,
                 validator : Y.Lang.isBoolean
+            },
+            rightWidget : {
+                value: null,
+                validator: function(o){
+                    return o instanceof Y.Widget;
+                }
             }
         }
     }
@@ -127,24 +142,49 @@ YUI.add('treeview', function (Y) {
     Y.TreeLeaf = Y.Base.create("treeleaf", Y.Widget, [Y.WidgetChild], {
 
 
-        CONTENT_TEMPLATE : "<span></span>",
-
+        CONTENT_TEMPLATE : "<div></div>",
         BOUNDING_TEMPLATE : "<li></li>",
+        menuNode: null,
+        labelNode: null,
 
         initializer : function () {
         },
 
         renderUI: function () {
-            this.get(CONTENT_BOX).setContent(this.get("label"));
+            var cb = this.get(CONTENT_BOX);
+            if(this.get("label")){
+                this.labelNode = Y.Node.create("<span class='" + this.getClassName("content", "label") + "'>" + this.get("label") + "</span>");
+                cb.append(this.labelNode);
+            }
+            if(this.get("rightWidget")){
+                this.menuNode = this.get("rightWidget");
+                cb.append("<div id=\"" + this.get("id") + "_right\" class=\"" + this.getClassName("content", "rightwidget") + "\">");
+                this.menuNode.render("#" + this.get("id") + "_right");
+            }
+        },
+
+        destructor: function () {
+            if(this.menuNode){
+                this.menuNode.destroy();
+            }
+            if(this.labelNode){
+                this.labelNode.destroy();
+            }
         }
     }, {
         NAME : "treeleaf",
         ATTRS : {
-            label : {
+            label: {
                 validator: Y.Lang.isString
             },
             tabIndex: {
                 value: -1
+            },
+            rightWidget: {
+                value: null,
+                validator: function(o){
+                    return o instanceof Y.Widget;
+                }
             }
         }
     });
