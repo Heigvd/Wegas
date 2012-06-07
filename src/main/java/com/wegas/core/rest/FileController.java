@@ -50,7 +50,6 @@ public class FileController {
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
         logger.debug("Trying to write {} to ({})", name, path);
-        logger.debug("File name: {}", details.getContentDisposition().getFileName());
         if (name.equals("") || name.contains("/")) {
             return null;
         }
@@ -59,9 +58,11 @@ public class FileController {
         AbstractContentDescriptor detachedFile = null;
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
         if (dir.exist()) {                                                  //directory has to exist
-            if (details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
+            if (details == null || details.getContentDisposition().getFileName().equals("") || details.getContentDisposition().getFileName() == null) {       //Assuming an empty filename means a directory
                 detachedFile = new DirectoryDescriptor(name, path, connector);
             } else {
+
+                logger.debug("File name: {}", details.getContentDisposition().getFileName());
                 detachedFile = new FileDescriptor(name, path, connector);
             }
             if (!detachedFile.exist()) {                                        //Node should not exist
