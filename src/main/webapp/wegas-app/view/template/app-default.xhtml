@@ -91,24 +91,26 @@
                     Y.log('Uncaught error: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
                 },
                 groups: {
-//                    /* Set up local version of yui2 */
-//                    yui2: {
-//                        base: '/Wegas/lib/yui2in3/build/',
-//                        // combine: true,
-//                        // comboBase: 'http://myserver.com/combo?',
-//                        // root: '/2in3/build/',
-//                        patterns:  {
-//                            'yui2-': {
-//                                configFn: function(me) {
-//                                    if(/-skin|reset|fonts|grids|base/.test(me.name)) {
-//                                        me.type = 'css';
-//                                        me.path = me.path.replace(/\.js/, '.css');
-//                                        me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
+                    <ui:fragment rendered="#{wegasConfig.assets_local}">
+                    /* Set up local version of yui2 TODO: remove that dependency !*/
+                    yui2: {
+                        base: '/Wegas/lib/yui2in3/build/',
+                        // combine: true,
+                        // comboBase: 'http://myserver.com/combo?',
+                        // root: '/2in3/build/',
+                        patterns:  {
+                            'yui2-': {
+                                configFn: function(me) {
+                                    if(/-skin|reset|fonts|grids|base/.test(me.name)) {
+                                        me.type = 'css';
+                                        me.path = me.path.replace(/\.js/, '.css');
+                                        me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    </ui:fragment>
                 }
             }).use(
                 <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
