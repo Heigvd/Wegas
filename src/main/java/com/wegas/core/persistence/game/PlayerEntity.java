@@ -65,11 +65,11 @@ public class PlayerEntity extends AbstractEntity {
      * The game model this belongs to
      */
     @ManyToOne
+    @JoinColumn(name = "parentteam_id")
     @NotNull
     @XmlTransient
    // @XmlInverseReference(mappedBy = "players")
     @JsonBackReference(value = "player-team")
-    @JoinColumn(name = "parentteam_id")
     private TeamEntity team;
     /**
      *

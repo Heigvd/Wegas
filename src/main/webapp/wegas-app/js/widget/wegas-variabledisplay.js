@@ -46,7 +46,8 @@ YUI.add('wegas-variabledisplay', function (Y) {
                             + '">' + i + '</div>');
                     }
                 }
-                this.get(CONTENTBOX).setContent(this.get('label') + ": <br />" + acc.join(''));
+                this.get(CONTENTBOX).setContent('<span class="yui3-wegas-valuebox-label">'+this.get('label')+'</span>'
+                    + '<div class="yui3-wegas-valuebox-units">' + acc.join('')+"</div");
                 break;
             case 'gauge':
                 maxVal = 145;

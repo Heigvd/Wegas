@@ -22,7 +22,8 @@ YUI().use(function (Y) {
                         /* @fixme those should be included on the fly*/
                         'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
                         'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 'wegas-inbox',
-                        'wegas-projectmanagementgame', 'wegas-crimesim'
+                        
+                        'wegas-projectmanagementgame', 'wegas-crimesim', 'wegas-leaderway'
                         ]
                     },
                     'wegas-appcss': {
@@ -149,7 +150,14 @@ YUI().use(function (Y) {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
                         "wegas-mcqtabview"]
+                    },
+                    
+                    /**Leaderway**/
+                    'wegas-leaderway': {
+                        path: 'wegas-leaderway/js/wegas-leaderway.js',
+                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack']
                     }
+                    
                     /* This one is only seful w/ yui3 treeview widget */
                     /* 'wegas-treeviewcss': {
                         path: 'wegas-app/css/treeview-classic.css',
