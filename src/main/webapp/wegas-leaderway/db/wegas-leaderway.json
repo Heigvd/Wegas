@@ -1,0 +1,298 @@
+{
+    "@class": "GameModel",
+    "name": "Leaderway",
+    "cssUri": "wegas-leaderway/css/wegas-leaderway.css",
+    "widgetsUri": "wegas-leaderway/db/wegas-leaderway-pages.json",
+    "games":[{
+        "@class":"Game",
+        "name":"Test-16",
+        "teams":[{
+            "@class": "Team",
+            "name":"Les autres",
+            "players": [ {
+                "@class": "Player",
+                "name": "Jean",
+                "user": {
+                    "@class": "User",
+                    "name": "Jean"
+                }
+            }]
+        }]
+    }],
+    "childVariableDescriptors": [{
+        "@class": "NumberDescriptor",
+        "name": "humanResources",
+        "defaultVariableInstance": {
+            "@class": "NumberInstance",
+            "value":"15"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    },{
+        "@class": "NumberDescriptor",
+        "name": "cost",
+        "defaultVariableInstance": {
+            "@class": "NumberInstance",
+            "value":"0"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    },{
+        "@class": "NumberDescriptor",
+        "name": "period",
+        "minValue": 1,
+        "maxValue": 10,
+        "defaultVariableInstance": {
+            "@class": "NumberInstance",
+            "value":"1"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }
+    },{
+        "@class": "InboxDescriptor",
+        "name": "inbox",
+        "defaultVariableInstance": {
+            "@class": "InboxInstance"
+        },
+        "scope": {
+            "@class": "PlayerScope"
+        }
+    },{
+        "@class": "ListDescriptor",
+        "name": "questions",
+        "items":[{
+            "@class": "QuestionDescriptor",
+            "name": "Comment la victime est parvenue là où elle a été découverte ?",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name": "a) Toute seule",
+                "description":"",
+                "answer": "",
+                "duration":0,
+                "cost":0,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"importPackage(com.wegas.core.script);\nvar mailer = Factory.lookupBean(\"MessagingFacade\");\n\nmailer.send(\"normal\", self, \"test\", \"test\", \"test\");\nhumanResources.value-=2;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name": "b) [...]",
+                "description":"",
+                "duration":0,
+                "cost":0,
+                "answer":"b) On l'a trainé là",
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"humanResources.value-=1;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
+            "defaultVariableInstance": {
+                "@class": "QuestionInstance",
+                "replies":[],
+                "active":true
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "QuestionDescriptor",
+            "name": "Question no 2",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name": "a) [...]",
+                "description":"",
+                "duration":0,
+                "cost":0,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"humanResources.value-=2;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name": "b) [...]",
+                "description":"",
+                "duration":0,
+                "cost":0,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"humanResources.value-=1;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
+            "defaultVariableInstance": {
+                "@class": "QuestionInstance",
+                "replies":[],
+                "active":true
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }],
+        "defaultVariableInstance": {
+            "@class": "NumberInstance",
+            "value": 0
+        },
+        "scope": {
+            "@class": "GameModelScope"
+        }
+    },{
+        "@class": "ListDescriptor",
+        "name": "evidences",
+        "items":[{
+            "@class": "QuestionDescriptor",
+            "name": "Sac poubelle n°5",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name":"Traces ED",
+                "description":"",
+                "duration":1,
+                "cost":1,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content":"print(\"traces\");\nvar currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name":"Fibres",
+                "description":"",
+                "duration":1,
+                "cost":1,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name":"ADN",
+                "description":"",
+                "duration":2,
+                "cost":2,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ChoiceDescriptor",
+                "name":"Prélévement ADN",
+                "description":"",
+                "duration":2,
+                "cost":2,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(3).desactivate(self);\nthis[\"Sac poubelle n°5: Prélévement ADN\"].activate();"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
+            "defaultVariableInstance": {
+                "@class": "QuestionInstance",
+                "replies":[],
+                "active":true
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "QuestionDescriptor",
+            "name": "Sac poubelle n°5: Prélévement ADN",
+            "items":[{
+                "@class": "ChoiceDescriptor",
+                "name":"ADN",
+                "description":"",
+                "duration":2,
+                "cost":2,
+                "impact":{
+                    "@class":"Script",
+                    "language":"JavaScript",
+                    "content": "var currentChoices = selectedReply.questionInstance.descriptor.items;"
+                },
+                "defaultVariableInstance": {
+                    "@class": "ChoiceInstance",
+                    "active":true
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            }],
+            "defaultVariableInstance": {
+                "@class": "QuestionInstance",
+                "replies":[],
+                "active":false
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }],
+        "defaultVariableInstance": {
+            "@class": "NumberInstance",
+            "value": 0
+        },
+        "scope": {
+            "@class": "GameModelScope"
+        }
+    }]
+}

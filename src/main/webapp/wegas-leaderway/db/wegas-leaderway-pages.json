@@ -1,0 +1,24 @@
+[{
+        "id": 1,
+        "label": "Main page",
+        "@class": "Page",
+        "type": "List",
+        "cssClass": "layout",
+        "children": [{
+                "label":"Liste de personnes",
+                "type":"RHList",
+                "content":"Bienvenue"
+            },
+            {
+                "label":"Dossier",
+                "type":"Text",
+                "content":"Dossier d'une personne... A faire :-)"               
+            },
+            {
+                "type": "VariableDisplay",
+                "label": "Période",
+                "view": "valuebox",
+                "variable": "period",
+                "dataSource": "VariableDescriptor"
+            }]
+    }]

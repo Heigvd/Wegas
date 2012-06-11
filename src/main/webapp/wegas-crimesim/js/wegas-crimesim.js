@@ -85,7 +85,7 @@ YUI.add('wegas-crimesim', function (Y) {
 
                 cb.delegate("click", this._hideDetails,                         // Hide the question detail on close icon click
                     ".schedule-icon-close", this);
-
+                    
                 cb.delegate("click", this.onCancelReplyClick,                   // Hide the question detail on close icon click
                     ".icon .close-icon", this);
 
