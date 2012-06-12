@@ -58,7 +58,7 @@ public class FileController {
         AbstractContentDescriptor detachedFile = null;
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
         if (dir.exist()) {                                                  //directory has to exist
-            if (details == null || details.getContentDisposition().getFileName().equals("") || details.getContentDisposition().getFileName() == null) {       //Assuming an empty filename means a directory
+            if (details == null || details.getContentDisposition().getFileName() == null || details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
                 detachedFile = new DirectoryDescriptor(name, path, connector);
             } else {
 
