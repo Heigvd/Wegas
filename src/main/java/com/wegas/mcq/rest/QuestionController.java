@@ -9,12 +9,10 @@
  */
 package com.wegas.mcq.rest;
 
-import com.sun.jersey.spi.container.ResourceFilters;
 import com.wegas.core.rest.AbstractRestController;
-import com.wegas.core.rest.ManagedModeResponseFilter;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
-import com.wegas.mcq.persistence.QuestionInstanceEntity;
-import com.wegas.mcq.persistence.ReplyEntity;
+import com.wegas.mcq.persistence.QuestionInstance;
+import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.script.ScriptException;
@@ -54,7 +52,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws ScriptException {
 
-        ReplyEntity reply =
+        Reply reply =
                 questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
         questionDescriptorFacade.validateReply(playerId, reply.getId());
         return Response.ok().build();
@@ -70,10 +68,10 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
     @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public QuestionInstanceEntity cancelReply(
+    public QuestionInstance cancelReply(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("replyId") Long replyId) throws ScriptException {
-        ReplyEntity reply = questionDescriptorFacade.cancelReply(replyId);
+        Reply reply = questionDescriptorFacade.cancelReply(replyId);
         return reply.getQuestionInstance();
     }
 
@@ -88,12 +86,12 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
     @GET
     @Path("/SelectReply/{choiceDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public QuestionInstanceEntity selectReply(
+    public QuestionInstance selectReply(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceDescriptorId") Long choiceDescriptorId,
             @PathParam("startTime") Long startTime) {
 
-        ReplyEntity reply = questionDescriptorFacade.selectChoice(choiceDescriptorId, playerId, startTime);
+        Reply reply = questionDescriptorFacade.selectChoice(choiceDescriptorId, playerId, startTime);
         return reply.getQuestionInstance();
     }
 

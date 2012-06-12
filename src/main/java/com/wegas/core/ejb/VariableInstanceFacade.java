@@ -9,9 +9,9 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstanceEntity> {
+public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance> {
 
     static final private Logger logger = LoggerFactory.getLogger(VariableInstanceFacade.class);
     /**
@@ -58,9 +58,9 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstanceE
      * @param player
      * @return
      */
-    public VariableInstanceEntity find(Long variableDescriptorId,
-            PlayerEntity player) {
-        VariableDescriptorEntity vd = variableDescriptorFacade.find(variableDescriptorId);
+    public VariableInstance find(Long variableDescriptorId,
+            Player player) {
+        VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getScope().getVariableInstance(player);
     }
 
@@ -70,7 +70,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstanceE
      * @param playerId
      * @return
      */
-    public VariableInstanceEntity find(Long variableDescriptorId,
+    public VariableInstance find(Long variableDescriptorId,
             Long playerId) {
         return this.find(variableDescriptorId, playerFacade.find(playerId));
     }
@@ -85,11 +85,11 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstanceE
      * @param variableInstance
      * @return
      */
-    public VariableInstanceEntity update(Long variableDescriptorId,
-            Long playerId, VariableInstanceEntity variableInstance) {
+    public VariableInstance update(Long variableDescriptorId,
+            Long playerId, VariableInstance variableInstance) {
 
-        VariableDescriptorEntity vd = variableDescriptorFacade.find(variableDescriptorId);
-        VariableInstanceEntity vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));
+        VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
+        VariableInstance vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));
         vi.merge(variableInstance);
         return vi;
     }
@@ -98,12 +98,12 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstanceE
      *
      * @param vi
      */
-    public void onVariableInstanceUpdate(VariableInstanceEntity vi) {
+    public void onVariableInstanceUpdate(VariableInstance vi) {
         logger.debug("onVariableInstanceUpdate() {}", variableInstanceManager);
         //  logger.info("onVariableInstanceUpdate() {} {}", requestManager.getCurrentPlayer(), requestManager.getUpdatedInstances());
         variableInstanceManager.addUpdatedInstance(vi);
     }
-    public List<VariableInstanceEntity> getUpdatedInstances() {
+    public List<VariableInstance> getUpdatedInstances() {
         return variableInstanceManager.getUpdatedInstances();
     }
 
@@ -120,6 +120,6 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstanceE
      *
      */
     public VariableInstanceFacade() {
-        super(VariableInstanceEntity.class);
+        super(VariableInstance.class);
     }
 }

@@ -12,9 +12,9 @@ package com.wegas.core.script;
 import com.wegas.core.ejb.AbstractEJBTest;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
-import com.wegas.core.persistence.variable.primitive.StringInstanceEntity;
-import com.wegas.core.persistence.variable.scope.TeamScopeEntity;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
 import junit.framework.Assert;
@@ -39,9 +39,9 @@ public class ScriptManagerTest extends AbstractEJBTest {
         ScriptFacade sm = lookupBy(ScriptFacade.class, ScriptFacade.class);
 
         // Create a dummy descriptor
-        StringDescriptorEntity stringDescriptor = new StringDescriptorEntity(VARIABLENAME);
-        stringDescriptor.setDefaultInstance(new StringInstanceEntity(VALUE));
-        stringDescriptor.setScope(new TeamScopeEntity());
+        StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
+        stringDescriptor.setDefaultInstance(new StringInstance(VALUE));
+        stringDescriptor.setScope(new TeamScope());
         vdf.create(gameModel.getId(), stringDescriptor);
 
         // Eval a dummy script
@@ -52,7 +52,7 @@ public class ScriptManagerTest extends AbstractEJBTest {
         logger.info("Tested " + sm);
 
         // Verify the new value
-        StringInstanceEntity instance = (StringInstanceEntity) vif.find(stringDescriptor.getId(), player.getId());
+        StringInstance instance = (StringInstance) vif.find(stringDescriptor.getId(), player.getId());
         Assert.assertEquals(VALUE2, instance.getValue());
     }
 }
