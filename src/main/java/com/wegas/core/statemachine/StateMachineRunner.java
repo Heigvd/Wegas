@@ -10,8 +10,8 @@
  */
 package com.wegas.core.statemachine;
 
-import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
