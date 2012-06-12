@@ -9,10 +9,10 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.game.TeamEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,10 +39,10 @@ public class AbstractEJBTest {
     protected static Context context;
     protected static GameModelFacade gameModelFacade;
     // *** Fields *** //
-    protected GameModelEntity gameModel;
-    protected GameEntity game;
-    protected TeamEntity team;
-    protected PlayerEntity player;
+    protected GameModel gameModel;
+    protected Game game;
+    protected Team team;
+    protected Player player;
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
@@ -68,19 +68,19 @@ public class AbstractEJBTest {
 
     @Before
     public void before() throws NamingException {
-        gameModel = new GameModelEntity();
+        gameModel = new GameModel();
         gameModel.setName("test-gamemodel");
 
-        game = new GameEntity();
+        game = new Game();
         game.setName(GAMENAME);
         game.setToken(GAMETOKEN);
         gameModel.addGame(game);
 
-        team = new TeamEntity();
+        team = new Team();
         team.setName("test-team");
         game.addTeam(team);
 
-        player = new PlayerEntity();
+        player = new Player();
         player.setName("test-player");
         team.addPlayer(player);
 

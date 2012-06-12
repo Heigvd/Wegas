@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.user.GroupEntity;
+import com.wegas.core.persistence.user.Group;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -21,7 +21,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @LocalBean
-public class GroupFacade extends AbstractFacadeImpl<GroupEntity> {
+public class GroupFacade extends AbstractFacadeImpl<Group> {
     /**
      *
      */
@@ -41,6 +41,6 @@ public class GroupFacade extends AbstractFacadeImpl<GroupEntity> {
      *
      */
     public GroupFacade() {
-        super(GroupEntity.class);
+        super(Group.class);
     }
 }

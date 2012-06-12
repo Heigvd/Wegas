@@ -9,8 +9,8 @@
  */
 package com.wegas.messaging.ejb;
 
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.messaging.persistence.variable.MessageEntity;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.messaging.persistence.variable.Message;
 import java.util.Date;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -65,11 +64,11 @@ public class EMailFacade {
 
         Session session = Session.getDefaultInstance(props, null);
 
-        Message msg = new MimeMessage(session);                                 // Create a new message
+        javax.mail.Message msg = new MimeMessage(session);                                 // Create a new message
 
         try {
             msg.setFrom(new InternetAddress(from));                             // Set the FROM and TO fields
-            msg.setRecipients(Message.RecipientType.TO,
+            msg.setRecipients(javax.mail.Message.RecipientType.TO,
                     InternetAddress.parse(to, false));
             // -- We could include CC recipients too --
             // if (cc != null)
@@ -94,7 +93,7 @@ public class EMailFacade {
      * @param subject
      * @param body
      */
-    public void send(PlayerEntity p, String from, String subject, String body) {
+    public void send(Player p, String from, String subject, String body) {
         //this.send(p.getUser().getName(), from, subject, body);
         this.send("fx@red-agent.com", from, subject, body);
     }
@@ -104,7 +103,7 @@ public class EMailFacade {
      * @param p
      * @param msg
      */
-    public void send(PlayerEntity p, MessageEntity msg) {
+    public void send(Player p, Message msg) {
         this.send(p, "admin@wegas.com", msg.getSubject(), msg.getBody());
     }
 }

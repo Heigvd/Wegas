@@ -9,8 +9,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.game.TeamEntity;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -23,7 +23,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @LocalBean
-public class PlayerFacade extends AbstractFacadeImpl<PlayerEntity> {
+public class PlayerFacade extends AbstractFacadeImpl<Player> {
 
     /**
      *
@@ -50,8 +50,8 @@ public class PlayerFacade extends AbstractFacadeImpl<PlayerEntity> {
      * @param teamId
      * @param player
      */
-    public void create(Long teamId, PlayerEntity player) {
-        TeamEntity team = teamEntityFacade.find(teamId);
+    public void create(Long teamId, Player player) {
+        Team team = teamEntityFacade.find(teamId);
         team.addPlayer(player);
         em.flush();
         em.refresh(player);
@@ -63,6 +63,6 @@ public class PlayerFacade extends AbstractFacadeImpl<PlayerEntity> {
      *
      */
     public PlayerFacade() {
-        super(PlayerEntity.class);
+        super(Player.class);
     }
 }
