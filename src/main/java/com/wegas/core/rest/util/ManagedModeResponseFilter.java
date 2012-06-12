@@ -12,6 +12,7 @@ package com.wegas.core.rest.util;
 import com.sun.jersey.spi.container.*;
 import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.exception.ExceptionWrapper;
 import java.util.ArrayList;
@@ -82,15 +83,15 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
     }
 
     @XmlRootElement
-    @XmlType(name = "ServerResponse")
+    @XmlType(name = "")
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     private class ServerResponse {
 
         /**
          *
          */
-        @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-        private List<Object> entities;
+       // @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+        private List<AbstractEntity> entities;
         /**
          *
          */
@@ -102,14 +103,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         /**
          * @return the entities
          */
-        public List<Object> getEntities() {
+        public List<AbstractEntity> getEntities() {
             return entities;
         }
 
         /**
          * @param entities the entities to set
          */
-        public void setEntities(List<Object> entities) {
+        public void setEntities(List<AbstractEntity> entities) {
             this.entities = entities;
         }
 

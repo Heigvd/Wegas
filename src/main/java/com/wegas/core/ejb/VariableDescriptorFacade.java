@@ -12,7 +12,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.user.User;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity_;
+import com.wegas.core.persistence.variable.VariableDescriptor_;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -48,9 +48,9 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param gameModelId
      * @param variableDescriptorEntity
      */
-    public void create(Long gameModelId, VariableDescriptor variableDescriptorEntity) {
-        this.gameModelFacade.find(gameModelId).addVariableDescriptor(variableDescriptorEntity);
-        //super.create(variableDescriptorEntity);
+    public void create(Long gameModelId, VariableDescriptor variableDescriptor) {
+        this.gameModelFacade.find(gameModelId).addVariableDescriptor(variableDescriptor);
+        //super.create(variableDescriptor);
     }
 
     /**

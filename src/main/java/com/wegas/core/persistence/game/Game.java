@@ -30,7 +30,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Entity
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"game_id", "name"}))
-@XmlType(name = "Game")
+@XmlType()
 public class Game extends NamedEntity implements Serializable {
 
     private static final Logger logger = Logger.getLogger("GameEntity");

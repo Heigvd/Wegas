@@ -24,10 +24,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "ChoiceDescriptor")
-public class ChoiceDescriptorEntity extends VariableDescriptor<ChoiceInstanceEntity> {
+public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     private static final long serialVersionUID = 1L;
-    // private static final Logger logger = LoggerFactory.getLogger(ChoiceDescriptorEntity.class);
+    // private static final Logger logger = LoggerFactory.getLogger(ChoiceDescriptor.class);
     /**
      *
      */
@@ -46,7 +46,7 @@ public class ChoiceDescriptorEntity extends VariableDescriptor<ChoiceInstanceEnt
      *
      */
     @Column(length = 4096)
-    private String answer;
+    private String feedback;
     /**
      *
      */
@@ -63,9 +63,9 @@ public class ChoiceDescriptorEntity extends VariableDescriptor<ChoiceInstanceEnt
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
-        ChoiceDescriptorEntity other = (ChoiceDescriptorEntity) a;
+        ChoiceDescriptor other = (ChoiceDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setAnswer(other.getAnswer());
+        this.setFeedback(other.getFeedback());
         this.setImpact(other.getImpact());
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
@@ -112,15 +112,15 @@ public class ChoiceDescriptorEntity extends VariableDescriptor<ChoiceInstanceEnt
     /**
      * @return the answer
      */
-    public String getAnswer() {
-        return answer;
+    public String getFeedback() {
+        return feedback;
     }
 
     /**
      * @param answer the answer to set
      */
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
     }
 
     /**

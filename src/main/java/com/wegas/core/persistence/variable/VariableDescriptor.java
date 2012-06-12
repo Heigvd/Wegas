@@ -17,14 +17,15 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
-import com.wegas.mcq.persistence.ChoiceDescriptorEntity;
-import com.wegas.mcq.persistence.QuestionDescriptorEntity;
-import com.wegas.messaging.persistence.variable.InboxDescriptorEntity;
+import com.wegas.leadergame.persistence.ResourceDescriptor;
+import com.wegas.leadergame.persistence.TaskDescriptor;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
+import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.messaging.persistence.variable.InboxDescriptor;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -37,16 +38,17 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"}))
-@NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptorEntity variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
-@XmlType(name = "VariableDescriptor")
+@NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptor variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
-    @JsonSubTypes.Type(name = "MCQDescriptor", value = QuestionDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "MCQDescriptor", value = QuestionDescriptor.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
-    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
     @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class),
-    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
+    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class)
 })
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity {
 

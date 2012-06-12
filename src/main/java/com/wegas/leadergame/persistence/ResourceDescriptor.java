@@ -12,23 +12,20 @@ package com.wegas.leadergame.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "ResourceDescriptor")
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
 
     private static final long serialVersionUID = 1L;
-
     /**
      *
      */
+    private String description;
+
     /**
      *
      * @param a
@@ -36,5 +33,22 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
+
+        ResourceDescriptor other = (ResourceDescriptor) a;
+        this.setDescription(other.getDescription());
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

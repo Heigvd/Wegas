@@ -9,13 +9,10 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.ejb.Helper;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
-import javax.naming.NamingException;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -28,16 +25,16 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "QuestionInstance")
-public class QuestionInstanceEntity extends VariableInstance {
+public class QuestionInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    //private static final Logger logger = LoggerFactory.getLogger(QuestionInstanceEntity.class);
+    //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
     /**
      *
      */
     @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<ReplyEntity> replies = new ArrayList<ReplyEntity>();
+    private List<Reply> replies = new ArrayList<Reply>();
     /**
      *
      */
@@ -53,7 +50,7 @@ public class QuestionInstanceEntity extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
-        QuestionInstanceEntity other = (QuestionInstanceEntity) a;
+        QuestionInstance other = (QuestionInstance) a;
         this.setActive(other.getActive());
         this.setUnread(other.getUnread());
         this.replies.clear();
@@ -78,7 +75,7 @@ public class QuestionInstanceEntity extends VariableInstance {
      * @return the replies
      */
     @JsonManagedReference
-    public List<ReplyEntity> getReplies() {
+    public List<Reply> getReplies() {
         return replies;
     }
 
@@ -86,7 +83,7 @@ public class QuestionInstanceEntity extends VariableInstance {
      * @param replies the replies to set
      */
     @JsonManagedReference
-    public void setReplies(List<ReplyEntity> replies) {
+    public void setReplies(List<Reply> replies) {
         this.replies = replies;
     }
 
@@ -94,7 +91,7 @@ public class QuestionInstanceEntity extends VariableInstance {
      *
      * @param reply
      */
-    public void addReply(ReplyEntity reply) {
+    public void addReply(Reply reply) {
         this.replies.add(reply);
         reply.setQuestionInstance(this);
     }
@@ -103,8 +100,8 @@ public class QuestionInstanceEntity extends VariableInstance {
      *
      * @param replies
      */
-    public void addReplies(List<ReplyEntity> replies) {
-        for (ReplyEntity r : replies) {
+    public void addReplies(List<Reply> replies) {
+        for (Reply r : replies) {
             this.addReply(r);
         }
     }

@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.mcq.rest;
+package com.wegas.leadergame.rest;
 
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -28,8 +28,8 @@ import javax.ws.rs.core.Response;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
-public class QuestionController extends AbstractRestController<QuestionDescriptorFacade> {
+@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ResourceDescriptor/")
+public class ResourceController extends AbstractRestController<QuestionDescriptorFacade> {
 
     /**
      *
@@ -46,7 +46,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      * @throws ScriptException
      */
     @GET
-    @Path("/SelectReply/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
+    @Path("/Assign/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response selectReply(
             @PathParam("playerId") Long playerId,

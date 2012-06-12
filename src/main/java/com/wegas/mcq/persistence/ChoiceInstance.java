@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "ChoiceInstance")
-public class ChoiceInstanceEntity extends VariableInstance {
+public class ChoiceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -39,7 +39,7 @@ public class ChoiceInstanceEntity extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         //super.merge(a);
-        ChoiceInstanceEntity other = (ChoiceInstanceEntity) a;
+        ChoiceInstance other = (ChoiceInstance) a;
         this.setActive(other.getActive());
         this.setUnread(other.getUnread());
     }

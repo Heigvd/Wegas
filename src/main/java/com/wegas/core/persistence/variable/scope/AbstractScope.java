@@ -16,10 +16,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.Serializable;
 import java.util.Map;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -27,8 +24,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity                                                                         // Database serialization
-@Inheritance(strategy = InheritanceType.JOINED)
-@XmlType(name = "Scope")                                                        // JSon Serialisation
+@Inheritance(strategy = InheritanceType.JOINED)                                           // JSon Serialisation
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
     @JsonSubTypes.Type(name = "GameScope", value = GameModelScope.class),

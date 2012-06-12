@@ -29,7 +29,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "InboxInstance")
-public class InboxInstanceEntity extends VariableInstance {
+public class InboxInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("InboxInstanceEntity");
@@ -40,22 +40,22 @@ public class InboxInstanceEntity extends VariableInstance {
     @JoinColumn(name = "variableinstance_id")
     @OrderBy("sentTime")
     @JsonManagedReference("inbox-message")
-    private List<MessageEntity> messages = new ArrayList<MessageEntity>();
+    private List<Message> messages = new ArrayList<Message>();
 
     /**
      * @return the replies
      */
-    public List<MessageEntity> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 
     /**
      * @param messages
      */
-    public void setMessages(List<MessageEntity> messages) {
+    public void setMessages(List<Message> messages) {
         this.messages = messages;
-        for (Iterator<MessageEntity> it = this.messages.iterator(); it.hasNext();) {
-            MessageEntity r = it.next();
+        for (Iterator<Message> it = this.messages.iterator(); it.hasNext();) {
+            Message r = it.next();
             r.setMailboxInstanceEntity(this);
         }
     }
@@ -64,14 +64,14 @@ public class InboxInstanceEntity extends VariableInstance {
      *
      * @param message
      */
-    public void addMessage(MessageEntity message) {
+    public void addMessage(Message message) {
         this.messages.add(message);
         message.setMailboxInstanceEntity(this);
     }
 
     @Override
     public void merge(AbstractEntity a) {
-        InboxInstanceEntity other = (InboxInstanceEntity) a;
+        InboxInstance other = (InboxInstance) a;
         this.setMessages(other.getMessages());
     }
 }

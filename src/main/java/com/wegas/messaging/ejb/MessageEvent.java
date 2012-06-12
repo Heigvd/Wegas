@@ -10,7 +10,7 @@
 package com.wegas.messaging.ejb;
 
 import com.wegas.core.persistence.game.Player;
-import com.wegas.messaging.persistence.variable.MessageEntity;
+import com.wegas.messaging.persistence.variable.Message;
 
 /**
  *
@@ -25,7 +25,7 @@ public class MessageEvent {
     /**
      *
      */
-    private MessageEntity message;
+    private Message message;
     /**
      *
      */
@@ -48,14 +48,14 @@ public class MessageEvent {
     /**
      * @return the message
      */
-    public MessageEntity getMessage() {
+    public Message getMessage() {
         return message;
     }
 
     /**
      * @param message the message to set
      */
-    public void setMessage(MessageEntity message) {
+    public void setMessage(Message message) {
         this.message = message;
     }
 

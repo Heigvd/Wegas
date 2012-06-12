@@ -22,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  */
 @Entity
 @XmlRootElement
-@XmlType(name = "Tag")
+@XmlType(name = "")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class Tag implements Serializable {
 
