@@ -12,8 +12,8 @@ package com.wegas.messaging.rest;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.messaging.ejb.InGameMailFacade;
-import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
-import com.wegas.messaging.persistence.variable.MessageEntity;
+import com.wegas.messaging.persistence.variable.InboxInstance;
+import com.wegas.messaging.persistence.variable.Message;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.PUT;
@@ -53,9 +53,9 @@ public class InboxDescriptorController extends AbstractRestController<VariableDe
     @PUT
     @Path("Message/{messageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public InboxInstanceEntity editMail(@PathParam("messageId") Long messageId,
-            MessageEntity message) {
-        MessageEntity update = inGameMailFacade.update(messageId, message);
+    public InboxInstance editMail(@PathParam("messageId") Long messageId,
+            Message message) {
+        Message update = inGameMailFacade.update(messageId, message);
         return update.getMailboxInstanceEntity();
     }
 }

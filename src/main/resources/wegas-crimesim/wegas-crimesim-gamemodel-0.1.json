@@ -14,7 +14,7 @@
                 "name": "Jo",
                 "user": {
                     "@class": "User",
-                    "name": "Jo"
+                    "name": "Jo2"
                 }
             }]
         }]
@@ -70,7 +70,7 @@
                 "@class": "ChoiceDescriptor",
                 "name": "a) Toute seule",
                 "description":"",
-                "answer": "",
+                "feedback": "",
                 "duration":0,
                 "cost":0,
                 "impact":{
@@ -91,7 +91,7 @@
                 "description":"",
                 "duration":0,
                 "cost":0,
-                "answer":"b) On l'a trainé là",
+                "feedback":"b) On l'a trainé là",
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",

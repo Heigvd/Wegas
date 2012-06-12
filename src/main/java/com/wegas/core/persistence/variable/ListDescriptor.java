@@ -10,12 +10,11 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.mcq.persistence.QuestionDescriptorEntity;
+import com.wegas.mcq.persistence.QuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +24,10 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "ListDescriptor")
 @NamedQuery(name = "findListDescriptorByChildId",
-query = "SELECT DISTINCT listDescriptor FROM ListDescriptorEntity listDescriptor LEFT JOIN listDescriptor.items AS item WHERE item.id = :itemId")
+query = "SELECT DISTINCT listDescriptor FROM ListDescriptor listDescriptor LEFT JOIN listDescriptor.items AS item WHERE item.id = :itemId")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class)
 })
 public class ListDescriptor extends VariableDescriptor<VariableInstance> {
 
@@ -51,14 +49,11 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> {
      *
      * @param force
      */
-    /*@Override
-    public void propagateDefaultInstance(boolean force) {
-        super.propagateDefaultInstance(force);
-        for (VariableDescriptor vd: this.getItems()) {
-            vd.propagateDefaultInstance(force);
-        }
-    }*/
-
+    /*
+     * @Override public void propagateDefaultInstance(boolean force) {
+     * super.propagateDefaultInstance(force); for (VariableDescriptor vd:
+     * this.getItems()) { vd.propagateDefaultInstance(force); } }
+     */
     /**
      *
      * @param gameModel

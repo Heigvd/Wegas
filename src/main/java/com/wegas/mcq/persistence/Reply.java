@@ -25,7 +25,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  */
 @Entity
 @XmlType(name = "Reply")
-public class ReplyEntity extends AbstractEntity {
+public class Reply extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 //    private static final Logger logger = LoggerFactory.getLogger(MCQReplyInstanceEntity.class);
@@ -44,7 +44,7 @@ public class ReplyEntity extends AbstractEntity {
      */
     @ManyToOne
     @JoinColumn(name = "choicedescriptor_id")
-    private ChoiceDescriptorEntity choiceDescriptor;
+    private ChoiceDescriptor choiceDescriptor;
     /**
      *
      */
@@ -56,7 +56,7 @@ public class ReplyEntity extends AbstractEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
     @JsonBackReference
-    private QuestionInstanceEntity questionInstance;
+    private QuestionInstance questionInstance;
 
     /**
      *
@@ -64,7 +64,7 @@ public class ReplyEntity extends AbstractEntity {
      */
     @Override
     public void merge(AbstractEntity a) {
-        ReplyEntity other = (ReplyEntity) a;
+        Reply other = (Reply) a;
         this.setChoiceDescriptor(other.getChoiceDescriptor());
         this.setStartTime(other.getStartTime());
     }
@@ -91,7 +91,7 @@ public class ReplyEntity extends AbstractEntity {
      */
     @XmlTransient
     @JsonBackReference
-    public QuestionInstanceEntity getQuestionInstance() {
+    public QuestionInstance getQuestionInstance() {
         return questionInstance;
     }
 
@@ -99,7 +99,7 @@ public class ReplyEntity extends AbstractEntity {
      * @param questionInstance
      */
     @JsonBackReference
-    public void setQuestionInstance(QuestionInstanceEntity questionInstance) {
+    public void setQuestionInstance(QuestionInstance questionInstance) {
         this.questionInstance = questionInstance;
     }
 
@@ -121,14 +121,14 @@ public class ReplyEntity extends AbstractEntity {
      * @return the choiceDescriptor
      */
     @XmlTransient
-    public ChoiceDescriptorEntity getChoiceDescriptor() {
+    public ChoiceDescriptor getChoiceDescriptor() {
         return choiceDescriptor;
     }
 
     /**
      * @param choiceDescriptor the choiceDescriptor to set
      */
-    public void setChoiceDescriptor(ChoiceDescriptorEntity choiceDescriptor) {
+    public void setChoiceDescriptor(ChoiceDescriptor choiceDescriptor) {
         this.choiceDescriptor = choiceDescriptor;
     }
 

@@ -17,6 +17,7 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.SerializationUtils;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -26,6 +27,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @XmlRootElement
+@XmlType(name = "")                                                             // This forces to use Class's short name as type
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModel", value = GameModel.class),
@@ -33,7 +35,8 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
     @JsonSubTypes.Type(name = "Player", value = Player.class),
     @JsonSubTypes.Type(name = "Team", value = Team.class),
     @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
-    @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class),})
+    @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
+})
 public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
@@ -88,25 +91,23 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * @return
      */
     //@XmlTransient
-   // public String getKey() {
+    // public String getKey() {
     //    return this.getClass().getSimpleName() + getId();
-   // }
-
+    // }
     /**
      *
      * @param ps
      * @return
      * @throws IOException
      */
-  //  @XmlTransient
-  //  public String toJson(Providers ps) throws IOException {
+    //  @XmlTransient
+    //  public String toJson(Providers ps) throws IOException {
 //        // Marshall new version
 //        OutputStream os = new ByteArrayOutputStream();
 //        MessageBodyWriter mbw = ps.getMessageBodyWriter(this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.APPLICATION_JSON_TYPE);
 //        mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
 //        return os.toString();
 //    }
-
     /**
      *
      * @return

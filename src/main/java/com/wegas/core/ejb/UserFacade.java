@@ -10,7 +10,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.user.User;
-import com.wegas.core.persistence.user.UserEntity_;
+import com.wegas.core.persistence.user.User_;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -61,7 +61,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<User> user = cq.from(User.class);
-        cq.where(cb.equal(user.get(UserEntity_.name), principal));
+        cq.where(cb.equal(user.get(User_.name), principal));
         Query q = em.createQuery(cq);
         return (User) q.getSingleResult();
     }

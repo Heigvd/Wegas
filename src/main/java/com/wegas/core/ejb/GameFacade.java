@@ -10,8 +10,8 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameEntity_;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Game_;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -59,7 +59,7 @@ public class GameFacade extends AbstractFacadeImpl<Game>{
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<Game> game = cq.from(Game.class);
-        cq.where(cb.equal(game.get(GameEntity_.token), token));
+        cq.where(cb.equal(game.get(Game_.token), token));
         Query q = em.createQuery(cq);
         return (Game) q.getSingleResult();
     }

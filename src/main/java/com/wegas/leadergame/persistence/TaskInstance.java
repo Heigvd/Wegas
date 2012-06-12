@@ -12,17 +12,19 @@ package com.wegas.leadergame.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "QuestionInstance")
 public class TaskInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private Boolean active = true;
 
     /**
      *
@@ -33,4 +35,17 @@ public class TaskInstance extends VariableInstance {
         TaskInstance other = (TaskInstance) a;
     }
 
+    /**
+     * @return the active
+     */
+    public Boolean getActive() {
+        return active;
+    }
+
+    /**
+     * @param active the active to set
+     */
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 }

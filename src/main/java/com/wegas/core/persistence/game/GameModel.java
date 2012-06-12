@@ -31,7 +31,6 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = "name"))
-@XmlType(name = "GameModel")
 public class GameModel extends NamedEntity implements Serializable {
 
     private static final Logger logger = Logger.getLogger("GameModelEntity");

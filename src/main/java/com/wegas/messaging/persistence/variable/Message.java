@@ -25,7 +25,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  */
 @Entity
 @XmlType(name = "MessageInstance")
-public class MessageEntity extends NamedEntity {
+public class Message extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQReplyInstanceEntity");
@@ -70,7 +70,7 @@ public class MessageEntity extends NamedEntity {
     @JsonBackReference("inbox-message")
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
-    private InboxInstanceEntity inboxInstanceEntity;
+    private InboxInstance inboxInstanceEntity;
 
     /**
      *
@@ -79,7 +79,7 @@ public class MessageEntity extends NamedEntity {
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
-        MessageEntity other = (MessageEntity) a;
+        Message other = (Message) a;
         this.setBody(other.getBody());
         this.setUnread(other.getUnread());
         this.setTime(other.getTime());
@@ -99,7 +99,7 @@ public class MessageEntity extends NamedEntity {
 
     @Override
     public boolean equals(Object o) {
-        MessageEntity vd = (MessageEntity) o;
+        Message vd = (Message) o;
         // @fixme is null variable returning false the right thing ?
         return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
     }
@@ -159,14 +159,14 @@ public class MessageEntity extends NamedEntity {
      * @return the MCQDescriptor
      */
     @XmlTransient
-    public InboxInstanceEntity getMailboxInstanceEntity() {
+    public InboxInstance getMailboxInstanceEntity() {
         return inboxInstanceEntity;
     }
 
     /**
      * @param mailboxInstanceEntity
      */
-    public void setMailboxInstanceEntity(InboxInstanceEntity mailboxInstanceEntity) {
+    public void setMailboxInstanceEntity(InboxInstance mailboxInstanceEntity) {
         this.inboxInstanceEntity = mailboxInstanceEntity;
     }
 

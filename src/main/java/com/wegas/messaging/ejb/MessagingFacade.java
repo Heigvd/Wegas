@@ -10,7 +10,7 @@
 package com.wegas.messaging.ejb;
 
 import com.wegas.core.persistence.game.Player;
-import com.wegas.messaging.persistence.variable.MessageEntity;
+import com.wegas.messaging.persistence.variable.Message;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ public class MessagingFacade {
      * @param p
      * @param msg
      */
-    public void send(String type, Player p, MessageEntity msg) {
+    public void send(String type, Player p, Message msg) {
         MessageEvent evt = new MessageEvent();
         evt.setMessage(msg);
         evt.setPlayer(p);
@@ -50,7 +50,7 @@ public class MessagingFacade {
      * @param body
      */
     public void send(String type, Player p, String from, String subject, String body) {
-        MessageEntity msg = new MessageEntity();
+        Message msg = new Message();
         msg.setFrom(from);
         msg.setSubject(subject);
         msg.setBody(body);

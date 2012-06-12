@@ -12,14 +12,12 @@ package com.wegas.leadergame.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "TaskDescriptor")
 public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
 
     private static final long serialVersionUID = 1L;

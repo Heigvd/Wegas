@@ -132,7 +132,7 @@
                     "language":"JavaScript",
                     "content":"var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(3).desactivate(self);\nthis[\"Sac poubelle n°5: Prélévement ADN\"].activate();"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":2,
                 "cost":2
             },{
@@ -156,7 +156,7 @@
                     "language":"JavaScript",
                     "content":"var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":2,
                 "cost":2
             },{
@@ -180,7 +180,7 @@
                     "language":"JavaScript",
                     "content":"var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":1,
                 "cost":1
             },{
@@ -204,7 +204,7 @@
                     "language":"JavaScript",
                     "content":"print(\"traces\");\nvar currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":1,
                 "cost":1
             }],
@@ -248,7 +248,7 @@
                     "language":"JavaScript",
                     "content":"var currentChoices = selectedReply.questionInstance.descriptor.items;"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":2,
                 "cost":2
             }],
@@ -292,7 +292,7 @@
                     "language":"JavaScript",
                     "content":"var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(3).desactivate(self);\nthis[\"Sac poubelle n°6: Prélévement ADN\"].activate();"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":2,
                 "cost":2
             },{
@@ -316,7 +316,7 @@
                     "language":"JavaScript",
                     "content":"var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":1,
                 "cost":1
             },{
@@ -340,7 +340,7 @@
                     "language":"JavaScript",
                     "content":"print(\"traces\");\nvar currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":1,
                 "cost":1
             },{
@@ -364,7 +364,7 @@
                     "language":"JavaScript",
                     "content":"var currentChoices = selectedReply.questionInstance.descriptor.items;\ncurrentChoices.get(0).desactivate(self);\ncurrentChoices.get(1).desactivate(self);"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":2,
                 "cost":2
             }],
@@ -408,7 +408,7 @@
                     "language":"JavaScript",
                     "content":"var currentChoices = selectedReply.questionInstance.descriptor.items;"
                 },
-                "answer":null,
+                "feedback":null,
                 "duration":2,
                 "cost":2
             }],
@@ -467,7 +467,7 @@
                     "language":"JavaScript",
                     "content":"humanResources.value-=2;"
                 },
-                "answer":"c'est faux",
+                "feedback":"c'est faux",
                 "duration":0,
                 "cost":0
             },{
@@ -491,7 +491,7 @@
                     "language":"JavaScript",
                     "content":"humanResources.value-=1;"
                 },
-                "answer":"Juste",
+                "feedback":"Juste",
                 "duration":0,
                 "cost":0
             }],
@@ -535,7 +535,7 @@
                     "language":"JavaScript",
                     "content":""
                 },
-                "answer":"faux",
+                "feedback":"faux",
                 "duration":1,
                 "cost":1
             },{
@@ -559,7 +559,7 @@
                     "language":"JavaScript",
                     "content":""
                 },
-                "answer":"",
+                "feedback":"",
                 "duration":1,
                 "cost":1
             }],
@@ -603,7 +603,7 @@
                     "language":"JavaScript",
                     "content":""
                 },
-                "answer":"",
+                "feedback":"",
                 "duration":1,
                 "cost":1
             },{
@@ -627,7 +627,7 @@
                     "language":"JavaScript",
                     "content":""
                 },
-                "answer":"",
+                "feedback":"",
                 "duration":1,
                 "cost":1
             }],
@@ -671,7 +671,7 @@
                     "language":"JavaScript",
                     "content":"humanResources.value-=1;"
                 },
-                "answer":"faux",
+                "feedback":"faux",
                 "duration":0,
                 "cost":0
             },{
@@ -695,7 +695,7 @@
                     "language":"JavaScript",
                     "content":"importPackage(com.wegas.core.script);\nvar mailer = Factory.lookupBean(\"MessagingFacade\");\n\nmailer.send(\"normal\", self, \"test\", \"test\", \"test\");\nhumanResources.value-=2;"
                 },
-                "answer":"juste",
+                "feedback":"juste",
                 "duration":0,
                 "cost":0
             }],

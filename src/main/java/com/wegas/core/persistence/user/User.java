@@ -26,11 +26,10 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints =
+@Table(name = "users", uniqueConstraints =
 @UniqueConstraint(columnNames = "name"))
 @XmlRootElement
-@XmlType(name = "User",
-propOrder = {"@class", "id", "name"})
+@XmlType(name = "User", propOrder = {"@class", "id", "name"})
 public class User extends AbstractEntity {
 
     private static final Logger logger = Logger.getLogger("UserEntity");
@@ -118,4 +117,3 @@ public class User extends AbstractEntity {
         this.players = players;
     }
 }
-

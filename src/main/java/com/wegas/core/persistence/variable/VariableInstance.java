@@ -16,13 +16,14 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
-import com.wegas.mcq.persistence.ChoiceInstanceEntity;
-import com.wegas.mcq.persistence.QuestionInstanceEntity;
-import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
+import com.wegas.leadergame.persistence.ResourceInstance;
+import com.wegas.leadergame.persistence.TaskInstance;
+import com.wegas.mcq.persistence.ChoiceInstance;
+import com.wegas.mcq.persistence.QuestionInstance;
+import com.wegas.messaging.persistence.variable.InboxInstance;
 import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +33,20 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-//@EntityListeners({VariableInstancePersistenceListener.class})
 @Inheritance(strategy = InheritanceType.JOINED)
-@XmlType(name = "VariableInstance")
-//@JsonIgnoreProperties(value={"descriptorId"})
+//@EntityListeners({VariableInstancePersistenceListener.class})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
-    @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstanceEntity.class),
+    @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
     @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstanceEntity.class),
-    @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstanceEntity.class),
-    @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstanceEntity.class)
+    @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
+    @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
+    @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
+    @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class)
 })
+//@JsonIgnoreProperties(value={"descriptorId"})
 abstract public class VariableInstance extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
