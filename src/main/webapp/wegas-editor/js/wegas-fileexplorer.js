@@ -16,7 +16,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         }
     };
 
-    //TODO: multiple files upload, correct bugs, no popup inputs.
+    //TODO: multiple files upload, correct bugs, no popup inputs. notes!
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.WidgetParent, Y.Wegas.Widget], {
 
