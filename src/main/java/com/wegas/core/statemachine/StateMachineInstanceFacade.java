@@ -10,7 +10,7 @@
 package com.wegas.core.statemachine;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
-import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.script.ScriptEntity;
 import com.wegas.core.script.ScriptFacade;
@@ -24,7 +24,7 @@ import javax.script.ScriptException;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineInstanceEntity> {
+public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineInstance> {
 
     @PersistenceContext(unitName="wegasPU")
     EntityManager em;
@@ -33,7 +33,7 @@ public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineI
     private ScriptFacade scriptManager;
 
     public StateMachineInstanceFacade() {
-        super(StateMachineInstanceEntity.class);
+        super(StateMachineInstance.class);
     }
 
 
@@ -43,8 +43,8 @@ public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineI
     }
 
 //    @Override
-//    public StateMachineInstanceEntity update(final Long entityId, final StateMachineInstanceEntity entity){
-//        StateMachineInstanceEntity oldEntity = this.find(entityId);
+//    public StateMachineInstance update(final Long entityId, final StateMachineInstance entity){
+//        StateMachineInstance oldEntity = this.find(entityId);
 //        Long newStateId = entity.getCurrentStateId();
 //        StateMachineDescriptorEntity descriptorEntity = (StateMachineDescriptorEntity)entity.getDescriptor();
 //        entity.setCurrentState(descriptorEntity.getStates().get(newStateId));
@@ -53,7 +53,7 @@ public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineI
 //        return entity;
 //    }
 
-    public void step(StateMachineInstanceEntity entity) throws ScriptException{
+    public void step(StateMachineInstance entity) throws ScriptException{
         List<Transition> transitions = entity.getCurrentState().getTransitions();
         for(Transition transition: transitions){
             ScriptEntity script = transition.getTriggerCondition();
