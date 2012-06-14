@@ -29,19 +29,19 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @XmlRootElement
 @XmlType(name = "FSMInstance")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstanceEntity.class)
+    @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class)
 })
-public class StateMachineInstanceEntity extends VariableInstance implements Serializable {
+public class StateMachineInstance extends VariableInstance implements Serializable {
 
     @Column(name = "currentstate_id", nullable=false)
     private Long currentStateId;
 
-    public StateMachineInstanceEntity() {
+    public StateMachineInstance() {
     }
 
     @XmlTransient
     public State getCurrentState() {
-        return ((StateMachineDescriptorEntity) this.getDescriptor()).getStates().get(this.currentStateId);
+        return ((StateMachineDescriptor) this.getDescriptor()).getStates().get(this.currentStateId);
     }
 
     /**
@@ -60,7 +60,7 @@ public class StateMachineInstanceEntity extends VariableInstance implements Seri
 
     @Override
     public void merge(AbstractEntity a) {
-        this.currentStateId = ((StateMachineInstanceEntity) a).getCurrentStateId();
+        this.currentStateId = ((StateMachineInstance) a).getCurrentStateId();
     }
 
     @Override

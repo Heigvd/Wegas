@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "TriggerDescriptor")
 @XmlRootElement
 @XmlType(name = "TriggerDescriptor")
-public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
+public class TriggerDescriptor extends StateMachineDescriptor {
 
     private Boolean oneShot;
     @Transient
@@ -34,7 +34,7 @@ public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
     @Transient
     private ScriptEntity postTriggerEvent;
 
-    public TriggerDescriptorEntity() {
+    public TriggerDescriptor() {
     }
 
     public Boolean isOneShot() {
@@ -78,7 +78,7 @@ public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
 
     @Override
     public void merge(AbstractEntity a) {
-        TriggerDescriptorEntity entity = (TriggerDescriptorEntity) a;
+        TriggerDescriptor entity = (TriggerDescriptor) a;
         this.oneShot = entity.isOneShot();
         this.postTriggerEvent = entity.getPostTriggerEvent();
         this.triggerEvent = entity.getTriggerEvent();
@@ -123,7 +123,7 @@ public class TriggerDescriptorEntity extends StateMachineDescriptorEntity {
             initialState.setOnEnterEvent(this.postTriggerEvent);
             transition.setNextStateId(1L);
         }
-        ((TriggerInstanceEntity)this.getDefaultVariableInstance()).setCurrentStateId(1L);
+        ((TriggerInstance)this.getDefaultVariableInstance()).setCurrentStateId(1L);
         this.setStates(states);
     }
 

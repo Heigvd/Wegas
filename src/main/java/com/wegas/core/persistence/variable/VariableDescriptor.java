@@ -16,7 +16,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.leadergame.persistence.ResourceDescriptor;
 import com.wegas.leadergame.persistence.TaskDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -45,7 +45,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "MCQDescriptor", value = QuestionDescriptor.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
-    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptorEntity.class),
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
     @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class)
