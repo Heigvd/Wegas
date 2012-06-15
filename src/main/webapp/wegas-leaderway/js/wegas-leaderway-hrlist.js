@@ -1,13 +1,13 @@
 /**
-* @author Francois-Xavier Aeberhard <fx@red-agent.com>
+* @author Benjamin Gerber <ger.benjamin@gmail.com>
 */
 
 YUI.add('wegas-leaderway', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', RHList;
+    var CONTENTBOX = 'contentBox', HRList;
 
-    RHList = Y.Base.create("wegas-rhlist", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    HRList = Y.Base.create("wegas-hrlist", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         
         // *** Fields *** /
         table: null,
@@ -60,17 +60,20 @@ YUI.add('wegas-leaderway', function (Y) {
                 columns: [
                 {
                     key:"nom", 
-                    label:"Nom"
+                    label:"Nom",
+                    sortable:true
                 },
 
                 {
                     key:"prenom", 
-                    label:"Prenom"
+                    label:"Prenom",
+                    sortable:true
                 },
 
                 {
                     key:"occupation", 
-                    label:"Occupation"
+                    label:"Occupation",
+                    sortable:true
                 },
 
                 {
@@ -87,11 +90,8 @@ YUI.add('wegas-leaderway', function (Y) {
                     allowHTML: true
                 }
                 
-                ],
-                data: this.data,
-                sortable: true
+                ]
             });
-            
             this.table.render(this.get(CONTENTBOX));
         },
             
@@ -108,7 +108,13 @@ YUI.add('wegas-leaderway', function (Y) {
         },
         
         syncUI: function () {
-
+            this.table.addRows(this.data);
+            if(this.data[0] == null){
+                this.table.showMessage("Personne n'est disponible.");
+            }
+            else{
+                this.table.hideMessage();
+            }
         }
         
     },
@@ -118,7 +124,7 @@ YUI.add('wegas-leaderway', function (Y) {
         }
     });
 
-    Y.namespace('Wegas').RHList = RHList;
+    Y.namespace('Wegas').HRList = HRList;
 }, '3.5.0', {
-    requires: ['datatable-sort', 'datatable-core']
+    requires: ['datatable-sort', 'datatable-core', 'datatable-message', 'datatable-mutable']
 });

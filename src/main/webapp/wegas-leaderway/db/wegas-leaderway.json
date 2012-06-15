@@ -34,7 +34,7 @@
         "name": "cost",
         "defaultVariableInstance": {
             "@class": "NumberInstance",
-            "value":"0"
+            "value":"32700"
         },
         "scope": {
             "@class": "TeamScope"

@@ -5,37 +5,218 @@
     Description:
         Purpose of the stylesheet follows.
 */
-
-/*-------------RHList---------------*/
-.yui3-wegas-rhlist table{
-    width:100%;
+/*---------------------------------Général------------------------------------*/
+html{
+    background-color:#E4DDCC;
 }
 
-.yui3-wegas-rhlist tr{
-    height: 2em;
+body{
+    width:980px;
+    margin:0 auto 0 auto;
+    border-style: solid;
+    border-width: 0 1px 1px 1px;
 }
 
-/*-------------Jauges---------------*/
-.yui3-wegas-variabledisplay .yui3-wegas-valuebox-units{
-    background-color:#00BBFF;
+/*--------------------------------Indicators----------------------------------*/
+.indicators{
+    background-color:#eed4aa;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/indicators_background.png");
+    background-repeat: repeat-x;
+    width:970px;
+    padding:5px;
+    min-height:70px;
+    clear:both;
+    overflow: auto;
+}
+
+.indicators-fraction{
+    margin-top: 41px;
+}
+
+.indicators-text{
+    margin: 41px 20px 0 0;
+    width:140px;
+    text-align: left;
+}
+
+.indicators-fraction .yui3-wegas-variabledisplay-fraction-minSeparator,
+.indicators-fraction .yui3-wegas-variabledisplay-fraction-minValue{
+    display:none;
+}
+
+.indicators .yui3-wegas-button{
+    margin: 36px 30px 0 5px;
+}
+
+.indicators-gauge{
+    margin:24px 20px 0 0;
+}
+
+.indicators-gauge .yui3-wegas-variabledisplay-box-units{
+    display:block;
+    background-color:#93C34F;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gauge_background_large.png");
+    background-repeat: repeat-y;
     width:200px;
-    height:20px;
+    height:15px;
     font-size: 1em;
-    border-style:solid;
-    border-width: 1px;
+    border:solid 1px;
     clear:both;
     overflow: hidden;
 }
 
-.yui3-wegas-variabledisplay .yui3-wegas-valuebox-unit{
-    background-color:#0022FF;
+.indicators-gauge .yui3-wegas-variabledisplay-box-unit{
+    display:block;
+    background-color:#6F89A2;    
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gaugeFiller-background.png");
+    background-repeat: repeat-x;
     float:left;
     width:2px;
     height:20px;
-    font-size:0;
 }
 
-.yui3-wegas-variabledisplay .yui3-wegas-valuebox-label{
+.indicators-gauge .yui3-wegas-variabledisplay-box-value{
+    display:none;
+}
+
+.yui3-wegas-variabledisplay:last-child{
+    float:right;
+}
+
+.indicators-block{
+    width:110px;
+    margin:5px 0 0 0;
+    float:right;
+}
+
+.indicators-block .yui3-wegas-variabledisplay-box-value{
+    float:right;
+    padding-right:2px;
+}
+
+.indicators-block .yui3-wegas-variabledisplay-box-label{
     display:block;
-    margin-bottom:2px;
+}
+
+.indicators-block .yui3-wegas-variabledisplay-box-units{
+    display: block;
+    width:110px;
+}
+
+.indicators-block .yui3-wegas-variabledisplay-box-unit{
+    width:7px;
+    height:15px;
+    margin:0 2px 2px 0;
+    background-color: #6F89A2;
+    border: solid 1px;
+    float:left;
+}
+
+/*-----------------------------------menu-------------------------------------*/
+.menu{
+    background-color:#E1D2B9;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/menu_background.png");
+    background-repeat: repeat-x;
+    width:970px;
+    padding:5px;
+    height:40px;
+    overflow:auto;
+    border-style: solid;
+    border-width: 1px 0 1px 0;
+}
+
+.menu div{
+    margin-right:20px;
+    overflow:hidden;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.menu .menu-HRList{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/homme.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-HRList:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .menu-folder{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/dossier.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-folder:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .menu-task{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/liste.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-task:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .menu-email{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/email.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-email:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .menu-score{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/awards.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-score:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .wegas-button-hover{
+    font-size: 1em;
+    display:block;
+    position:absolute;
+    background-color:#DCCDB1;
+    border:solid 1px;
+    margin:10px 0 0 40px;
+}
+
+.menu .yui3-wegas-login{
+    float:right;
+    margin:15px 0 0 0;
+}
+
+/*----------------------------maindisplayarea---------------------------------*/
+#maindisplayarea{
+    background-color:#FFFFFF;    
+}
+
+
+/*----------------------------------RHList-----------------------------------*/
+.yui3-wegas-hrlist table{
+    width:100%;
+}
+
+.yui3-wegas-hrlist tr{
+    height: 2em;
 }

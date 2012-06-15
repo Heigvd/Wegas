@@ -54,6 +54,16 @@ YUI.add('wegas-button', function (Y) {
                     }
                 }
             }, this);
+            if(this.get('hover')){
+                this.get(CONTENTBOX).on('mouseenter', function () {
+                    this.get(CONTENTBOX).insert('<span class="wegas-button-hover">'
+                        + this.get('hover')
+                        +'</span>', 'before');
+                },this);
+                this.get(CONTENTBOX).on('mouseleave', function () {
+                    Y.one('.wegas-button-hover').remove();
+                },this);
+            }
         },
         syncUI: function () {                                                   // Update the button display
             switch (this.get('view')) {
@@ -77,7 +87,8 @@ YUI.add('wegas-button', function (Y) {
                 }
             },
             targetDisplayArea: {},
-            view: {}
+            view: {},
+            hover:{}
         }
     });
 

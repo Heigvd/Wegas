@@ -16,6 +16,15 @@
     padding:5px;
     max-width:150px;
 }
+
+.yui3-wegas-variabledisplay-text-value{
+    display:block;
+}
+
+.yui3-wegas-variabledisplay-box-label{
+    display:block;
+}
+
 .yui3-wegas-variabledisplay-box-unit {
     width:5px;
     height:10px;
@@ -24,13 +33,13 @@
     margin-right:2px;
     float:left;
 }
-.yui3-wegas-valuebox-unit {
+.yui3-wegas-variabledisplay-valuebox-unit {
     background:steelblue;
     border:1px solid gray;
     float:left;
 }
 
-.yui3-wegas-valuebox-selected {
+.yui3-wegas-variabledisplay-valuebox-selected {
     background:white;
 }
 #menu {

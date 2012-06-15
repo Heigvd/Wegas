@@ -5,20 +5,128 @@
         "type": "List",
         "cssClass": "layout",
         "children": [{
-                "label":"Liste de personnes",
-                "type":"RHList",
-                "content":"Bienvenue"
+                "label": "indicateurs",
+                "type": "List",
+                "cssClass": "indicators",
+                "direction": "horizontal",
+                "children": [{
+                        "type": "VariableDisplay",
+                        "label": "Semaine N° : ",
+                        "cssClass":"indicators-fraction",
+                        "view": "fraction",
+                        "variable": "period",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "type": "Button",
+                        "label": ">",
+                        "view": "button",
+                        "onClick": "importPackage(com.wegas.core.script);\nperiod.value += 1;\n"
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "Budget : ",
+                        "cssClass":"indicators-text",
+                        "view": "text",
+                        "variable": "cost",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "type": "VariableDisplay",
+                        "cssClass":"indicators-gauge",
+                        "label": "Motivation",
+                        "variable": "period",
+                        "view": "box",
+                        "dataSource": "VariableDescriptor"
+                    },
+                    {
+                        "type": "VariableDisplay",
+                        "cssClass":"indicators-gauge",
+                        "label": "Satisfaction client",
+                        "variable": "period",
+                        "view": "box",
+                        "dataSource": "VariableDescriptor"
+                    },
+                    { 
+                        "type": "VariableDisplay",
+                        "cssClass":"indicators-block",
+                        "label": "Temps restant",
+                        "variable": "period",
+                        "view": "box",
+                        "dataSource": "VariableDescriptor"
+                    }]
             },
             {
-                "label":"Dossier",
-                "type":"Text",
-                "content":"Dossier d'une personne... A faire :-)"               
+                "label": "Menu",
+                "type": "List",
+                "cssClass": "menu",
+                "direction": "horizontal",
+                "children": [{
+                        "type": "Button",
+                        "label": "Liste des membres",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-HRList",
+                        "hover":"Liste des membres",
+                        "subpage": {
+                            "type":"HRList",
+                            "content":"module RH à faire"
+                        }
+                    },
+                    {
+                        "type": "Button",
+                        "label": "Dossiers",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-folder",
+                        "hover":"Dossiers des membres",
+                        "subpage": {
+                            "type": "Folder",
+                            "content": "module dossier à faire"
+                        }
+                    },
+                    {
+                        "type": "Button",
+                        "label": "Mandats",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-task",
+                        "hover":"Liste des mandats",
+                        "subpage": {
+                            "type": "Dialogue",
+                            "content": "module dialogue à faire"
+                        }
+                    },
+                    {
+                        "type": "Button",
+                        "label": "E-mail",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-email",
+                        "hover":"Liste des mandats",
+                        "subpage": {
+                            "type": "InboxDisplay",
+                            "variable": "inbox"
+                        },
+                        "plugins": [{
+                            "fn": "UnreadCount",
+                            "cfg": {
+                                "variable": "inbox"
+                            }
+                        }]
+                    },
+                    {
+                        "type": "Button",
+                        "label": "Score",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-score",
+                        "hover":"Score des entreprises",
+                        "subpage": {
+                            "type": "Text",
+                            "content": "module score à faire"
+                        }
+                    },
+                    {
+                        "type": "LoginButton",
+                        "cssClass": "menu-loginbutton"
+                    }]
             },
             {
-                "type": "VariableDisplay",
-                "label": "Période",
-                "view": "valuebox",
-                "variable": "period",
-                "dataSource": "VariableDescriptor"
+                "type": "DisplayArea",
+                "id": "maindisplayarea",
+                "cssClass": "body"
             }]
     }]
