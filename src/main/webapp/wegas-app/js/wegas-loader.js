@@ -154,10 +154,16 @@ YUI().use(function (Y) {
                     
                     /**Leaderway**/
                     'wegas-leaderway': {
-                        path: 'wegas-leaderway/js/wegas-leaderway.js',
-                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack']
+                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        requires:['wegas-leaderway-folder', 'wegas-leaderway-dialogue']
+                        
+                    },
+                    'wegas-leaderway-folder':{
+                        path: 'wegas-leaderway/js/wegas-leaderway-folder.js'
+                    },
+                    'wegas-leaderway-dialogue':{
+                        path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js'
                     }
-                    
                     /* This one is only seful w/ yui3 treeview widget */
                     /* 'wegas-treeviewcss': {
                         path: 'wegas-app/css/treeview-classic.css',
