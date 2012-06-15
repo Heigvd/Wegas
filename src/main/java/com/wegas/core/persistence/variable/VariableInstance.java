@@ -15,7 +15,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.leadergame.persistence.ResourceInstance;
 import com.wegas.leadergame.persistence.TaskInstance;
 import com.wegas.mcq.persistence.ChoiceInstance;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
-    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstanceEntity.class),
+    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
     @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
     @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
     @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
