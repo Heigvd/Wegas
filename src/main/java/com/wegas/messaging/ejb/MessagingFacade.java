@@ -11,6 +11,7 @@ package com.wegas.messaging.ejb;
 
 import com.wegas.core.persistence.game.Player;
 import com.wegas.messaging.persistence.variable.Message;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
+@LocalBean
 public class MessagingFacade {
 
     /**

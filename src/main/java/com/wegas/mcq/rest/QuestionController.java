@@ -39,7 +39,6 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
 
     /**
      *
-     * @param gameModelId
      * @param playerId
      * @param choiceId
      * @return p
@@ -77,7 +76,6 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
 
     /**
      *
-     * @param gameModelId
      * @param playerId
      * @param choiceDescriptorId
      * @param startTime

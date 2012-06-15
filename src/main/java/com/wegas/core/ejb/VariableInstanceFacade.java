@@ -79,7 +79,6 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
      *
      * Update the variable instance entity fo the given descriptor and player.
      *
-     * @param gameModelId
      * @param variableDescriptorId
      * @param playerId
      * @param variableInstance
@@ -103,6 +102,10 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
         //  logger.info("onVariableInstanceUpdate() {} {}", requestManager.getCurrentPlayer(), requestManager.getUpdatedInstances());
         variableInstanceManager.addUpdatedInstance(vi);
     }
+    /**
+     *
+     * @return
+     */
     public List<VariableInstance> getUpdatedInstances() {
         return variableInstanceManager.getUpdatedInstances();
     }

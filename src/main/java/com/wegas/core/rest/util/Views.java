@@ -17,6 +17,9 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
  */
 public class Views {
 
+    /**
+     *
+     */
     static public class Export {
     }
     /*
@@ -28,6 +31,9 @@ public class Views {
     }
      */
 
+    /**
+     *
+     */
     @JsonIgnoreProperties({"id"})
     //@JsonPropertyOrder(value = {"title", "id", "version", "price", "summary"})
     public interface ExportFilter {

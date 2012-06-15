@@ -83,7 +83,8 @@ YUI().use(function (Y) {
                         'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
                         'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
                         'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
-                        'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
+                        'inputex-keyvalue', 'inputex-combine', "inputex-field", "inputex-object",
+                        'yui2-editor', "inputex-rte" ]
                     },
 
                     /** Editor **/

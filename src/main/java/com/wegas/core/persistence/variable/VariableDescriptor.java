@@ -53,20 +53,6 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     *
-     */
-    public VariableDescriptor() {
-    }
-
-    /**
-     *
-     * @param name
-     */
-    public VariableDescriptor(String name) {
-        this.name = name;
-    }
     /**
      *
      */
@@ -79,6 +65,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @NotNull
     protected String name;
+    /**
+     *
+     */
+    private String label;
     /**
      *
      */
@@ -115,14 +105,29 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      *
+     */
+    public VariableDescriptor() {
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public VariableDescriptor(String name) {
+        this.name = name;
+    }
+
+    /**
+     *
      * @param a
      */
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
-        VariableDescriptor vd = (VariableDescriptor) a;
+        VariableDescriptor other = (VariableDescriptor) a;
+        this.defaultVariableInstance.merge(other.getDefaultVariableInstance());
+        this.setLabel(other.getLabel());
         //this.scope.merge(vd.getScope());
-        this.defaultVariableInstance.merge(vd.getDefaultVariableInstance());
     }
 
     /**
@@ -238,5 +243,19 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

@@ -10,9 +10,9 @@
 package com.wegas.core.script;
 
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -28,10 +28,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import javax.script.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +51,11 @@ public class ScriptFacade {
      */
     @EJB
     private PlayerFacade playerEntityFacade;
+    /**
+     *
+     */
+    @EJB
+    private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
      */
@@ -85,22 +87,22 @@ public class ScriptFacade {
         if (scripts.isEmpty()) {
             return null;
         }
-        arguments = (Map<String, AbstractEntity>) (arguments != null ? arguments : new HashMap<>());
+        arguments = (Map<String, AbstractEntity>) ( arguments != null ? arguments : new HashMap<>() );
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName(scripts.get(0).getLanguage());
-        // Invocable invocableEngine = (Invocable) engine;
-        GameModel gm = player.getGameModel();
-        List<VariableInstance> vis = new ArrayList<VariableInstance>();
+//        Invocable invocableEngine = (Invocable) engine;
 
-        variableInstanceManager.setCurrentPlayer(player);                                // Set up request execution context
-        variableInstanceManager.setGameModel(gm);
-        engine.put("self", player);                                             // Inject constants
+        variableInstanceManager.setCurrentPlayer(player);                       // Set up request execution context
+        variableInstanceManager.setGameModel(player.getGameModel());
+        engine.put("self", player);                                             // Inject current player
+        engine.put("VariableDescriptorFacade", variableDescriptorFacade);       // Inject the variabledescriptor facade
+        engine.eval("importPackage(com.wegas.core.script)");                    // Inject factory object
 
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
         }
 
-        for (VariableDescriptor vd : gm.getVariableDescriptors()) {       // We inject the variable instances in the script
+        for (VariableDescriptor vd : player.getGameModel().getVariableDescriptors()) {       // We inject the variable instances in the script
             VariableInstance vi = vd.getVariableInstance(player);
             engine.put(vd.getName(), vi);
         }

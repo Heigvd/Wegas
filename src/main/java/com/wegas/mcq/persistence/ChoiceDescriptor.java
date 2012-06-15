@@ -117,7 +117,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
-     * @param answer the answer to set
+     * @param feedback
      */
     public void setFeedback(String feedback) {
         this.feedback = feedback;

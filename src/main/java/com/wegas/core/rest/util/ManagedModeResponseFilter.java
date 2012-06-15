@@ -72,11 +72,19 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         return response;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public ContainerRequestFilter getRequestFilter() {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public ContainerResponseFilter getResponseFilter() {
         return this;

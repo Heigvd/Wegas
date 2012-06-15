@@ -26,9 +26,18 @@ public class ExceptionWrapper {
     private Class exception;
     private String message;
 
+    /**
+     *
+     */
     public ExceptionWrapper() {
     }
 
+    /**
+     *
+     * @param code
+     * @param exception
+     * @param message
+     */
     public ExceptionWrapper(String code, Class exception, String message) {
         this.code = code;
         this.exception = exception;

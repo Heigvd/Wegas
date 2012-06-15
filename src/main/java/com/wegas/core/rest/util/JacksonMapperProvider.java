@@ -27,6 +27,9 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
 
     ObjectMapper mapper;
 
+    /**
+     *
+     */
     public JacksonMapperProvider() {
         mapper = new ObjectMapper();
         mapper.configure(Feature.INDENT_OUTPUT, true);
@@ -34,6 +37,11 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
      //   mapper.getSerializationConfig().setDateFormat(myDateFormat);
     }
 
+    /**
+     *
+     * @param aClass
+     * @return
+     */
     @Override
     public ObjectMapper getContext(Class<?> aClass) {
         return mapper;
