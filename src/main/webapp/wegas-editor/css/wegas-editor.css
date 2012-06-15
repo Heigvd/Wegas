@@ -34,9 +34,9 @@ div.inputEx-fieldWrapper > div.inputEx-label {
 div.inputEx-fieldWrapper > div.inputEx-Field {
     width:99.8%;
 }
-div.inputEx-fieldWrapper div.inputEx-fieldWrapper {
+/*div.inputEx-fieldWrapper div.inputEx-fieldWrapper {
     padding-left:70px;
-}
+}*/
 div.inputEx-fieldWrapper div.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-70px;
     width:65px;
@@ -53,14 +53,32 @@ div.inputEx-fieldWrapper div.inputEx-fieldWrapper > div.inputEx-label {
     padding:0;
 }
 /* Inputex List styles */
+div.inputEx-ListField {
+    position: relative;
+    padding-bottom: 20px;
+}
+div.inputEx-ListField > span {
+    display:none;
+}
 div.inputEx-ListField-subFieldEl {
     margin-left: 0;
     width: 100%;
 }
 .inputEx-ListField-childContainer > div {
-    margin-left:16px;
-    border-top: 1px solid lightgray;
-    padding-top: 5px;
+    position:relative;
+    /*   margin-left:16px;
+       border-top: 1px solid lightgray;
+       padding-top: 5px;*/
+}
+a.inputEx-List-link {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+}
+/* The "add"" button */
+div.inputEx-ListField >  a.inputEx-List-link {
+    bottom:3px;
+    top: auto;
 }
 img.inputEx-ListField-delButton {
     margin-left:-16px;

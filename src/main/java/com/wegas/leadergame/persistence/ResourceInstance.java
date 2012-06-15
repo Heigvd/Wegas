@@ -11,10 +11,12 @@ package com.wegas.leadergame.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
@@ -30,7 +32,7 @@ public class ResourceInstance extends VariableInstance {
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<Assignment> assignments = new ArrayList<Assignment>();
+    private List<Assignment> assignments;
     /**
      *
      */
@@ -45,12 +47,6 @@ public class ResourceInstance extends VariableInstance {
      */
     @ElementCollection
     private Map<String, String> properties;
-
-    /**
-     *
-     */
-    @Column(length = 4096)
-    private String description;
     /**
      *
      */
@@ -67,12 +63,16 @@ public class ResourceInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         ResourceInstance other = (ResourceInstance) a;
-        this.setAssignments(other.getAssignments());
         this.setActive(other.getActive());
-        this.setAssignments(other.getAssignments());
+
+        if (other.getAssignments() != null) {
+            this.setAssignments(other.getAssignments());
+        }
+        this.skillset.clear();
+        this.skillset.putAll(other.getSkillset());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
         this.setDesiredSkill(other.getDesiredSkill());
-        this.setProperties(other.getProperties());
-        this.setSkillset(other.getSkillset());
         this.setUndesiredSkillset(other.getUndesiredSkillset());
     }
 
@@ -84,11 +84,29 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * @param replies the replies to set
+     * @param assignments
      */
     public void setAssignments(List<Assignment> assignments) {
         this.assignments = assignments;
     }
+
+    /**
+     *
+     * @param assignment
+     */
+    public void addAssignement(Assignment assignment) {
+        this.assignments.add(assignment);
+        assignment.setResourceInstance(this);
+    }
+    /**
+     *
+     * @param task
+     * @param startTime
+     */
+    public void assign(Long startTime, TaskDescriptor task) {
+        this.addAssignement(new Assignment(startTime, task));
+    }
+
 
     /**
      * @return the active
@@ -119,6 +137,24 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setSkill(String key, Long val) {
+        this.skillset.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public Long getSkill(String key) {
+        return this.skillset.get(key);
+    }
+
+    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -130,6 +166,24 @@ public class ResourceInstance extends VariableInstance {
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setProperty(String key, String val) {
+        this.properties.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getProperty(String key) {
+        return this.properties.get(key);
     }
 
     /**
@@ -158,19 +212,5 @@ public class ResourceInstance extends VariableInstance {
      */
     public void setUndesiredSkillset(String undesiredSkillset) {
         this.undesiredSkillset = undesiredSkillset;
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

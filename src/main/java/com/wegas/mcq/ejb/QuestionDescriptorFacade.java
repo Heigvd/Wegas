@@ -137,7 +137,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      *
      * @param player
      * @param reply
-     * @return
      * @throws ScriptException
      */
     public void validateReply(Player player, Reply reply) throws ScriptException {
@@ -150,7 +149,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      *
      * @param player
      * @param replyVariableInstanceId
-     * @return
      * @throws ScriptException
      */
     public void validateReply(Player player, Long replyVariableInstanceId) throws ScriptException {
@@ -161,7 +159,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      *
      * @param playerId
      * @param replyVariableInstanceId
-     * @return
      * @throws ScriptException
      */
     public void validateReply(Long playerId, Long replyVariableInstanceId) throws ScriptException {

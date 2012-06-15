@@ -32,7 +32,6 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     /**
      *
      * @param gameModelId
-     * @return
      */
     public void reset(Long gameModelId) {
         GameModel gm = this.find(gameModelId);

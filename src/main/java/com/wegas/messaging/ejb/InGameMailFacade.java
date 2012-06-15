@@ -46,7 +46,6 @@ public class InGameMailFacade extends AbstractFacadeImpl<Message> {
 
     /**
      *
-     * @param entityClass
      */
     public InGameMailFacade() {
         super(Message.class);

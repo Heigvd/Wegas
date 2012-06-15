@@ -464,17 +464,21 @@
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
 //                            { name: 'label', label:'Label'},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'ResourceInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'active', 'label': 'Active by default', type: 'boolean', value: true}
-                                ]},
                             { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'ResourceInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'},
+                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                { name: "properties", "type": "object", label: "Default properties" },
+                                { name: "skillset", "type": "object", label: "Default skills" }
+                            ]}
                         ],
                         "ResourceInstance": [
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'ResourceInstance'},
-                            { name: 'active', label:'Active', type: 'boolean'}
+                            { name: 'active', label:'Active', type: 'boolean'},
+                            { name: "properties", "type": "object", label: "Properties" },
+                            { name: "skillset", "type": "object", label: "Skills" }
                         ],
                         "TaskDescriptor": [
                             { name: "id", type: "hidden"},
@@ -482,17 +486,20 @@
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
 //                            { name: 'label', label:'Label'},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'TaskInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'active', 'label': 'Active by default', type: 'boolean', value: true}
-                                ]},
+                            { name: 'duration', label:'Duration', required: true},
                             { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'TaskInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'},
+                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                { name: "properties", "type": "object", label: "Default properties" }
+                            ]}
                         ],
                         "TaskInstance": [
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'TaskInstance'},
-                            { name: 'active', label:'Active', type: 'boolean'}
+                            { name: 'active', label:'Active', type: 'boolean'},
+                            { name: "properties", "type": "object", label: "Properties" }
                         ],
 
                         //  *** Widgets *** //

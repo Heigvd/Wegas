@@ -76,6 +76,24 @@ abstract public class VariableInstance extends AbstractEntity {
         return c;
     }
 
+//    @PostPersist
+    /**
+     *
+     */
+    @PostUpdate
+//    @PostRemove
+    public void onInstanceUpdate() {
+        if (this.getScope() == null) {                                          // If the instance has no scope, it means it's a default
+            return;                                                             // default Instance and the updated event is not sent
+        }
+        try {
+            Helper.lookupBy(VariableInstanceFacade.class).onVariableInstanceUpdate(this);
+        }
+        catch (NamingException ex) {
+            logger.error("Error looking up VariableInstanceFacade");
+        }
+    }
+
     /**
      * @return the id
      */
@@ -127,22 +145,11 @@ abstract public class VariableInstance extends AbstractEntity {
         }
     }
 
+    /**
+     *
+     * @param l
+     */
     public void setDescriptorId(Long l) {
         // Dummy so that jaxb doesnt yell
-    }
-
-//    @PostPersist
-    @PostUpdate
-//    @PostRemove
-    public void onInstanceUpdate() {
-        if (this.getScope() == null) {                                          // If the instance has no scope, it means it's a default
-            return;                                                             // default Instance and the updated event is not sent
-        }
-        try {
-            Helper.lookupBy(VariableInstanceFacade.class).onVariableInstanceUpdate(this);
-        }
-        catch (NamingException ex) {
-            logger.error("Error looking up VariableInstanceFacade");
-        }
     }
 }
