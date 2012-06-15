@@ -14,8 +14,8 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
-import com.wegas.core.persistence.variable.statemachine.StateMachineInstanceEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.script.ScriptEntity;
 import com.wegas.core.script.ScriptFacade;
@@ -48,7 +48,7 @@ public class StateMachineRunner implements Serializable {
      */
     private Boolean run = false;
     private Integer steps = 0;
-    private HashSet<StateMachineInstanceEntity> stateMachines = new HashSet<>();
+    private HashSet<StateMachineInstance> stateMachines = new HashSet<>();
     private HashSet<Transition> passedTransitions = new HashSet<>();
     @Inject
     private VariableInstanceManager gameManager;
@@ -66,15 +66,15 @@ public class StateMachineRunner implements Serializable {
         run = true;
         if (stateMachines.isEmpty()) {                                          // load stateMachines only once
             GameModel gamemodel = gameManager.getGameModel();
-            List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel,StateMachineDescriptorEntity.class);
+            List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel,StateMachineDescriptor.class);
             for (VariableDescriptor stateMachineDescriptor : stateMachineDescriptors) {
-                stateMachines.add((StateMachineInstanceEntity) stateMachineDescriptor.getScope().getVariableInstance(gameManager.getCurrentPlayer()));
+                stateMachines.add((StateMachineInstance) stateMachineDescriptor.getScope().getVariableInstance(gameManager.getCurrentPlayer()));
             }
             logger.info("StateMachineInstance(s) found: {}", stateMachines);
         }
         //Put that in the SM Facade
         ArrayList<ScriptEntity> impacts = new ArrayList<>();
-        for (StateMachineInstanceEntity stateMachine : stateMachines) {
+        for (StateMachineInstance stateMachine : stateMachines) {
             List<Transition> transitions = stateMachine.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
                 Boolean validTransition = false;

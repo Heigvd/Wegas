@@ -6,14 +6,14 @@
     zoom: 1;
 }
 
-.yui3-treeleaf-content,
-.yui3-treenode-content-label
+.yui3-treeleaf-content-icon,
+.yui3-treenode-content-icon
 {
     background-image: url(tree_view_icons_blue_01_arrow_beside_folders.gif);
     background-repeat: no-repeat;
     padding-left:40px;
 }
-.yui3-treenode-content-label{
+.yui3-treenode-content-icon{
     background-position: -0px -41px;
 }
 
@@ -22,7 +22,7 @@
     margin-left: 6px;
 }
 
-.yui3-treeleaf-content {
+.yui3-treeleaf-content-icon {
     background-position: 0 -162px;
     text-decoration: none;
 }
@@ -31,7 +31,7 @@
     display:none;
 }
 
-.yui3-treenode-collapsed .yui3-treenode-content-label {
+.yui3-treenode-collapsed .yui3-treenode-content-icon {
     background-position: -0px -2px;
 }
 .yui3-treenode-content > .yui3-treenode, .yui3-treenode-content > .yui3-treeleaf{
@@ -41,17 +41,35 @@
 .yui3-treenode-content-rightwidget, .yui3-treeleaf-content-rightwidget{
     float: right;
 }
+.yui3-treenode-content-header, .yui3-treeleaf-content-header{
+    padding:4px 10px;
+}
+
+/* EFFECT */
+.yui3-treenode-content-header:hover, .yui3-treeleaf-content-header:hover{
+    background-color:#EDF5FF;
+    box-shadow: 0px 0px 6px black;
+}
 
 /* WEGAS menu*/
 .yui3-wegas-menu-content li{
     cursor:pointer;
     list-style-type: none;
 }
+.yui3-wegas-menu-content li:hover{
+    box-shadow: 0px 0px 6px black inset;
+    border-radius: 5px;
+}
 .yui3-wegas-menu-itemlist-horizontal{
     display:inline;
-    padding-left: 15px;
+    padding:3px 8px;
 }
 .yui3-wegas-menu-itemlist-vertical{
     display: list-item;
+}
+
+/* FILE EXPLORER */
+.yui3-uploader-hidden{
+    display:none;
 }
 

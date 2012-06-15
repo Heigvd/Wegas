@@ -24,16 +24,16 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Table(name = "FSMDescriptor")
 @XmlType(name = "FSMDescriptor")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptorEntity.class)
+    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class)
 })
-public class StateMachineDescriptorEntity extends VariableDescriptor<StateMachineInstanceEntity> {
+public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     //@MapKey(name = "id")
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
     @MapKeyColumn(name = "fsm_statekey")
     private Map<Long, State> states = new HashMap<>();
 
-    public StateMachineDescriptorEntity() {
+    public StateMachineDescriptor() {
     }
 
     public Map<Long, State> getStates() {
@@ -51,7 +51,7 @@ public class StateMachineDescriptorEntity extends VariableDescriptor<StateMachin
 
     @Override
     public void merge(AbstractEntity a) {
-        StateMachineDescriptorEntity smDescriptor = (StateMachineDescriptorEntity) a;
+        StateMachineDescriptor smDescriptor = (StateMachineDescriptor) a;
         this.mergeStates((HashMap<Long, State>) smDescriptor.getStates());
         super.merge(smDescriptor);
     }

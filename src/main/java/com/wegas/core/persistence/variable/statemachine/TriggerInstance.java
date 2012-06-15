@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name="TriggerInstance")
 @XmlRootElement
 @XmlType(name = "TriggerInstance")
-public class TriggerInstanceEntity extends StateMachineInstanceEntity {
+public class TriggerInstance extends StateMachineInstance {
 
     @Override
     public String toString() {
