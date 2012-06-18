@@ -64,8 +64,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         CriteriaQuery cq = cb.createQuery();
         Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
 //        cq.where(cb.and(
-//                cb.equal(variableDescriptor.get(VariableDescriptorEntity_.gameModel), gameModel),
-//                cb.equal(variableDescriptor.get(VariableDescripdtorEntity_.name), name)));
+//                cb.equal(variableDescriptor.get(VariableDescriptor_.gameModel), gameModel),
+//                cb.equal(variableDescriptor.get(VariableDescriptor_.name), name)));
         cq.where(cb.and(
                 cb.equal(variableDescriptor.get("gameModel"), gameModel),
                 cb.equal(variableDescriptor.get("name"), name)));

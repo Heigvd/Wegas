@@ -33,7 +33,6 @@ public class JsonMappingExceptionMapper extends AbstractExceptionMapper
      */
     @Override
     public Response toResponse(JsonMappingException exception) {
-        logger.error("Caught an error");
-        return processException(exception.getCause());
+        return processException(exception);
     }
 }

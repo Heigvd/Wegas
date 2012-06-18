@@ -17,8 +17,8 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.script.ScriptEntity;
-import com.wegas.core.script.ScriptFacade;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.ejb.ScriptFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -65,7 +65,7 @@ public class StateMachineRunner implements Serializable {
         //TODO: Should Eval without firing Event, lock SMInstance (concurrency)
         run = true;
         if (stateMachines.isEmpty()) {                                          // load stateMachines only once
-            GameModel gamemodel = gameManager.getGameModel();
+            GameModel gamemodel = gameManager.getCurrentGameModel();
             List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel,StateMachineDescriptor.class);
             for (VariableDescriptor stateMachineDescriptor : stateMachineDescriptors) {
                 stateMachines.add((StateMachineInstance) stateMachineDescriptor.getScope().getVariableInstance(gameManager.getCurrentPlayer()));
@@ -73,7 +73,7 @@ public class StateMachineRunner implements Serializable {
             logger.info("StateMachineInstance(s) found: {}", stateMachines);
         }
         //Put that in the SM Facade
-        ArrayList<ScriptEntity> impacts = new ArrayList<>();
+        ArrayList<Script> impacts = new ArrayList<>();
         for (StateMachineInstance stateMachine : stateMachines) {
             List<Transition> transitions = stateMachine.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
@@ -100,7 +100,7 @@ public class StateMachineRunner implements Serializable {
         steps += 1;
         run = false;
         try {
-            scriptManager.eval(gameManager.getCurrentPlayer(), impacts, null);
+            scriptManager.eval(gameManager.getCurrentPlayer(), impacts);
         }
         catch (ScriptException ex) {
             logger.error("Script Failed : {} returned: {}", impacts, ex);
