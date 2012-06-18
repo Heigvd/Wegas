@@ -9,9 +9,21 @@ YUI.add('wegas-leaderway-folder', function (Y) {
 
     Folder = Y.Base.create("wegas-folder", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         
+        previousMembreButton: null,
+        nextMembreButton: null,
         tabview: null,
         
           renderUI: function (){
+            this.previousMembreButton = new Y.Wegas.Button({
+                label: "Membre précédent",
+                cssClass:'wegas-folder-previousMembrebutton',
+                view:'button'
+            });
+            this.nextMembreButton = new Y.Wegas.Button({
+                label: "Membre suivant",
+                cssClass:'wegas-folder-nextMembreButton',
+                view:'button'
+            });
             this.tabview = new Y.TabView({
                 children: [{
                     label: 'Dossier',
@@ -30,7 +42,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     +'</div>'
                 }]
             });
-
+            this.get(CONTENTBOX).insert('<div class="wegas-folder-container-previousMembrebutton"></div>');
+            this.previousMembreButton.render('.wegas-folder-container-previousMembrebutton');
+            this.get(CONTENTBOX).insert('<div class="wegas-folder-container-nextMembrebutton"></div>');
+            this.nextMembreButton.render('.wegas-folder-container-nextMembrebutton');
             this.tabview.render(this.get(CONTENTBOX));
           },
         
@@ -46,6 +61,4 @@ YUI.add('wegas-leaderway-folder', function (Y) {
     });
 
     Y.namespace('Wegas').Folder = Folder;
-}, '3.5.0', {
-    requires: ['tabview']
 });

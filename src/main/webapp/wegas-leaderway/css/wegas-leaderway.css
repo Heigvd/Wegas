@@ -17,6 +17,14 @@ body{
     border-width: 0 1px 1px 1px;
 }
 
+.wegas-button-hover{
+    font-size: 1em;
+    display:block;
+    position:absolute;
+    background-color:#DCCDB1;
+    border:solid 1px;
+}
+
 /*--------------------------------Indicators----------------------------------*/
 .indicators{
     background-color:#eed4aa;
@@ -112,6 +120,10 @@ body{
     float:left;
 }
 
+.indicators .wegas-button-hover{
+    margin:5px 0 0 25px;
+}
+
 /*-----------------------------------menu-------------------------------------*/
 .menu{
     background-color:#E1D2B9;
@@ -192,20 +204,14 @@ body{
     border-radius: 10px
 }
 
-.menu .wegas-button-hover{
-    font-size: 1em;
-    display:block;
-    position:absolute;
-    background-color:#DCCDB1;
-    border:solid 1px;
-    margin:10px 0 0 40px;
-}
-
 .menu .yui3-wegas-login{
     float:right;
     margin:15px 0 0 0;
 }
 
+.menu .wegas-button-hover{
+    margin:10px 0 0 40px;
+}
 /*----------------------------maindisplayarea---------------------------------*/
 #maindisplayarea{
     background-color:#FFFFFF;    
@@ -213,10 +219,84 @@ body{
 
 
 /*----------------------------------RHList-----------------------------------*/
-.yui3-wegas-hrlist table{
+#leaderway-hrlist table{
     width:100%;
 }
 
-.yui3-wegas-hrlist tr{
-    height: 2em;
+#leaderway-hrlist th, #hrlist td{
+    border-width: 1px 0 1px 0;
+}
+
+#leaderway-hrlist th{
+    background-color: #dce5ef;
+    background-repeat: repeat-x;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/table-header_background.png");
+    height:30px;
+}
+
+#leaderway-hrlist th{
+    vertical-align:middle;
+    padding:0 5px 0 5px;
+}
+
+#leaderway-hrlist th div{
+    height:17px;
+    vertical-align:bottom;
+    
+}
+
+#leaderway-hrlist th div .yui3-datatable-sort-indicator{
+    vertical-align:top;
+}
+
+#leaderway-hrlist .yui3-datatable-odd td{
+    background-color: #DCE5EF;
+}
+
+#leaderway-hrlist td{
+    height:80px;
+    padding:0 5px 0 5px;
+}
+
+/*-----------------------------------Folder-----------------------------------*/
+#leaderway-folder .wegas-folder-container-previousMembrebutton{
+    float:left;
+    padding:5px;
+}
+
+#leaderway-folder .wegas-folder-container-nextMembrebutton{
+    float:right;
+    padding:5px;
+}
+
+#leaderway-folder .yui3-tabview{
+    display: block;
+    clear:both;
+    padding:20px 5px 5px 5px;
+}
+
+#leaderway-folder .yui3-tab-selected .yui3-tab-label{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/tabselected_background.png");
+    background-repeat: repeat-x;
+    background-color: #dce5ef;
+    background-position:center; 
+}
+
+#leaderway-folder .yui3-tab-label{
+    display:block;
+    width:100px;
+    height:20px;
+    font-size:1em;
+    margin: 0;
+    padding:10px 0 0 5px;
+}
+
+#leaderway-folder .yui3-tabview-list{
+    border-bottom:1px solid #6F89A2;
+}
+
+#leaderway-folder .yui3-tabview-panel{
+    background-color: #DCE5EF;
+    border:1px solid #6F89A2;
+    padding:5px;
 }

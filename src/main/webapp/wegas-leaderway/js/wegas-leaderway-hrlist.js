@@ -125,6 +125,4 @@ YUI.add('wegas-leaderway', function (Y) {
     });
 
     Y.namespace('Wegas').HRList = HRList;
-}, '3.5.0', {
-    requires: ['datatable-sort', 'datatable-core', 'datatable-message', 'datatable-mutable']
 });

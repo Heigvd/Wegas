@@ -20,7 +20,8 @@
                         "type": "Button",
                         "label": ">",
                         "view": "button",
-                        "onClick": "importPackage(com.wegas.core.script);\nperiod.value += 1;\n"
+                        "onClick": "importPackage(com.wegas.core.script);\nperiod.value += 1;\n",
+                        "hover":"Semaine suivante"
                     },{
                         "type": "VariableDisplay",
                         "label": "Budget : ",
@@ -65,6 +66,7 @@
                         "cssClass": "menu-HRList",
                         "hover":"Liste des membres",
                         "subpage": {
+                            "id":"leaderway-hrlist",
                             "type":"HRList",
                             "content":"module RH à faire"
                         }
@@ -76,6 +78,7 @@
                         "cssClass": "menu-folder",
                         "hover":"Dossiers des membres",
                         "subpage": {
+                            "id":"leaderway-folder",
                             "type": "Folder",
                             "content": "module dossier à faire"
                         }

@@ -155,11 +155,12 @@ YUI().use(function (Y) {
                     /**Leaderway**/
                     'wegas-leaderway': {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
-                        requires:['wegas-leaderway-folder', 'wegas-leaderway-dialogue']
+                        requires:['wegas-leaderway-folder', 'wegas-leaderway-dialogue', 'datatable-sort', 'datatable-core', 'datatable-message', 'datatable-mutable']
                         
                     },
                     'wegas-leaderway-folder':{
-                        path: 'wegas-leaderway/js/wegas-leaderway-folder.js'
+                        path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
+                        requires:['tabview', 'wegas-button']
                     },
                     'wegas-leaderway-dialogue':{
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js'
