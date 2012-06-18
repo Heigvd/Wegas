@@ -16,7 +16,7 @@ import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.script.ScriptFacade;
+import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.statemachine.StateMachineDescriptorFacade;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +81,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
             @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId)
             throws ScriptException {
         StateMachineDescriptor stateMachineDescriptorEntity = (StateMachineDescriptor) stateMachineDescriptorFacade.find(stateMachineDescriptorId);
-        StateMachineInstance stateMachineInstanceEntity = (StateMachineInstance) stateMachineDescriptorEntity.getVariableInstance(playerFacade.find(playerId));
+        StateMachineInstance stateMachineInstanceEntity = (StateMachineInstance) stateMachineDescriptorEntity.getInstance(playerFacade.find(playerId));
         State currentState = stateMachineInstanceEntity.getCurrentState();
         List<Transition> transitions = currentState.getTransitions();
         List<Transition> passedTransitions = new ArrayList<>();

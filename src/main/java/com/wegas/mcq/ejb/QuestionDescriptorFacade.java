@@ -15,7 +15,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.script.ScriptFacade;
+import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.QuestionInstance;
@@ -85,7 +85,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @throws ScriptException
      */
     public void setCurrentTime(QuestionDescriptor question, Player player, Long time) throws ScriptException {
-        QuestionInstance questionInstance = (QuestionInstance) question.getVariableInstance(player);
+        QuestionInstance questionInstance = (QuestionInstance) question.getInstance(player);
         for (Reply reply : questionInstance.getReplies()) {
            //logger.warn(reply.getStartTime()+"*"+reply.getChoiceDescriptor().getDuration()+"*"+time);
             if (reply.getStartTime() + reply.getChoiceDescriptor().getDuration() + 1  == time ) {
@@ -109,7 +109,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         findListDescriptorByChildId.setParameter("itemId", choiceDescriptorId);
         QuestionDescriptor questionDescriptor = (QuestionDescriptor) findListDescriptorByChildId.getSingleResult();
 
-        QuestionInstance questionInstance = (QuestionInstance) questionDescriptor.getVariableInstance(player);
+        QuestionInstance questionInstance = (QuestionInstance) questionDescriptor.getInstance(player);
         Reply reply = new Reply();
 
         reply.setChoiceDescriptor(choiceDescriptor);

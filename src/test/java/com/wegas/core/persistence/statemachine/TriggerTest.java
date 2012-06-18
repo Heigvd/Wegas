@@ -12,7 +12,7 @@ package com.wegas.core.persistence.statemachine;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import com.wegas.core.script.ScriptEntity;
+import com.wegas.core.persistence.game.Script;
 import org.junit.*;
 
 /**
@@ -25,7 +25,7 @@ public class TriggerTest {
 
     private TriggerInstance trigger;
     private TriggerDescriptor triggerDescriptor;
-    private ScriptEntity scriptEntity;
+    private Script scriptEntity;
 
     public TriggerTest() {
     }
@@ -45,7 +45,7 @@ public class TriggerTest {
         this.triggerDescriptor = new TriggerDescriptor();
         this.triggerDescriptor.setDefaultInstance(this.trigger);
         this.triggerDescriptor.setName("testTrigger");
-        this.scriptEntity = new ScriptEntity();
+        this.scriptEntity = new Script();
         this.scriptEntity.setLanguage("JavaScript");
         this.scriptEntity.setContent("var x=10; x+=2;");
         this.triggerDescriptor.setTriggerEvent(scriptEntity);
@@ -122,7 +122,7 @@ public class TriggerTest {
         newTrigger.setDefaultInstance(this.trigger);
         newTrigger.setId(5L);
         newTrigger.setOneShot(true);
-        ScriptEntity newTestScript = new ScriptEntity();
+        Script newTestScript = new Script();
         newTestScript.setLanguage("Python");
         newTestScript.setContent("TestScript;");
         newTrigger.setPostTriggerEvent(newTestScript);

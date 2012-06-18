@@ -12,7 +12,6 @@ package com.wegas.leadergame.ejb;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.leadergame.persistence.Assignment;
 import com.wegas.leadergame.persistence.ResourceDescriptor;
 import com.wegas.leadergame.persistence.ResourceInstance;
 import com.wegas.leadergame.persistence.TaskDescriptor;
@@ -69,7 +68,7 @@ public class ResourceDescriptorFacade extends AbstractFacadeImpl<ResourceDescrip
      * @param taskId
      */
     public void assign(Player player, Long resourceDescriptorId, Long startTime, Long taskId) {
-        this.assign(this.find(resourceDescriptorId).getVariableInstance(player),
+        this.assign(this.find(resourceDescriptorId).getInstance(player),
                 startTime, (TaskDescriptor) variableDescriptorFacade.find(taskId));
     }
 

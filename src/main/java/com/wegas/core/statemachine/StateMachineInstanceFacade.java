@@ -12,8 +12,8 @@ package com.wegas.core.statemachine;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.script.ScriptEntity;
-import com.wegas.core.script.ScriptFacade;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.ejb.ScriptFacade;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.persistence.EntityManager;
@@ -56,7 +56,7 @@ public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineI
     public void step(StateMachineInstance entity) throws ScriptException{
         List<Transition> transitions = entity.getCurrentState().getTransitions();
         for(Transition transition: transitions){
-            ScriptEntity script = transition.getTriggerCondition();
+            Script script = transition.getTriggerCondition();
             //Get playerId, gameModelId and need an additional evalScript (true|false)
             scriptManager.eval(Long.MIN_VALUE, script);
 

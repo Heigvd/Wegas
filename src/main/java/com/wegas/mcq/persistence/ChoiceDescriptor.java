@@ -12,7 +12,7 @@ package com.wegas.mcq.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.script.ScriptEntity;
+import com.wegas.core.persistence.game.Script;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -41,7 +41,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     @Embedded
-    private ScriptEntity impact;
+    private Script impact;
     /**
      *
      */
@@ -88,14 +88,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      * @return the impact
      */
-    public ScriptEntity getImpact() {
+    public Script getImpact() {
         return impact;
     }
 
     /**
      * @param impact the impact to set
      */
-    public void setImpact(ScriptEntity impact) {
+    public void setImpact(Script impact) {
         this.impact = impact;
     }
 
@@ -157,14 +157,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @param p
      */
     public void activate(Player p) {
-       this.getVariableInstance(p).activate();
+       this.getInstance(p).activate();
     }
     /**
      *
      * @param p
      */
     public void desactivate(Player p) {
-       this.getVariableInstance(p).desactivate();
+       this.getInstance(p).desactivate();
     }
 
 }

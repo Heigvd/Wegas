@@ -67,7 +67,7 @@ public class InGameMailFacade extends AbstractFacadeImpl<Message> {
      */
     public void send(Player p, Message msg) {
         VariableDescriptor vd = variableDescriptorFacade.findByName(p.getGameModel(), "inbox");
-        InboxInstance inbox = (InboxInstance) vd.getVariableInstance(p);
+        InboxInstance inbox = (InboxInstance) vd.getInstance(p);
         inbox.addMessage(msg);
     }
 
