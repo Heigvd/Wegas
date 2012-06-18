@@ -89,6 +89,10 @@ public class ScriptFacade {
      * @throws ScriptException
      */
     public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
+        if (scripts.isEmpty()) {
+            return null;
+        }
+
         ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
         ScriptEngine engine = mgr.getEngineByName(scripts.get(0).getLanguage());
         // Invocable invocableEngine = (Invocable) engine;
@@ -102,10 +106,14 @@ public class ScriptFacade {
             engine.put(arg.getKey(), arg.getValue());
         }
 
+        // @fixme test the most performant version
         Object result = null;
+        String script = "";
         for (Script s : scripts) {                                              // Evaluate each script
-            result = engine.eval(s.getContent());
+            script += s.getContent() + ";";
+            //result = engine.eval(s.getContent());
         }
+        result = engine.eval(script);
 
         em.flush();                                                             // Commit the transaction
         variableInstanceManager.commit();
@@ -123,9 +131,9 @@ public class ScriptFacade {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
         evt.getEngine().eval("importPackage(com.wegas.core.script)");           // Inject factory object
 
-        for (Script s : evt.getPlayer().getGameModel().getScriptLibrary()) {
-            evt.getEngine().eval(s.getContent());
-        }
+//        for (Script s : evt.getPlayer().getGameModel().getScriptLibrary()) {
+//            evt.getEngine().eval(s.getContent());
+//        }
 
         for (VariableDescriptor vd : evt.getPlayer().getGameModel().getVariableDescriptors()) { // We inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());

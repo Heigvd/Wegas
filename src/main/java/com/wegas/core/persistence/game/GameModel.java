@@ -83,7 +83,7 @@ public class GameModel extends NamedEntity implements Serializable {
 //    })
     @Transient
     @XmlTransient
-    private Set<Script> scriptLibrary;
+    private List<Script> scriptLibrary = new ArrayList<>();
     /**
      * @fixme temporary solutions to store pages
      */
@@ -279,14 +279,14 @@ public class GameModel extends NamedEntity implements Serializable {
     /**
      * @return the scriptLibrary
      */
-    public Set<Script> getScriptLibrary() {
+    public List<Script> getScriptLibrary() {
         return scriptLibrary;
     }
 
     /**
      * @param scriptLibrary the scriptLibrary to set
      */
-    public void setScriptLibrary(Set<Script> scriptLibrary) {
+    public void setScriptLibrary(List<Script> scriptLibrary) {
         this.scriptLibrary = scriptLibrary;
     }
 }
