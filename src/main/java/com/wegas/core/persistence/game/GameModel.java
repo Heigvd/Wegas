@@ -12,17 +12,15 @@ package com.wegas.core.persistence.game;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.layout.Widget;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -40,7 +38,7 @@ public class GameModel extends NamedEntity implements Serializable {
      */
     @Id
     @Column(name = "gamemodelid")
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private Long id;
     /**
      *
@@ -76,6 +74,16 @@ public class GameModel extends NamedEntity implements Serializable {
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("gamemodel-widget")
     private List<Widget> widgets;
+    /**
+     * Holds all the scripts contained in current game model.
+     */
+    //@ElementCollection
+//    @CollectionTable(joinColumns = {
+//        @JoinColumn(name = "parentgamemodel", referencedColumnName = "gamemodelid")
+//    })
+    @Transient
+    @XmlTransient
+    private List<Script> scriptLibrary = new ArrayList<>();
     /**
      * @fixme temporary solutions to store pages
      */
@@ -266,5 +274,19 @@ public class GameModel extends NamedEntity implements Serializable {
      */
     public void setWidgetsUri(String widgetsUri) {
         this.widgetsUri = widgetsUri;
+    }
+
+    /**
+     * @return the scriptLibrary
+     */
+    public List<Script> getScriptLibrary() {
+        return scriptLibrary;
+    }
+
+    /**
+     * @param scriptLibrary the scriptLibrary to set
+     */
+    public void setScriptLibrary(List<Script> scriptLibrary) {
+        this.scriptLibrary = scriptLibrary;
     }
 }

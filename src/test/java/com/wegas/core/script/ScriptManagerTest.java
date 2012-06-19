@@ -9,6 +9,8 @@
  */
 package com.wegas.core.script;
 
+import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.ejb.AbstractEJBTest;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -45,7 +47,7 @@ public class ScriptManagerTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), stringDescriptor);
 
         // Eval a dummy script
-        ScriptEntity s = new ScriptEntity();
+        Script s = new Script();
         s.setLanguage("JavaScript");
         s.setContent(VARIABLENAME + ".value = \"" + VALUE2 + "\"");
         sm.eval(player.getId(), s);

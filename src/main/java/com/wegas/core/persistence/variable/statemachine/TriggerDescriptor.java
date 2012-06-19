@@ -10,7 +10,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.script.ScriptEntity;
+import com.wegas.core.persistence.game.Script;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +30,9 @@ public class TriggerDescriptor extends StateMachineDescriptor {
 
     private Boolean oneShot;
     @Transient
-    private ScriptEntity triggerEvent;
+    private Script triggerEvent;
     @Transient
-    private ScriptEntity postTriggerEvent;
+    private Script postTriggerEvent;
 
     public TriggerDescriptor() {
     }
@@ -50,7 +50,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         this.oneShot = oneShot;
     }
 
-    public ScriptEntity getPostTriggerEvent() {
+    public Script getPostTriggerEvent() {
         return postTriggerEvent;
     }
 
@@ -59,11 +59,11 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      *
      * @param postTriggerEvent a script to execute after this trigger executes
      */
-    public void setPostTriggerEvent(ScriptEntity postTriggerEvent) {
+    public void setPostTriggerEvent(Script postTriggerEvent) {
         this.postTriggerEvent = postTriggerEvent;
     }
 
-    public ScriptEntity getTriggerEvent() {
+    public Script getTriggerEvent() {
         return triggerEvent;
     }
 
@@ -72,7 +72,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      *
      * @param triggerEvent a script which fires the trigger
      */
-    public void setTriggerEvent(ScriptEntity triggerEvent) {
+    public void setTriggerEvent(Script triggerEvent) {
         this.triggerEvent = triggerEvent;
     }
 

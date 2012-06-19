@@ -46,7 +46,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     /**
      *
      * @param gameModelId
-     * @param variableDescriptorEntity
+     * @param variableDescriptor
      */
     public void create(Long gameModelId, VariableDescriptor variableDescriptor) {
         this.gameModelFacade.find(gameModelId).addVariableDescriptor(variableDescriptor);
@@ -55,6 +55,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
     /**
      *
+     * @param gameModel
      * @param name
      * @return
      */
@@ -63,8 +64,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         CriteriaQuery cq = cb.createQuery();
         Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
 //        cq.where(cb.and(
-//                cb.equal(variableDescriptor.get(VariableDescriptorEntity_.gameModel), gameModel),
-//                cb.equal(variableDescriptor.get(VariableDescriptorEntity_.name), name)));
+//                cb.equal(variableDescriptor.get(VariableDescriptor_.gameModel), gameModel),
+//                cb.equal(variableDescriptor.get(VariableDescriptor_.name), name)));
         cq.where(cb.and(
                 cb.equal(variableDescriptor.get("gameModel"), gameModel),
                 cb.equal(variableDescriptor.get("name"), name)));
@@ -85,8 +86,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
     /**
      *
+     * @param gamemodel
      * @param variableDescriptorClass the filtering class
-     * @param gameModelId The Game Model ID
      * @return All specified classes and subclasses belonging to the game model.
      */
     public List<VariableDescriptor> findByClass(GameModel gamemodel, Class variableDescriptorClass) {

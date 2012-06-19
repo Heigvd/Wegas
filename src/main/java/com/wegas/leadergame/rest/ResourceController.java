@@ -40,27 +40,6 @@ public class ResourceController extends AbstractRestController<QuestionDescripto
     /**
      *
      * @param gameModelId
-     * @param playerId
-     * @param choiceId
-     * @return p
-     * @throws ScriptException
-     */
-    @GET
-    @Path("/Assign/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response selectReply(
-            @PathParam("playerId") Long playerId,
-            @PathParam("choiceId") Long choiceId) throws ScriptException {
-
-        Reply reply =
-                questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
-        questionDescriptorFacade.validateReply(playerId, reply.getId());
-        return Response.ok().build();
-    }
-
-    /**
-     *
-     * @param gameModelId
      * @param replyId
      * @return
      * @throws ScriptException
@@ -77,7 +56,6 @@ public class ResourceController extends AbstractRestController<QuestionDescripto
 
     /**
      *
-     * @param gameModelId
      * @param playerId
      * @param choiceDescriptorId
      * @param startTime

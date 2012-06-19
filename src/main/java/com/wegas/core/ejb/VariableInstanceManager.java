@@ -41,10 +41,6 @@ public class VariableInstanceManager implements Serializable {
      *
      */
     private List<VariableInstance> updatedInstances = new ArrayList<>();
-    /**
-     *
-     */
-    private GameModel gameModel;
 
     /**
      *
@@ -54,6 +50,16 @@ public class VariableInstanceManager implements Serializable {
             PlayerAction action = new PlayerAction();
             action.setPlayer(this.getCurrentPlayer());
             playerActionEvent.fire(action);
+        }
+    }
+
+    /**
+     *
+     * @param instance
+     */
+    public void addUpdatedInstance(VariableInstance instance) {
+        if (!this.getUpdatedInstances().contains(instance)) {
+            this.getUpdatedInstances().add(instance);
         }
     }
 
@@ -75,26 +81,8 @@ public class VariableInstanceManager implements Serializable {
      *
      * @return
      */
-    public GameModel getGameModel() {
-        return gameModel;
-    }
-
-    /**
-     *
-     * @param gameModel
-     */
-    public void setGameModel(GameModel gameModel) {
-        this.gameModel = gameModel;
-    }
-
-    /**
-     *
-     * @param instance
-     */
-    public void addUpdatedInstance(VariableInstance instance) {
-        if (!this.getUpdatedInstances().contains(instance)) {
-            this.getUpdatedInstances().add(instance);
-        }
+    public GameModel getCurrentGameModel() {
+        return this.getCurrentPlayer().getGameModel();
     }
 
     /**
