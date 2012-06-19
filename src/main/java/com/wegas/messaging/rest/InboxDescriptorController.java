@@ -50,6 +50,12 @@ public class InboxDescriptorController extends AbstractRestController<VariableDe
         return this.inboxDescriptorFacade;
     }
 
+    /**
+     *
+     * @param messageId
+     * @param message
+     * @return
+     */
     @PUT
     @Path("Message/{messageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)

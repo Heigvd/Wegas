@@ -11,6 +11,8 @@ package com.wegas.leadergame.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.Map;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 
 /**
@@ -25,6 +27,11 @@ public class TaskInstance extends VariableInstance {
      *
      */
     private Boolean active = true;
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, String> properties;
 
     /**
      *
@@ -33,6 +40,9 @@ public class TaskInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         TaskInstance other = (TaskInstance) a;
+        this.setActive(other.getActive());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
     }
 
     /**
@@ -47,5 +57,37 @@ public class TaskInstance extends VariableInstance {
      */
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setProperty(String key, String val) {
+        this.properties.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getProperty(String key) {
+        return this.properties.get(key);
     }
 }

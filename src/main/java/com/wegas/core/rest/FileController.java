@@ -39,6 +39,17 @@ public class FileController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
 
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @param note
+     * @param path
+     * @param file
+     * @param details
+     * @return
+     * @throws RepositoryException
+     */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
@@ -89,6 +100,12 @@ public class FileController {
         return detachedFile;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @return
+     */
     @GET
     @Path("read{absolutePath : .*?}")
     public Response read(@PathParam("gameModelId") String gameModelId, @PathParam("absolutePath") String name) {
@@ -116,6 +133,12 @@ public class FileController {
         return response.build();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param directory
+     * @return
+     */
     @GET
     @Path("list{absoluteDirectoryPath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -137,6 +160,13 @@ public class FileController {
         return new ArrayList<>();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param absolutePath
+     * @param force
+     * @return
+     */
     @DELETE
     @Path("{force: (force/)?}delete{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -171,6 +201,7 @@ public class FileController {
 
     /**
      * Well... underlying function not yet implemented do it by hand for now
+     * @param gameModelId
      */
     @DELETE
     @Path("destruct")

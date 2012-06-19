@@ -169,8 +169,20 @@ public class Player extends AbstractEntity {
     }
 
     // *** Sugar *** //
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
+    }
+    /**
+     *
+     * @return
+     */
+    @XmlTransient
+    public Game getGame() {
+        return this.getTeam().getGame();
     }
 }

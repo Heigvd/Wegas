@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractExceptionMapper {
 
-    final private Logger logger = LoggerFactory.getLogger(AbstractExceptionMapper.class);
+    final static private Logger logger = LoggerFactory.getLogger(AbstractExceptionMapper.class);
 
     /**
      *
@@ -70,6 +70,7 @@ public abstract class AbstractExceptionMapper {
                     new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
 
         } else {
+            logger.error("Caught an unexpected error: {}",  exception.getLocalizedMessage());
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
                     new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();

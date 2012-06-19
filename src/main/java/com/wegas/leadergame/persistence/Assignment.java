@@ -56,6 +56,22 @@ public class Assignment extends AbstractEntity {
 
     /**
      *
+     */
+    public Assignment() {
+    }
+
+    /**
+     *
+     * @param startTime
+     * @param taskDescriptor
+     */
+    public Assignment(Long startTime, TaskDescriptor taskDescriptor) {
+        this.startTime = startTime;
+        this.taskDescriptor = taskDescriptor;
+    }
+
+    /**
+     *
      * @param a
      */
     @Override
@@ -93,7 +109,7 @@ public class Assignment extends AbstractEntity {
     }
 
     /**
-     * @param questionInstance
+     * @param resourceInstance
      */
     @JsonBackReference
     public void setResourceInstance(ResourceInstance resourceInstance) {
@@ -123,7 +139,7 @@ public class Assignment extends AbstractEntity {
     }
 
     /**
-     * @param choiceDescriptor the choiceDescriptor to set
+     * @param taskDescriptor
      */
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
