@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

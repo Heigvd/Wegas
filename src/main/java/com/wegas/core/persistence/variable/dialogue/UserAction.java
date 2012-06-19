@@ -10,7 +10,7 @@
  */
 package com.wegas.core.persistence.variable.dialogue;
 
-import com.wegas.core.script.ScriptEntity;
+import com.wegas.core.persistence.game.Script;
 import java.io.Serializable;
 import java.util.Map;
 import javax.persistence.*;
@@ -41,7 +41,7 @@ public class UserAction implements Serializable {
     private String name;
     private String notes;
     @Embedded
-    private ScriptEntity impact;
+    private Script impact;
     @OneToMany(mappedBy = "action", cascade = CascadeType.ALL)
     @MapKeyColumn(name = "response_name", insertable = false, updatable = false)
     private Map<String, ResponseModel> responseModels;
@@ -61,11 +61,11 @@ public class UserAction implements Serializable {
         return id;
     }
 
-    public ScriptEntity getImpact() {
+    public Script getImpact() {
         return impact;
     }
 
-    public void setImpact(ScriptEntity impact) {
+    public void setImpact(Script impact) {
         this.impact = impact;
     }
 

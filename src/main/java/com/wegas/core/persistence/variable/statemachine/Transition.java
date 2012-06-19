@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.dialogue.UserInput;
 import java.io.Serializable;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -33,9 +34,9 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 public class Transition implements Serializable {
 
     @Embedded
-    private ScriptEntity triggerCondition;
+    private Script triggerCondition;
     @Embedded
-    ScriptEntity preStateImpact;
+    private Script preStateImpact;
     private Long nextStateId;
 
     public Transition() {
@@ -57,11 +58,11 @@ public class Transition implements Serializable {
         this.triggerCondition = triggerCondition;
     }
 
-    public ScriptEntity getPreStateImpact() {
+    public Script getPreStateImpact() {
         return preStateImpact;
     }
 
-    public void setPreStateImpact(ScriptEntity preStateImpact) {
+    public void setPreStateImpact(Script preStateImpact) {
         this.preStateImpact = preStateImpact;
     }
 

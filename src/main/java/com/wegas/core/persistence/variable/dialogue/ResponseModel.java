@@ -10,7 +10,7 @@
  */
 package com.wegas.core.persistence.variable.dialogue;
 
-import com.wegas.core.script.ScriptEntity;
+import com.wegas.core.persistence.game.Script;
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
@@ -39,7 +39,7 @@ public class ResponseModel implements Serializable {
     private String label;
     private String responseText;
     @Embedded
-    private ScriptEntity impact;
+    private Script impact;
     private String notes;
 
     public ResponseModel() {
@@ -49,11 +49,11 @@ public class ResponseModel implements Serializable {
         return id;
     }
 
-    public ScriptEntity getImpact() {
+    public Script getImpact() {
         return impact;
     }
 
-    public void setImpact(ScriptEntity impact) {
+    public void setImpact(Script impact) {
         this.impact = impact;
     }
 
