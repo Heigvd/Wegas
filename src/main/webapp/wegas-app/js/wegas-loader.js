@@ -93,7 +93,7 @@ YUI().use(function (Y) {
                             'wegas-inputex', 'wegas-app', 'wegas-treeview',
                             'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
                             'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
-                            'ace-css'
+                            'ace-css', 'wegas-statemachine'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss',
                         ]
@@ -137,6 +137,10 @@ YUI().use(function (Y) {
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer.js',
                         requires: ['treeview', 'uploader-html5']
+                    },
+                    'wegas-statemachineviewer': {
+                        path: 'wegas-editor/js/wegas-statemachineviewer.js',
+                        requires: ['graphics']
                     },
 
                     /** Project Management Game */

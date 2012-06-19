@@ -183,6 +183,12 @@
                 "children": [{
                     "type": "FileExplorer"
                 }]
+            }, {
+                "type": "Tab",
+                "label": "StateMachine Viewer",
+                "childer": [{
+                    "type": "StateMachineViewer"
+                }]
             }]
         }]
     }

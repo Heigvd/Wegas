@@ -22,14 +22,13 @@ import javax.xml.bind.annotation.XmlType;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@Table(name="TriggerInstance")
+@Table(name = "TriggerInstance")
 @XmlRootElement
 @XmlType(name = "TriggerInstance")
 public class TriggerInstance extends StateMachineInstance {
 
     @Override
     public String toString() {
-        return "TriggerInstanceEntity{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';
+        return "TriggerInstance{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';
     }
-
 }

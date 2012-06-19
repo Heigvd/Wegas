@@ -9,12 +9,14 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
 import com.wegas.core.script.ScriptEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
@@ -26,6 +28,9 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @Access(AccessType.FIELD)
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "ActiveResponse", value = ActiveResponse.class)
+})
 public class State implements Serializable {
 
     @Id
@@ -44,10 +49,6 @@ public class State implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getLabel() {
