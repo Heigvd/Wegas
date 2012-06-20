@@ -123,12 +123,12 @@ public class TriggerDescriptor extends StateMachineDescriptor {
             initialState.setOnEnterEvent(this.postTriggerEvent);
             transition.setNextStateId(1L);
         }
-        ((TriggerInstance)this.getDefaultVariableInstance()).setCurrentStateId(1L);
+        ((TriggerInstance) this.getDefaultVariableInstance()).setCurrentStateId(1L);
         this.setStates(states);
     }
 
     @Override
     public String toString() {
-        return "TriggerDescriptorEntity{id=" + this.getId() + ", oneShot=" + oneShot + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
+        return "TriggerDescriptor{id=" + this.getId() + ", oneShot=" + oneShot + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
     }
 }
