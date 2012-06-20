@@ -9,12 +9,12 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.core.persistence.variable.primitive.BooleanDescriptorEntity;
-import com.wegas.core.persistence.variable.primitive.BooleanInstanceEntity;
-import com.wegas.core.persistence.variable.primitive.StringDescriptorEntity;
-import com.wegas.core.persistence.variable.primitive.StringInstanceEntity;
-import com.wegas.core.persistence.variable.scope.TeamScopeEntity;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
+import com.wegas.core.persistence.variable.primitive.BooleanInstance;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import javax.naming.NamingException;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -40,28 +40,28 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
 
         // Test the descriptor
-        StringDescriptorEntity stringDescriptor = new StringDescriptorEntity(VARIABLENAME);
-        stringDescriptor.setDefaultInstance(new StringInstanceEntity(VALUE));
-        stringDescriptor.setScope(new TeamScopeEntity());
+        StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
+        stringDescriptor.setDefaultInstance(new StringInstance(VALUE));
+        stringDescriptor.setScope(new TeamScope());
 
-        StringDescriptorEntity stringDescriptor2 = new StringDescriptorEntity(VARIABLENAME2);
-        stringDescriptor2.setDefaultInstance(new StringInstanceEntity(VALUE2));
+        StringDescriptor stringDescriptor2 = new StringDescriptor(VARIABLENAME2);
+        stringDescriptor2.setDefaultInstance(new StringInstance(VALUE2));
         this.testVariableDescriptor(stringDescriptor, stringDescriptor2);
 
         // Check its value
-        StringInstanceEntity instance = (StringInstanceEntity) vif.find(stringDescriptor.getId(), player);
+        StringInstance instance = (StringInstance) vif.find(stringDescriptor.getId(), player);
         Assert.assertEquals(VALUE2, instance.getValue());
 
         // Edit the variable instance
-        vif.update(stringDescriptor.getId(), player.getId(), new StringInstanceEntity(VALUE3));
+        vif.update(stringDescriptor.getId(), player.getId(), new StringInstance(VALUE3));
 
         // Verify the new value
-        instance = (StringInstanceEntity) vif.find(stringDescriptor.getId(), player.getId());
+        instance = (StringInstance) vif.find(stringDescriptor.getId(), player.getId());
         Assert.assertEquals(VALUE3, instance.getValue());
 
         // Reset the game and test
         gameModelFacade.reset(gameModel.getId());
-        instance = (StringInstanceEntity) vif.find(stringDescriptor.getId(), player);
+        instance = (StringInstance) vif.find(stringDescriptor.getId(), player);
         Assert.assertEquals(VALUE2, instance.getValue());
     }
 
@@ -72,31 +72,31 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
 
         // Test the descriptor
-        BooleanDescriptorEntity booleanDescriptor = new BooleanDescriptorEntity(VARIABLENAME);
-        booleanDescriptor.setDefaultInstance(new BooleanInstanceEntity(true));
-        booleanDescriptor.setScope(new TeamScopeEntity());
-        BooleanDescriptorEntity booleanDescriptor2 = new BooleanDescriptorEntity(VARIABLENAME2);
-        booleanDescriptor2.setDefaultInstance(new BooleanInstanceEntity(false));
+        BooleanDescriptor booleanDescriptor = new BooleanDescriptor(VARIABLENAME);
+        booleanDescriptor.setDefaultInstance(new BooleanInstance(true));
+        booleanDescriptor.setScope(new TeamScope());
+        BooleanDescriptor booleanDescriptor2 = new BooleanDescriptor(VARIABLENAME2);
+        booleanDescriptor2.setDefaultInstance(new BooleanInstance(false));
         this.testVariableDescriptor(booleanDescriptor, booleanDescriptor2);
 
         // Check its value
-        BooleanInstanceEntity instance = (BooleanInstanceEntity) vif.find(booleanDescriptor.getId(), player);
+        BooleanInstance instance = (BooleanInstance) vif.find(booleanDescriptor.getId(), player);
         Assert.assertEquals(false, instance.getValue());
 
         // Edit the variable instance
-        vif.update(booleanDescriptor.getId(), player.getId(), new BooleanInstanceEntity(true));
+        vif.update(booleanDescriptor.getId(), player.getId(), new BooleanInstance(true));
 
         // Verify the new value
-        instance = (BooleanInstanceEntity) vif.find(booleanDescriptor.getId(), player.getId());
+        instance = (BooleanInstance) vif.find(booleanDescriptor.getId(), player.getId());
         Assert.assertEquals(true, instance.getValue());
 
         // Reset the game and test
         gameModelFacade.reset(gameModel.getId());
-        instance = (BooleanInstanceEntity) vif.find(booleanDescriptor.getId(), player);
+        instance = (BooleanInstance) vif.find(booleanDescriptor.getId(), player);
         Assert.assertEquals(false, instance.getValue());
     }
 
-    public <T extends VariableDescriptorEntity> T testVariableDescriptor(T descriptor1, T descriptor2)
+    public <T extends VariableDescriptor> T testVariableDescriptor(T descriptor1, T descriptor2)
             throws NamingException {
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
         VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);

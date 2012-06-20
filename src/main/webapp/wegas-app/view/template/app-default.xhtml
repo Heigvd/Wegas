@@ -4,7 +4,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
-
+    <f:loadBundle basename="wegas-app.wegasapp" var="wegasConfig"/>
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title><ui:insert name="title">Wegas - 0.2</ui:insert></title>
@@ -17,13 +17,18 @@
         <meta name="revisit-after" content="30 days" />
         <link rel="icon" type="image/ico" href="/favicon.ico" />
 
-        <!-- YUI -->
-        <!-- CDN  -->
-        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.5.0/build/cssfonts/fonts-min.css&amp;3.5.0/build/cssreset/reset-min.css&amp;3.5.0/build/cssgrids/grids-min.css&amp;3.5.0/build/widget-base/assets/skins/sam/widget-base.css&amp;3.5.0/build/node-menunav/assets/skins/sam/node-menunav.css" />
+        <ui:fragment rendered="#{!wegasConfig.assets_local}">
+            <!-- YUI -->
+            <!-- CDN  -->
+            <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.5.0/build/cssfonts/fonts-min.css&amp;3.5.0/build/cssreset/reset-min.css&amp;3.5.0/build/cssgrids/grids-min.css&amp;3.5.0/build/widget-base/assets/skins/sam/widget-base.css&amp;3.5.0/build/node-menunav/assets/skins/sam/node-menunav.css" />
+        </ui:fragment>
 
-        <!-- Self hosted -->
-<!--         <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
-        <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />-->
+        <ui:fragment rendered="#{wegasConfig.assets_local}">
+            <!-- Self hosted -->
+            <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
+            <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />
+        </ui:fragment>
+
 
         <!-- <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.2/build/assets/skins/sam/skin.css" />-->
 
@@ -42,13 +47,15 @@
     </h:head>
 
     <h:body class="yui3-skin-sam yui-skin-sam">
-
-        <!-- YUI Base -->
-        <!-- CDN -->
-        <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.5.0/build/yui/yui-min.js&amp;3.5.0/build/loader/loader-min.js"></script>
-
-        <!-- Self hosted -->
-<!--        <script type="text/javascript" src="/Wegas/lib/yui3/build/yui/yui-min.js"></script>-->
+        <ui:fragment rendered="#{!wegasConfig.assets_local}">
+            <!-- YUI Base -->
+            <!-- CDN -->
+            <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.5.0/build/yui/yui-min.js&amp;3.5.0/build/loader/loader-min.js"></script>
+        </ui:fragment>
+        <ui:fragment rendered="#{wegasConfig.assets_local}">
+            <!-- Self hosted -->
+            <script type="text/javascript" src="/Wegas/lib/yui3/build/yui/yui-min.js"></script>
+        </ui:fragment>
 
         <!-- InputEx Loader -->
         <script src="/Wegas/lib/inputex/build/loader.js"  type='text/javascript'></script>
@@ -84,24 +91,26 @@
                     Y.log('Uncaught error: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
                 },
                 groups: {
-//                    /* Set up local version of yui2 */
-//                    yui2: {
-//                        base: '/Wegas/lib/yui2in3/build/',
-//                        // combine: true,
-//                        // comboBase: 'http://myserver.com/combo?',
-//                        // root: '/2in3/build/',
-//                        patterns:  {
-//                            'yui2-': {
-//                                configFn: function(me) {
-//                                    if(/-skin|reset|fonts|grids|base/.test(me.name)) {
-//                                        me.type = 'css';
-//                                        me.path = me.path.replace(/\.js/, '.css');
-//                                        me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
+                    <ui:fragment rendered="#{wegasConfig.assets_local}">
+                    /* Set up local version of yui2 TODO: remove that dependency !*/
+                    yui2: {
+                        base: '/Wegas/lib/yui2in3/build/',
+                        // combine: true,
+                        // comboBase: 'http://myserver.com/combo?',
+                        // root: '/2in3/build/',
+                        patterns:  {
+                            'yui2-': {
+                                configFn: function(me) {
+                                    if(/-skin|reset|fonts|grids|base/.test(me.name)) {
+                                        me.type = 'css';
+                                        me.path = me.path.replace(/\.js/, '.css');
+                                        me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    </ui:fragment>
                 }
             }).use(
                 <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
@@ -271,7 +280,12 @@
                         "Player": [
                             { text: "Delete", value: { op:'delete' } }
                         ],
-                        "Player": [
+
+                        // *** Leader game *** //
+                        "TaskDescriptor": [
+                            { text: "Delete", value: { op:'delete' } }
+                        ],
+                        "ResourceDescriptor": [
                             { text: "Delete", value: { op:'delete' } }
                         ]
                     },
@@ -331,20 +345,20 @@
                             { name: 'name', label:'Name', required: true},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name:'defaultVariableInstance', disabled:true, type:'group', fields: [
-                                { name: '@class', value:'TriggerInstance', type: 'hidden'},
-                                { name: 'id', type: 'hidden'},
-                                { name: 'currentStateId', label: 'Initial state'}
-                            ]},
+                                    { name: '@class', value:'TriggerInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: 'currentStateId', label: 'Initial state'}
+                                ]},
                             {name:'triggerEvent', type:'group', fields:[
-                                {name:'@class', value:'Script', type:'hidden'},
-                                {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
-                                {name:'content', label:'Condition',type:'text'}
-                            ]},
+                                    {name:'@class', value:'Script', type:'hidden'},
+                                    {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
+                                    {name:'content', label:'Condition',type:'text'}
+                                ]},
                             {name:'postTriggerEvent', type:'group', fields:[
-                                {name:'@class', value:'Script', type:'hidden'},
-                                {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
-                                {name:'content', label:'Impact',type:'text'}
-                            ]},
+                                    {name:'@class', value:'Script', type:'hidden'},
+                                    {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
+                                    {name:'content', label:'Impact',type:'text'}
+                                ]},
                             { name: 'oneShot', label:'Only once', type:'boolean'}
                         ],
                         "TriggerInstance": [
@@ -423,7 +437,7 @@
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
                             { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
-                            { name: 'answer', 'type': 'html', label:'Answer', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
+                            { name: 'feedback', 'type': 'html', label:'Feedback', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
                             { name:'impact', type:'group', fields: [
                                     { name: '@class', value:'Script', type: 'hidden'},
                                     { name: 'language', value:'JavaScript', type: 'hidden'},
@@ -442,7 +456,53 @@
                             { name: '@class', type: 'hidden', value: 'ChoiceInstance'},
                             { name: 'active', label:'Active', type: 'boolean'}
                         ],
-                        /*********************************************************** Widgets Forms */
+
+                        // *** Leader Game *** //
+                        "ResourceDescriptor": [
+                            { name: "id", type: "hidden"},
+                            { name: '@class', type: 'hidden', value: "ResourceDescriptor"},
+                            { name: 'scope', type:'group', fields: ScopeForm},
+                            { name: 'name', label:'Name', required: true},
+//                            { name: 'label', label:'Label'},
+                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'ResourceInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'},
+                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                { name: "properties", "type": "object", label: "Default properties" },
+                                { name: "skillset", "type": "object", label: "Default skills" }
+                            ]}
+                        ],
+                        "ResourceInstance": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'ResourceInstance'},
+                            { name: 'active', label:'Active', type: 'boolean'},
+                            { name: "properties", "type": "object", label: "Properties" },
+                            { name: "skillset", "type": "object", label: "Skills" }
+                        ],
+                        "TaskDescriptor": [
+                            { name: "id", type: "hidden"},
+                            { name: '@class', type: 'hidden', value: "TaskDescriptor"},
+                            { name: 'scope', type:'group', fields: ScopeForm},
+                            { name: 'name', label:'Name', required: true},
+//                            { name: 'label', label:'Label'},
+                            { name: 'duration', label:'Duration', required: true},
+                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'TaskInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'},
+                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                { name: "properties", "type": "object", label: "Default properties" }
+                            ]}
+                        ],
+                        "TaskInstance": [
+                            { name: 'id', type: 'hidden'},
+                            { name: '@class', type: 'hidden', value: 'TaskInstance'},
+                            { name: 'active', label:'Active', type: 'boolean'},
+                            { name: "properties", "type": "object", label: "Properties" }
+                        ],
+
+                        //  *** Widgets *** //
                         List: [
                             { name: 'label', label: 'Label'},
                             { name: 'direction', label: 'Direction', type: 'select', choices: [
@@ -508,7 +568,9 @@
                             {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
                             {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Config.forms.QuestionDescriptor },
                             {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor },
-                            {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor }
+                            {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor },
+                            {type: 'group', name: 'ResourceDescriptor', label: 'a resource',fields:  Config.forms.ResourceDescriptor },
+                            {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Config.forms.TaskDescriptor }
                         ]
                     }
                 ];

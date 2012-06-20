@@ -11,9 +11,9 @@ package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import java.io.IOException;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
@@ -55,7 +55,7 @@ public class GameController implements Serializable {
     /**
      *
      */
-    private PlayerEntity currentPlayer;
+    private Player currentPlayer;
 
     /**
      *
@@ -67,7 +67,7 @@ public class GameController implements Serializable {
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
             currentPlayer = playerFacade.find(this.getPlayerId());
         } else if (this.gameId != null) {                                       // If we only have a gameModel id, we select the 1st player of the 1st team of the 1st game
-            final GameModelEntity gameModel = gameModeFacade.find(this.gameId);
+            final GameModel gameModel = gameModeFacade.find(this.gameId);
             currentPlayer = gameModel.getGames().get(0).getTeams().get(0).getPlayers().get(0);
         }
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to the lobby
@@ -79,7 +79,7 @@ public class GameController implements Serializable {
      *
      * @return the game the game the current player belongs to.
      */
-    public GameEntity getCurrentGame() {
+    public Game getCurrentGame() {
         return this.getCurrentPlayer().getTeam().getGame();
     }
 
@@ -87,14 +87,14 @@ public class GameController implements Serializable {
      *
      * @return
      */
-    public GameModelEntity getCurrentGameModel() {
+    public GameModel getCurrentGameModel() {
         return this.getCurrentPlayer().getTeam().getGame().getGameModel();
     }
 
     /**
      * @return the currentPlayer
      */
-    public PlayerEntity getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return currentPlayer;
     }
 

@@ -12,7 +12,7 @@ package com.wegas.core.statemachine;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.VariableInstanceManager;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptorEntity;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
@@ -25,7 +25,7 @@ import javax.persistence.PersistenceContext;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
-public class StateMachineDescriptorFacade extends AbstractFacadeImpl<StateMachineDescriptorEntity> {
+public class StateMachineDescriptorFacade extends AbstractFacadeImpl<StateMachineDescriptor> {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -33,7 +33,7 @@ public class StateMachineDescriptorFacade extends AbstractFacadeImpl<StateMachin
     private GameModelFacade gameModelEntityFacade;
 
     public StateMachineDescriptorFacade() {
-        super(StateMachineDescriptorEntity.class);
+        super(StateMachineDescriptor.class);
     }
 
 //    public void create(Long gameModelId, VariableDescriptorEntity smDescriptor) {
@@ -41,10 +41,10 @@ public class StateMachineDescriptorFacade extends AbstractFacadeImpl<StateMachin
 //        this.gameModelEntityFacade.find(gameModelId).addVariableDescriptor(smDescriptor);
 //        em.persist(smDescriptor);
 //        //create initial State
-//        State tmpInitialState = ((StateMachineDescriptorEntity) smDescriptor).getStates().get(((StateMachineDescriptorEntity) smDescriptor).getInitialStateId());
+//        State tmpInitialState = ((StateMachineDescriptor) smDescriptor).getStates().get(((StateMachineDescriptor) smDescriptor).getInitialStateId());
 //        StateMachineInstanceEntity defaultInstance = (StateMachineInstanceEntity) smDescriptor.getDefaultVariableInstance();
 //        defaultInstance.setCurrentState(tmpInitialState);
-//        ((StateMachineDescriptorEntity) smDescriptor).setInitialStateId(tmpInitialState.getId());
+//        ((StateMachineDescriptor) smDescriptor).setInitialStateId(tmpInitialState.getId());
 //        //reset instance
 //        smDescriptor.getScope().propagateDefaultInstance(true);
 //        em.flush();

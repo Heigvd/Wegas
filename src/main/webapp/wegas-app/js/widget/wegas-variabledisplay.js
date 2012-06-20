@@ -35,9 +35,16 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 for (i = 0; i < val.value; i += 1) {
                     acc.push('<div class="yui3-wegas-variabledisplay-box-unit"></div>');
                 }
-                this.get(CONTENTBOX).setContent('<span class="yui3-wegas-variabledisplay-box-label">'+this.get('label')+'</span>'
-                    + '<span class="yui3-wegas-variabledisplay-box-units">'+acc.join('')+'</span>'
-                    +'<span class="yui3-wegas-variabledisplay-box-value">(' + val.value + ')</span>');
+                if (variableDescriptor) {
+                    this.get(CONTENTBOX).setContent('<span class="yui3-wegas-variabledisplay-box-label">'+this.get('label')+'</span>'
+                        +'<span class="yui3-wegas-variabledisplay-box-value">(' + val.value + '<span class="yui3-wegas-variabledisplay-box-valueMax">/'+variableDescriptor.maxValue+'</span>)</span>'
+                        +'<span class="yui3-wegas-variabledisplay-box-units">'+acc.join('')+'</span>');
+                }
+                else{
+                    this.get(CONTENTBOX).setContent('<span class="yui3-wegas-variabledisplay-box-label">'+this.get('label')+'</span>'
+                        +'<span class="yui3-wegas-variabledisplay-box-value">(' + val.value + ')</span>'
+                        +'<span class="yui3-wegas-variabledisplay-box-units">'+acc.join('')+'</span>');   
+                }
                 break;
             case 'fraction':
                 if(variableDescriptor){

@@ -14,11 +14,11 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.UserFacade;
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.game.TeamEntity;
-import com.wegas.core.persistence.user.UserEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.user.User;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -69,15 +69,15 @@ public class LobbyController implements Serializable {
     /*
      *
      */
-    private TeamEntity selectedTeam;
+    private Team selectedTeam;
     /**
      *
      */
-    private GameEntity currentGame;
+    private Game currentGame;
     /**
      *
      */
-    private PlayerEntity currentPlayer;
+    private Player currentPlayer;
 
     /**
      *
@@ -89,7 +89,7 @@ public class LobbyController implements Serializable {
      *
      * @return
      */
-    public UserEntity getCurrentUser() {
+    public User getCurrentUser() {
 
         final Subject subject = SecurityUtils.getSubject();
         try {
@@ -99,7 +99,7 @@ public class LobbyController implements Serializable {
         }
         catch (EJBException e) {                                              // If the user is logged in but we cannot find a
             if (e.getCausedByException() instanceof NoResultException) {        // corresponding account, that means we need to create one.
-                UserEntity newUser = new UserEntity();
+                User newUser = new User();
                 newUser.setName(subject.getPrincipal().toString());
                 userFacade.create(newUser);
                 return newUser;
@@ -113,7 +113,7 @@ public class LobbyController implements Serializable {
      *
      * @return
      */
-    public List<PlayerEntity> getPlayers() {
+    public List<Player> getPlayers() {
         return this.getCurrentUser().getPlayers();
     }
 
@@ -121,7 +121,7 @@ public class LobbyController implements Serializable {
      *
      * @return
      */
-    public List<GameModelEntity> getGameModels() {
+    public List<GameModel> getGameModels() {
         return gameModelFacade.findAll();
     }
 
@@ -148,7 +148,7 @@ public class LobbyController implements Serializable {
      *
      * @return
      */
-    public List<TeamEntity> getAvailableTeams() {
+    public List<Team> getAvailableTeams() {
         return this.currentGame.getTeams();
     }
 
@@ -165,7 +165,7 @@ public class LobbyController implements Serializable {
      *
      * @return
      */
-    public GameModelEntity getCurrentGameModel() {
+    public GameModel getCurrentGameModel() {
         return currentPlayer.getTeam().getGame().getGameModel();
     }
 
@@ -186,35 +186,35 @@ public class LobbyController implements Serializable {
     /**
      * @return the selectedTeam
      */
-    public TeamEntity getSelectedTeam() {
+    public Team getSelectedTeam() {
         return this.selectedTeam;
     }
 
     /**
      * @param selectedTeam the selectedTeam to set
      */
-    public void setSelectedTeam(final TeamEntity selectedTeam) {
+    public void setSelectedTeam(final Team selectedTeam) {
         this.selectedTeam = selectedTeam;
     }
 
     /**
      * @return the currentPlayer
      */
-    public PlayerEntity getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
     /**
      * @param currentPlayer the currentPlayer to set
      */
-    public void setCurrentPlayer(final PlayerEntity currentPlayer) {
+    public void setCurrentPlayer(final Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
     /**
      *
      */
-    @FacesConverter(forClass = TeamEntity.class, value = "appTeamConverter")
+    @FacesConverter(forClass = Team.class, value = "appTeamConverter")
     public static class LobbyControllerConverter implements Converter {
 
         /**
@@ -252,11 +252,11 @@ public class LobbyController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof TeamEntity) {
-                final TeamEntity o = (TeamEntity) object;
+            if (object instanceof Team) {
+                final Team o = (Team) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + TeamEntity.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Team.class.getName());
             }
         }
     }

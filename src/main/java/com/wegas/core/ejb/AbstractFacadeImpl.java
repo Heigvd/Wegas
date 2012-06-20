@@ -57,7 +57,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
     @Override
     public void create(T entity) {
         getEntityManager().persist(entity);
-        getEntityManager().flush();
+       // getEntityManager().flush();
     }
 
 //    /**

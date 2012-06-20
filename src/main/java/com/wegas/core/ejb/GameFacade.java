@@ -9,9 +9,9 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.GameEntity_;
-import com.wegas.core.persistence.game.GameModelEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Game_;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -29,7 +29,7 @@ import javax.persistence.criteria.Root;
  */
 @Stateless
 @LocalBean
-public class GameFacade extends AbstractFacadeImpl<GameEntity>{
+public class GameFacade extends AbstractFacadeImpl<Game>{
 
     /**
      *
@@ -46,7 +46,7 @@ public class GameFacade extends AbstractFacadeImpl<GameEntity>{
      *
      */
     public GameFacade() {
-        super(GameEntity.class);
+        super(Game.class);
     }
 
     /**
@@ -55,13 +55,13 @@ public class GameFacade extends AbstractFacadeImpl<GameEntity>{
      * @return
      * @throws NoResultException
      */
-    public GameEntity getGameByToken(String token) throws NoResultException {
+    public Game getGameByToken(String token) throws NoResultException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
-        Root<GameEntity> game = cq.from(GameEntity.class);
-        cq.where(cb.equal(game.get(GameEntity_.token), token));
+        Root<Game> game = cq.from(Game.class);
+        cq.where(cb.equal(game.get(Game_.token), token));
         Query q = em.createQuery(cq);
-        return (GameEntity) q.getSingleResult();
+        return (Game) q.getSingleResult();
     }
 
     /**
@@ -69,8 +69,8 @@ public class GameFacade extends AbstractFacadeImpl<GameEntity>{
      * @param gameModelId
      * @param game
      */
-    public void create(Long gameModelId, GameEntity game) {
-        GameModelEntity gameModel = gameModelEntityFacade.find(gameModelId);
+    public void create(Long gameModelId, Game game) {
+        GameModel gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
         super.create(game);
     }

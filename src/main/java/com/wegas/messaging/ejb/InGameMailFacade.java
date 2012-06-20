@@ -11,10 +11,10 @@ package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
-import com.wegas.messaging.persistence.variable.InboxInstanceEntity;
-import com.wegas.messaging.persistence.variable.MessageEntity;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.messaging.persistence.variable.InboxInstance;
+import com.wegas.messaging.persistence.variable.Message;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class InGameMailFacade extends AbstractFacadeImpl<MessageEntity> {
+public class InGameMailFacade extends AbstractFacadeImpl<Message> {
 
     final static private Logger logger = LoggerFactory.getLogger(InGameMailFacade.class);
     /**
@@ -46,10 +46,9 @@ public class InGameMailFacade extends AbstractFacadeImpl<MessageEntity> {
 
     /**
      *
-     * @param entityClass
      */
     public InGameMailFacade() {
-        super(MessageEntity.class);
+        super(Message.class);
     }
 
     /**
@@ -66,9 +65,9 @@ public class InGameMailFacade extends AbstractFacadeImpl<MessageEntity> {
      * @param p
      * @param msg
      */
-    public void send(PlayerEntity p, MessageEntity msg) {
-        VariableDescriptorEntity vd = variableDescriptorFacade.findByName(p.getGameModel(), "inbox");
-        InboxInstanceEntity inbox = (InboxInstanceEntity) vd.getVariableInstance(p);
+    public void send(Player p, Message msg) {
+        VariableDescriptor vd = variableDescriptorFacade.findByName(p.getGameModel(), "inbox");
+        InboxInstance inbox = (InboxInstance) vd.getInstance(p);
         inbox.addMessage(msg);
     }
 
@@ -78,8 +77,8 @@ public class InGameMailFacade extends AbstractFacadeImpl<MessageEntity> {
      * @param subject
      * @param body
      */
-    public void send(PlayerEntity p, String subject, String body) {
-        MessageEntity msg = new MessageEntity();
+    public void send(Player p, String subject, String body) {
+        Message msg = new Message();
         msg.setName(subject);
         msg.setBody(body);
         this.send(p, msg);
