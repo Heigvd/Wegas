@@ -9,23 +9,23 @@
  */
 package com.wegas.core.persistence.statemachine;
 
-import com.wegas.core.persistence.variable.scope.TeamScopeEntity;
-import com.wegas.core.persistence.variable.statemachine.TriggerDescriptorEntity;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstanceEntity;
-import com.wegas.core.script.ScriptEntity;
+import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import com.wegas.core.persistence.game.Script;
 import org.junit.*;
 
 /**
- * Testing Triggers, class TriggerInstanceEntity and class
- * TriggerDescriptorEntity
+ * Testing Triggers, class TriggerInstance and class
+ * TriggerDescriptor
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class TriggerTest {
 
-    private TriggerInstanceEntity trigger;
-    private TriggerDescriptorEntity triggerDescriptor;
-    private ScriptEntity scriptEntity;
+    private TriggerInstance trigger;
+    private TriggerDescriptor triggerDescriptor;
+    private Script scriptEntity;
 
     public TriggerTest() {
     }
@@ -40,12 +40,12 @@ public class TriggerTest {
 
     @Before
     public void setUp() {
-        this.trigger = new TriggerInstanceEntity();
+        this.trigger = new TriggerInstance();
         this.trigger.setId(666L);
-        this.triggerDescriptor = new TriggerDescriptorEntity();
+        this.triggerDescriptor = new TriggerDescriptor();
         this.triggerDescriptor.setDefaultInstance(this.trigger);
         this.triggerDescriptor.setName("testTrigger");
-        this.scriptEntity = new ScriptEntity();
+        this.scriptEntity = new Script();
         this.scriptEntity.setLanguage("JavaScript");
         this.scriptEntity.setContent("var x=10; x+=2;");
         this.triggerDescriptor.setTriggerEvent(scriptEntity);
@@ -66,7 +66,7 @@ public class TriggerTest {
         this.triggerDescriptor.buildStateMachine();
         assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L;
         assert this.triggerDescriptor.getStates().get(2L).getTransitions().isEmpty();
-        assert ((TriggerInstanceEntity) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId() == 1L;
+        assert ((TriggerInstance) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId() == 1L;
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
@@ -85,7 +85,7 @@ public class TriggerTest {
         this.triggerDescriptor.buildStateMachine();
         assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 1L;
         assert this.triggerDescriptor.getStates().size() == 1;
-        assert ((TriggerInstanceEntity) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId() == 1L;
+        assert ((TriggerInstance) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId() == 1L;
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
@@ -111,18 +111,18 @@ public class TriggerTest {
     @Test
     public void testMerge() {
         System.out.println("Merge trigger");
-        TriggerInstanceEntity instanceEntity = new TriggerInstanceEntity();
+        TriggerInstance instanceEntity = new TriggerInstance();
         instanceEntity.setId(45L);
         instanceEntity.setCurrentStateId(2L);
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.setId(4L);
         this.triggerDescriptor.buildStateMachine();
-        this.triggerDescriptor.setScope(new TeamScopeEntity());
-        TriggerDescriptorEntity newTrigger = new TriggerDescriptorEntity();
+        this.triggerDescriptor.setScope(new TeamScope());
+        TriggerDescriptor newTrigger = new TriggerDescriptor();
         newTrigger.setDefaultInstance(this.trigger);
         newTrigger.setId(5L);
         newTrigger.setOneShot(true);
-        ScriptEntity newTestScript = new ScriptEntity();
+        Script newTestScript = new Script();
         newTestScript.setLanguage("Python");
         newTestScript.setContent("TestScript;");
         newTrigger.setPostTriggerEvent(newTestScript);
@@ -134,8 +134,8 @@ public class TriggerTest {
         assert this.triggerDescriptor.getTriggerEvent().equals(newTestScript);
         assert (this.triggerDescriptor.getPostTriggerEvent().getContent() == null ? newTestScript.getContent() == null : this.triggerDescriptor.getPostTriggerEvent().getContent().equals(newTestScript.getContent()));
         assert (this.triggerDescriptor.getPostTriggerEvent().getLanguage() == null ? newTestScript.getLanguage() == null : this.triggerDescriptor.getPostTriggerEvent().getLanguage().equals(newTestScript.getLanguage()));
-        assert this.triggerDescriptor.getScope().getClass().equals(TeamScopeEntity.class);
-        assert ((TriggerInstanceEntity) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId().equals(instanceEntity.getCurrentStateId());
+        assert this.triggerDescriptor.getScope().getClass().equals(TeamScope.class);
+        assert ((TriggerInstance) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId().equals(instanceEntity.getCurrentStateId());
         assert this.triggerDescriptor.getDefaultVariableInstance().getId() == this.trigger.getId();
     }
 }

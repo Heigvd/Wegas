@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.persistence.game.GameModelEntity;
+import com.wegas.core.persistence.game.GameModel;
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  */
 @Entity
 @XmlRootElement
-@XmlType(name = "Tag")
+@XmlType(name = "")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class Tag implements Serializable {
 

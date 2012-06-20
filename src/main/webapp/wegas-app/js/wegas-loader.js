@@ -84,7 +84,8 @@ YUI().use(function (Y) {
                         'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
                         'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
                         'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
-                        'inputex-keyvalue', 'inputex-combine', "inputex-field", 'yui2-editor', "inputex-rte" ]
+                        'inputex-keyvalue', 'inputex-combine', "inputex-field", "inputex-object",
+                        'yui2-editor', "inputex-rte" ]
                     },
 
                     /** Editor **/
@@ -105,6 +106,10 @@ YUI().use(function (Y) {
                     },
 
                     /** Editor's Widgets **/
+                    'treeview':{
+                        path: 'wegas-editor/js/treeview.js',
+                        requires: ['widget', 'widget-parent', 'widget-child']
+                    },
                     'wegas-logger': {
                         path: 'wegas-editor/js/wegas-logger-min.js',
                         requires: ['console', 'console-filters']
@@ -132,8 +137,8 @@ YUI().use(function (Y) {
                         requires: ['datatable-deprecated', 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
                     },
                     'wegas-fileexplorer': {
-                        path: 'wegas-editor/js/wegas-fileexplorer-min.js',
-                        requires: ['gallery-yui3treeview']
+                        path: 'wegas-editor/js/wegas-fileexplorer.js',
+                        requires: ['treeview', 'uploader-html5']
                     },
 
                     /** Project Management Game */

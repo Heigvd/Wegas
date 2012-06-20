@@ -11,7 +11,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.TeamEntity;
+import com.wegas.core.persistence.game.Team;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
@@ -45,7 +45,7 @@ public class TeamController extends AbstractRestController<TeamFacade> {
     @Override
     public AbstractEntity create(AbstractEntity entity) {
         this.teamFacade.create(new Long(this.getPathParam("gameId")),
-                (TeamEntity) entity);
+                (Team) entity);
         return entity;
     }
     /**
@@ -71,7 +71,7 @@ public class TeamController extends AbstractRestController<TeamFacade> {
     /*
      * @POST @Path("{teamId: [1-9][0-9]*}/ ")
      * @Consumes(MediaType.APPLICATION_JSON)
-     * @Produces(MediaType.APPLICATION_JSON) public TeamEntity
+     * @Produces(MediaType.APPLICATION_JSON) public Team
      * addUser(@PathParam("teamId") Long teamId, UserEntity u) {
      * ume.createUser(u); return this.addUser(teamId, u.getId()); }
      */

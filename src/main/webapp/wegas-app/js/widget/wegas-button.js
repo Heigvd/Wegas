@@ -54,14 +54,14 @@ YUI.add('wegas-button', function (Y) {
                     }
                 }
             }, this);
-            if(this.get('hover')){
+            if(this.get('tooltips')){
                 this.get(CONTENTBOX).on('mouseenter', function () {
-                    this.get(CONTENTBOX).insert('<span class="wegas-button-hover">'
-                        + this.get('hover')
+                    this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
+                        + this.get('tooltips')
                         +'</span>', 'before');
                 },this);
                 this.get(CONTENTBOX).on('mouseleave', function () {
-                    Y.one('.wegas-button-hover').remove();
+                    Y.one('.wegas-button-tooltips').remove();
                 },this);
             }
         },
@@ -88,7 +88,7 @@ YUI.add('wegas-button', function (Y) {
             },
             targetDisplayArea: {},
             view: {},
-            hover:{}
+            tooltips:{}
         }
     });
 

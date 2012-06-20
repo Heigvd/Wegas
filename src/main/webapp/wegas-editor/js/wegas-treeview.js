@@ -232,6 +232,8 @@ YUI.add('wegas-treeview', function (Y) {
                             case 'InboxDescriptor':
                             case 'ChoiceDescriptor':
                             case 'TriggerDescriptor':
+                            case 'TaskDescriptor':
+                            case 'ResourceDescriptor':
                                 text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
                                 ret.push({
                                     type: 'html',

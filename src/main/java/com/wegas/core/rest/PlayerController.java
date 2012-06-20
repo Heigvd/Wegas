@@ -11,8 +11,8 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.GameEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -40,7 +40,7 @@ public class PlayerController extends AbstractRestController<PlayerFacade> {
      */
     @Override
     public AbstractEntity create(AbstractEntity entity) {
-        playerFacade.create(new Long(this.getPathParam("teamId")), (PlayerEntity) entity);
+        playerFacade.create(new Long(this.getPathParam("teamId")), (Player) entity);
         return entity;
     }
 

@@ -9,9 +9,9 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameModelEntity;
-import com.wegas.core.persistence.game.PlayerEntity;
-import com.wegas.core.persistence.variable.VariableInstanceEntity;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,15 +36,11 @@ public class VariableInstanceManager implements Serializable {
     /**
      *
      */
-    private PlayerEntity currentPlayer;
+    private Player currentPlayer;
     /**
      *
      */
-    private List<VariableInstanceEntity> updatedInstances = new ArrayList<>();
-    /**
-     *
-     */
-    private GameModelEntity gameModel;
+    private List<VariableInstance> updatedInstances = new ArrayList<>();
 
     /**
      *
@@ -58,16 +54,26 @@ public class VariableInstanceManager implements Serializable {
     }
 
     /**
+     *
+     * @param instance
+     */
+    public void addUpdatedInstance(VariableInstance instance) {
+        if (!this.getUpdatedInstances().contains(instance)) {
+            this.getUpdatedInstances().add(instance);
+        }
+    }
+
+    /**
      * @return the currentPlayer
      */
-    public PlayerEntity getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
     /**
      * @param currentPlayer the currentPlayer to set
      */
-    public void setCurrentPlayer(PlayerEntity currentPlayer) {
+    public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
@@ -75,39 +81,21 @@ public class VariableInstanceManager implements Serializable {
      *
      * @return
      */
-    public GameModelEntity getGameModel() {
-        return gameModel;
-    }
-
-    /**
-     *
-     * @param gameModel
-     */
-    public void setGameModel(GameModelEntity gameModel) {
-        this.gameModel = gameModel;
-    }
-
-    /**
-     *
-     * @param instance
-     */
-    public void addUpdatedInstance(VariableInstanceEntity instance) {
-        if (!this.getUpdatedInstances().contains(instance)) {
-            this.getUpdatedInstances().add(instance);
-        }
+    public GameModel getCurrentGameModel() {
+        return this.getCurrentPlayer().getGameModel();
     }
 
     /**
      * @return the updatedInstances
      */
-    public List<VariableInstanceEntity> getUpdatedInstances() {
+    public List<VariableInstance> getUpdatedInstances() {
         return updatedInstances;
     }
 
     /**
      * @param updatedInstances the updatedInstances to set
      */
-    public void setUpdatedInstances(List<VariableInstanceEntity> updatedInstances) {
+    public void setUpdatedInstances(List<VariableInstance> updatedInstances) {
         this.updatedInstances = updatedInstances;
     }
 
@@ -126,19 +114,19 @@ public class VariableInstanceManager implements Serializable {
         /**
          *
          */
-        private PlayerEntity player;
+        private Player player;
 
         /**
          * @return the player
          */
-        public PlayerEntity getPlayer() {
+        public Player getPlayer() {
             return player;
         }
 
         /**
          * @param player the player to set
          */
-        public void setPlayer(PlayerEntity player) {
+        public void setPlayer(Player player) {
             this.player = player;
         }
     }

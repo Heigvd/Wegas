@@ -39,6 +39,17 @@ public class FileController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
 
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @param note
+     * @param path
+     * @param file
+     * @param details
+     * @return
+     * @throws RepositoryException
+     */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
@@ -49,8 +60,8 @@ public class FileController {
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
-        logger.debug("Trying to write {} to ({})", name, path);
-        logger.debug("File name: {}", details.getContentDisposition().getFileName());
+    logger.debug("File name: {}", details.getContentDisposition().getFileName());
+
         if (name.equals("") || name.contains("/")) {
             return null;
         }
@@ -59,9 +70,10 @@ public class FileController {
         AbstractContentDescriptor detachedFile = null;
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
         if (dir.exist()) {                                                  //directory has to exist
-            if (details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
+            if (details == null || details.getContentDisposition().getFileName() == null || details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
                 detachedFile = new DirectoryDescriptor(name, path, connector);
             } else {
+                logger.debug("File name: {}", details.getContentDisposition().getFileName());
                 detachedFile = new FileDescriptor(name, path, connector);
             }
             if (!detachedFile.exist()) {                                        //Node should not exist
@@ -88,6 +100,12 @@ public class FileController {
         return detachedFile;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @return
+     */
     @GET
     @Path("read{absolutePath : .*?}")
     public Response read(@PathParam("gameModelId") String gameModelId, @PathParam("absolutePath") String name) {
@@ -115,6 +133,13 @@ public class FileController {
         return response.build();
     }
 
+
+    /**
+     *
+     * @param gameModelId
+     * @param directory
+     * @return
+     */
     @GET
     @Path("list{absoluteDirectoryPath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -136,6 +161,13 @@ public class FileController {
         return new ArrayList<>();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param absolutePath
+     * @param force
+     * @return
+     */
     @DELETE
     @Path("{force: (force/)?}delete{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -170,6 +202,7 @@ public class FileController {
 
     /**
      * Well... underlying function not yet implemented do it by hand for now
+     * @param gameModelId
      */
     @DELETE
     @Path("destruct")

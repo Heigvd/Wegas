@@ -1,67 +1,20 @@
 .yui3-treeview {
     margin:0;
     padding:0;
-    margin-left: 10px;
+    margin: 2px 10px;
     list-style:none;
     zoom: 1;
 }
 
-.yui3-js-enabled .yui3-treeview-loading {
-    display:none;
-}
-
-.yui3-treeview .yui3-treeview {
-    border-left: 1px solid #ebebeb;
-}
-
-.yui3-toggle {
-    background-position: -6px -285px;
-    display: block;
-    position: absolute;
-    height: 9px;
-    width: 9px;
-    bottom: 0px;
-    left: -5px;
-}
-
-.yui3-tree-collapsed .yui3-treeview-label-content {
-    background-position: -0px -81px;
-}
-
-.yui3-treeview-label-content {
-    background-position: 0px -121px;
-    display : block;
-    position : relative;
-    left : -5px;
-    padding-left : 35px;
-    top : 5px;
-}
-
-.yui3-treeview .yui3-singletree {
-    border: none;
-}
-
-.yui3-treeleaf-content,
-.yui3-treeleaf,
-.yui3-treeview .yui3-treeview-content .yui3-treeview,
-.yui3-treeview-label-content
+.yui3-treeleaf-content-icon,
+.yui3-treenode-content-icon
 {
     background-image: url(tree_view_icons_blue_01_arrow_beside_folders.gif);
     background-repeat: no-repeat;
+    padding-left:40px;
 }
-
-.yui3-treeview-treelabel {
-    display: block;
-    position: relative;
-    margin-left: -1px;
-    margin-top: 2px;
-    text-decoration: none;
-    color: black;
-    border-left: 1px solid #EBEBEB;
-}
-
-.yui3-treeview .yui3-tree-collapsed .yui3-treeview-content {
-    display : none;
+.yui3-treenode-content-icon{
+    background-position: -0px -41px;
 }
 
 .yui3-treeview .yui3-treeview-content {
@@ -69,21 +22,54 @@
     margin-left: 6px;
 }
 
-.yui3-treeview .yui3-treeview-content .yui3-treeview {
-    background: none;
-}
-
-.yui3-treeview .yui3-treeleaf {
-    background-position: 0 -258px;
-    margin-bottom: -7px;
-    border: none;
-    padding-top: 10px;
-}
-
-.yui3-treeleaf-content {
+.yui3-treeleaf-content-icon {
     background-position: 0 -162px;
-    padding-left: 35px;
-    margin-left: 4px;
     text-decoration: none;
+}
+
+.yui3-treenode-collapsed > li{
+    display:none;
+}
+
+.yui3-treenode-collapsed .yui3-treenode-content-icon {
+    background-position: -0px -2px;
+}
+.yui3-treenode-content > .yui3-treenode, .yui3-treenode-content > .yui3-treeleaf{
+    margin-left:20px;
+}
+
+.yui3-treenode-content-rightwidget, .yui3-treeleaf-content-rightwidget{
+    float: right;
+}
+.yui3-treenode-content-header, .yui3-treeleaf-content-header{
+    padding:4px 10px;
+}
+
+/* EFFECT */
+.yui3-treenode-content-header:hover, .yui3-treeleaf-content-header:hover{
+    background-color:#EDF5FF;
+    box-shadow: 0px 0px 6px black;
+}
+
+/* WEGAS menu*/
+.yui3-wegas-menu-content li{
+    cursor:pointer;
+    list-style-type: none;
+}
+.yui3-wegas-menu-content li:hover{
+    box-shadow: 0px 0px 6px black inset;
+    border-radius: 5px;
+}
+.yui3-wegas-menu-itemlist-horizontal{
+    display:inline;
+    padding:3px 8px;
+}
+.yui3-wegas-menu-itemlist-vertical{
+    display: list-item;
+}
+
+/* FILE EXPLORER */
+.yui3-uploader-hidden{
+    display:none;
 }
 

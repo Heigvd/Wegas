@@ -11,61 +11,79 @@ YUI.add('wegas-leaderway', function (Y) {
         
         // *** Fields *** /
         table: null,
-        
-        data: [
-        {
-            nom: "Justin", 
-            prenom: "Béatrice",   
-            occupation: "Libre", 
-            dossier:'1', 
-            parler:'1'
-        },
+        data: [],
+        //        data: [
+        //        {
+        //            nom: "Justin", 
+        //            prenom: "Béatrice",   
+        //            occupation: "Libre", 
+        //            dossier:'1', 
+        //            parler:'1'
+        //        },
+        //
+        //        {
+        //            nom: "Pierre", 
+        //            prenom: "Zimmerman",   
+        //            occupation: "Occupé", 
+        //            dossier:'2', 
+        //            parler:'2'
+        //        },
+        //
+        //        {
+        //            nom: "Boniface", 
+        //            prenom: "Laurentin", 
+        //            occupation: "Occupé", 
+        //            dossier:'3', 
+        //            parler:'3'
+        //        },
+        //
+        //        {
+        //            nom: "Valerie", 
+        //            prenom: "Philbert",   
+        //            occupation: "Libre", 
+        //            dossier:'4', 
+        //            parler:'4'
+        //        },
+        //
+        //        {
+        //            nom: "Hercule", 
+        //            prenom: "Auguste",   
+        //            occupation: "Occupé", 
+        //            dossier:'5', 
+        //            parler:'5'
+        //        }
+        //        ],
 
-        {
-            nom: "Pierre", 
-            prenom: "Zimmerman",   
-            occupation: "Occupé", 
-            dossier:'2', 
-            parler:'2'
+        //*** Particular Methods ***/
+        getMembersData: function(){
+            var resourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),
+            resourceDescriptor,resourceInstance,occupation
+            for (var i = 0; i < resourcesDescriptor.items.length; i = i + 1) {
+                resourceDescriptor = resourcesDescriptor.items[i];
+                resourceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(resourceDescriptor);
+                (resourceInstance.properties.occupation == null) ? occupation = 'Libre' : occupation = resourceInstance.properties.occupation;
+                this.data.push({
+                    name:resourceDescriptor.name,
+                    surname:resourceInstance.properties.surname,
+                    occupation:occupation,
+                    folder:i,
+                    speak:i
+                })
+            }
         },
-
-        {
-            nom: "Boniface", 
-            prenom: "Laurentin", 
-            occupation: "Occupé", 
-            dossier:'3', 
-            parler:'3'
-        },
-
-        {
-            nom: "Valerie", 
-            prenom: "Philbert",   
-            occupation: "Libre", 
-            dossier:'4', 
-            parler:'4'
-        },
-
-        {
-            nom: "Hercule", 
-            prenom: "Auguste",   
-            occupation: "Occupé", 
-            dossier:'5', 
-            parler:'5'
-        }
-        ],
 
         // *** Lifecycle Methods *** //
         renderUI: function (){
             this.table = new Y.DataTable({
                 columns: [
                 {
-                    key:"nom", 
+                    key:"name", 
                     label:"Nom",
                     sortable:true
                 },
 
                 {
-                    key:"prenom", 
+                    key:"surname", 
                     label:"Prenom",
                     sortable:true
                 },
@@ -77,16 +95,16 @@ YUI.add('wegas-leaderway', function (Y) {
                 },
 
                 {
-                    key: "dossier",
-                    formatter: '<input class="dossier" type="button" name="dossier" value="dossier">',
-                    label: 'Dossier',
+                    key: "folder",
+                    formatter: '<input class="folder" type="button" name="folder" value="dossier">',
+                    label: ' ',
                     allowHTML: true
                 },
                 
                 {
-                    key: "parler",
-                    formatter: '<input class="parler" type="button" name="parler" value="Parler">',
-                    label: 'Parler',
+                    key: "speak",
+                    formatter: '<input class="speak" type="button" name="speak" value="Parler">',
+                    label: ' ',
                     allowHTML: true
                 }
                 
@@ -100,14 +118,15 @@ YUI.add('wegas-leaderway', function (Y) {
                 var tr_id = e.currentTarget._node.parentElement.parentElement.id,  
                 model = this.getRow(tr_id);
                 alert(model._node.childNodes[0].textContent);
-            }, '.yui3-datatable-data .parler', this.table);
+            }, '.yui3-datatable-data .speak', this.table);
             
             this.table.delegate('click', function (e) {
-                alert("Comment afficher le dossier et cacher le reste..?");
-            }, '.yui3-datatable-data .dossier', this.table);
+                //afficher le widget "folder et passer l'id du membre."
+            }, '.yui3-datatable-data .folder', this.table);
         },
         
         syncUI: function () {
+            this.getMembersData();
             this.table.addRows(this.data);
             if(this.data[0] == null){
                 this.table.showMessage("Personne n'est disponible.");

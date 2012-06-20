@@ -9,7 +9,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameModelEntity;
+import com.wegas.core.persistence.game.GameModel;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -21,7 +21,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @LocalBean
-public class GameModelFacade extends AbstractFacadeImpl<GameModelEntity> {
+public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
     /**
      *
@@ -32,10 +32,9 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModelEntity> {
     /**
      *
      * @param gameModelId
-     * @return
      */
     public void reset(Long gameModelId) {
-        GameModelEntity gm = this.find(gameModelId);
+        GameModel gm = this.find(gameModelId);
         gm.propagateDefaultVariableInstance(true);
         em.flush();
         em.refresh(gm);
@@ -45,7 +44,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModelEntity> {
      *
      */
     public GameModelFacade() {
-        super(GameModelEntity.class);
+        super(GameModel.class);
     }
 
     /**

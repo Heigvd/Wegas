@@ -11,8 +11,8 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.ListDescriptorEntity;
-import com.wegas.core.persistence.variable.VariableDescriptorEntity;
+import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -42,8 +42,8 @@ public class ListDescriptorController extends AbstractRestController<VariableDes
     @Path("{variableDescriptorId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public AbstractEntity create(@PathParam(value = "variableDescriptorId") Long variableDescriptorId, VariableDescriptorEntity entity) {
-        ListDescriptorEntity listDescriptor = (ListDescriptorEntity) descriptorFacade.find(variableDescriptorId);
+    public AbstractEntity create(@PathParam(value = "variableDescriptorId") Long variableDescriptorId, VariableDescriptor entity) {
+        ListDescriptor listDescriptor = (ListDescriptor) descriptorFacade.find(variableDescriptorId);
         listDescriptor.addItem(entity);
         return listDescriptor;
     }
