@@ -11,8 +11,11 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.dialogue.DialogueInstance;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,12 +32,15 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @XmlRootElement
 @XmlType(name = "FSMInstance")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class)
+    @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class),
+    @JsonSubTypes.Type(name = "DialogueInstance", value = DialogueInstance.class)
 })
 public class StateMachineInstance extends VariableInstance implements Serializable {
 
-    @Column(name = "currentstate_id", nullable=false)
+    @Column(name = "currentstate_id")
     private Long currentStateId;
+    @ElementCollection
+    private List<Transition> transitionHistory;
 
     public StateMachineInstance() {
     }
@@ -58,6 +64,14 @@ public class StateMachineInstance extends VariableInstance implements Serializab
         this.currentStateId = currentStateId;
     }
 
+    public List<Transition> getTransitionHistory() {
+        return transitionHistory;
+    }
+
+    public void setTransitionHistory(List<Transition> transitionHistory) {
+        this.transitionHistory = transitionHistory;
+    }
+
     @Override
     public void merge(AbstractEntity a) {
         this.currentStateId = ((StateMachineInstance) a).getCurrentStateId();
@@ -65,6 +79,6 @@ public class StateMachineInstance extends VariableInstance implements Serializab
 
     @Override
     public String toString() {
-        return "StateMachineInstanceEntity{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';
+        return "StateMachineInstance{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';
     }
 }
