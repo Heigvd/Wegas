@@ -150,10 +150,6 @@ public class Message extends NamedEntity {
         return this.id;
     }
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      * @return the MCQDescriptor

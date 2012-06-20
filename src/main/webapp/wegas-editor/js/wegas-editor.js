@@ -82,7 +82,7 @@ YUI.add('wegas-editor', function(Y) {
             node.empty();
             var node = newTab.item(0).get('panelNode').append('<div></div>');
             */
-            node = this._tab.item(0).get('panelNode').one('.yui3-wegas-list-content');
+            node = this._tab.item(0).get('panelNode').one('.yui3-tab-panel-content');
             node.setStyle('padding-right', '5px');
             data = data || {};
 

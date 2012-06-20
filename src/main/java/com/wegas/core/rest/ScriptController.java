@@ -9,17 +9,10 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.VariableInstanceManager;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.game.Script;
 import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.messaging.ejb.MessageEvent;
-import java.util.List;
+import com.wegas.core.persistence.game.Script;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -40,11 +33,6 @@ public class ScriptController {
 
     @EJB
     private ScriptFacade scriptManager;
-    /**
-     *
-     */
-    @Inject
-    private VariableInstanceManager variableInstanceManager;
 
     /**
      *
@@ -62,6 +50,4 @@ public class ScriptController {
 
         return scriptManager.eval(playerId, script);
     }
-
-
 }

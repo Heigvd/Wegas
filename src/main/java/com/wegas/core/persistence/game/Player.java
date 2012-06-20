@@ -106,14 +106,6 @@ public class Player extends AbstractEntity {
         return id;
     }
 
-    /**
-     *
-     * @param id
-     */
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      * @return the user

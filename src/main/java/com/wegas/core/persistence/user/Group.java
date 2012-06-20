@@ -54,14 +54,6 @@ public class Group extends AbstractEntity {
     }
 
 
-    /**
-     *
-     * @param id
-     */
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
 
     /**
