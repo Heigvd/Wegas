@@ -84,8 +84,7 @@
         "scope": {
             "@class": "PlayerScope"
         }
-    },
-    {
+    },{
         "@class": "ListDescriptor",
         "name": "resources",
         "items":[{
@@ -119,6 +118,49 @@
                     "skillset":{
                         "Langages Web":67,
                         "Modélisation de base de données":44
+                    }
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }],
+        "defaultVariableInstance":{
+            "@class": "NumberInstance",
+            "value": 0
+        },
+        "scope": {
+            "@class": "GameModelScope"
+        }
+    },{
+        "@class": "ListDescriptor",
+        "name": "tasks",
+        "items":[{
+            "@class": "TaskDescriptor",
+            "name": "softwareMockup1",
+            "description":"Création d'une maquette pour un logiciel.",
+            "duration":1,
+            "defaultVariableInstance":{
+                    "@class":"TaskInstance",
+                    "properties":{
+                        "term":2,
+                        "salary":"1500",
+                        "Design graphique":"50"
+                    }
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "TaskDescriptor",
+            "name": "db1",
+            "description":"Création d’une base de données.",
+            "duration":2,
+            "defaultVariableInstance":{
+                    "@class":"TaskInstance",
+                    "properties":{
+                        "term":2,
+                        "salary":"2600",
+                        "Développement de base de données":"43"
                     }
             },
             "scope": {
