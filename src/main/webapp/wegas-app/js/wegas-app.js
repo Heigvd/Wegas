@@ -55,7 +55,7 @@ YUI.add('wegas-app', function (Y) {
                             //Y.log("RAW JSON DATA: " + o.responseText);
                             //this.updateCustomCSS(o.responseText);
                             if (this._customCSSForm) {
-                                this._customCSSForm.inputs[0].setValue(o.responseText);
+                                this._customCSSForm.setValue(o.responseText);
                             }
                         },
                         failure : function (x, o) {

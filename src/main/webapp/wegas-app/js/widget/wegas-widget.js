@@ -6,7 +6,7 @@ YUI.add('wegas-widget', function (Y) {
     "use strict";
 
     var Lang = Y.Lang,
-        CONTENTBOX = 'contentBox';
+    CONTENTBOX = 'contentBox';
 
     function Widget() {
         this.after('render', function () {
@@ -32,10 +32,10 @@ YUI.add('wegas-widget', function (Y) {
     };
     Widget.create = function (config) {
         var type = config.childType || config.type,
-            child, Fn;
+        child, Fn;
 
         if (type) {
-            Fn = Lang.isString(type) ? Y.Wegas[type] : type;
+            Fn = Lang.isString(type) ? Y.Wegas[type] || Y[type] : type;
         }
 
         if (Lang.isFunction(Fn)) {
@@ -73,10 +73,10 @@ YUI.add('wegas-widget', function (Y) {
      */
     Y.WidgetParent.prototype._createChild = function (config) {
         var defaultType = this.get("defaultChildType"),
-            altType = config.childType || config.type,
-            child,
-            Fn,
-            FnConstructor;
+        altType = config.childType || config.type,
+        child,
+        Fn,
+        FnConstructor;
 
         if (altType) {
             Fn = Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;           // @hacked

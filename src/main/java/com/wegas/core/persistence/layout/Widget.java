@@ -92,14 +92,6 @@ public class Widget extends NamedEntity implements Serializable {
         return id;
     }
 
-    /**
-     *
-     * @param id
-     */
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      *

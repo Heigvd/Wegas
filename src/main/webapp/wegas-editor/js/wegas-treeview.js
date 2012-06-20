@@ -30,6 +30,8 @@ YUI.add('wegas-treeview', function (Y) {
             this.treeView = new YAHOO.widget.TreeView(node.getDOMNode());
             this.treeView.singleNodeHighlight = true;
             this.treeView.render();
+
+            this.renderToolbar();
         },
 
         bindUI: function () {
@@ -72,6 +74,36 @@ YUI.add('wegas-treeview', function (Y) {
         },
 
         // ** Private methods ** //
+
+        renderToolbar: function () {
+            var el = this.get("parent").get('panelNode').one(".wegas-tab-toolbar");
+
+//            this.newButton = new Y.Button({
+//                label: "<span class=\"wegas-icon wegas-icon-new\"></span>",
+//                on: {
+//                    click: Y.bind(function () {
+//                        Y.Wegas.editor.showAddPanel({
+//                            "@class": e.button.data['@class']
+//                        }, null, this.dataSource);
+//                    }, this)
+//                }
+//            }).render(el);
+//"toolbarButtons": [{
+//                    "type": "push",
+//                    "label": "New variable",
+//                    "value": "new",
+//                    "id": "new",
+//                    "data": {
+//                        "dataSource":"VariableDescriptor",
+//                        "@class": "VariableDescriptor"
+//                    }
+//                },{
+//                    "type": "push",
+//                    "label": "Reset this game",
+//                    "value": "reset",
+//                    "id": "reset"
+//                }]
+        },
         genVariableInstanceElements: function (label, el) {
             var l;
 

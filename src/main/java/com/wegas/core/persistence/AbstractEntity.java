@@ -16,9 +16,10 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.apache.commons.lang.SerializationUtils;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
@@ -43,12 +44,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      *
      * @return
      */
-    public abstract Long getId();
-
-    /**
-     * @param id
-     */
-    public abstract void setId(Long id);
+    abstract public Long getId();
 
     /**
      *
@@ -90,6 +86,34 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      *
      * @return
      */
+    @Override
+    public AbstractEntity clone() {
+        //AnonymousEntity ae = (AnonymousEntity)super.clone();
+        //AbstractEntity ae = (AbstractEntity) SerializationUtils.clone(this);
+        //ae.setId(null);
+        AbstractEntity ae = null;
+        try {
+            ae = this.getClass().newInstance();
+            ae.merge(this);
+        }
+        catch (InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(AbstractEntity.class.getName()).log(Level.SEVERE, "Error during clone", ex);
+        }
+        return ae;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + " )";
+    }
+    /**
+     *
+     * @return
+     */
     //@XmlTransient
     // public String getKey() {
     //    return this.getClass().getSimpleName() + getId();
@@ -108,24 +132,4 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 //        mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
 //        return os.toString();
 //    }
-    /**
-     *
-     * @return
-     */
-    @Override
-    public AbstractEntity clone() {
-        //AnonymousEntity ae = (AnonymousEntity)super.clone();
-        AbstractEntity ae = (AbstractEntity) SerializationUtils.clone(this);
-        ae.setId(null);
-        return ae;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + " )";
-    }
 }

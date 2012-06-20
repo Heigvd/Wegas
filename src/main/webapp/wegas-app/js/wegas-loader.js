@@ -64,7 +64,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-tabview': {
                         path: 'wegas-app/js/widget/wegas-tabview-min.js',
-                        requires: ['tabview', 'yui2-editor']
+                        requires: ['tabview', 'button']
                     },
                     'wegas-displayarea': {
                         path: 'wegas-app/js/widget/wegas-displayarea-min.js'
@@ -91,10 +91,11 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                            'wegas-inputex', 'wegas-app', 'wegas-treeview',
-                            'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
-                            'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
-                            'ace-css'
+                        'wegas-inputex', 'wegas-app', 'wegas-treeview',
+                        'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
+                        'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
+                        'wegas-scriptlibrary',
+                        'ace-css'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss',
                         ]
@@ -118,7 +119,8 @@ YUI().use(function (Y) {
                         requires: ['yui2-menu']
                     },
                     'wegas-csseditor': {
-                        path: 'wegas-editor/js/wegas-csseditor-min.js'
+                        path: 'wegas-editor/js/wegas-csseditor-min.js',
+                        requires: [ 'ace-css' ]
                     },
                     'wegas-console': {
                         path: 'wegas-editor/js/wegas-console-min.js'
@@ -134,6 +136,10 @@ YUI().use(function (Y) {
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
                         requires: ['datatable-deprecated', 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
+                    },
+                    'wegas-scriptlibrary': {
+                        path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
+                        requires: [ 'ace-javascript', 'button' ]
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer.js',
@@ -155,12 +161,12 @@ YUI().use(function (Y) {
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
                         "wegas-mcqtabview"]
                     }
-                    /* This one is only seful w/ yui3 treeview widget */
-                    /* 'wegas-treeviewcss': {
+                /* This one is only seful w/ yui3 treeview widget */
+                /* 'wegas-treeviewcss': {
                         path: 'wegas-app/css/treeview-classic.css',
                         type: 'css'
                         },*/
-                    /*'wegas-treeble': {
+                /*'wegas-treeble': {
                         path: 'wegas-app/js/wegas-treeble.js',
                         requires: ['gallery-treeble', 'yui2-button' ]
                     },
@@ -174,7 +180,7 @@ YUI().use(function (Y) {
             /* Ace */
             ace: {
                 combine: false,
-                //base: "lib/CodeMirror/",
+                base: "lib/CodeMirror/",
                 modules:  {
                     'ace': {
                         path: 'src/ace.js'
@@ -185,38 +191,16 @@ YUI().use(function (Y) {
                     },
                     'ace-css': {
                         path: 'src/mode-css.js',
-                        requires: ['ace-javascript']
+                        requires: ['ace']
                     }
                 }
             },
-
-            /* Wire It */
-            wireit: {
+            excanvas: {
                 combine: false,
-                base: "lib/wireit/",
+                base: "lib/",
                 modules:  {
-                    'wireit': {
-                        path: 'build/wireit.js',
-                        requires: ["yui2-utilities", 'excanvas']
-                    },
-                    'wire': {
-                        path: 'js/Wire.js',
-                        requires: ['wireit', 'wireit-dd', 'wireit-anim', 'canvaselement', 'terminal']
-                    },
-                    'canvaselement': {
-                        path: 'js/CanvasElement.js'
-                    },
-                    'terminal': {
-                        path: 'js/Terminal.js'
-                    },
                     'excanvas': {
-                        path: 'lib/excanvas.js'
-                    },
-                    'wireit-anim': {
-                        path: 'js/util/Anim.js'
-                    },
-                    'wireit-dd': {
-                        path: 'js/util/DD.js'
+                        path: 'excanvas.js'
                     }
                 }
             }
@@ -251,5 +235,5 @@ YUI().use(function (Y) {
 
     loadModules(YUI_config.groups.wegas);
     loadModules(YUI_config.groups.ace);
-    loadModules(YUI_config.groups.wireit);
+    loadModules(YUI_config.groups.excanvas);
 });
