@@ -88,11 +88,12 @@
                         "type": "Button",
                         "label": "Mandats",
                         "targetDisplayArea": "maindisplayarea",
-                        "cssClass": "menu-task",
+                        "cssClass": "menu-tasklist",
                         "tooltips":"Liste des mandats",
                         "subpage": {
-                            "type": "Dialogue",
-                            "content": "module dialogue à faire"
+                            "id":"leaderway-tasklist",
+                            "type": "TaskList",
+                            "content": "module task à faire"
                         }
                     },
                     {
@@ -119,8 +120,21 @@
                         "cssClass": "menu-score",
                         "tooltips":"Score des entreprises",
                         "subpage": {
-                            "type": "Text",
-                            "content": "module score à faire"
+                            "id":"leaderway-score",
+                            "type": "Score",
+                            "title": "Top 5 des meilleurs entreprises actuelles"
+                        }
+                    },
+                    {
+                        "type": "Button",
+                        "label": "Dialogue",
+                        "targetDisplayArea": "maindisplayarea",
+                        "cssClass": "menu-tasklist",
+                        "tooltips":"dialogue(temporaire)",
+                        "subpage": {
+                            "id":"leaderway-dialogue",
+                            "type": "Dialogue",
+                            "content": "module Dialogue à faire"
                         }
                     },
                     {

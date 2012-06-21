@@ -143,7 +143,9 @@
                     "@class":"TaskInstance",
                     "properties":{
                         "term":2,
-                        "salary":"1500",
+                        "salary":"1500"
+                    },
+                    "skillset":{
                         "Design graphique":"50"
                     }
             },
@@ -159,7 +161,9 @@
                     "@class":"TaskInstance",
                     "properties":{
                         "term":2,
-                        "salary":"2600",
+                        "salary":"2600"
+                    },
+                    "skillset":{
                         "Développement de base de données":"43"
                     }
             },

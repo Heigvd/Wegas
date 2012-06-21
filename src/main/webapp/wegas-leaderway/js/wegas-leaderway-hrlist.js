@@ -11,7 +11,7 @@ YUI.add('wegas-leaderway', function (Y) {
         
         // *** Fields *** /
         table: null,
-        data: [],
+        data: new Array(),
         //        data: [
         //        {
         //            nom: "Justin", 

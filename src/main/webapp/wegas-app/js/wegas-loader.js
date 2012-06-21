@@ -160,14 +160,24 @@ YUI().use(function (Y) {
                     /**Leaderway**/
                     'wegas-leaderway': {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
-                        requires:['wegas-leaderway-folder', 'wegas-leaderway-dialogue', 'datatable-sort', 'datatable-core', 'datatable-message', 'datatable-mutable']
-                        
+                        requires:[
+                            'wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue',
+                            'datatable-core', 'datatable-message', 'datatable-mutable', 'datatable-sort'
+                        ]
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
                         requires:['tabview', 'wegas-button']
                     },
-                    'wegas-leaderway-dialogue':{
+                    'wegas-leaderway-tasklist': {
+                        path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
+                        requires:['datatable-core', 'datatable-message', 'datatable-mutable', 'datatable-sort']
+                    },
+                    'wegas-leaderway-score': {
+                        path: 'wegas-leaderway/js/wegas-leaderway-score.js',
+                        requires:['datatable-core', 'datatable-message', 'datatable-mutable']
+                    },
+                    'wegas-leaderway-dialogue': {
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js'
                     }
                     /* This one is only seful w/ yui3 treeview widget */
