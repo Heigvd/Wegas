@@ -32,6 +32,11 @@ public class TaskInstance extends VariableInstance {
      */
     @ElementCollection
     private Map<String, String> properties;
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, String> skillset;
 
     /**
      *
@@ -43,6 +48,8 @@ public class TaskInstance extends VariableInstance {
         this.setActive(other.getActive());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
+        this.skillset.clear();
+        this.skillset.putAll(other.getProperties());
     }
 
     /**
@@ -89,5 +96,37 @@ public class TaskInstance extends VariableInstance {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
+    }
+    
+    /**
+     * @return the skillset
+     */
+    public Map<String, String> getSkillset() {
+        return skillset;
+    }
+
+    /**
+     * @param skillset the skillset to set
+     */
+    public void setSkillset(Map<String, String> skillset) {
+        this.skillset = skillset;
+    }
+
+    /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setSkillset(String key, String val) {
+        this.skillset.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getSkillset(String key) {
+        return this.skillset.get(key);
     }
 }
