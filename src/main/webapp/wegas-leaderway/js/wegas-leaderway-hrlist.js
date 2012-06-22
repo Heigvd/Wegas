@@ -57,19 +57,35 @@ YUI.add('wegas-leaderway', function (Y) {
         //*** Particular Methods ***/
         getMembersData: function(){
             var resourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),
-            resourceDescriptor,resourceInstance,occupation
+            resourceDescriptor,resourceInstance;
             for (var i = 0; i < resourcesDescriptor.items.length; i = i + 1) {
                 resourceDescriptor = resourcesDescriptor.items[i];
                 resourceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(resourceDescriptor);
-                (resourceInstance.properties.occupation == null) ? occupation = 'Libre' : occupation = resourceInstance.properties.occupation;
                 this.data.push({
                     name:resourceDescriptor.name,
                     surname:resourceInstance.properties.surname,
-                    occupation:occupation,
+                    occupation:this.getOccupation(resourceInstance),
                     folder:i,
                     speak:i
                 })
             }
+        },
+        
+        getOccupation: function(resourceInstance){
+            var occupation, listDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"), taskDescriptor;
+            if(resourceInstance.assignments.length == 0){
+                occupation = 'Libre';
+            }
+            else{
+                for (var i = 0; i < listDescriptor.items.length; i = i + 1) {
+                        taskDescriptor = listDescriptor.items[i];
+                        if(taskDescriptor.id == resourceInstance.assignments[0].taskDescriptorId){
+                            occupation = taskDescriptor.name;
+                            break;
+                        }
+                }
+            }
+            return occupation;
         },
 
         // *** Lifecycle Methods *** //

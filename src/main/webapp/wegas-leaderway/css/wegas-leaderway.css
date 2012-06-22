@@ -320,8 +320,13 @@ body{
     margin-top: 0;
 } 
 
+#leaderway-folder .title-folder-section{
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
 #leaderway-folder .basic_informations div{
-    margin-bottom: 25px;
+    margin-bottom: 10px;
 }
 
 #leaderway-folder .picture{
@@ -339,18 +344,34 @@ body{
 
 #leaderway-folder .name_surname{
     font-weight: bold;
+    text-decoration: underline;
 }
 
-#leaderway-folder .skillset{
-    margin:10px 150px 20px 0;
+#leaderway-folder .occupation{
+    margin-top:-50px;
+    width:700px;
+    float:left;
+    margin-bottom: 20px;
+}
+
+#leaderway-folder .occupation-value div{
+    margin-bottom:10px;
+}
+
+#leaderway-folder .task-skill-value{
+    margin-right:25px;
+}
+
+#leaderway-folder .gauge{
+    margin:0 150px 20px 0;
     float:left;
 }
 
-#leaderway-folder .skillset-value{
+#leaderway-folder .gauge-value{
     font-size: 0.8em;
 }
 
-#leaderway-folder .skillset-units{
+#leaderway-folder .gauge-units{
     display:block;
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gauge_background_large.png");
     background-repeat: repeat-y;
@@ -362,7 +383,7 @@ body{
     overflow: hidden;
 }
 
-#leaderway-folder .skillset-unit{
+#leaderway-folder .gauge-unit{
     display:block;
     background-color:#6F89A2;    
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gaugeFiller-background.png");
@@ -377,12 +398,12 @@ body{
     padding-top:15px;
 }
 
-/*-----folder-folder-----*/
+/*-----folder-archives-----*/
 #leaderway-folder .archives{
     min-height: 100px;
 }
 
-/*------------------------------------Score-----------------------------------*/
+/*------------------------------------tasklist-----------------------------------*/
 #leaderway-tasklist table{
     width:100%;
 }

@@ -64,7 +64,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 },
                 {
                     key:"salary", 
-                    label:"Salaire",
+                    label:"Remunération",
                     sortable:true
                 },
                 {

@@ -95,7 +95,16 @@
                     "@class":"ResourceInstance",
                     "properties":{
                         "surname":"Fernand",
-                        "salary":"1100"   
+                        "salary":1200,
+                        "moral":80,
+                        "confidence":50,
+                        "LeadershipLevel":1,
+                        "LastWorkQuality":70,
+                        "wish":"",
+                        "hate":"",
+                        "frankness":85,
+                        "wantToBeLeader":false,
+                        "numberOfworkWithLeader":0
                     },
                     "skillset":{
                         "Design graphique":30,
@@ -113,7 +122,16 @@
                     "@class":"ResourceInstance",
                     "properties":{
                         "surname":"Laurentin",
-                        "salary":"1300"   
+                        "salary":1100,
+                        "moral":60,
+                        "confidence":70,
+                        "LeadershipLevel":1,
+                        "LastWorkQuality":60,
+                        "wish":"",
+                        "hate":"Négociation",
+                        "frankness":35,
+                        "wantToBeLeader":true,
+                        "numberOfworkWithLeader":0  
                     },
                     "skillset":{
                         "Langages Web":67,
@@ -142,11 +160,16 @@
             "defaultVariableInstance":{
                     "@class":"TaskInstance",
                     "properties":{
-                        "term":2,
-                        "salary":"1500"
+                        "term":1,
+                        "salary":1300,
+                        "bonus":0,
+                        "comment":"",
+                        "clientSatisfactionToAppear":0,
+                        "appearAtWeek":1,
+                        "workWithLeader": true
                     },
                     "skillset":{
-                        "Design graphique":"50"
+                        "Design graphique":50
                     }
             },
             "scope": {
@@ -161,10 +184,15 @@
                     "@class":"TaskInstance",
                     "properties":{
                         "term":2,
-                        "salary":"2600"
+                        "salary":2600,
+                        "bonus":0,
+                        "comment":"",
+                        "clientSatisfactionToAppear":0,
+                        "appearAtWeek":1,
+                        "workWithLeader": true
                     },
                     "skillset":{
-                        "Développement de base de données":"43"
+                        "Développement de base de données":43
                     }
             },
             "scope": {

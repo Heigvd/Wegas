@@ -11,7 +11,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
         
         // *** Fields *** /
         table: null,
-        //data: new Array,
+        //data: new Array(),
         
         data:[
             {"number":1, "team":"tertgrst", "score":11278},
