@@ -358,6 +358,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         }
     },{
         NAME:"wegas-menu",
+        CSS_PREFIX: "wegas-menu",
         ATTRS:{
             horizontal: {
                 value: false,

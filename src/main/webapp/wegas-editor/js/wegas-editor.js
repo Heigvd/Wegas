@@ -74,12 +74,17 @@ YUI.add('wegas-editor', function(Y) {
             //widget = Y.Widget.getByNode('#centerTabView');
 
             if (!this._tab) {
+
+
                 this.tabView = Y.Widget.getByNode('#rightTabView');
                 this._tab = this.tabView.add({
                     type: "Tab",
                     label: "Edit"
                 }).item(0);
                 toolbarNode = this._tab.get('toolbarNode');
+
+
+                var name = this._tab.getClassName("OO");
 
                 this.saveButton = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
@@ -129,7 +134,7 @@ YUI.add('wegas-editor', function(Y) {
                 this._form.destroy();
                 node.empty();
             }
-            node.append('<div class="yui3-wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>');
+            node.append('<div class="wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>');
 
             formFields = {
                 type: "group",
@@ -147,7 +152,7 @@ YUI.add('wegas-editor', function(Y) {
             }, this, formFields));
         },
         showFormMsg: function (level, msg) {													// Form msgs logic
-            var msgNode = this._tab.get('panelNode').one('.yui3-wegas-systemmessage');
+            var msgNode = this._tab.get('panelNode').one('.wegas-systemmessage');
             msgNode.removeClass("info");
             msgNode.removeClass("warn");
             msgNode.removeClass("error");

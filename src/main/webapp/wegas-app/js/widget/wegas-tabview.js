@@ -211,5 +211,7 @@ YUI.add('wegas-tabview', function (Y) {
             }
             this.selectField.setValue(Y.Wegas.app.get("currentPlayer"));
         }
+    }, {
+        CSS_PREFIX: "wegas-selectbutton"
     });
 });

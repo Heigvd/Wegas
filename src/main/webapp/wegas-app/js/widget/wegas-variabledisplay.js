@@ -32,7 +32,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
             case 'box':
                 acc = [];
                 for (i = 0; i < val.value; i += 1) {
-                    acc.push('<div class="yui3-wegas-variabledisplay-box-unit"></div>');
+                    acc.push('<div class="wegas-variabledisplay-box-unit"></div>');
                 }
                 this.get(CONTENTBOX).setContent(this.get('label') + ": <br />" + acc.join('') + '(' + val.value + ')');
                 break;
@@ -41,8 +41,8 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 acc = [];
                 if (variableDescriptor) {
                     for (i = variableDescriptor.minValue; i <= variableDescriptor.maxValue; i += 1) {
-                        acc.push('<div class="yui3-wegas-valuebox-unit '
-                            + ((i === val.value) ? "yui3-wegas-valuebox-selected" : "")
+                        acc.push('<div class="wegas-valuebox-unit '
+                            + ((i === val.value) ? "wegas-valuebox-selected" : "")
                             + '">' + i + '</div>');
                     }
                 }
@@ -54,7 +54,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 value = val.value;
 
                 this.get(CONTENTBOX).setContent('<canvas width="90" height="51"></canvas><br />'
-                    + '<div class="yui3-wegas-variabledisplay-gauge-text">' + val.value + '%</div>'
+                    + '<div class="wegas-variabledisplay-gauge-text">' + val.value + '%</div>'
                     + '<center>' + this.get('label') + "</center>");
 
                 ctx = this.get(CONTENTBOX).one('canvas')._node.getContext('2d');
