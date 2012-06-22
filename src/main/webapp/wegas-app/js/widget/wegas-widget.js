@@ -13,20 +13,20 @@ YUI.add('wegas-widget', function (Y) {
             var cb = this.get(CONTENTBOX);
             cb.addClass(this.get('cssClass'));
         });
-
-
-    /*this.publish("wegas:select", {
-                emitFacade: false
+        this.constructor.CSS_PREFIX = this.constructor.NAME.toLowerCase();
+        this._cssPrefix = this.constructor.NAME.toLowerCase();
+        /*this.publish("wegas:select", {
+            emitFacade: false
         });
         this.publish("wegas:reload", {
-                emitFacade: false
+            emitFacade: false
         });
         this.publish("wegas:success", {
         defaultTargetOnly: true,
         defaultFn: this._defAddChildFn
         });*/
     }
-
+    //Widget.CSS_PREFIX = "wegas";
     Widget.ATTRS = {
         cssClass: {}
     };

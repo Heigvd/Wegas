@@ -46,19 +46,19 @@
 }
 
 /* WEGAS menu*/
-.yui3-wegas-menu-content li{
+.wegas-menu-content li{
     cursor:pointer;
     list-style-type: none;
 }
-.yui3-wegas-menu-content li:hover{
+.wegas-menu-content li:hover{
     box-shadow: 0px 0px 6px black inset;
     border-radius: 5px;
 }
-.yui3-wegas-menu-itemlist-horizontal{
+.wegas-menu-itemlist-horizontal{
     display:inline;
     padding:3px 8px;
 }
-.yui3-wegas-menu-itemlist-vertical{
+.wegas-menu-itemlist-vertical{
     display: list-item;
 }
 
@@ -66,7 +66,7 @@
  .yui3-uploader-hidden{
     display:none;
 }
-.yui3-wegas-fileexplorer .yui3-treeleaf {
+.wegas-fileexplorer .yui3-treeleaf {
     cursor:pointer;
 }
 .

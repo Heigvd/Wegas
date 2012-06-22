@@ -13,14 +13,13 @@ YUI().use(function (Y) {
                 combine: false,
                 filter: "raw",
                 modules: {
-
                     /** Base **/
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
-                        requires: ['stylesheet',
-                        'wegas-appcss', 'wegas-datasourcerest', 'wegas-widget', 'wegas-widgetloader',
+                        requires: ['stylesheet', 'wegas-appcss', 'wegas-datasourcerest',
+                        'wegas-widget', 'wegas-widgetloader',
                         /* @fixme those should be included on the fly*/
-                        'wegas-layout', 'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
+                        'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
                         'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 'wegas-inbox',
                         'wegas-projectmanagementgame', 'wegas-crimesim'
                         ]
@@ -53,8 +52,8 @@ YUI().use(function (Y) {
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
                         requires: ['yui2-layout', 'yui2-resize',
-//                         'yui2-event-mouseenter', 'yui2-event-delegate', 'yui2-yahoo', 'yui2-dom', 'yui2-containercore'
-//                        'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector',
+                        // 'yui2-event-mouseenter', 'yui2-event-delegate', 'yui2-yahoo', 'yui2-dom', 'yui2-containercore'
+                        // 'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector',
                         ]
                     },
                     'wegas-list': {
@@ -71,7 +70,6 @@ YUI().use(function (Y) {
                     'wegas-displayarea': {
                         path: 'wegas-app/js/widget/wegas-displayarea-min.js'
                     },
-
                     'wegas-variabledisplay': {
                         path: 'wegas-app/js/widget/wegas-variabledisplay-min.js',
                         requires: ['excanvas']
@@ -96,8 +94,7 @@ YUI().use(function (Y) {
                         'wegas-inputex', 'wegas-app', 'wegas-treeview',
                         'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
                         'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
-                        'wegas-scriptlibrary', 'wegas-statemachine',
-                        'ace-css'
+                        'wegas-scriptlibrary', 'wegas-layout', 'wegas-statemachine'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss',
                         ]
@@ -122,10 +119,11 @@ YUI().use(function (Y) {
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
-                        requires: [ 'ace-css' ]
+                        requires: ['ace-css']
                     },
                     'wegas-console': {
-                        path: 'wegas-editor/js/wegas-console-min.js'
+                        path: 'wegas-editor/js/wegas-console-min.js',
+                        requires: ['ace-javascript']
                     },
                     'wegas-editmenu': {
                         path: 'wegas-editor/js/wegas-editmenu-min.js',

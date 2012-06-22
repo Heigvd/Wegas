@@ -68,6 +68,8 @@ YUI.add('wegas-editmenu', function(Y) {
             }
             this.hide();
         }
+    }, {
+        CSS_PREFIX: "wegas-editmenu"
     });
 
     Y.namespace('Wegas').EditMenu = EditMenu;
