@@ -44,16 +44,18 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-widgetloader-min.js'
                     },
                     'wegas-button': {
-                        path: 'wegas-app/js/widget/wegas-button-min.js'
+                        path: 'wegas-app/js/widget/wegas-button-min.js',
+                        requires: ['inputex-select']
                     },
                     'wegas-chat': {
                         path: 'wegas-app/js/widget/wegas-chat-min.js'
                     },
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
-                        requires: ['yui2-layout', 'yui2-event-mouseenter', 'yui2-event-delegate', 'yui2-yahoo', 'yui2-dom',
-                        'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector', 'yui2-resize',
-                        'yui2-containercore', 'yui2-menu', 'yui2-calendar']
+                        requires: ['yui2-layout', 'yui2-resize',
+//                         'yui2-event-mouseenter', 'yui2-event-delegate', 'yui2-yahoo', 'yui2-dom', 'yui2-containercore'
+//                        'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector',
+                        ]
                     },
                     'wegas-list': {
                         path: 'wegas-app/js/widget/wegas-list-min.js',
@@ -79,12 +81,12 @@ YUI().use(function (Y) {
                     },
                     'wegas-inputex': {
                         path: 'wegas-app/js/widget/wegas-inputex-min.js',
-                        requires: [
-                        'inputex', 'inputex-form', 'inputex-email', 'inputex-radio', 'inputex-url',
-                        'inputex-select', 'inputex-checkbox', 'inputex-list', 'inputex-hidden',
-                        'inputex-password', 'inputex-group', 'inputex-string', 'inputex-textarea',
-                        'inputex-keyvalue', 'inputex-combine', "inputex-field", "inputex-object",
-                        'yui2-editor', "inputex-rte" ]
+                        requires: [ 'inputex', 'inputex-field', 'inputex-string', 'inputex-keyvalue' ]
+                    },
+                    'wegas-inputex-rte': {
+                        path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',
+                        requires: ['inputex-field', 'yui2-editor', 'panel'],
+                        ix_provides: 'html'
                     },
 
                     /** Editor **/
@@ -135,7 +137,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable-deprecated', 'yui2-button' /*'datatable-events', 'datatable-sort',*/ ]
+                        requires: ['datatable-deprecated', /*'datatable-events', 'datatable-sort',*/ ]
                     },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
@@ -165,19 +167,6 @@ YUI().use(function (Y) {
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
                         "wegas-mcqtabview"]
                     }
-                /* This one is only seful w/ yui3 treeview widget */
-                /* 'wegas-treeviewcss': {
-                        path: 'wegas-app/css/treeview-classic.css',
-                        type: 'css'
-                        },*/
-                /*'wegas-treeble': {
-                        path: 'wegas-app/js/wegas-treeble.js',
-                        requires: ['gallery-treeble', 'yui2-button' ]
-                    },
-                    'wegas-wireit-container': {
-                        path: 'wegas-admin/js/wegas-wireit-container-min.js',
-                        requires: ['wireit']
-                    },*/
                 }
             },
 
@@ -199,12 +188,14 @@ YUI().use(function (Y) {
                     }
                 }
             },
+
+            /* ExCanvas */
             excanvas: {
                 combine: false,
-                base: "lib/",
+                base: "lib/excanvas/",
                 modules:  {
                     'excanvas': {
-                        path: 'excanvas.js'
+                        path: 'excanvas.compiled.js'
                     }
                 }
             }

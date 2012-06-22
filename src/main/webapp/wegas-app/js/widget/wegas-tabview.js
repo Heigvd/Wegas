@@ -99,10 +99,14 @@ YUI.add('wegas-tabview', function (Y) {
         renderUI: function () {
             Tab.superclass.renderUI.apply(this, arguments);
 
-            this._renderToolbar();
+            this.renderToolbar();
         },
 
-        _renderToolbar: function () {
+        // *** Private Methods *** //
+        getToolbarNode: function() {
+            ;
+        },
+        renderToolbar: function () {
             var panelNode = this.get('panelNode'),
             toolbarChildren = this.get("toolbarChildren"),
             widget, toolbarNode;
@@ -123,6 +127,13 @@ YUI.add('wegas-tabview', function (Y) {
         ATTRS : {
             content: {
                 setter: function() { }                                          // Overrides the panelNode management
+            },
+            toolbarNode: {
+                lazyAdd: false,
+                value: false,
+                getter : function () {
+                    return this.get('panelNode').one(".wegas-tab-toolbar");
+                }
             },
             toolbarChildren: {
                 value: []

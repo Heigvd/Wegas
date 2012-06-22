@@ -25,7 +25,7 @@ YUI.add('wegas-console', function (Y) {
             cb.append('<div class="results"></div>');
 
             this.runButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-play\"></span>",
+                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run script",
                 on: {
                     click: Y.bind(function () {
                         Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({

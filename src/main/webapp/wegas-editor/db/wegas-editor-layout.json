@@ -70,11 +70,11 @@
                 "label": "Variables",
                 "toolbarChildren": [{
                     "type": "NewButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                     "targetClass": "VariableDescriptor"
                 }, {
                     "type": "ResetButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>"
+                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart"
                 }],
                 "children": [
                 {
@@ -91,9 +91,8 @@
                     "type": "WTreeView",
                     "dataSource": "Page"
                 }],
-                "toolbarButtons": []
-            },
-            {
+                "toolbarLabel": "Pages"
+            },{
                 "type": "Tab",
                 "label": "Users",
                 "children": [{
@@ -109,9 +108,8 @@
                         "key":"@class"
                     }]
                 } ],
-                "toolbarButtons": []
-            }
-            ]
+                "toolbarLabel": "Users"
+            }]
         }]
     },
     "center": {
@@ -138,7 +136,7 @@
                 }],
                 "toolbarChildren": [{
                     "type": "NewButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                     "targetClass": "Game"
                 }]
             }, {
@@ -146,13 +144,15 @@
                 "label": "File explorer",
                 "children": [{
                     "type": "FileExplorer"
-                }]
+                }],
+                "toolbarLabel": "File explorer"
             }, {
                 "type": "Tab",
                 "label": "StateMachine Viewer",
                 "childer": [{
                     "type": "StateMachineViewer"
-                }]
+                }],
+                "toolbarLabel": "State machine viewer"
             }]
         }]
     }
