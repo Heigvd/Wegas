@@ -98,8 +98,8 @@
                         "salary":1200,
                         "moral":80,
                         "confidence":50,
-                        "LeadershipLevel":1,
-                        "LastWorkQuality":70,
+                        "leadershipLevel":2,
+                        "lastWorkQuality":70,
                         "wish":"",
                         "hate":"",
                         "frankness":85,
@@ -125,8 +125,8 @@
                         "salary":1100,
                         "moral":60,
                         "confidence":70,
-                        "LeadershipLevel":1,
-                        "LastWorkQuality":60,
+                        "leadershipLevel":1,
+                        "lastWorkQuality":60,
                         "wish":"",
                         "hate":"Négociation",
                         "frankness":35,
@@ -154,8 +154,8 @@
         "name": "tasks",
         "items":[{
             "@class": "TaskDescriptor",
-            "name": "softwareMockup1",
-            "description":"Création d'une maquette pour un logiciel.",
+            "name": "Création d'une maquette pour un logiciel.",
+            "description":"",
             "duration":1,
             "defaultVariableInstance":{
                     "@class":"TaskInstance",
@@ -177,8 +177,8 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "db1",
-            "description":"Création d’une base de données.",
+            "name": "Création d’une base de données.",
+            "description":"",
             "duration":2,
             "defaultVariableInstance":{
                     "@class":"TaskInstance",

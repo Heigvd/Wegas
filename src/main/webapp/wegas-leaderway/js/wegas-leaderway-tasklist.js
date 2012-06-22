@@ -21,7 +21,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     taskInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(taskDescriptor);
                     (taskInstance.properties.comment)? comment = taskInstance.properties.comment : comment = "-";
                     this.data.push({
-                        task:taskDescriptor.description,
+                        task:taskDescriptor.name,
                         skill:this.getSkillsets(taskInstance),
                         duration:taskDescriptor.duration,
                         term:taskInstance.properties.term,
@@ -50,7 +50,6 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 {
                     key:"skill", 
                     label:"Compétence"
-
                 },
                 {
                     key:"duration", 

@@ -362,6 +362,27 @@ body{
     margin-right:25px;
 }
 
+#leaderway-folder .leadershipLevel{
+    display:block;
+    clear:both;
+}
+#leaderway-folder .leadershipLevel-label{
+    margin-bottom: 5px
+}
+
+#leaderway-folder .leadershipLevel-info{
+    color:#6F89A2;
+    margin-left:15px;
+}
+
+#leaderway-folder .leadershipLevel .currentLevel{
+    list-style-type:circle;
+}
+
+#leaderway-folder .leadershipLevel .levelActive{
+    color:#000000;
+}
+
 #leaderway-folder .gauge{
     margin:0 150px 20px 0;
     float:left;
