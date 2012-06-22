@@ -15,29 +15,29 @@
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }
-form div.inputEx-Field input[type=text] {
-    width: 100% !important;
+.inputEx-Group div.inputEx-Field > div > input[type=text] {
+    width: 100%;
 }
-form div.inputEx-Field select {
+.inputEx-Group div.inputEx-Field select {
     margin: 0;
 }
-form div.inputEx-Field textarea {
+.inputEx-Group div.inputEx-Field textarea {
     width:100%;
 }
-form div.inputEx-fieldWrapper {
+.inputEx-Group div.inputEx-fieldWrapper {
     padding-left:135px;
 }
-form div.inputEx-fieldWrapper > div.inputEx-label {
+.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label {
     padding:.2em 5px 0 0;
     margin-left:-135px;
 }
-form div.inputEx-fieldWrapper > div.inputEx-Field {
+.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-Field {
     width:99.8%;
 }
 /*div.inputEx-fieldWrapper div.inputEx-fieldWrapper {
     padding-left:70px;
 }*/
-form div.inputEx-fieldWrapper div.inputEx-fieldWrapper > div.inputEx-label {
+.inputEx-Group div.inputEx-fieldWrapper div.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-70px;
     width:65px;
 }
@@ -106,7 +106,7 @@ img.inputEx-ListField-delButton {
     padding:0;
     left:0px;
     right:0px;
-    top: 56px;
+    top: 57px;
 }
 /*.yui3-skin-sam .yui3-tabview-panel > .yui3-tab-panel > .yui3-tab-panel-content > div{
     height: 100%;
@@ -124,9 +124,10 @@ img.inputEx-ListField-delButton {
 
 /** Toolbar styles **/
 .wegas-tab-toolbar {
+    vertical-align: top;
     border: none;
-    min-height: 27px;
-    padding: 3px 0 0;
+    min-height: 26px;
+    padding: 2px 0;
     border-bottom: 1px solid lightgray;
     /*    background-color: #F2F2F2;*/
 }
@@ -140,12 +141,19 @@ img.inputEx-ListField-delButton {
     font-weight: bold;
     display: inline-block;
 }
-.wegas-tab-toolbar button {
+.wegas-tab-toolbar .yui3-button {
     vertical-align: top;
     margin: 0;
-    padding: 0.2em 0.4em .25em;
+    padding: 0.1em 0.4em .1em;
     margin-left: 0.3em;
     min-height: 24px;
+    background-color:white;
+}
+.wegas-tab-toolbar .yui3-button > *{
+    vertical-align: top;
+}
+.yui3-skin-sam .wegas-tab-toolbar .yui3-button .wegas-icon {
+    margin: -2px 2px 0 0;
 }
 .wegas-tab-toolbar .yui3-wegas-selectbutton {
     display:inline-block;
@@ -156,16 +164,18 @@ img.inputEx-ListField-delButton {
     display:inline-block;
 }
 .wegas-tab-toolbar select {
-    margin: 2px 0 0;
+    margin: 1px 0;
+    height: 22px;
 }
 /*.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectplayer .first-child a:before {
     content: 'Current user: ';
 }*/
 .wegas-tab-toolbar div.inputEx-label {
-    padding: 3px 3px 0 0;
+    padding: 4px 1px 0 0;
 }
+/* Wegas small icons */
 .yui3-skin-sam .wegas-icon {
-    display: block;
+    display: inline-block;
     height: 18px;
     width: 18px;
     overflow: hidden;
@@ -206,11 +216,21 @@ img.inputEx-ListField-delButton {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px -271px;
 }
 .yui3-skin-sam .wegas-icon-save {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -652px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -654px;
 }
 .yui3-skin-sam .wegas-icon-delete {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px -771px;
 }
+.yui3-skin-sam .wegas-icon-preview {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -741px;
+}
+.yui3-skin-sam .wegas-icon-cancel {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -834px;
+}
+.yui3-skin-sam .wegas-icon-fileexplorer {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -870px;
+}
+
 /* Console style */
 .yui3-console-hd {
     display:none;
@@ -234,7 +254,7 @@ img.inputEx-ListField-delButton {
     bottom: 90px;
     left: 0;
     right: 0;
-    top:0;
+    top:1px;
 }
 .yui3-skin-sam .yui3-console-ft {
     height:auto !important;
@@ -307,20 +327,60 @@ img.inputEx-ListField-delButton {
 .yui3-wegas-scriptlibrary .inputEx-fieldWrapper {
     height: 100%;
 }
-/* YUI 2 RTE Styles */
 
+/* YUI 2 RTE Styles */
 .yui-skin-sam .yui-editor-container {
     border: 1px solid lightgray;
+}
+.yui-skin-sam .yui-toolbar-container {
+    background-color: transparent;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-titlebar {
     display: none;
 }
-.yui-skin-sam .yui-toolbar-container .yui-toolbar-group h3 {
-    margin: 0;
-}
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont {
-    padding: 2px 7px;
+    padding: .3em .3em 0;
     border-bottom: 1px solid lightgray;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-group {
+    margin-bottom: .3em;
+}
+.yui-skin-sam .yui-editor-panel .hd span.close {
+    top: 4px;
+}
+
+/* Add file/image panel styles */
+.yui-skin-sam .yui-editor-panel button {
+    padding: 4px 4px 0;
+    margin: -2px 0px 0 4px;
+}
+.yui-skin-sam .yui-editor-panel .hd h3 {
+    color: black;
+    border: 1px solid lightgray;
+    background: white;
+}
+.yui-skin-sam .yui-editor-panel .bd {
+    background-color: white;
+    border-left: 1px solid lightgray;
+    border-right: 1px solid lightgray;
+}
+.yui-skin-sam .yui-editor-panel .ft {
+    border: 1px solid lightgray;
+}
+/* Code source plugin */
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-editcode span.yui-toolbar-icon,
+.yui-skin-sam .yui-toolbar-container .yui-button-editcode-selected span.yui-toolbar-icon {
+    background: transparent url(../images/wegas-editor-sprite.png) 2px -805px no-repeat;
+    left: 5px;
+}
+.yui-skin-sam .yui-editor-container textarea {
+    border:none;
+}
+.yui-skin-sam .yui-editor-container .editor-hidden {
+    visibility: hidden;
+    top: -9999px;
+    left: -9999px;
+    position: absolute !important;
 }
 /* YUI 2 TreeView Styles */
 .ygtvlabel, .ygtvlabel:link, .ygtvlabel:visited, .ygtvlabel:hover {
@@ -386,27 +446,23 @@ td.yui3-wegas-treeview-icon-player {
 /* Top Menu bar */
 
 .yui-skin-sam #topmenubar {
-    background: #2647A0 url(/Wegas/lib/yui2in3/build/assets/skins/sam/sprite.png) repeat-x left -1400px;
-    border-color: #243356;
+    background: white;
+    border: none;
 }
 .yui-skin-sam #topmenubar .yuimenubaritemlabel {
-    color: #ccd9ff;
+    color: #6d6d6d;
     border-color: transparent;
     line-height: 1.9em;
     font-weight: bold;
     font-size:11px;
+    padding-top: 2px;
 }
 .yui-skin-sam #topmenubar .yuimenubaritem-selected {
-    background: none;
-}
-.yui-skin-sam #topmenubar .yuimenubaritem-selected .yuimenubaritemlabel {
-    color: white;
+    background: lightgray;
 }
 .yui-skin-sam .yuimenubarnav .yuimenubaritem {
-    background: #2647A0 url(/Wegas/lib/yui2in3/build/assets/skins/sam/sprite.png) repeat-x left -1400px;
     border-right: solid 1px transparent;
 }
-
 
 /* System messages */
 .yui3-wegas-systemmessage {
@@ -440,3 +496,24 @@ td.yui3-wegas-treeview-icon-player {
 .yui3-wegas-systemmessage.error .icon {
     background: url(../images/wegas-icon-error-48.png) no-repeat;
 }
+/* Panel Widget Styles */
+.yui3-skin-sam .yui3-panel .yui3-widget-hd {
+    background: white;
+    color: #606060;
+    margin-bottom: 0px;
+    border-bottom: 1px solid lightgray;
+}
+.yui3-skin-sam .yui3-panel .yui3-widget-hd .yui3-widget-buttons {
+    padding: 8px 8px 0 0;
+}
+.yui3-skin-sam .yui3-panel .yui3-widget-hd .yui3-button-close {
+    background: url(../../lib/yui2in3/build/assets/skins/sam/sprite.png) no-repeat 0 -300px;
+    width: 26px;
+    height: 15px;
+}
+.yui3-skin-sam .yui3-panel .yui3-widget-hd .yui3-button-close::before {
+    /*    content: url(../../lib/yui2in3/build/assets/skins/sam/sprite.png);*/
+    content: "";
+    width: 30px;
+}
+

@@ -24,8 +24,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         },
 
         renderUI: function () {
-            var cb = this.get(CONTENTBOX),
-                el = this.get("parent").get('panelNode').one(".wegas-tab-toolbar");
+            var cb = this.get(CONTENTBOX);
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.getDOMNode(),
@@ -36,56 +35,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                 value: ""
             });
 
-            this.newButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>",
-                on: {
-                    click: Y.bind(function () {
-                         this.currentScript = prompt("Script name:");
-                         Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
-                            cfg: {
-                                method: "POST",
-                                data: ""
-                            }
-                        });
-                    }, this)
-                }
-            }).render(el);
-
-            this.selectField = new Y.inputEx.SelectField({
-                choices: [{
-                    value: "loading..."
-                }],
-                parentEl: el
-            });
-
-            this.saveButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-save\"></span>",
-                on: {
-                    click: Y.bind(function () {
-                         Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.selectField.getValue(),
-                            cfg: {
-                                method: "POST",
-                                data: this.aceField.getValue()
-                            }
-                        });
-                    }, this)
-                }
-            }).render(el);
-
-            this.deleteButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-delete\"></span>",
-                on: {
-                    click: Y.bind(function () {
-                         Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
-                            cfg: { method: "DELETE" }
-                        });
-                        this.currentScript = null;
-                    }, this)
-                }
-            }).render(el);
+            this.renderToolbar();
         },
         bindUI: function () {
             Y.Wegas.app.dataSources.GameModel.after("response", this.syncUI, this);
@@ -124,9 +74,71 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             this.saveButton.set("disabled", isEmpty);
             this.deleteButton.set("disabled", isEmpty);
         },
+
+        // *** Private Methods *** //
+
+        renderToolbar: function () {
+            var toolbarNode = this.get("parent").get('toolbarNode');
+
+            this.newButton = new Y.Button({
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                on: {
+                    click: Y.bind(function () {
+                        this.currentScript = prompt("Script name:");
+                        Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
+                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
+                            cfg: {
+                                method: "POST",
+                                data: ""
+                            }
+                        });
+                    }, this)
+                }
+            }).render(toolbarNode);
+
+            this.selectField = new Y.inputEx.SelectField({
+                choices: [{
+                    value: "loading..."
+                }],
+                parentEl: toolbarNode
+            });
+
+            this.saveButton = new Y.Button({
+                label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
+                on: {
+                    click: Y.bind(function () {
+                        Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
+                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.selectField.getValue(),
+                            cfg: {
+                                method: "POST",
+                                data: this.aceField.getValue()
+                            }
+                        });
+                    }, this)
+                }
+            }).render(toolbarNode);
+
+            this.deleteButton = new Y.Button({
+                label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                on: {
+                    click: Y.bind(function () {
+                        Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
+                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
+                            cfg: {
+                                method: "DELETE"
+                            }
+                        });
+                        this.currentScript = null;
+                    }, this)
+                }
+            }).render(toolbarNode);
+        },
+
         syncEditor: function () {
             var cGameModel = Y.Wegas.app.dataSources.GameModel.rest.getCachedVariableById(Y.Wegas.app.get('currentGameModel'));
-            this.aceField.setValue(cGameModel.scriptLibrary[this.selectField.getValue()]);
+            if (cGameModel.scriptLibrary[this.selectField.getValue()]) {
+                this.aceField.setValue(cGameModel.scriptLibrary[this.selectField.getValue()]);
+            }
         }
     });
 

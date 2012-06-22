@@ -7,7 +7,6 @@ YUI.add('wegas-app', function (Y) {
 
     var	App = Y.Base.create("wegas-app", Y.Base, [ ], {
 
-
         // ** Private fields ** //
         dataSources: [],
         _rootWidgetCfg: null,
@@ -126,7 +125,7 @@ YUI.add('wegas-app', function (Y) {
             },
             currentGameModel: {},
             currentGame: {},
-            currentTeam: { },
+            currentTeam: {},
             currentPlayer: {
                 setter: function (val) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);

@@ -8,14 +8,13 @@ YUI.add('wegas-csseditor', function (Y) {
 
     CSSEditor = Y.Base.create("wegas-csseditor", Y.Widget, [Y.WidgetChild,  Y.Wegas.Widget], {
 
-        destroyer: function () {
-        },
+        // *** Lifecycle Methods *** //
 
         renderUI: function () {
             var cb = this.get(CONTENTBOX),
             form,
             value = Y.Wegas.app._customCSSText || '',
-            el = this.get("parent").get('panelNode').one(".wegas-tab-toolbar");
+            el = this.get("parent").get('toolbarNode');
 
             form = new Y.inputEx.AceField({
                 parentEl: cb._node,
@@ -26,36 +25,22 @@ YUI.add('wegas-csseditor', function (Y) {
                 value: value
             });
             Y.Wegas.app._customCSSForm = form;
-            
-            this.newButton = new Y.Button({
-                label: "Preview",
+
+            this.previewButton = new Y.Button({
+                label: "<span class=\"wegas-icon wegas-icon-preview\"></span>Preview",
                 on: {
                     click: Y.bind(function () {
                         Y.Wegas.app._customCSSStyleSheet.disable();
                         Y.Wegas.app._customCSSStyleSheet = new Y.StyleSheet(form.getValue());
-
                         // showFormMsg('success', 'CSS has been updated.');
                     }, this)
                 }
             }).render(el);
 
             this.saveButton = new Y.Button({
-                label: "Save",
+                label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
                 disabled: true
             }).render(el);
-        },
-        bindUI: function () {
-        },
-        syncUI: function () {
-        }
-    }, {
-        ATTRS : {
-            classTxt: {
-                value: "CSSEditor"
-            },
-            type: {
-                value: "CSSEditor"
-            }
         }
     });
 
