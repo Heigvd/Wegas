@@ -92,7 +92,7 @@ YUI().use(function (Y) {
                         'wegas-inputex', 'wegas-app', 'wegas-treeview',
                         'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
                         'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
-                        'wegas-scriptlibrary', 'wegas-layout', 'wegas-statemachine',
+                        'wegas-scriptlibrary', 'wegas-layout', 'wegas-statemachineviewer',
                         'wegas-wysiwygeditor'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss',
