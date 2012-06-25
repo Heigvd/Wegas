@@ -135,10 +135,9 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         },
 
         syncEditor: function () {
-            var cGameModel = Y.Wegas.app.dataSources.GameModel.rest.getCachedVariableById(Y.Wegas.app.get('currentGameModel'));
-            if (cGameModel.scriptLibrary[this.selectField.getValue()]) {
-                this.aceField.setValue(cGameModel.scriptLibrary[this.selectField.getValue()]);
-            }
+            var cGameModel = Y.Wegas.app.dataSources.GameModel.rest.getCachedVariableById(Y.Wegas.app.get('currentGameModel')),
+            val = cGameModel.scriptLibrary[this.selectField.getValue()] || "";
+            this.aceField.setValue(val);
         }
     });
 
