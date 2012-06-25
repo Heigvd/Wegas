@@ -517,3 +517,27 @@ td.wegas-treeview-icon-player {
     width: 30px;
 }
 
+/* Wysiwyg code editor */
+
+.wegas-wysiwygeditor div.inputEx-fieldWrapper {
+    padding:0;
+}
+.wegas-wysiwygeditor div.inputEx-message {
+    margin:0;
+}
+.wegas-field-arguments {
+    position: relative;
+    padding-bottom: 20px;
+}
+.wegas-field-arguments::before {
+    content: "(";
+}
+.wegas-field-arguments::after {
+    content: ")";
+}
+.wegas-field-arguments .inputEx-ListField-childContainer {
+    display:inline-block;
+}
+.wegas-field-arguments .inputEx-List-link {
+    display: none;
+}

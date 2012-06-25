@@ -1,6 +1,6 @@
 [{
         "id": 1,
-        "label": "Main page",
+        "label": "Main layout",
         "@class": "Page",
         "type": "List",
         "cssClass": "layout",
@@ -43,58 +43,63 @@
                 "children": [{
                         "type": "Button",
                         "label": "Accueil",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpage": {
-                            "type": "Text",
-                            "content": "Welcome to CrimeSim."
-                        }
+                        "subpageId": 2
                     },{
                         "type": "Button",
                         "label": "Questions",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpage": {
-                            "type": "MCQTabView",
-                            "listDescriptorName": "questions"
-                        },
+                        "subpageId": 3,
                         "plugins": [{
-                            "fn": "UnreadCount",
-                            "cfg": {
-                                "variable": "questions"
-                            }
-                        }]
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": "questions"
+                                }
+                            }]
                     }, {
                         "type": "Button",
                         "label": "Pièces",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpage": {
-                            "type": "ScheduleDisplay"
-                        }
+                        "subpageId": 4
                     },{
                         "type": "Button",
                         "label": "Mails",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpage": {
-                            "type": "InboxDisplay",
-                            "variable": "inbox"
-                        },
+                        "subpageId": 5,
                         "plugins": [{
-                            "fn": "UnreadCount",
-                            "cfg": {
-                                "variable": "inbox"
-                            }
-                        }]
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": "inbox"
+                                }
+                            }]
                     },{
                         "type": "LoginButton",
                         "cssClass": "menu-loginbutton"
                     }]
-            },
-            {
-                "type": "DisplayArea",
+            }, {
+                "type": "PageLoader",
                 "id": "maindisplayarea",
-                "cssClass": "body"
+                "cssClass": "body",
+                "pageId": 2
             }]
-    }]
+    },{
+        "id": 2,
+        "type": "Text",
+        "content": "Welcome to CrimeSim."
+    },{
+        "id": 3,
+        "type": "MCQTabView",
+        "listDescriptorName": "questions"
+    },{
+        "id": 4,
+        "type": "ScheduleDisplay"
+    },{
+        "id": 5,
+        "type": "InboxDisplay",
+        "variable": "inbox"
+    }
+]
