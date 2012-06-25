@@ -77,7 +77,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         getOccupation: function(memberInstance){
             var i, occupation = new Array(), sick=true, listDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"), taskDescriptor, taskInstance, taskSkills = new Array();
             if(memberInstance.assignments.length == 0){
-                occupation.push('Libre');
+                occupation.push('Libre pour un mandat, travail habituel.');
             }
             else{
                 for (i = 0; i < listDescriptor.items.length; i = i + 1) {

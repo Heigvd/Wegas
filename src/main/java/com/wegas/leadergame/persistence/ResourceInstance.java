@@ -130,7 +130,7 @@ public class ResourceInstance extends VariableInstance {
      * @return the skillset
      */
     public Map<String, Long> getSkillset() {
-        return skillset;
+        return this.skillset;
     }
 
     /**
@@ -145,7 +145,7 @@ public class ResourceInstance extends VariableInstance {
      * @param key
      * @param val
      */
-    public void setSkill(String key, Long val) {
+    public void setSkillset(String key, Long val) {
         this.skillset.put(key, val);
     }
 
@@ -154,7 +154,7 @@ public class ResourceInstance extends VariableInstance {
      * @param key
      * @return
      */
-    public Long getSkill(String key) {
+    public Long getSkillset(String key) {
         return this.skillset.get(key);
     }
 
@@ -162,7 +162,7 @@ public class ResourceInstance extends VariableInstance {
      * @return the properties
      */
     public Map<String, String> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     /**

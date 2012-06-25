@@ -345,6 +345,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 } else if (cEl['@class'] === "Team") {
                 //@TODO is this case still in use ??
                 } else {
+                    // @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
+                    if (e.request.indexOf("ScriptLibrary") != -1) e.cfg.method = "POST";
                     this.applyOperation(e.cfg.method, cEl, e.data);
                 }
             }

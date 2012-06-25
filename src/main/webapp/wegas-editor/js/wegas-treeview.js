@@ -9,7 +9,7 @@ YUI.add('wegas-treeview', function (Y) {
 
     var CONTENTBOX = 'contentBox', WTreeView,
     YAHOO = Y.YUI2,
-    EDITBUTTONTPL = "<span class=\"yui3-wegas-treeview-editmenubutton\"></span>";
+    EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>";
 
     WTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
@@ -45,7 +45,7 @@ YUI.add('wegas-treeview', function (Y) {
             this.treeView.subscribe("clickEvent", function (e) {
                 YAHOO.log(e.node.index + " label was clicked", "info", "Wegas.WTreeView");
                 // Either show the edit menu
-                if (e.event.target.className === "yui3-wegas-treeview-editmenubutton") {
+                if (e.event.target.className === "wegas-treeview-editmenubutton") {
                     Y.Wegas.editor.showEditMenu(e.node.data, this.dataSource);
                     Y.Wegas.editor._editMenu.get("boundingBox").appendTo(e.event.target.parentNode);
                     Y.Wegas.editor._editMenu.set("align", {

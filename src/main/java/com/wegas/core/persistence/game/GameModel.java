@@ -14,8 +14,9 @@ import com.wegas.core.persistence.layout.Widget;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -38,7 +39,7 @@ public class GameModel extends NamedEntity implements Serializable {
      */
     @Id
     @Column(name = "gamemodelid")
-    @GeneratedValue(strategy=GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     /**
      *
@@ -76,14 +77,16 @@ public class GameModel extends NamedEntity implements Serializable {
     private List<Widget> widgets;
     /**
      * Holds all the scripts contained in current game model.
+     *
+     * @FIXME the @Lob annotation has no effect on ElementCollection and
+     * Postgresql
+     *
      */
-    //@ElementCollection
-//    @CollectionTable(joinColumns = {
-//        @JoinColumn(name = "parentgamemodel", referencedColumnName = "gamemodelid")
-//    })
-    @Transient
-    @XmlTransient
-    private List<Script> scriptLibrary = new ArrayList<>();
+    //@Lob
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column(length = 10485760)
+    // @Column(columnDefinition = "BLOB NOT NULL")
+    private Map<String, String> scriptLibrary = new HashMap<>();
     /**
      * @fixme temporary solutions to store pages
      */
@@ -131,7 +134,7 @@ public class GameModel extends NamedEntity implements Serializable {
      *
      * @param id
      */
-    @Override
+//    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -279,14 +282,14 @@ public class GameModel extends NamedEntity implements Serializable {
     /**
      * @return the scriptLibrary
      */
-    public List<Script> getScriptLibrary() {
+    public Map<String, String> getScriptLibrary() {
         return scriptLibrary;
     }
 
     /**
      * @param scriptLibrary the scriptLibrary to set
      */
-    public void setScriptLibrary(List<Script> scriptLibrary) {
+    public void setScriptLibrary(Map<String, String> scriptLibrary) {
         this.scriptLibrary = scriptLibrary;
     }
 }

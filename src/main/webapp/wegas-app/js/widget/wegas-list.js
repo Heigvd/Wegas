@@ -30,12 +30,6 @@ YUI.add('wegas-list', function (Y) {
             },
             direction: {
                 value: 'vertical'
-            },
-            classTxt: {
-                value: 'List'
-            },
-            type: {
-                value: "List"
             }
         }
     });

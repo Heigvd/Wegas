@@ -69,11 +69,9 @@ abstract public class VariableInstance extends AbstractEntity {
      *
      * @return
      */
-    @XmlTransient
     @Override
     public VariableInstance clone() {
-        VariableInstance c = (VariableInstance) super.clone();
-        return c;
+        return (VariableInstance) super.clone();
     }
 
 //    @PostPersist
@@ -97,18 +95,11 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @return the id
      */
-    @Override
-    public Long getId() {
-        return id;
-    }
+//    @Override
+//    public Long getId() {
+//        return id;
+//    }
 
-    /**
-     * @param id the id to set
-     */
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      * @return the scope
@@ -151,5 +142,13 @@ abstract public class VariableInstance extends AbstractEntity {
      */
     public void setDescriptorId(Long l) {
         // Dummy so that jaxb doesnt yell
+    }
+
+    /**
+     * @return the id
+     */
+    @Override
+    public Long getId() {
+        return id;
     }
 }
