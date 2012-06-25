@@ -159,7 +159,10 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                     'type':'object',
                     'properties':{
                         "type": {
-                            'type':'string'
+                            'type':'string',
+                            _inputex: {
+                                type: "hidden"
+                            }
                         },
                         "body": {
                             "type":"array",
@@ -194,8 +197,9 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                                 "$ref":"Identifier"
                             },
                             "_inputex":{
-//                                "useButtons":false
-                                sortable: false
+                                // "useButtons":false
+                                sortable: false,
+                                className: "wegas-field wegas-field-arguments"
                             }
                         }
                     }
@@ -206,7 +210,10 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                     properties:{
                         'name':{
                             'type':'string',
-                            'label': "("
+                            "_inputex": {
+                                className: "wegas-field wegas-field-identifier",
+                                label: null
+                            }
                         }
                     }
                 },

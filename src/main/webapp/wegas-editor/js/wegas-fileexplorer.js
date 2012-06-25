@@ -79,7 +79,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             this.events.neEvent = this.treeView.on("*:nodeExpanded", function(e){
                 this.listNodeData(e.node);
             }, this);
-            this.events.tlClickEvent = this.treeView.on("*:click", function(e){
+            this.events.tlClickEvent = this.treeView.on("treeleaf:labelClick", function(e){
                 //TODO: need url path
                 window.open(Y.Wegas.app.get("base") + "rest/File/GameModelId/" + this.gameModelId + "/read" +e.target.path, null, null);
             }, this);
