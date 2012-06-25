@@ -84,7 +84,7 @@
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
-                "defaultpageId": 2
+                "pageId": 2
             }]
     },{
         "id": 2,
