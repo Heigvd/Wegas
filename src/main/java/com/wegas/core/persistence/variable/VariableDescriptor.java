@@ -156,14 +156,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return id;
     }
 
-    /**
-     *
-     * @param id
-     */
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      *

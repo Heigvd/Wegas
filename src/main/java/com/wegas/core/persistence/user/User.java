@@ -66,14 +66,6 @@ public class User extends AbstractEntity {
         return id;
     }
 
-    /**
-     *
-     * @param id
-     */
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      *

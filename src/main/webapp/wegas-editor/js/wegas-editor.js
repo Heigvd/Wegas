@@ -67,22 +67,59 @@ YUI.add('wegas-editor', function(Y) {
          * Show edition form in the target div
          */
         edit: function (data, callback, formFields, scope) {
-            var node, widget = Y.Widget.getByNode('#rightTabView');
-            // var widget = Y.Widget.getByNode('#centerTabView');
+            var node, toolbarNode;
+
+            this.callback = callback;
+            this.scope = scope;
+            //widget = Y.Widget.getByNode('#centerTabView');
 
             if (!this._tab) {
-                this._tab = widget.add({
+
+
+                this.tabView = Y.Widget.getByNode('#rightTabView');
+                this._tab = this.tabView.add({
                     type: "Tab",
-                    label: "Edit",
-                    toolbarLabel: "Edit"
-                });
+                    label: "Edit"
+                }).item(0);
+                toolbarNode = this._tab.get('toolbarNode');
+
+
+                var name = this._tab.getClassName("OO");
+
+                this.saveButton = new Y.Button({
+                    label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
+                    on: {
+                        click: Y.bind(function () {
+                            var val = this._form.getValue();
+
+                            if (!this._form.validate()) {
+                                return;
+                            }
+                            this._form.fire("afterValidation");
+                            if (val.valueselector) {
+                                val = val.valueselector;
+                            }
+                            this.callback.call(this.scope || this, val, this.currentData);
+                        }, this)
+                    }
+                }).render(toolbarNode);
+
+                this.cancelButton = new Y.Button({
+                    label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Cancel",
+                    on: {
+                        click: Y.bind(function () {
+                            this._form.destroy();
+                            this.tabView.remove(this._tab.get('index'));
+                            this.tabView.selectChild(0);
+                            this._tab.destroy();
+                            this._tab = null;
+                        }, this)
+                    }
+                }).render(toolbarNode);
             }
-            widget.selectChild(widget.size() - 1);
-            /* var node = Y.one('#editor-editdisplayarea').one('div');
-            node.empty();
-            var node = newTab.item(0).get('panelNode').append('<div></div>');
-            */
-            node = this._tab.item(0).get('panelNode').one('.yui3-wegas-list-content');
+            this.tabView.selectChild(this.tabView.size() - 1);
+
+            node = this._tab.get('panelNode').one('.yui3-tab-panel-content');
             node.setStyle('padding-right', '5px');
             data = data || {};
 
@@ -97,46 +134,25 @@ YUI.add('wegas-editor', function(Y) {
                 this._form.destroy();
                 node.empty();
             }
-            node.append('<div class="yui3-wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>');
+            node.append('<div class="wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>');
 
-            this._form = new Y.inputEx.Form({
+            formFields = {
+                type: "group",
                 fields: formFields,
-                buttons: [{
-                    type: 'submit',
-                    value: 'Submit'
-                }, {
-                    type: 'button',
-                    value: 'Cancel',
-                    onClick: function () {
-                        this._form.destroy();
-                        widget.remove(newTab.item(0).get('index'));
-                        widget.selectChild(0);
-                    }
-                }],
-                parentEl: node._node,
+                parentEl: node,
                 onSubmit: function () {
-                    var val = this.getValue();
-
-                    if (!this.validate()) {
-                        return;
-                    }
-                    this.fire("afterValidation");
-                    if (val.valueselector) {
-                        val = val.valueselector;
-                    }
-                    callback.call(scope || this, val, this._oData);
-                /*
-                      this._form.destroy();
-                    widget.remove(newTab.item(0).get('index'));
-                    widget.selectChild(0);
-                     */
+                    return false;
                 }
-            });
-            this._form.setValue(data);
-            this._form._oData = data;
+            };
+
+            this.currentData = data;
+
+            Y.inputEx.use(formFields, Y.bind(function(fields, data) {
+                this._form = Y.inputEx(fields, this.currentData);
+            }, this, formFields));
         },
         showFormMsg: function (level, msg) {													// Form msgs logic
-            var msgNode = this._tab.item(0).get('panelNode').one('.yui3-wegas-systemmessage');
+            var msgNode = this._tab.get('panelNode').one('.wegas-systemmessage');
             msgNode.removeClass("info");
             msgNode.removeClass("warn");
             msgNode.removeClass("error");

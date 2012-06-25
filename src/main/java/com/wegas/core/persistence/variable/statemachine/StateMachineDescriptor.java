@@ -11,6 +11,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.dialogue.DialogueDescriptor;
 import java.util.*;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
@@ -24,11 +25,12 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Table(name = "FSMDescriptor")
 @XmlType(name = "FSMDescriptor")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class)
+    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
+    @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
 })
 public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    //@MapKey(name = "id")
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
     @MapKeyColumn(name = "fsm_statekey")
     private Map<Long, State> states = new HashMap<>();
@@ -46,7 +48,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     @Override
     public String toString() {
-        return "StateMachineDescriptorEntity{id=" + this.getId() +  ", states=" + states + '}';
+        return "StateMachineDescriptor{id=" + this.getId() + ", states=" + states + '}';
     }
 
     @Override

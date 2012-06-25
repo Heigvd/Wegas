@@ -103,13 +103,4 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     public Long getId() {
         return this.id;
     }
-
-    /**
-     *
-     * @param id
-     */
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

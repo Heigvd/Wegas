@@ -94,10 +94,6 @@ public class Assignment extends AbstractEntity {
         return this.id;
     }
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      * @return the MCQDescriptor

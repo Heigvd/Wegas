@@ -9,56 +9,44 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
-            "children": [
-            {
+            "children": [{
                 "type": "Tab",
                 "label": "Console",
-                "toolbarButtons": [
-                {
-                    "type": "select",
-                    "label": "Francois",
-                    "lazyloadmenu": false,
-                    "value": "selectplayer",
-                    "menu": [{
-                        "text": "notloaded",
-                        "value": "null"
-                    }]
-                }],
-                "children": [
-                {
+                "children": [{
                     "type": "Console",
                     "class": "wegas-console"
-                }
-                ]
+                }],
+                "toolbarChildren": [{
+                    "type": "SelectPlayer"
+                }]
             },
             {
                 "type": "Tab",
                 "label": "Chat",
                 "toolbarLabel": "Chat",
-                "children": [
-                {
+                "children": [{
                     "type": "Chat"
-                }
-                ]
+                }]
+            }, {
+                "type": "Tab",
+                "label": "Scripts",
+                "children": [{
+                    "type": "ScriptLibrary"
+                }]
             }, {
                 "type": "Tab",
                 "label": "CSS",
-                "toolbarLabel": "Edit CSS",
-                "children": [
-                {
+                "children": [{
                     "type": "CSSEditor",
                     "class": "wegas-csseditor"
-                }
-                ]
+                }]
             }, {
                 "type": "Tab",
                 "label": "Log",
                 "toolbarLabel": "Log",
-                "children": [
-                {
+                "children": [{
                     "type": "Logger"
-                }
-                ]
+                }]
             }]
         }]
     },
@@ -77,10 +65,17 @@
         "animate": true,
         "children": [{
             "type": "TabView",
-            "children": [
-            {
+            "children": [{
                 "type": "Tab",
                 "label": "Variables",
+                "toolbarChildren": [{
+                    "type": "NewButton",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    "targetClass": "VariableDescriptor"
+                }, {
+                    "type": "ResetButton",
+                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart"
+                }],
                 "children": [
                 {
                     "type": "WTreeView",
@@ -88,21 +83,6 @@
                     "excludeClasses": {
                         "MCQDescriptor": true
                     }
-                }],
-                "toolbarButtons": [{
-                    "type": "push",
-                    "label": "New variable",
-                    "value": "new",
-                    "id": "new",
-                    "data": {
-                        "dataSource":"VariableDescriptor",
-                        "@class": "VariableDescriptor"
-                    }
-                },{
-                    "type": "push",
-                    "label": "Reset this game",
-                    "value": "reset",
-                    "id": "reset"
                 }]
             }, {
                 "type": "Tab",
@@ -111,13 +91,11 @@
                     "type": "WTreeView",
                     "dataSource": "Page"
                 }],
-                "toolbarButtons": []
-            },
-            {
+                "toolbarLabel": "Pages"
+            },{
                 "type": "Tab",
                 "label": "Users",
-                "children": [
-                {
+                "children": [{
                     "type": "DataTable",
                     "dataSource": "User",
                     "columnset": [ {
@@ -129,11 +107,9 @@
                     }, {
                         "key":"@class"
                     }]
-                }
-                ],
-                "toolbarButtons": []
-            }
-            ]
+                } ],
+                "toolbarLabel": "Users"
+            }]
         }]
     },
     "center": {
@@ -144,18 +120,9 @@
             {
                 "type": "Tab",
                 "label": "Preview",
-                "toolbarButtons": [
-                {
-                    "type": "select",
-                    "label": "Francois",
-                    "lazyloadmenu": false,
-                    "value": "selectplayer",
-                    "menu": [{
-                        "text": "notloaded",
-                        "value": "null"
-                    }]
-                }
-                ],
+                "toolbarChildren": [{
+                    "type": "SelectPlayer"
+                }],
                 "children": [{
                     "type": "WidgetLoader",
                     "pageId": 1
@@ -167,22 +134,25 @@
                     "type": "WTreeView",
                     "dataSource": "Game"
                 }],
-                "toolbarButtons": [{
-                    "type": "push",
-                    "label": "New game",
-                    "value": "new",
-                    "id": "new",
-                    "data": {
-                        "dataSource":"Game",
-                        "@class": "Game"
-                    }
+                "toolbarChildren": [{
+                    "type": "NewButton",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    "targetClass": "Game"
                 }]
             }, {
                 "type": "Tab",
                 "label": "File explorer",
                 "children": [{
                     "type": "FileExplorer"
-                }]
+                }],
+                "toolbarLabel": "File explorer"
+            }, {
+                "type": "Tab",
+                "label": "StateMachine Viewer",
+                "childer": [{
+                    "type": "StateMachineViewer"
+                }],
+                "toolbarLabel": "State machine viewer"
             }]
         }]
     }

@@ -31,10 +31,6 @@ public class Book extends AbstractEntity{
         return this.id;
     }
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     @Override
     public void merge(AbstractEntity a) {
