@@ -107,9 +107,9 @@
     background-color: #7A7A7A;
     height: 100%;
 }
-.wegas-list-vertical > .wegas-widgetloader,
-.wegas-list-vertical > .wegas-widgetloader > .wegas-widgetloader-content,
-.wegas-list-vertical > .wegas-widgetloader > .wegas-widgetloader-content > .wegas-list,
+.wegas-list-vertical > .wegas-pageloader,
+.wegas-list-vertical > .wegas-pageloader > .wegas-pageloader-content,
+.wegas-list-vertical > .wegas-pageloader > .wegas-pageloader-content > .wegas-list,
 .pmg-mainlayout,
 .pmg-maindisplayarea {
     height:inherit;

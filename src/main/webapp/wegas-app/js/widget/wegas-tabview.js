@@ -27,12 +27,6 @@ YUI.add('wegas-tabview', function (Y) {
     *
     * @module widget-parent
     */
-
-
-    var Lang = Y.Lang,
-    RENDERED = "rendered",
-    BOUNDING_BOX = "boundingBox";
-
     function Parent(config) {
 
         this.publish("addChild", {
@@ -186,9 +180,12 @@ YUI.add('wegas-tabview', function (Y) {
                 Y.Wegas.app.set('currentPlayer', val);
             }, this);
             Y.Wegas.app.dataSources.Game.after("response", this.syncUI, this);
+            Y.Wegas.app.on("currentPlayerChange", function (e) {
+                this.selectField.setValue(e.newVal, false);
+            }, this);
         },
         syncUI: function() {
-            var isEmpty = true, k,
+            var isEmpty = true, j, k,
             cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame();
 
             if (!cGame) {                                                       // The game has not been loaded yet
@@ -200,7 +197,7 @@ YUI.add('wegas-tabview', function (Y) {
                     position:0
                 });
             }
-            for (var j = 0; cGame.teams && j < cGame.teams.length; j = j + 1) {
+            for (j = 0; cGame.teams && j < cGame.teams.length; j = j + 1) {
                 for (k = 0; k < cGame.teams[j].players.length; k = k + 1) {
                     this.selectField.addChoice({
                         value: cGame.teams[j].players[k].id,
@@ -209,7 +206,7 @@ YUI.add('wegas-tabview', function (Y) {
                     isEmpty = false;
                 }
             }
-            this.selectField.setValue(Y.Wegas.app.get("currentPlayer"));
+            this.selectField.setValue(Y.Wegas.app.get("currentPlayer"), false);
         }
     }, {
         CSS_PREFIX: "wegas-selectbutton"

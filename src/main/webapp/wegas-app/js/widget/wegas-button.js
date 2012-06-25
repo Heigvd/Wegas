@@ -36,22 +36,9 @@ YUI.add('wegas-button', function (Y) {
                     });
                 }
 
-                if (this.get('targetDisplayArea')) {                            // If there is already a widget displayed, we remove it
-                    var target = Y.one('#' + this.get('targetDisplayArea') + ' div');
-                    if (target.one('div')) {
-                        target.one('div').remove();
-                    }
-
-                    if (!this.childWidget) {                                    // If there is an a target display area, display the children in it
-                        try {
-                            this.childWidget = Y.Wegas.Widget.create(this.get("subpage"));
-                            this.childWidget.render(target);
-                        } catch (e) {
-                            Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.Button');
-                        }
-                    } else {
-                        target.append(this.childWidget.get(BOUNDINGBOX));
-                    }
+                if (this.get('targetPageLoaderId')) {                            // If there is already a widget displayed, we remove it
+                    var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                    targetPageLoader.set("pageId", this.get("subpageId"));
                 }
             }, this);
         },
@@ -70,13 +57,8 @@ YUI.add('wegas-button', function (Y) {
         ATTRS : {
             onClick: {},
             label: {},
-            subpage: {
-                value: {
-                    'type': 'Text',
-                    'content': 'Nothing to display'
-                }
-            },
-            targetDisplayArea: {},
+            subpageId: {},
+            targetPageLoaderId: {},
             view: {}
         }
     });
