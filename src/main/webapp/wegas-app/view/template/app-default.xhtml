@@ -59,8 +59,8 @@
             YUI_config.groups.ace.base = '/Wegas/lib/ace-0.2.0/';               // Hack fix codemirror loading path so it uses local files
             //YUI_config.groups.wireit.base = '/Wegas/lib/wireit/';
             YUI_config.groups.excanvas.base = '/Wegas/lib/excanvas/';
+            YUI_config.groups.esprima.base = '/Wegas/lib/esprima/';
 
-            //YUI_config.groups.codemirror.base = '/Wegas/lib/CodeMirror/';     // Hack fix codemirror loading path so it uses local files
             /**<!--
                 base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
                     { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
@@ -534,9 +534,9 @@
                             { name: 'cssClass', label: 'CSS class'},
                             { name: 'type', value:'Text', type: 'hidden'}
                         ],
-                        DisplayArea:[
+                        PageLoader: [
                             { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'DisplayArea', type: 'hidden'}
+                            { name: 'type', value:'PageLoader', type: 'hidden'}
                         ],
                         TabView: [
                             { name: 'cssClass', label: 'CSS class'},

@@ -83,9 +83,6 @@ YUI.add('wegas-editor', function(Y) {
                 }).item(0);
                 toolbarNode = this._tab.get('toolbarNode');
 
-
-                var name = this._tab.getClassName("OO");
-
                 this.saveButton = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
                     on: {
