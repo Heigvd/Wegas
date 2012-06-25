@@ -2,45 +2,59 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-widgetloader', function (Y) {
+YUI.add('wegas-pageloader', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', WidgetLoader;
+    var CONTENTBOX = 'contentBox', PageLoader;
 
-    WidgetLoader = Y.Base.create("wegas-widgetloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget], {
+    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget], {
 
         // *** Lifecycle Methods ***/
-        
+        initializer: function () {
+            PageLoader.pageLoaderInstances[this.get("id")] = this;              // We keep a references of all loaded PageLoaders
+        },
+
         bindUI: function () {
             Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
         },
 
         syncUI: function () {
-            var widgetCfg = Y.Wegas.app.dataSources.Page.rest.getCachedVariableById(this.get("pageId")),
-            widget;
-
-            this.get(CONTENTBOX).setContent("");
-
-            if (!widgetCfg) {
-                this.get(CONTENTBOX).setContent("No widget to display here.");
-                return;
-            }
-
-            widget = Y.Wegas.Widget.create(widgetCfg);
-
-            try {
-                widget.render(this.get(CONTENTBOX));
-            } catch (e) {
-                Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.WidgetLoader');
-            }
-            this.set("widget", widget);
+            this.set("pageId", this.get("pageId"))
         }
+
     }, {
         ATTRS : {
-            pageId: {},
+            pageId: {
+                setter: function (val) {
+                    if (this.get("widget")) {                                   // If there is already a widget, we destroy it
+                        this.get("widget").destroy();                           // @fixme we should remove the widget instead of destroying it
+                    }
+
+                    var widget = Y.Wegas.app.getPageById(val);
+                    if (!widget) {
+                        widget = new Y.Wegas.Text({
+                            content: "No widget to display here."
+                        });
+                    }
+
+                    try {
+                        widget.render(this.get(CONTENTBOX));
+                    } catch (e) {
+                        Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
+                    }
+
+                    this.set("widget", widget);
+                    return val;
+                }
+            },
             widget: {}
+        },
+
+        pageLoaderInstances: [],
+        find: function (id) {
+            return PageLoader.pageLoaderInstances[id];
         }
     });
 
-    Y.namespace('Wegas').WidgetLoader = WidgetLoader;
+    Y.namespace('Wegas').PageLoader = PageLoader;
 });

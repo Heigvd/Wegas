@@ -17,12 +17,12 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: ['stylesheet', 'wegas-appcss', 'wegas-datasourcerest',
-                        'wegas-widget', 'wegas-widgetloader',
+                        'wegas-widget', 'wegas-pageloader',
                         /* @fixme those should be included on the fly*/
-                        'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable', 'wegas-displayarea',
-                        'wegas-widgetloader', 'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 'wegas-inbox',
-                        
-                        'wegas-projectmanagementgame', 'wegas-crimesim', 'wegas-leaderway'
+                        'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable',
+                        'wegas-pageloader', 'wegas-variabledisplay', 'wegas-button',
+                        'wegas-chat', 'wegas-inbox',
+                        'wegas-projectmanagementgame', 'wegas-crimesim'
                         ]
                     },
                     'wegas-appcss': {
@@ -40,8 +40,8 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-widget-min.js',
                         requires: ['widget', 'widget-parent', 'widget-child']
                     },
-                    'wegas-widgetloader': {
-                        path: 'wegas-app/js/widget/wegas-widgetloader-min.js'
+                    'wegas-pageloader': {
+                        path: 'wegas-app/js/widget/wegas-pageloader-min.js'
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
@@ -68,9 +68,6 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-tabview-min.js',
                         requires: ['tabview', 'button']
                     },
-                    'wegas-displayarea': {
-                        path: 'wegas-app/js/widget/wegas-displayarea-min.js'
-                    },
                     'wegas-variabledisplay': {
                         path: 'wegas-app/js/widget/wegas-variabledisplay-min.js',
                         requires: ['excanvas']
@@ -95,7 +92,8 @@ YUI().use(function (Y) {
                         'wegas-inputex', 'wegas-app', 'wegas-treeview',
                         'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
                         'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
-                        'wegas-scriptlibrary', 'wegas-layout', 'wegas-statemachine'
+                        'wegas-scriptlibrary', 'wegas-layout', 'wegas-statemachineviewer',
+                        'wegas-wysiwygeditor'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss',
                         ]
@@ -149,6 +147,10 @@ YUI().use(function (Y) {
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer.js',
                         requires: ['graphics']
+                    },
+                    'wegas-wysiwygeditor': {
+                        path: 'wegas-editor/js/wegas-wysiwygeditor.js',
+                        requires: ['inputex', 'inputex-jsonschema', 'esprima', 'escodegen']
                     },
 
                     /** Project Management Game */
@@ -221,6 +223,20 @@ YUI().use(function (Y) {
                         path: 'excanvas.compiled.js'
                     }
                 }
+            },
+
+            /* Esprima */
+            esprima: {
+                combine: false,
+                base: "lib/esprima/",
+                modules:  {
+                    'esprima': {
+                        path: 'esprima-min.js'
+                    },
+                    'escodegen': {
+                        path: '/test/3rdparty/escodegen.js'
+                    }
+                }
             }
         }
     };
@@ -254,4 +270,5 @@ YUI().use(function (Y) {
     loadModules(YUI_config.groups.wegas);
     loadModules(YUI_config.groups.ace);
     loadModules(YUI_config.groups.excanvas);
+    loadModules(YUI_config.groups.esprima);
 });

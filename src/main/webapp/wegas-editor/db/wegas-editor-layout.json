@@ -119,12 +119,18 @@
             "children": [
             {
                 "type": "Tab",
+                "label": "Test",
+                "children": [{
+                    "type": "WysiwygEditor"
+                }]
+            },{
+                "type": "Tab",
                 "label": "Preview",
                 "toolbarChildren": [{
                     "type": "SelectPlayer"
                 }],
                 "children": [{
-                    "type": "WidgetLoader",
+                    "type": "PageLoader",
                     "pageId": 1
                 }]
             }, {
