@@ -140,8 +140,13 @@
         "children": [{
             "id": "centerTabView",
             "type": "TabView",
-            "children": [
-            {
+            "children": [{
+                "type": "Tab",
+                "label": "StateMachine Viewer",
+                "children": [{
+                    "type": "StateMachineViewer"
+                }]
+            }, {
                 "type": "Tab",
                 "label": "Preview",
                 "toolbarButtons": [
@@ -182,12 +187,6 @@
                 "label": "File explorer",
                 "children": [{
                     "type": "FileExplorer"
-                }]
-            }, {
-                "type": "Tab",
-                "label": "StateMachine Viewer",
-                "childer": [{
-                    "type": "StateMachineViewer"
                 }]
             }]
         }]
