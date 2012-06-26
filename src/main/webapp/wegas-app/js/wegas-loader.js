@@ -134,7 +134,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable-deprecated', /*'datatable-events', 'datatable-sort',*/ ]
+                        requires: [/*'datatable-deprecated',*/ /*'datatable-events', 'datatable-sort',*/ ]
                     },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
@@ -190,12 +190,10 @@ YUI().use(function (Y) {
                         requires:['tabview', 'wegas-button']
                     },
                     'wegas-leaderway-tasklist': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
-                        requires:['datatable-core', 'datatable-message', 'datatable-mutable', 'datatable-sort']
+                        path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js'
                     },
                     'wegas-leaderway-score': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-score.js',
-                        requires:['datatable-core', 'datatable-message', 'datatable-mutable']
+                        path: 'wegas-leaderway/js/wegas-leaderway-score.js'
                     },
                     'wegas-leaderway-dialogue': {
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js'
