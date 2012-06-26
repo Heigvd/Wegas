@@ -122,7 +122,8 @@
                 "label": "StateMachine Viewer",
                 "children": [{
                     "type": "StateMachineViewer"
-                }]
+                }],
+                "toolbarLabel": "State machine viewer"
             }, {
                 "type": "Tab",
                 "label": "Test",
@@ -158,13 +159,6 @@
                     "type": "FileExplorer"
                 }],
                 "toolbarLabel": "File explorer"
-            }, {
-                "type": "Tab",
-                "label": "StateMachine Viewer",
-                "childer": [{
-                    "type": "StateMachineViewer"
-                }],
-                "toolbarLabel": "State machine viewer"
             }]
         }]
     }
