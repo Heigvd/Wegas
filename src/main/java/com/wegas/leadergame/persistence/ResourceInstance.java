@@ -11,6 +11,7 @@ package com.wegas.leadergame.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.CascadeType;
@@ -45,12 +46,12 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, Long> skillset;
+    private Map<String, Long> skillset = new HashMap<>();
     /**
      *
      */
     @ElementCollection
-    private Map<String, String> properties;
+    private Map<String, String> properties = new HashMap<>();
     /**
      *
      */

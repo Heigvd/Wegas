@@ -22,7 +22,7 @@ YUI().use(function (Y) {
                         'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable',
                         'wegas-pageloader', 'wegas-variabledisplay', 'wegas-button',
                         'wegas-chat', 'wegas-inbox',
-                        'wegas-projectmanagementgame', 'wegas-crimesim'
+                        'wegas-projectmanagementgame', 'wegas-crimesim', 'wegas-leaderway'
                         ]
                     },
                     'wegas-appcss': {
