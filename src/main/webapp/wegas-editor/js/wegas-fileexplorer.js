@@ -40,6 +40,11 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 fileFieldName: "file"
             });
             this.fakeFile = new Y.FileHTML5({});
+            this.publish("fileSelected", {
+                bubbles: true,
+                emitFacade: true,
+                defaultFn: this.openFile
+            });
         },
         renderUI: function () {
             var cb = this.get(CONTENTBOX);
@@ -79,9 +84,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
             this.events.neEvent = this.treeView.on("*:nodeExpanded", function(e){
                 this.listNodeData(e.node);
             }, this);
-            this.events.tlClickEvent = this.treeView.on("treeleaf:labelClick", function(e){
-                //TODO: need url path
-                window.open(Y.Wegas.app.get("base") + "rest/File/GameModelId/" + this.gameModelId + "/read" +e.target.path, null, null);
+            this.events.tlClickEvent = this.treeView.on("treeleaf:iconClick", function(e){
+                this.fire("fileSelected", Y.Wegas.app.get("base") + "rest/File/GameModelId/" + this.gameModelId + "/read" +e.target.path);
             }, this);
             this.events.itemClickHandler = this.treeView.on("wegas-menu:itemClick", function(e){
                 this.processMenuClick(e.item, e.parent);
@@ -276,6 +280,10 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 }
             }
             return true;
+        },
+
+        openFile: function (e, path){
+            console.log(path);
         },
 
         processUpload: function (file) {

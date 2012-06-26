@@ -460,9 +460,10 @@ YUI.add("wegas-inputex-rte", function (Y){
 
                 this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode(Y.WidgetStdMod.BODY));
 
-                this.fileExplorer.treeView.before("treeleaf:labelClick", function (e) {
+                this.fileExplorer.on("*:fileSelected", function (e, path) {
                     e.stopImmediatePropagation();
-                    this.inputNode.set('value', Y.Wegas.app.get("base") + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") + "/read" +e.target.path);
+                    e.preventDefault();
+                    this.inputNode.set('value', path);
                     this.inputNode.focus();											//HACK we simulate the blur event to trigger the editor's image update
                     this.inputNode.blur();
                     this.filepanel.hide();
