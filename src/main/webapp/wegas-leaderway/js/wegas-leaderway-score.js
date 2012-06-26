@@ -23,12 +23,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
 
         //*** Particular Methods ***/
         getTeamScore: function(){
-            var listDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),resourceDescriptor,resourceInstance;
-            for (var i = 0; i < listDescriptor.items.length; i = i + 1) {
-                    resourceDescriptor = listDescriptor.items[i];
-                    resourceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(resourceDescriptor);
-                    console.log(resourceDescriptor, resourceInstance);
-            }
+            //To do
         },
 
         // *** Lifecycle Methods *** //

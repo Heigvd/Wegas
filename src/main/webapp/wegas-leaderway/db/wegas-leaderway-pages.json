@@ -1,6 +1,6 @@
 [{
         "id": 1,
-        "label": "Main page",
+        "label": "Main layout",
         "@class": "Page",
         "type": "List",
         "cssClass": "layout",
@@ -62,50 +62,34 @@
                 "children": [{
                         "type": "Button",
                         "label": "Liste des membres",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-HRList",
                         "tooltips":"Liste des membres",
-                        "subpage": {
-                            "id":"leaderway-hrlist",
-                            "type":"HRList",
-                            "content":"module RH à faire"
-                        },
-                        "subpageId": "leaderway-hrlist"
+                        "subpageId": 2
                     },
                     {
                         "type": "Button",
                         "label": "Dossiers",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-folder",
                         "tooltips":"Dossiers des membres",
-                        "subpage": {
-                            "id":"leaderway-folder",
-                            "type": "Folder",
-                            "content": "module dossier à faire"
-                        }
+                        "subpageId": 3
                     },
                     {
                         "type": "Button",
                         "label": "Mandats",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-tasklist",
                         "tooltips":"Liste des mandats",
-                        "subpage": {
-                            "id":"leaderway-tasklist",
-                            "type": "TaskList",
-                            "content": "module task à faire"
-                        }
+                        "subpageId": 4
                     },
                     {
                         "type": "Button",
                         "label": "E-mail",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-email",
                         "tooltips":"Réception e-mail",
-                        "subpage": {
-                            "type": "InboxDisplay",
-                            "variable": "inbox"
-                        },
+                        "subpageId": 5,
                         "plugins": [{
                                 "fn": "UnreadCount",
                                 "cfg": {
@@ -116,41 +100,61 @@
                     {
                         "type": "Button",
                         "label": "Score",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-score",
                         "tooltips":"Score des entreprises",
-                        "subpage": {
-                            "id":"leaderway-score",
-                            "type": "Score",
-                            "title": "Top 5 des meilleurs entreprises actuelles"
-                        }
+                        "subpageId": 6
                     },
                     {
                         "type": "Button",
                         "label": "Dialogue",
-                        "targetDisplayArea": "maindisplayarea",
+                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-tasklist",
                         "tooltips":"dialogue(temporaire)",
-                        "subpage": {
-                            "id":"leaderway-dialogue",
-                            "type": "Dialogue",
-                            "content": "module Dialogue à faire"
-                        }
+                        "subpageId": 7
                     },
                     {
                         "type": "LoginButton",
+                        "label":"Login button",
                         "cssClass": "menu-loginbutton"
                     }]
             },
             {
-                "type": "DisplayArea",
+                "type": "PageLoader",
                 "id": "maindisplayarea",
-                "cssClass": "body"
+                "cssClass": "body",
+                "pageId": 2
             }]
     },
     {
-        "id":"leaderway-hrlist",
+        "id":2,
         "type":"HRList",
-        "content":"module RH à faire"
+        "cssClass":"leaderway-hrlist"
+    },
+    {
+        "id":3,
+        "type":"Folder",
+        "cssClass":"leaderway-folder"
+    },
+    {
+        "id":4,
+        "type":"TaskList",
+        "cssClass":"leaderway-tasklist"
+    },
+    {
+        "type":5,
+        "variable":"inbox",
+        "cssClass":"leaderway-inbox"
+    },
+    {
+        "id":6,
+        "type":"Score",
+        "title":"Top 5 des meilleurs entreprises actuelles",
+        "cssClass":"leaderway-score"
+    },
+    {
+        "id":7,
+        "type":"Dialogue",
+        "cssClass":"leaderway-dialogue"        
     }
 ]

@@ -17,37 +17,37 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         
         //*** Particular Methods ***/
         clearBeforeSync: function(){
-            Y.one('#leaderway-folder .name').setHTML();
-            Y.one('#leaderway-folder .surname').setHTML();
-            Y.one('#leaderway-folder .salary-value').setHTML();
-            Y.one('#leaderway-folder .picture').setHTML();
-            Y.one('#leaderway-folder .moral').setHTML();
-            Y.one('#leaderway-folder .confidence').setHTML();
-            Y.one('#leaderway-folder .leadershipLevel').setHTML();
-            Y.one('#leaderway-folder .occupation-value').setHTML();
-            Y.one('#leaderway-folder .skillsets').setHTML();
-            Y.one('#leaderway-folder .description-value').setHTML();
+            Y.one('.leaderway-folder .name').setHTML();
+            Y.one('.leaderway-folder .surname').setHTML();
+            Y.one('.leaderway-folder .salary-value').setHTML();
+            Y.one('.leaderway-folder .picture').setHTML();
+            Y.one('.leaderway-folder .moral').setHTML();
+            Y.one('.leaderway-folder .confidence').setHTML();
+            Y.one('.leaderway-folder .leadershipLevel').setHTML();
+            Y.one('.leaderway-folder .occupation-value').setHTML();
+            Y.one('.leaderway-folder .skillsets').setHTML();
+            Y.one('.leaderway-folder .description-value').setHTML();
         },
         
         syncFolderInformations: function(){
             var currentMemberInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(this.currentMemberDescriptor);
-            Y.one('#leaderway-folder .name').insert(this.currentMemberDescriptor.name);
+            Y.one('.leaderway-folder .name').insert(this.currentMemberDescriptor.name);
             if(currentMemberInstance.properties.surname){
-                Y.one('#leaderway-folder .surname').insert(currentMemberInstance.properties.surname);   
+                Y.one('.leaderway-folder .surname').insert(currentMemberInstance.properties.surname);   
             }
             if(currentMemberInstance.properties.salary){
-                Y.one('#leaderway-folder .salary-value').insert(currentMemberInstance.properties.salary);   
+                Y.one('.leaderway-folder .salary-value').insert(currentMemberInstance.properties.salary);   
             }            
             /*temporary hard-coded*/
-            Y.one('#leaderway-folder .picture').insert('<img src="http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png" alt="face" width=100 height="100" />');
-            Y.one('#leaderway-folder .moral').insert(this.createGauge('Moral', parseInt(currentMemberInstance.properties.moral)));
-            Y.one('#leaderway-folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentMemberInstance.properties.confidence)));
+            Y.one('.leaderway-folder .picture').insert('<img src="http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png" alt="face" width=100 height="100" />');
+            Y.one('.leaderway-folder .moral').insert(this.createGauge('Moral', parseInt(currentMemberInstance.properties.moral)));
+            Y.one('.leaderway-folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentMemberInstance.properties.confidence)));
             this.addLevelOfLeadershipInformations(currentMemberInstance);
-            Y.one('#leaderway-folder .occupation-value').insert(this.getOccupation(currentMemberInstance));
+            Y.one('.leaderway-folder .occupation-value').insert(this.getOccupation(currentMemberInstance));
             for (var key in currentMemberInstance.skillset){
-                Y.one('#leaderway-folder .skillsets').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentMemberInstance.skillset[key]))+'</div>');
+                Y.one('.leaderway-folder .skillsets').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentMemberInstance.skillset[key]))+'</div>');
             }
-            Y.one('#leaderway-folder .description-value').insert(this.currentMemberDescriptor.description);            
+            Y.one('.leaderway-folder .description-value').insert(this.currentMemberDescriptor.description);            
         },
         
         addLevelOfLeadershipInformations: function(memberInstance){
@@ -63,14 +63,14 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+memberInstance.properties.surname+" suis vos directives car il vous considère et pense que vos choix sont justifiés.</li>");
                     leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+memberInstance.properties.surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");
                     leadershipInfo.push('</ul>');
-                    Y.one('#leaderway-folder .leadershipLevel').insert(leadershipInfo.join(""));
+                    Y.one('.leaderway-folder .leadershipLevel').insert(leadershipInfo.join(""));
                     
-                    Y.all('#leaderway-folder .leadershipLevel-info').item(5-leadershipLevel).addClass('currentLevel');
+                    Y.all('.leaderway-folder .leadershipLevel-info').item(5-leadershipLevel).addClass('currentLevel');
                     for(i=0 ; i<=leadershipLevel-1 ; i++){
-                        Y.all('#leaderway-folder .leadershipLevel-info').item(4-i).addClass('levelActive');
+                        Y.all('.leaderway-folder .leadershipLevel-info').item(4-i).addClass('levelActive');
                     }
                 }
-                else{Y.one('#leaderway-folder .leadershipLevel').insert('<div class="error">Leadership level must to be between 1 to 5)</div>')}
+                else{Y.one('.leaderway-folder .leadershipLevel').insert('<div class="error">Leadership level must to be between 1 to 5)</div>')}
             }
         },
         
@@ -176,6 +176,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         bindUI: function(){
+            //Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
             var resourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
             this.nextMembreButton.on('click', function () {
                 (resourcesDescriptor.items.length-1 <= this.currentMemberId)?this.currentMemberId = 0:this.currentMemberId++;
@@ -189,8 +191,9 @@ YUI.add('wegas-leaderway-folder', function (Y) {
           
         syncUI: function () {
             this.clearBeforeSync();
-            var resourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
-            this.currentMemberDescriptor = resourcesDescriptor.items[this.currentMemberId];
+            var ListResourceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
+            if(!ListResourceDescriptor) return;
+            this.currentMemberDescriptor = ListResourceDescriptor.items[this.currentMemberId];
             this.syncFolderInformations();
             this.syncArchivesInformations();
         }

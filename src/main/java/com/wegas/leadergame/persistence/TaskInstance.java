@@ -11,6 +11,7 @@ package com.wegas.leadergame.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -31,12 +32,12 @@ public class TaskInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, String> properties;
+    private Map<String, String> properties = new HashMap<>();
     /**
      *
      */
     @ElementCollection
-    private Map<String, String> skillset;
+    private Map<String, String> skillset = new HashMap<>();
 
     /**
      *
@@ -49,7 +50,7 @@ public class TaskInstance extends VariableInstance {
         this.properties.clear();
         this.properties.putAll(other.getProperties());
         this.skillset.clear();
-        this.skillset.putAll(other.getProperties());
+        this.skillset.putAll(other.getSkillset());
     }
 
     /**
@@ -70,7 +71,7 @@ public class TaskInstance extends VariableInstance {
      * @return the properties
      */
     public Map<String, String> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     /**
@@ -102,7 +103,7 @@ public class TaskInstance extends VariableInstance {
      * @return the skillset
      */
     public Map<String, String> getSkillset() {
-        return skillset;
+        return this.skillset;
     }
 
     /**

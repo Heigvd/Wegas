@@ -79,6 +79,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         },
         
         syncUI: function () {
+            this.data.length = 0;
             this.getTasksData();
             this.table.addRows(this.data);
             if(this.data[0] == null){

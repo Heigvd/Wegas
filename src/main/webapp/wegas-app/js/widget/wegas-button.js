@@ -69,7 +69,8 @@ YUI.add('wegas-button', function (Y) {
             label: {},
             subpageId: {},
             targetPageLoaderId: {},
-            view: {}
+            view: {},
+            tooltips:{}
         }
     });
 

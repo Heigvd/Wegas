@@ -12,54 +12,14 @@ YUI.add('wegas-leaderway', function (Y) {
         // *** Fields *** /
         table: null,
         data: new Array(),
-        //        data: [
-        //        {
-        //            nom: "Justin", 
-        //            prenom: "Béatrice",   
-        //            occupation: "Libre", 
-        //            dossier:'1', 
-        //            parler:'1'
-        //        },
-        //
-        //        {
-        //            nom: "Pierre", 
-        //            prenom: "Zimmerman",   
-        //            occupation: "Occupé", 
-        //            dossier:'2', 
-        //            parler:'2'
-        //        },
-        //
-        //        {
-        //            nom: "Boniface", 
-        //            prenom: "Laurentin", 
-        //            occupation: "Occupé", 
-        //            dossier:'3', 
-        //            parler:'3'
-        //        },
-        //
-        //        {
-        //            nom: "Valerie", 
-        //            prenom: "Philbert",   
-        //            occupation: "Libre", 
-        //            dossier:'4', 
-        //            parler:'4'
-        //        },
-        //
-        //        {
-        //            nom: "Hercule", 
-        //            prenom: "Auguste",   
-        //            occupation: "Occupé", 
-        //            dossier:'5', 
-        //            parler:'5'
-        //        }
-        //        ],
 
         //*** Particular Methods ***/
         getMembersData: function(){
-            var resourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),
-            resourceDescriptor,resourceInstance;
-            for (var i = 0; i < resourcesDescriptor.items.length; i = i + 1) {
-                resourceDescriptor = resourcesDescriptor.items[i];
+            var i, listResourceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),
+            resourceDescriptor, resourceInstance;
+            if (!listResourceDescriptor) return;
+            for (i = 0; i < listResourceDescriptor.items.length; i++) {
+                resourceDescriptor = listResourceDescriptor.items[i];
                 resourceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(resourceDescriptor);
                 this.data.push({
                     name:resourceDescriptor.name,
@@ -130,6 +90,8 @@ YUI.add('wegas-leaderway', function (Y) {
         },
             
         bindUI: function() {
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
             this.table.delegate('click', function (e) {
                 var tr_id = e.currentTarget._node.parentElement.parentElement.id,  
                 model = this.getRow(tr_id);
@@ -141,14 +103,12 @@ YUI.add('wegas-leaderway', function (Y) {
             }, '.yui3-datatable-data .folder', this.table);
         },
         
-        syncUI: function () {
+        syncUI: function (){
+            this.data.length = 0;
             this.getMembersData();
             this.table.addRows(this.data);
             if(this.data[0] == null){
                 this.table.showMessage("Personne n'est disponible.");
-            }
-            else{
-                this.table.hideMessage();
             }
         }
         
