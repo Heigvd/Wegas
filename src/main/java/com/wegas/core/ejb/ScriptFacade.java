@@ -131,9 +131,9 @@ public class ScriptFacade {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
         evt.getEngine().eval("importPackage(com.wegas.core.script)");           // Inject factory object
 
-//        for (Script s : evt.getPlayer().getGameModel().getScriptLibrary()) {
-//            evt.getEngine().eval(s.getContent());
-//        }
+        for (Entry<String, String> arg : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) {        // Inject the arguments
+            evt.getEngine().eval(arg.getValue());
+        }
 
         for (VariableDescriptor vd : evt.getPlayer().getGameModel().getVariableDescriptors()) { // We inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());

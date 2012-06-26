@@ -27,23 +27,14 @@
             <!-- Self hosted -->
             <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
             <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />
+            <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssgrids/grids-min.css" />
         </ui:fragment>
-
-
-        <!-- <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.2/build/assets/skins/sam/skin.css" />-->
-
-
-        <!-- WireIt -->
-        <!--<link rel="stylesheet" type="text/css" href="lib/wireit/css/WireIt.css" /> -->
-
-        <!-- InputEx -->
-        <!-- <link type='text/css' rel='stylesheet' href='lib/inputex/css/inputEx.css' />-->
 
         <meta id="customstyles" />
 
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/treeview-classic.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
-        <link rel="stylesheet" id="yui_3_5_0_3_1337250563303_2" href="/Wegas/wegas-app/css/wegas-app.css" />
+        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
     </h:head>
 
     <h:body class="yui3-skin-sam yui-skin-sam">
@@ -67,9 +58,10 @@
             YUI_config.groups.inputex.base = '/Wegas/lib/inputex/build/';	// Hack fix inputex loading path so it uses local files
             YUI_config.groups.wegas.base = '/Wegas/';                           // Hack fix wegas loading path so it uses local files
             YUI_config.groups.ace.base = '/Wegas/lib/ace-0.2.0/';               // Hack fix codemirror loading path so it uses local files
-            YUI_config.groups.wireit.base = '/Wegas/lib/wireit/';
-            YUI_config.groups.jsplumb.base = '/Wegas/' + YUI_config.groups.jsplumb.base;
-            //YUI_config.groups.codemirror.base = '/Wegas/lib/CodeMirror/';       // Hack fix codemirror loading path so it uses local files
+            //YUI_config.groups.wireit.base = '/Wegas/lib/wireit/';
+            YUI_config.groups.excanvas.base = '/Wegas/lib/excanvas/';
+            YUI_config.groups.esprima.base = '/Wegas/lib/esprima/';
+
             /**<!--
                 base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
                     { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
@@ -84,7 +76,7 @@
                 useBrowserConsole: true,
                 //debug: Config.debug,
                 //timeout: 10000,
-                //filter: 'raw',
+                filter: 'raw',
                 //filters: { event: 'debug' },
                 //logExclude: { event : true },
                 //logInclude: { event : true },
@@ -424,7 +416,7 @@
                                     { name: 'id', type: 'hidden'},
                                     { name: 'active', 'label': 'Active by default', type: 'boolean', value: true}
                                 ]},
-                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
+                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
                         ],
                         "QuestionInstance": [
                             { name: '@class', value:'QuestionInstance', type: 'hidden'},
@@ -437,8 +429,8 @@
                             { name: '@class', type: 'hidden', value: 'ChoiceDescriptor'},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
-                            { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
-                            { name: 'feedback', 'type': 'html', label:'Feedback', opts: {width:'100%', height: '50px', autoHeight: true, dompath: false}},
+                            { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px'}},
+                            { name: 'feedback', 'type': 'html', label:'Feedback', opts: {width:'100%', height: '50px'}},
                             { name:'impact', type:'group', fields: [
                                     { name: '@class', value:'Script', type: 'hidden'},
                                     { name: 'language', value:'JavaScript', type: 'hidden'},
@@ -465,7 +457,7 @@
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
 //                            { name: 'label', label:'Label'},
-                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
+                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
                             { name:'defaultVariableInstance', type:'group', fields: [
                                 { name: '@class', value:'ResourceInstance', type: 'hidden'},
                                 { name: 'id', type: 'hidden'},
@@ -488,7 +480,7 @@
                             { name: 'name', label:'Name', required: true},
 //                            { name: 'label', label:'Label'},
                             { name: 'duration', label:'Duration', required: true},
-                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px', autoHeight: true, dompath: false }},
+                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
                             { name:'defaultVariableInstance', type:'group', fields: [
                                 { name: '@class', value:'TaskInstance', type: 'hidden'},
                                 { name: 'id', type: 'hidden'},
@@ -539,13 +531,13 @@
                             { name: 'type', value:'Button', type: 'hidden'}
                         ],
                         Text: [
-                            { name: 'content', 'type': 'html', label:'Description', opts: {width:'100%', height: '250px', autoHeight: true, dompath: false}},
+                            { name: 'content', 'type': 'html', label:'Description', opts: {width:'100%', height: '250px'}},
                             { name: 'cssClass', label: 'CSS class'},
                             { name: 'type', value:'Text', type: 'hidden'}
                         ],
-                        DisplayArea:[
+                        PageLoader: [
                             { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'DisplayArea', type: 'hidden'}
+                            { name: 'type', value:'PageLoader', type: 'hidden'}
                         ],
                         TabView: [
                             { name: 'cssClass', label: 'CSS class'},

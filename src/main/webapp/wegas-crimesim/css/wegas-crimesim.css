@@ -12,11 +12,11 @@
      border-bottom:none;*/
 
 }
-.yui3-wegas-variabledisplay {
+.wegas-variabledisplay {
     padding:5px;
     max-width:150px;
 }
-.yui3-wegas-variabledisplay-box-unit {
+.wegas-variabledisplay-box-unit {
     width:5px;
     height:10px;
     background:steelblue;
@@ -24,13 +24,13 @@
     margin-right:2px;
     float:left;
 }
-.yui3-wegas-valuebox-unit {
+.wegas-valuebox-unit {
     background:steelblue;
     border:1px solid gray;
     float:left;
 }
 
-.yui3-wegas-valuebox-selected {
+.wegas-valuebox-selected {
     background:white;
 }
 #menu {
@@ -45,7 +45,7 @@
 .menu-button:hover {
     background:gray;
 }
-.yui3-wegas-login {
+.wegas-login {
     padding:5px;
     float:right  !important;
     cursor: pointer;
@@ -56,7 +56,7 @@
     min-height:200px;
 }
 /* Schedule display Widget style */
-.yui3-wegas-crimesim-scheduledisplay-content {
+.wegas-crimesim-scheduledisplay-content {
     position:relative;
 }
 /* Schedule detail style */
@@ -227,10 +227,10 @@
 
 
 /* TabView Styles */
-.yui3-wegas-mcqtabview  .yui3-tabview-content {
+.wegas-mcqtabview  .yui3-tabview-content {
     /*padding-left: 350px;*/
 }
-.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tabview-list {
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-list {
     display: inline-block;
     float:left;
     /* margin-left: -350px;*/
@@ -240,13 +240,13 @@
     width: 39.9%;
 }
 
-.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tabview-panel {
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-panel {
     display:inline-block;
     width:60%;
     float:left;
     overflow:inherit;
 }
-.yui3-wegas-mcqtabview .yui3-tab {
+.wegas-mcqtabview .yui3-tab {
     display: block;
     border:none;
     border-bottom:1px solid #DBDBDB;
@@ -255,78 +255,78 @@
     width:100%;
     padding:0;
 }
-.yui3-wegas-mcqtabview .pmg-subtitle {
+.wegas-mcqtabview .pmg-subtitle {
     padding:6px 0;
     font-size: 1.2em;
     font-weight: normal;
     border-bottom: 2px solid #4D4D4D;
 }
-.yui3-skin-sam .yui3-wegas-mcqtabview .pmg-subtitle  .left ,
-.yui3-skin-sam .yui3-wegas-mcqtabview .yui3-tab  .label {
+.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle  .left ,
+.yui3-skin-sam .wegas-mcqtabview .yui3-tab  .label {
     float:left;
     padding-left:8px;
 }
-.yui3-skin-sam .yui3-wegas-mcqtabview .pmg-subtitle .right ,
-.yui3-skin-sam .yui3-wegas-mcqtabview .yui3-tab .status {
+.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle .right ,
+.yui3-skin-sam .wegas-mcqtabview .yui3-tab .status {
     float:right;
     padding-right:8px;
 }
-.yui3-skin-sam .yui3-wegas-mcqtabview .yui3-tab a.yui3-tab-label  {
+.yui3-skin-sam .wegas-mcqtabview .yui3-tab a.yui3-tab-label  {
     background: none;
     border: none;
     padding: 6px 0px;
     width:100%;
 }
 
-.yui3-wegas-mcqtabview {
+.wegas-mcqtabview {
     line-height: normal;
 }
-.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tab a:hover {
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tab a:hover {
     background: #B2D2FF;
 }
-.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tab-selected {
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected {
     background: #CCCCCC;
 }
-.yui3-skin-sam  .yui3-wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
     color:black;
 }
 
-.yui3-wegas-mcqtabview .title {
+.wegas-mcqtabview .title {
     background:lightsteelblue;
     font-weight: bold;
     padding: 2px 5px;
 }
-.yui3-wegas-mcqtabview .subtitle {
+.wegas-mcqtabview .subtitle {
     background:lightsteelblue;
     font-weight: bold;
     padding: 2px 5px;
     border-top:1px solid gray;
     border-bottom:1px solid gray;
 }
-.yui3-wegas-mcqtabview  .description {
+.wegas-mcqtabview  .description {
     margin: 5px;
     margin-bottom: 20px;
 }
-.yui3-wegas-mcqtabview  input {
+.wegas-mcqtabview  input {
     margin: 5px;
     float: right;
     padding:5px;
 }
-.yui3-wegas-mcqtabview .replies {
+.wegas-mcqtabview .replies {
 }
-.yui3-wegas-mcqtabview .reply {
+.wegas-mcqtabview .reply {
     margin-bottom: 5px;
     margin-bottom: 20px;
 /*    margin: 5px;*/
 }
-.yui3-wegas-mcqtabview .reply.first-child {
+.wegas-mcqtabview .reply.first-child {
     border:none;
 }
-.yui3-wegas-mcqtabview .reply bold {
+.wegas-mcqtabview .reply bold {
     font-weight: bold;
     display:block;
     margin-bottom:10px;
 }
-.yui3-wegas-mcqtabview .unread {
+.wegas-mcqtabview .unread {
     font-weight:bold;
 }
