@@ -128,32 +128,38 @@
     },
     {
         "id":2,
+        "label":"HRList",
         "type":"HRList",
         "cssClass":"leaderway-hrlist"
     },
     {
         "id":3,
+        "label":"Fodler",
         "type":"Folder",
         "cssClass":"leaderway-folder"
     },
     {
         "id":4,
+        "label":"TaskList",
         "type":"TaskList",
         "cssClass":"leaderway-tasklist"
     },
     {
         "type":5,
+        "label":"Inbox",
         "variable":"inbox",
         "cssClass":"leaderway-inbox"
     },
     {
         "id":6,
+        "label":"Score",
         "type":"Score",
         "title":"Top 5 des meilleurs entreprises actuelles",
         "cssClass":"leaderway-score"
     },
     {
         "id":7,
+        "label":"Dialogue",
         "type":"Dialogue",
         "cssClass":"leaderway-dialogue"        
     }
