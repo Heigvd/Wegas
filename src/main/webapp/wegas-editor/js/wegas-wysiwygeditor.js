@@ -18,34 +18,23 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
         },
 
         renderUI: function () {
-            var cb = this.get("contentBox");
+            var cb = this.get("contentBox"), code, syntax;
 
             cb.append("<textarea style=\"width:100%;200px\">VariableDescriptor.getInstance(self);</textarea>");
 
             new Y.Button({
                 label: "Generate form",
                 on: {
-                    click: Y.bind(this.syncUI, this)
+                    click: Y.bind(this.genSyntaxTree, this)
                 }
             }).render(cb);
 
-        },
-
-        syncUI: function () {
-            var cb = this.get("contentBox"),
-            code = cb.one("textarea").get("value"),
-            syntax = window.esprima.parse(code, {
-                raw: true
-            });
-            //            code = window.escodegen.generate(syntax, {
-            //                indent: indent
-            //            });
-
-            console.log(syntax, code);
-
-            if (this.form) {
-                this.form.destroy();
-            }
+            new Y.Button({
+                label: "Generate code",
+                on: {
+                    click: Y.bind(this.genCode, this)
+                }
+            }).render(cb);
 
             var base_schema_map = {
                 "address": {
@@ -161,7 +150,8 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                         "type": {
                             'type':'string',
                             _inputex: {
-                                type: "hidden"
+                                _type: "hidden",
+                                value: "Program"
                             }
                         },
                         "body": {
@@ -170,7 +160,8 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                                 "$ref":"ExpressionStatement"
                             },
                             "_inputex":{
-                                "useButtons":false
+                                "useButtons":false,
+                                className: "wegas-field wegas-field-body"
                             }
                         }
                     }
@@ -179,6 +170,13 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                     id:'information-source',
                     type:'object',
                     properties:{
+                        "type": {
+                            'type':'string',
+                            _inputex: {
+                                _type: "hidden",
+                                value: "ExpressionStatement"
+                            }
+                        },
                         'expression':{
                             '$ref':'CallExpression'
                         }
@@ -188,6 +186,13 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                     id: 'CallExpression',
                     type: 'object',
                     properties:{
+                        "type": {
+                            'type':'string',
+                            _inputex: {
+                                _type: "hidden",
+                                value: "CallExpression"
+                            }
+                        },
                         'callee': {
                             $ref: "MemberExpression"
                         },
@@ -202,17 +207,27 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                                 className: "wegas-field wegas-field-arguments"
                             }
                         }
+                    },
+                    "_inputex":{
+                        className: "wegas-field wegas-field-callexpression"
                     }
                 },
                 "Identifier": {
                     id:'identifier',
                     type:'object',
                     properties:{
+                        "type": {
+                            'type':'string',
+                            _inputex: {
+                                _type: "hidden",
+                                value: "Identifier"
+                            }
+                        },
                         'name':{
                             'type':'string',
                             "_inputex": {
                                 className: "wegas-field wegas-field-identifier",
-                                label: null
+                                label: ""
                             }
                         }
                     }
@@ -220,12 +235,25 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                 "MemberExpression": {
                     type: "object",
                     properties: {
+                        "type": {
+                            'type':'string',
+                            _inputex: {
+                                _type: "hidden",
+                                value: "MemberExpression"
+                            }
+                        },
                         "object": {
-                            "$ref":"Identifier"
+                            "$ref":"Identifier",
+                            "_inputex":{
+                                className: "wegas-field wegas-field-identifier wegas-field-object"
+                            }
                         },
                         "property": {
                             "$ref":"Identifier"
                         }
+                    },
+                    "_inputex":{
+                        className: "wegas-field wegas-field-memberexpression"
                     }
                 }
             };
@@ -241,17 +269,34 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
 
             Y.inputEx.use(formFields, Y.bind(function(fields) {
                 this.form = Y.inputEx(fields);
-                this.form.setValue(syntax);
+                this.genSyntaxTree();
             }, this, formFields));
-
-        }
+        },
 
         // *** Private Methods *** //
 
+        genSyntaxTree: function() {
+            var code = this.get("contentBox").one("textarea").get("value"),
+            syntax = window.esprima.parse(code, {
+                raw: true
+            });
+            var code = window.escodegen.generate(syntax, {
+                indent: true
+            });
+            console.log("Generating tree:", syntax , code,"info", "Wegas.WysiwyEditor");
+            this.form.setValue(syntax);
+        },
+        genCode: function() {
+            console.log("Generating code:", this.form.getValue(), "info", "Wegas.WysiwyEditor");
+            var code = window.escodegen.generate(this.form.getValue(), {
+                indent: true
+            });
+            this.get("contentBox").one("textarea").set("value", code);
+        }
     }, {
         ATTRS: {
 
-        }
+    }
     });
 
     Y.namespace('Wegas').WysiwygEditor = WysiwygEditor;

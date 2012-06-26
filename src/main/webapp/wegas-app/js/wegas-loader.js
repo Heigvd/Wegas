@@ -22,7 +22,7 @@ YUI().use(function (Y) {
                         'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable',
                         'wegas-pageloader', 'wegas-variabledisplay', 'wegas-button',
                         'wegas-chat', 'wegas-inbox',
-                        'wegas-projectmanagementgame', 'wegas-crimesim'
+                        'wegas-projectmanagementgame', 'wegas-crimesim', 'wegas-mmo'
                         ]
                     },
                     'wegas-appcss': {
@@ -153,12 +153,12 @@ YUI().use(function (Y) {
                         requires: ['inputex', 'inputex-jsonschema', 'esprima', 'escodegen']
                     },
 
-                    /** Project Management Game */
+                    /** Project Management Game **/
                     'wegas-projectmanagementgame': {
                         path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
                     },
 
-                    /** CrimeSim */
+                    /** CrimeSim **/
                     'wegas-mcqtabview': {
                         path: 'wegas-crimesim/js/wegas-mcqtabview-min.js',
                         requires: ['tabview']
@@ -167,6 +167,12 @@ YUI().use(function (Y) {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
                         "wegas-mcqtabview"]
+                    },
+
+                    /** MMO **/
+                    'wegas-mmo': {
+                        path: 'wegas-mmo/js/wegas-mmo-min.js',
+                        requires: ['wegas-widget', 'ace-javascript']
                     }
                 }
             },
