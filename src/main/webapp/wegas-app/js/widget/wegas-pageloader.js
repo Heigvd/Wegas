@@ -26,8 +26,13 @@ YUI.add('wegas-pageloader', function (Y) {
         ATTRS : {
             pageId: {
                 setter: function (val) {
-                    if (this.get("widget")) {                                   // If there is already a widget, we destroy it
-                        this.get("widget").destroy();                           // @fixme we should remove the widget instead of destroying it
+                    var oldWidget = this.get("widget");
+                    if (oldWidget) {                                               // If there is already a widget, we destroy it
+                        if (oldWidget.get("id") == val) {                          // If the widget is the same as the one currently loaded, exit
+                            return;
+                        }
+                        oldWidget.destroy();                           // @fixme we should remove the widget instead of destroying it
+
                     }
 
                     var widget = Y.Wegas.app.getPageById(val);
