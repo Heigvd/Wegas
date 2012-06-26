@@ -7,7 +7,6 @@ YUI.add('wegas-app', function (Y) {
 
     var	App = Y.Base.create("wegas-app", Y.Base, [ ], {
 
-
         // ** Private fields ** //
         dataSources: [],
         _rootWidgetCfg: null,
@@ -22,7 +21,7 @@ YUI.add('wegas-app', function (Y) {
             this.initCSS();
         },
         destructor : function () {
-            // @todo Delete datasources
+        // @todo Delete datasources
         },
         render: function () {
             this.requestDataSources();
@@ -30,8 +29,7 @@ YUI.add('wegas-app', function (Y) {
 
         // *** Private methods ** //
         initDataSources: function () {
-            var dataSources = this.get('dataSources'),
-                k;
+            var k, dataSources = this.get('dataSources');
 
             // @todo Shall we use browser native parser ?
             // Y.JSON.useNativeParse = true;
@@ -41,48 +39,46 @@ YUI.add('wegas-app', function (Y) {
                     this.dataSources[k] = new Y.DataSource.IO(dataSources[k]);
                 }
             }
+        /*this.dataSources.Game.after("response", function() {
+                Y.log("info", "Game has been modified, reloading variable descriptors", "Wegas.Editor");
+            });*/
         },
         initCSS: function () {
             var css = this.get('cssStylesheets'),
-                i,
-                callback = {
-                    timeout : 3000,
-                    context: this,
-                    on : {
-                        success : function (x, o) {
-                            this._customCSSText = o.responseText;
-                            this._customCSSStyleSheet = new Y.StyleSheet(o.responseText);
-                            //Y.log("RAW JSON DATA: " + o.responseText);
-                            //this.updateCustomCSS(o.responseText);
-                            if (this._customCSSForm) {
-                                this._customCSSForm.inputs[0].setValue(o.responseText);
-                            }
-                        },
-                        failure : function (x, o) {
-                            Y.log("initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
+            i,
+            callback = {
+                timeout : 3000,
+                context: this,
+                on : {
+                    success : function (x, o) {
+                        this._customCSSText = o.responseText;
+                        this._customCSSStyleSheet = new Y.StyleSheet(o.responseText);
+                        //Y.log("RAW JSON DATA: " + o.responseText);
+                        //this.updateCustomCSS(o.responseText);
+                        if (this._customCSSForm) {
+                            this._customCSSForm.setValue(o.responseText);
                         }
+                    },
+                    failure : function (x, o) {
+                        Y.log("initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
                     }
-                };
+                }
+            };
 
             for (i = 0; i < css.length; i += 1) {
                 Y.io(this.get('base') + css[i] + '?id=' + App.genId(), callback);   // Load the page css
             }
         },
         requestDataSources: function () {
-            var k;
+            var k, ds;
             for (k in this.dataSources) {
                 if (this.dataSources.hasOwnProperty(k) && k !== "File") {
-                    if (this.dataSources[k].rest) {
-                        this.dataSources[k].rest.sendRequest({request: ""});
-                    } else {
-                        this.dataSources[k].sendRequest({request: ""});
-                    }
+                    ds = this.dataSources[k].rest ? this.dataSources[k].rest : this.dataSources[k];
+                    ds.sendRequest({
+                        request: ""
+                    });
                 }
             }
-
-        /*this.dataSources.Game.after("response", function() {
-                Y.log("info", "Game has been modified, reloading variable descriptors", "Wegas.Editor");
-            });*/
         },
 
         initUI: function() {
@@ -107,12 +103,21 @@ YUI.add('wegas-app', function (Y) {
                     }
                 }
             });
+        },
+        getPageById: function (id) {
+            var widgetCfg = this.dataSources.Page.rest.getCachedVariableById(id);
+
+            if (!widgetCfg) {
+                return null;
+            }
+
+            return Y.Wegas.Widget.create(widgetCfg);
         }
     }, {
         ATTRS: {
             /**
-             * Base url for app
-             */
+            * Base url for app
+            */
             base: { },
             layoutSrc: {},
             dataSources: {
@@ -126,11 +131,13 @@ YUI.add('wegas-app', function (Y) {
             },
             currentGameModel: {},
             currentGame: {},
-            currentTeam: { },
+            currentTeam: {},
             currentPlayer: {
                 setter: function (val) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
-                    if (cPlayer) { this.set('currentTeam', cPlayer.teamId); }   // When current player is updated, we also update current team
+                    if (cPlayer) {
+                        this.set('currentTeam', cPlayer.teamId);
+                    }   // When current player is updated, we also update current team
                     return val;
                 }
             }

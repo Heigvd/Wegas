@@ -1,0 +1,49 @@
+{
+    "@class":"GameModel",
+    "name":"MMO",
+    "games":[{
+        "@class":"Game",
+        "name":"Test-16",
+        "teams":[{
+            "@class": "Team",
+            "name":"Les autres",
+            "players": [ {
+                "@class": "Player",
+                "name": "Jo",
+                "user": {
+                    "@class": "User",
+                    "name": "Fred"
+                }
+            }]
+        }]
+    }],
+    "childVariableDescriptors":[{
+        "@class":"NumberDescriptor",
+        "name":"money",
+        "defaultVariableInstance":{
+            "@class":"NumberInstance",
+            "value":0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "tags":[],
+        "minValue":null,
+        "maxValue":null
+    },{
+        "@class":"InboxDescriptor",
+        "name":"inbox",
+        "defaultVariableInstance":{
+            "@class":"InboxInstance",
+            "messages":[]
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "tags":[],
+        "label":null,
+        "description":null
+    }],
+    "cssUri":"wegas-mmo/css/wegas-mmo.css",
+    "widgetsUri":"wegas-mmo/db/wegas-mmo-pages.json"
+}

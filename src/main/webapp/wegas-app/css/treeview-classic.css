@@ -1,7 +1,6 @@
 .yui3-treeview {
     margin:0;
     padding:0;
-    margin: 2px 10px;
     list-style:none;
     zoom: 1;
 }
@@ -15,11 +14,6 @@
 }
 .yui3-treenode-content-icon{
     background-position: -0px -41px;
-}
-
-.yui3-treeview .yui3-treeview-content {
-    padding-bottom: 3px;
-    margin-left: 6px;
 }
 
 .yui3-treeleaf-content-icon {
@@ -42,7 +36,7 @@
     float: right;
 }
 .yui3-treenode-content-header, .yui3-treeleaf-content-header{
-    padding:4px 10px;
+    padding:4px 5px;
 }
 
 /* EFFECT */
@@ -52,24 +46,27 @@
 }
 
 /* WEGAS menu*/
-.yui3-wegas-menu-content li{
+.wegas-menu-content li{
     cursor:pointer;
     list-style-type: none;
 }
-.yui3-wegas-menu-content li:hover{
+.wegas-menu-content li:hover{
     box-shadow: 0px 0px 6px black inset;
     border-radius: 5px;
 }
-.yui3-wegas-menu-itemlist-horizontal{
+.wegas-menu-itemlist-horizontal{
     display:inline;
     padding:3px 8px;
 }
-.yui3-wegas-menu-itemlist-vertical{
+.wegas-menu-itemlist-vertical{
     display: list-item;
 }
 
 /* FILE EXPLORER */
-.yui3-uploader-hidden{
+ .yui3-uploader-hidden{
     display:none;
 }
-
+.wegas-fileexplorer .yui3-treeleaf {
+    cursor:pointer;
+}
+.

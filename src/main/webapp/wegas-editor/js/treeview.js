@@ -187,6 +187,9 @@ YUI.add('treeview', function (Y) {
             this.publish("labelClick",{
                broadcast: true
             });
+            this.publish("click",{
+               broadcast: true
+            });
         },
 
         renderUI: function () {
@@ -210,12 +213,12 @@ YUI.add('treeview', function (Y) {
             this.events.labelClick = this.labelNode.on("click",function(e){
                 e.stopImmediatePropagation();
                 this.fire("labelClick", {node:this});
+                this.fire("click", { node: this });
             },this);
             this.events.labelClick = this.iconNode.on("click",function(e){
                 e.stopImmediatePropagation();
-                this.fire("iconClick", {
-                    node: this
-                });
+                this.fire("iconClick", { node: this });
+                this.fire("click", { node: this });
             },this);
         },
 

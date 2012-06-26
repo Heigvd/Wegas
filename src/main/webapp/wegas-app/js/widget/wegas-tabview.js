@@ -19,120 +19,196 @@ YUI.add('wegas-tabview', function (Y) {
         }
     });
 
-    Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget], {
+
+    /**
+    * Extension enabling a Tab to be a parent of another Widget.
+    *
+    * @modified from original WidgetParent module
+    *
+    * @module widget-parent
+    */
+    function Parent(config) {
+
+        this.publish("addChild", {
+            defaultTargetOnly: true,
+            defaultFn: this._defAddChildFn
+        });
+        this.publish("removeChild", {
+            defaultTargetOnly: true,
+            defaultFn: this._defRemoveChildFn
+        });
+
+        this._items = [];
+
+        var children,
+        handle;
+
+        if (config && config.children) {
+
+            children = config.children;
+
+            handle = this.after("initializedChange", function (e) {
+                this._add(children);
+                handle.detach();
+            });
+
+        }
+
+        //  Widget method overlap
+        Y.after(this._renderChildren, this, "renderUI");
+        Y.after(this._bindUIParent, this, "bindUI");
+
+        //        this.after("selectionChange", this._afterSelectionChange);
+        //        this.after("selectedChange", this._afterParentSelectedChange);
+        //        this.after("activeDescendantChange", this._afterActiveDescendantChange);
+
+        this._hDestroyChild = this.after("*:destroy", this._afterDestroyChild);
+    //        this.after("*:focusedChange", this._updateActiveDescendant);
+
+    }
+
+    Y.mix(Parent, Y.WidgetParent);
+    Y.augment(Parent, Y.WidgetParent);
+    delete Parent.ATTRS.selected;
+    Parent.prototype._renderChildren = function () {
+        var renderTo = this._childrenContainer || this.get("panelNode").one(".yui3-tab-panel-content");        // @modified
+
+        this._childrenContainer = renderTo;
+
+        this.each(function (child) {
+            child.render(renderTo);
+        });
+    }
+    Parent.prototype._createChild =  Y.WidgetParent.prototype._createChild;
+
+
+    /**
+    * Custom Tab implementation
+    */
+    Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Parent], {
 
         // *** Private Fields *** //
-        toolbar: null,
 
         // *** Lifecycle Methods *** //
         renderUI: function () {
             Tab.superclass.renderUI.apply(this, arguments);
 
-            this._renderToolbar();
-
-            try {
-                var cWidget = new Y.Wegas.List({
-                    children: this.get('children')
-                });
-                cWidget.render(this.get('panelNode'));
-            } catch (e) {
-                Y.log('Error rendering tab ' + this.get('label') + ': ' + (e.stack || e), 'error', 'Wegas.TabView');
-            }
-
+            this.renderToolbar();
         },
 
-        _renderToolbar: function () {
-            var panelNode = this.get('panelNode');
+        // *** Private Methods *** //
+        getToolbarNode: function() {
+            ;
+        },
+        renderToolbar: function () {
+            var panelNode = this.get('panelNode'),
+            toolbarChildren = this.get("toolbarChildren"),
+            widget, toolbarNode;
 
-            panelNode.addClass('wegas-tab-hastoolbar');
-            panelNode.prepend('<div class="yui-editor-container wegas-tab-toolbar"><div class="first-child"><div></div></div></div><div style="clear:both"></div>');
+            panelNode.prepend('<div class="wegas-tab-toolbar"></div><div class="yui3-tab-panel-content"></div>');
+            toolbarNode = panelNode.one(".wegas-tab-toolbar");
 
-            this.toolbar = new Y.YUI2.widget.Toolbar(panelNode.one('.yui-editor-container div div')._node, {
-                buttonType: 'advanced',
-                draggable: false,
-                buttons: this.get('toolbarButtons')
-            // collapse:, cont:, disabled:,  grouplabels:, titlebar: "test",
-            });
             if (this.get('toolbarLabel')) {
-                panelNode.one('.yui-toolbar-subcont').setContent('<span class="title">' + this.get('toolbarLabel') + '</span></div>');
+                toolbarNode.setContent('<span class="title">' + this.get('toolbarLabel') + '</span></div>');
             }
-            this.toolbar.on('buttonClick', function (e) {
-                var button = this.toolbar.getButtonByValue(e.button.value),    // We have a button reference
-                    p;
-                switch (button.get('value')) {
-                case 'selectplayer':
-                    p = Y.Wegas.app.dataSources.Game.rest.getPlayerById(parseInt(e.button.value, 10));
-                    button.set('label', p.name);
-                    Y.Wegas.app.set('currentPlayer', e.button.value);
-                    break;
-                case 'reset':
-                    Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({ request: '/reset' });
-                    break;
-                case 'new':                                                     // New button click event
-                    Y.Wegas.editor.showAddPanel({
-                        "@class": e.button.data['@class']
-                    }, null, Y.Wegas.app.dataSources[e.button.data.dataSource]);
-                    break;
-                }
-            }, null, this);
 
-            Y.Wegas.app.dataSources.Game.after("response", function (e) {
-                var menu, button, i, j, k, cGame, players,
-                    buttons = this.toolbar.getButtons();
-
-                if (!buttons) {
-                    return;
-                }
-
-                for (i = 0; i < buttons.length; i += 1) {
-                    button = buttons[i];
-                    switch (button.get('value')) {
-                    case 'selectplayer':
-                        //if (button.getMenu().getItems().length == 0) return;
-                        //currentPlayerId = Y.Wegas.app.get('currentPlayer');
-                        cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame();
-                        players = [];
-
-                        for (j = 0; cGame.teams && j < cGame.teams.length; j += 1) {
-                            for (k = 0; k < cGame.teams[j].players.length; k += 1) {
-                                players.push({
-                                    text: cGame.teams[j].players[k].name,
-                                    value: String(cGame.teams[j].players[k].id)
-                                });
-                            }
-                        }
-                        menu = button.getMenu();
-                        menu.clearContent();
-                        menu.addItems(players);
-                        try {
-                            menu.render();
-                        } catch (e) {
-                            Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.WidgetLoader');
-                        }
-                        break;
-                    }
-                }
-            }, this);
+            for (var i = 0; i < toolbarChildren.length; i = i + 1) {
+                widget = Y.Wegas.Widget.create(toolbarChildren[i]);
+                widget.render(toolbarNode);
+            }
         }
     }, {
         ATTRS : {
-            classTxt: {
-                value: 'Tab'
-            },
-            type: {
-                value: "Tab"
-            },
-            children: { },
-            toolbarButtons: {
-                value:[]
-            },
-            toolbarLabel: {},
             content: {
                 setter: function() { }                                          // Overrides the panelNode management
-            }
+            },
+            toolbarNode: {
+                lazyAdd: false,
+                value: false,
+                getter : function () {
+                    return this.get('panelNode').one(".wegas-tab-toolbar");
+                }
+            },
+            toolbarChildren: {
+                value: []
+            },
+            toolbarLabel: {}
         }
     });
 
     Y.namespace('Wegas').TabView = TabView;
     Y.namespace('Wegas').Tab = Tab;
+
+    Y.Wegas.NewButton = Y.Base.create("button", Y.Button, [], {
+        bindUI: function () {
+            Y.Wegas.NewButton.superclass.bindUI.apply(this, arguments);
+            this.on("click", function(){
+                Y.Wegas.editor.showAddPanel({
+                    "@class": this.get("targetClass")
+                }, null, Y.Wegas.app.dataSources[this.get("targetClass")]);
+            });
+        }
+    }, {
+        ATTRS : {
+            targetClass: {}
+        }
+    });
+
+    Y.Wegas.ResetButton = Y.Base.create("button", Y.Button, [], {
+        bindUI: function () {
+            Y.Wegas.NewButton.superclass.bindUI.apply(this, arguments);
+            this.on("click", function(){
+                Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
+                    request: '/reset'
+                });
+            });
+        }
+    });
+
+    Y.Wegas.SelectPlayer = Y.Base.create("wegas-selectbutton", Y.Widget, [], {
+        renderUI: function () {
+            this.selectField = new Y.inputEx.SelectField({
+                label: "Current player:",
+                choices: [{
+                    value: "loading..."
+                }],
+                parentEl: this.get("contentBox")
+            });
+        },
+        bindUI: function () {
+            this.selectField.on("updated", function (val) {
+                Y.Wegas.app.set('currentPlayer', val);
+            }, this);
+            Y.Wegas.app.dataSources.Game.after("response", this.syncUI, this);
+            Y.Wegas.app.on("currentPlayerChange", function (e) {
+                this.selectField.setValue(e.newVal, false);
+            }, this);
+        },
+        syncUI: function() {
+            var isEmpty = true, j, k,
+            cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame();
+
+            if (!cGame) {                                                       // The game has not been loaded yet
+                return;
+            }
+
+            while(this.selectField.choicesList.length > 0) {
+                this.selectField.removeChoice({
+                    position:0
+                });
+            }
+            for (j = 0; cGame.teams && j < cGame.teams.length; j = j + 1) {
+                for (k = 0; k < cGame.teams[j].players.length; k = k + 1) {
+                    this.selectField.addChoice({
+                        value: cGame.teams[j].players[k].id,
+                        label: cGame.teams[j].players[k].name
+                    });
+                    isEmpty = false;
+                }
+            }
+            this.selectField.setValue(Y.Wegas.app.get("currentPlayer"), false);
+        }
+    }, {
+        CSS_PREFIX: "wegas-selectbutton"
+    });
 });
