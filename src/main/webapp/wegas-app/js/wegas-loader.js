@@ -290,4 +290,5 @@ YUI().use(function (Y) {
     loadModules(YUI_config.groups.ace);
     loadModules(YUI_config.groups.excanvas);
     loadModules(YUI_config.groups.esprima);
+    loadModules(YUI_config.groups.jsplumb);
 });
