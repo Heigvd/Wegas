@@ -128,7 +128,7 @@
                 "type": "Tab",
                 "label": "Test",
                 "children": [{
-                    "type": "StateMachineViewer"
+                    "type": "WysiwygEditor"
                 }]
             },{
                 "type": "Tab",
