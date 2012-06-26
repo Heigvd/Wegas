@@ -23,8 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 @Entity
 @Table(name = "user_action",
 uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"dialogue_id", "name"}),
-    @UniqueConstraint(columnNames = {"dialogue_id", "label"})
+    @UniqueConstraint(columnNames = {"dialogue_id", "name"})
 })
 @XmlType(name = "")
 public class UserAction implements Serializable {
@@ -33,7 +32,7 @@ public class UserAction implements Serializable {
     @GeneratedValue
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "dialogue_id")
+    @JoinColumn(name = "dialogue_id", nullable = false)
     private DialogueDescriptor dialogue;
     @Column(name = "label")
     private String label;

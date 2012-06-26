@@ -94,7 +94,7 @@ YUI().use(function (Y) {
                             'wegas-inputex', 'wegas-app', 'wegas-treeview',
                             'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
                             'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
-                            'ace-css', 'wegas-statemachine'
+                            'ace-css', 'wegas-statemachineviewer'
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss',
                         ]
@@ -141,7 +141,10 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer.js',
-                        requires: ['graphics']
+                        requires: ['wegas-statemachineviewercss', 'jsplumb-yui', 'jsplumb-svg', 'jsplumb-defaults', 'jsplumb-statemachine', 'button']
+                    },
+                    'wegas-statemachineviewercss': {
+                        path: 'wegas-editor/css/wegas-statemachineviewer.css'
                     },
 
                     /** Project Management Game */
@@ -190,6 +193,40 @@ YUI().use(function (Y) {
                     'ace-css': {
                         path: 'src/mode-css.js',
                         requires: ['ace-javascript']
+                    }
+                }
+            },
+            /* jsPlumb */
+            jsplumb: {
+                combine: false,
+                base:"lib/jsPlumb-1.3.10/",
+                modules: {
+                    'jsplumb': {
+                        path: 'jsPlumb-1.3.10-RC1.js',
+                        requires: ['jsplumb-utils']
+                    },
+                    'jsplumb-utils': {
+                        path: 'jsPlumb-util-1.3.10-RC1.js',
+                        requires: []
+                    },
+                    'jsplumb-svg': {
+                        path: 'jsPlumb-renderers-svg-1.3.10-RC1.js',
+                        requires: ['jsplumb']
+                    },
+                    'jsplumb-defaults': {
+                        path: 'jsPlumb-defaults-1.3.10-RC1.js',
+                        requires: ['jsplumb']
+                    },
+                    'jsplumb-statemachine': {
+                        path: 'jsPlumb-connectors-statemachine-1.3.10-RC1.js',
+                        requires: ['jsplumb', 'jsbezier']
+                    },
+                    'jsplumb-yui': {
+                        path: 'yui.jsPlumb-1.3.10-RC1.js',
+                        requires: ['jsplumb']
+                    },
+                    'jsbezier': {
+                        path: 'jsBezier-0.3-min.js'
                     }
                 }
             },
