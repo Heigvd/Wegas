@@ -22,7 +22,7 @@ YUI().use(function (Y) {
                         'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable',
                         'wegas-pageloader', 'wegas-variabledisplay', 'wegas-button',
                         'wegas-chat', 'wegas-inbox',
-                        'wegas-projectmanagementgame', 'wegas-crimesim', 'wegas-leaderway'
+                        'wegas-projectmanagementgame', 'wegas-crimesim', 'wegas-leaderway', 'wegas-mmo'
                         ]
                     },
                     'wegas-appcss': {
@@ -170,6 +170,11 @@ YUI().use(function (Y) {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
                         "wegas-mcqtabview"]
+                    },
+                    /** MMO **/
+                    'wegas-mmo': {
+                        path: 'wegas-mmo/js/wegas-mmo-min.js',
+                        requires: ['wegas-widget', 'ace-javascript']
                     },
                     
                     /**Leaderway**/
