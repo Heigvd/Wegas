@@ -146,19 +146,22 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer.js',
-                        requires: ['graphics']
+                        requires: ['wegas-statemachineviewercss', 'jsplumb-yui', 'jsplumb-svg', 'jsplumb-defaults', 'jsplumb-statemachine', 'button']
+                    },
+                    'wegas-statemachineviewercss': {
+                        path: 'wegas-editor/css/wegas-statemachineviewer.css'
                     },
                     'wegas-wysiwygeditor': {
                         path: 'wegas-editor/js/wegas-wysiwygeditor.js',
                         requires: ['inputex', 'inputex-jsonschema', 'esprima', 'escodegen']
                     },
 
-                    /** Project Management Game */
+                    /** Project Management Game **/
                     'wegas-projectmanagementgame': {
                         path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
                     },
 
-                    /** CrimeSim */
+                    /** CrimeSim **/
                     'wegas-mcqtabview': {
                         path: 'wegas-crimesim/js/wegas-mcqtabview-min.js',
                         requires: ['tabview']
@@ -210,6 +213,40 @@ YUI().use(function (Y) {
                     'ace-css': {
                         path: 'src/mode-css.js',
                         requires: ['ace']
+                    }
+                }
+            },
+            /* jsPlumb */
+            jsplumb: {
+                combine: false,
+                base:"lib/jsPlumb-1.3.10/",
+                modules: {
+                    'jsplumb': {
+                        path: 'jsPlumb-1.3.10-RC1.js',
+                        requires: ['jsplumb-utils']
+                    },
+                    'jsplumb-utils': {
+                        path: 'jsPlumb-util-1.3.10-RC1.js',
+                        requires: []
+                    },
+                    'jsplumb-svg': {
+                        path: 'jsPlumb-renderers-svg-1.3.10-RC1.js',
+                        requires: ['jsplumb']
+                    },
+                    'jsplumb-defaults': {
+                        path: 'jsPlumb-defaults-1.3.10-RC1.js',
+                        requires: ['jsplumb']
+                    },
+                    'jsplumb-statemachine': {
+                        path: 'jsPlumb-connectors-statemachine-1.3.10-RC1.js',
+                        requires: ['jsplumb', 'jsbezier']
+                    },
+                    'jsplumb-yui': {
+                        path: 'yui.jsPlumb-1.3.10-RC1.js',
+                        requires: ['jsplumb']
+                    },
+                    'jsbezier': {
+                        path: 'jsBezier-0.3-min.js'
                     }
                 }
             },
@@ -271,4 +308,5 @@ YUI().use(function (Y) {
     loadModules(YUI_config.groups.ace);
     loadModules(YUI_config.groups.excanvas);
     loadModules(YUI_config.groups.esprima);
+    loadModules(YUI_config.groups.jsplumb);
 });
