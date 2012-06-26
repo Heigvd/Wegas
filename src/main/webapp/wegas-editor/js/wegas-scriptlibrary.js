@@ -27,7 +27,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             var cb = this.get(CONTENTBOX);
 
             this.aceField = new Y.inputEx.AceField({
-                parentEl: cb.getDOMNode(),
+                parentEl: cb,
                 name: 'text',
                 type: 'ace',
                 height: "100%",

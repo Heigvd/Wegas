@@ -67,6 +67,7 @@ YUI.add('treeview', function (Y) {
                 header.append("<div id=\"" + this.get("id") + "_right\" class=\"" + this.getClassName("content", "rightwidget") + "\">");
                 this.menuNode.render("#" + this.get("id") + "_right");
                 this.menuNode.set("parent", this);
+                this.menuNode.addTarget(this);
             }
             if(this.get('collapsed') && !cb.hasClass(classNames.collapsed)){
                 cb.addClass(classNames.collapsed);
@@ -207,18 +208,19 @@ YUI.add('treeview', function (Y) {
                 header.append("<div id=\"" + this.get("id") + "_right\" class=\"" + this.getClassName("content", "rightwidget") + "\">");
                 this.menuNode.render("#" + this.get("id") + "_right");
                 this.menuNode.set("parent", this);
+                this.menuNode.addTarget(this);
             }
         },
         bindUI: function () {
             this.events.labelClick = this.labelNode.on("click",function(e){
                 e.stopImmediatePropagation();
                 this.fire("labelClick", {node:this});
-                this.fire("click", { node: this });
+                this.fire("click", {node: this});
             },this);
             this.events.labelClick = this.iconNode.on("click",function(e){
                 e.stopImmediatePropagation();
-                this.fire("iconClick", { node: this });
-                this.fire("click", { node: this });
+                this.fire("iconClick", {node: this});
+                this.fire("click", {node: this});
             },this);
         },
 

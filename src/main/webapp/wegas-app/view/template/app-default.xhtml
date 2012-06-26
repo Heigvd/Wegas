@@ -27,6 +27,7 @@
             <!-- Self hosted -->
             <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
             <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />
+            <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssgrids/grids-min.css" />
         </ui:fragment>
 
         <meta id="customstyles" />
@@ -60,6 +61,7 @@
             //YUI_config.groups.wireit.base = '/Wegas/lib/wireit/';
             YUI_config.groups.excanvas.base = '/Wegas/lib/excanvas/';
             YUI_config.groups.esprima.base = '/Wegas/lib/esprima/';
+            YUI_config.groups.jsplumb.base = '/Wegas/' + YUI_config.groups.jsplumb.base;
 
             /**<!--
                 base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",

@@ -31,9 +31,9 @@ public class ResponseModel implements Serializable {
     @GeneratedValue
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "action")
+    @JoinColumn(name = "action", nullable = false)
     private UserAction action;
-    @Column(name = "response_name")
+    @Column(name = "response_name", nullable = false)
     private String name;
     @Column(name = "label")
     private String label;
