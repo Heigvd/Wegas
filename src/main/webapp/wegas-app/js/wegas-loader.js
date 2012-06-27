@@ -16,8 +16,8 @@ YUI().use(function (Y) {
                     /** Base **/
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
-                        requires: ['stylesheet', 'wegas-appcss', 'wegas-datasourcerest',
-                        'wegas-widget', 'wegas-pageloader',
+                        requires: ['stylesheet', 'wegas-appcss', 'wegas-entity',
+                        'wegas-datasourcerest', 'wegas-widget', 'wegas-pageloader',
                         /* @fixme those should be included on the fly*/
                         'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable',
                         'wegas-pageloader', 'wegas-variabledisplay', 'wegas-button',
@@ -31,8 +31,10 @@ YUI().use(function (Y) {
                     },
                     'wegas-datasourcerest': {
                         path: 'wegas-app/js/wegas-datasourcerest-min.js',
-                        requires: ['plugin', 'json', 'io-base', "datasource-io", "datasource-jsonschema", "datasource-cache", 'array-extras'
-                        /*'json-stringify', "datatype-date */]
+                        requires: ['plugin', 'json', 'array-extras', 'io-base', "datasource-io", "datasource-jsonschema", "datasource-cache"]
+                    },
+                    'wegas-entity': {
+                        path: 'wegas-app/js/wegas-entity-min.js'
                     },
 
                     /** Widgets **/
@@ -134,7 +136,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable-deprecated', /*'datatable-events', 'datatable-sort',*/ ]
+                        requires: ['datatable', 'datatable-sort' ]
                     },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',

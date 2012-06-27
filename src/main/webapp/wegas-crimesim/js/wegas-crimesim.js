@@ -115,7 +115,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 questionsVarDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "evidences").items,
                 questionInstances = [],
                 period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
-                periodInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy("name", "period"),
+                periodInstance = period.getInstance(),
                 acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
                 cb = this.get(CONTENTBOX).one(".schedule-questions"),
 
@@ -137,7 +137,7 @@ YUI.add('wegas-crimesim', function (Y) {
 
                 for (i = 0; i < questionsVarDesc.length; i += 1) {              // First pass to compute remaining time budget per period
                     question = questionsVarDesc[i];
-                    questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(question);
+                    questionInstance = question.getInstance();
                     for (j = 0; j < questionInstance.replies.length; j += 1) {
                         reply = questionInstance.replies[j];
                         choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId);
@@ -175,7 +175,7 @@ YUI.add('wegas-crimesim', function (Y) {
                         reply = questionInstance.replies[j];
                         cIndex = reply.startTime;
                         choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId);
-                        choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choiceDescriptor);
+                        choiceInstance = choiceDescriptor.getInstance();
 
                         cols[cIndex] = ["schedule-unavailable", "schedule-task",
                             "schedule-unavailable-" + choiceDescriptor.duration];
@@ -230,9 +230,9 @@ YUI.add('wegas-crimesim', function (Y) {
                 var i, reply,
                 targetNode = this.get(CONTENTBOX).one(".schedule-detail"),
                 question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId),
-                questionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(question.id),
+                questionInstance = question.getInstance(),
                 periodDesc = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy('name', "period"),
-                period = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceBy('name', "period"),
+                period = periodDesc.getInstance(),
                 acc = ['<div class="schedule-icon-close"></div><h1>',
                 question.label || question.name || "undefined",
                 '</h1><div class="content">', question.description, '</div>'];
@@ -247,7 +247,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     reply = questionInstance.replies[i];
 
                     var choiceDescriptor = this.getChoiceDescriptor(reply.choiceDescriptorId),
-                    choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choiceDescriptor);
+                    choiceInstance = choiceDescriptor.getInstance();
 
                     acc.push('<div class="schedule-detail-reply"><h3>Period ',
                         reply.startTime - periodDesc.minValue, ': ', choiceDescriptor.name || "undefined",
@@ -299,7 +299,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 var perPeriodBudget = 15, ret = [], i, choice, choiceInstance;
                 for (i = 0; i < question.items.length; i += 1) {
                     choice = question.items[i];
-                    choiceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(choice);
+                    choiceInstance = choice.getInstance();
                     ret.push({
                         text: choice.label || choice.name || "undefined",
                         value: {
