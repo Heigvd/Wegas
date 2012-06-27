@@ -126,7 +126,7 @@
                 "toolbarLabel": "State machine viewer"
             }, {
                 "type": "Tab",
-                "label": "Test",
+                "label": "Wysiwyg editor",
                 "children": [{
                     "type": "WysiwygEditor"
                 }]

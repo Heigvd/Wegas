@@ -21,20 +21,20 @@ YUI.add('wegas-variabledisplay', function (Y) {
         },
 
         syncUI: function () {
-            var acc, angle_pourcent, maxVal, minVal, value, ctx, i, value_x, value_y, angle_value,
+            var acc, angle_pourcent, maxVal, minVal, ctx, i, value_x, value_y, angle_value,
                 variableDescriptor = this.get("dataSource").rest.getCachedVariableBy('name', this.get("variable")),
-                val = this.get("dataSource").rest.getInstanceBy('name', this.get("variable")) || "undefined";
+                value = variableDescriptor.getInstance().value || "undefined";
 
             switch (this.get('view')) {
             case 'text':
-                this.get(CONTENTBOX).setContent(this.get('label') + ": <br />" + val.value);
+                this.get(CONTENTBOX).setContent(this.get('label') + ": <br />" + value);
                 break;
             case 'box':
                 acc = [];
-                for (i = 0; i < val.value; i += 1) {
+                for (i = 0; i < value; i += 1) {
                     acc.push('<div class="wegas-variabledisplay-box-unit"></div>');
                 }
-                this.get(CONTENTBOX).setContent(this.get('label') + ": <br />" + acc.join('') + '(' + val.value + ')');
+                this.get(CONTENTBOX).setContent(this.get('label') + ": <br />" + acc.join('') + '(' + value + ')');
                 break;
 
             case 'valuebox':
@@ -42,7 +42,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 if (variableDescriptor) {
                     for (i = variableDescriptor.minValue; i <= variableDescriptor.maxValue; i += 1) {
                         acc.push('<div class="wegas-valuebox-unit '
-                            + ((i === val.value) ? "wegas-valuebox-selected" : "")
+                            + ((i === value) ? "wegas-valuebox-selected" : "")
                             + '">' + i + '</div>');
                     }
                 }
@@ -51,10 +51,9 @@ YUI.add('wegas-variabledisplay', function (Y) {
             case 'gauge':
                 maxVal = 145;
                 minVal = 55;
-                value = val.value;
 
                 this.get(CONTENTBOX).setContent('<canvas width="90" height="51"></canvas><br />'
-                    + '<div class="wegas-variabledisplay-gauge-text">' + val.value + '%</div>'
+                    + '<div class="wegas-variabledisplay-gauge-text">' + value + '%</div>'
                     + '<center>' + this.get('label') + "</center>");
 
                 ctx = this.get(CONTENTBOX).one('canvas')._node.getContext('2d');
