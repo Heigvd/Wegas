@@ -19,9 +19,11 @@ YUI().use(function (Y) {
                         requires: ['stylesheet', 'wegas-appcss', 'wegas-entity',
                         'wegas-datasourcerest', 'wegas-widget', 'wegas-pageloader',
                         /* @fixme those should be included on the fly*/
-                        'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable',
-                        'wegas-pageloader', 'wegas-variabledisplay', 'wegas-button',
-                        'wegas-chat', 'wegas-inbox'
+                        'wegas-text',  'wegas-tabview', 'wegas-datatable',
+                        'wegas-variabledisplay',
+                       'wegas-button',
+                        'wegas-chat',
+                        'wegas-list'
                         ]
                     },
                     'wegas-appcss': {
@@ -33,7 +35,8 @@ YUI().use(function (Y) {
                         requires: ['plugin', 'json', 'array-extras', 'io-base', "datasource-io", "datasource-jsonschema", "datasource-cache"]
                     },
                     'wegas-entity': {
-                        path: 'wegas-app/js/wegas-entity-min.js'
+                        path: 'wegas-app/js/wegas-entity-min.js',
+                        requires: ['node']
                     },
 
                     /** Widgets **/
@@ -42,41 +45,51 @@ YUI().use(function (Y) {
                         requires: ['widget', 'widget-parent', 'widget-child']
                     },
                     'wegas-pageloader': {
-                        path: 'wegas-app/js/widget/wegas-pageloader-min.js'
+                        path: 'wegas-app/js/widget/wegas-pageloader-min.js',
+                        ix_provides: 'PageLoader'
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: ['inputex-select']
+                        requires: ['inputex-select', 'wegas-widget', 'plugin'],
+                        ix_provides: 'Button'
                     },
                     'wegas-chat': {
-                        path: 'wegas-app/js/widget/wegas-chat-min.js'
+                        path: 'wegas-app/js/widget/wegas-chat-min.js',
+                        ix_provides: 'Chat'
                     },
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
                         requires: ['yui2-layout', 'yui2-resize',
                         // 'yui2-event-mouseenter', 'yui2-event-delegate', 'yui2-yahoo', 'yui2-dom', 'yui2-containercore'
                         // 'yui2-event', 'yui2-element', 'yui2-dragdrop', 'yui2-animation', 'yui2-selector',
-                        ]
+                        ],
+                        ix_provides: 'Layout'
                     },
                     'wegas-list': {
                         path: 'wegas-app/js/widget/wegas-list-min.js',
-                        requires: ["substitute", "node-focusmanager"]
+                        requires: ["substitute", "node-focusmanager"],
+                        ix_provides: 'List'
                     },
                     'wegas-text': {
                         path: 'wegas-app/js/widget/wegas-text-min.js',
-                        ix_provides: "text"
+                        ix_provides: "Text"
                     },
                     'wegas-tabview': {
                         path: 'wegas-app/js/widget/wegas-tabview-min.js',
-                        requires: ['tabview', 'button']
+                        requires: ['tabview', 'button'],
+                        ix_provides: 'TabView'
                     },
                     'wegas-variabledisplay': {
                         path: 'wegas-app/js/widget/wegas-variabledisplay-min.js',
-                        requires: ['excanvas']
+                        requires: ['excanvas'],
+                        ix_provides: 'VariableDisplay'
                     },
                     'wegas-inbox': {
-                        path: 'wegas-app/js/widget/wegas-inbox-min.js'
+                        path: 'wegas-app/js/widget/wegas-inbox-min.js',
+                        ix_provides: 'InboxDisplay'
                     },
+
+                    /** Inputex Fields **/
                     'wegas-inputex': {
                         path: 'wegas-app/js/widget/wegas-inputex-min.js',
                         requires: [ 'inputex', 'inputex-field', 'inputex-string', 'inputex-keyvalue' ]
@@ -96,11 +109,12 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-inputex', 'wegas-app', 'wegas-treeview',
-                        'wegas-logger', 'wegas-csseditor', 'wegas-editmenu',
+                        'wegas-inputex', 'wegas-app', 'wegas-editmenu',
+
+                        'wegas-logger', 'wegas-csseditor',
                         'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
                         'wegas-scriptlibrary', 'wegas-layout', 'wegas-statemachineviewer',
-                        'wegas-wysiwygeditor'
+                        'wegas-wysiwygeditor', 'wegas-treeview',
                         /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
                         //'wegas-editorcss',
                         ]
@@ -117,55 +131,66 @@ YUI().use(function (Y) {
                     },
                     'wegas-logger': {
                         path: 'wegas-editor/js/wegas-logger-min.js',
-                        requires: ['console', 'console-filters']
+                        requires: ['console', 'console-filters'],
+                        ix_provides: 'Logger'
                     },
                     'wegas-editor-topmenu': {
                         path: 'wegas-editor/js/wegas-editor-topmenu-min.js',
-                        requires: ['yui2-menu']
+                        requires: ['yui2-menu'],
+                        ix_provides: 'EditorTopMenu'
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
-                        requires: ['ace-css']
+                        requires: ['ace-css'],
+                        ix_provides: 'CSSEditor'
                     },
                     'wegas-console': {
                         path: 'wegas-editor/js/wegas-console-min.js',
-                        requires: ['ace-javascript']
+                        requires: ['ace-javascript'],
+                        ix_provides: 'Console'
                     },
                     'wegas-editmenu': {
                         path: 'wegas-editor/js/wegas-editmenu-min.js',
-                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack']
+                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', 'yui2-menu']
                     },
                     'wegas-treeview': {
                         path: 'wegas-editor/js/wegas-treeview-min.js',
-                        requires: [ 'yui2-treeview' /*'gallery-yui3treeview', 'wegas-treeviewcss'*/]
+                        requires: [ 'yui2-treeview' /*'gallery-yui3treeview', 'wegas-treeviewcss'*/],
+                        ix_provides: 'WTreeView'
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable', 'datatable-sort' ]
+                        requires: ['datatable', 'datatable-sort' ],
+                        ix_provides: 'DataTable'
                     },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
-                        requires: [ 'ace-javascript', 'button' ]
+                        requires: [ 'ace-javascript', 'button' ],
+                        ix_provides: 'ScriptLibrary'
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer.js',
-                        requires: ['treeview', 'uploader-html5']
+                        requires: ['treeview', 'uploader-html5'],
+                        ix_provides: "FileExplorer"
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer.js',
-                        requires: ['wegas-statemachineviewercss', 'jsplumb-yui', 'jsplumb-svg', 'jsplumb-defaults', 'jsplumb-statemachine', 'button']
+                        requires: ['wegas-statemachineviewercss', 'jsplumb-yui', 'jsplumb-svg', 'jsplumb-defaults', 'jsplumb-statemachine', 'button'],
+                        ix_provides: 'StateMachineViewer'
                     },
                     'wegas-statemachineviewercss': {
                         path: 'wegas-editor/css/wegas-statemachineviewer.css'
                     },
                     'wegas-wysiwygeditor': {
                         path: 'wegas-editor/js/wegas-wysiwygeditor.js',
-                        requires: ['inputex', 'inputex-jsonschema', 'esprima', 'escodegen']
+                        requires: ['inputex', 'inputex-jsonschema', 'esprima', 'escodegen'],
+                        ix_provides: "WysiwygEditor"
                     },
 
                     /** Project Management Game **/
                     'wegas-projectmanagementgame': {
-                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
+                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js',
+                        ix_provides: "todo"
                     },
 
                     /** CrimeSim **/
@@ -176,8 +201,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-crimesim': {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
-                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
-                        "wegas-mcqtabview"],
+                        requires: ['wegas-widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"],
                         ix_provides: "ScheduleDisplay"
                     },
 

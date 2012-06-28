@@ -72,10 +72,17 @@ YUI.add('wegas-widget', function (Y) {
                 modules.push(module);
             }
 
-            if(cfg.children) {
+            if(cfg.children) {                                                  // Get definitions from children (for Y.WidgetParents)
                 Y.Array.each(cfg.children, function(field) {
                     modules = modules.concat( this.getModulesFromDefinition(field) );
                 }, this);
+            }
+
+            var props = ["left", "right", "center", "top", "bottom"];           // Get definitions from children (for Y.Wegas.Layouts)
+            for (var i = 0; i < props.length; i = i + 1) {
+                if (cfg[props[i]]) {
+                    modules = modules.concat(this.getModulesFromDefinition(cfg[props[i]]));
+                }
             }
 
             return modules;

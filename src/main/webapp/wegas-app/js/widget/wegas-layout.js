@@ -36,10 +36,7 @@ YUI.add('wegas-layout', function (Y) {
 	},
 
 	_renderUnitContent: function (position) {
-	    //var cWidget = Y.Wegas.Widget.create(this.get(position).content);
-	    var pos = this.get(position), cWidget;
-	    pos.width = null;
-	    cWidget = new Y.Wegas.List(pos);
+	    var cWidget = Y.Wegas.Widget.create(this.get(position).children[0]);
 	    cWidget.render(this._layout.getUnitByPosition(position).body)
 	}
     }, {
