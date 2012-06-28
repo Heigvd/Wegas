@@ -20,7 +20,7 @@ YUI.add('wegas-leaderway', function (Y) {
             if (!listResourceDescriptor) return;
             for (i = 0; i < listResourceDescriptor.items.length; i++) {
                 resourceDescriptor = listResourceDescriptor.items[i];
-                resourceInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(resourceDescriptor);
+                resourceInstance = resourceDescriptor.getInstance();
                 this.data.push({
                     name:resourceDescriptor.name,
                     surname:resourceInstance.properties.surname,

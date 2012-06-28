@@ -18,7 +18,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             var listDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),taskDescriptor, taskInstance, comment; 
             for (var i = 0; i < listDescriptor.items.length; i++) {
                     taskDescriptor = listDescriptor.items[i];
-                    taskInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(taskDescriptor);
+                    taskInstance = taskDescriptor.getInstance();
                     (taskInstance.properties.comment)? comment = taskInstance.properties.comment : comment = "-";
                     this.data.push({
                         task:taskDescriptor.name,

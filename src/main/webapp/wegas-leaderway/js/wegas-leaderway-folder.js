@@ -31,7 +31,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         syncFolderInformations: function(){
-            var currentMemberInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(this.currentMemberDescriptor);
+            var currentMemberInstance = this.currentMemberDescriptor.getInstance();
             Y.one('.leaderway-folder .name').insert(this.currentMemberDescriptor.name);
             if(currentMemberInstance.properties.surname){
                 Y.one('.leaderway-folder .surname').insert(currentMemberInstance.properties.surname);   
@@ -84,7 +84,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 for (i = 0; i < listDescriptor.items.length; i = i + 1) {
                         taskDescriptor = listDescriptor.items[i];
                         if(taskDescriptor.id == memberInstance.assignments[0].taskDescriptorId){
-                            taskInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getDescriptorInstance(taskDescriptor);
+                            taskInstance = taskDescriptor.getInstance();
                             for(var key in taskInstance.skillset){
                                 taskSkills.push('<span class="task-skill-value">'+key+' ('+taskInstance.skillset[key]+')</span>');
                             }

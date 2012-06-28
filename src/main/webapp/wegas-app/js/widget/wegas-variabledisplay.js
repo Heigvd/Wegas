@@ -22,7 +22,9 @@ YUI.add('wegas-variabledisplay', function (Y) {
 
         syncUI: function () {
             var acc, angle_pourcent, maxVal, minVal, ctx, i, value_x, value_y, angle_value,
-                variableDescriptor = this.get("dataSource").rest.getCachedVariableBy('name', this.get("variable")),
+                variableDescriptor, value;
+                variableDescriptor = this.get("dataSource").rest.getCachedVariableBy('name', this.get("variable"));
+                if (!variableDescriptor) {return;}
                 value = variableDescriptor.getInstance().value || "undefined";
 
             switch (this.get('view')) {
