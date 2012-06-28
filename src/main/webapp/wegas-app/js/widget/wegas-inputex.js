@@ -9,7 +9,7 @@ YUI.add('wegas-inputex', function(Y) {
     lang = Y.Lang;
 
     YUI_config.groups.inputex.modulesByType.html = "wegas-inputex-rte";         // @fix so inputex will use our own widgets when using f = Y.inpuex(cfg)
-
+    YUI_config.groups.inputex.modulesByType.hashlist = "wegas-inputex-hashlist";
     /**
      * Ace code editor field
      */
@@ -87,6 +87,34 @@ YUI.add('wegas-inputex', function(Y) {
 
     // Register this class as "html" type
     inputEx.registerType("ace", inputEx.AceField, []);
+
+    /**
+     * @hack Let inputex also get requirement from selectfields, lists
+     */
+    Y.inputEx.getRawModulesFromDefinition = function(inputexDef) {
+
+        var type = inputexDef.type || 'string',
+        module = YUI_config.groups.inputex.modulesByType[type],
+        modules = [module];
+
+        // recursive for group,forms,list,combine, etc...
+        if(inputexDef.fields) {
+            Y.Array.each(inputexDef.fields, function(field) {
+                modules = modules.concat( this.getModulesFromDefinition(field) );
+            }, this);
+        }
+        Y.Array.each(inputexDef.availableFields, function(field) {
+            modules = modules.concat( this.getModulesFromDefinition(field) );
+        }, this);
+
+        if (inputexDef.elementType) {
+             modules = modules.concat( this.getModulesFromDefinition(inputexDef.elementType) );
+        }
+        // TODO: list elementType
+        // TODO: inplaceedit  editorField
+
+        return modules;
+    }
 
     /*
      * @hack prevents KeyValueField to return the selector field
