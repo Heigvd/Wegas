@@ -103,15 +103,6 @@ YUI.add('wegas-app', function (Y) {
                     }
                 }
             });
-        },
-        getPageById: function (id) {
-            var widgetCfg = this.dataSources.Page.rest.getCachedVariableById(id);
-
-            if (!widgetCfg) {
-                return null;
-            }
-
-            return Y.Wegas.Widget.create(widgetCfg);
         }
     }, {
         ATTRS: {

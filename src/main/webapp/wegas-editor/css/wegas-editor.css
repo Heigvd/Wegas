@@ -24,8 +24,9 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
 .inputEx-Group div.inputEx-Field textarea {
     width:100%;
 }
-.inputEx-Group div.inputEx-fieldWrapper {
+.inputEx-Group .inputEx-fieldWrapper {
     padding-left:135px;
+    position: relative;
 }
 .inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label {
     padding:.2em 5px 0 0;
@@ -33,6 +34,11 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
 }
 .inputEx-Group div.inputEx-fieldWrapper > div.inputEx-Field {
     width:99.8%;
+}
+
+.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-ListField {
+    position:absolute;
+    left:0;
 }
 /*div.inputEx-fieldWrapper div.inputEx-fieldWrapper {
     padding-left:70px;

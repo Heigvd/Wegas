@@ -21,8 +21,7 @@ YUI().use(function (Y) {
                         /* @fixme those should be included on the fly*/
                         'wegas-text', 'wegas-list', 'wegas-tabview', 'wegas-datatable',
                         'wegas-pageloader', 'wegas-variabledisplay', 'wegas-button',
-                        'wegas-chat', 'wegas-inbox',
-                        'wegas-projectmanagementgame', 'wegas-crimesim', 'wegas-mmo'
+                        'wegas-chat', 'wegas-inbox'
                         ]
                     },
                     'wegas-appcss': {
@@ -64,7 +63,8 @@ YUI().use(function (Y) {
                         requires: ["substitute", "node-focusmanager"]
                     },
                     'wegas-text': {
-                        path: 'wegas-app/js/widget/wegas-text-min.js'
+                        path: 'wegas-app/js/widget/wegas-text-min.js',
+                        ix_provides: "text"
                     },
                     'wegas-tabview': {
                         path: 'wegas-app/js/widget/wegas-tabview-min.js',
@@ -85,6 +85,11 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',
                         requires: ['inputex-field', 'yui2-editor', 'panel'],
                         ix_provides: 'html'
+                    },
+                    'wegas-inputex-hashlist': {
+                        path: 'wegas-app/js/widget/wegas-inputex-hashlist-min.js',
+                        requires: ['inputex-list'],
+                        ix_provides: 'hashlist'
                     },
 
                     /** Editor **/
@@ -166,18 +171,21 @@ YUI().use(function (Y) {
                     /** CrimeSim **/
                     'wegas-mcqtabview': {
                         path: 'wegas-crimesim/js/wegas-mcqtabview-min.js',
-                        requires: ['tabview']
+                        requires: ['tabview'],
+                        ix_provides: "MCQTabView"
                     },
                     'wegas-crimesim': {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu",
-                        "wegas-mcqtabview"]
+                        "wegas-mcqtabview"],
+                        ix_provides: "ScheduleDisplay"
                     },
 
                     /** MMO **/
                     'wegas-mmo': {
                         path: 'wegas-mmo/js/wegas-mmo-min.js',
-                        requires: ['wegas-widget', 'ace-javascript']
+                        requires: ['wegas-widget', 'ace-javascript'],
+                        ix_provides: 'MMOWidget'
                     }
                 }
             },
