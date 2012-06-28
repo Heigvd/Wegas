@@ -19,21 +19,25 @@ import javax.persistence.Lob;
  */
 @Entity
 public class DialogueState extends State {
+    /**
+     * 
+     */
     @Lob
-    private String content;
+    private String text;
 
     /**
-     * @return the content
+     * @return the text
      */
-    public String getContent() {
-        return content;
+    public String getText() {
+        return text;
     }
 
     /**
-     * @param content the content to set
+     * @param text the text to set
      */
-    public void setContent(String content) {
-        this.content = content;
+    public void setText(String text) {
+        this.text = text;
     }
+
 
 }

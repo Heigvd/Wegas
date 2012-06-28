@@ -24,7 +24,7 @@ YUI.add("wegas-inputex-hashlist", function(Y){
                 id = v[i]["id"];
                 if (!id) {
                     id = this.seq;
-                    v[id] = this.seq;
+                    obj[id] = this.seq;
                     this.seq++;
                 }
                 obj[ id] = v[i];

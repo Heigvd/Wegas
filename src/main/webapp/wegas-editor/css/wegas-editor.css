@@ -36,13 +36,15 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     width:99.8%;
 }
 
-.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-ListField {
-    position:absolute;
-    left:0;
+.inputEx-Group  div.inputEx-ListField div.inputEx-fieldWrapper {
+    padding-left:55px;
+    position: relative;
 }
-/*div.inputEx-fieldWrapper div.inputEx-fieldWrapper {
-    padding-left:70px;
-}*/
+.inputEx-Group div.inputEx-ListField div.inputEx-fieldWrapper > div.inputEx-label {
+    padding:.2em 5px 0 0;
+    margin-left:-55px;
+}
+
 .inputEx-Group div.inputEx-fieldWrapper div.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-70px;
     width:65px;
@@ -91,11 +93,9 @@ img.inputEx-ListField-delButton {
 }
 /* Tabs styles */
 /* FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .wegas-list,
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .wegas-list > .wegas-list-content,
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .wegas-list > .wegas-list-content >.yui3-tabview,
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .wegas-list > .wegas-list-content > .yui3-tabview >  .yui3-tabview-content ,
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .wegas-list > .wegas-list-content > .yui3-tabview >  .yui3-tabview-content > .yui3-tabview-panel{
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview,
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview > .yui3-tabview-content ,
+.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel{
     height:inherit;
 }
 .yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd {
