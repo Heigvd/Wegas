@@ -1,23 +1,45 @@
 .yui3-treeview {
-    margin:0;
-    padding:0;
+    margin:0px 5px;
+    padding:0px;
     list-style:none;
     zoom: 1;
 }
 
-.yui3-treeleaf-content-icon,
-.yui3-treenode-content-icon
-{
+.yui3-treenode-content-toggle{
+    display: inline-block;
+    width: 14px;
+    height: 14px;
     background-image: url(tree_view_icons_blue_01_arrow_beside_folders.gif);
     background-repeat: no-repeat;
-    padding-left:40px;
-}
-.yui3-treenode-content-icon{
     background-position: -0px -41px;
+    cursor:pointer;
+}
+.yui3-treenode-collapsed .yui3-treenode-content-toggle{
+    background-position: 0px -3px;
+}
+.yui3-treenode-content-icon, .yui3-treeleaf-content-icon{
+    display:inline-block;
+    width:21px;
+    height:18px;
+}
+.yui3-treenode-default-icon{
+    background-image: url(tree_view_icons_blue_01_arrow_beside_folders.gif);
+    background-repeat: no-repeat;
+    background-position: -14px -38px;
+}
+.yui3-treenode-collapsed .yui3-treenode-default-icon {
+    background-position: -14px 2px;
 }
 
-.yui3-treeleaf-content-icon {
-    background-position: 0 -162px;
+.yui3-treenode-loading > div > .yui3-treenode-content-icon{
+    background-image: url("../images/loading.gif") !important;
+    background-repeat: no-repeat !important;
+    background-position: bottom left !important;
+}
+
+.yui3-treeleaf-default-icon {
+    background-image: url(tree_view_icons_blue_01_arrow_beside_folders.gif);
+    background-position: -17px -160px;
     text-decoration: none;
 }
 
@@ -25,18 +47,16 @@
     display:none;
 }
 
-.yui3-treenode-collapsed .yui3-treenode-content-icon {
-    background-position: -0px -2px;
-}
 .yui3-treenode-content > .yui3-treenode, .yui3-treenode-content > .yui3-treeleaf{
     margin-left:20px;
 }
 
 .yui3-treenode-content-rightwidget, .yui3-treeleaf-content-rightwidget{
     float: right;
+    margin-top:3px;
 }
 .yui3-treenode-content-header, .yui3-treeleaf-content-header{
-    padding:4px 5px;
+    padding:2px;
 }
 
 /* EFFECT */
@@ -66,7 +86,3 @@
  .yui3-uploader-hidden{
     display:none;
 }
-.wegas-fileexplorer .yui3-treeleaf {
-    cursor:pointer;
-}
-.
