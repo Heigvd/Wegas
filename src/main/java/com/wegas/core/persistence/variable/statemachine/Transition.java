@@ -13,14 +13,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.UserInput;
 import com.wegas.leadergame.persistence.DialogueTransition;
 import java.io.Serializable;
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -44,7 +37,7 @@ public class Transition implements Serializable {
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name="content", column=@Column(name="onTransition_content")),
-        @AttributeOverride(name="language", column=@Column(name="onTransition_language"))
+        @AttributeOverride(name="lang", column=@Column(name="onTransition_language"))
     })
     private Script preStateImpact;
     private Long nextStateId;

@@ -90,6 +90,7 @@ public class StateMachineRunner implements Serializable {
                     } else {
                         stateMachine.setCurrentStateId(transition.getNextStateId());
                         impacts.add(stateMachine.getCurrentState().getOnEnterEvent());
+                        impacts.add(transition.getPreStateImpact());
                         passedTransitions.add(transition);
                         break;
                     }
