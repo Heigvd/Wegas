@@ -45,7 +45,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
             for (i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
                 ret = [];
-                cQuestionInstance = this.dataSource.rest.getDescriptorInstance(cQuestion);
+                cQuestionInstance = cQuestion.getInstance();
                 firstChild = "first-child";
                 cQuestionLabel = cQuestion.label || cQuestion.name || "undefined";
                 cReplyLabel = null;
