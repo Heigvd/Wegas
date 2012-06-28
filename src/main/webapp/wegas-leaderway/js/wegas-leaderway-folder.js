@@ -17,6 +17,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         
         //*** Particular Methods ***/
         clearBeforeSync: function(){
+            //is .empty() function more correct?
             Y.one('.leaderway-folder .name').setHTML();
             Y.one('.leaderway-folder .surname').setHTML();
             Y.one('.leaderway-folder .salary-value').setHTML();
@@ -25,7 +26,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             Y.one('.leaderway-folder .confidence').setHTML();
             Y.one('.leaderway-folder .leadershipLevel').setHTML();
             Y.one('.leaderway-folder .occupation-value').setHTML();
-            Y.one('.leaderway-folder .skillsets').setHTML();
+            Y.one('.leaderway-folder .skillsets-value').setHTML();
             Y.one('.leaderway-folder .description-value').setHTML();
         },
         
@@ -45,7 +46,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             this.addLevelOfLeadershipInformations(currentMemberInstance);
             Y.one('.leaderway-folder .occupation-value').insert(this.getOccupation(currentMemberInstance));
             for (var key in currentMemberInstance.skillset){
-                Y.one('.leaderway-folder .skillsets').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentMemberInstance.skillset[key]))+'</div>');
+                Y.one('.leaderway-folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentMemberInstance.skillset[key]))+'</div>');
             }
             Y.one('.leaderway-folder .description-value').insert(this.currentMemberDescriptor.description);            
         },
@@ -157,7 +158,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 +   '<div class="confidence gauge"></div>'
                 +   '<div class="leadershipLevel"></div>'
                 +   '</div>'
-                +   '<div class="skillsets folder-section"><div class="title-folder-section">Compétences : </div></div>'
+                +   '<div class="skillsets folder-section"><div class="title-folder-section">Compétences : </div><div class="skillsets-value"></div></div>'
                 +   '<div class="description folder-section"><div class="title-folder-section">Description : </div><div class="description-value"></div></div>'
                 +'</div>'
                 }, {
@@ -176,7 +177,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         bindUI: function(){
-            //Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
             var resourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
             this.nextMembreButton.on('click', function () {
@@ -190,9 +191,9 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
           
         syncUI: function () {
-            this.clearBeforeSync();
             var ListResourceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
-            if(!ListResourceDescriptor) return;
+            if(!ListResourceDescriptor || !Y.one('.wegas-folder .leaderway-folder')) return;
+            this.clearBeforeSync();
             this.currentMemberDescriptor = ListResourceDescriptor.items[this.currentMemberId];
             this.syncFolderInformations();
             this.syncArchivesInformations();

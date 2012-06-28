@@ -45,11 +45,13 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 columns: [
                 {
                     key:"task", 
-                    label:"Mandat"
+                    label:"Mandat",
+                    sortable:true
                 },
                 {
                     key:"skill", 
-                    label:"Compétence"
+                    label:"Compétence",
+                    sortable:true
                 },
                 {
                     key:"duration", 
@@ -68,7 +70,8 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 },
                 {
                     key:"comment", 
-                    label:"Remarque"
+                    label:"Remarque",
+                    sortable: true
                 }          
                 ]
             });
