@@ -115,6 +115,7 @@ YUI.add('wegas-button', function (Y) {
             var i, instance,
                 dataSource = Y.Wegas.app.dataSources.VariableDescriptor,
                 descriptor = dataSource.rest.getCachedVariableBy('name', this.get('variable')),
+                instance = descriptor.getInstance(),
                 count = 0;
 
             if (!descriptor){
@@ -122,12 +123,11 @@ YUI.add('wegas-button', function (Y) {
             }
             if (descriptor.items) {                                             // In ListDescriptors, we count the children instance's
                 for (i = 0; i < descriptor.items.length; i = i + 1) {
-                    instance = dataSource.rest.getDescriptorInstance(descriptor.items[i]);
+                    instance = descriptor.items[i].getInstance();
                     count += instance.unread ? 1 : 0;
                 }
             }
 
-            instance = dataSource.rest.getDescriptorInstance(descriptor);
             if (instance.messages) {                                             // In InboxVariableDescriptors, we count the replies
                 for (i = 0; i < instance.messages.length; i = i + 1) {
                     count += instance.messages[i].unread ? 1 : 0;

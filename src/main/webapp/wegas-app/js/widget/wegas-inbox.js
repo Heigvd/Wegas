@@ -32,7 +32,7 @@ YUI.add('wegas-inbox', function (Y) {
 
         syncUI: function () {
             var i, msg, tab,
-                inboxVariable = this.dataSource.rest.getInstanceBy('name', this.get('variable')),
+                inboxVariable = this.dataSource.rest.getCachedVariableBy('name', this.get('variable')).getInstance(),
                 selectedIndex = 0,
                 tabs = [];
 
