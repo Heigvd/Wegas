@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@Entity
+//@Entity
 @Table(name = "response_model",
 uniqueConstraints = {
     @UniqueConstraint(columnNames = {"action", "response_name"})

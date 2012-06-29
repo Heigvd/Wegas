@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@Entity
+//@Entity
 @Table(name = "user_action",
 uniqueConstraints = {
     @UniqueConstraint(columnNames = {"dialogue_id", "name"})

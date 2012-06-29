@@ -12,12 +12,14 @@ YUI.add('wegas-app', function (Y) {
         _rootWidgetCfg: null,
         _rootWidget: null,
 
+        pageLoader: null,
+
         // ** Lifecycle methods ** //
         initializer: function () {
             Y.Wegas.app = this;
 
             this.initDataSources();
-            this.initUI();
+            this.renderUI();
             this.initCSS();
         },
         destructor : function () {
@@ -81,37 +83,35 @@ YUI.add('wegas-app', function (Y) {
             }
         },
 
-        initUI: function() {
+        renderUI: function() {
+
+            this.pageLoader = new Y.Wegas.PageLoader();
+            this.pageLoader.render();
+
             Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + App.genId(), {
                 context: this,
                 on: {
                     success: function (id, o, args) {
                         //Y.log("RedCMS.onWidgetReloadContentReceived():"+  o.responseText, 'log');
+                        var cfg;
                         try {
-                            this._rootWidgetCfg = Y.JSON.parse(o.responseText);				// Process the JSON data returned from the server
+                            cfg = Y.JSON.parse(o.responseText);				// Process the JSON data returned from the server
                         } catch (jsonException) {
                             alert("Wegas.App.initUI(): JSON Parse failed!");
                             return;
                         }
-                        this._rootWidget = Y.Wegas.Widget.create(this._rootWidgetCfg);
+                        cfg.id = -100;
+                        this.dataSources.Page.data.push(cfg);
 
                         try {
-                            this._rootWidget.render();
+                            this.pageLoader.set("pageId", -100);
+                           // this._rootWidget.render();
                         } catch (renderException) {
                             Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
                         }
                     }
                 }
             });
-        },
-        getPageById: function (id) {
-            var widgetCfg = this.dataSources.Page.rest.getCachedVariableById(id);
-
-            if (!widgetCfg) {
-                return null;
-            }
-
-            return Y.Wegas.Widget.create(widgetCfg);
         }
     }, {
         ATTRS: {

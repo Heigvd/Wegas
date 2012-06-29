@@ -11,11 +11,9 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.UserInput;
+import com.wegas.leadergame.persistence.DialogueTransition;
 import java.io.Serializable;
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -29,13 +27,18 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "UserInput", value = UserInput.class)
+    @JsonSubTypes.Type(name = "UserInput", value = UserInput.class),
+    @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
 public class Transition implements Serializable {
 
     @Embedded
     private Script triggerCondition;
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name="content", column=@Column(name="onTransition_content")),
+        @AttributeOverride(name="lang", column=@Column(name="onTransition_language"))
+    })
     private Script preStateImpact;
     private Long nextStateId;
 
