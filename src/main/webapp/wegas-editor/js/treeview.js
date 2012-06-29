@@ -145,7 +145,7 @@ YUI.add('treeview', function (Y) {
     },
 
     {
-        NAME : "treenode",
+        NAME : "TreeNode",
         ATTRS : {
             label : {
                 value: "",
@@ -284,6 +284,7 @@ YUI.add('treeview', function (Y) {
             this.set("label", this.get("label"));
             this.set("iconCSS", this.get("iconCSS"));
             this.set("editable", this.get("editable"));
+            this.set("loading", this.get("loading"));
             this.set("rightWidget", this.get("rightWidget"));
         },
 
@@ -295,13 +296,19 @@ YUI.add('treeview', function (Y) {
             this.labelNode.destroy();
         }
     }, {
-        NAME : "treeleaf",
+        NAME : "TreeLeaf",
         ATTRS : {
             label: {
                 value:"",
                 validator: Y.Lang.isString,
                 setter: function (v){
                     this.labelNode.setContent(v);
+                    return v;
+                },
+                getter: function(v){
+                    if(this.get("editable")){
+                        return this.labelNode.getContent();
+                    }
                     return v;
                 }
             },
@@ -339,6 +346,19 @@ YUI.add('treeview', function (Y) {
                         this.labelNode.setAttribute("contenteditable", "true");
                     }else{
                         this.labelNode.setAttribute("contenteditable", "false");
+                        this.set("label", this.labelNode.getContent);
+                    }
+                    return v;
+                }
+            },
+            loading : {
+                value: false,
+                validator: Y.Lang.isBoolean,
+                setter: function (v){
+                    if(v){
+                        this.get(CONTENT_BOX).addClass(classNames.loading);
+                    }else{
+                        this.get(CONTENT_BOX).removeClass(classNames.loading);
                     }
                     return v;
                 }
