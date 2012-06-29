@@ -119,19 +119,6 @@
             "type": "TabView",
             "children": [{
                 "type": "Tab",
-                "label": "StateMachine Viewer",
-                "children": [{
-                    "type": "StateMachineViewer"
-                }],
-                "toolbarLabel": "State machine viewer"
-            }, {
-                "type": "Tab",
-                "label": "Wysiwyg editor",
-                "children": [{
-                    "type": "WysiwygEditor"
-                }]
-            },{
-                "type": "Tab",
                 "label": "Preview",
                 "toolbarChildren": [{
                     "type": "SelectPlayer"
@@ -159,6 +146,19 @@
                     "type": "FileExplorer"
                 }],
                 "toolbarLabel": "File explorer"
+            },{
+                "type": "Tab",
+                "label": "StateMachine Viewer",
+                "children": [{
+                    "type": "StateMachineViewer"
+                }],
+                "toolbarLabel": "State machine viewer"
+            }, {
+                "type": "Tab",
+                "label": "Wysiwyg editor",
+                "children": [{
+                    "type": "WysiwygEditor"
+                }]
             }]
         }]
     }

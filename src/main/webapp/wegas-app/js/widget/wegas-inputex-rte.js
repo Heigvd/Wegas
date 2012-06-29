@@ -345,7 +345,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                     label: 'Edit HTML Code',
                     value: 'editcode'
                 };
-                Y.log('Create the (editcode) Button', 'info', 'example');
+                Y.log('Create the (editcode) Button', 'info', 'Wegas.RTEField');
                 this.toolbar.addButtonToGroup(codeConfig, 'insertitem');
 
                 this.toolbar.on('editcodeClick', function() {
@@ -355,8 +355,8 @@ YUI.add("wegas-inputex-rte", function (Y){
                     if (this.state == 'on') {
                         this.state = 'off';
                         this.toolbar.set('disabled', false);
-                        Y.log('Show the Editor', 'info', 'example');
-                        Y.log('Inject the HTML from the textarea into the editor', 'info', 'example');
+                        Y.log('Show the Editor', 'info', 'Wegas.RTEEditor');
+                        Y.log('Inject the HTML from the textarea into the editor', 'info', 'Wegas.RTEEditor');
                         this.setEditorHTML(ta.value);
                         if (!this.browser.ie) {
                             this._setDesignMode('on');
@@ -368,9 +368,9 @@ YUI.add("wegas-inputex-rte", function (Y){
                         this._focusWindow();
                     } else {
                         this.state = 'on';
-                        Y.log('Show the Code Editor', 'info', 'example');
+                        Y.log('Show the Code Editor', 'info', 'Wegas.RTEEditor');
                         this.cleanHTML();
-                        Y.log('Save the Editors HTML', 'info', 'example');
+                        Y.log('Save the Editors HTML', 'info', 'Wegas.RTEEditor');
                         Y.YUI2.util.Dom.addClass(iframe, 'editor-hidden');
                         Y.YUI2.util.Dom.removeClass(ta, 'editor-hidden');
                         this.toolbar.set('disabled', true);
@@ -383,7 +383,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                 }, this, true);
 
                 this.on('cleanHTML', function(ev) {
-                    Y.log('cleanHTML callback fired..', 'info', 'example');
+                    //Y.log('cleanHTML callback fired..', 'info', 'Wegas.RTEEditor');
                     this.get('element').value = ev.html;
                 }, this, true);
 

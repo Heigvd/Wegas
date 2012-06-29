@@ -11,6 +11,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
+import com.wegas.leadergame.persistence.DialogueState;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,8 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "ActiveResponse", value = ActiveResponse.class)
+    @JsonSubTypes.Type(name = "ActiveResponse", value = ActiveResponse.class),
+    @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 public class State implements Serializable {
 
