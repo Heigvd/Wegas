@@ -21,8 +21,10 @@ body{
     font-size: 1em;
     display:block;
     position:absolute;
-    background-color:#DCCDB1;
+    padding:2px;
+    background-color:#F3E4D2;
     border:solid 1px;
+    border-radius: 5px;
 }
 
 /*--------------------------------Indicators----------------------------------*/
@@ -361,8 +363,25 @@ body{
     margin-bottom:10px;
 }
 
-.wegas-folder .leaderway-folder .task-skill-value{
-    margin-right:25px;
+.wegas-folder .leaderway-folder .occupation .task{
+    margin-top: 10px;
+    border-top: dotted 1px #6F89A2;
+    padding-top:10px;
+}
+
+.wegas-folder .leaderway-folder .occupation .task:first-child{
+    margin-top:0;
+    border-top:0;
+    padding-top:0;
+}
+
+.wegas-folder .leaderway-folder .occupation .task-skill{
+    margin-bottom:0;
+}
+
+.wegas-folder .leaderway-folder .occupation .task-skill-value{
+    display:inline;
+    margin-right:20px;
 }
 
 .wegas-folder .leaderway-folder .leadershipLevel{

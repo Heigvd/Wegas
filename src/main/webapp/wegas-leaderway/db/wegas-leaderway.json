@@ -92,24 +92,56 @@
             "name": "Salzmann",
             "description":"Test de description.",
             "defaultVariableInstance":{
-                    "@class":"ResourceInstance",
-                    "properties":{
-                        "surname":"Fernand",
-                        "salary":1200,
-                        "moral":80,
-                        "confidence":50,
-                        "leadershipLevel":2,
-                        "lastWorkQuality":70,
-                        "wish":"",
-                        "hate":"",
-                        "frankness":85,
-                        "wantToBeLeader":false,
-                        "numberOfworkWithLeader":0
-                    },
-                    "skillset":{
-                        "Design graphique":30,
-                        "Négociation":75
-                    }
+                "@class":"ResourceInstance",
+                "properties":{
+                    "surname":"Fernand",
+                    "salary":1200,
+                    "moral":80,
+                    "confidence":50,
+                    "leadershipLevel":2,
+                    "lastWorkQuality":70,
+                    "wish":"",
+                    "hate":"",
+                    "frankness":85,
+                    "wantToBeLeader":false,
+                    "numberOfWorkWithLeader":0,
+                    "totalExperienceGained":0  
+                },
+                "skillset":{
+                    "Design graphique":30,
+                    "Négociation":75
+                }
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Auguste",
+            "description":"sans description",
+            "defaultVariableInstance":{
+                "@class":"ResourceInstance",
+                "properties":{
+                    "surname":"Hercule",
+                    "salary":1500,
+                    "moral":95,
+                    "confidence":40,
+                    "leadershipLevel":1,
+                    "lastWorkQuality":75,
+                    "wish":"Développement logiciel",
+                    "hate":"Design graphique",
+                    "frankness":85,
+                    "wantToBeLeader":true,
+                    "numberOfWorkWithLeader":0, 
+                    "totalExperienceGained":0  
+                },
+                "skillset":{
+                    "Langages Web":85,
+                    "Développement de base de données":78,
+                    "Modélisation des traitements":86,
+                    "Développement logiciel":80,
+                    "Design graphique":34
+                }
             },
             "scope": {
                 "@class": "TeamScope"
@@ -119,24 +151,26 @@
             "name": "Boniface",
             "description":"Description du personnage",
             "defaultVariableInstance":{
-                    "@class":"ResourceInstance",
-                    "properties":{
-                        "surname":"Laurentin",
-                        "salary":1100,
-                        "moral":60,
-                        "confidence":70,
-                        "leadershipLevel":1,
-                        "lastWorkQuality":60,
-                        "wish":"",
-                        "hate":"Négociation",
-                        "frankness":35,
-                        "wantToBeLeader":true,
-                        "numberOfworkWithLeader":0  
-                    },
-                    "skillset":{
-                        "Langages Web":67,
-                        "Modélisation de base de données":44
-                    }
+                "@class":"ResourceInstance",
+                "properties":{
+                    "surname":"Laurentin",
+                    "salary":1300,
+                    "moral":60,
+                    "confidence":70,
+                    "leadershipLevel":1,
+                    "lastWorkQuality":60,
+                    "wish":"",
+                    "hate":"Négociation",
+                    "frankness":35,
+                    "wantToBeLeader":true,
+                    "numberOfWorkWithLeader":0,
+                    "totalExperienceGained":0  
+                },
+                "skillset":{
+                    "Langages Web":67,
+                    "Développement de base de données":44,
+                    "Design graphique":57
+                }
             },
             "scope": {
                 "@class": "TeamScope"
@@ -158,20 +192,96 @@
             "description":"",
             "duration":1,
             "defaultVariableInstance":{
-                    "@class":"TaskInstance",
-                    "properties":{
-                        "term":1,
-                        "salary":1300,
-                        "bonus":0,
-                        "comment":"",
-                        "clientSatisfactionMinToAppear":0,
-                        "clientSatisfactionMaxToAppear":100,
-                        "appearAtWeek":1,
-                        "workWithLeader": true
-                    },
-                    "skillset":{
-                        "Design graphique":50
-                    }
+                "@class":"TaskInstance",
+                "properties":{
+                    "salary":1500,
+                    "bonus":0,
+                    "SatisfactionMinForBonus":0,
+                    "comment":"",
+                    "clientSatisfactionMinToAppear":0,
+                    "clientSatisfactionMaxToAppear":100,
+                    "appearAtWeek":1,
+                    "disappearAtWeek":2,
+                    "workWithLeader": false
+                },
+                "skillset":{
+                    "Design graphique":50
+                }
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "TaskDescriptor",
+            "name": "Création d'un cahier des charges pour un CMS",
+            "description":"",
+            "duration":1,
+            "defaultVariableInstance":{
+                "@class":"TaskInstance",
+                "properties":{
+                    "salary":1100,
+                    "bonus":0,
+                    "SatisfactionMinForBonus":0,
+                    "comment":"",
+                    "clientSatisfactionMinToAppear":0,
+                    "clientSatisfactionMaxToAppear":60,
+                    "appearAtWeek":2,
+                    "disappearAtWeek":5,
+                    "workWithLeader": false
+                },
+                "skillset":{
+                    "Négociation":30
+                }
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "TaskDescriptor",
+            "name": "Migration d'une base de données MySQL vers une base de données PostgreSQL",
+            "description":"",
+            "duration":3,
+            "defaultVariableInstance":{
+                "@class":"TaskInstance",
+                "properties":{
+                    "salary":3600,
+                    "bonus":0,
+                    "SatisfactionMinForBonus":0,
+                    "comment":"",
+                    "clientSatisfactionMinToAppear":40,
+                    "clientSatisfactionMaxToAppear":100,
+                    "appearAtWeek":2,
+                    "disappearAtWeek":4,
+                    "workWithLeader": false
+                },
+                "skillset":{
+                    "Dévellopement de base de données":55
+                }
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "TaskDescriptor",
+            "name": "Modélisation des traitement d'un logiciel",
+            "description":"",
+            "duration":4,
+            "defaultVariableInstance":{
+                "@class":"TaskInstance",
+                "properties":{
+                    "salary":5700,
+                    "bonus":1000,
+                    "SatisfactionMinForBonus":80,
+                    "comment":"",
+                    "clientSatisfactionMinToAppear":70,
+                    "clientSatisfactionMaxToAppear":100,
+                    "appearAtWeek":1,
+                    "disappearAtWeek":4,
+                    "workWithLeader": true
+                },
+                "skillset":{
+                    "Modelisation des traitements":70
+                }
             },
             "scope": {
                 "@class": "TeamScope"
@@ -182,20 +292,20 @@
             "description":"",
             "duration":2,
             "defaultVariableInstance":{
-                    "@class":"TaskInstance",
-                    "properties":{
-                        "term":2,
-                        "salary":2600,
-                        "bonus":0,
-                        "comment":"",
-                        "clientSatisfactionMinToAppear":0,
-                        "clientSatisfactionMaxToAppear":100,
-                        "appearAtWeek":1,
-                        "workWithLeader": true
-                    },
-                    "skillset":{
-                        "Développement de base de données":43
-                    }
+                "@class":"TaskInstance",
+                "properties":{
+                    "salary":3000,
+                    "bonus":0,
+                    "comment":"",
+                    "clientSatisfactionMinToAppear":0,
+                    "clientSatisfactionMaxToAppear":100,
+                    "appearAtWeek":1,
+                    "disappearAtWeek":3,
+                    "workWithLeader": true
+                },
+                "skillset":{
+                    "Développement de base de données":43
+                }
             },
             "scope": {
                 "@class": "TeamScope"
@@ -208,6 +318,27 @@
         "scope": {
             "@class": "GameModelScope"
         }
-    }
-    ]
+    },{
+        "@class": "ListDescriptor",
+        "name": "absence",
+        "items":[{
+            "@class": "TaskDescriptor",
+            "name": "sickness",
+            "description":"",
+            "duration":1,
+            "defaultVariableInstance":{
+                "@class":"TaskInstance"
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }],
+        "defaultVariableInstance":{
+            "@class": "NumberInstance",
+            "value": 0
+        },
+        "scope": {
+            "@class": "GameModelScope"
+        }
+    }]
 }

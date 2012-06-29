@@ -76,27 +76,41 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         getOccupation: function(memberInstance){
-            var i, occupation = new Array(), sick=true, listDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"), taskDescriptor, taskInstance, taskSkills = new Array();
+            var i, j, occupation = new Array(), sick=false, taskListDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
+            absenceListDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "absence"), taskDescriptor, taskInstance, taskSkills = new Array();
             if(memberInstance.assignments.length == 0){
                 occupation.push('Libre pour un mandat, travail habituel.');
             }
             else{
-                for (i = 0; i < listDescriptor.items.length; i = i + 1) {
-                        taskDescriptor = listDescriptor.items[i];
-                        if(taskDescriptor.id == memberInstance.assignments[0].taskDescriptorId){
-                            taskInstance = taskDescriptor.getInstance();
-                            for(var key in taskInstance.skillset){
-                                taskSkills.push('<span class="task-skill-value">'+key+' ('+taskInstance.skillset[key]+')</span>');
+                for (i = 0; i < absenceListDescriptor.items.length; i++) {
+                        for(j = 0; j < memberInstance.assignments.length; j++){
+                            taskDescriptor = absenceListDescriptor.items[i];
+                            if(taskDescriptor.id == memberInstance.assignments[j].taskDescriptorId){
+                                sick=true;
+                                occupation.push('Arrêt maladie');
                             }
-                            occupation.push('<div class="task-name"><span="task-name-label">Mandat : </span><span="task-name-value">'+taskDescriptor.name+'</span></div>');
-                            occupation.push('<div class="task-skill"><span="task-skill-label">Compétence demandée : </span><span="task-skill-values">'+taskSkills.join("")+'</span></div>');
-                            occupation.push('<div class="task-salary"><span="task-salary-label">Rémunération : </span><span="task-salary-value">'+taskInstance.properties.salary+'</span></div>');
-                            occupation.push('<div class="task-duration"><span="task-duration-label">Durée de travail restant : </span><span="task-duration-value">'+taskDescriptor.duration+'</span></div>');
-                            sick=false;
                         }
                 }
-                if(sick){
-                    occupation.push('Arrêt maladie');
+                if(!sick){
+                    for (i = 0; i < taskListDescriptor.items.length; i++) {
+                            for(j = 0; j < memberInstance.assignments.length; j++){
+                                taskDescriptor = taskListDescriptor.items[i];
+                                if(taskDescriptor.id == memberInstance.assignments[j].taskDescriptorId){
+                                    taskInstance = taskDescriptor.getInstance();
+                                    for(var key in taskInstance.skillset){
+                                        taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.skillset[key]+')</li>');
+                                    }
+                                    occupation.push('<div class="task">');
+                                    occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+taskDescriptor.name+'</span></div>');
+                                    occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>'+taskSkills.join("")+'</ul></div>');
+                                    occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.properties.salary+'</span></div>');
+                                    occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskDescriptor.duration+'</span></div>');
+                                    occupation.push("</div>");
+                                    sick=false;
+                                    taskSkills.length = 0;
+                                }
+                            }
+                    }
                 }
             }
             return occupation.join("");

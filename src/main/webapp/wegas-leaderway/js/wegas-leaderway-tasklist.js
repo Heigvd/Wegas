@@ -15,19 +15,44 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
 
         //*** Particular Methods ***/
         getTasksData: function(){
-            var listDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),taskDescriptor, taskInstance, comment; 
-            for (var i = 0; i < listDescriptor.items.length; i++) {
-                    taskDescriptor = listDescriptor.items[i];
-                    taskInstance = taskDescriptor.getInstance();
+            var i, j, k, termData, workers = new Array(), taskDescriptor, taskInstance, resourceDescriptor, resourceInstance, comment,
+            listTasksDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
+            listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),
+            currentWeekInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "week").getInstance(),  
+            currentSatisfactionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "clientSatisfaction").getInstance();
+            if(!listTasksDescriptor) return;
+            for (i = 0; i < listTasksDescriptor.items.length; i++) {
+                workers.length = 0;
+                taskDescriptor = listTasksDescriptor.items[i];
+                taskInstance = taskDescriptor.getInstance();
+                for(j=0; j<listResourcesDescriptor.items.length; j++){
+                    resourceDescriptor = listResourcesDescriptor.items[j];
+                    resourceInstance = resourceDescriptor.getInstance();
+                    for(k=0; k<resourceInstance.assignments.length; k++){
+                        if(taskDescriptor.id == resourceInstance.assignments[k].taskDescriptorId){
+                            workers.push(resourceDescriptor.name);
+                            break;
+                        }
+                    }
+                }
+                if(currentWeekInstance.value >= taskInstance.properties.appearAtWeek &&
+                   (currentWeekInstance.value < taskInstance.properties.disappearAtWeek || workers.length > 0) &&
+                   currentSatisfactionInstance.value >= taskInstance.properties.clientSatisfactionMinToAppear &&
+                   currentSatisfactionInstance.value <= taskInstance.properties.clientSatisfactionMaxToAppear
+                ){
+                    (workers.length <= 0)? termData = (taskInstance.properties.disappearAtWeek - currentWeekInstance.value) : termData = "-";
                     (taskInstance.properties.comment)? comment = taskInstance.properties.comment : comment = "-";
-                    this.data.push({
-                        task:taskDescriptor.name,
-                        skill:this.getSkillsets(taskInstance),
-                        duration:taskDescriptor.duration,
-                        term:taskInstance.properties.term,
-                        salary:taskInstance.properties.salary,
-                        comment:comment
-                    })
+                    if(workers.length <= 0) workers.push("-");
+                        this.data.push({
+                            task:taskDescriptor.name,
+                            skill:this.getSkillsets(taskInstance),
+                            duration:taskDescriptor.duration,
+                            term:termData,
+                            salary:taskInstance.properties.salary,
+                            comment:comment,
+                            worker: workers.join(",")
+                        })
+                }
             }
         },
         
@@ -72,13 +97,20 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     key:"comment", 
                     label:"Remarque",
                     sortable: true
-                }          
+                },
+                {
+                    key:"worker", 
+                    label:"Employé",
+                    sortable: true
+                }    
                 ]
             });
             this.table.render(this.get(CONTENTBOX));
         },
             
         bindUI: function() {
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
         
         syncUI: function () {
