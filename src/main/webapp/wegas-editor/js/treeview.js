@@ -303,13 +303,9 @@ YUI.add('treeview', function (Y) {
                 validator: Y.Lang.isString,
                 setter: function (v){
                     this.labelNode.setContent(v);
-                    return v;
                 },
                 getter: function(v){
-                    if(this.get("editable")){
-                        return this.labelNode.getContent();
-                    }
-                    return v;
+                    return this.labelNode.getContent();
                 }
             },
             tabIndex: {
@@ -346,7 +342,6 @@ YUI.add('treeview', function (Y) {
                         this.labelNode.setAttribute("contenteditable", "true");
                     }else{
                         this.labelNode.setAttribute("contenteditable", "false");
-                        this.set("label", this.labelNode.getContent);
                     }
                     return v;
                 }
