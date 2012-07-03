@@ -1,7 +1,7 @@
 YUI.add('wegas-fileexplorer', function (Y) {
     'use strict';
 
-    var FileExplorer, WegasMenu, ProgressBar,
+    var FileExplorer, ProgressBar,
     getClassName = Y.ClassNameManager.getClassName,
     CONTENTBOX = 'contentBox',
     DEFAULTHEADERS = {
@@ -16,7 +16,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         }
     };
 
-    //TODO: multiple files upload, correct bugs, no popup inputs. notes!
+    //TODO: notes, preview!
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.WidgetParent, Y.Wegas.Widget], {
 
@@ -472,133 +472,10 @@ YUI.add('wegas-fileexplorer', function (Y) {
 
     }, ATTRS);
 
-    ProgressBar = Y.Base.create("wegas-progressbar", Y.Widget, [], {
-        renderUI: function (){
-            var bbStyle = this.get(BOUNDING_BOX).getDOMNode().style;
-            bbStyle.border = "1px solid " + this.get("color");
-            bbStyle.borderRadius = "5px";
-            bbStyle.display = "inline-block";
-            bbStyle.textAlign = "center";
-            bbStyle.fontSize = this.get("height");
-        },
-        syncUI: function () {
-            this.set("percent", this.get("percent"));
-            this.set("color", this.get("color"));
-        }
-    },{
-        ATTRS: {
-            percent:{
-                value:100,
-                setter:function (v){
-                    this.get(CONTENT_BOX).getDOMNode().style.width = v + "%";
-                    if(this.get("showValue")){
-                        this.get(CONTENT_BOX).setContent(v + "%");
-                    }else{
-                        this.get(CONTENT_BOX).setContent("");
-                    }
-                    return v;
-                }
-            },
-            color:{
-                value: "lightblue",
-                validator:Y.Lang.isString,
-                setter: function(v){
-                    this.get(CONTENT_BOX).getDOMNode().style.backgroundColor = v;
-                    this.get(BOUNDING_BOX).getDOMNode().style.borderColor = v;
-                    return v;
-                }
-            },
-            showValue:{
-                value:false,
-                validator: Y.Lang.isBoolean,
-                setter:function (v){
-                    this.set("percent", this.get("percent"));
-                    return v;
-                }
-            }
-        }
-    })
 
-    WegasMenu = Y.Base.create("wegas-menu", Y.Widget, [Y.WidgetChild], {
-        BOUNDING_TEMPLATE: "<div></div>",
-        CONTENT_TEMPLATE:"<ul></ul>",
-        nodeInstances: null,
-        eventInstances: null,
-        clickHandler: null,
 
-        initializer: function () {
-            this.nodeInstances = [];
-            this.eventInstances = [];
-            this.publish("itemClick", {
-                emitFacade: true,
-                bubbles: true
-            });
-        },
-        renderUI: function () {
-            var listItem, item;
-            for (var i in this.get("items")){
-                item = this.get("items")[i];
-                listItem = this.itemCreator(item);
-                this.get(CONTENTBOX).append(listItem);
-                this.nodeInstances.push(listItem);
-            }
-        },
-        bindUI: function () {
-            this.clickHandler = this.get(CONTENTBOX).delegate('click', function(e) {					// Listen for click events on the table
-                e.stopImmediatePropagation();
-                this.fire("itemClick", {
-                    parent: this.get("parent"),
-                    item:  e.currentTarget.nodeName,
-                    params: this.get('params')
-                });
-            }, 'li', this);
-        },
 
-        destructor: function () {
-            this.clickHandler.detach();
-            for(var n in this.nodeInstances){
-                this.nodeInstances[n].destroy();
-            }
-        },
-        itemCreator: function (item) {
-            var node;
-            if(item.imgSrc){
-                node = Y.Node.create("<li><img src='" + item.imgSrc + "' alt='" + item.label + "'/></li>");
-            } else {
-                node = Y.Node.create("<li>" + item.label + "</li>");
-            }
-            node.nodeName = item.label
-            node.addClass(this.getClassName("itemlist", this.get("horizontal") ? "horizontal" : "vertical"));
-            return node
-        }
-    },{
-        NAME:"wegas-menu",
-        CSS_PREFIX: "wegas-menu",
-        ATTRS:{
-            horizontal: {
-                value: false,
-                validator: Y.Lang.isBoolean
-            },
-            items:{
-                validator: function(o){
-                    var valid = Y.Lang.isArray(o) || o === null;
-                    for(var i in o){
-                        valid = Y.Lang.isString(o[i].label) && (Y.Lang.isString(o[i].imgSrc) || o[i].imgSrc == null)
-                    }
-                    return valid;
-                }
-            },
-            title: {
-                value: null,
-                validator: Y.Lang.isString
-            },
-            params:{                                                            // Given input params returned with the click event, a reference for instance
-                value: null
-            }
-        }
-    });
 
     Y.namespace('Wegas').FileExplorer = FileExplorer;
-    Y.namespace('Wegas').WegasMenu = WegasMenu;
-    Y.namespace("Wegas").ProgressBar = ProgressBar;
+
 });
