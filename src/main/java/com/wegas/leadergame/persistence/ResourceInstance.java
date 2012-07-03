@@ -117,7 +117,7 @@ public class ResourceInstance extends VariableInstance {
      * @return the active
      */
     public Boolean getActive() {
-        return active;
+        return this.active;
     }
 
     /**

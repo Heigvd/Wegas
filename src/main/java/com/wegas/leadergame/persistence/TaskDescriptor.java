@@ -24,10 +24,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
-    private Integer duration;
-    /**
-     *
-     */
     private String description;
 
     /**
@@ -39,21 +35,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         super.merge(a);
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setDuration(other.getDuration());
-    }
-
-    /**
-     * @return the duration
-     */
-    public Integer getDuration() {
-        return duration;
-    }
-
-    /**
-     * @param duration the duration to set
-     */
-    public void setDuration(Integer duration) {
-        this.duration = duration;
     }
 
     /**

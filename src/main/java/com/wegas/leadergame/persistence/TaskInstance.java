@@ -31,6 +31,10 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      */
+    private Integer duration;
+    /**
+     *
+     */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
     /**
@@ -47,6 +51,7 @@ public class TaskInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         TaskInstance other = (TaskInstance) a;
         this.setActive(other.getActive());
+        this.setDuration(other.getDuration());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
         this.skillset.clear();
@@ -57,7 +62,7 @@ public class TaskInstance extends VariableInstance {
      * @return the active
      */
     public Boolean getActive() {
-        return active;
+        return this.active;
     }
 
     /**
@@ -65,6 +70,20 @@ public class TaskInstance extends VariableInstance {
      */
     public void setActive(Boolean active) {
         this.active = active;
+    }
+    
+    /**
+     * @return the duration
+     */
+    public Integer getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     /**
