@@ -39,7 +39,6 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if(currentMemberInstance.properties.salary){
                 Y.one('.leaderway-folder .salary-value').insert(currentMemberInstance.properties.salary);   
             }            
-            /*temporary hard-coded*/
             Y.one('.leaderway-folder .picture').insert('<img src="http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png" alt="face" width=100 height="100" />');
             Y.one('.leaderway-folder .moral').insert(this.createGauge('Moral', parseInt(currentMemberInstance.properties.moral)));
             Y.one('.leaderway-folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentMemberInstance.properties.confidence)));
@@ -71,47 +70,53 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                         Y.all('.leaderway-folder .leadershipLevel-info').item(4-i).addClass('levelActive');
                     }
                 }
-                else{Y.one('.leaderway-folder .leadershipLevel').insert('<div class="error">Leadership level must to be between 1 to 5)</div>')}
+                else{
+                    Y.one('.leaderway-folder .leadershipLevel').insert('<div class="error">Leadership level must to be between 1 to 5)</div>')
+                    }
             }
         },
         
         getOccupation: function(memberInstance){
             var i, j, occupation = new Array(), sick=false, taskListDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
-            absenceListDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "absence"), taskDescriptor, taskInstance, taskSkills = new Array();
-            if(memberInstance.assignments.length == 0){
-                occupation.push('Libre pour un mandat, travail habituel.');
-            }
-            else{
-                for (i = 0; i < absenceListDescriptor.items.length; i++) {
-                        for(j = 0; j < memberInstance.assignments.length; j++){
-                            taskDescriptor = absenceListDescriptor.items[i];
-                            if(taskDescriptor.id == memberInstance.assignments[j].taskDescriptorId){
-                                sick=true;
-                                occupation.push('Arrêt maladie');
-                            }
+            listAbsenceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "absences"), taskDescriptor, taskInstance, taskSkills = new Array();
+            for (i = 0; i < listAbsenceDescriptor.items.length; i++) {
+                taskDescriptor = listAbsenceDescriptor.items[i];
+                taskInstance = taskDescriptor.getInstance();
+                if(taskInstance.active){
+                    for(j = 0; j < memberInstance.assignments.length; j++){
+                        if(taskDescriptor.id == memberInstance.assignments[j].taskDescriptorId){
+                            sick=true;
+                            occupation.push('Arrêt maladie (revient dans ');
+                            occupation.push(taskInstance.duration);
+                            (taskInstance.duration > 1)?occupation.push(' semaines).') : occupation.push(' semaine).');
+                            break;
                         }
-                }
-                if(!sick){
-                    for (i = 0; i < taskListDescriptor.items.length; i++) {
-                            for(j = 0; j < memberInstance.assignments.length; j++){
-                                taskDescriptor = taskListDescriptor.items[i];
-                                if(taskDescriptor.id == memberInstance.assignments[j].taskDescriptorId){
-                                    taskInstance = taskDescriptor.getInstance();
-                                    for(var key in taskInstance.skillset){
-                                        taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.skillset[key]+')</li>');
-                                    }
-                                    occupation.push('<div class="task">');
-                                    occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+taskDescriptor.name+'</span></div>');
-                                    occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>'+taskSkills.join("")+'</ul></div>');
-                                    occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.properties.salary+'</span></div>');
-                                    occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskDescriptor.duration+'</span></div>');
-                                    occupation.push("</div>");
-                                    sick=false;
-                                    taskSkills.length = 0;
-                                }
-                            }
                     }
                 }
+            }
+            if(!sick){
+                for (i = 0; i < taskListDescriptor.items.length; i++) {
+                    for(j = 0; j < memberInstance.assignments.length; j++){
+                        taskDescriptor = taskListDescriptor.items[i];
+                        if(taskDescriptor.id == memberInstance.assignments[j].taskDescriptorId){
+                            taskInstance = taskDescriptor.getInstance();
+                            for(var key in taskInstance.skillset){
+                                taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.skillset[key]+')</li>');
+                            }
+                            occupation.push('<div class="task">');
+                            occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+taskDescriptor.name+'</span></div>');
+                            occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>'+taskSkills.join("")+'</ul></div>');
+                            occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.properties.salary+'</span></div>');
+                            occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskInstance.duration+'</span></div>');
+                            occupation.push("</div>");
+                            sick=false;
+                            taskSkills.length = 0;
+                        }
+                    }
+                }
+            }
+            if(occupation.length <= 0){
+                occupation.push('Libre pour un mandat, travail habituel.');
             }
             return occupation.join("");
         },

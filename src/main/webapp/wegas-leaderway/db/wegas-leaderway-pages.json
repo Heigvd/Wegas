@@ -41,7 +41,7 @@
                         "type": "VariableDisplay",
                         "cssClass":"indicators-gauge",
                         "label": "Satisfaction client",
-                        "variable": "clientSatisfaction",
+                        "variable": "clientsSatisfaction",
                         "view": "box",
                         "dataSource": "VariableDescriptor"
                     },

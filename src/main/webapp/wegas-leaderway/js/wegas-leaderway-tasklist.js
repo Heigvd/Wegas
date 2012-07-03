@@ -19,7 +19,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             listTasksDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
             listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),
             currentWeekInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "week").getInstance(),  
-            currentSatisfactionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "clientSatisfaction").getInstance();
+            currentSatisfactionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "clientsSatisfaction").getInstance();
             if(!listTasksDescriptor) return;
             for (i = 0; i < listTasksDescriptor.items.length; i++) {
                 workers.length = 0;
@@ -35,18 +35,14 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                         }
                     }
                 }
-                if(currentWeekInstance.value >= taskInstance.properties.appearAtWeek &&
-                   (currentWeekInstance.value < taskInstance.properties.disappearAtWeek || workers.length > 0) &&
-                   currentSatisfactionInstance.value >= taskInstance.properties.clientSatisfactionMinToAppear &&
-                   currentSatisfactionInstance.value <= taskInstance.properties.clientSatisfactionMaxToAppear
-                ){
+                if(taskInstance.active){
                     (workers.length <= 0)? termData = (taskInstance.properties.disappearAtWeek - currentWeekInstance.value) : termData = "-";
                     (taskInstance.properties.comment)? comment = taskInstance.properties.comment : comment = "-";
                     if(workers.length <= 0) workers.push("-");
                         this.data.push({
                             task:taskDescriptor.name,
                             skill:this.getSkillsets(taskInstance),
-                            duration:taskDescriptor.duration,
+                            duration:taskInstance.duration,
                             term:termData,
                             salary:taskInstance.properties.salary,
                             comment:comment,

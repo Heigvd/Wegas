@@ -65,7 +65,7 @@
         }
     },{
         "@class": "NumberDescriptor",
-        "name": "clientSatisfaction",
+        "name": "clientsSatisfaction",
         "minValue": 0,
         "maxValue": 100,
         "defaultVariableInstance": {
@@ -105,7 +105,8 @@
                     "frankness":85,
                     "wantToBeLeader":false,
                     "numberOfWorkWithLeader":0,
-                    "totalExperienceGained":0  
+                    "totalExperienceGained":0,
+                    "learningCoefficient":1
                 },
                 "skillset":{
                     "Design graphique":30,
@@ -133,7 +134,8 @@
                     "frankness":85,
                     "wantToBeLeader":true,
                     "numberOfWorkWithLeader":0, 
-                    "totalExperienceGained":0  
+                    "totalExperienceGained":0,
+                    "learningCoefficient":1
                 },
                 "skillset":{
                     "Langages Web":85,
@@ -164,7 +166,8 @@
                     "frankness":35,
                     "wantToBeLeader":true,
                     "numberOfWorkWithLeader":0,
-                    "totalExperienceGained":0  
+                    "totalExperienceGained":0,
+                    "learningCoefficient":1
                 },
                 "skillset":{
                     "Langages Web":67,
@@ -190,13 +193,13 @@
             "@class": "TaskDescriptor",
             "name": "Création d'une maquette pour un logiciel.",
             "description":"",
-            "duration":1,
             "defaultVariableInstance":{
                 "@class":"TaskInstance",
+                "duration":1,
                 "properties":{
                     "salary":1500,
                     "bonus":0,
-                    "SatisfactionMinForBonus":0,
+                    "workQualityMinForBonus":0,
                     "comment":"",
                     "clientSatisfactionMinToAppear":0,
                     "clientSatisfactionMaxToAppear":100,
@@ -215,13 +218,13 @@
             "@class": "TaskDescriptor",
             "name": "Création d'un cahier des charges pour un CMS",
             "description":"",
-            "duration":1,
             "defaultVariableInstance":{
                 "@class":"TaskInstance",
+                "duration":1,
                 "properties":{
                     "salary":1100,
-                    "bonus":0,
-                    "SatisfactionMinForBonus":0,
+                    "bonus":3000,
+                    "workQualityMinForBonus":10,
                     "comment":"",
                     "clientSatisfactionMinToAppear":0,
                     "clientSatisfactionMaxToAppear":60,
@@ -240,13 +243,13 @@
             "@class": "TaskDescriptor",
             "name": "Migration d'une base de données MySQL vers une base de données PostgreSQL",
             "description":"",
-            "duration":3,
             "defaultVariableInstance":{
                 "@class":"TaskInstance",
+                "duration":3,
                 "properties":{
                     "salary":3600,
                     "bonus":0,
-                    "SatisfactionMinForBonus":0,
+                    "workQualityMinForBonus":0,
                     "comment":"",
                     "clientSatisfactionMinToAppear":40,
                     "clientSatisfactionMaxToAppear":100,
@@ -265,13 +268,13 @@
             "@class": "TaskDescriptor",
             "name": "Modélisation des traitement d'un logiciel",
             "description":"",
-            "duration":4,
             "defaultVariableInstance":{
                 "@class":"TaskInstance",
+                "duration":4,
                 "properties":{
                     "salary":5700,
                     "bonus":1000,
-                    "SatisfactionMinForBonus":80,
+                    "workQualityMinForBonus":80,
                     "comment":"",
                     "clientSatisfactionMinToAppear":70,
                     "clientSatisfactionMaxToAppear":100,
@@ -290,11 +293,12 @@
             "@class": "TaskDescriptor",
             "name": "Création d’une base de données.",
             "description":"",
-            "duration":2,
             "defaultVariableInstance":{
                 "@class":"TaskInstance",
+                "duration":2,
                 "properties":{
                     "salary":3000,
+                    "workQualityMinForBonus":80,
                     "bonus":0,
                     "comment":"",
                     "clientSatisfactionMinToAppear":0,
@@ -320,14 +324,14 @@
         }
     },{
         "@class": "ListDescriptor",
-        "name": "absence",
+        "name": "absences",
         "items":[{
             "@class": "TaskDescriptor",
             "name": "sickness",
             "description":"",
-            "duration":1,
             "defaultVariableInstance":{
-                "@class":"TaskInstance"
+                "@class":"TaskInstance",
+                "duration":1
             },
             "scope": {
                 "@class": "TeamScope"
