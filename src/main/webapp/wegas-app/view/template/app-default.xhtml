@@ -77,7 +77,7 @@
                 useBrowserConsole: true,
                 //debug: Config.debug,
                 //timeout: 10000,
-                filter: 'raw',
+                //filter: 'raw',
                 //filters: { event: 'debug' },
                 //logExclude: { event : true },
                 //logInclude: { event : true },
@@ -85,8 +85,8 @@
                     Y.log('Uncaught error: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
                 },
                 groups: {
-                    <ui:fragment rendered="#{wegasConfig.assets_local}">
-                    /* Set up local version of yui2 TODO: remove that dependency !*/
+                        <ui:fragment rendered="#{wegasConfig.assets_local}">
+                        /* Set up local version of yui2 TODO: remove that dependency !*/
                     yui2: {
                         base: '/Wegas/lib/yui2in3/build/',
                         // combine: true,
@@ -104,13 +104,13 @@
                             }
                         }
                     }
-                    </ui:fragment>
-                }
+                        </ui:fragment>
+                    }
             }).use(
                 <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
             function (Y) {
                 var ScopeForm = [
-                    { name: 'id', type: 'hidden'},
+                    /*{ name: 'id', type: 'hidden'},*/
                     { type: 'select',
                         name: '@class',
                         label: 'Variable is',
@@ -452,20 +452,68 @@
                         ],
 
                         // *** Leader Game *** //
+                        "DialogueDescriptor": [
+                            { name: "id", type: "hidden"},
+                            { name: 'name', label:'Name', required: true},
+                            { name: '@class', type: 'hidden', value: "DialogueDescriptor"},
+                            { name: 'scope', type:'group', fields: ScopeForm},
+                            { name:'defaultVariableInstance', type:'group', fields: [
+                                { name: '@class', value:'FSMInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'},
+                                { name: 'currentStateId', label: "Initial state id" }
+                            ]},
+                            { name: 'states', label: 'States', type:'hashlist', 'elementType': {
+                                type:'group', fields: [
+                                    { name: '@class', value:'DialogueState', type: 'hidden'},
+                                    { name: 'id', type: 'string', label: "Id", disabled: true},
+                                    { name: 'label', label: 'Label' },
+                                    { name: 'text', label: 'Text', type: 'text', rows: 8 },
+                                    { name: 'onEnterEvent', type:'group', fields: [
+                                        { name: '@class', value:'Script', type: 'hidden'},
+                                        { name: 'language', value:'JavaScript', type: 'hidden'},
+                                        { name: 'content', 'type': 'text', label:'On enter', rows: 3}
+                                    ]},
+                                    { name: 'transitions', label: 'Transitions', type: 'list', elementType: {
+                                        type:'group', fields: [
+                                            { name: '@class', value:'Transition', type: 'hidden'},
+                                            { name: 'triggerCondition', type:'group', fields: [
+                                                { name: '@class', value:'Script', type: 'hidden'},
+                                                { name: 'language', value:'JavaScript', type: 'hidden'},
+                                                { name: 'content', 'type': 'text', label:'Condition', rows: 3}
+                                            ]},
+                                            { name: 'nextStateId', label: 'Next state id'},
+                                            { name: 'preStateImpact', type:'group', fields: [
+                                                { name: '@class', value:'Script', type: 'hidden'},
+                                                { name: 'language', value:'JavaScript', type: 'hidden'},
+                                                { name: 'content', 'type': 'text', label:'On transition', rows: 8}
+                                            ]}
+                                        ]}
+                                    }
+
+                                ]
+                            }}
+                        ],
+
+                        "FSMInstance": [
+                            { name: "id", type: "hidden"},
+                            { name: '@class', type: 'hidden', value: "FSMInstance"},
+                            { name: 'currentStateId', label: "Current state id"}
+                        ],
+
                         "ResourceDescriptor": [
                             { name: "id", type: "hidden"},
                             { name: '@class', type: 'hidden', value: "ResourceDescriptor"},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
-//                            { name: 'label', label:'Label'},
+                            //                            { name: 'label', label:'Label'},
                             { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
                             { name:'defaultVariableInstance', type:'group', fields: [
-                                { name: '@class', value:'ResourceInstance', type: 'hidden'},
-                                { name: 'id', type: 'hidden'},
-                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
-                                { name: "properties", "type": "object", label: "Default properties" },
-                                { name: "skillset", "type": "object", label: "Default skills" }
-                            ]}
+                                    { name: '@class', value:'ResourceInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                    { name: "properties", "type": "object", label: "Default properties" },
+                                    { name: "skillset", "type": "object", label: "Default skills" }
+                                ]}
                         ],
                         "ResourceInstance": [
                             { name: 'id', type: 'hidden'},
@@ -479,15 +527,15 @@
                             { name: '@class', type: 'hidden', value: "TaskDescriptor"},
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
-//                            { name: 'label', label:'Label'},
+                            //                            { name: 'label', label:'Label'},
                             { name: 'duration', label:'Duration', required: true},
                             { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
                             { name:'defaultVariableInstance', type:'group', fields: [
-                                { name: '@class', value:'TaskInstance', type: 'hidden'},
-                                { name: 'id', type: 'hidden'},
-                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
-                                { name: "properties", "type": "object", label: "Default properties" }
-                            ]}
+                                    { name: '@class', value:'TaskInstance', type: 'hidden'},
+                                    { name: 'id', type: 'hidden'},
+                                    { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                    { name: "properties", "type": "object", label: "Default properties" }
+                                ]}
                         ],
                         "TaskInstance": [
                             { name: 'id', type: 'hidden'},
@@ -564,7 +612,8 @@
                             {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor },
                             {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor },
                             {type: 'group', name: 'ResourceDescriptor', label: 'a resource',fields:  Config.forms.ResourceDescriptor },
-                            {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Config.forms.TaskDescriptor }
+                            {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Config.forms.TaskDescriptor },
+                            {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Config.forms.DialogueDescriptor }
                         ]
                     }
                 ];

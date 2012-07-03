@@ -57,7 +57,6 @@ YUI.add('wegas-tabview', function (Y) {
         //  Widget method overlap
         Y.after(this._renderChildren, this, "renderUI");
         Y.after(this._bindUIParent, this, "bindUI");
-
         //        this.after("selectionChange", this._afterSelectionChange);
         //        this.after("selectedChange", this._afterParentSelectedChange);
         //        this.after("activeDescendantChange", this._afterActiveDescendantChange);

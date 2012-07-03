@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@Entity
+//@Entity
 @XmlType(name = "")
 public class DialogueDescriptor extends StateMachineDescriptor {
 

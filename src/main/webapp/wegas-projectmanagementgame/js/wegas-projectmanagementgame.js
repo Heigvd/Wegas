@@ -41,7 +41,7 @@ YUI.add('wegas-projectmanagementgame', function (Y) {
             for (i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
                 ret = [];
-                cQuestionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getInstanceById(cQuestion.id);
+                cQuestionInstance = cQuestion.getInstance();
                 firstChild = true;
 
                 if (cQuestionInstance.active) {
