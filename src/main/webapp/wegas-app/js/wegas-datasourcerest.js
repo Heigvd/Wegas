@@ -64,7 +64,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return false;
         },
         beforeResponse: function (e) {
+            Y.log("Response received from " + this.get('host').get('source') + e.cfg.request, "info", "Wegas.RestDataSource");
             e.data = this.get('host').data;
+            e.response.results = Y.Wegas.persistence.Entity.revive(e.response.results);
             if (e.error) {
                 return;
             }
@@ -151,7 +153,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
         },
         _failureHandler: function (e) {
-           // alert("Error sending REST post request!");
+            // alert("Error sending REST post request!");
         }
 
     });
@@ -277,7 +279,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
             }
         },
-         post: function (data, parentData, callback) {
+        post: function (data, parentData, callback) {
             var request = "";
             if (parentData) {
                 switch (parentData["@class"]) {
@@ -298,27 +300,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 },
                 callback: callback
             });
-        },
-        getInstanceById: function (id) {
-            return this.getInstanceBy('id', id);
-        },
-        getInstanceBy: function (key, val) {
-            var el = this.getCachedVariableBy(key, val);
-            if (!el) {
-                return null;
-            }
-            return this.getDescriptorInstance(el);
-        },
-        getDescriptorInstance: function(descriptor) {
-            switch (descriptor.scope['@class']) {
-                case 'PlayerScope':
-                    return descriptor.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
-                case 'TeamScope':
-                    return descriptor.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
-                case 'GameModelScope':
-                case 'GameScope':
-                    return descriptor.scope.variableInstances[0];
-            }
         }
     });
 
@@ -343,7 +324,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 if (!cEl) {
 
                 } else if (cEl['@class'] === "Team") {
-                //@TODO is this case still in use ??
+                    //@TODO is this case still in use ??
                 } else {
                     // @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
                     if (e.request.indexOf("ScriptLibrary") != -1) e.cfg.method = "POST";
@@ -394,7 +375,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 return '/' + data.gameId + '/Team/' + data.id;
             } else if (data['@class'] === 'Player') {
                 return "/" + this.getGameByTeamId(data.teamId).id
-                + '/Team/' + data.teamId + '/Player/' + data.id;
+                    + '/Team/' + data.teamId + '/Player/' + data.id;
             } else {
                 return "/" + data.id;
             }
@@ -499,17 +480,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             // Strip the ["string keys"] and [1] array indexes
             locator = locator.
-            replace(/\[(['"])(.*?)\1\]/g,
-                function (x,$1,$2) {
-                    keys[i]=$2;
-                    return '.@'+(i++);
-                }).
-            replace(/\[(\d+)\]/g,
-                function (x,$1) {
-                    keys[i]=parseInt($1,10)|0;
-                    return '.@'+(i++);
-                }).
-            replace(/^\./,''); // remove leading dot
+                replace(/\[(['"])(.*?)\1\]/g,
+            function (x,$1,$2) {
+                keys[i]=$2;
+                return '.@'+(i++);
+            }).
+                replace(/\[(\d+)\]/g,
+            function (x,$1) {
+                keys[i]=parseInt($1,10)|0;
+                return '.@'+(i++);
+            }).
+                replace(/^\./,''); // remove leading dot
 
             // Validate against problematic characters.
             if (!/[^\w\.\$@]/.test(locator)) {
@@ -518,7 +499,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     /*if (path[i].charAt(0) === '@') {				// MODIFIED !!
 			path[i] = keys[parseInt(path[i].substr(1),10)];
 		    }*/
-                    }
+                }
             }
             else {
             }
@@ -548,7 +529,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             //}
             //else {
             uri += request;
-        //}
+            //}
         }
         Y.DataSource.Local.transactions[e.tId] = io(uri, cfg);
         return e.tId;

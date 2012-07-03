@@ -17,29 +17,95 @@ YUI.add('wegas-widget', function (Y) {
         this.constructor.CSS_PREFIX = this.constructor.NAME.toLowerCase();
         this._cssPrefix = this.constructor.NAME.toLowerCase();
     }
+    Y.mix(Widget, {
+        ATTRS: {
+            cssClass: {}
+        },
+        create: function (config) {
+            var type = config.childType || config.type,
+            child, Fn;
 
-    Widget.ATTRS = {
-        cssClass: {}
-    };
-    Widget.create = function (config) {
-        var type = config.childType || config.type,
-        child, Fn;
+            if (type) {
+                Fn = Lang.isString(type) ? Y.Wegas[type] || Y[type] : type;
+            }
 
-        if (type) {
-            Fn = Lang.isString(type) ? Y.Wegas[type] || Y[type] : type;
+            if (Lang.isFunction(Fn)) {
+                child = new Fn(config);
+            } else {
+                Y.log("Could not create a child widget because its constructor is either undefined or invalid(" + type + ").", 'error', 'Wegas.Widget');
+            }
+
+            return child;
+        },
+
+        /**
+        * Returns the class for the given type
+        *
+        * @static
+        * @param {String} type String type of the field
+        */
+        getClass: function(type) {
+            // @todo
+        },
+
+        /**
+        * Get the type for the given class
+        * @static
+        * @param {Wegas.Widget} Widget Class
+        * @return {String} returns the Wegas type string or <code>null</code>
+        */
+        getType: function(FieldClass) {
+            // @todo
+        },
+
+
+        /**
+        * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
+        */
+        getRawModulesFromDefinition: function(cfg) {
+
+            var type = cfg.type || 'text',
+            module = YUI_config.groups.wegas.modulesByType[type],
+            modules = [];
+
+            if (module) {
+                modules.push(module);
+            }
+
+            if(cfg.children) {                                                  // Get definitions from children (for Y.WidgetParents)
+                Y.Array.each(cfg.children, function(field) {
+                    modules = modules.concat( this.getModulesFromDefinition(field) );
+                }, this);
+            }
+
+            var props = ["left", "right", "center", "top", "bottom"];           // Get definitions from children (for Y.Wegas.Layouts)
+            for (var i = 0; i < props.length; i = i + 1) {
+                if (cfg[props[i]]) {
+                    modules = modules.concat(this.getModulesFromDefinition(cfg[props[i]]));
+                }
+            }
+
+            return modules;
+        },
+        /**
+         * Return unique modules definitions
+         */
+        getModulesFromDefinition: function(cfg) {
+            var modules = Y.Wegas.Widget.getRawModulesFromDefinition(cfg);
+            return Y.Object.keys(Y.Array.hash(modules));
+        },
+        /**
+         * Load the modules from an Wegas widget definition
+         */
+        use: function(cfg, cb) {
+            var modules = Y.Wegas.Widget.getModulesFromDefinition(cfg);
+            modules.push(cb);
+            Y.use.apply( Y, modules);
         }
+    });
 
-        if (Lang.isFunction(Fn)) {
-            child = new Fn(config);
-        } else {
-            Y.log("Could not create a child widget because its constructor is either undefined or invalid(" + type + ").", 'error', 'Wegas.Widget');
-        }
-
-        return child;
-    };
-
-    Widget.prototype = {
-    /*   _overlay: null,
+    Y.mix(Widget.prototype, {
+        /*   _overlay: null,
 
             hideReloadOverlay: function(){
                     this._overlay.hide();
@@ -55,7 +121,7 @@ YUI.add('wegas-widget', function (Y) {
                     this._overlay.one('div').setStyle('height', bb.getComputedStyle('height'));
                     this._overlay.show();
             }*/
-    };
+        });
 
     Y.namespace('Wegas').Widget = Widget;
 

@@ -19,34 +19,31 @@ YUI.add('wegas-datatable', function(Y) {
 	renderUI: function () {
 	    var cb = this.get(CONTENTBOX);
 
-	    this._table = new Y.DataTable.Base({				// Instantiate the data table
-		columnset: this.get('columnset'),
-		plugins: [ Y.Plugin.DataTableSort ]
+	    this._table = new Y.DataTable({				// Instantiate the data table
+		columns: this.get('columnset')
 	    });
 	    this._table.plug(Y.Plugin.DataTableDataSource, {
-		datasource: this._dataSource,
-		initialRequest: "/"
+		datasource: this._dataSource
+		//initialRequest: "/"
 	    });
 	    this._table.render(cb);
 	},
 	bindUI: function() {
 	    var that = this;
-	    this._dataSource.after("response", function(e) {			// Listen for datasource updates
-		this._table.set('recordset', new Y.Recordset({
-		    records:e.data
-		}));
+	    this._dataSource.after("response", function (e) {			// Listen for datasource updates
+		this._table.set('recordset', e.data);
 	    }, this);
 
 	    Y.delegate('click', function(e) {					// Listen for click events on the table
 		var target = e.currentTarget,
-		recordSet = this._table.get('recordset'),
-		record = recordSet.getRecord(target.ancestor('tr').get('id'));
+		record = this._table.getRecord(target.ancestor('tr').get('id'));
+
 		//cellIndex = Y.Node.getDOMNode(target).cellIndex,
 		//columnSet = this.get('columnset');
 		//col = columnSet._conf.data.value.definitions[cellIndex],
-		//name= recordSet.getRecord(target.ancestor('tr').get('id')).getValue('name');
+		//name= recordSet.get(target.ancestor('tr').get('id')).getValue('name');
 
-		this._dataSource.rest.getById(record.getValue('id'));
+		this._dataSource.rest.getById(record.get('id'));
 
 		this._dataSource.once('response', function(e) {
 		    Y.Wegas.editor.edit(e.response.results[0], function(cfg) {

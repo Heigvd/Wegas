@@ -136,16 +136,14 @@ YUI.add('wegas-editor', function(Y) {
             formFields = {
                 type: "group",
                 fields: formFields,
-                parentEl: node,
-                onSubmit: function () {
-                    return false;
-                }
+                parentEl: node
             };
 
             this.currentData = data;
 
-            Y.inputEx.use(formFields, Y.bind(function(fields, data) {
-                this._form = Y.inputEx(fields, this.currentData);
+            Y.inputEx.use(formFields, Y.bind(function(fields) {
+                this._form = Y.inputEx(fields);
+                this._form.setValue(this.currentData);
             }, this, formFields));
         },
         showFormMsg: function (level, msg) {													// Form msgs logic
