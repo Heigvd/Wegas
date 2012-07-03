@@ -163,6 +163,11 @@ YUI().use(function (Y) {
                         requires: ['datatable', 'datatable-sort' ],
                         ix_provides: 'DataTable'
                     },
+                    'wegas-menu': {
+                        path:'wegas-editor/js/wegas-menu-min.js',
+                        requires:['button'],
+                        ix_provides: 'WegasMenu'
+                    },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
                         requires: [ 'ace-javascript', 'button' ],
@@ -170,8 +175,13 @@ YUI().use(function (Y) {
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer.js',
-                        requires: ['treeview', 'uploader-html5'],
+                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar'],
                         ix_provides: "FileExplorer"
+                    },
+                    'wegas-progressbar': {
+                        path: 'wegas-editor/js/wegas-progressbar-min.js',
+                        requires: ['widget'],
+                        ix_provides: 'ProgressBar'
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer.js',
