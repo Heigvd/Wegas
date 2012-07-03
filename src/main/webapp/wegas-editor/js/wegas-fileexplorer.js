@@ -66,6 +66,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 label: "/",
                 rightWidget: new Y.Wegas.WegasMenu({
                     items: [{
+                            label:"refresh",
+                            imgSrc:""
+                        },{
                         label:"add dir",
                         imgSrc:""
                     },{
@@ -183,10 +186,13 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     this.uploader.hide();
                     this.fileUploader.addFile(file)
                     break;
-                    
+
                     break;
                 case 'add file':
                     this.addFile(node, true);
+                    break;
+                case 'refresh':
+                    this.refresh(node);
                     break;
                 case 'add dir':
                     name = prompt("Directory name:");
@@ -230,6 +236,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
 
         onListRequestSuccess: function (callback, e) {
             var i;
+            if(this.editNode){
+                this.editNode.set("rightWidget", null);
+            }
             e.cfg.node.destroyChildren();
             for (i = 0; i < e.response.results.length; i += 1) {
                 e.cfg.node.add(this.createNode(e.response.results[i]));
@@ -250,6 +259,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     label: data.name,
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
+                            label:"refresh",
+                            imgSrc:""
+                        },{
                             label:"add dir",
                             imgSrc:""
                         },{
@@ -291,8 +303,11 @@ YUI.add('wegas-fileexplorer', function (Y) {
             return childNode;
         },
 
-        removeNode: function(event){
+        removeNode: function (event) {
             event.cfg.node.destroy();
+        },
+        refresh: function (node) {
+            node.expand();
         },
 
         addFile: function (event, refresh) {
