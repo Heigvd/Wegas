@@ -10,13 +10,14 @@
 package com.wegas.leadergame.persistence;
 
 import com.wegas.core.persistence.variable.statemachine.Transition;
+import javax.persistence.Entity;
 import javax.persistence.Lob;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-//@Entity
+@Entity
 public class DialogueTransition extends Transition {
     @Lob
     private String content;

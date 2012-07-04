@@ -42,8 +42,8 @@ public class State implements Serializable {
     private String label;
     @Embedded
     private Script onEnterEvent;
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Embedded
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "transition_id", referencedColumnName = "state_id")
     private List<Transition> transitions = new ArrayList<>();
 
     public State() {

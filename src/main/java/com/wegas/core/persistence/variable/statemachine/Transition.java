@@ -22,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@Embeddable
+@Entity
 @Access(AccessType.FIELD)
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -32,17 +32,28 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 })
 public class Transition implements Serializable {
 
+    @Id
+    @GeneratedValue
+    private Long id;
     @Embedded
     private Script triggerCondition;
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name="content", column=@Column(name="onTransition_content")),
-        @AttributeOverride(name="lang", column=@Column(name="onTransition_language"))
+        @AttributeOverride(name = "content",
+        column =
+        @Column(name = "onTransition_content")),
+        @AttributeOverride(name = "lang",
+        column =
+        @Column(name = "onTransition_language"))
     })
     private Script preStateImpact;
     private Long nextStateId;
 
     public Transition() {
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getNextStateId() {
