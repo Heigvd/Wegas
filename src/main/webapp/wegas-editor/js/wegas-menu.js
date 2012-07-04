@@ -74,7 +74,7 @@ YUI.add('wegas-menu', function (Y) {
                     return valid;
                 }
             },
-            title: {
+            mainItem: {
                 value: null,
                 validator: Y.Lang.isString
             },
