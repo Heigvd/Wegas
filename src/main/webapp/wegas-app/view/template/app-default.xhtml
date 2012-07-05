@@ -511,6 +511,8 @@
                                     { name: '@class', value:'ResourceInstance', type: 'hidden'},
                                     { name: 'id', type: 'hidden'},
                                     { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                    { name: "moral", label: "Moral", required: true  },
+                                    { name: "confidence", label: "Confiance", required: true},
                                     { name: "properties", "type": "object", label: "Default properties" },
                                     { name: "skillset", "type": "object", label: "Default skills" }
                                 ]}
@@ -519,6 +521,8 @@
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'ResourceInstance'},
                             { name: 'active', label:'Active', type: 'boolean'},
+                            { name: "moral", label: "Moral", required: true },
+                            { name: "confidence", label: "Confiance", required: true },
                             { name: "properties", "type": "object", label: "Properties" },
                             { name: "skillset", "type": "object", label: "Skills" }
                         ],

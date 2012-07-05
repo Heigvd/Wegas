@@ -221,7 +221,8 @@ YUI().use(function (Y) {
                         path: 'wegas-leaderway/js/wegas-leaderway-score.js'
                     },
                     'wegas-leaderway-dialogue': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js'
+                        path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
+                        /*!!!*/requires:['charts', 'charts-legend']/*!!!*/
                     },
                     
                     /** MMO **/

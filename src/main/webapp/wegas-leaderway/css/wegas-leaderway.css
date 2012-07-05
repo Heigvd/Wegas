@@ -532,11 +532,22 @@ body{
 
 /*----------------------------------Dialogue----------------------------------*/
 .wegas-dialogue .leaderway-dialogue .pictures{
-    min-height: 300px;
+    min-height: 365px;
+}
+
+.wegas-dialogue .leaderway-dialogue .chart{
+    float:right;
+    margin-right:25px;
+    margin-top:-325px;
+}
+
+.wegas-dialogue .leaderway-dialogue .chart .yui3-categoryaxis{
+    display:none;
 }
 
 .wegas-dialogue .leaderway-dialogue .dialogue{
     min-height: 200px;
+    margin-top: 0px;
     background-color: #DCE5EF;
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/dialogue_background.png");
     background-repeat: repeat-x;
@@ -547,8 +558,8 @@ body{
 .wegas-dialogue .leaderway-dialogue .speaker-name{
     height: 50px;
     width:150px;
-    margin: 0 0 -20px 50px;
-    padding-top: 10px;
+    margin: -65px 0 -20px 50px;
+    padding-top: 15px;
     background-color: #DCE5EF;
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/dialogue_background.png");
     background-repeat: repeat-x;

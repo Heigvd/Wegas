@@ -93,11 +93,11 @@
             "description":"Test de description.",
             "defaultVariableInstance":{
                 "@class":"ResourceInstance",
+                "moral":80,
+                "confidence":50,
                 "properties":{
                     "surname":"Fernand",
                     "salary":1200,
-                    "moral":80,
-                    "confidence":50,
                     "leadershipLevel":2,
                     "lastWorkQuality":70,
                     "wish":"",
@@ -122,11 +122,11 @@
             "description":"sans description",
             "defaultVariableInstance":{
                 "@class":"ResourceInstance",
+                "moral":95,
+                "confidence":40,
                 "properties":{
                     "surname":"Hercule",
                     "salary":1500,
-                    "moral":95,
-                    "confidence":40,
                     "leadershipLevel":1,
                     "lastWorkQuality":75,
                     "wish":"Développement logiciel",
@@ -154,11 +154,11 @@
             "description":"Description du personnage",
             "defaultVariableInstance":{
                 "@class":"ResourceInstance",
+                "moral":60,
+                "confidence":70,
                 "properties":{
                     "surname":"Laurentin",
                     "salary":1300,
-                    "moral":60,
-                    "confidence":70,
                     "leadershipLevel":1,
                     "lastWorkQuality":60,
                     "wish":"",

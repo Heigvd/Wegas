@@ -40,8 +40,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 Y.one('.leaderway-folder .salary-value').insert(currentMemberInstance.properties.salary);   
             }            
             Y.one('.leaderway-folder .picture').insert('<img src="http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png" alt="face" width=100 height="100" />');
-            Y.one('.leaderway-folder .moral').insert(this.createGauge('Moral', parseInt(currentMemberInstance.properties.moral)));
-            Y.one('.leaderway-folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentMemberInstance.properties.confidence)));
+            Y.one('.leaderway-folder .moral').insert(this.createGauge('Moral', parseInt(currentMemberInstance.moral)));
+            Y.one('.leaderway-folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentMemberInstance.confidence)));
             this.addLevelOfLeadershipInformations(currentMemberInstance);
             Y.one('.leaderway-folder .occupation-value').insert(this.getOccupation(currentMemberInstance));
             for (var key in currentMemberInstance.skillset){
