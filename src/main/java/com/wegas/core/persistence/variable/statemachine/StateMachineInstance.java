@@ -37,7 +37,11 @@ public class StateMachineInstance extends VariableInstance implements Serializab
 
     @Column(name = "currentstate_id")
     private Long currentStateId;
-
+    @ManyToMany(cascade = CascadeType.REFRESH, targetEntity = Transition.class)
+    @JoinTable(name = "hiddenTransition", joinColumns =
+    @JoinColumn(name = "FSMinstance_id"), inverseJoinColumns =
+    @JoinColumn(name = "transition_id"))
+    private List<Transition> hiddenTransitions = new ArrayList<>();
     @ElementCollection
     @CollectionTable(name = "transitionHistory")
     @Column(name = "transitionId")
@@ -63,6 +67,14 @@ public class StateMachineInstance extends VariableInstance implements Serializab
      */
     public void setCurrentStateId(Long currentStateId) {
         this.currentStateId = currentStateId;
+    }
+
+    public List<Transition> getHiddenTransitions() {
+        return hiddenTransitions;
+    }
+
+    public void setHiddenTransitions(List<Transition> hiddenTransitions) {
+        this.hiddenTransitions = hiddenTransitions;
     }
 
     public List<Long> getTransitionHistory() {
