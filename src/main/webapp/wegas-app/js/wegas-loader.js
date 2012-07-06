@@ -40,6 +40,10 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/wegas-entity-min.js',
                         requires: ['node']
                     },
+                    'statemachine-entities': {
+                        path: 'wegas-editor/js/statemachine-entities-min.js',
+                        requires: ['wegas-entity']
+                    },
 
                     /** Widgets **/
                     'wegas-widget': {
@@ -187,7 +191,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer.js',
-                        requires: ['wegas-statemachineviewercss', 'jsplumb-yui', 'jsplumb-svg', 'jsplumb-defaults', 'jsplumb-statemachine', 'button'],
+                        requires: ['wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'statemachine-entities', 'selector-css3'],
                         ix_provides: 'StateMachineViewer'
                     },
                     'wegas-statemachineviewercss': {
@@ -269,7 +273,7 @@ YUI().use(function (Y) {
                 modules: {
                     'jsplumb': {
                         path: 'jsPlumb-1.3.10-RC1.js',
-                        requires: ['jsplumb-utils']
+                        requires: ['jsplumb-utils', 'dd']
                     },
                     'jsplumb-utils': {
                         path: 'jsPlumb-util-1.3.10-RC1.js',
@@ -290,6 +294,9 @@ YUI().use(function (Y) {
                     'jsplumb-yui': {
                         path: 'yui.jsPlumb-1.3.10-RC1.js',
                         requires: ['jsplumb']
+                    },
+                    'jsplumb-yui-all': {
+                        path:'yui.jsPlumb-1.3.10-all.js'
                     },
                     'jsbezier': {
                         path: 'jsBezier-0.3-min.js'
