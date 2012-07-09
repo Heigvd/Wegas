@@ -9,7 +9,9 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.FSMInstance = function (){
         Y.Wegas.persistence.FSMInstance.superclass.constructor.apply(this, arguments);
-        this.currentStateId = 1;
+        Y.mix(this, {
+            currentStateId:null
+        });
     }
     Y.extend(Y.Wegas.persistence.FSMInstance, Y.Wegas.persistence.VariableInstance, {
         "@class":"FSMInstance"
@@ -20,6 +22,9 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.FSMDescriptor = function (){
         Y.Wegas.persistence.FSMDescriptor.superclass.constructor.apply(this, arguments);
+        Y.mix(this, {
+            states:{}
+        });
     }
     Y.extend(Y.Wegas.persistence.FSMDescriptor, Y.Wegas.persistence.VariableDescriptor, {
         "@class":"FSMDescriptor",
@@ -27,10 +32,10 @@ Y.add("statemachine-entities", function(Y){
             return this.states[this.getInstance().currentStateId];
         },
         getInitialStateId: function(){
-            return this.defaultVariableInstance.currentStateId;
+            return this.getInstance().currentStateId;
         },
         setInitialStateId: function(initialStateId){
-            this.defaultVariableInstance.currentStateId = initialStateId;
+            this.getInstance().currentStateId = initialStateId;
         }
     });
 
@@ -39,6 +44,11 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.State = function (){
         Y.Wegas.persistence.State.superclass.constructor.apply(this, arguments);
+        Y.mix(this, {
+            onEnterEvent:null,
+            label:null,
+            transitions:[]
+        });
     }
     Y.extend(Y.Wegas.persistence.State, Y.Wegas.persistence.Entity,{
         "@class": "State"
@@ -49,6 +59,11 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.Transition = function (){
         Y.Wegas.persistence.Transition.superclass.constructor.apply(this, arguments);
+        Y.mix(this,{
+            triggerCondition:null,
+            preStateImpact:null,
+            nextStateId:null
+        });
     }
     Y.extend(Y.Wegas.persistence.Transition, Y.Wegas.persistence.Entity, {
         "@class": "Transition"
@@ -74,7 +89,6 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.TriggerInstance = function (){
         Y.Wegas.persistence.TriggerInstance.superclass.constructor.apply(this, arguments);
-        this.currentStateId = 1;
     }
     Y.extend(Y.Wegas.persistence.TriggerInstance, Y.Wegas.persistence.FSMInstance, {
         "@class": "TriggerInstance"
@@ -84,22 +98,15 @@ Y.add("statemachine-entities", function(Y){
     /******** DIALOGUE ENTITY *********/
     /**********************************/
 
-    /*
+    /**
      * DialogueDescriptor Entity
+     * @class DialogueDescriptor
      */
     Y.Wegas.persistence.DialogueDescriptor = function (){
         Y.Wegas.persistence.DialogueDescriptor.superclass.constructor.apply(this, arguments);
     }
     Y.extend(Y.Wegas.persistence.DialogueDescriptor, Y.Wegas.persistence.FSMDescriptor, {
-        "@class": "DialogueDescriptor",
-        getCurrentText: function () {
-            var state = this.getCurrentState();
-            if(state.text){
-                return state.text
-            }else {
-                return false;
-            }
-        }
+        "@class": "DialogueDescriptor"
     });
 
     /*
@@ -107,6 +114,9 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.DialogueTransition = function (){
         Y.Wegas.persistence.DialogueTransition.superclass.constructor.apply(this, arguments);
+        Y.mix(this, {
+            actionText:null
+        });
     }
     Y.extend(Y.Wegas.persistence.DialogueTransition, Y.Wegas.persistence.Transition, {
         "@class": "DialogueTransition"
@@ -117,6 +127,9 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.DialogueState = function (){
         Y.Wegas.persistence.DialogueTransition.superclass.constructor.apply(this, arguments);
+        Y.mix(this, {
+            text:null
+        });
     }
     Y.extend(Y.Wegas.persistence.DialogueState, Y.Wegas.persistence.State, {
         "@class": "DialogueState",
@@ -129,6 +142,27 @@ Y.add("statemachine-entities", function(Y){
                 }
             }
             return availableActions;
+        },
+        /**
+         * Get an array of texts from the state's text, split by a token
+         *
+         * @method getTexts
+         * @param {String} token
+         */
+        getTexts: function ( token ) {
+            return this.text.split(token);
+        },
+
+        /**
+         * Set the text with an array and a token
+         *
+         * @method setText
+         * @param {Array} Strings to join
+         * @param {String} Token to join the array
+         *
+         */
+        setText: function (a, token){
+            this.text = a.join(token);
         }
     });
 });
