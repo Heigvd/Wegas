@@ -75,6 +75,11 @@ YUI.add('wegas-entity', function (Y) {
     */
     Y.Wegas.persistence.VariableDescriptor = function() {
         Y.Wegas.persistence.VariableDescriptor.superclass.constructor.apply(this, arguments);
+        Y.mix(this,{
+            id:null,
+            name:null,
+            defaultVariableInstance:null
+        });
     }
     Y.extend(Y.Wegas.persistence.VariableDescriptor, Y.Wegas.persistence.Entity, {
         getInstance: function () {
@@ -90,7 +95,7 @@ YUI.add('wegas-entity', function (Y) {
             return null;
         }
     });
-    
+
     /**
     * VariableInstance mapper
     */
