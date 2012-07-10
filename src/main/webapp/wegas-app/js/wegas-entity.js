@@ -78,7 +78,8 @@ YUI.add('wegas-entity', function (Y) {
         Y.mix(this,{
             id:null,
             name:null,
-            defaultVariableInstance:null
+            defaultVariableInstance:null,
+            scope:null
         });
     }
     Y.extend(Y.Wegas.persistence.VariableDescriptor, Y.Wegas.persistence.Entity, {
@@ -103,4 +104,26 @@ YUI.add('wegas-entity', function (Y) {
         Y.Wegas.persistence.VariableInstance.superclass.constructor.apply(this, arguments);
     }
     Y.extend(Y.Wegas.persistence.VariableInstance, Y.Wegas.persistence.Entity);
+
+    /**
+     * Script mapper
+     */
+    Y.Wegas.persistence.Script = function() {
+        Y.Wegas.persistence.Script.superclass.constructor.apply(this, arguments);
+
+        Y.mix(this, {
+            content:null,
+            language: "JavaScript"
+        });
+    }
+    Y.extend(Y.Wegas.persistence.Script, Y.Wegas.persistence.Entity, {
+        "@class": "Script",
+        isValid: function (){
+        //TODO : FX a greffer :)
+        },
+        isEmpty: function () {
+            return (this.content == null || this.content == "");
+        }
+    });
+
 });
