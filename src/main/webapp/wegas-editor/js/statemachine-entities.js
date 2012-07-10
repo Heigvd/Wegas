@@ -100,7 +100,6 @@ Y.add("statemachine-entities", function(Y){
 
     /**
      * DialogueDescriptor Entity
-     * @class DialogueDescriptor
      */
     Y.Wegas.persistence.DialogueDescriptor = function (){
         Y.Wegas.persistence.DialogueDescriptor.superclass.constructor.apply(this, arguments);
@@ -109,7 +108,7 @@ Y.add("statemachine-entities", function(Y){
         "@class": "DialogueDescriptor"
     });
 
-    /*
+    /**
      * DialogueTransition Entity
      */
     Y.Wegas.persistence.DialogueTransition = function (){
@@ -122,11 +121,11 @@ Y.add("statemachine-entities", function(Y){
         "@class": "DialogueTransition"
     });
 
-    /*
+    /**
      * DialogueState Entity
      */
     Y.Wegas.persistence.DialogueState = function (){
-        Y.Wegas.persistence.DialogueTransition.superclass.constructor.apply(this, arguments);
+        Y.Wegas.persistence.DialogueState.superclass.constructor.apply(this, arguments);
         Y.mix(this, {
             text:null
         });
@@ -143,11 +142,10 @@ Y.add("statemachine-entities", function(Y){
             }
             return availableActions;
         },
+
         /**
          * Get an array of texts from the state's text, split by a token
-         *
-         * @method getTexts
-         * @param {String} token
+         * @param {String} The token to split by
          */
         getTexts: function ( token ) {
             return this.text.split(token);
@@ -156,10 +154,8 @@ Y.add("statemachine-entities", function(Y){
         /**
          * Set the text with an array and a token
          *
-         * @method setText
          * @param {Array} Strings to join
          * @param {String} Token to join the array
-         *
          */
         setText: function (a, token){
             this.text = a.join(token);
