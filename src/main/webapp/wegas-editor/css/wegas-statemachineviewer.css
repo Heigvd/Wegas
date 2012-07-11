@@ -1,5 +1,6 @@
 .yui3-wegas-statemachineviewer{
-    height: 600px;
+    height: 100%;
+    width: 100%
 }
 .yui3-wegas-statemachineviewer-draw{
     border:2px solid lightgray;
