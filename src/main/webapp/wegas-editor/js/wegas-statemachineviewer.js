@@ -22,6 +22,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
     };
 
     StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.WidgetParent], {
+        //TODO : zoom on simple scroll (ie without altKey), move panel with mouse (overflow hidden)
+        //Zoom and Endpoint pos, sould mult by zoom
+        //DRAG and Zoom, same problem
         CONTENT_TEMPLATE: null,
         panel: null,
         dialog: null,
@@ -67,26 +70,22 @@ YUI.add('wegas-statemachineviewer', function (Y) {
 
         bindUI: function() {
             this.events.createNode = this.get(CONTENT_BOX).on("dblclick", function(e){
-                e.stopImmediatePropagation();
+                e.halt(true);
+                //TODO : something with Zoom
                 if(e.target == this.get(CONTENT_BOX)){
                     this.addState(e.clientX - this.get(CONTENT_BOX).getX() - 30, e.clientY - this.get(CONTENT_BOX).getY() - 30, this.stateId);
                 }
             }, this);
             this.events.deleteTransition = jp.bind("beforeDetach", function(e){
                 var transitions;
-                transitions = e.getParameters().transition.get("parent").get("entity").transitions;
+                transitions = e.getParameter("transition").source.get("entity").transitions;
                 for(var i in transitions){
                     if(transitions[i] === e.getParameters().transition.get("entity") ){
                         transitions.splice(i,1);
-                        e.getParameters().transition.get("parent").set("entity", e.getParameters().transition.get("parent").get("entity"));
                     }
                 }
-
-
-                e.getParameters().transition.destroy();
-
+                e.getParameter("transition").destroy();
                 return true;
-
             });
             this.events.transitionDeleted = jp.bind("jsPlumbConnectionDetached", function(e){
                 //Clean panel
@@ -106,10 +105,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     this.zoom(e);
                 }
             }, ".yui3-wegas-statemachineviewer-content", this);
-        //            this.on("wegas-state:entityChange", function(e){
-        //                console.log("New entity :",e.target.get("sid"), e.newVal);
-        //                this.get("entity").states[e.target.get("sid")] = e.newVal;
-        //            });
+            this.events.stateDestroy = this.on("wegas-state:userRemove", function(e){
+                delete this.get("entity").states[e.target.get("sid").toString()];
+                delete this.nodes[e.target.get("sid").toString()];
+            });
         },
         destructor: function (){
             var i;
@@ -160,7 +159,14 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             if(!config.entity){
                 delete config.entity;
             }
-            state = this.add(new Y.Wegas.State(config)).item(0);
+            state = new Y.Wegas.State(config);
+            try{
+                this.add(state);
+            }catch(e){
+                //Really ... should find the problem, this currently goes quite well
+                console.error(e.message,e.stack);
+                this.add(state);
+            }
             this.nodes[id.toString()] = state;
             this.get("entity").states[id.toString()] = state.get("entity");
             this.stateId = Math.max(this.stateId, parseInt(id) + 1);
@@ -189,6 +195,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
     State = Y.Base.create('wegas-state', Y.Widget, [Y.WidgetChild, Y.WidgetParent], {
         textNode:null,
         addScriptButton:null,
+        transitionsTarget:[],                                                   //store incomming transitions
         events:{},
         cssClass: {
             state: 'statemachine-state',
@@ -197,11 +204,15 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         CONTENT_TEMPLATE: null,
         //TODO : use localStorage for positions !
         initializer: function () {
+            this.transitionsTarget = [];
             this.get(BOUNDING_BOX).addClass(this.cssClass.state);
             if(this.get("entity") instanceof Y.Wegas.persistence.DialogueState){
                 this.textNode = new Y.Node.create("<textarea placeholder=\"Text (Response)\"/>");
                 this.textNode.addClass(this.getClassName("text"));
             }
+            this.publish("userRemove",{
+                emitFacade:true
+            });
         },
 
         renderUI: function () {
@@ -215,7 +226,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 }));
             } else {
                 this.addScriptButton = this.add(new Y.Button({
-                    label: "onEnterEvent"
+                    label: "{ }"
                 })).item(0);
             }
             if(this.get("x")){
@@ -225,6 +236,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 this.get(BOUNDING_BOX).getDOMNode().style.top = this.get("y") + "px";
             }
             this.get(CONTENT_BOX).append("<div class='transition-start'/>");
+            this.get(CONTENT_BOX).append("<div class='state-delete'/>");
 
         },
         syncUI: function(){
@@ -232,6 +244,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.set("initial", this.get("initial"));
         },
         bindUI: function (){
+            this.events.deleteState = this.get(CONTENT_BOX).delegate("click", function (e){
+                this.deleteSelf();
+            },".state-delete", this);
             jp.draggable(this.get(BOUNDING_BOX));
             jp.makeTarget(this.get(BOUNDING_BOX), {
                 dropOptions:{
@@ -268,6 +283,12 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     this.addScriptButton.destroy();
                 },this);
             }
+            this.events.transitionDelete= this.on("wegas-transition:destroy", function(e){
+                var index = this.transitionsTarget.indexOf(e.target);
+                if( index > -1){
+                    this.transitionsTarget.splice(index, 1);
+                }
+            })
 
         },
         destructor: function(){
@@ -284,6 +305,15 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 entity:tr
             })).item(0).connect();
             this.get("entity").transitions.push(tr);
+        },
+        deleteSelf: function (){
+            var i;
+
+            for(i in this.transitionsTarget){
+                this.transitionsTarget[i].disconnect();
+            }
+            this.fire("userRemove");
+            this.destroy();
         },
         makeAllOutgoingTransitions: function (){
             var i, transitions = this.get("entity").transitions;
@@ -444,6 +474,8 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     this.get("entity").actionText = val
                 }, this);
             }
+
+
             this.events.scriptUpdate = this.on("wegas-script:scriptContentUpdated", function (e){
                 this.connector.setLabel(e.content);
             //TODO : need some more control, waiting to have full script transition management
@@ -461,7 +493,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.get(BOUNDING_BOX).appendTo(this.get("parent").get("parent").get(CONTENT_BOX));
             var nextStateId = this.get("entity").nextStateId;
             this.source = this.get('parent');
-            this.target = Y.Widget.getByNode(this.source.get("parent").get(CONTENT_BOX).one("[sid=" + nextStateId + "]"));
+            this.target = this.get("parent").get("parent").nodes[nextStateId.toString()];
             try{
                 this.connector = jp.connect({
                     source:this.source.get(BOUNDING_BOX),
@@ -472,12 +504,20 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                         transition:this
                     }
                 });
-            //this could be if we listen to click events on complete connector
+                this.addTarget(this.target);
+                this.target.transitionsTarget.push(this);
+            //this could be if we listen to click events on complete connector(ie arrow + label)
             // this.connector.canvas.setAttribute("cursor", "pointer");
             }catch(e){
                 console.error("Connection failed", e);
             }
             this.createLabel();
+        },
+        //
+        disconnect :function(e){
+            jp.detach(this.connector, {
+                fireEvent:true
+            });
         },
         createLabel: function () {
             if(this.get("entity") instanceof Y.Wegas.persistence.DialogueTransition){
