@@ -41,6 +41,16 @@ YUI.add('wegas-button', function (Y) {
                     targetPageLoader.set("pageId", this.get("subpageId"));
                 }
             }, this);
+            if(this.get('tooltips')){
+                this.get(CONTENTBOX).on('mouseenter', function () {
+                    this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
+                        + this.get('tooltips')
+                        +'</span>', 'before');
+                },this);
+                this.get(CONTENTBOX).on('mouseleave', function () {
+                    Y.one('.wegas-button-tooltips').remove();
+                },this);
+            }
         },
         syncUI: function () {                                                   // Update the button display
             switch (this.get('view')) {
@@ -59,7 +69,8 @@ YUI.add('wegas-button', function (Y) {
             label: {},
             subpageId: {},
             targetPageLoaderId: {},
-            view: {}
+            view: {},
+            tooltips:{}
         }
     });
 

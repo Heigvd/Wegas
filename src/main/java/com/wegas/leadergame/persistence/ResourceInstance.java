@@ -11,12 +11,18 @@ package com.wegas.leadergame.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.PreUpdate;
+import javax.persistence.Transient;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
@@ -24,6 +30,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@Access(AccessType.FIELD)
 public class ResourceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -41,12 +48,12 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, Long> skillset;
+    private Map<String, Long> skillset = new HashMap<>();
     /**
      *
      */
     @ElementCollection
-    private Map<String, String> properties;
+    private Map<String, String> properties = new HashMap<>();
     /**
      *
      */
@@ -55,6 +62,24 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     private String undesiredSkillset;
+    /**
+     *
+     */
+    private int moral;
+    /**
+     *
+     */
+    @ElementCollection
+    private List<Integer> moralHistory = new ArrayList<>();
+    /**
+     *
+     */
+    private Integer confidence;
+    /**
+     *
+     */
+    @ElementCollection
+    private List<Integer> confidenceHistory = new ArrayList<>();;
 
     /**
      *
@@ -64,7 +89,6 @@ public class ResourceInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         ResourceInstance other = (ResourceInstance) a;
         this.setActive(other.getActive());
-
         if (other.getAssignments() != null) {
             this.setAssignments(other.getAssignments());
         }
@@ -74,6 +98,8 @@ public class ResourceInstance extends VariableInstance {
         this.properties.putAll(other.getProperties());
         this.setDesiredSkill(other.getDesiredSkill());
         this.setUndesiredSkillset(other.getUndesiredSkillset());
+        this.setMoral(other.getMoral());
+        this.setConfidence(other.getConfidence());
     }
 
     /**
@@ -112,7 +138,7 @@ public class ResourceInstance extends VariableInstance {
      * @return the active
      */
     public Boolean getActive() {
-        return active;
+        return this.active;
     }
 
     /**
@@ -126,7 +152,7 @@ public class ResourceInstance extends VariableInstance {
      * @return the skillset
      */
     public Map<String, Long> getSkillset() {
-        return skillset;
+        return this.skillset;
     }
 
     /**
@@ -141,7 +167,7 @@ public class ResourceInstance extends VariableInstance {
      * @param key
      * @param val
      */
-    public void setSkill(String key, Long val) {
+    public void setSkillset(String key, Long val) {
         this.skillset.put(key, val);
     }
 
@@ -150,7 +176,7 @@ public class ResourceInstance extends VariableInstance {
      * @param key
      * @return
      */
-    public Long getSkill(String key) {
+    public Long getSkillset(String key) {
         return this.skillset.get(key);
     }
 
@@ -158,7 +184,7 @@ public class ResourceInstance extends VariableInstance {
      * @return the properties
      */
     public Map<String, String> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     /**
@@ -212,5 +238,98 @@ public class ResourceInstance extends VariableInstance {
      */
     public void setUndesiredSkillset(String undesiredSkillset) {
         this.undesiredSkillset = undesiredSkillset;
+    }
+    
+    /**
+     * @return the moral
+     */
+    public int getMoral() {
+        return this.moral;
+    }
+
+    /**
+     * Set the confidence's value and add old confidence value in confidenceHistorique.
+     * @param moral the moral to set
+     */
+    public void setMoral(Integer moral) {
+            this.moral = moral;
+            this.moralHistory.add(moral);   
+    }
+    
+    /**
+     * @return the moralHistory
+     */
+    public List<Integer> getMoralHistory() {
+        return this.moralHistory;
+    }
+
+    /**
+     * @param moralHistory the moralHistory to set
+     */
+    public void setMoralHistory(List<Integer> moralHistory) {
+        this.moralHistory = moralHistory;
+    }
+    
+    /**
+     * @param ref a index value corresponding to a value
+     * @return the value corresponding at the 'ref' param in the moralHistory
+     */
+    public int getMoralHistory(Integer ref) {
+        return this.moralHistory.get(ref);
+    }
+
+     /**
+     * @param ref a index value corresponding to a value
+     * @param value the new value
+     */
+    public void setMoralHistory(Integer ref, Integer value) {
+        this.moralHistory.set(ref, value);
+    }
+   
+    
+    /**
+     * @return the confidence
+     */
+    public int getConfidence() {
+        return this.confidence;
+    }
+
+    /**
+     * Set the confidence's value and add confidence value in confidenceHistorique.
+     * @param confidence the confidence to set
+     */
+    public void setConfidence(Integer confidence) {
+            this.confidence = confidence;
+            this.confidenceHistory.add(confidence);
+    }
+    
+    /**
+     * @return the confidenceHistoric
+     */
+    public List<Integer> getConfidenceHistory() {
+        return this.confidenceHistory;
+    }
+
+    /**
+     * @param confidenceHistory the confidenceHistory to set
+     */
+    public void setConfidenceHistory(List<Integer> confidenceHistory) {
+        this.confidenceHistory = confidenceHistory;
+    }
+    
+    /**
+     * @param ref a index value corresponding to a value
+     * @return the value corresponding at the 'ref' param in the confidenceHistory
+     */
+    public int getConfidenceHistory(Integer ref) {
+        return this.confidenceHistory.get(ref);
+    }
+
+     /**
+     * @param ref a index value corresponding to a value
+     * @param value the new value
+     */
+    public void setConfidenceHistory(Integer ref, Integer value) {
+        this.confidenceHistory.set(ref, value);
     }
 }
