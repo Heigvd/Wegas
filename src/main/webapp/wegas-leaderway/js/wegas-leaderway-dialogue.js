@@ -96,15 +96,46 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             return fitSeries;
         },
         
-
-          
+        readStateMachine: function(){
+            var dialogue = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "dialogues"),
+            state, text = new Array();
+            if(dialogue == null){
+                Y.one('.wegas-dialogue .dialogue .talk').insert("Aucun dialogue n'est disponible.");
+                return;
+            }
+            state = dialogue.states[dialogue.getInstance().currentStateId];
+            text = state.text.split(new RegExp("[ ]+", "g"));
+            this.displayText(text);
+        },
+        
+        displayText: function(text){
+            Y.one('.wegas-dialogue .dialogue .talk').insert(text[0]+'&nbsp');
+            text.shift();
+            if(text.length > 0){
+                setTimeout(function(){Y.Wegas.Dialogue.prototype.displayText(text)}, 100);
+            }
+            else{
+                this.displayResponse();
+            }
+        },
+        
+        displayResponse: function(){
+            var i, dialogue = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "dialogues"),
+            state;
+            state = dialogue.states[dialogue.getInstance().currentStateId];
+            Y.one('.wegas-dialogue .dialogue .response').insert('<ul class="responseElement"></ul>');
+            for(i=0 ; i<state.transitions.length; i++){
+                Y.one('.wegas-dialogue .dialogue .response .responseElement').insert('<li>'+state.transitions[i].actionText+'</li>');
+            }
+        },
+        
         /***Lifecycle methode***/
         renderUI: function (){
             this.get(CONTENTBOX).setContent(
                 '<div class="pictures"></div>'
                 +'<div style="width: 250px; height: 200px;" class="chart"></div>'
                 +'<div class="speaker-name">Leader</div>'
-                +'<div class="dialogue"></div>'
+                +'<div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
                 );
         },
           
@@ -117,6 +148,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             var listResourceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
             if(listResourceDescriptor == null) return;
             this.createChart(listResourceDescriptor.items[0]);
+            this.readStateMachine();
         }
         
     }, {

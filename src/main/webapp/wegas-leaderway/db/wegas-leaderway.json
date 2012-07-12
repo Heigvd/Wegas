@@ -4,345 +4,394 @@
     "cssUri": "wegas-leaderway/css/wegas-leaderway.css",
     "widgetsUri": "wegas-leaderway/db/wegas-leaderway-pages.json",
     "games":[{
-        "@class":"Game",
-        "name":"Test-16",
-        "teams":[{
-            "@class": "Team",
-            "name":"Les autres",
-            "players": [ {
-                "@class": "Player",
-                "name": "Jo",
-                "user": {
-                    "@class": "User",
-                    "name": "Jean"
-                }
-            }]
-        }]
-    }],
+            "@class":"Game",
+            "name":"Test-16",
+            "teams":[{
+                    "@class": "Team",
+                    "name":"Les autres",
+                    "players": [ {
+                            "@class": "Player",
+                            "name": "Jo",
+                            "user": {
+                                "@class": "User",
+                                "name": "Jean"
+                            }
+                        }]
+                }]
+        }],
     "childVariableDescriptors": [{
-        "@class": "NumberDescriptor",
-        "name": "budget",
-        "defaultVariableInstance": {
-            "@class": "NumberInstance",
-            "value":"30000"
-        },
-        "scope": {
-            "@class": "TeamScope"
-        }
-    },{
-        "@class": "NumberDescriptor",
-        "name": "actions",
-        "defaultVariableInstance": {
-            "@class": "NumberInstance",
-            "value":"10"
-        },
-        "scope": {
-            "@class": "TeamScope"
-        }
-    },{
-        "@class": "NumberDescriptor",
-        "name": "week",
-        "minValue": 1,
-        "maxValue": 10,
-        "defaultVariableInstance": {
-            "@class": "NumberInstance",
-            "value":"1"
-        },
-        "scope": {
-            "@class": "TeamScope"
-        }
-    },{
-        "@class": "NumberDescriptor",
-        "name": "teamMotivation",
-        "minValue": 0,
-        "maxValue": 100,
-        "defaultVariableInstance": {
-            "@class": "NumberInstance",
-            "value":"67"
-        },
-        "scope": {
-            "@class": "TeamScope"
-        }
-    },{
-        "@class": "NumberDescriptor",
-        "name": "clientsSatisfaction",
-        "minValue": 0,
-        "maxValue": 100,
-        "defaultVariableInstance": {
-            "@class": "NumberInstance",
-            "value":"54"
-        },
-        "scope": {
-            "@class": "TeamScope"
-        }
-    },{
-        "@class": "InboxDescriptor",
-        "name": "inbox",
-        "defaultVariableInstance": {
-            "@class": "InboxInstance"
-        },
-        "scope": {
-            "@class": "PlayerScope"
-        }
-    },{
-        "@class": "ListDescriptor",
-        "name": "resources",
-        "items":[{
-            "@class": "ResourceDescriptor",
-            "name": "Salzmann",
-            "description":"Test de description.",
-            "defaultVariableInstance":{
-                "@class":"ResourceInstance",
-                "moral":80,
-                "confidence":50,
-                "properties":{
-                    "surname":"Fernand",
-                    "salary":1200,
-                    "leadershipLevel":2,
-                    "lastWorkQuality":70,
-                    "wish":"",
-                    "hate":"",
-                    "frankness":85,
-                    "wantToBeLeader":false,
-                    "numberOfWorkWithLeader":0,
-                    "totalExperienceGained":0,
-                    "learningCoefficient":1
-                },
-                "skillset":{
-                    "Design graphique":30,
-                    "Négociation":75
-                }
+            "@class": "NumberDescriptor",
+            "name": "budget",
+            "defaultVariableInstance": {
+                "@class": "NumberInstance",
+                "value":"30000"
             },
             "scope": {
                 "@class": "TeamScope"
             }
         },{
-            "@class": "ResourceDescriptor",
-            "name": "Auguste",
-            "description":"sans description",
-            "defaultVariableInstance":{
-                "@class":"ResourceInstance",
-                "moral":95,
-                "confidence":40,
-                "properties":{
-                    "surname":"Hercule",
-                    "salary":1500,
-                    "leadershipLevel":1,
-                    "lastWorkQuality":75,
-                    "wish":"Développement logiciel",
-                    "hate":"Design graphique",
-                    "frankness":85,
-                    "wantToBeLeader":true,
-                    "numberOfWorkWithLeader":0, 
-                    "totalExperienceGained":0,
-                    "learningCoefficient":1
-                },
-                "skillset":{
-                    "Langages Web":85,
-                    "Développement de base de données":78,
-                    "Modélisation des traitements":86,
-                    "Développement logiciel":80,
-                    "Design graphique":34
-                }
+            "@class": "NumberDescriptor",
+            "name": "actions",
+            "defaultVariableInstance": {
+                "@class": "NumberInstance",
+                "value":"10"
             },
             "scope": {
                 "@class": "TeamScope"
             }
         },{
-            "@class": "ResourceDescriptor",
-            "name": "Boniface",
-            "description":"Description du personnage",
-            "defaultVariableInstance":{
-                "@class":"ResourceInstance",
-                "moral":60,
-                "confidence":70,
-                "properties":{
-                    "surname":"Laurentin",
-                    "salary":1300,
-                    "leadershipLevel":1,
-                    "lastWorkQuality":60,
-                    "wish":"",
-                    "hate":"Négociation",
-                    "frankness":35,
-                    "wantToBeLeader":true,
-                    "numberOfWorkWithLeader":0,
-                    "totalExperienceGained":0,
-                    "learningCoefficient":1
-                },
-                "skillset":{
-                    "Langages Web":67,
-                    "Développement de base de données":44,
-                    "Design graphique":57
-                }
+            "@class": "NumberDescriptor",
+            "name": "week",
+            "minValue": 1,
+            "maxValue": 10,
+            "defaultVariableInstance": {
+                "@class": "NumberInstance",
+                "value":"1"
             },
             "scope": {
                 "@class": "TeamScope"
             }
-        }],
-        "defaultVariableInstance":{
-            "@class": "NumberInstance",
-            "value": 0
+        },{
+            "@class": "NumberDescriptor",
+            "name": "teamMotivation",
+            "minValue": 0,
+            "maxValue": 100,
+            "defaultVariableInstance": {
+                "@class": "NumberInstance",
+                "value":"67"
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "NumberDescriptor",
+            "name": "clientsSatisfaction",
+            "minValue": 0,
+            "maxValue": 100,
+            "defaultVariableInstance": {
+                "@class": "NumberInstance",
+                "value":"54"
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "InboxDescriptor",
+            "name": "inbox",
+            "defaultVariableInstance": {
+                "@class": "InboxInstance"
+            },
+            "scope": {
+                "@class": "PlayerScope"
+            }
+        },{
+            "@class": "ListDescriptor",
+            "name": "resources",
+            "items":[{
+                    "@class": "ResourceDescriptor",
+                    "name": "Salzmann",
+                    "description":"Test de description.",
+                    "defaultVariableInstance":{
+                        "@class":"ResourceInstance",
+                        "moral":80,
+                        "confidence":50,
+                        "properties":{
+                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
+                            "surname":"Fernand",
+                            "salary":1200,
+                            "leadershipLevel":2,
+                            "lastWorkQuality":70,
+                            "wish":"",
+                            "hate":"",
+                            "frankness":85,
+                            "wantToBeLeader":false,
+                            "numberOfWorkWithLeader":0,
+                            "totalExperienceGained":0,
+                            "learningCoefficient":1
+                        },
+                        "skillset":{
+                            "Design graphique":30,
+                            "Négociation":75
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "ResourceDescriptor",
+                    "name": "Auguste",
+                    "description":"sans description",
+                    "defaultVariableInstance":{
+                        "@class":"ResourceInstance",
+                        "moral":95,
+                        "confidence":40,
+                        "properties":{
+                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
+                            "surname":"Hercule",
+                            "salary":1500,
+                            "leadershipLevel":1,
+                            "lastWorkQuality":75,
+                            "wish":"Développement logiciel",
+                            "hate":"Design graphique",
+                            "frankness":85,
+                            "wantToBeLeader":true,
+                            "numberOfWorkWithLeader":0, 
+                            "totalExperienceGained":0,
+                            "learningCoefficient":1
+                        },
+                        "skillset":{
+                            "Langages Web":85,
+                            "Développement de base de données":78,
+                            "Modélisation des traitements":86,
+                            "Développement logiciel":80,
+                            "Design graphique":34
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "ResourceDescriptor",
+                    "name": "Boniface",
+                    "description":"Description du personnage",
+                    "defaultVariableInstance":{
+                        "@class":"ResourceInstance",
+                        "moral":60,
+                        "confidence":70,
+                        "properties":{
+                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
+                            "surname":"Laurentin",
+                            "salary":1300,
+                            "leadershipLevel":1,
+                            "lastWorkQuality":60,
+                            "wish":"",
+                            "hate":"Négociation",
+                            "frankness":35,
+                            "wantToBeLeader":true,
+                            "numberOfWorkWithLeader":0,
+                            "totalExperienceGained":0,
+                            "learningCoefficient":1
+                        },
+                        "skillset":{
+                            "Langages Web":67,
+                            "Développement de base de données":44,
+                            "Design graphique":57
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }],
+            "defaultVariableInstance":{
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "GameModelScope"
+            }
+        },{
+            "@class": "ListDescriptor",
+            "name": "tasks",
+            "items":[{
+                    "@class": "TaskDescriptor",
+                    "name": "Création d'une maquette pour un logiciel.",
+                    "description":"",
+                    "defaultVariableInstance":{
+                        "@class":"TaskInstance",
+                        "duration":1,
+                        "properties":{
+                            "salary":1500,
+                            "bonus":0,
+                            "workQualityMinForBonus":0,
+                            "comment":"",
+                            "clientSatisfactionMinToAppear":0,
+                            "clientSatisfactionMaxToAppear":100,
+                            "appearAtWeek":1,
+                            "disappearAtWeek":2,
+                            "workWithLeader": false
+                        },
+                        "skillset":{
+                            "Design graphique":50
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "TaskDescriptor",
+                    "name": "Création d'un cahier des charges pour un CMS",
+                    "description":"",
+                    "defaultVariableInstance":{
+                        "@class":"TaskInstance",
+                        "duration":1,
+                        "properties":{
+                            "salary":1100,
+                            "bonus":3000,
+                            "workQualityMinForBonus":10,
+                            "comment":"",
+                            "clientSatisfactionMinToAppear":0,
+                            "clientSatisfactionMaxToAppear":60,
+                            "appearAtWeek":2,
+                            "disappearAtWeek":5,
+                            "workWithLeader": false
+                        },
+                        "skillset":{
+                            "Négociation":30
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "TaskDescriptor",
+                    "name": "Migration d'une base de données MySQL vers une base de données PostgreSQL",
+                    "description":"",
+                    "defaultVariableInstance":{
+                        "@class":"TaskInstance",
+                        "duration":3,
+                        "properties":{
+                            "salary":3600,
+                            "bonus":0,
+                            "workQualityMinForBonus":0,
+                            "comment":"",
+                            "clientSatisfactionMinToAppear":40,
+                            "clientSatisfactionMaxToAppear":100,
+                            "appearAtWeek":2,
+                            "disappearAtWeek":4,
+                            "workWithLeader": false
+                        },
+                        "skillset":{
+                            "Dévellopement de base de données":55
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "TaskDescriptor",
+                    "name": "Modélisation des traitement d'un logiciel",
+                    "description":"",
+                    "defaultVariableInstance":{
+                        "@class":"TaskInstance",
+                        "duration":4,
+                        "properties":{
+                            "salary":5700,
+                            "bonus":1000,
+                            "workQualityMinForBonus":80,
+                            "comment":"",
+                            "clientSatisfactionMinToAppear":70,
+                            "clientSatisfactionMaxToAppear":100,
+                            "appearAtWeek":1,
+                            "disappearAtWeek":4,
+                            "workWithLeader": true
+                        },
+                        "skillset":{
+                            "Modelisation des traitements":70
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "TaskDescriptor",
+                    "name": "Création d’une base de données.",
+                    "description":"",
+                    "defaultVariableInstance":{
+                        "@class":"TaskInstance",
+                        "duration":2,
+                        "properties":{
+                            "salary":3000,
+                            "workQualityMinForBonus":80,
+                            "bonus":0,
+                            "comment":"",
+                            "clientSatisfactionMinToAppear":0,
+                            "clientSatisfactionMaxToAppear":100,
+                            "appearAtWeek":1,
+                            "disappearAtWeek":3,
+                            "workWithLeader": true
+                        },
+                        "skillset":{
+                            "Développement de base de données":43
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }],
+            "defaultVariableInstance":{
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "GameModelScope"
+            }
+        },{
+            "@class": "ListDescriptor",
+            "name": "absences",
+            "items":[{
+                    "@class": "TaskDescriptor",
+                    "name": "sickness",
+                    "description":"",
+                    "defaultVariableInstance":{
+                        "@class":"TaskInstance",
+                        "duration":1
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }],
+            "defaultVariableInstance":{
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "GameModelScope"
+            }
         },
-        "scope": {
-            "@class": "GameModelScope"
+        {
+            "@class" : "DialogueDescriptor",
+            "name" : "dialogues",
+            "defaultVariableInstance" : {
+                "@class" : "FSMInstance",
+                "currentStateId" : 1,
+                "hiddenTransitions" : ["Un list avec les ID des transition qui sont cachées, vraiment pas encore fonctionel"],
+                "transitionHistory" : ["READ ONLY (SOON)"],
+            },
+            "scope" : {
+                "@class" : "TeamScope"
+            },
+            "states" : {
+                "1" : {
+                    "@class" : "DialogueState",
+                    "text" : "Le Text qui doit apparaître dans cet état 1",
+                    "transitions" : [{
+                            "@class" : "DialogueTransition",
+                            "actionText" : "Si je fais ça, je vais dans l'état 2",
+                            "nextStateId" : 2,
+                            "triggerCondition" : {
+                                "@class" : "Script",
+                                "content" : "C'est possible d'avoir un script aussi ...",
+                                "language" : "JavaScript"
+                            },
+                            "preStateImpact" : {
+                                "@class" : "Script",
+                                "content" : "Un script exécuté au passage de la transition (n'est pour le moment pas évalué)",
+                                "language" : "JavaScript"
+                            }
+                        }
+                    ]
+                },
+                "2" : {
+                    "@class" : "DialogueState",
+                    "text" : "Le Text2 qui doit apparaître dans cet état 2",
+                    "transitions" : [],
+                    "onEnterEvent" : {
+                        "@class" : "Script",
+                        "content" : "Un script exécuté à l'entrée dans l'état",
+                        "language" : "JavaScript"
+                    }
+                }
+            }
         }
-    },{
-        "@class": "ListDescriptor",
-        "name": "tasks",
-        "items":[{
-            "@class": "TaskDescriptor",
-            "name": "Création d'une maquette pour un logiciel.",
-            "description":"",
-            "defaultVariableInstance":{
-                "@class":"TaskInstance",
-                "duration":1,
-                "properties":{
-                    "salary":1500,
-                    "bonus":0,
-                    "workQualityMinForBonus":0,
-                    "comment":"",
-                    "clientSatisfactionMinToAppear":0,
-                    "clientSatisfactionMaxToAppear":100,
-                    "appearAtWeek":1,
-                    "disappearAtWeek":2,
-                    "workWithLeader": false
-                },
-                "skillset":{
-                    "Design graphique":50
-                }
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        },{
-            "@class": "TaskDescriptor",
-            "name": "Création d'un cahier des charges pour un CMS",
-            "description":"",
-            "defaultVariableInstance":{
-                "@class":"TaskInstance",
-                "duration":1,
-                "properties":{
-                    "salary":1100,
-                    "bonus":3000,
-                    "workQualityMinForBonus":10,
-                    "comment":"",
-                    "clientSatisfactionMinToAppear":0,
-                    "clientSatisfactionMaxToAppear":60,
-                    "appearAtWeek":2,
-                    "disappearAtWeek":5,
-                    "workWithLeader": false
-                },
-                "skillset":{
-                    "Négociation":30
-                }
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        },{
-            "@class": "TaskDescriptor",
-            "name": "Migration d'une base de données MySQL vers une base de données PostgreSQL",
-            "description":"",
-            "defaultVariableInstance":{
-                "@class":"TaskInstance",
-                "duration":3,
-                "properties":{
-                    "salary":3600,
-                    "bonus":0,
-                    "workQualityMinForBonus":0,
-                    "comment":"",
-                    "clientSatisfactionMinToAppear":40,
-                    "clientSatisfactionMaxToAppear":100,
-                    "appearAtWeek":2,
-                    "disappearAtWeek":4,
-                    "workWithLeader": false
-                },
-                "skillset":{
-                    "Dévellopement de base de données":55
-                }
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        },{
-            "@class": "TaskDescriptor",
-            "name": "Modélisation des traitement d'un logiciel",
-            "description":"",
-            "defaultVariableInstance":{
-                "@class":"TaskInstance",
-                "duration":4,
-                "properties":{
-                    "salary":5700,
-                    "bonus":1000,
-                    "workQualityMinForBonus":80,
-                    "comment":"",
-                    "clientSatisfactionMinToAppear":70,
-                    "clientSatisfactionMaxToAppear":100,
-                    "appearAtWeek":1,
-                    "disappearAtWeek":4,
-                    "workWithLeader": true
-                },
-                "skillset":{
-                    "Modelisation des traitements":70
-                }
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        },{
-            "@class": "TaskDescriptor",
-            "name": "Création d’une base de données.",
-            "description":"",
-            "defaultVariableInstance":{
-                "@class":"TaskInstance",
-                "duration":2,
-                "properties":{
-                    "salary":3000,
-                    "workQualityMinForBonus":80,
-                    "bonus":0,
-                    "comment":"",
-                    "clientSatisfactionMinToAppear":0,
-                    "clientSatisfactionMaxToAppear":100,
-                    "appearAtWeek":1,
-                    "disappearAtWeek":3,
-                    "workWithLeader": true
-                },
-                "skillset":{
-                    "Développement de base de données":43
-                }
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }],
-        "defaultVariableInstance":{
-            "@class": "NumberInstance",
-            "value": 0
-        },
-        "scope": {
-            "@class": "GameModelScope"
-        }
-    },{
-        "@class": "ListDescriptor",
-        "name": "absences",
-        "items":[{
-            "@class": "TaskDescriptor",
-            "name": "sickness",
-            "description":"",
-            "defaultVariableInstance":{
-                "@class":"TaskInstance",
-                "duration":1
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }],
-        "defaultVariableInstance":{
-            "@class": "NumberInstance",
-            "value": 0
-        },
-        "scope": {
-            "@class": "GameModelScope"
-        }
-    }]
+    ]
 }
