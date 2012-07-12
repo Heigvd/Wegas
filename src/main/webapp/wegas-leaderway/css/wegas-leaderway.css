@@ -1,0 +1,572 @@
+/* 
+    Document   : wegas-leaderway
+    Created on : 8 juin 2012, 10:07:07
+    Author     : Benjamin
+    Description:
+        Purpose of the stylesheet follows.
+*/
+/*---------------------------------Général------------------------------------*/
+html{
+    background-color:#E4DDCC;
+}
+
+body{
+    width:980px;
+    margin:0 auto 0 auto;
+    border-style: solid;
+    border-width: 0 1px 1px 1px;
+}
+
+.wegas-button-tooltips{
+    font-size: 1em;
+    display:block;
+    position:absolute;
+    padding:2px;
+    background-color:#F3E4D2;
+    border:solid 1px;
+    border-radius: 5px;
+}
+
+/*--------------------------------Indicators----------------------------------*/
+.indicators{
+    background-color:#eed4aa;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/indicators_background.png");
+    background-repeat: repeat-x;
+    width:970px;
+    padding:5px;
+    min-height:70px;
+    clear:both;
+    overflow: auto;
+}
+
+.indicators-fraction{
+    margin-top: 41px;
+}
+
+.indicators-text{
+    margin: 41px 20px 0 0;
+    width:140px;
+    text-align: left;
+}
+
+.indicators-fraction .wegas-variabledisplay-fraction-minSeparator,
+.indicators-fraction .wegas-variabledisplay-fraction-minValue{
+    display:none;
+}
+
+.indicators .wegas-button{
+    margin: 36px 30px 0 5px;
+}
+
+.indicators-gauge{
+    margin:24px 20px 0 0;
+}
+
+.indicators-gauge .wegas-variabledisplay-box-units{
+    display:block;
+    background-color:#93C34F;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gauge_background_large.png");
+    background-repeat: repeat-y;
+    width:200px;
+    height:15px;
+    font-size: 1em;
+    border:solid 1px;
+    clear:both;
+    overflow: hidden;
+}
+
+.indicators-gauge .wegas-variabledisplay-box-unit{
+    display:block;
+    background-color:#6F89A2;    
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gaugeFiller-background.png");
+    background-repeat: repeat-x;
+    float:left;
+    width:2px;
+    height:20px;
+}
+
+.indicators-gauge .wegas-variabledisplay-box-value{
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+.wegas-variabledisplay:last-child{
+    float:right;
+}
+
+.indicators-block{
+    width:110px;
+    margin:5px 0 0 0;
+    float:right;
+}
+
+.indicators-block .wegas-variabledisplay-box-label{
+    margin-right:5px;
+}
+
+.indicators-block .wegas-variabledisplay-box-valueMax{
+    display:none;
+}
+
+.indicators-block .wegas-variabledisplay-box-units{
+    display: block;
+    width:110px;
+}
+
+.indicators-block .wegas-variabledisplay-box-unit{
+    width:7px;
+    height:15px;
+    margin:0 2px 2px 0;
+    background-color: #6F89A2;
+    border: solid 1px;
+    float:left;
+}
+
+.indicators .wegas-button-tooltips{
+    margin:5px 0 0 25px;
+}
+
+/*-----------------------------------menu-------------------------------------*/
+.menu{
+    background-color:#E1D2B9;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/menu_background.png");
+    background-repeat: repeat-x;
+    width:970px;
+    padding:5px;
+    height:40px;
+    overflow:auto;
+    border-style: solid;
+    border-width: 1px 0 1px 0;
+}
+
+.menu div{
+    margin-right:20px;
+    overflow:hidden;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.menu .menu-HRList{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/homme.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-HRList:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .menu-folder{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/dossier.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-folder:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .menu-tasklist{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/liste.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-tasklist:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .menu-email{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/email.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-email:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .menu-score{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/awards.png");
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+
+.menu .menu-score:hover{
+    background-color:#DFC69F;
+    border-radius: 10px
+}
+
+.menu .wegas-login{
+    float:right;
+    margin:15px 0 0 0;
+}
+
+.menu .wegas-button-tooltips{
+    margin:10px 0 0 40px;
+}
+/*----------------------------maindisplayarea---------------------------------*/
+#maindisplayarea{
+    background-color:#FFFFFF;    
+    min-height: 300px;
+}
+
+
+/*----------------------------------RHList------------------------------------*/
+.wegas-hrlist .leaderway-hrlist table{
+    width:100%;
+}
+
+.wegas-hrlist .leaderway-hrlist th, #hrlist td{
+    border-width: 1px 0 1px 0;
+}
+
+.wegas-hrlist .leaderway-hrlist th{
+    background-color: #dce5ef;
+    background-repeat: repeat-x;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/table-header_background.png");
+    height:30px;
+}
+
+.wegas-hrlist .leaderway-hrlist th{
+    vertical-align:middle;
+    padding:0 5px 0 5px;
+}
+
+.wegas-hrlist .leaderway-hrlist th div{
+    height:17px;
+    vertical-align:bottom;
+    
+}
+
+.wegas-hrlist .leaderway-hrlist th div .yui3-datatable-sort-indicator{
+    vertical-align:top;
+}
+
+.wegas-hrlist .leaderway-hrlist .yui3-datatable-odd td{
+    background-color: #DCE5EF;
+}
+
+.wegas-hrlist .leaderway-hrlist td{
+    height:80px;
+    padding:0 5px 0 5px;
+    border:none;
+}
+
+/*-----------------------------------Folder-----------------------------------*/
+/*-----folder-general-----*/
+.wegas-folder .leaderway-folder .container-previousMembrebutton{
+    float:left;
+    padding:5px;
+}
+
+.wegas-folder .leaderway-folder .container-nextMembrebutton{
+    float:right;
+    padding:5px;
+}
+
+.wegas-folder .leaderway-folder .yui3-tabview{
+    display: block;
+    clear:both;
+    padding:20px 5px 5px 5px;
+}
+
+.wegas-folder .leaderway-folder .yui3-tab-selected .yui3-tab-label{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/tabselected_background.png");
+    background-repeat: repeat-x;
+    background-color: #dce5ef;
+    background-position:center; 
+}
+
+.wegas-folder .leaderway-folder .yui3-tab-label{
+    display:block;
+    width:100px;
+    height:20px;
+    font-size:1em;
+    margin: 0;
+    padding:10px 0 0 5px;
+}
+
+.wegas-folder .leaderway-folder .yui3-tabview-list{
+    border-bottom:1px solid #6F89A2;
+}
+
+.wegas-folder .leaderway-folder .yui3-tabview-panel{
+    background-color: #DCE5EF;
+    border:1px solid #6F89A2;
+    padding:30px 0 0 30px;
+}
+
+/*-----folder-folder-----*/
+.wegas-folder .leaderway-folder .folder-section{
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/border_folder-section.png");
+    background-repeat: no-repeat;
+    background-position-x:0;
+    background-position-y:top;
+    margin-top:15px;
+    padding-top:10px;
+    clear:both;
+}
+
+.wegas-folder .leaderway-folder .folder-section:first-child{
+    background-image:none;
+    margin-top: 0;
+} 
+
+.wegas-folder .leaderway-folder .title-folder-section{
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.wegas-folder .leaderway-folder .basic_informations div{
+    margin-bottom: 10px;
+}
+
+.wegas-folder .leaderway-folder .picture{
+    float:right;
+    height:100px;
+    width:100px;
+    margin: 0 30px 0 0;
+}
+
+.wegas-folder .leaderway-folder .picture img{
+    background-color:#FFFFFF;
+    border:solid 1px;
+}
+
+.wegas-folder .leaderway-folder .name{
+    margin-right: 5px;
+}
+
+.wegas-folder .leaderway-folder .name_surname{
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.wegas-folder .leaderway-folder .occupation{
+    margin-top:-50px;
+    width:700px;
+    float:left;
+    margin-bottom: 20px;
+}
+
+.wegas-folder .leaderway-folder .occupation-value div{
+    margin-bottom:10px;
+}
+
+.wegas-folder .leaderway-folder .occupation .task{
+    margin-top: 10px;
+    border-top: dotted 1px #6F89A2;
+    padding-top:10px;
+}
+
+.wegas-folder .leaderway-folder .occupation .task:first-child{
+    margin-top:0;
+    border-top:0;
+    padding-top:0;
+}
+
+.wegas-folder .leaderway-folder .occupation .task-skill{
+    margin-bottom:0;
+}
+
+.wegas-folder .leaderway-folder .occupation .task-skill-value{
+    display:inline;
+    margin-right:20px;
+}
+
+.wegas-folder .leaderway-folder .leadershipLevel{
+    display:block;
+    clear:both;
+}
+.wegas-folder .leaderway-folder .leadershipLevel-label{
+    margin-bottom: 5px
+}
+
+.wegas-folder .leaderway-folder .leadershipLevel-info{
+    color:#6F89A2;
+    margin-left:15px;
+}
+
+.wegas-folder .leaderway-folder .leadershipLevel .currentLevel{
+    list-style-type:circle;
+}
+
+.wegas-folder .leaderway-folder .leadershipLevel .levelActive{
+    color:#000000;
+}
+
+.wegas-folder .leaderway-folder .gauge{
+    margin:0 150px 20px 0;
+    float:left;
+}
+
+.wegas-folder .leaderway-folder .gauge-value{
+    font-size: 0.8em;
+}
+
+.wegas-folder .leaderway-folder .gauge-units{
+    display:block;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gauge_background_large.png");
+    background-repeat: repeat-y;
+    width:200px;
+    height:15px;
+    font-size: 1em;
+    border:solid 1px;
+    clear:both;
+    overflow: hidden;
+}
+
+.wegas-folder .wegas-folder-content .gauge-unit{
+    display:block;
+    background-color:#6F89A2;    
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gaugeFiller-background.png");
+    background-repeat: repeat-x;
+    float:left;
+    width:2px;
+    height:20px;
+}
+
+.wegas-folder .wegas-folder-content .description{
+    margin-bottom: 30px;
+    padding-top:15px;
+}
+
+/*-----folder-archives-----*/
+.wegas-folder .leaderway-folder .archives{
+    min-height: 100px;
+}
+
+/*------------------------------------tasklist-----------------------------------*/
+.wegas-tasklist .leaderway-tasklist table{
+    width:100%;
+}
+
+.wegas-tasklist .leaderway-tasklist th, #hrlist td{
+    border-width: 1px 0 1px 0;
+}
+
+.wegas-tasklist .leaderway-tasklist th{
+    background-color: #dce5ef;
+    background-repeat: repeat-x;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/table-header_background.png");
+    height:30px;
+}
+
+.wegas-tasklist .leaderway-tasklist th{
+    vertical-align:middle;
+    padding:0 5px 0 5px;
+}
+
+.wegas-tasklist .leaderway-tasklist th div{
+    height:17px;
+    vertical-align:bottom;
+    
+}
+
+.wegas-tasklist .leaderway-tasklist th div .yui3-datatable-sort-indicator{
+    vertical-align:top;
+}
+
+.wegas-tasklist .leaderway-tasklist .yui3-datatable-odd td{
+    background-color: #DCE5EF;
+}
+
+.wegas-tasklist .leaderway-tasklist td{
+    height:30px;
+    padding:0 5px 0 5px;
+    border:none;
+}
+
+/*------------------------------------Score-----------------------------------*/
+.wegas-score .leaderway-score .scoreTitle{
+    font-size: 1.2em;
+    text-align: center;
+    padding:20px 0 10px 0;
+}
+
+.wegas-score .leaderway-score table{
+    width:60%;
+    margin:0 auto 0 auto;
+}
+
+.wegas-score .leaderway-score th, #hrlist td{
+    border-width: 1px 0 1px 0;
+}
+
+.wegas-score .leaderway-score th{
+    background-color: #dce5ef;
+    background-repeat: repeat-x;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/table-header_background.png");
+    height:30px;
+}
+
+.wegas-score .leaderway-score th{
+    vertical-align:middle;
+    padding:0 5px 0 5px;
+}
+
+.wegas-score .leaderway-score .yui3-datatable-odd td{
+    background-color: #DCE5EF;
+}
+
+.wegas-score .leaderway-score td{
+    height:30px;
+    padding:0 5px 0 5px;
+    border:none;
+}
+
+.wegas-score .leaderway-score tr:first-child td{
+    background-color:#FDE092;
+}
+
+
+/*----------------------------------Dialogue----------------------------------*/
+.wegas-dialogue .leaderway-dialogue .pictures{
+    min-height: 365px;
+}
+
+.wegas-dialogue .leaderway-dialogue .chart{
+    float:right;
+    margin-right:25px;
+    margin-top:-325px;
+}
+
+.wegas-dialogue .leaderway-dialogue .chart .yui3-categoryaxis{
+    display:none;
+}
+
+.wegas-dialogue .leaderway-dialogue .dialogue{
+    min-height: 200px;
+    margin-top: 0px;
+    background-color: #DCE5EF;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/dialogue_background.png");
+    background-repeat: repeat-x;
+    background-position: bottom;
+    border-top: solid 1px #6F89A2;
+}
+
+.wegas-dialogue .leaderway-dialogue .speaker-name{
+    height: 50px;
+    width:150px;
+    margin: -65px 0 -20px 50px;
+    padding-top: 15px;
+    background-color: #DCE5EF;
+    background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/dialogue_background.png");
+    background-repeat: repeat-x;
+    background-position: bottom;
+    border: solid 1px #6F89A2;
+    border-radius: 10px;
+    text-align: center;
+}
+
+

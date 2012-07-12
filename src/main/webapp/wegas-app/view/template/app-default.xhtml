@@ -521,6 +521,8 @@
                                     { name: '@class', value:'ResourceInstance', type: 'hidden'},
                                     { name: 'id', type: 'hidden'},
                                     { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                    { name: "moral", label: "Moral", required: true  },
+                                    { name: "confidence", label: "Confiance", required: true},
                                     { name: "properties", "type": "object", label: "Default properties" },
                                     { name: "skillset", "type": "object", label: "Default skills" }
                                 ]}
@@ -529,6 +531,8 @@
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'ResourceInstance'},
                             { name: 'active', label:'Active', type: 'boolean'},
+                            { name: "moral", label: "Moral", required: true },
+                            { name: "confidence", label: "Confiance", required: true },
                             { name: "properties", "type": "object", label: "Properties" },
                             { name: "skillset", "type": "object", label: "Skills" }
                         ],
@@ -538,20 +542,23 @@
                             { name: 'scope', type:'group', fields: ScopeForm},
                             { name: 'name', label:'Name', required: true},
                             //                            { name: 'label', label:'Label'},
-                            { name: 'duration', label:'Duration', required: true},
                             { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
                             { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'TaskInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
-                                    { name: "properties", "type": "object", label: "Default properties" }
-                                ]}
+                                { name: '@class', value:'TaskInstance', type: 'hidden'},
+                                { name: 'id', type: 'hidden'},
+                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
+                                { name: 'duration', label:'Duration', required: true},
+                                { name: "properties", "type": "object", label: "Default properties" },
+                                { name: "skillset", "type": "object", label: "Default skillset" },
+                            ]}
                         ],
                         "TaskInstance": [
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'TaskInstance'},
                             { name: 'active', label:'Active', type: 'boolean'},
-                            { name: "properties", "type": "object", label: "Properties" }
+                            { name: 'duration', label:'Duration', required: true},
+                            { name: "properties", "type": "object", label: "Properties" },
+                            { name: "skillset", "type": "object", label: "Skillset" }
                         ],
 
                         //  *** Widgets *** //

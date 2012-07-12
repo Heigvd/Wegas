@@ -60,7 +60,8 @@ public class FileController {
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
-        logger.debug("Trying to write {} to ({})", name, path);
+    logger.debug("File name: {}", details.getContentDisposition().getFileName());
+
         if (name.equals("") || name.contains("/")) {
             return null;
         }
@@ -72,7 +73,6 @@ public class FileController {
             if (details == null || details.getContentDisposition().getFileName() == null || details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
                 detachedFile = new DirectoryDescriptor(name, path, connector);
             } else {
-
                 logger.debug("File name: {}", details.getContentDisposition().getFileName());
                 detachedFile = new FileDescriptor(name, path, connector);
             }
@@ -132,6 +132,7 @@ public class FileController {
         }
         return response.build();
     }
+
 
     /**
      *

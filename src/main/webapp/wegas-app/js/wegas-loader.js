@@ -23,7 +23,9 @@ YUI().use(function (Y) {
                         'wegas-variabledisplay',
                        'wegas-button',
                         'wegas-chat',
-                        'wegas-list'
+                        'wegas-list',
+                        /*Benjamin temp while I don't understand how to load "on the fly" your game*/
+                        'wegas-leaderway'
                         ]
                     },
                     'wegas-appcss': {
@@ -218,7 +220,25 @@ YUI().use(function (Y) {
                         requires: ['wegas-widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"],
                         ix_provides: "ScheduleDisplay"
                     },
-
+                   /**Leaderway**/
+                    'wegas-leaderway': {
+                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']
+                    },
+                    'wegas-leaderway-folder':{
+                        path: 'wegas-leaderway/js/wegas-leaderway-folder.js'
+                    },
+                    'wegas-leaderway-tasklist': {
+                        path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js'
+                    },
+                    'wegas-leaderway-score': {
+                        path: 'wegas-leaderway/js/wegas-leaderway-score.js'
+                    },
+                    'wegas-leaderway-dialogue': {
+                        path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
+                        /*!!!*/requires:['charts', 'charts-legend']/*!!!*/
+                    },
+                    
                     /** MMO **/
                     'wegas-mmo': {
                         path: 'wegas-mmo/js/wegas-mmo-min.js',
