@@ -59,20 +59,21 @@
                 "type": "List",
                 "cssClass": "menu",
                 "direction": "horizontal",
-                "children": [{
-                        "type": "Button",
-                        "label": "Liste des membres",
-                        "targetPageLoaderId": "maindisplayarea",
-                        "cssClass": "menu-HRList",
-                        "tooltips":"Liste des membres",
-                        "subpageId": 2
-                    },
+                "children": [
                     {
                         "type": "Button",
                         "label": "Dossiers",
                         "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-folder",
                         "tooltips":"Dossiers des membres",
+                        "subpageId": 2
+                    },
+{
+                        "type": "Button",
+                        "label": "Liste des membres",
+                        "targetPageLoaderId": "maindisplayarea",
+                        "cssClass": "menu-HRList",
+                        "tooltips":"Liste des membres",
                         "subpageId": 3
                     },
                     {
@@ -123,20 +124,20 @@
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
-                "pageId": 3
+                "pageId": 2
             }]
     },
     {
         "id":2,
-        "label":"HRList",
-        "type":"HRList",
-        "cssClass":"leaderway-hrlist"
+        "label":"Folder",
+        "type":"Folder",
+        "cssClass":"leaderway-folder"
     },
     {
         "id":3,
-        "label":"Fodler",
-        "type":"Folder",
-        "cssClass":"leaderway-folder"
+        "label":"HRList",
+        "type":"HRList",
+        "cssClass":"leaderway-hrlist"
     },
     {
         "id":4,
