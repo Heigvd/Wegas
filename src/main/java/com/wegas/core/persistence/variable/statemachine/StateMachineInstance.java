@@ -13,11 +13,9 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.dialogue.DialogueInstance;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -39,9 +37,15 @@ public class StateMachineInstance extends VariableInstance implements Serializab
 
     @Column(name = "currentstate_id")
     private Long currentStateId;
-//    @ElementCollection
-    @Transient
-    private List<Transition> transitionHistory;
+    @ManyToMany(cascade = CascadeType.REFRESH, targetEntity = Transition.class)
+    @JoinTable(name = "hiddenTransition", joinColumns =
+    @JoinColumn(name = "FSMinstance_id"), inverseJoinColumns =
+    @JoinColumn(name = "transition_id"))
+    private List<Transition> hiddenTransitions = new ArrayList<>();
+    @ElementCollection
+    @CollectionTable(name = "transitionHistory")
+    @Column(name = "transitionId")
+    private List<Long> transitionHistory = new ArrayList<>();
 
     public StateMachineInstance() {
     }
@@ -65,11 +69,19 @@ public class StateMachineInstance extends VariableInstance implements Serializab
         this.currentStateId = currentStateId;
     }
 
-    public List<Transition> getTransitionHistory() {
+    public List<Transition> getHiddenTransitions() {
+        return hiddenTransitions;
+    }
+
+    public void setHiddenTransitions(List<Transition> hiddenTransitions) {
+        this.hiddenTransitions = hiddenTransitions;
+    }
+
+    public List<Long> getTransitionHistory() {
         return transitionHistory;
     }
 
-    public void setTransitionHistory(List<Transition> transitionHistory) {
+    public void setTransitionHistory(List<Long> transitionHistory) {
         this.transitionHistory = transitionHistory;
     }
 
