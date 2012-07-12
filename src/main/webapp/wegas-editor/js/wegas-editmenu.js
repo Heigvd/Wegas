@@ -68,6 +68,9 @@ YUI.add('wegas-editmenu', function(Y) {
             case "delete":
                 this._currentDataSource.rest.deleteObject(this._currentData);
                 break;
+            case "smeditor":
+                Y.Widget.getByNode(".yui3-wegas-statemachineviewer").set("entity", this._currentData); //TODO: create elsewhere
+                break;
             }
             this.hide();
         }

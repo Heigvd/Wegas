@@ -32,7 +32,7 @@
 
         <meta id="customstyles" />
 
-        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/treeview-classic.css" />
+        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/treeview.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
     </h:head>
@@ -258,7 +258,16 @@
                             { text: "Delete", value: { op:'delete' } }
                         ],
                         "TriggerDescriptor": [
-                            { text: "Delete", value: { op:'delete' } }
+                            { text: "Delete", value: { op:'delete' } },
+                            { text: "Edit", value: {op:'smeditor'}}
+                        ],
+                        "DialogueDescriptor": [
+                            { text: "Delete", value: { op:'delete' } },
+                            { text: "Edit", value: {op:'smeditor'}}
+                        ],
+                        "FSMDescriptor": [
+                            { text: "Delete", value: { op:'delete' } },
+                            { text: "Edit", value: {op:'smeditor'}}
                         ],
                         "ListDescriptor": [
                             { text: "Add element", value: { op:'addChild', childClass: "VariableDescriptor" } },
@@ -475,12 +484,13 @@
                                     ]},
                                     { name: 'transitions', label: 'Transitions', type: 'list', elementType: {
                                         type:'group', fields: [
-                                            { name: '@class', value:'Transition', type: 'hidden'},
+                                            { name: '@class', value:'DialogueTransition', type: 'hidden'},
                                             { name: 'triggerCondition', type:'group', fields: [
                                                 { name: '@class', value:'Script', type: 'hidden'},
                                                 { name: 'language', value:'JavaScript', type: 'hidden'},
-                                                { name: 'content', 'type': 'text', label:'Condition', rows: 3}
+                                                { name: 'content', 'type': 'hidden', label:'Condition', rows: 3}
                                             ]},
+                                            { name: 'actionText', label: 'Action/User input'},
                                             { name: 'nextStateId', label: 'Next state id'},
                                             { name: 'preStateImpact', type:'group', fields: [
                                                 { name: '@class', value:'Script', type: 'hidden'},

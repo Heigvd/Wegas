@@ -38,6 +38,10 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/wegas-entity-min.js',
                         requires: ['node']
                     },
+                    'statemachine-entities': {
+                        path: 'wegas-editor/js/statemachine-entities-min.js',
+                        requires: ['wegas-entity']
+                    },
 
                     /** Widgets **/
                     'wegas-widget': {
@@ -163,6 +167,11 @@ YUI().use(function (Y) {
                         requires: ['datatable', 'datatable-sort' ],
                         ix_provides: 'DataTable'
                     },
+                    'wegas-menu': {
+                        path:'wegas-editor/js/wegas-menu-min.js',
+                        requires:['button'],
+                        ix_provides: 'WegasMenu'
+                    },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
                         requires: [ 'ace-javascript', 'button' ],
@@ -170,12 +179,17 @@ YUI().use(function (Y) {
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer.js',
-                        requires: ['treeview', 'uploader-html5'],
+                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar'],
                         ix_provides: "FileExplorer"
+                    },
+                    'wegas-progressbar': {
+                        path: 'wegas-editor/js/wegas-progressbar-min.js',
+                        requires: ['widget'],
+                        ix_provides: 'ProgressBar'
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer.js',
-                        requires: ['wegas-statemachineviewercss', 'jsplumb-yui', 'jsplumb-svg', 'jsplumb-defaults', 'jsplumb-statemachine', 'button'],
+                        requires: ['wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'statemachine-entities', 'selector-css3'],
                         ix_provides: 'StateMachineViewer'
                     },
                     'wegas-statemachineviewercss': {
@@ -239,7 +253,7 @@ YUI().use(function (Y) {
                 modules: {
                     'jsplumb': {
                         path: 'jsPlumb-1.3.10-RC1.js',
-                        requires: ['jsplumb-utils']
+                        requires: ['jsplumb-utils', 'dd']
                     },
                     'jsplumb-utils': {
                         path: 'jsPlumb-util-1.3.10-RC1.js',
@@ -260,6 +274,9 @@ YUI().use(function (Y) {
                     'jsplumb-yui': {
                         path: 'yui.jsPlumb-1.3.10-RC1.js',
                         requires: ['jsplumb']
+                    },
+                    'jsplumb-yui-all': {
+                        path:'yui.jsPlumb-1.3.10-all.js'
                     },
                     'jsbezier': {
                         path: 'jsBezier-0.3-min.js'
