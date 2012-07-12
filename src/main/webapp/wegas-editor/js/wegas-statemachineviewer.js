@@ -194,7 +194,6 @@ YUI.add('wegas-statemachineviewer', function (Y) {
 
     State = Y.Base.create('wegas-state', Y.Widget, [Y.WidgetChild, Y.WidgetParent], {
         textNode:null,
-        addScriptButton:null,
         transitionsTarget:[],                                                   //store incomming transitions
         events:{},
         cssClass: {
@@ -219,15 +218,12 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             if(this.textNode){
                 this.get(CONTENT_BOX).append(this.textNode);
                 this.textNode.setContent(this.get("entity").text);
-            }
-            if(this.get("entity").onEnterEvent){
+            }else if(this.get("entity").onEnterEvent){
                 this.add(new Y.Wegas.Script({
                     entity:this.get("entity").onEnterEvent
                 }));
             } else {
-                this.addScriptButton = this.add(new Y.Button({
-                    label: "{ }"
-                })).item(0);
+                this.add(new Y.Wegas.Script({}));
             }
             if(this.get("x")){
                 this.get(BOUNDING_BOX).getDOMNode().style.left = this.get("x") + "px";
@@ -236,7 +232,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 this.get(BOUNDING_BOX).getDOMNode().style.top = this.get("y") + "px";
             }
             this.get(CONTENT_BOX).append("<div class='transition-start'/>");
-            this.get(CONTENT_BOX).append("<div class='state-delete'/>");
+            this.get(CONTENT_BOX).append("<div class='state-toolbox'><div class='state-edit'></div><div class='state-delete'></div></div>");
 
         },
         syncUI: function(){
@@ -274,15 +270,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     this.get("entity").text = val
                 }, this);
             }
-            if(this.addScriptButton){
-                this.events.addScript = this.addScriptButton.on("click",function(e){
-                    this.get("entity").onEnterEvent = new Y.Wegas.persistence.Script();
-                    this.add(new Y.Wegas.Script({
-                        entity:this.get("entity").onEnterEvent
-                    }));
-                    this.addScriptButton.destroy();
-                },this);
-            }
+            this.events.editState= this.get(CONTENT_BOX).delegate("click",function(e){
+                console.log("TODO: edit");
+            },".state-edit",this);
             this.events.transitionDelete= this.on("wegas-transition:destroy", function(e){
                 var index = this.transitionsTarget.indexOf(e.target);
                 if( index > -1){
