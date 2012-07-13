@@ -94,27 +94,41 @@ YUI.add('wegas-tabview', function (Y) {
 
             this.renderToolbar();
         },
+        bindUI: function () {
+            Tab.superclass.bindUI.apply(this, arguments);
+            this.on("widget:addChild", function(e) {
+                console.log("added",e);
+            });
+        },
+        destructor: function (){
+            var toolbarChildren = this.get("toolbarChildren");
+            for (var i in toolbarChildren){
+                toolbarChildren[i].destroy();
+            }
+        },
 
         // *** Private Methods *** //
-        getToolbarNode: function() {
-            ;
-        },
         renderToolbar: function () {
             var panelNode = this.get('panelNode'),
-            toolbarChildren = this.get("toolbarChildren"),
-            widget, toolbarNode;
+            toolbarChildren = this.get("toolbarChildren");
 
-            panelNode.prepend('<div class="wegas-tab-toolbar"></div><div class="yui3-tab-panel-content"></div>');
-            toolbarNode = panelNode.one(".wegas-tab-toolbar");
-
-            if (this.get('toolbarLabel')) {
-                toolbarNode.setContent('<span class="title">' + this.get('toolbarLabel') + '</span></div>');
-            }
-
+            panelNode.prepend('<div class="wegas-tab-toolbar"><div class="wegas-tab-toolbar-header"></div><div class="wegas-tab-toolbar-panel"></div></div><div class="yui3-tab-panel-content"></div>');
             for (var i = 0; i < toolbarChildren.length; i = i + 1) {
-                widget = Y.Wegas.Widget.create(toolbarChildren[i]);
-                widget.render(toolbarNode);
+                toolbarChildren[i] = this.addToolbarWidget(toolbarChildren[i]);
             }
+        },
+        addToolbarWidget: function(widget) {
+
+            if (!(widget instanceof Y.Widget)) {
+                widget = Y.Wegas.Widget.create(widget);
+
+            }
+            widget.render(this.get("toolbarNode"));
+//            widget.on("click", function(e){
+//                this.get("children").fire("toolbarEvent", e);
+//            }, this);
+            widget.addTarget(this.item(0));
+            return widget;
         }
     }, {
         ATTRS : {
@@ -125,13 +139,19 @@ YUI.add('wegas-tabview', function (Y) {
                 lazyAdd: false,
                 value: false,
                 getter : function () {
-                    return this.get('panelNode').one(".wegas-tab-toolbar");
+                    return this.get('panelNode').one(".wegas-tab-toolbar-header");
+                }
+            },
+            toolbarPanel: {
+                lazyAdd: false,
+                value: false,
+                getter : function () {
+                    return this.get('panelNode').one(".wegas-tab-toolbar-panel");
                 }
             },
             toolbarChildren: {
                 value: []
-            },
-            toolbarLabel: {}
+            }
         }
     });
 
