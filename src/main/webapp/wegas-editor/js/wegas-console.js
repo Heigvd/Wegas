@@ -15,7 +15,7 @@ YUI.add('wegas-console', function (Y) {
 
         renderUI: function () {
             var cb = this.get(CONTENTBOX),
-                el = this.get("parent").get('panelNode').one(".wegas-tab-toolbar");
+                el = this.get("parent").get('toolbarNode');
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb,

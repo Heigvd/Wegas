@@ -135,17 +135,41 @@ img.inputEx-ListField-delButton {
     min-height: 26px;
     padding: 2px 0;
     border-bottom: 1px solid lightgray;
-    /*    background-color: #F2F2F2;*/
+    position: absolute;
+    width: 100%;
+    z-index: 20;
+    box-shadow: 0px 2px 5px grey;
 }
 .yui-layout-unit-right .wegas-tab-toolbar {
     padding-left:6px;
 }
-.wegas-tab-toolbar .title {
-    color: #2647A0;
-    padding: 5px 5px 0px;
-    font-size: 12pt;
-    font-weight: bold;
-    display: inline-block;
+.wegas-tab-toolbar-header{
+    vertical-align: top;
+    border: none;
+    min-height: 26px;
+}
+.wegas-tab-toolbar-panel {
+    height: 200px;
+    max-height: 0px;
+    background-color: white;
+    -webkit-transition-property: max-height;
+    -webkit-transition-duration: 0.5s;
+    -webkit-transition-timing-function: ease-out;
+    -moz-transition-property: max-height;
+    -moz-transition-duration: 0.5s;
+    -moz-transition-timing-function: ease-out;
+    -ms-transition-property: max-height;
+    -ms-transition-duration: 0.5s;
+    -ms-transition-timing-function: ease-out;
+    -o-transition-property: max-height;
+    -o-transition-duration: 0.5s;
+    -o-transition-timing-function: ease-out;
+    transition-property: max-height;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+}
+.wegas-tab-toolbar:hover > .wegas-tab-toolbar-panel{
+    max-height: 200px;
 }
 .wegas-tab-toolbar .yui3-button {
     vertical-align: top;
