@@ -152,7 +152,10 @@
                 "children": [{
                     "type": "StateMachineViewer"
                 }],
-                "toolbarLabel": "State machine viewer"
+               "toolbarChildren": [{
+                    "type": "Button",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New"
+                }]
             }, {
                 "type": "Tab",
                 "label": "Wysiwyg editor",
