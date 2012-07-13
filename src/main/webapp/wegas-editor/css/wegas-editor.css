@@ -92,39 +92,23 @@ img.inputEx-ListField-delButton {
     margin-left:-16px;
 }
 /* Tabs styles */
-/* FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview,
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview > .yui3-tabview-content ,
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel{
+/* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
+.yui3-skin-sam .wegas-layout .yui3-tabview,
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content ,
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel{
     height:inherit;
-}
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd {
-    overflow:initial;
 }
 .yui3-skin-sam .yui3-tabview-panel {
     padding:0px;
 }
 .yui3-skin-sam .yui3-tabview-panel  > .yui3-tab-panel > .yui3-tab-panel-content {
     position: absolute;
-    top: 28px;
     bottom: 0px;
     overflow: auto;
     padding:0;
     left:0px;
     right:0px;
     top: 57px;
-}
-/*.yui3-skin-sam .yui3-tabview-panel > .yui3-tab-panel > .yui3-tab-panel-content > div{
-    height: 100%;
-}*/
-.yui3-skin-sam .yui-layout-unit-right .yui3-tabview-panel > .yui3-tab-panel-content {
-    left:4px;
-}
-.yui3-skin-sam .yui-layout-unit-left .yui3-tabview-panel > .yui3-tab-panel-content {
-    right:4px;
-}
-.yui3-skin-sam #centerTabView > yui3-tabview-content > yui3-tabview-list > .yui3-tabview-panel > .yui3-tab-panel  > .yui3-tab-panel-content {
-    padding-right: 5px;
 }
 
 
@@ -136,16 +120,6 @@ img.inputEx-ListField-delButton {
     padding: 2px 0;
     border-bottom: 1px solid lightgray;
     /*    background-color: #F2F2F2;*/
-}
-.yui-layout-unit-right .wegas-tab-toolbar {
-    padding-left:6px;
-}
-.wegas-tab-toolbar .title {
-    color: #2647A0;
-    padding: 5px 5px 0px;
-    font-size: 12pt;
-    font-weight: bold;
-    display: inline-block;
 }
 .wegas-tab-toolbar .yui3-button {
     vertical-align: top;

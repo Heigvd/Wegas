@@ -24,6 +24,7 @@ YUI.add('wegas-treeview', function (Y) {
         },
 
         renderUI: function () {
+            return;
             var node = this.get(CONTENTBOX).append('<div></div>');
 
             // Render YUI2 TreeView widget
@@ -33,6 +34,7 @@ YUI.add('wegas-treeview', function (Y) {
         },
 
         bindUI: function () {
+            return; 
             // Listen updates on the target datasource
             this.dataSource.after("response", function (e) {
                 var treeViewElements = this.genTreeViewElements(e.data);

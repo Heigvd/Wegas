@@ -18,38 +18,38 @@ YUI.add('wegas-editmenu', function(Y) {
         // *** Lifecycle Methods *** //
         renderUI : function() {
             var cb = this.get(CONTENTBOX);
-//
-//            this.menu = new Y.YUI2.widget.Menu("as-editmenu", {
-//                visible: true,
-//                position: 'static',
-//                hidedelay: 100,
-//                shadow: true
-//            });
-//            this.menu.render(cb._node);
+
+            this.menu = new Y.YUI2.widget.Menu("as-editmenu", {
+                visible: true,
+                position: 'static',
+                hidedelay: 100,
+                shadow: true
+            });
+            this.menu.render(cb._node);
         },
         bindUI : function () {
             //var bb = this.get(BOUNDINGBOX);
             //bb.on('mouseupoutside', this.hide, this);
-//            //bb.on('click', this.hide, this);
-//            this.menu.subscribe("click", this._onMenuClick, null, this);
+            //bb.on('click', this.hide, this);
+            this.menu.subscribe("click", this._onMenuClick, null, this);
         },
         showMenu: function(mouseEvent) {
             //this.move(mouseEvent.clientX + Y.DOM.docScrollX(), mouseEvent.clientY + Y.DOM.docScrollY());
-//            this.show();
+            this.show();
         },
         setMenuItems: function(data, dataSource) {
-//            var menuItems = Y.Wegas.editor.get("editorMenus")[data["@class"]];
-//
-//            if (!menuItems) {
-//                Y.log('error', 'Menu items are undefined.', "Wegas.Editor");
-//            }
-//
-//            this._currentDataSource = dataSource;
-//            this._currentData = data;
-//
-//            this.menu.clearContent();
-//            this.menu.addItems(menuItems);
-//            this.menu.render();
+            var menuItems = Y.Wegas.editor.get("editorMenus")[data["@class"]];
+
+            if (!menuItems) {
+                Y.log('error', 'Menu items are undefined.', "Wegas.Editor");
+            }
+
+            this._currentDataSource = dataSource;
+            this._currentData = data;
+
+            this.menu.clearContent();
+            this.menu.addItems(menuItems);
+            this.menu.render();
         },
 
         // *** Private Methods *** //
