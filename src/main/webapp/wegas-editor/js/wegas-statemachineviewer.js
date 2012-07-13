@@ -22,10 +22,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
     };
 
     StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.WidgetParent], {
-        //TODO : zoom on simple scroll (ie without altKey), move panel with mouse (overflow hidden)
+        //TODO : zoom on simple scroll (ie without altKey), move panel with mouse (overflow hidden); zoom disabled
         //Zoom and Endpoint pos, sould mult by zoom
         //DRAG and Zoom, same problem
-        CONTENT_TEMPLATE: null,
+        //CONTENT_TEMPLATE: null,
         panel: null,
         dialog: null,
         stateId: null,
@@ -48,7 +48,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             //                stub:[40, 40],
             //                gap:10
             //            } ];
-            jp.Defaults.Connector = "StateMachine";
+            jp.Defaults.Connector = ["StateMachine", {
+                    curviness:60,
+                    proximityLimit:100
+            }];
             jp.Defaults.ConnectionOverlays = [["Arrow", {
                 location : 1,
                 width: 15
@@ -60,15 +63,21 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 outlineWidth:3
             };
             this.stateId = 1;
-            this.panel = Y.Node.create("<div class=" + this.getClassName('draw') + "><div/>");
-            this.dialog= Y.Node.create("<div class=" + this.getClassName('dialog') + "><div/>");
+            this.panel = Y.Node.create("<div class=" + this.getClassName('panel') + "><div/>");
+            this.dialog = Y.Node.create("<div class=" + this.getClassName('dialog') + "><div/>");
+            this.panel.name = Y.Node.create("<input type='text' name='name'></input>");
+            this.panel.append(this.panel.name);
 
         },
         renderUI: function() {
             this.get(CONTENT_BOX).setStyle("zoom", this.currentZoom);
+            this.get(BOUNDING_BOX).append(this.panel);
         },
 
         bindUI: function() {
+            this.on("*:click", function(e){
+               console.log("button click", e);
+            });
             this.events.createNode = this.get(CONTENT_BOX).on("dblclick", function(e){
                 e.halt(true);
                 //TODO : something with Zoom
@@ -96,8 +105,8 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     console.log("warn", e);
                 }
             });
-            this.events.smUpdate = this.on("entityChange", function (e){
-                this.rebuild()
+            this.events.smUpdate = this.after("entityChange", function (e){
+                this.rebuild();
             });
             this.events.zoom = this.get(CONTENT_BOX).delegate("mousewheel", function (e){
                 if(e.altKey){
@@ -131,7 +140,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             states.each(function(item){
                 item.destroy();
             });
-
+            this.panel.name.getDOMNode().value = sm.name;
             this.get("parent").get("toolbarNode").one(".title").setContent(sm["@class"] + " -- " + sm.name); //TODO : could certainly be better
 
             for(state in sm.states){
@@ -172,6 +181,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.stateId = Math.max(this.stateId, parseInt(id) + 1);
         },
         zoom: function (event){
+            return ; //zoom disabled
             if(event.wheelDelta < 0){
                 this.currentZoom = (this.currentZoom < 0.35 ) ? 0.3 : this.currentZoom - 0.05;
             }else{
@@ -194,7 +204,6 @@ YUI.add('wegas-statemachineviewer', function (Y) {
 
     State = Y.Base.create('wegas-state', Y.Widget, [Y.WidgetChild, Y.WidgetParent], {
         textNode:null,
-        addScriptButton:null,
         transitionsTarget:[],                                                   //store incomming transitions
         events:{},
         cssClass: {
@@ -207,7 +216,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.transitionsTarget = [];
             this.get(BOUNDING_BOX).addClass(this.cssClass.state);
             if(this.get("entity") instanceof Y.Wegas.persistence.DialogueState){
-                this.textNode = new Y.Node.create("<textarea placeholder=\"Text (Response)\"/>");
+                this.textNode = new Y.Node.create("<textarea placeholder=\"Text (Response)\"></textarea>");
                 this.textNode.addClass(this.getClassName("text"));
             }
             this.publish("userRemove",{
@@ -219,15 +228,12 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             if(this.textNode){
                 this.get(CONTENT_BOX).append(this.textNode);
                 this.textNode.setContent(this.get("entity").text);
-            }
-            if(this.get("entity").onEnterEvent){
+            }else if(this.get("entity").onEnterEvent){
                 this.add(new Y.Wegas.Script({
                     entity:this.get("entity").onEnterEvent
                 }));
             } else {
-                this.addScriptButton = this.add(new Y.Button({
-                    label: "{ }"
-                })).item(0);
+                this.add(new Y.Wegas.Script({}));
             }
             if(this.get("x")){
                 this.get(BOUNDING_BOX).getDOMNode().style.left = this.get("x") + "px";
@@ -236,7 +242,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 this.get(BOUNDING_BOX).getDOMNode().style.top = this.get("y") + "px";
             }
             this.get(CONTENT_BOX).append("<div class='transition-start'/>");
-            this.get(CONTENT_BOX).append("<div class='state-delete'/>");
+            this.get(CONTENT_BOX).append("<div class='state-toolbox'><div class='state-edit'></div><div class='state-delete'></div></div>");
 
         },
         syncUI: function(){
@@ -274,15 +280,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     this.get("entity").text = val
                 }, this);
             }
-            if(this.addScriptButton){
-                this.events.addScript = this.addScriptButton.on("click",function(e){
-                    this.get("entity").onEnterEvent = new Y.Wegas.persistence.Script();
-                    this.add(new Y.Wegas.Script({
-                        entity:this.get("entity").onEnterEvent
-                    }));
-                    this.addScriptButton.destroy();
-                },this);
-            }
+            this.events.editState= this.get(CONTENT_BOX).delegate("click",function(e){
+                console.log("TODO: edit");
+            },".state-edit",this);
             this.events.transitionDelete= this.on("wegas-transition:destroy", function(e){
                 var index = this.transitionsTarget.indexOf(e.target);
                 if( index > -1){
@@ -377,8 +377,8 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         language:null,
         CONTENT_TEMPLATE:null,
         initializer: function () {
-            this.content = new Y.Node.create("<textarea placeholder=\"onEnterEvent (Script Impact)\"/>");
-            this.language = new Y.Node.create("<div/>");
+            this.content = new Y.Node.create("<textarea placeholder=\"onEnterEvent (Script Impact)\"></textarea>");
+            this.language = new Y.Node.create("<div></div>");
             this.content.addClass(this.getClassName(this.cssClass.script));
             this.language.addClass(this.getClassName(this.cssClass.language));
             this.publish("scriptContentUpdated", {
@@ -465,10 +465,8 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             if(this.actionNode){
                 this.events.actionTextChange = this.actionNode.on("change", function (e){
                     var val = e.target.getDOMNode().value;
-                    this.connector.setLabel({
-                        label:val
-                    });
-                    if(val == ""){                                              //Set an empty String to null
+                    this.connector.setLabel(val);
+                    if(val == "" || val == undefined){                                              //Set an empty String to null
                         val = null;
                     }
                     this.get("entity").actionText = val

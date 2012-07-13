@@ -2,26 +2,135 @@
     height: 100%;
     width: 100%
 }
-.yui3-wegas-statemachineviewer-draw{
-    border:2px solid lightgray;
-    width: 70%;
+.yui3-wegas-statemachineviewer-content{
     height: 100%;
-    padding: 15px;
+    width: 100%;
+}
+
+.yui3-wegas-statemachineviewer-panel{
+    border-bottom:20px solid lightgray;
+    width: 100%;
+    max-height: 0px;
+    position:absolute;
+    top:0;
+    z-index:16;
+    background-color: white;
+    overflow: hidden;
+}
+/*
+.wegas-tab-toolbar{
+    position:absolute;
+    width: 100%;
+    z-index: 20;
+}
+.wegas-tab-toolbar-panel{
+    height: 200px;
+    margin-top: 2px;
+    max-height: 0px;
+    background-color: red;
+    -webkit-transition-property: max-height;
+    -webkit-transition-duration: 0.5s;
+    -webkit-transition-timing-function: ease-out;
+    -moz-transition-property: max-height;
+    -moz-transition-duration: 1s;
+    -moz-transition-timing-function: ease-out;
+    transition-property: max-height;
+    transition-duration: 1s;
+    transition-timing-function: ease-out;
+}
+.wegas-tab-toolbar-header{
+    vertical-align: top;
+    border: none;
+    min-height: 26px;
+    padding: 2px 0;
+    border-bottom: 1px solid lightgray;
+}
+.wegas-tab-toolbar:hover > .wegas-tab-toolbar-panel{
+    max-height: 200px;
+}*/
+.yui3-wegas-statemachineviewer-panel:hover{
+    height: 100px;
 }
 .yui3-wegas-state{
     position:absolute;
     display:inline-block;
-    min-width:28px;
-    min-height:28px;
+    width:70px;
+    height:50px;
     border:4px solid grey;
     border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0px 0px 20px black;
+    padding: 10px;
+    box-shadow: 4px 4px 10px black;
     z-index: 10;
     opacity:0.9;
     background-color:white;
     cursor: move;
 }
+.yui3-wegas-state:hover, .jsPlumb_dragged{
+    z-index:11;
+}
+.yui3-wegas-state-text{
+    width: 100%;
+    height: 100%;
+    display:block;
+    resize:none;
+    overflow: hidden;
+    font-size:8pt;
+}
+.yui3-wegas-state-text:focus{
+    width: 500px;
+    height: 15em;
+    overflow-x:auto;
+    font-size:medium;
+}
+.state-toolbox{
+    display:none;
+    cursor: pointer;
+    position: absolute;
+    top: -10px;
+    right: 5px;
+    width: 40px;
+    height: 20px;
+    border-radius: 10px;
+}
+
+.yui3-wegas-state:hover .state-toolbox{
+    display:inline-block;
+}
+.transition-start{
+    cursor: default;
+    position: absolute;
+    top: 45%;
+    right: -8px;
+    width: 10px;
+    height: 10px;
+    background-color: #F0F0F0;
+    border-radius: 10px;
+    border: 2px solid grey;
+}
+.transition-start:hover{
+    background-color: #B8B8B8;
+}
+.yui3-wegas-state-text:focus + .transition-start{
+    display:none;
+}
+.state-delete{
+    display:inline-block;
+    width: 49%;
+    height: 100%;
+    background:url("../images/wegas-editor-sprite.png");
+    background-position: 2px -772px;
+    background-repeat: no-repeat;
+}
+
+.state-edit{
+    display: inline-block;
+    width: 49%;
+    height: 100%;
+    background:url("../images/wegas-editor-sprite.png");
+    background-position: 0px -709px;
+    background-repeat: no-repeat;
+}
+
 .droppable-state{
     box-shadow: 0px 0px 20px #009933;
 }
@@ -37,15 +146,6 @@ yui3-wegas-script-content{
     max-width:400px;
     overflow: hidden;
     width: 100px;
-}
-.yui3-wegas-state-text{
-    min-width:100px;
-    max-width:400px;
-    width:100px;
-    max-height: 30em;
-    min-height: 25px;
-    display:block;
-    margin:2px;
 }
 
 .yui3-wegas-script-language{
@@ -67,7 +167,6 @@ yui3-wegas-script-content{
     display:inline-block;
     width: 100%;
     height: 100%;
-    background-color:rgba(0,0,0,0.7);
     position:absolute;
     z-index:12;
 }
@@ -91,26 +190,7 @@ yui3-wegas-script-content{
     opacity: 0.9;
     padding:3px;
     z-index:8;
-    box-shadow: 0px 0px 15px black;
+    box-shadow: 4px 4px 9px black;
     cursor:pointer;
 }
-.state-delete{
-    cursor: no-drop;
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    width: 20px;
-    height: 20px;
-    background-color: red;
-    border-radius: 10px;
-}
-.transition-start{
-    cursor: default;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 20px;
-    height: 20px;
-    background-color: green;
-    border-radius: 10px;
-}
+
