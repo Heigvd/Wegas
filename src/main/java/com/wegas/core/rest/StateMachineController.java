@@ -69,13 +69,14 @@ public class StateMachineController extends AbstractRestController<StateMachineD
      * @param gameModelId
      * @param playerId
      * @param stateMachineDescriptorId
-     * @return
+     * @param transitionId
+     * @return StateMachineInstance
      * @throws ScriptException
      */
     @GET
-    @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Step/{transitionId : [1-9][0-9]*}")
+    @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Do/{transitionId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public StateMachineInstance step(
+    public StateMachineInstance doTransition(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId,
             @PathParam("transitionId") Long transitionId)
