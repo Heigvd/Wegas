@@ -24,20 +24,24 @@ YUI.add('wegas-treeview', function (Y) {
         },
 
         renderUI: function () {
-            return;
             var node = this.get(CONTENTBOX).append('<div></div>');
 
             // Render YUI2 TreeView widget
-            this.treeView = new YAHOO.widget.TreeView(node.getDOMNode());
-            this.treeView.singleNodeHighlight = true;
-            this.treeView.render();
+           // Y.on('domready', Y.bind(function () {                               // @hack to ensure YUI libs are properly
+           console.log("renderUi", this.get("dataSource"), YAHOO.widget.TreeView);
+                this.treeView = new YAHOO.widget.TreeView(node.getDOMNode());
+                this.treeView.singleNodeHighlight = true;
+                this.treeView.render();
+           // }, this));;
         },
 
         bindUI: function () {
-            return; 
+            console.log("bindUI", this.get("dataSource"));
             // Listen updates on the target datasource
             this.dataSource.after("response", function (e) {
+                console.log("bindUI", this.get("dataSource"), treeViewElements, e.data);
                 var treeViewElements = this.genTreeViewElements(e.data);
+                console.log("rendered",treeViewElements);
                 this.treeView.removeChildren(this.treeView.getRoot());
                 this.treeView.buildTreeFromObject(treeViewElements);
                 this.treeView.render();

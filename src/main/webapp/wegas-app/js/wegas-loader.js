@@ -16,14 +16,14 @@ YUI().use(function (Y) {
                     /** Base **/
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
-                        requires: ['stylesheet', 'wegas-appcss', 'wegas-entity',
-                        'wegas-datasourcerest', 'wegas-widget', 'wegas-pageloader',
+                        requires: ['stylesheet', 'wegas-appcss',
+                        'wegas-entity', 'wegas-datasourcerest',
+                        'wegas-widget', 'wegas-list', 'wegas-pageloader',
+
                         /* @fixme those should be included on the fly*/
                         'wegas-text',  'wegas-tabview', 'wegas-datatable',
-                        'wegas-variabledisplay',
-                       'wegas-button',
-                        'wegas-chat',
-                        'wegas-list',
+                        'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 'wegas-list',
+
                         /*Benjamin temp while I don't understand how to load "on the fly" your game*/
                         'wegas-leaderway'
                         ]
@@ -38,7 +38,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-entity': {
                         path: 'wegas-app/js/wegas-entity-min.js',
-                        requires: ['node']
+                        requires: ['base']
                     },
                     'statemachine-entities': {
                         path: 'wegas-editor/js/statemachine-entities-min.js',
@@ -112,14 +112,16 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-inputex', 'wegas-app', 'wegas-editmenu',
-                        "wegas-editor-buttons", 
+                        'wegas-app', 'wegas-inputex',
+                        "wegas-editor-buttons", 'wegas-editor-menu',
+
+                        /* @fixme those should be included on the fly*/
                         'wegas-logger', 'wegas-csseditor',
                         'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
                         'wegas-scriptlibrary', 'wegas-layout', 'wegas-statemachineviewer',
                         'wegas-wysiwygeditor', 'wegas-treeview',
-                        /* @fixme There is a bug in css include order, this one got hardcoded in the jsp file */
-                        //'wegas-editorcss',
+
+                        //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
                     'wegas-editorcss': {
@@ -144,7 +146,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
-                        requires: ["button"],
+                        requires: ["button", 'inputex-select'],
                         ix_provides: 'NewButton'
                     },
                     'wegas-csseditor': {
@@ -157,13 +159,13 @@ YUI().use(function (Y) {
                         requires: ['ace-javascript'],
                         ix_provides: 'Console'
                     },
-                    'wegas-editmenu': {
-                        path: 'wegas-editor/js/wegas-editmenu-min.js',
-                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack']
+                    'wegas-editor-menu': {
+                        path: 'wegas-editor/js/wegas-editor-menu-min.js',
+                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"]
                     },
                     'wegas-treeview': {
                         path: 'wegas-editor/js/wegas-treeview-min.js',
-                        requires: [  /*'gallery-yui3treeview', 'wegas-treeviewcss'*/],
+                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize', 'resize', "yui2-treeview", 'wegas-menu', 'event'],
                         ix_provides: 'WTreeView'
                     },
                     'wegas-datatable': {
@@ -222,7 +224,7 @@ YUI().use(function (Y) {
                         requires: ['wegas-widget', 'widget-position', 'widget-position-align', 'widget-stack'],
                         ix_provides: "ScheduleDisplay"
                     },
-                   /**Leaderway**/
+                    /**Leaderway**/
                     'wegas-leaderway': {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist-min.js',
                         requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']
@@ -320,13 +322,13 @@ YUI().use(function (Y) {
             /* Esprima */
             esprima: {
                 combine: false,
-                base: "lib/esprima/",
+                base: "lib/",
                 modules:  {
                     'esprima': {
-                        path: 'esprima-min.js'
+                        path: 'esprima/esprima-min.js'
                     },
                     'escodegen': {
-                        path: '/test/3rdparty/escodegen.js'
+                        path: 'escodegen/escodegen-min.js'
                     }
                 }
             }

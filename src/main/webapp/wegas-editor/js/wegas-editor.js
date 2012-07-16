@@ -120,12 +120,7 @@ YUI.add('wegas-editor', function(Y) {
             node.setStyle('padding-right', '5px');
             data = data || {};
 
-            if (!formFields) {                                                  // If no form is provided, we select one based on the @class
-                formFields = Y.Wegas.app.get('forms')[data['@class']];
-            }
-            if (!formFields) {                                                  // Or the type
-                formFields = Y.Wegas.app.get('forms')[data.type];
-            }
+            formFields = data.getFormCfg();
 
             if (this._form) {
                 this._form.destroy();

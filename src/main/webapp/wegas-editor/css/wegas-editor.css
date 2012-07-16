@@ -445,16 +445,16 @@ td.wegas-treeview-icon-player {
 }
 
 /* Edit Menu Styles */
-.wegas-editmenu {
+.wegas-editor-menu {
     position:absolute;
 }
-.wegas-editmenu-hidden {
+.wegas-editor-menu-hidden {
     display: none;
 }
-.ygtvcell > div.wegas-editmenu{
+.ygtvcell > div.wegas-editor-menu{
     display:none;
 }
-.ygtvcell:hover > div.wegas-editmenu{
+.ygtvcell:hover > div.wegas-editor-menu{
     display:block;
 }
 /* Top Menu bar */
