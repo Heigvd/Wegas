@@ -32,7 +32,7 @@ YUI.add('wegas-layout', function (Y) {
             this.renderPosition('left');
             this.renderPosition('center');
             this.renderPosition('right');
-            this.renderPosition('bottom');
+      //      this.renderPosition('bottom');
         },
 
         renderPosition: function (position) {
@@ -77,7 +77,6 @@ YUI.add('wegas-layout', function (Y) {
          *
          */
         syncCenterNode: function () {
-            console.log("mm", this.getStdModNode("body").one(".wegas-layout-center"));
             var bodyNode = this.getStdModNode("body"),
                 centerNode = bodyNode.one(".wegas-layout-center");
 

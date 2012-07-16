@@ -60,7 +60,7 @@
             YUI_config.groups.ace.base = '/Wegas/lib/ace-0.2.0/';               // Hack fix codemirror loading path so it uses local files
             //YUI_config.groups.wireit.base = '/Wegas/lib/wireit/';
             YUI_config.groups.excanvas.base = '/Wegas/lib/excanvas/';
-            YUI_config.groups.esprima.base = '/Wegas/lib/esprima/';
+            YUI_config.groups.esprima.base = '/Wegas/lib/';
             YUI_config.groups.jsplumb.base = '/Wegas/' + YUI_config.groups.jsplumb.base;
 
             /**<!--
@@ -295,37 +295,6 @@
 
                     /** Entities admin Forms **/
                     forms: {
-                        "GameModel" : [
-                            { name: 'id', type: 'hidden' },
-                            { name: 'name', label:'Name', required: true},
-                            { name: '@class', value:'GameModel', type: 'hidden'}
-                        ],
-                        "Game" : [
-                            { name: 'id', type: 'hidden' },
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'token', label:'Token', required: true},
-                            { name: '@class', value:'Game', type: 'hidden'}
-                        ],
-                        "Team" : [
-                            { name: 'id', type: 'hidden'},
-                            { name: 'gameId', type: 'hidden'},
-                            { name: '@class', value:'Team', type: 'hidden'},
-                            { name: 'name', label:'Name', required: true},
-                            // { name: 'token', label:'Token'},
-                        ],
-                        "Player" : [
-                            { name: 'id', type: 'hidden'},
-                            { name: 'teamId', type: 'hidden'},
-                            { name: 'name', label:'Name', required: true},
-                            { name: '@class', value:'Player', type: 'hidden'}
-                        ],
-                        "User" : [
-                            { name: 'id', type: 'hidden'},
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'password', type: 'password', label: 'New password', showMsg: true,  id: 'firstPassword', strengthIndicator: true, capsLockWarning: true },
-                            { type: 'password', label: 'Confirmation', showMsg: true, confirm: 'firstPassword' },
-                            { name: '@class', value:'User', type: 'hidden'}
-                        ],
                         "StringDescriptor": [
                             { name: 'id', type: 'hidden'},
                             { name: '@class', type: 'hidden', value: 'StringDescriptor'},
