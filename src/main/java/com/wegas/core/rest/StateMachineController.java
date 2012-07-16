@@ -11,14 +11,14 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.statemachine.StateMachineDescriptorFacade;
-import java.util.ArrayList;
+import com.wegas.leadergame.persistence.DialogueTransition;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -64,7 +64,6 @@ public class StateMachineController extends AbstractRestController<StateMachineD
 //        this.stateMachineDescriptorFacade.create(gameModelId, (StateMachineDescriptor) entity);
 //        return (StateMachineDescriptor) entity;
 //    }
-
     /**
      *
      * @param gameModelId
@@ -74,27 +73,29 @@ public class StateMachineController extends AbstractRestController<StateMachineD
      * @throws ScriptException
      */
     @GET
-    @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Step")
+    @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Step/{transitionId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public StateMachineDescriptor step(
+    public StateMachineInstance step(
             @PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId)
+            @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId,
+            @PathParam("transitionId") Long transitionId)
             throws ScriptException {
         StateMachineDescriptor stateMachineDescriptorEntity = (StateMachineDescriptor) stateMachineDescriptorFacade.find(stateMachineDescriptorId);
         StateMachineInstance stateMachineInstanceEntity = (StateMachineInstance) stateMachineDescriptorEntity.getInstance(playerFacade.find(playerId));
         State currentState = stateMachineInstanceEntity.getCurrentState();
         List<Transition> transitions = currentState.getTransitions();
-        List<Transition> passedTransitions = new ArrayList<>();
+
         for (Transition transition : transitions) {
-            if ((Boolean) scriptManager.eval(playerId, transition.getTriggerCondition())) {
+            if (transition instanceof DialogueTransition && transition.getId() == transitionId) {
                 stateMachineInstanceEntity.setCurrentStateId(transition.getNextStateId());
+                stateMachineInstanceEntity.transitionHistoryAdd(transitionId);
                 if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
                     scriptManager.eval(playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
                 }
-                break;                                                          //A valid transition was found
+                break;
             }
         }
         variableInstanceFacade.update(stateMachineInstanceEntity.getId(), stateMachineInstanceEntity);
-        return stateMachineDescriptorEntity;
+        return stateMachineInstanceEntity;
     }
 }

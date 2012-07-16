@@ -9,10 +9,10 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.UserInput;
 import com.wegas.leadergame.persistence.DialogueTransition;
-import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -30,7 +30,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
     @JsonSubTypes.Type(name = "UserInput", value = UserInput.class),
     @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
-public class Transition implements Serializable {
+public class Transition extends AbstractEntity {
 
     @Id
     @GeneratedValue
@@ -52,6 +52,7 @@ public class Transition implements Serializable {
     public Transition() {
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -83,5 +84,10 @@ public class Transition implements Serializable {
     @Override
     public String toString() {
         return "Transition{" + "triggerCondition=" + triggerCondition + ", nextStateId=" + nextStateId + '}';
+    }
+
+    @Override
+    public void merge(AbstractEntity other) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
