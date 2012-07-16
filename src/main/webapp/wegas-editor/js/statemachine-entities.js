@@ -131,7 +131,7 @@ Y.add("statemachine-entities", function(Y){
             Y.Wegas.app.get("currentGame")
             + "/VariableDescriptor/StateMachine/" + id
             + "/Player/" + Y.Wegas.app.get("currentPlayer")
-            + "/Step/" + this.id;
+            + "/Do/" + this.id;
         }
     });
 
