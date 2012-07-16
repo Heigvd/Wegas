@@ -71,29 +71,87 @@ YUI.add('wegas-entity', function (Y) {
     };
 
     /**
+     * GameScope mapper
+     */
+    Y.Wegas.persistence.GameScope = function() {
+        Y.Wegas.persistence.GameScope.superclass.constructor.apply(this, arguments);
+    }
+    Y.extend(Y.Wegas.persistence.GameScope, Y.Wegas.persistence.Entity, {
+        "@class": "GameScope",
+        getInstance: function (){
+            try{
+                return this.variableInstances[0];
+            }catch(e){
+                return null;
+            }
+        }
+    });
+
+    /**
+     * TeamScope mapper
+     */
+    Y.Wegas.persistence.TeamScope = function() {
+        Y.Wegas.persistence.TeamScope.superclass.constructor.apply(this, arguments);
+    }
+    Y.extend(Y.Wegas.persistence.TeamScope, Y.Wegas.persistence.Entity, {
+        "@class": "TeamScope",
+        getInstance: function(){
+            try{
+                return this.variableInstances[Y.Wegas.app.get('currentTeam')];
+            }catch(e){
+                return null;
+            }
+        }
+    });
+
+    /**
+     * PlayerScope mapper
+     */
+    Y.Wegas.persistence.PlayerScope = function() {
+        Y.Wegas.persistence.PlayerScope.superclass.constructor.apply(this, arguments);
+    }
+    Y.extend(Y.Wegas.persistence.PlayerScope, Y.Wegas.persistence.Entity, {
+        "@class": "PlayerScope",
+        getInstance: function () {
+            try{
+                return this.variableInstances[Y.Wegas.app.get('currentPlayer')];
+            }catch(e){
+                return null;
+            }
+        }
+    });
+
+    /**
+     * GameModelScope mapper
+     */
+    Y.Wegas.persistence.GameModelScope = function() {
+        Y.Wegas.persistence.GameModelScope.superclass.constructor.apply(this, arguments);
+    }
+    Y.extend(Y.Wegas.persistence.GameModelScope, Y.Wegas.persistence.Entity, {
+        "@class": "GameModelScope",
+        getInstance: function () {
+            try{
+                return this.variableInstances[0];
+            }catch(e){
+                return null;
+            }
+        }
+    });
+    /**
     * VariableDescriptor mapper
     */
     Y.Wegas.persistence.VariableDescriptor = function() {
         Y.Wegas.persistence.VariableDescriptor.superclass.constructor.apply(this, arguments);
         Y.mix(this,{
-            id:null,
-            name:null,
+            id: null,
+            name: null,
             defaultVariableInstance:null,
-            scope:null
+            scope: new Y.Wegas.persistence.TeamScope()                          //Default to teamscope
         });
     }
     Y.extend(Y.Wegas.persistence.VariableDescriptor, Y.Wegas.persistence.Entity, {
         getInstance: function () {
-            switch (this.scope['@class']) {
-                case 'PlayerScope':
-                    return this.scope.variableInstances[Y.Wegas.app.get('currentPlayer')];
-                case 'TeamScope':
-                    return this.scope.variableInstances[Y.Wegas.app.get('currentTeam')];
-                case 'GameModelScope':
-                case 'GameScope':
-                    return this.scope.variableInstances[0];
-            }
-            return null;
+            return this.scope.getInstance();
         }
     });
 
