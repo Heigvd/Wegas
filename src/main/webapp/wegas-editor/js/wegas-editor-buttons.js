@@ -13,7 +13,7 @@ YUI.add('wegas-editor-buttons', function (Y) {
      * @extends Widget
      * @param {Object} cfg The button config object
      */
-    var NewButton = Y.Base.create("button", Y.Button, [], {
+    var NewButton = Y.Base.create("new-button", Y.Button, [], {
         bindUI: function () {
             Y.Wegas.NewButton.superclass.bindUI.apply(this, arguments);
             this.on("click", function(){
@@ -23,13 +23,14 @@ YUI.add('wegas-editor-buttons', function (Y) {
             });
         }
     }, {
+        CSS_PREFIX:"yui3-button",
         ATTRS : {
             targetClass: {}
         }
     });
     Y.Wegas.NewButton = NewButton;
 
-    Y.Wegas.ResetButton = Y.Base.create("button", Y.Button, [], {
+    Y.Wegas.ResetButton = Y.Base.create("reset-button", Y.Button, [], {
         bindUI: function () {
             Y.Wegas.NewButton.superclass.bindUI.apply(this, arguments);
             this.on("click", function(){
@@ -38,6 +39,8 @@ YUI.add('wegas-editor-buttons', function (Y) {
                 });
             });
         }
+    }, {
+        CSS_PREFIX:"yui3-button"
     });
 
     Y.Wegas.SelectPlayer = Y.Base.create("wegas-selectbutton", Y.Widget, [], {

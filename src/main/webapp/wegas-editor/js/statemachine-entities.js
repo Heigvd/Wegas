@@ -25,6 +25,7 @@ Y.add("statemachine-entities", function(Y){
         Y.mix(this, {
             states:{}
         });
+        this.defaultVariableInstance = this.defaultVariableInstance || new Y.Wegas.persistence.FSMInstance();
     }
     Y.extend(Y.Wegas.persistence.FSMDescriptor, Y.Wegas.persistence.VariableDescriptor, {
         "@class":"FSMDescriptor",
@@ -32,10 +33,10 @@ Y.add("statemachine-entities", function(Y){
             return this.states[this.getInstance().currentStateId];
         },
         getInitialStateId: function(){
-            return this.getInstance().currentStateId;
+            return this.defaultVariableInstance.currentStateId;
         },
         setInitialStateId: function(initialStateId){
-            this.getInstance().currentStateId = initialStateId;
+            this.defaultVariableInstance.currentStateId = initialStateId;
         }
     });
 
@@ -79,6 +80,7 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.TriggerDescriptor = function (){
         Y.Wegas.persistence.TriggerDescriptor.superclass.constructor.apply(this, arguments);
+        this.defaultVariableInstance = this.defaultVariableInstance || new Y.Wegas.persistence.TriggerInstance();
     }
     Y.extend(Y.Wegas.persistence.TriggerDescriptor, Y.Wegas.persistence.FSMDescriptor, {
         "@class": "TriggerDescriptor"
