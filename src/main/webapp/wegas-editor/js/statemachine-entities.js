@@ -120,7 +120,19 @@ Y.add("statemachine-entities", function(Y){
         });
     }
     Y.extend(Y.Wegas.persistence.DialogueTransition, Y.Wegas.persistence.Transition, {
-        "@class": "DialogueTransition"
+        "@class": "DialogueTransition",
+        /**
+         * Builds the REST request to trigger this specifique transition
+         * @param {Integer} The dialogue's id
+         * @return {String} an url to GET.
+         */
+        getTriggerURL: function(id){
+            return Y.Wegas.app.get("base") + "rest/GameMode/" +
+            Y.Wegas.app.get("currentGame")
+            + "/VariableDescriptor/StateMachine/" + id
+            + "/Player/" + Y.Wegas.app.get("currentPlayer")
+            + "/Step/" + this.id;
+        }
     });
 
     /**
