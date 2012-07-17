@@ -138,19 +138,24 @@ img.inputEx-ListField-delButton {
     background-color: white;
     -webkit-transition-property: max-height;
     -webkit-transition-duration: 0.5s;
-    -webkit-transition-timing-function: ease-out;
+    -webkit-transition-timing-function: linear;
+    -webkit-transition-delay: 0.3s;
     -moz-transition-property: max-height;
     -moz-transition-duration: 0.5s;
-    -moz-transition-timing-function: ease-out;
+    -moz-transition-timing-function: linear;
+    -moz-transition-delay: 0.3s;
     -ms-transition-property: max-height;
     -ms-transition-duration: 0.5s;
-    -ms-transition-timing-function: ease-out;
+    -ms-transition-timing-function: linear;
+    -ms-transition-delay: 0.3s;
     -o-transition-property: max-height;
     -o-transition-duration: 0.5s;
-    -o-transition-timing-function: ease-out;
+    -o-transition-timing-function: linear;
+    -o-transition-delay: 0.3s;
     transition-property: max-height;
     transition-duration: 0.5s;
-    transition-timing-function: ease-out;
+    transition-timing-function: linear;
+    transition-delay: 0.3s;
 }
 .wegas-tab-toolbar:hover > .wegas-tab-toolbar-panel{
     max-height: 200px;
