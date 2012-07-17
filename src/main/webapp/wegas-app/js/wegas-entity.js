@@ -14,6 +14,23 @@ YUI.add('wegas-entity', function (Y) {
     Y.mix(Entity.prototype, {
         writeObject: function () {
             return Y.mix({}, this);                                             // Return a copy of this's fields.
+        },
+        /**
+         * Cleaning out JSON export, "compression" purpose.
+         * This methid is called by JSON's stringify method
+         *
+         * @return {Entity} containing relevant informations needed by server
+         */
+        toJSON: function(){
+            var e = this.writeObject();                                         //Make a working copy
+            for(var i in e){                                                    //Removing irrelevant informations
+                if(e[i] === null){                                              //Null attributes
+                    //TODO : empty strings, objects ??
+                    delete e[i];
+                }
+            }
+            e["@class"] = this["@class"];                                       //Adding the @class attribute to JSON's stringify method
+            return e;
         }
     });
     Y.mix(Entity, {
