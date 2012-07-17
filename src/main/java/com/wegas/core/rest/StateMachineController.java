@@ -96,7 +96,6 @@ public class StateMachineController extends AbstractRestController<StateMachineD
                 break;
             }
         }
-        variableInstanceFacade.update(stateMachineInstanceEntity.getId(), stateMachineInstanceEntity);
-        return stateMachineInstanceEntity;
+        return (StateMachineInstance) variableInstanceFacade.update(stateMachineInstanceEntity.getId(), stateMachineInstanceEntity);
     }
 }

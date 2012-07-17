@@ -9,6 +9,7 @@
  */
 package com.wegas.leadergame.persistence;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.statemachine.State;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -20,7 +21,7 @@ import javax.persistence.Lob;
 @Entity
 public class DialogueState extends State {
     /**
-     * 
+     *
      */
     @Lob
     private String text;
@@ -39,5 +40,10 @@ public class DialogueState extends State {
         this.text = text;
     }
 
+    @Override
+    public void merge(AbstractEntity other){
+        this.text = ((DialogueState) other).text;
+        super.merge(other);
+    }
 
 }

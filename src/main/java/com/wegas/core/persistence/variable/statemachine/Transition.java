@@ -88,6 +88,9 @@ public class Transition extends AbstractEntity {
 
     @Override
     public void merge(AbstractEntity other) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Transition newTranstion = (Transition)other;
+        this.nextStateId = newTranstion.nextStateId;
+        this.preStateImpact = newTranstion.preStateImpact;
+        this.triggerCondition = newTranstion.triggerCondition;
     }
 }
