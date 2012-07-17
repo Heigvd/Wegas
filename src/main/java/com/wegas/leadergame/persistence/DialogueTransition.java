@@ -9,6 +9,7 @@
  */
 package com.wegas.leadergame.persistence;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -34,5 +35,11 @@ public class DialogueTransition extends Transition {
      */
     public void setActionText(String actionText) {
         this.actionText = actionText;
+    }
+
+    @Override
+    public void merge(AbstractEntity other){
+        this.actionText = ((DialogueTransition) other).actionText;
+        super.merge(other);
     }
 }
