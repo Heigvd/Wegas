@@ -133,7 +133,7 @@ img.inputEx-ListField-delButton {
     min-height: 26px;
 }
 .wegas-tab-toolbar-panel {
-    height: 200px;
+    overflow: hidden;
     max-height: 0px;
     background-color: white;
     -webkit-transition-property: max-height;
@@ -154,6 +154,7 @@ img.inputEx-ListField-delButton {
 }
 .wegas-tab-toolbar:hover > .wegas-tab-toolbar-panel{
     max-height: 200px;
+    overflow-x: auto;
 }
 .wegas-tab-toolbar .yui3-button {
     vertical-align: top;

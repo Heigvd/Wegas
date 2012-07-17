@@ -25,7 +25,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 variableDescriptor, value;
                 variableDescriptor = this.get("dataSource").rest.getCachedVariableBy('name', this.get("variable"));
                 if (!variableDescriptor) {return;}
-                value = variableDescriptor.getInstance().value || "undefined";
+                value = variableDescriptor.getInstance().get("value") || "undefined";
 
             switch (this.get('view')) {
             case 'text':
@@ -45,7 +45,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 else{
                     this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-box-label">'+this.get('label')+'</span>'
                         +'<span class="wegas-variabledisplay-box-value">(' + value + ')</span>'
-                        +'<span class="wegas-variabledisplay-box-units">'+acc.join('')+'</span>');   
+                        +'<span class="wegas-variabledisplay-box-units">'+acc.join('')+'</span>');
                 }
                 break;
             case 'fraction':

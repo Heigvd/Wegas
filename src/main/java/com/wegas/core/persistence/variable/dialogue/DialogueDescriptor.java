@@ -13,7 +13,6 @@ package com.wegas.core.persistence.variable.dialogue;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import java.util.Map;
 import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlType;

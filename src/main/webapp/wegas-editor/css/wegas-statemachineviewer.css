@@ -7,50 +7,6 @@
     width: 100%;
 }
 
-.yui3-wegas-statemachineviewer-panel{
-    border-bottom:20px solid lightgray;
-    width: 100%;
-    max-height: 0px;
-    position:absolute;
-    top:0;
-    z-index:16;
-    background-color: white;
-    overflow: hidden;
-}
-/*
-.wegas-tab-toolbar{
-    position:absolute;
-    width: 100%;
-    z-index: 20;
-}
-.wegas-tab-toolbar-panel{
-    height: 200px;
-    margin-top: 2px;
-    max-height: 0px;
-    background-color: red;
-    -webkit-transition-property: max-height;
-    -webkit-transition-duration: 0.5s;
-    -webkit-transition-timing-function: ease-out;
-    -moz-transition-property: max-height;
-    -moz-transition-duration: 1s;
-    -moz-transition-timing-function: ease-out;
-    transition-property: max-height;
-    transition-duration: 1s;
-    transition-timing-function: ease-out;
-}
-.wegas-tab-toolbar-header{
-    vertical-align: top;
-    border: none;
-    min-height: 26px;
-    padding: 2px 0;
-    border-bottom: 1px solid lightgray;
-}
-.wegas-tab-toolbar:hover > .wegas-tab-toolbar-panel{
-    max-height: 200px;
-}*/
-.yui3-wegas-statemachineviewer-panel:hover{
-    height: 100px;
-}
 .yui3-wegas-state{
     position:absolute;
     display:inline-block;
