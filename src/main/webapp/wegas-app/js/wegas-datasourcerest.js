@@ -48,7 +48,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             e.data = this.getEntities();
             e.serverResponse = Y.Wegas.persistence.Entity.revive(e.response.results);
 
-            if (Lang.isArray(e.serverResponse)) {
+            if (Lang.isArray(e.serverResponse)) {                               // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < e.serverResponse.length; i += 1) {
                     this.applyOperation(e.cfg.method, e.serverResponse[i], this.getEntities());
                 }
@@ -68,9 +68,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
 
         },
-        lookupAndFn: function(method, needle, stack) {
-
-        },
+//        lookupAndFn: function(method, needle, stack) {
+//
+//        },
         lookupAndDo: function(method, needle, stack) {
             var id;
             for (i = 0; i < stack.length; i += 1) {
@@ -99,11 +99,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 stack.push(needle);
             };
         },
-
+        /// *** Cache methods *** //
+        /**
+         * Retrieves all entities from the cache
+         */
         getEntities: function () {
             return this.get('host').data;
         },
 
+        /**
+         * Retrieves an entity from the cache
+         */
         getEntityBy: function (key, val) {
             var entities = this.getEntities(), i;
             for (i in entities) {                                              // We first check in the cache if the data is available
@@ -113,6 +119,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return null;
         },
+        /**
+         * Retrieves an entity from the cache
+         */
         getEntitiesBy: function (key, val) {
             var host = this.get('host'), ret = [], i;
             for (i in host.data) {                                              // We first check in the cache if the data is available
@@ -122,6 +131,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return ret;
         },
+        /**
+         * Retrieves an entity from the cache
+         */
         getEntityById: function (id) {
             return this.getEntityBy("id", id  * 1);                     // Cast to number
         },

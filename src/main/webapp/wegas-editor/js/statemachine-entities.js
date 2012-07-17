@@ -26,7 +26,7 @@ Y.add("statemachine-entities", function(Y){
     Y.Wegas.persistence.FSMDescriptor = Y.Base.create("FSMDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
 
         // *** Lifecycle methods *** //
-   
+
         // *** Private methods *** //
         getCurrentState: function(){
             return this.get("states")[this.getInstance().get("currentStateId")];
@@ -204,7 +204,7 @@ Y.add("statemachine-entities", function(Y){
      * DialogueDescriptor Entity
      */
 
-    Y.Wegas.persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", Y.Wegas.persistence.FSMInstance, [], {}, {
+    Y.Wegas.persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", Y.Wegas.persistence.FSMDescriptor, [], {}, {
         ATTRS: {
             "@class": {
                 value: "DialogueDescriptor"
