@@ -46,19 +46,19 @@ YUI.add('wegas-datasourcerest', function (Y) {
         beforeResponse: function (e) {
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "info", "Wegas.RestDataSource");
             e.data = this.getEntities();
-            e.response = Y.Wegas.persistence.Entity.revive(e.response.results);
+            e.serverResponse = Y.Wegas.persistence.Entity.revive(e.response.results);
 
-            if (Lang.isArray(e.response)) {
-                for (i = 0; i < e.response.length; i += 1) {
-                    this.applyOperation(e.cfg.method, e.response[i], this.getEntities());
+            if (Lang.isArray(e.serverResponse)) {
+                for (i = 0; i < e.serverResponse.length; i += 1) {
+                    this.applyOperation(e.cfg.method, e.serverResponse[i], this.getEntities());
                 }
             } else {
-                for (i = 0; i < e.response.get("entities").length; i += 1) {       // Update the cache with the Entites in the reply body
-                    this.applyOperation(e.cfg.method, e.response.get("entities")[i], this.getEntities());
+                for (i = 0; i < e.serverResponse.get("entities").length; i += 1) {       // Update the cache with the Entites in the reply body
+                    this.applyOperation(e.cfg.method, e.serverResponse.get("entities")[i], this.getEntities());
                 }
 
-                for (i = 0; i < e.response.get("events").length; i += 1) {
-                    evt = e.response.get("events")[i];
+                for (i = 0; i < e.serverResponse.get("events").length; i += 1) {
+                    evt = e.serverResponse.get("events")[i];
                     if (evt.get('@class') == "EntityUpdatedEvent") {
                         for (i = 0; i < evt.updatedEntities.length; i += 1) {         // Update the cache with the entites in the reply
                             this.applyOperation("POST", evt.updatedEntities[i], this.getEntities());
@@ -72,8 +72,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
         },
         lookupAndDo: function(method, needle, stack) {
+            var id;
             for (i = 0; i < stack.length; i += 1) {
-                if (stack[i].get("id") === needle.get("id")) {
+                if (( stack[i].get ) ? stack[i].get("id") === needle.get("id") :
+                    stack[i].id === needle.id) {
                     switch (method) {
                         case "DELETE":
                             stack.splice(i, 1);
@@ -380,15 +382,15 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.getTeamById(Y.Wegas.app.get('currentTeam'));
         },
         getPlayerById: function (playerId) {
-            var i, j, k, data = this.get('host').data;
+            var i, j, k, data = this.getEntities();
 
             playerId = playerId * 1;                                            // Convert to number
 
             for (i = 0; i < data.length; i += 1) {
-                for (j = 0; j < data[i].teams.length; j += 1) {
-                    for (k = 0; k < data[i].teams[j].players.length; k += 1) {
-                        if (data[i].teams[j].players[k].id === playerId) {
-                            return data[i].teams[j].players[k];
+                for (j = 0; j < data[i].get("teams").length; j += 1) {
+                    for (k = 0; k < data[i].get("teams")[j].get("players").length; k += 1) {
+                        if (data[i].get("teams")[j].get("players")[k].id === playerId) {
+                            return data[i].get("teams")[j].get("players")[k];
                         }
                     }
                 }
@@ -410,14 +412,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return null;
         },
         getTeamById: function (teamId) {
-            var i, j, data = this.get('host').data;
+            var i, j, data = this.getEntities();
 
             teamId = teamId * 1;                                                // Convert to number
 
             for (i = 0; i < data.length; i += 1) {
-                for (j = 0; j < data[i].teams.length; j += 1) {
-                    if (data[i].teams[j].id === teamId) {
-                        return data[i].teams[j];
+                for (j = 0; j < data[i].get("teams").length; j += 1) {
+                    if (data[i].get("teams")[j].get("id") === teamId) {
+                        return data[i].get("teams")[j];
                     }
                 }
             }

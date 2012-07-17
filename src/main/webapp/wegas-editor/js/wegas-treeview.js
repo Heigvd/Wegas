@@ -36,19 +36,14 @@ YUI.add('wegas-treeview', function (Y) {
         },
 
         bindUI: function () {
-            console.log("bindUI", this.get("dataSource"));
-            // Listen updates on the target datasource
-            this.dataSource.after("response", function (e) {
-                console.log("bindUI", this.get("dataSource"), treeViewElements, e.data);
+            this.dataSource.after("response", function (e) {                    // Listen updates on the target datasource
                 var treeViewElements = this.genTreeViewElements(e.data);
-                console.log("rendered",treeViewElements);
                 this.treeView.removeChildren(this.treeView.getRoot());
                 this.treeView.buildTreeFromObject(treeViewElements);
                 this.treeView.render();
             }, this);
 
-            // When a leaf is clicked
-            this.treeView.subscribe("clickEvent", function (e) {
+            this.treeView.subscribe("clickEvent", function (e) {                // When a leaf is clicked
                 YAHOO.log(e.node.index + " label was clicked", "info", "Wegas.WTreeView");
                 // Either show the edit menu
                 if (e.event.target.className === "wegas-treeview-editmenubutton") {
@@ -81,13 +76,13 @@ YUI.add('wegas-treeview', function (Y) {
         genVariableInstanceElements: function (label, el) {
             var l;
 
-            switch (el['@class']) {
+            switch (el.get('@class')) {
                 case 'StringInstance':
                 case 'NumberInstance':
                 case 'ListInstance':
                     return {
-                        label: label + ': ' + el.value,
-                        title: label + ': ' + el.value,
+                        label: label + ': ' + el.get("value"),
+                        title: label + ': ' + el.get("value"),
                         data: el
                     };
 
@@ -103,13 +98,13 @@ YUI.add('wegas-treeview', function (Y) {
                 case 'InboxInstance':
                     var k, children = [];
 
-                    label += "(" + el.messages.length + ")";
+                    label += "(" + el.get("messages").length + ")";
 
-                    for (k = 0; k < el.messages.length; k += 1) {
+                    for (k = 0; k < el.get("messages").length; k += 1) {
                         children.push({
                             type: 'Text',
-                            label: el.messages[k].subject,
-                            title: el.messages[k].subject
+                            label: el.get("messages")[k].get("subject"),
+                            title: el.get("messages")[k].get("subject")
                         });
                     }
                     return {
@@ -191,11 +186,11 @@ YUI.add('wegas-treeview', function (Y) {
         genScopeTreeViewElements: function (el) {
             var children = [], i, label, team, player, subEl;
 
-            for (i in el.scope.variableInstances) {
-                if (el.scope.variableInstances.hasOwnProperty(i)) {
-                    subEl = el.scope.variableInstances[i];
+            for (i in el.get("scope").get("variableInstances")) {
+                if (el.get("scope").get("variableInstances").hasOwnProperty(i)) {
+                    subEl = el.get("scope").get("variableInstances")[i];
                     label = '';
-                    switch (el.scope['@class']) {
+                    switch (el.get("scope").get('@class')) {
                         case 'PlayerScope':
                             player = Y.Wegas.app.dataSources.Game.rest.getPlayerById(i);
                             label = (player) ? player.name : "undefined";
@@ -214,25 +209,18 @@ YUI.add('wegas-treeview', function (Y) {
             return children;
         },
         genTreeViewElements: function (elements) {
-            var class2text = {
-                QuestionDescriptor: "Question",
-                StringDescriptor: "String",
-                NumberDescriptor: "Number",
-                ListDescriptor: "List",
-                ChoiceDescriptor: "Choice",
-                InboxDescriptor: "Inbox",
-                TriggerDescriptor: "Trigger"
-            }, ret = [], i, el, text;
+            var ret = [], i, el, text;
 
             for (i in elements) {
                 if (elements.hasOwnProperty(i)) {
                     el = elements[i];
 
-                    if ((this.get("excludeClasses") === null
+                    if (el.get &&
+                        (this.get("excludeClasses") === null
                         || !this.get('excludeClasses').hasOwnProperty(el['@class']))
                     && (this.get('includeClasses') === null
                         || this.get('includeClasses').hasOwnProperty(el['@class']))) {
-                        switch (el['@class']) {
+                        switch (el.get('@class')) {
                             case 'StringDescriptor':
                             case 'NumberDescriptor':
                             case 'InboxDescriptor':
@@ -241,29 +229,29 @@ YUI.add('wegas-treeview', function (Y) {
                             case 'TaskDescriptor':
                             case 'ResourceDescriptor':
                             case 'DialogueDescriptor':
-                                text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
+                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
                                 ret.push({
                                     type: 'html',
                                     html: text + EDITBUTTONTPL,
                                     title: text,
                                     children: this.genScopeTreeViewElements(el),
                                     data: el,
-                                    contentStyle: this.getClassName('icon-' +el['@class'])
+                                    contentStyle: this.getClassName('icon-' + el.get('@class'))
                                 });
 
                                 break;
 
                             case 'ListDescriptor':
                             case 'QuestionDescriptor':
-                                text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
+                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
                                 ret.push({
                                     type: 'html',
                                     html: text + EDITBUTTONTPL,
                                     title: text,
                                     //children: this.genScopeTreeViewElements(el),
-                                    children: this.genTreeViewElements(el.items),
+                                    children: this.genTreeViewElements(el.get("items")),
                                     data: el,
-                                    contentStyle: this.getClassName('icon-'+el['@class'])
+                                    contentStyle: this.getClassName('icon-'+el.get('@class'))
                                 });
                                 break;
                             case 'Page':
@@ -323,7 +311,7 @@ YUI.add('wegas-treeview', function (Y) {
                                 });
                                 break;
                             default:
-                                text = (class2text[el['@class']] || el['@class']) + ': ' + el.name;
+                                text = el.get('@class') + ': ' + el.get("name");
                                 ret.push({
                                     type: 'Text',
                                     label: text,

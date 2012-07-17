@@ -7,66 +7,98 @@ Y.add("statemachine-entities", function(Y){
     /*
      * FSMInstance Entity
      */
-    Y.Wegas.persistence.FSMInstance = function (){
-        Y.Wegas.persistence.FSMInstance.superclass.constructor.apply(this, arguments);
-        Y.mix(this, {
-            currentStateId:null
-        });
-    }
-    Y.extend(Y.Wegas.persistence.FSMInstance, Y.Wegas.persistence.VariableInstance, {
-        "@class":"FSMInstance"
+    Y.Wegas.persistence.FSMInstance = Y.Base.create("FSMInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            currentStateId: {},
+            "@class": {
+                value: "FSMInstance"
+            }
+        },
+        EDITFORM:  [{
+            name: 'currentStateId',
+            label: "Current state id"
+        }]
     });
 
     /*
      * FSMDescriptor Entity
      */
-    Y.Wegas.persistence.FSMDescriptor = function (){
-        Y.Wegas.persistence.FSMDescriptor.superclass.constructor.apply(this, arguments);
-        Y.mix(this, {
-            states:{}
-        });
-    }
-    Y.extend(Y.Wegas.persistence.FSMDescriptor, Y.Wegas.persistence.VariableDescriptor, {
-        "@class":"FSMDescriptor",
+    Y.Wegas.persistence.FSMDescriptor = Y.Base.create("FSMDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+
+        // *** Lifecycle methods *** //
+   
+        // *** Private methods *** //
         getCurrentState: function(){
-            return this.states[this.getInstance().currentStateId];
+            return this.get("states")[this.getInstance().get("currentStateId")];
         },
         getInitialStateId: function(){
-            return this.getInstance().currentStateId;
+            return this.get("defaultVariableInstance").get("currentStateId");
         },
-        setInitialStateId: function(initialStateId){
-            this.getInstance().currentStateId = initialStateId;
+        setInitialStateId: function(initialStateId) {
+            this.get("defaultVariableInstance").set("currentStateId", initialStateId);
         }
+    }, {
+        ATTRS: {
+            states: {
+                value: {}
+            },
+            "@class": {
+                value: "FSMDescriptor"
+            },
+            defaultVariableInstance:{
+                valueFn: function(){
+                    return new Y.Wegas.persistence.FSMInstance();
+                }
+            }
+        },
+        EDITMENU: [{
+            text: "Edit",
+            value: {
+                op:'smeditor'
+            }
+        },{
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
 
     /*
      * State Entity
      */
-    Y.Wegas.persistence.State = function (){
-        Y.Wegas.persistence.State.superclass.constructor.apply(this, arguments);
-        Y.mix(this, {
-            onEnterEvent:null,
-            label:null,
-            transitions:[]
-        });
-    }
-    Y.extend(Y.Wegas.persistence.State, Y.Wegas.persistence.Entity,{
-        "@class": "State"
+    Y.Wegas.persistence.State = Y.Base.create("State", Y.Wegas.persistence.Entity, [], {
+
+        // *** Lifecycle methods *** //
+        initializer: function () {
+        }
+
+    // *** Private methods *** //
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "State"
+            },
+            label: {},
+            onEnterEvent: {},
+            transitions: {
+                value: []
+            }
+        }
     });
 
     /*
      * TransitionDescriptor Entity
      */
-    Y.Wegas.persistence.Transition = function (){
-        Y.Wegas.persistence.Transition.superclass.constructor.apply(this, arguments);
-        Y.mix(this,{
-            triggerCondition:null,
-            preStateImpact:null,
-            nextStateId:null
-        });
-    }
-    Y.extend(Y.Wegas.persistence.Transition, Y.Wegas.persistence.Entity, {
-        "@class": "Transition"
+    Y.Wegas.persistence.Transition = Y.Base.create("Transition", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "Transition"
+            },
+            triggerCondition: {},
+            preStateImpact: {},
+            nextStateId: {}
+        }
     });
 
 
@@ -77,21 +109,91 @@ Y.add("statemachine-entities", function(Y){
     /*
      * TriggerDescriptor Entity
      */
-    Y.Wegas.persistence.TriggerDescriptor = function (){
-        Y.Wegas.persistence.TriggerDescriptor.superclass.constructor.apply(this, arguments);
-    }
-    Y.extend(Y.Wegas.persistence.TriggerDescriptor, Y.Wegas.persistence.FSMDescriptor, {
-        "@class": "TriggerDescriptor"
+    Y.Wegas.persistence.TriggerDescriptor = Y.Base.create("TriggerDescriptor", Y.Wegas.persistence.FSMDescriptor, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "TriggerDescriptor"
+            },
+            defaultVariableInstance:{
+                valueFn: function(){
+                    return new Y.Wegas.persistence.TriggerInstance();
+                }
+            }
+        },
+        EDITFORM: [{
+            name:'defaultVariableInstance',
+            disabled:true,
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'TriggerInstance',
+                type: 'hidden'
+            }, {
+                name: 'id',
+                type: 'hidden'
+            }, {
+                name: 'currentStateId',
+                label: 'Initial state'
+            }]
+        }, {
+            name:'triggerEvent',
+            type:'group',
+            fields:[{
+                name:'@class',
+                value:'Script',
+                type:'hidden'
+            }, {
+                name:'language',
+                label:'Language',
+                type:'select',
+                choices:[{
+                    value:'JavaScript'
+                }]
+            }, {
+                name:'content',
+                label:'Condition',
+                type:'text'
+            }]
+        }, {
+            name:'postTriggerEvent',
+            type:'group',
+            fields:[{
+                name:'@class',
+                value:'Script',
+                type:'hidden'
+            }, {
+                name:'language',
+                label:'Language',
+                type:'select',
+                choices:[{
+                    value:'JavaScript'
+                }]
+            }, {
+                name:'content',
+                label:'Impact',
+                type:'text'
+            }]
+        }, {
+            name: 'oneShot',
+            label:'Only once',
+            type:'boolean'
+        }]
     });
 
     /*
      * TriggerInstance Entity
      */
-    Y.Wegas.persistence.TriggerInstance = function (){
-        Y.Wegas.persistence.TriggerInstance.superclass.constructor.apply(this, arguments);
-    }
-    Y.extend(Y.Wegas.persistence.TriggerInstance, Y.Wegas.persistence.FSMInstance, {
-        "@class": "TriggerInstance"
+    Y.Wegas.persistence.TriggerInstance = Y.Base.create("TriggerInstance", Y.Wegas.persistence.FSMInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "TriggerInstance"
+            }
+        },
+        EDITFORM: [{
+            name: 'currentStateId',
+            label: "Trigger state",
+            disabled:true
+        }]
     });
 
     /**********************************/
@@ -101,40 +203,142 @@ Y.add("statemachine-entities", function(Y){
     /**
      * DialogueDescriptor Entity
      */
-    Y.Wegas.persistence.DialogueDescriptor = function (){
-        Y.Wegas.persistence.DialogueDescriptor.superclass.constructor.apply(this, arguments);
-    }
-    Y.extend(Y.Wegas.persistence.DialogueDescriptor, Y.Wegas.persistence.FSMDescriptor, {
-        "@class": "DialogueDescriptor"
-    });
 
+    Y.Wegas.persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", Y.Wegas.persistence.FSMInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "DialogueDescriptor"
+            }
+        },
+        EDITFORM: [{
+            name:'defaultVariableInstance',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'FSMInstance',
+                type: 'hidden'
+            }, {
+                name: 'id',
+                type: 'hidden'
+            }, {
+                name: 'currentStateId',
+                label: "Initial state id"
+            }]
+        }, {
+            name: 'states',
+            label: 'States',
+            type:'hashlist',
+            'elementType': {
+                type:'group',
+                fields: [{
+                    name: '@class',
+                    value:'DialogueState',
+                    type: 'hidden'
+                },{
+                    name: 'id',
+                    type: 'string',
+                    label: "Id",
+                    disabled: true
+                }, {
+                    name: 'label',
+                    label: 'Label'
+                }, {
+                    name: 'text',
+                    label: 'Text',
+                    type: 'text',
+                    rows: 8
+                }, {
+                    name: 'onEnterEvent',
+                    type:'group',
+                    fields: [{
+                        name: '@class',
+                        value:'Script',
+                        type: 'hidden'
+                    }, {
+                        name: 'language',
+                        value:'JavaScript',
+                        type: 'hidden'
+                    }, {
+                        name: 'content',
+                        'type': 'text',
+                        label:'On enter',
+                        rows: 3
+                    }]
+                }, {
+                    name: 'transitions',
+                    label: 'Transitions',
+                    type: 'list',
+                    elementType: {
+                        type:'group',
+                        fields: [{
+                            name: '@class',
+                            value:'DialogueTransition',
+                            type: 'hidden'
+                        }, {
+                            name: 'triggerCondition',
+                            type:'group',
+                            fields: [{
+                                name: '@class',
+                                value:'Script',
+                                type: 'hidden'
+                            }, {
+                                name: 'language',
+                                value:'JavaScript',
+                                type: 'hidden'
+                            }, {
+                                name: 'content',
+                                'type': 'hidden',
+                                label:'Condition',
+                                rows: 3
+                            }]
+                        }, {
+                            name: 'actionText',
+                            label: 'Action/User input'
+                        }, {
+                            name: 'nextStateId',
+                            label: 'Next state id'
+                        }, {
+                            name: 'preStateImpact',
+                            type:'group',
+                            fields: [{
+                                name: '@class',
+                                value:'Script',
+                                type: 'hidden'
+                            }, {
+                                name: 'language',
+                                value:'JavaScript',
+                                type: 'hidden'
+                            }, {
+                                name: 'content',
+                                'type': 'text',
+                                label:'On transition',
+                                rows: 8
+                            }]
+                        }]
+                    }
+                }]
+            }
+        }]
+    });
     /**
      * DialogueTransition Entity
      */
-    Y.Wegas.persistence.DialogueTransition = function (){
-        Y.Wegas.persistence.DialogueTransition.superclass.constructor.apply(this, arguments);
-        Y.mix(this, {
-            actionText:null
-        });
-    }
-    Y.extend(Y.Wegas.persistence.DialogueTransition, Y.Wegas.persistence.Transition, {
-        "@class": "DialogueTransition"
+    Y.Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Y.Wegas.persistence.Transition, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "DialogueTransition"
+            },
+            actionText: {}
+        }
     });
 
     /**
      * DialogueState Entity
      */
-    Y.Wegas.persistence.DialogueState = function (){
-        Y.Wegas.persistence.DialogueState.superclass.constructor.apply(this, arguments);
-        Y.mix(this, {
-            text:null
-        });
-    }
-    Y.extend(Y.Wegas.persistence.DialogueState, Y.Wegas.persistence.State, {
-        "@class": "DialogueState",
+    Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
         getAvailableActions: function(){
             var availableActions = [],
-            i;
+            i, transitions = this.get("transitions");
             for (i in this.transitions){
                 if(this.transitions[i] instanceof Y.Wegas.persistence.DialogueTransition){
                     availableActions.push(this.transitions[i]);
@@ -159,6 +363,13 @@ Y.add("statemachine-entities", function(Y){
          */
         setText: function (a, token){
             this.text = a.join(token);
+        }
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "DialogueState"
+            },
+            text: {}
         }
     });
 });

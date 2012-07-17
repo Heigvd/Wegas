@@ -38,8 +38,8 @@ YUI.add('wegas-editor', function(Y) {
             this._editMenu.setMenuItems(data, dataSource);
             this._editMenu.show();
         },
-        showEditPanel: function (data, dataSource) {
-            this.edit(data, function (cfg) {
+        showEditPanel: function (entity, dataSource) {
+            this.edit(entity, function (cfg) {
                 this.rest.put(cfg, {
                     success: function (e) {
                         Y.Wegas.editor.showFormMsg("success", "Item has been updated");
@@ -66,7 +66,7 @@ YUI.add('wegas-editor', function(Y) {
         /**
          * Show edition form in the target div
          */
-        edit: function (data, callback, formFields, scope) {
+        edit: function (entity, callback, formFields, scope) {
             var node, toolbarNode;
 
             this.callback = callback;
@@ -96,7 +96,7 @@ YUI.add('wegas-editor', function(Y) {
                             if (val.valueselector) {
                                 val = val.valueselector;
                             }
-                            this.callback.call(this.scope || this, val, this.currentData);
+                            this.callback.call(this.scope || this, val, this.currentEntity);
                         }, this)
                     }
                 }).render(toolbarNode);
@@ -118,9 +118,6 @@ YUI.add('wegas-editor', function(Y) {
 
             node = this._tab.get('panelNode').one('.yui3-tab-panel-content');
             node.setStyle('padding-right', '5px');
-            data = data || {};
-
-            formFields = data.getFormCfg();
 
             if (this._form) {
                 this._form.destroy();
@@ -130,15 +127,15 @@ YUI.add('wegas-editor', function(Y) {
 
             formFields = {
                 type: "group",
-                fields: formFields,
+                fields: entity.getFormCfg(),
                 parentEl: node
             };
 
-            this.currentData = data;
+            this.currentEntity = entity;
 
             Y.inputEx.use(formFields, Y.bind(function(fields) {
                 this._form = Y.inputEx(fields);
-                this._form.setValue(this.currentData);
+                this._form.setValue(this.currentEntity.toJson());
             }, this, formFields));
         },
         showFormMsg: function (level, msg) {													// Form msgs logic
@@ -151,9 +148,21 @@ YUI.add('wegas-editor', function(Y) {
         }
     }, {
         ATTRS: {
+            /**
+            * This field is used to globally override Entities edition menus.
+            * Use the target class name as the key.
+            */
             editorMenus: {
-                value: []
+                value: {}
+            },
+            /**
+            * This field is used to globally override Entities edition forms.
+            * Use the target class name as the key.
+            */
+            editorForms: {
+                value: {}
             }
+
         }
     });
 
