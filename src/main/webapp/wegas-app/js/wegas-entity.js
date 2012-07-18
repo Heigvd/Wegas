@@ -976,11 +976,26 @@ YUI.add('wegas-entity', function (Y) {
             "@class":{
                 value:"Script"
             }
+        },
+        EDITFORM:[
+        {
+            name:"content",
+            label:"Script"
+        },
+        {
+            name:"language",
+            //type:"select",
+            type:"hidden",
+            value:"JavaScript",
+            choices:[{
+                    value:"JavaScript"
+            }]
         }
+        ]
     });
 
 
-    /*
+/*
      * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORMS values here, so
      * we can use other object's existing declaration.
      */

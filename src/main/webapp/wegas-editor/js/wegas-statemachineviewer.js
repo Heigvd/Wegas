@@ -230,7 +230,8 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 case "save":
                     entity = this.get("entity");
                     if(entity){
-                        //entity.save();        //FIXME : @FX entity est à sauver
+                    //entity.save();        //FIXME : @FX entity est à sauver
+                    //Y.Wegas.VariableDescriptorFacade.rest.put / post (entity, callback, scope)
                     }
                     break;
                 default:
@@ -336,7 +337,11 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 }, this);
             }
             this.events.editState= this.get(CONTENT_BOX).delegate("click",function(e){
-                console.log("TODO: edit");
+                if(this.get("entity").get("onEnterEvent")){
+                    Y.Wegas.editor.showEditForm(this.get("entity").get("onEnterEvent"), this.setOnEnterEvent, this);
+                }else{
+                    Y.Wegas.editor.showEditForm(new Y.Wegas.persistence.Script(), this.setOnEnterEvent, this);
+                }
             },".state-edit",this);
             this.events.transitionDelete = this.on("wegas-transition:destroy", function(e){
                 var index = this.transitionsTarget.indexOf(e.target);
@@ -351,6 +356,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             for(i in this.events){
                 this.events[i].detach();
             }
+        },
+        setOnEnterEvent:function (entity){
+            entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.persistence.Entity.readObject(entity);
+            this.get("entity").set("onEnterEvent", entity);
         },
         addTransition: function(target){
             var tr;
