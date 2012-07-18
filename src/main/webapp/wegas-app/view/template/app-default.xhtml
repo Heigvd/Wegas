@@ -60,7 +60,7 @@
             YUI_config.groups.ace.base = '/Wegas/lib/ace-0.2.0/';               // Hack fix codemirror loading path so it uses local files
             //YUI_config.groups.wireit.base = '/Wegas/lib/wireit/';
             YUI_config.groups.excanvas.base = '/Wegas/lib/excanvas/';
-            YUI_config.groups.esprima.base = '/Wegas/lib/esprima/';
+            YUI_config.groups.esprima.base = '/Wegas/lib/';
             YUI_config.groups.jsplumb.base = '/Wegas/' + YUI_config.groups.jsplumb.base;
 
             /**<!--
@@ -109,19 +109,7 @@
             }).use(
                 <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
             function (Y) {
-                var ScopeForm = [
-                    /*{ name: 'id', type: 'hidden'},*/
-                    { type: 'select',
-                        name: '@class',
-                        label: 'Variable is',
-                        choices: [
-                            { value: "TeamScope", label: 'different for each team' },
-                            { value: "PlayerScope", label: 'different for each user' },
-                            { value: "GameModelScope", label: 'the same for everybody' }
-                        ]
-                    }
-                ],
-                Config = {
+                var cfg = {
                     base : "/Wegas/",
                     layoutSrc: '<ui:insert name="layoutUri">wegas-app/db/wegas-app-layout.json</ui:insert>',
                     lang : 'en-US',
@@ -238,329 +226,17 @@
                             ]
                         },*/
                     },
-                    /**  Entities admin menus **/
-                    editorMenus: {
-                        "Game": [
-                            { text: "New team", value: { op:'addChild', childClass: "Team" } },
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "Team": [
-                            { text: "New player", value: { op:'addChild', childClass: "Player" } },
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "Player": [
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "StringDescriptor": [
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "NumberDescriptor": [
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "TriggerDescriptor": [
-                            { text: "Delete", value: { op:'delete' } },
-                            { text: "Edit", value: {op:'smeditor'}}
-                        ],
-                        "DialogueDescriptor": [
-                            { text: "Delete", value: { op:'delete' } },
-                            { text: "Edit", value: {op:'smeditor'}}
-                        ],
-                        "FSMDescriptor": [
-                            { text: "Delete", value: { op:'delete' } },
-                            { text: "Edit", value: {op:'smeditor'}}
-                        ],
-                        "ListDescriptor": [
-                            { text: "Add element", value: { op:'addChild', childClass: "VariableDescriptor" } },
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "QuestionDescriptor": [
-                            { text: "Add a choice", value: { op:'addChild', childClass: "ChoiceDescriptor" } },
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "InboxDescriptor": [
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "Player": [
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
+                    /**
+                    * This field is used to override Entities edition menus.
+                    * Use the target class name as the key.
+                    */
+                    editorMenus: {},
 
-                        // *** Leader game *** //
-                        "TaskDescriptor": [
-                            { text: "Delete", value: { op:'delete' } }
-                        ],
-                        "ResourceDescriptor": [
-                            { text: "Delete", value: { op:'delete' } }
-                        ]
-                    },
-
-                    /** Entities admin Forms **/
-                    forms: {
-                        "GameModel" : [
-                            { name: 'id', type: 'hidden' },
-                            { name: 'name', label:'Name', required: true},
-                            { name: '@class', value:'GameModel', type: 'hidden'}
-                        ],
-                        "Game" : [
-                            { name: 'id', type: 'hidden' },
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'token', label:'Token', required: true},
-                            { name: '@class', value:'Game', type: 'hidden'}
-                        ],
-                        "Team" : [
-                            { name: 'id', type: 'hidden'},
-                            { name: 'gameId', type: 'hidden'},
-                            { name: '@class', value:'Team', type: 'hidden'},
-                            { name: 'name', label:'Name', required: true},
-                            // { name: 'token', label:'Token'},
-                        ],
-                        "Player" : [
-                            { name: 'id', type: 'hidden'},
-                            { name: 'teamId', type: 'hidden'},
-                            { name: 'name', label:'Name', required: true},
-                            { name: '@class', value:'Player', type: 'hidden'}
-                        ],
-                        "User" : [
-                            { name: 'id', type: 'hidden'},
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'password', type: 'password', label: 'New password', showMsg: true,  id: 'firstPassword', strengthIndicator: true, capsLockWarning: true },
-                            { type: 'password', label: 'Confirmation', showMsg: true, confirm: 'firstPassword' },
-                            { name: '@class', value:'User', type: 'hidden'}
-                        ],
-                        "StringDescriptor": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'StringDescriptor'},
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'StringInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'value', label: 'Default value'}
-                                ]}
-                        ],
-                        "StringInstance": [
-                            { name: '@class', value:'StringInstance', type: 'hidden'},
-                            { name: 'id', type: 'hidden'},
-                            { name: 'value', label: 'Text'}
-                        ],
-                        "TriggerDescriptor": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'TriggerDescriptor'},
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name:'defaultVariableInstance', disabled:true, type:'group', fields: [
-                                    { name: '@class', value:'TriggerInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'currentStateId', label: 'Initial state'}
-                                ]},
-                            {name:'triggerEvent', type:'group', fields:[
-                                    {name:'@class', value:'Script', type:'hidden'},
-                                    {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
-                                    {name:'content', label:'Condition',type:'text'}
-                                ]},
-                            {name:'postTriggerEvent', type:'group', fields:[
-                                    {name:'@class', value:'Script', type:'hidden'},
-                                    {name:'language', label:'Language', type:'select', choices:[{value:'JavaScript'}]},
-                                    {name:'content', label:'Impact',type:'text'}
-                                ]},
-                            { name: 'oneShot', label:'Only once', type:'boolean'}
-                        ],
-                        "TriggerInstance": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'TriggerInstance'},
-                            { name: 'currentStateId', label: "Trigger state", disabled:true}
-                        ],
-                        "State": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'State'},
-                            { name: 'label', label:'Name', required: true},
-                            { name:'impact', type:'group', fields: [
-                                    { name: '@class', value:'Script', type: 'hidden'},
-                                    { name: 'language', value:'JavaScript', type: 'hidden'},
-                                    { name: 'content', 'type': 'text', label:'Impact', rows: 3}
-                                ]}
-                        ],
-                        "NumberDescriptor": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'NumberDescriptor'},
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name: 'minValue', label:'Minimum' },
-                            { name: 'maxValue', label: "Maximum" },
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'NumberInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'value', label: 'Default value', regexp: /^[0-9]*$/ }
-                                ]}
-                        ],
-                        "NumberInstance": [
-                            { name: '@class', value:'NumberInstance:', type: 'hidden'},
-                            { name: 'id', type: 'hidden'},
-                            { name: 'value', label: 'Value', regexp: /^[0-9]*$/ }
-                        ],
-                        "ListDescriptor": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'ListDescriptor'},
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'scope', type:'group', fields: [
-                                    { name: 'id', type: 'hidden'},
-                                    { name: '@class', type: 'hidden', value: "GameModelScope" }
-                                ]},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'ListInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'}
-                                ]}
-                        ],
-                        "ListInstance": [
-                            { name: '@class', value:'ListInstance', type: 'hidden'},
-                            { name: 'id', type: 'hidden'}
-                        ],
-                        "QuestionDescriptor": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'QuestionDescriptor'},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'label', label:'Label'},
-                            { name: 'allowMultipleReplies', 'label': 'Allow multiple replies', type: 'boolean', value: false},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'QuestionInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'active', 'label': 'Active by default', type: 'boolean', value: true}
-                                ]},
-                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
-                        ],
-                        "QuestionInstance": [
-                            { name: '@class', value:'QuestionInstance', type: 'hidden'},
-                            { name: 'id', type: 'hidden'},
-                            { name: 'active', 'label': 'Active', type: 'boolean', value: true},
-                            { name: 'unread', 'label': 'Unread', type: 'boolean', value: true}
-                        ],
-                        "ChoiceDescriptor": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'ChoiceDescriptor'},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name: 'name', label:'Name', required: true},
-                            { name: 'description', 'type': 'html', label:'Description', opts: {width:'100%', height: '50px'}},
-                            { name: 'feedback', 'type': 'html', label:'Feedback', opts: {width:'100%', height: '50px'}},
-                            { name:'impact', type:'group', fields: [
-                                    { name: '@class', value:'Script', type: 'hidden'},
-                                    { name: 'language', value:'JavaScript', type: 'hidden'},
-                                    { name: 'content', 'type': 'text', label:'Impact', rows: 3}
-                                ]},
-                            { name: 'duration', label:'Duration', required: true, value: 1},
-                            { name: 'cost', label:'Cost', required: true, value: 1},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'ChoiceInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'active', label:'Active by default', type: 'boolean', value: true}
-                                ]}
-                        ],
-                        "ChoiceInstance": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'ChoiceInstance'},
-                            { name: 'active', label:'Active', type: 'boolean'}
-                        ],
-
-                        // *** Leader Game *** //
-                        "DialogueDescriptor": [
-                            { name: "id", type: "hidden"},
-                            { name: 'name', label:'Name', required: true},
-                            { name: '@class', type: 'hidden', value: "DialogueDescriptor"},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                { name: '@class', value:'FSMInstance', type: 'hidden'},
-                                { name: 'id', type: 'hidden'},
-                                { name: 'currentStateId', label: "Initial state id" }
-                            ]},
-                            { name: 'states', label: 'States', type:'hashlist', 'elementType': {
-                                type:'group', fields: [
-                                    { name: '@class', value:'DialogueState', type: 'hidden'},
-                                    { name: 'id', type: 'string', label: "Id", disabled: true},
-                                    { name: 'label', label: 'Label' },
-                                    { name: 'text', label: 'Text', type: 'text', rows: 8 },
-                                    { name: 'onEnterEvent', type:'group', fields: [
-                                        { name: '@class', value:'Script', type: 'hidden'},
-                                        { name: 'language', value:'JavaScript', type: 'hidden'},
-                                        { name: 'content', 'type': 'text', label:'On enter', rows: 3}
-                                    ]},
-                                    { name: 'transitions', label: 'Transitions', type: 'list', elementType: {
-                                        type:'group', fields: [
-                                            { name: '@class', value:'DialogueTransition', type: 'hidden'},
-                                            { name: 'triggerCondition', type:'group', fields: [
-                                                { name: '@class', value:'Script', type: 'hidden'},
-                                                { name: 'language', value:'JavaScript', type: 'hidden'},
-                                                { name: 'content', 'type': 'hidden', label:'Condition', rows: 3}
-                                            ]},
-                                            { name: 'actionText', label: 'Action/User input'},
-                                            { name: 'nextStateId', label: 'Next state id'},
-                                            { name: 'preStateImpact', type:'group', fields: [
-                                                { name: '@class', value:'Script', type: 'hidden'},
-                                                { name: 'language', value:'JavaScript', type: 'hidden'},
-                                                { name: 'content', 'type': 'text', label:'On transition', rows: 8}
-                                            ]}
-                                        ]}
-                                    }
-
-                                ]
-                            }}
-                        ],
-
-                        "FSMInstance": [
-                            { name: "id", type: "hidden"},
-                            { name: '@class', type: 'hidden', value: "FSMInstance"},
-                            { name: 'currentStateId', label: "Current state id"}
-                        ],
-
-                        "ResourceDescriptor": [
-                            { name: "id", type: "hidden"},
-                            { name: '@class', type: 'hidden', value: "ResourceDescriptor"},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name: 'name', label:'Name', required: true},
-                            //                            { name: 'label', label:'Label'},
-                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                    { name: '@class', value:'ResourceInstance', type: 'hidden'},
-                                    { name: 'id', type: 'hidden'},
-                                    { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
-                                    { name: "moral", label: "Moral", required: true  },
-                                    { name: "confidence", label: "Confiance", required: true},
-                                    { name: "properties", "type": "object", label: "Default properties" },
-                                    { name: "skillset", "type": "object", label: "Default skills" }
-                                ]}
-                        ],
-                        "ResourceInstance": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'ResourceInstance'},
-                            { name: 'active', label:'Active', type: 'boolean'},
-                            { name: "moral", label: "Moral", required: true },
-                            { name: "confidence", label: "Confiance", required: true },
-                            { name: "properties", "type": "object", label: "Properties" },
-                            { name: "skillset", "type": "object", label: "Skills" }
-                        ],
-                        "TaskDescriptor": [
-                            { name: "id", type: "hidden"},
-                            { name: '@class', type: 'hidden', value: "TaskDescriptor"},
-                            { name: 'scope', type:'group', fields: ScopeForm},
-                            { name: 'name', label:'Name', required: true},
-                            //                            { name: 'label', label:'Label'},
-                            { name: 'description', 'type': 'html', label:'Description', opts: {"width":"100%", height: '80px' }},
-                            { name:'defaultVariableInstance', type:'group', fields: [
-                                { name: '@class', value:'TaskInstance', type: 'hidden'},
-                                { name: 'id', type: 'hidden'},
-                                { name: 'active', 'label': 'Active by default', type: 'boolean', value: true},
-                                { name: 'duration', label:'Duration', required: true},
-                                { name: "properties", "type": "object", label: "Default properties" },
-                                { name: "skillset", "type": "object", label: "Default skillset" },
-                            ]}
-                        ],
-                        "TaskInstance": [
-                            { name: 'id', type: 'hidden'},
-                            { name: '@class', type: 'hidden', value: 'TaskInstance'},
-                            { name: 'active', label:'Active', type: 'boolean'},
-                            { name: 'duration', label:'Duration', required: true},
-                            { name: "properties", "type": "object", label: "Properties" },
-                            { name: "skillset", "type": "object", label: "Skillset" }
-                        ],
-
+                    /**
+                    * This field is used to override Entities edition forms.
+                    * Use the target class name as the key.
+                    */
+                    editorForms: {
                         //  *** Widgets *** //
                         List: [
                             { name: 'label', label: 'Label'},
@@ -620,33 +296,28 @@
                     }
                 };
 
-                Config.forms.ListDescriptor.fields = Config.forms.ListInstance
-                Config.forms.VariableDescriptor = [
-                    { name: 'valueselector', label:'Variable is', type: 'keyvalue', availableFields: [
-                            {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Config.forms.StringDescriptor},
-                            {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
-                            {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Config.forms.QuestionDescriptor },
-                            {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor },
-                            {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor },
-                            {type: 'group', name: 'ResourceDescriptor', label: 'a resource',fields:  Config.forms.ResourceDescriptor },
-                            {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Config.forms.TaskDescriptor },
-                            {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Config.forms.DialogueDescriptor }
-                        ]
-                    }
-                ];
+//                Config.forms.VariableDescriptor = [
+//                    { name: 'valueselector', label:'Variable is', type: 'keyvalue', availableFields: [
+//                    //        {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Config.forms.StringDescriptor},
+//                    //        {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
+//                            {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Config.forms.QuestionDescriptor },
+//                            {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor },
+//                            {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor },
+//                            {type: 'group', name: 'ResourceDescriptor', label: 'a resource',fields:  Config.forms.ResourceDescriptor },
+//                            {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Config.forms.TaskDescriptor },
+//                            {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Config.forms.DialogueDescriptor }
+//                        ]
+//                    }
+//                ];
 
-
-                    <ui:insert name="jsInitMethod">
-                    Y.on('domready', function() {						// Launch the app as soon as Dom is ready
-                    var app = new Y.Wegas.App(Config);
+                Y.on('domready', function() {
+                <ui:insert name="jsInitMethod">
+                    var app = new Y.Wegas.App(cfg);                             // Launch the app as soon as Dom is ready
                     app.render();
-                });
-                    </ui:insert>
+                </ui:insert>
+                 });
 
-                });
-
-
+            });
         </script>
     </h:body>
-
 </html>

@@ -5,11 +5,11 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-editmenu', function(Y) {
+YUI.add('wegas-editor-menu', function(Y) {
     var CONTENTBOX = 'contentBox',
         EditMenu;
 
-    EditMenu = Y.Base.create("wegas-editmenu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
+    EditMenu = Y.Base.create("wegas-editor-menu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
 
         // *** Instance Members *** //
         _currentDataSource: null,
@@ -75,7 +75,7 @@ YUI.add('wegas-editmenu', function(Y) {
             this.hide();
         }
     }, {
-        CSS_PREFIX: "wegas-editmenu"
+        CSS_PREFIX: "wegas-editor-menu"
     });
 
     Y.namespace('Wegas').EditMenu = EditMenu;

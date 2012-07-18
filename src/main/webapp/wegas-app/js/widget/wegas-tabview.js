@@ -96,9 +96,6 @@ YUI.add('wegas-tabview', function (Y) {
         },
         bindUI: function () {
             Tab.superclass.bindUI.apply(this, arguments);
-            this.on("widget:addChild", function(e) {
-                console.log("added",e);
-            });
         },
         destructor: function (){
             var toolbarChildren = this.get("toolbarChildren");

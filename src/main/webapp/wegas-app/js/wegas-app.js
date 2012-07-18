@@ -123,9 +123,6 @@ YUI.add('wegas-app', function (Y) {
             dataSources: {
                 value: {}
             },
-            forms: {
-                value: []
-            },
             cssStylesheets: {
                 value: []
             },
