@@ -91,6 +91,11 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
                         ix_provides: 'InboxDisplay'
                     },
+                    'wegas-form': {
+                        path: 'wegas-app/js/widget/wegas-form-min.js',
+                        requires: ['wegas-widget', 'wegas-inputex'],
+                        ix_provides: "FormWidget"
+                    },
 
                     /** Inputex Fields **/
                     'wegas-inputex': {
@@ -112,7 +117,7 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-app', 'wegas-inputex',
+                        'wegas-app', 'wegas-form',
                         "wegas-editor-buttons", 'wegas-editor-menu',
 
                         /* @fixme those should be included on the fly*/

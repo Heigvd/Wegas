@@ -17,7 +17,7 @@ YUI.add('wegas-editor-buttons', function (Y) {
         bindUI: function () {
             Y.Wegas.NewButton.superclass.bindUI.apply(this, arguments);
             this.on("click", function(){
-                Y.Wegas.editor.showAddPanel({
+                Y.Wegas.editor.showAddForm({
                     "@class": this.get("targetClass")
                 }, null, Y.Wegas.app.dataSources[this.get("targetClass")]);
             });

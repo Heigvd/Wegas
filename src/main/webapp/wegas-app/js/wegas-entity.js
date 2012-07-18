@@ -22,7 +22,7 @@ YUI.add('wegas-entity', function (Y) {
 
             for (k in ret) {
                 if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
-                    ret[k] = ret[k].toJson();
+                    ret[k] = ret[k].toJSON();
                 }
             }
             return ret;                                                         // Return a copy of this's fields.
