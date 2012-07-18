@@ -30,6 +30,26 @@ YUI.add('wegas-entity', function (Y) {
             return ret;                                                         // Return a copy of this's fields.
         },
         /**
+         * Cleaning out object by removing irrelevant informations such as null values
+         *
+         * @return {Entity} containing relevant informations needed by server
+         */
+        compressExport: function(){
+            var e = this.getAttrs();
+            delete e["initialized"];
+            delete e["destroyed"];
+            for(var i in e){                                                    //Removing irrelevant informations
+                if(e[i] === null){                                              //Null attributes
+                    //TODO : empty strings, objects ??
+                    delete e[i];
+                }
+                if(e.hasOwnProperty(i) && e[i] instanceof Y.Wegas.persistence.Entity){
+                    e[i] = e[i].compressExport()
+                }
+            }
+            return e;
+        },
+        /**
          * Returns the form configuration associated to this object, to be used a an inputex object.
          */
         getFormCfg: function () {
