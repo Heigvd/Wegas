@@ -54,7 +54,7 @@ YUI.add('wegas-treeview', function (Y) {
                         points: ["tr", "br"]
                     });
                 } else {                                                        // Or display the edit tab
-                    Y.Wegas.editor.showEditPanel(e.node.data, this.dataSource);
+                    Y.Wegas.editor.showUpdateForm(e.node.data, this.dataSource);
                 }
             }, null, this);
 

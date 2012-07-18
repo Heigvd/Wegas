@@ -11,6 +11,9 @@ YUI.add('wegas-list', function (Y) {
 
     List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget ], {
 
+
+        // ** Lifecycle Methods ** //
+
         syncUI: function () {
             var cb = this.get(CONTENTBOX);
 
