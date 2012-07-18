@@ -50,7 +50,7 @@ YUI.add('wegas-entity', function (Y) {
         getMenuCfg: function () {
             var menus = Y.Wegas.app.get('editorMenus'),
             menu = menus[this.get('@class')] || menus[this.get("type")] ||      // Select first server defined forms, based on the @class or the type attribute
-                this.constructor.EDITMENU || [];                                // And if no form is defined we return the default one defined in the entity
+            this.constructor.EDITMENU || [];                                // And if no form is defined we return the default one defined in the entity
 
             return menu;
         }
@@ -125,21 +125,21 @@ YUI.add('wegas-entity', function (Y) {
      * GameModel mapper
      */
     Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
-            ATTRS: {
-                name: {},
-                games: {
-                    value: []
-                },
-                scriptLibrary: {
-                    value: {}
-                }
+        ATTRS: {
+            name: {},
+            games: {
+                value: []
             },
-            EDITFORM : [{
-                name: 'name',
-                label:'Name',
-                required: true
-            }]
-        });
+            scriptLibrary: {
+                value: {}
+            }
+        },
+        EDITFORM : [{
+            name: 'name',
+            label:'Name',
+            required: true
+        }]
+    });
 
     /**
      * Game mapper
@@ -296,7 +296,13 @@ YUI.add('wegas-entity', function (Y) {
                     return new Y.Wegas.persistence.TeamScope();                 // Should the default scope be set server or client side?
                 }
             }
-        }
+        },
+        EDITFORM:  [{
+            name: 'valueselector',
+            label:'Variable is',
+            type: 'keyvalue',
+            availableFields: []
+        }]
     });
 
 
@@ -838,4 +844,22 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
 
+
+    /*
+     * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORMS values here, so
+     * we can use other object's existing declaration.
+     */
+//    Y.Wegas.persistence.VariableDescriptor.EDITFORMS
+//    [
+//                            {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Config.forms.StringDescriptor},
+//                            {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
+//                            {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Config.forms.QuestionDescriptor },
+//                            {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor },
+//                            {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor },
+//                            {type: 'group', name: 'ResourceDescriptor', label: 'a resource',fields:  Config.forms.ResourceDescriptor },
+//                            {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Config.forms.TaskDescriptor },
+//                            {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Config.forms.DialogueDescriptor }
+//                        ]
+//                    }
+//                ]
 });
