@@ -68,10 +68,10 @@ YUI.add('wegas-entity', function (Y) {
     }, {
         ATTRS: {
             id: {
-                value:null
+                readOnly:true
             },
             '@class': {
-                value:null,
+                value: null,
                 readOnly: true
             }
         },
