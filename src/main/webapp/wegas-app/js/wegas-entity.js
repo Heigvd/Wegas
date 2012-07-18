@@ -5,35 +5,51 @@
 YUI.add('wegas-entity', function (Y) {
     "use strict";
     /**
-    * Entity is used to represent db objects.
-    */
-    var Entity = function (cfg) {
-        Y.mix(this, cfg);
-    };
+     * Entity is used to represent db objects.
+     */
 
-    Y.mix(Entity.prototype, {
-        writeObject: function () {
-            return Y.mix({}, this);                                             // Return a copy of this's fields.
+    var Entity = Y.Base.create("Entity", Y.Base, [ ], {
+
+        initializer: function () {
         },
         /**
-         * Cleaning out JSON export, "compression" purpose.
-         * This methid is called by JSON's stringify method
+         * Serialize to a json object.
          *
-         * @return {Entity} containing relevant informations needed by server
+         * @function getObject
          */
-        toJSON: function(){
-            var e = this.writeObject();                                         //Make a working copy
-            for(var i in e){                                                    //Removing irrelevant informations
-                if(e[i] === null){                                              //Null attributes
-                    //TODO : empty strings, objects ??
-                    delete e[i];
-                }
-            }
-            e["@class"] = this["@class"];                                       //Adding the @class attribute to JSON's stringify method
-            return e;
+        toJSON: function () {
+            var k, ret = this.getAttrs();
+            delete ret["initialized"];                                          // Remove values coming from Y.Base implementation
+            delete ret["destroyed"];
+
+            //            for (k in ret) {
+            //                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
+            //                    ret[k] = ret[k].toJson();
+            //                }
+            //            }
+            return ret;                                                         // Return a copy of this's fields.
+        },
+        /**
+         * Returns the form configuration associated to this object, to be used a an inputex object.
+         */
+        getFormCfg: function () {
+            var forms = Y.Wegas.app.get('forms'),
+            form = forms[this.get('@class')] || forms[this.get("type")] ||                 // Select first server defined forms, based on the @class or the type attribute
+            this.constructor.EDITFORM || [];                                    // And if no form is defined we return the default one defined in the entity
+
+            return form.concat([{
+                name: 'id',
+                type: 'hidden'
+            }, {
+                name: '@class',
+                type: 'hidden'
+            }]);
         }
-    });
-    Y.mix(Entity, {
+    }, {
+        ATTRS: {
+            id: {},
+            '@class': {}
+        },
         /**
          *  This method takes a parsed json object and instantiate them based
          *  on their @class attribute. Target class are found in namespace
@@ -53,7 +69,7 @@ YUI.add('wegas-entity', function (Y) {
                             }
                         }
                     }
-                    if (!Y.Lang.isArray(value) && !Y.Lang.isUndefined(value["@class"])) {
+                    if (!Y.Lang.isArray(value) && (!Y.Lang.isUndefined(value["@class"])/* || !Y.Lang.isUndefined(value["type"])*/)) {
                         return Y.Wegas.persistence.Entity.readObject(value);
                     }
                 }
@@ -68,136 +84,747 @@ YUI.add('wegas-entity', function (Y) {
         readObject: function (o) {
             var classDef = Y.Wegas.persistence.Entity;
 
-            if (o["@class"].indexOf("Descriptor") !== -1) {                     // @Hack so VariableDescriptors are instantiated even if they dont have a mapping
+            if (o["@class"] && o["@class"].indexOf("Descriptor") !== -1) {                     // @Hack so VariableDescriptors are instantiated even if they dont have a mapping
                 classDef = Y.Wegas.persistence.VariableDescriptor;
             }
-            if (o["@class"].indexOf("Instance") !== -1) {                       // @Hack so VariableInstances are instantiated even if they dont have a mapping
+            if (o["@class"] && o["@class"].indexOf("Instance") !== -1) {                       // @Hack so VariableInstances are instantiated even if they dont have a mapping
                 classDef = Y.Wegas.persistence.VariableInstance;
             }
-
-            classDef = Y.Wegas.persistence[o["@class"]] || classDef;
+            if (o["@class"] && Y.Wegas.persistence[o["@class"]]) {
+                // console.log(o["@class"] );
+                classDef = Y.Wegas.persistence[o["@class"]] || classDef;
+            }
             return new classDef(o);
-        },
-        writeObject: function (o) {
-            return o.writeObject();
         }
     });
+
 
     Y.namespace('Wegas').persistence = {
         Entity : Entity
     };
 
     /**
-     * GameScope mapper
+     * ServerResponse mapper
      */
-    Y.Wegas.persistence.GameScope = function() {
-        Y.Wegas.persistence.GameScope.superclass.constructor.apply(this, arguments);
-    }
-    Y.extend(Y.Wegas.persistence.GameScope, Y.Wegas.persistence.Entity, {
-        "@class": "GameScope",
-        getInstance: function (){
-            try{
-                return this.variableInstances[0];
-            }catch(e){
-                return null;
+    Y.Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Y.Base.create("ManagedModeResponseFilter$ServerResponse", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            entities: {
+                value: []
+            },
+            events: {
+                value: []
             }
         }
     });
+    /**
+     * GameModel mapper
+     */
+    Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
+        }, {
+            ATTRS: {
+                name: {},
+                games: {
+                    value: []
+                }
+            },
+            EDITFORM : [{
+                name: 'name',
+                label:'Name',
+                required: true
+            }]
+        });
 
     /**
-     * TeamScope mapper
+     * Game mapper
      */
-    Y.Wegas.persistence.TeamScope = function() {
-        Y.Wegas.persistence.TeamScope.superclass.constructor.apply(this, arguments);
-    }
-    Y.extend(Y.Wegas.persistence.TeamScope, Y.Wegas.persistence.Entity, {
-        "@class": "TeamScope",
-        getInstance: function(){
-            try{
-                return this.variableInstances[Y.Wegas.app.get('currentTeam')];
-            }catch(e){
-                return null;
+    Y.Wegas.persistence.Game = Y.Base.create("Game", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            name: {},
+            teams: {
+                value: []
             }
-        }
+        },
+        EDITFORM: [{
+            name: 'name',
+            label:'Name',
+            required: true
+        }, {
+            name: 'token',
+            label:'Token',
+            required: true
+        }],
+        EDITMENU: [{
+            text: "New team",
+            value: {
+                op:'addChild',
+                childClass: "Team"
+            }
+        }, {
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
 
     /**
-     * PlayerScope mapper
+     * Team mapper
      */
-    Y.Wegas.persistence.PlayerScope = function() {
-        Y.Wegas.persistence.PlayerScope.superclass.constructor.apply(this, arguments);
-    }
-    Y.extend(Y.Wegas.persistence.PlayerScope, Y.Wegas.persistence.Entity, {
-        "@class": "PlayerScope",
+    Y.Wegas.persistence.Team = Y.Base.create("Team", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            name: {},
+            players: {
+                value: []
+            }
+        },
+        EDITFORM : [{
+            name: 'gameId',
+            type: 'hidden'
+        }, {
+            name: 'name',
+            label:'Name',
+            required: true
+        }],
+        EDITMENU: [{
+            text: "New player",
+            value: {
+                op:'addChild',
+                childClass: "Player"
+            }
+        }, {
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
+    });
+
+    /**
+     * Player mapper
+     */
+    Y.Wegas.persistence.Player = Y.Base.create("Player", Y.Wegas.persistence.Entity, [], {}, {
+        EDITFORM : [{
+            name: 'teamId',
+            type: 'hidden'
+        }, {
+            name: 'name',
+            label:'Name',
+            required: true
+        }],
+        EDITMENU: [{
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
+    });
+
+    /**
+     * User mapper
+     */
+    Y.Wegas.persistence.User = Y.Base.create("User", Y.Wegas.persistence.Entity, [], {}, {
+        EDITFORM : [{
+            name: 'name',
+            label:'Name',
+            required: true
+        }, {
+            name: 'password',
+            type: 'password',
+            label: 'New password',
+            showMsg: true,
+            id: 'firstPassword',
+            strengthIndicator: true,
+            capsLockWarning: true
+        }, {
+            type: 'password',
+            label: 'Confirmation',
+            showMsg: true,
+            confirm: 'firstPassword'
+        }]
+    });
+    /**
+     * VariableDescriptor mapper
+     */
+    Y.Wegas.persistence.VariableDescriptor = Y.Base.create("VariableDescriptor", Y.Wegas.persistence.Entity, [], {
+        getFormCfg: function () {
+            var def =  [{
+                name: 'name',
+                label:'Name',
+                required: true
+            }, {
+                name: 'label',
+                label:'Label'
+            }, {
+                name: 'scope',
+                type:'group',
+                fields: [{
+                    type: 'select',
+                    name: '@class',
+                    label: 'Variable is',
+                    choices: [{
+                        value: "TeamScope",
+                        label: 'different for each team'
+                    }, {
+                        value: "PlayerScope",
+                        label: 'different for each user'
+                    }, {
+                        value: "GameModelScope",
+                        label: 'the same for everybody'
+                    }]
+                }]
+            }];
+
+            return def.concat(Y.Wegas.persistence.VariableDescriptor.superclass.getFormCfg.apply(this));
+        },
         getInstance: function () {
-            try{
-                return this.variableInstances[Y.Wegas.app.get('currentPlayer')];
-            }catch(e){
-                return null;
-            }
+            return this.get("scope").getInstance();
         }
+    }, {
+        ATTRS: {
+            name: {},
+            descriptorId: {},
+            defaultVariableInstance: {},
+            scope: {
+                valueFn: function(){
+                    return new Y.Wegas.persistence.TeamScope();                 // Should the default scope be set server or client side?
+                }
+            }
+    }
     });
 
-    /**
+
+
+/**
+     * Scope mapper
+     */
+Y.Wegas.persistence.Scope = Y.Base.create("Scope", Y.Wegas.persistence.Entity, [], {
+    getInstance: function (){
+        console.log("ERROR SHOULD BE OVERRIDDEN")
+    }
+}, {
+    ATTRS: {
+        variableInstances: {}
+    }
+});
+/**
      * GameModelScope mapper
      */
-    Y.Wegas.persistence.GameModelScope = function() {
-        Y.Wegas.persistence.GameModelScope.superclass.constructor.apply(this, arguments);
+Y.Wegas.persistence.GameModelScope = Y.Base.create("GameModelScope", Y.Wegas.persistence.Scope, [], {
+    getInstance: function () {
+        return this.get("variableInstances")[0];
     }
-    Y.extend(Y.Wegas.persistence.GameModelScope, Y.Wegas.persistence.Entity, {
-        "@class": "GameModelScope",
-        getInstance: function () {
-            try{
-                return this.variableInstances[0];
-            }catch(e){
-                return null;
-            }
+});
+/**
+     * GameScope mapper
+     */
+Y.Wegas.persistence.GameScope = Y.Base.create("GameScope", Y.Wegas.persistence.Scope, [], {
+    getInstance: function (){
+        return this.get("variableInstances")[0];
+    }
+});
+
+/**
+     * TeamScope mapper
+     */
+Y.Wegas.persistence.TeamScope = Y.Base.create("TeamScope", Y.Wegas.persistence.Scope, [], {
+    getInstance: function (){
+        return this.get("variableInstances")[Y.Wegas.app.get('currentTeam')];
+    }
+});
+
+/**
+     * PlayerScope mapper
+     */
+Y.Wegas.persistence.PlayerScope = Y.Base.create("PlayerScope", Y.Wegas.persistence.Scope, [], {
+    getInstance: function () {
+        return this.get("variableInstances")[Y.Wegas.app.get('currentPlayer')];
+    }
+});
+
+/**
+     * VariableInstance mapper
+     */
+Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], { }, {
+    ATTRS: {
+        value: {}
+    }
+});
+/**
+     * StringDescriptor mapper
+     */
+Y.Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+    ATTRS: {
+    },
+    EDITFORM:  [{
+        name:'defaultVariableInstance',
+        type:'group',
+        fields: [{
+            name: '@class',
+            value:'StringInstance',
+            type: 'hidden'
+        },{
+            name: 'id',
+            type: 'hidden'
+        },{
+            name: 'value',
+            label: 'Default value'
+        }]
+    }],
+    EDITMENU: [{
+        text: "Delete",
+        value: {
+            op:'delete'
         }
+    }]
+});
+/**
+     * StringInstance mapper
+     */
+Y.Wegas.persistence.StringInstance = Y.Base.create("StringInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+    EDITFORM: [{
+        name: 'value',
+        label: 'Text'
+    }]
+});
+/**
+    * NumberDescriptor mapper
+    */
+Y.Wegas.persistence.NumberDescriptor = Y.Base.create("NumberDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+    ATTRS: {
+        minValue: {},
+        maxValue: {}
+    },
+    EDITFORM: [{
+        name: 'minValue',
+        label:'Minimum'
+    }, {
+        name: 'maxValue',
+        label: "Maximum"
+    },{
+        name:'defaultVariableInstance',
+        type:'group',
+        fields: [{
+            name: '@class',
+            value:'NumberInstance',
+            type: 'hidden'
+        },{
+            name: 'id',
+            type: 'hidden'
+        },{
+            name: 'value',
+            label: 'Default value',
+            regexp: /^[0-9]*$/
+        }]
+    }],
+    EDITMENU: [{
+        text: "Delete",
+        value: {
+            op:'delete'
+        }
+    }]
+});
+/**
+     * NumberInstance mapper
+     */
+Y.Wegas.persistence.NumberInstance = Y.Base.create("NumberInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+    EDITFORM: [{
+        name: 'value',
+        label: 'Text',
+        regexp: /^[0-9]*$/
+    }]
+});
+/**
+     * ListDescriptor mapper
+     */
+Y.Wegas.persistence.ListDescriptor = Y.Base.create("ListDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+    ATTRS: {
+        items: {
+            value: []
+        }
+    },
+    EDITFORM: [{
+        name:'defaultVariableInstance',
+        type:'group',
+        fields: [{
+            name: '@class',
+            value:'ListInstance',
+            type: 'hidden'
+        },{
+            name: 'id',
+            type: 'hidden'
+        }]
+    }],
+    EDITMENU: [{
+        text: "Add element",
+        value: {
+            op:'addChild',
+            childClass: "VariableDescriptor"
+        }
+    },{
+        text: "Delete",
+        value: {
+            op:'delete'
+        }
+    }]
+});
+/*
+     * ListInstance mapper
+     */
+Y.Wegas.persistence.ListInstance = Y.Base.create("ListInstance", Y.Wegas.persistence.VariableInstance, []);
+
+
+    /**
+     * QuestionDescriptor mapper
+     */
+    Y.Wegas.persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", Y.Wegas.persistence.ListDescriptor, [], {}, {
+        EDITFORM: [{
+            name: 'label',
+            label:'Label'
+        }, {
+            name: 'allowMultipleReplies',
+            'label': 'Allow multiple replies',
+            type: 'boolean',
+            value: false
+        }, {
+            name:'defaultVariableInstance',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'QuestionInstance',
+                type: 'hidden'
+            }, {
+                name: 'id',
+                type: 'hidden'
+            }, {
+                name: 'active',
+                'label': 'Active by default',
+                type: 'boolean',
+                value: true
+            }]
+        }, {
+            name: 'description',
+            'type': 'html',
+            label:'Description',
+            opts: {
+                "width":"100%",
+                height: '80px'
+            }
+        }],
+        EDITMENU: [{
+            text: "Add a choice",
+            value: {
+                op:'addChild',
+                childClass: "ChoiceDescriptor"
+            }
+        }, {
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
+    });
+
+    /**
+     * QuestionInstance mapper
+     */
+    Y.Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            active: {
+                value: true
+            },
+            unread: {
+                value: true
+            }
+        },
+        EDITFORM: [{
+            name: 'active',
+            label: 'Active',
+            type: 'boolean'
+        },{
+            name: 'unread',
+            label: 'Unread',
+            type: 'boolean'
+        }]
     });
     /**
-    * VariableDescriptor mapper
-    */
-    Y.Wegas.persistence.VariableDescriptor = function() {
-        Y.Wegas.persistence.VariableDescriptor.superclass.constructor.apply(this, arguments);
-        Y.mix(this,{
-            id: null,
-            name: null,
-            defaultVariableInstance:null,
-            scope: new Y.Wegas.persistence.TeamScope()                          //Default to teamscope
-        });
-    }
-    Y.extend(Y.Wegas.persistence.VariableDescriptor, Y.Wegas.persistence.Entity, {
-        getInstance: function () {
-            return this.scope.getInstance();
+     * ChoiceDescriptor mapper
+     */
+    Y.Wegas.persistence.ChoiceDescriptor = Y.Base.create("ChoiceDescriptor", Y.Wegas.persistence.ListDescriptor, [], {}, {
+        EDITFORM: [{
+            name: 'description',
+            'type': 'html',
+            label:'Description',
+            opts: {
+                width:'100%',
+                height: '50px'
+            }
+        }, {
+            name: 'feedback',
+            type: 'html',
+            label:'Feedback',
+            opts: {
+                height: '50px'
+            }
+        },{
+            name:'impact',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'Script',
+                type: 'hidden'
+            }, {
+                name: 'language',
+                value:'JavaScript',
+                type: 'hidden'
+            }, {
+                name: 'content',
+                'type': 'text',
+                label:'Impact',
+                rows: 3
+            }]
+        }, {
+            name: 'duration',
+            label:'Duration',
+            required: true,
+            value: 1
+        }, {
+            name: 'cost',
+            label:'Cost',
+            required: true,
+            value: 1
+        }, {
+            name:'defaultVariableInstance',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'ChoiceInstance',
+                type: 'hidden'
+            }, {
+                name: 'id',
+                type: 'hidden'
+            }, {
+                name: 'active',
+                label:'Active by default',
+                type: 'boolean',
+                value: true
+            }]
+        }]
+    });
+
+    /**
+     * ChoiceInstance mapper
+     */
+    Y.Wegas.persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            active: {
+                value: true
+            }
+        },
+        EDITMENU: [{
+            name: 'active',
+            label:'Active',
+            type: 'boolean'
+        }]
+    });
+
+    /**
+     * ResourceDescriptor mapper
+     */
+    Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+        ATTRS: {
+            messages: {}
+        },
+        EDITFORM: [{
+            name: 'description',
+            'type': 'html',
+            label:'Description',
+            opts: {
+                "width":"100%",
+                height: '80px'
+            }
+        }, {
+            name:'defaultVariableInstance',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'ResourceInstance',
+                type: 'hidden'
+            }, {
+                name: 'id',
+                type: 'hidden'
+            }, {
+                name: 'active',
+                'label': 'Active by default',
+                type: 'boolean',
+                value: true
+            }, {
+                name: "moral",
+                label: "Moral",
+                required: true
+            }, {
+                name: "confidence",
+                label: "Confiance",
+                required: true
+            }, {
+                name: "properties",
+                "type": "object",
+                label: "Default properties"
+            }, {
+                name: "skillset",
+                "type": "object",
+                label: "Default skills"
+            }]
+        }],
+        EDITMENU: [{
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
+    });
+
+    /**
+     * ResourceInstance mapper
+     */
+    Y.Wegas.persistence.ResourceInstance = Y.Base.create("ResourceInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
+        EDITFORM: [{
+            name: 'active',
+            label:'Active',
+            type: 'boolean'
+        }, {
+            name: "moral",
+            label: "Moral",
+            required: true
+        }, {
+            name: "confidence",
+            label: "Confiance",
+            required: true
+        }, {
+            name: "properties",
+            "type": "object",
+            label: "Properties"
+        }, {
+            name: "skillset",
+            "type": "object",
+            label: "Skills"
+        }]
+    });
+
+    /**
+     * TaskDescriptor mapper
+     */
+    Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+        EDITFORM: [{
+            name: 'description',
+            'type': 'html',
+            label:'Description',
+            opts: {
+                "width":"100%",
+                height: '80px'
+            }
+        }, {
+            name:'defaultVariableInstance',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'TaskInstance',
+                type: 'hidden'
+            }, {
+                name: 'id',
+                type: 'hidden'
+            }, {
+                name: 'active',
+                'label': 'Active by default',
+                type: 'boolean',
+                value: true
+            }, {
+                name: 'duration',
+                label:'Duration',
+                required: true
+            }, {
+                name: "properties",
+                "type": "object",
+                label: "Default properties"
+            }, {
+                name: "skillset",
+                "type": "object",
+                label: "Default skillset"
+            }]
+        }],
+        EDITMENU: [{
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
+    });
+
+    /**
+     * TaskInstance mapper
+     */
+    Y.Wegas.persistence.TaskInstance = Y.Base.create("TaskInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
+        EDITFORM: [{
+            name: 'active',
+            label:'Active',
+            type: 'boolean'
+        }, {
+            name: 'duration',
+            label:'Duration',
+            required: true
+        }, {
+            name: "properties",
+            "type": "object",
+            label: "Properties"
+        }, {
+            name: "skillset",
+            "type": "object",
+            label: "Skillset"
+        }]
+    });
+
+    Y.Wegas.persistence.InboxDescriptor = Y.Base.create("", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+        EDITMENU: [{
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
+    });
+    /**
+     * InboxInstance mapper
+     */
+    Y.Wegas.persistence.InboxInstance = Y.Base.create("InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
+        ATTRS: {
+            messages: {}
         }
     });
 
     /**
-    * VariableInstance mapper
-    */
-    Y.Wegas.persistence.VariableInstance = function() {
-        Y.Wegas.persistence.VariableInstance.superclass.constructor.apply(this, arguments);
-    }
-    Y.extend(Y.Wegas.persistence.VariableInstance, Y.Wegas.persistence.Entity);
+     * Message mapper
+     */
+    Y.Wegas.persistence.Message = Y.Base.create("Message", Y.Wegas.persistence.Entity, [], { }, {
+        ATTRS: {
+            subject: {},
+            body: {}
+        }
+    });
 
     /**
      * Script mapper
      */
-    Y.Wegas.persistence.Script = function() {
-        Y.Wegas.persistence.Script.superclass.constructor.apply(this, arguments);
-
-        Y.mix(this, {
-            content:null,
-            language: "JavaScript"
-        });
-    }
-    Y.extend(Y.Wegas.persistence.Script, Y.Wegas.persistence.Entity, {
-        "@class": "Script",
+    Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
         isValid: function (){
         //TODO : FX a greffer :)
         },
         isEmpty: function () {
             return (this.content == null || this.content == "");
+        }
+    }, {
+        ATTRS: {
+            content: {},
+            language: {
+                value: "JavaScript"
+            }
         }
     });
 

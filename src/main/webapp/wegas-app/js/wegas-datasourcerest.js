@@ -42,56 +42,87 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.get('host').sendRequest(requestCfg);
         },
 
-        applyOperation: function (method, needle, stack) {
-            var i;
-            for (i = 0; i < stack.length; i += 1) {
-                if (stack[i].id === needle.id) {
-                    switch (method) {
-                        case "DELETE":
-                            //@fixme is there a memory leak here ??
-                            stack.splice(i, 1);
-                            //delete stack[i];
-                            return true;
-                        default:
-                            //stack[i] = Y.merge(stack[i], needle);
-                            delete stack[i];
-                            stack[i] = needle;
-                            return true;
+
+        beforeResponse: function (e) {
+            Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "info", "Wegas.RestDataSource");
+            e.data = this.getEntities();
+            e.serverResponse = Y.Wegas.persistence.Entity.revive(e.response.results);
+
+            if (Lang.isArray(e.serverResponse)) {                               // Non-managed response: we apply the operation for each object in the returned array
+                for (i = 0; i < e.serverResponse.length; i += 1) {
+                    this.applyOperation(e.cfg.method, e.serverResponse[i], this.getEntities());
+                }
+            } else {
+                for (i = 0; i < e.serverResponse.get("entities").length; i += 1) {       // Update the cache with the Entites in the reply body
+                    this.applyOperation(e.cfg.method, e.serverResponse.get("entities")[i], this.getEntities());
+                }
+
+                for (i = 0; i < e.serverResponse.get("events").length; i += 1) {
+                    evt = e.serverResponse.get("events")[i];
+                    if (evt.get('@class') == "EntityUpdatedEvent") {
+                        for (i = 0; i < evt.updatedEntities.length; i += 1) {         // Update the cache with the entites in the reply
+                            this.applyOperation("POST", evt.updatedEntities[i], this.getEntities());
+                        }
                     }
                 }
             }
-            stack.push(needle);
+
+        },
+//        lookupAndFn: function(method, needle, stack) {
+//
+//        },
+        lookupAndDo: function(method, needle, stack) {
+            var id;
+            for (i = 0; i < stack.length; i += 1) {
+                if (( stack[i].get ) ? stack[i].get("id") === needle.get("id") :
+                    stack[i].id === needle.id) {
+                    switch (method) {
+                        case "DELETE":
+                            stack.splice(i, 1);
+                            return true;
+                        default:
+                            stack[i].setAttrs(needle.getAttrs());
+                            return true;
+                    }
+                }
+                if (stack[i].items) {
+                    if (this.lookupAndDo(method, needle, stack[i].items)) {
+                        return true;
+                    }
+                }
+            }
             return false;
         },
-        beforeResponse: function (e) {
-            Y.log("Response received from " + this.get('host').get('source') + e.cfg.request, "info", "Wegas.RestDataSource");
-            e.data = this.get('host').data;
-            e.response.results = Y.Wegas.persistence.Entity.revive(e.response.results);
-            if (e.error) {
-                return;
-            }
-            this.updateCache(e);
-        },
-        updateCache: function (e) {
-            var i, results = e.response.results.entities || e.response.results;
 
-            for (i = 0; i < results.length; i += 1) {                // Treat reply
-                this.applyOperation(e.cfg.method, results[i], e.data);
-            }
+        applyOperation: function (method, needle, stack) {
+            if (!this.lookupAndDo(method, needle, stack)) {
+                stack.push(needle);
+            };
         },
-        getCachedVariables: function () {
+        /// *** Cache methods *** //
+        /**
+         * Retrieves all entities from the cache
+         */
+        getEntities: function () {
             return this.get('host').data;
         },
-        getCachedVariableBy: function (key, val) {
-            var host = this.get('host'), i;
-            for (i in host.data) {                                              // We first check in the cache if the data is available
-                if (host.data.hasOwnProperty(i) && host.data[i][key] === val) {
-                    return host.data[i];
+
+        /**
+         * Retrieves an entity from the cache
+         */
+        getEntityBy: function (key, val) {
+            var entities = this.getEntities(), i;
+            for (i in entities) {                                              // We first check in the cache if the data is available
+                if (entities.hasOwnProperty(i) && entities[i][key] === val) {
+                    return entities[i];
                 }
             }
             return null;
         },
-        getCachedVariablesBy: function (key, val) {
+        /**
+         * Retrieves an entity from the cache
+         */
+        getEntitiesBy: function (key, val) {
             var host = this.get('host'), ret = [], i;
             for (i in host.data) {                                              // We first check in the cache if the data is available
                 if (host.data.hasOwnProperty(i) && host.data[i][key] === val) {
@@ -100,15 +131,30 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return ret;
         },
-        getCachedVariableById: function (id) {
-            return this.getCachedVariableBy("id", id  * 1);                     // Cast to number
+        /**
+         * Retrieves an entity from the cache
+         */
+        getEntityById: function (id) {
+            return this.getEntityBy("id", id  * 1);                     // Cast to number
         },
 
-        getById: function (id) {
-            this.sendRequest({
-                request: "/" + id
-            });
+        /**
+         * @deprecated, here for retrocompatibility
+         */
+        getCachedVariableBy: function (key, val) {
+            Y.log("Function getCachedVariableBy() is deprecated, use getEntityBy(key, val)");
+            return this.getEntityBy(key, val);
         },
+        getCachedVariablesBy: function (key, val) {
+            Y.log("Function getCachedVariableBy() is deprecated, use getEntitiesBy(key, val)");
+            return this.getEntitiesBy(key, val);
+        },
+        getCachedVariableById: function (id) {
+            Y.log("Function getCachedVariableById() is deprecated, use getEntityById(key, val)");
+            return this.getEntityById(id);                     // Cast to number
+        },
+
+
 
         generateRequest: function (data) {
             return "/" + data.id;
@@ -153,7 +199,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
             Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
         },
         _failureHandler: function (e) {
-            // alert("Error sending REST post request!");
+            console.log("DataSourceRest._failureHandler", e);
+            Y.log("Datasource reply:" + e, 'log', 'Y.Wegas.DataSourceRest');
+        // alert("Error sending REST post request!");
         }
 
     });
@@ -171,78 +219,19 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
 
-        updateCache: function (e) {
-            var cEl, i, j, k, instances,
-            results = e.response.results;
-
-            Y.log("Response received", "info", "Y.Wegas.VariableDescriptorDataSourceREST");
-
-            for (i = 0; i < results.entities.length; i += 1) {                  // Update the cache with the entites in the reply
-                cEl = results.entities[i];
-                if (Y.Lang.isObject(cEl)) {
-                    if (cEl['@class'].indexOf("Instance") !== -1) {
-                        instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
-                        for (k in instances) {
-                            if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
-                                instances[k] = Y.merge(instances[i], cEl);
-                            }
-                        }
-                    } else {
-                        this.applyOperation(e.cfg.method, cEl, e.data);
-                    }
-                }
-            }
-
-            if (results.events.length > 0 &&
-                results.events[0]['@class'] == "EntityUpdatedEvent") {
-                for (i = 0; i < results.events[0].updatedEntities.length; i += 1) {         // Update the cache with the entites in the reply
-                    cEl = results.events[0].updatedEntities[i];
-                    if (cEl['@class'].indexOf("Instance") !== -1) {
-                        instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
-                        for (k in instances) {
-                            if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
-                                instances[k] = Y.merge(instances[i], cEl);
-                            }
-                        }
-                    } else {
-                        this.applyOperation(e.cfg.method, cEl, e.data);
-                    }
-                }
-            }
-        },
         applyOperation: function (method, needle, stack) {
-            function applyOperationInner (method, needle, stack) {
-                var i, ret;
-                for (i = 0; i < stack.length; i += 1) {
-                    if (stack[i].id === needle.id) {
-                        switch (method) {
-                            case "DELETE":
-                                //@fixme is there a memory leak here ??
-                                stack.splice(i, 1);
-                                //delete stack[i];
-                                return true;
-                            default:
-                                //stack[i] = Y.merge(stack[i], needle);
-                                delete stack[i];
-                                stack[i] = needle;
-                                return true;
-                        }
+            if (needle.get("@class").indexOf("Instance") !== -1) {
+                instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
+                for (k in instances) {
+                    if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
+                        instances[k] = Y.merge(instances[i], cEl);
                     }
-                    //if (stack[i]["@class"] === "ListDescriptor") {                  // We override so the datasource will also look for objects in datasource childs
-                    // @fixme We use this property to detect ListDescriptors
-                    if (stack[i].items) {
-                        if (applyOperationInner(method, needle, stack[i].items)) {
-                            return true;
-                        }
-                    }
-
-                }
-                return false;
-            }
-            if (!applyOperationInner(method, needle, stack)) {
+                };
+            } else if (!this.lookupAndDo(method, needle, stack)) {
                 stack.push(needle);
-            }
+            };
         },
+
         getCachedVariableBy: function (key, val) {
             function getCachedVariableByInner(variables) {
                 var i, ret;
@@ -324,7 +313,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 if (!cEl) {
 
                 } else if (cEl['@class'] === "Team") {
-                    //@TODO is this case still in use ??
+                //@TODO is this case still in use ??
                 } else {
                     // @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
                     if (e.request.indexOf("ScriptLibrary") != -1) e.cfg.method = "POST";
@@ -352,16 +341,16 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             Y.log("Response received", "info", "Y.Wegas.GameDataSourceREST");
 
-            for (i = 0; i < e.response.results.entities.length; i += 1) {
-                cEl = e.response.results.entities[i];
+            for (i = 0; i < e.response.results.get("entities").length; i += 1) {
+                cEl = e.response.results.get("entities")[i];
 
                 if (!cEl) {
 
-                } else if (cEl['@class'] === "Team") {
+                } else if (cEl.get('@class') === "Team") {
                     game = this.getCachedVariableBy('id', cEl.gameId);
                     this.applyOperation(e.cfg.method, cEl, game.teams);
 
-                } else if (cEl['@class'] === "Player") {
+                } else if (cEl.get('@class') === "Player") {
                     team = this.getTeamById(cEl.teamId);
                     this.applyOperation(e.cfg.method, cEl, team.players);
 
@@ -375,7 +364,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 return '/' + data.gameId + '/Team/' + data.id;
             } else if (data['@class'] === 'Player') {
                 return "/" + this.getGameByTeamId(data.teamId).id
-                    + '/Team/' + data.teamId + '/Player/' + data.id;
+                + '/Team/' + data.teamId + '/Player/' + data.id;
             } else {
                 return "/" + data.id;
             }
@@ -405,15 +394,15 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.getTeamById(Y.Wegas.app.get('currentTeam'));
         },
         getPlayerById: function (playerId) {
-            var i, j, k, data = this.get('host').data;
+            var i, j, k, data = this.getEntities();
 
             playerId = playerId * 1;                                            // Convert to number
 
             for (i = 0; i < data.length; i += 1) {
-                for (j = 0; j < data[i].teams.length; j += 1) {
-                    for (k = 0; k < data[i].teams[j].players.length; k += 1) {
-                        if (data[i].teams[j].players[k].id === playerId) {
-                            return data[i].teams[j].players[k];
+                for (j = 0; j < data[i].get("teams").length; j += 1) {
+                    for (k = 0; k < data[i].get("teams")[j].get("players").length; k += 1) {
+                        if (data[i].get("teams")[j].get("players")[k].id === playerId) {
+                            return data[i].get("teams")[j].get("players")[k];
                         }
                     }
                 }
@@ -435,14 +424,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return null;
         },
         getTeamById: function (teamId) {
-            var i, j, data = this.get('host').data;
+            var i, j, data = this.getEntities();
 
             teamId = teamId * 1;                                                // Convert to number
 
             for (i = 0; i < data.length; i += 1) {
-                for (j = 0; j < data[i].teams.length; j += 1) {
-                    if (data[i].teams[j].id === teamId) {
-                        return data[i].teams[j];
+                for (j = 0; j < data[i].get("teams").length; j += 1) {
+                    if (data[i].get("teams")[j].get("id") === teamId) {
+                        return data[i].get("teams")[j];
                     }
                 }
             }
@@ -468,8 +457,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
 
     /**
-     * FIXME We redefine this so we can use a "." selector and a "@..." field name
-     */
+         * FIXME We redefine this so we can use a "." selector and a "@..." field name
+         */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],
@@ -480,17 +469,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             // Strip the ["string keys"] and [1] array indexes
             locator = locator.
-                replace(/\[(['"])(.*?)\1\]/g,
-            function (x,$1,$2) {
-                keys[i]=$2;
-                return '.@'+(i++);
-            }).
-                replace(/\[(\d+)\]/g,
-            function (x,$1) {
-                keys[i]=parseInt($1,10)|0;
-                return '.@'+(i++);
-            }).
-                replace(/^\./,''); // remove leading dot
+            replace(/\[(['"])(.*?)\1\]/g,
+                function (x,$1,$2) {
+                    keys[i]=$2;
+                    return '.@'+(i++);
+                }).
+            replace(/\[(\d+)\]/g,
+                function (x,$1) {
+                    keys[i]=parseInt($1,10)|0;
+                    return '.@'+(i++);
+                }).
+            replace(/^\./,''); // remove leading dot
 
             // Validate against problematic characters.
             if (!/[^\w\.\$@]/.test(locator)) {
@@ -499,7 +488,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     /*if (path[i].charAt(0) === '@') {				// MODIFIED !!
 			path[i] = keys[parseInt(path[i].substr(1),10)];
 		    }*/
-                }
+                    }
             }
             else {
             }
@@ -529,7 +518,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             //}
             //else {
             uri += request;
-            //}
+        //}
         }
         Y.DataSource.Local.transactions[e.tId] = io(uri, cfg);
         return e.tId;

@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
@@ -33,6 +34,18 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      */
     private Long maxValue;
+
+    /**
+     *
+     * @param a
+     */
+    @Override
+    public void merge(AbstractEntity a) {
+        super.merge(a);
+        NumberDescriptor other = (NumberDescriptor) a;
+        this.setMinValue(other.getMinValue());
+        this.setMaxValue(other.getMaxValue());
+    }
 
     /**
      * @return the minValue
