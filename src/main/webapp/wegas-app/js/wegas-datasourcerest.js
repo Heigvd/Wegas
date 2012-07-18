@@ -14,7 +14,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
         'Content-Type': 'application/json; charset=utf-8',
         'Managed-Mode': 'true'
     };
-
+    /**
+     *  @class DataSourceREST
+     *  @module Wegas
+     *  @constructor
+     */
     DataSourceREST = function () {
         DataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -31,6 +35,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.get('host').data = [];
         },
 
+
+        /// *** Server requests methods *** //
         sendRequest: function (requestCfg) {
             requestCfg.callback = requestCfg.callback || {
                 success: this._successHandler,
@@ -45,80 +51,75 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
         beforeResponse: function (e) {
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "info", "Wegas.RestDataSource");
-            e.data = this.getEntities();
+            e.data = this.getCache();
             e.serverResponse = Y.Wegas.persistence.Entity.revive(e.response.results);
 
             if (Lang.isArray(e.serverResponse)) {                               // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < e.serverResponse.length; i += 1) {
-                    this.applyOperation(e.cfg.method, e.serverResponse[i], this.getEntities());
+                    this.updateCache(e.cfg.method, e.serverResponse[i], this.getCache());
                 }
             } else {
                 for (i = 0; i < e.serverResponse.get("entities").length; i += 1) {       // Update the cache with the Entites in the reply body
-                    this.applyOperation(e.cfg.method, e.serverResponse.get("entities")[i], this.getEntities());
+                    this.updateCache(e.cfg.method, e.serverResponse.get("entities")[i], this.getCache());
                 }
 
                 for (i = 0; i < e.serverResponse.get("events").length; i += 1) {
                     evt = e.serverResponse.get("events")[i];
                     if (evt.get('@class') == "EntityUpdatedEvent") {
                         for (i = 0; i < evt.updatedEntities.length; i += 1) {         // Update the cache with the entites in the reply
-                            this.applyOperation("POST", evt.updatedEntities[i], this.getEntities());
+                            this.updateCache("POST", evt.updatedEntities[i], this.getCache());
                         }
                     }
                 }
             }
 
         },
-//        lookupAndFn: function(method, needle, stack) {
-//
-//        },
-        lookupAndDo: function(method, needle, stack) {
-            var id;
-            for (i = 0; i < stack.length; i += 1) {
-                if (( stack[i].get ) ? stack[i].get("id") === needle.get("id") :
-                    stack[i].id === needle.id) {
-                    switch (method) {
-                        case "DELETE":
-                            stack.splice(i, 1);
-                            return true;
-                        default:
-                            stack[i].setAttrs(needle.getAttrs());
-                            return true;
-                    }
-                }
-                if (stack[i].items) {
-                    if (this.lookupAndDo(method, needle, stack[i].items)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        },
+        /**
+         *
+         *  Recuresivly walk the provided stack, looking for an object with an
+         *  id corresponing to needle's and apply an operation based method.
+         *
+         *  @method lookupAndDo
+         *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
+         *  @param {Entity} needle Value to search for
+         *  @param {Array} stack An array of entities to look into
+         *  @return {Boolean} `true` if object could be located and method applied
+         *  @for DataSourceREST
+         */
 
-        applyOperation: function (method, needle, stack) {
-            if (!this.lookupAndDo(method, needle, stack)) {
-                stack.push(needle);
+        updateCache: function (method, item) {
+            var ret = false;
+
+            switch (method) {
+                case "DELETE":
+                    ret = this.find("id", item, function(item, needle, index, stack) {
+                        stack.splice(index, 1);
+                        return true;
+                    });
+                    break;
+                default:
+                    ret = this.find("id", item, function(item, needle) {
+                        item.setAttrs(needle.getAttrs());
+                        return true;
+                    });
+                    break;
+            }
+            if (!ret) {
+                this.getCache().push(item);
             };
         },
-        /// *** Cache methods *** //
-        /**
-         * Retrieves all entities from the cache
-         */
-        getEntities: function () {
-            return this.get('host').data;
+
+        _successHandler: function (e) {
+            Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
+        },
+        _failureHandler: function (e) {
+            console.log("DataSourceRest._failureHandler", e);
+            Y.log("Datasource reply:" + e, 'log', 'Y.Wegas.DataSourceRest');
+        // alert("Error sending REST post request!");
         },
 
-        /**
-         * Retrieves an entity from the cache
-         */
-        getEntityBy: function (key, val) {
-            var entities = this.getEntities(), i;
-            for (i in entities) {                                              // We first check in the cache if the data is available
-                if (entities.hasOwnProperty(i) && entities[i][key] === val) {
-                    return entities[i];
-                }
-            }
-            return null;
-        },
+        /// *** Cache methods *** //
+
         /**
          * Retrieves an entity from the cache
          */
@@ -131,31 +132,84 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return ret;
         },
-        /**
-         * Retrieves an entity from the cache
-         */
-        getEntityById: function (id) {
-            return this.getEntityBy("id", id  * 1);                     // Cast to number
-        },
 
         /**
          * @deprecated, here for retrocompatibility
          */
         getCachedVariableBy: function (key, val) {
-            Y.log("Function getCachedVariableBy() is deprecated, use getEntityBy(key, val)");
-            return this.getEntityBy(key, val);
+            Y.log("Function getCachedVariableBy() is deprecated, use find(key, val)");
+            return this.find(key, val);
         },
         getCachedVariablesBy: function (key, val) {
-            Y.log("Function getCachedVariableBy() is deprecated, use getEntitiesBy(key, val)");
-            return this.getEntitiesBy(key, val);
+            Y.log("Function getCachedVariablesBy() is deprecated, use ???????(key, val)");
+            //return this.getEntitiesBy(key, val);
         },
         getCachedVariableById: function (id) {
-            Y.log("Function getCachedVariableById() is deprecated, use getEntityById(key, val)");
-            return this.getEntityById(id);                     // Cast to number
+            Y.log("Function getCachedVariableById() is deprecated, use findById(key, val)");
+            return this.findById(id);                     // Cast to number
+        },
+
+        /**
+         * Retrieves all entities stored in the cache.
+         */
+        getCache: function () {
+            return this.get('host').data;
+        },
+
+        /**
+         * Retrieves an entity from the cache
+         *
+         *  @method find
+         *  @for DataSourceREST
+         */
+        find: function(key, needle, onFindFn) {
+            return this.doFind(this.getCache(), key, needle,  onFindFn);
+        },
+        /**
+         * Retrieves an entity from the cache
+         */
+        findById: function (id) {
+            return this.find("id", id  * 1);                              // Cast to number
+        },
+
+        /**
+         *
+         */
+        doFind: function(stack, key, needle, onFindFn) {
+            return Y.Array.find(stack, function(item, index, array) {
+                if (this.testEntity(item, key, needle)) {                       // We check the current element if it's a match
+                    if (onFindFn) {
+                        onFindFn(item, needle, array);
+                    }
+                    return true;
+                }
+                return this.walkEntity(item, Y.bind(this.findBy, this, needle, stack, key, onFindFn));
+            }, this);
+        },
+
+        /**
+         *
+         */
+        walkEntity: function(item, callback) {
+            var acc = false;
+            if (item.get && item.get("items")) {
+            // acc = callback(this.get("items"));
+            }
+            return acc;
+        },
+
+        /**
+         *
+         */
+        testEntity: function(entity, key, needle) {
+            var value = ( entity.get ) ? entity.get(key) : entity[key],          // Normalize item and needle values
+                needleValue = (needle.get) ? needle.get(key) :  (typeof needle === 'object') ? needle[key] : needle;
+
+            return value === needleValue;
         },
 
 
-
+        /* @deprecated from here */
         generateRequest: function (data) {
             return "/" + data.id;
         },
@@ -194,14 +248,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     method: "DELETE"
                 }
             });
-        },
-        _successHandler: function (e) {
-            Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
-        },
-        _failureHandler: function (e) {
-            console.log("DataSourceRest._failureHandler", e);
-            Y.log("Datasource reply:" + e, 'log', 'Y.Wegas.DataSourceRest');
-        // alert("Error sending REST post request!");
         }
 
     });
@@ -232,27 +278,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
             };
         },
 
-        getCachedVariableBy: function (key, val) {
-            function getCachedVariableByInner(variables) {
-                var i, ret;
-                for (i in variables) {                                              // We first check in the cache if the data is available
-                    if (variables.hasOwnProperty(i)) {
-                        if (variables[i][key] === val) {
-                            return variables[i];
-                        }
-                        if (variables[i].items) {
-                            ret = getCachedVariableByInner(variables[i].items);
-                            if (ret) {
-                                return ret;
-                            }
-                        }
-
-                    }
-                }
-                return null;
-            }
-            return getCachedVariableByInner(this.get("host").data);
-        },
         put: function (data, callback) {
             if (data['@class'].indexOf("Instance") !== -1) {
                 this.sendRequest({
@@ -268,6 +293,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
             }
         },
+
         post: function (data, parentData, callback) {
             var request = "";
             if (parentData) {
@@ -305,7 +331,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(GameModelDataSourceREST, DataSourceREST, {
-        updateCache: function (e) {
+        updateCache2: function (e) {
             var cEl, i;
 
             for (i = 0; i < e.response.results.entities.length; i += 1) {
@@ -320,6 +346,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     this.applyOperation(e.cfg.method, cEl, e.data);
                 }
             }
+        },
+        getCurrentGameModel: function () {
+            return this.findById(Y.Wegas.app.get('currentGameModel'))
         }
     });
 
@@ -336,7 +365,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(GameDataSourceREST, DataSourceREST, {
 
-        updateCache: function (e) {
+        updateCache2: function (e) {
             var cEl, i, game, team;                                             // Treat reply
 
             Y.log("Response received", "info", "Y.Wegas.GameDataSourceREST");
@@ -384,6 +413,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 GameDataSourceREST.superclass.post.call(this, data, parentData, callback);
             }
         },
+
+        /* Util methods */
         getCurrentGame: function () {
             return this.getCachedVariableById(Y.Wegas.app.get('currentGame'));
         },
@@ -394,7 +425,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.getTeamById(Y.Wegas.app.get('currentTeam'));
         },
         getPlayerById: function (playerId) {
-            var i, j, k, data = this.getEntities();
+            var i, j, k, data = this.getCache();
 
             playerId = playerId * 1;                                            // Convert to number
 
@@ -424,7 +455,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return null;
         },
         getTeamById: function (teamId) {
-            var i, j, data = this.getEntities();
+            var i, j, data = this.getCache();
 
             teamId = teamId * 1;                                                // Convert to number
 
@@ -457,8 +488,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
 
     /**
-         * FIXME We redefine this so we can use a "." selector and a "@..." field name
-         */
+     * FIXME We redefine this so we can use a "." selector and a "@..." field name
+     */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],

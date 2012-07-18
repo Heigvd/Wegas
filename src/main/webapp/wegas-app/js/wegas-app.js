@@ -17,15 +17,15 @@ YUI.add('wegas-app', function (Y) {
         // ** Lifecycle methods ** //
         initializer: function () {
             Y.Wegas.app = this;
-
-            this.initDataSources();
-            this.renderUI();
-            this.initCSS();
         },
         destructor : function () {
         // @todo Delete datasources
         },
         render: function () {
+
+            this.initDataSources();
+            this.renderUI();
+            this.initCSS();
             this.requestDataSources();
         },
 
@@ -38,12 +38,13 @@ YUI.add('wegas-app', function (Y) {
             for (k in dataSources) {
                 if (dataSources.hasOwnProperty(k)) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
-                    this.dataSources[k] = new Y.DataSource.IO(dataSources[k]);
+                    this.dataSources[k] = this[k] = Y.Wegas[k] = new Y.DataSource.IO(dataSources[k]);
                 }
             }
-        /*this.dataSources.Game.after("response", function() {
-                Y.log("info", "Game has been modified, reloading variable descriptors", "Wegas.Editor");
-            });*/
+            this.Game.after("response", function() {
+                Y.log("info", "Game has been loaded, rendering UI", "Wegas.App");
+
+            }, this);
         },
         initCSS: function () {
             var css = this.get('cssStylesheets'),

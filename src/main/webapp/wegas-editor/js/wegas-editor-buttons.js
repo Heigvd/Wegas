@@ -55,7 +55,9 @@ YUI.add('wegas-editor-buttons', function (Y) {
         },
         bindUI: function () {
             this.selectField.on("updated", function (val) {
-                Y.Wegas.app.set('currentPlayer', val);
+                if (val !== "") {
+                    Y.Wegas.app.set('currentPlayer', val);
+                }
             }, this);
             Y.Wegas.app.dataSources.Game.after("response", this.syncUI, this);
             Y.Wegas.app.on("currentPlayerChange", function (e) {

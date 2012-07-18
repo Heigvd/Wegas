@@ -87,7 +87,7 @@ YUI.add('wegas-treeview', function (Y) {
                     };
 
                 case 'QuestionInstance':
-                    l = label + ((el.replies.length > 0) ? ': ' + el.replies[0].name : ': unanswered');
+                    l = label + ((el.get("replies").length > 0) ? ': ' + el.get("replies").get("name") : ': unanswered');
                     return {
                         type: 'Text',
                         label: l,

@@ -114,13 +114,13 @@ YUI.add('wegas-button', function (Y) {
         getUnreadCount:  function () {
             var i, instance,
                 dataSource = Y.Wegas.app.dataSources.VariableDescriptor,
-                descriptor = dataSource.rest.getEntityBy('name', this.get('variable')),
+                descriptor = dataSource.rest.find('name', this.get('variable')),
                 instance, count = 0, messages;
 
             if (!descriptor){
                 return 0;
             }
-            
+
             if (descriptor.get("items")) {                                             // In ListDescriptors, we count the children instance's
                 for (i = 0; i < descriptor.get("items").length; i = i + 1) {
                     instance = descriptor.get("items")[i].getInstance();
