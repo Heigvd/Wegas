@@ -24,10 +24,8 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         },
 
         renderUI: function () {
-            var cb = this.get(CONTENTBOX);
-
             this.aceField = new Y.inputEx.AceField({
-                parentEl: cb,
+                parentEl: this.get(CONTENTBOX),
                 name: 'text',
                 type: 'ace',
                 height: "100%",
@@ -37,6 +35,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
             this.renderToolbar();
         },
+
         bindUI: function () {
             Y.Wegas.app.dataSources.GameModel.after("response", this.syncUI, this);
 
@@ -45,8 +44,9 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                 this.syncEditor();
             }, this);
         },
+
         syncUI: function () {
-            var cGameModel = Y.Wegas.app.dataSources.GameModel.rest.getCachedVariableById(Y.Wegas.app.get('currentGameModel')),
+            var cGameModel = Y.Wegas.GameModel.rest.getCurrentGameModel(),
             isEmpty = true;
 
             if (!cGameModel) return;
@@ -56,7 +56,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                     position:0
                 });
             }
-            for (var i in cGameModel.scriptLibrary) {
+            for (var i in cGameModel.get("scriptLibrary")) {
                 if (!this.currentScript) this.currentScript = i;
                 this.selectField.addChoice({
                     value: i
@@ -65,7 +65,8 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             }
             if (isEmpty) {
                 this.selectField.addChoice({
-                    value: "No scripts"
+                    value: null,
+                    label:"No scripts"
                 });
             } else {
                 this.selectField.setValue(this.currentScript, false);
@@ -98,7 +99,8 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
             this.selectField = new Y.inputEx.SelectField({
                 choices: [{
-                    value: "loading..."
+                    value: null,
+                    label: "loading..."
                 }],
                 parentEl: toolbarNode
             });
@@ -135,8 +137,9 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         },
 
         syncEditor: function () {
-            var cGameModel = Y.Wegas.app.dataSources.GameModel.rest.getCachedVariableById(Y.Wegas.app.get('currentGameModel')),
-            val = cGameModel.scriptLibrary[this.selectField.getValue()] || "";
+            var cGameModel = Y.Wegas.GameModel.rest.getCurrentGameModel(),
+            val = cGameModel.get("scriptLibrary")[this.selectField.getValue()] || "";
+            
             this.aceField.setValue(val);
         }
     });

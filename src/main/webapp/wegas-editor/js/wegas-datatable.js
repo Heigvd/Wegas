@@ -29,6 +29,8 @@ YUI.add('wegas-datatable', function(Y) {
 	    this._table.render(cb);
 	},
 	bindUI: function() {
+            return;
+            
 	    var that = this;
 	    this._dataSource.after("response", function (e) {			// Listen for datasource updates
 		this._table.set('recordset', e.data);

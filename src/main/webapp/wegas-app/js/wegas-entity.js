@@ -4,14 +4,12 @@
 
 YUI.add('wegas-entity', function (Y) {
     "use strict";
+
     /**
      * Entity is used to represent db objects.
      */
+    Y.namespace('Wegas.persistence').Entity = Y.Base.create("Entity", Y.Base, [], {
 
-    var Entity = Y.Base.create("Entity", Y.Base, [ ], {
-
-        initializer: function () {
-        },
         /**
          * Serialize to a json object.
          *
@@ -22,19 +20,19 @@ YUI.add('wegas-entity', function (Y) {
             delete ret["initialized"];                                          // Remove values coming from Y.Base implementation
             delete ret["destroyed"];
 
-            //            for (k in ret) {
-            //                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
-            //                    ret[k] = ret[k].toJson();
-            //                }
-            //            }
+            for (k in ret) {
+                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
+                    ret[k] = ret[k].toJson();
+                }
+            }
             return ret;                                                         // Return a copy of this's fields.
         },
         /**
          * Returns the form configuration associated to this object, to be used a an inputex object.
          */
         getFormCfg: function () {
-            var forms = Y.Wegas.app.get('forms'),
-            form = forms[this.get('@class')] || forms[this.get("type")] ||                 // Select first server defined forms, based on the @class or the type attribute
+            var forms = Y.Wegas.app.get('editorForms'),
+            form = forms[this.get('@class')] || forms[this.get("type")] ||      // Select first server defined forms, based on the @class or the type attribute
             this.constructor.EDITFORM || [];                                    // And if no form is defined we return the default one defined in the entity
 
             return form.concat([{
@@ -44,12 +42,24 @@ YUI.add('wegas-entity', function (Y) {
                 name: '@class',
                 type: 'hidden'
             }]);
+        },
+
+        /**
+         * Returns the edition menu associated to this object, to be used a an inputex object.
+         */
+        getMenuCfg: function () {
+            var menus = Y.Wegas.app.get('editorMenus'),
+            menu = menus[this.get('@class')] || menus[this.get("type")] ||      // Select first server defined forms, based on the @class or the type attribute
+                this.constructor.EDITMENU || [];                                // And if no form is defined we return the default one defined in the entity
+
+            return menu;
         }
     }, {
         ATTRS: {
             id: {},
             '@class': {}
         },
+
         /**
          *  This method takes a parsed json object and instantiate them based
          *  on their @class attribute. Target class are found in namespace
@@ -98,11 +108,6 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
 
-
-    Y.namespace('Wegas').persistence = {
-        Entity : Entity
-    };
-
     /**
      * ServerResponse mapper
      */
@@ -120,11 +125,13 @@ YUI.add('wegas-entity', function (Y) {
      * GameModel mapper
      */
     Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
-        }, {
             ATTRS: {
                 name: {},
                 games: {
                     value: []
+                },
+                scriptLibrary: {
+                    value: {}
                 }
             },
             EDITFORM : [{
@@ -289,188 +296,188 @@ YUI.add('wegas-entity', function (Y) {
                     return new Y.Wegas.persistence.TeamScope();                 // Should the default scope be set server or client side?
                 }
             }
-    }
+        }
     });
 
 
 
-/**
+    /**
      * Scope mapper
      */
-Y.Wegas.persistence.Scope = Y.Base.create("Scope", Y.Wegas.persistence.Entity, [], {
-    getInstance: function (){
-        console.log("ERROR SHOULD BE OVERRIDDEN")
-    }
-}, {
-    ATTRS: {
-        variableInstances: {}
-    }
-});
-/**
+    Y.Wegas.persistence.Scope = Y.Base.create("Scope", Y.Wegas.persistence.Entity, [], {
+        getInstance: function (){
+            console.log("ERROR SHOULD BE OVERRIDDEN")
+        }
+    }, {
+        ATTRS: {
+            variableInstances: {}
+        }
+    });
+    /**
      * GameModelScope mapper
      */
-Y.Wegas.persistence.GameModelScope = Y.Base.create("GameModelScope", Y.Wegas.persistence.Scope, [], {
-    getInstance: function () {
-        return this.get("variableInstances")[0];
-    }
-});
-/**
+    Y.Wegas.persistence.GameModelScope = Y.Base.create("GameModelScope", Y.Wegas.persistence.Scope, [], {
+        getInstance: function () {
+            return this.get("variableInstances")[0];
+        }
+    });
+    /**
      * GameScope mapper
      */
-Y.Wegas.persistence.GameScope = Y.Base.create("GameScope", Y.Wegas.persistence.Scope, [], {
-    getInstance: function (){
-        return this.get("variableInstances")[0];
-    }
-});
+    Y.Wegas.persistence.GameScope = Y.Base.create("GameScope", Y.Wegas.persistence.Scope, [], {
+        getInstance: function (){
+            return this.get("variableInstances")[0];
+        }
+    });
 
-/**
+    /**
      * TeamScope mapper
      */
-Y.Wegas.persistence.TeamScope = Y.Base.create("TeamScope", Y.Wegas.persistence.Scope, [], {
-    getInstance: function (){
-        return this.get("variableInstances")[Y.Wegas.app.get('currentTeam')];
-    }
-});
+    Y.Wegas.persistence.TeamScope = Y.Base.create("TeamScope", Y.Wegas.persistence.Scope, [], {
+        getInstance: function (){
+            return this.get("variableInstances")[Y.Wegas.app.get('currentTeam')];
+        }
+    });
 
-/**
+    /**
      * PlayerScope mapper
      */
-Y.Wegas.persistence.PlayerScope = Y.Base.create("PlayerScope", Y.Wegas.persistence.Scope, [], {
-    getInstance: function () {
-        return this.get("variableInstances")[Y.Wegas.app.get('currentPlayer')];
-    }
-});
+    Y.Wegas.persistence.PlayerScope = Y.Base.create("PlayerScope", Y.Wegas.persistence.Scope, [], {
+        getInstance: function () {
+            return this.get("variableInstances")[Y.Wegas.app.get('currentPlayer')];
+        }
+    });
 
-/**
+    /**
      * VariableInstance mapper
      */
-Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], { }, {
-    ATTRS: {
-        value: {}
-    }
-});
-/**
+    Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], { }, {
+        ATTRS: {
+            value: {}
+        }
+    });
+    /**
      * StringDescriptor mapper
      */
-Y.Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
-    ATTRS: {
-    },
-    EDITFORM:  [{
-        name:'defaultVariableInstance',
-        type:'group',
-        fields: [{
-            name: '@class',
-            value:'StringInstance',
-            type: 'hidden'
-        },{
-            name: 'id',
-            type: 'hidden'
-        },{
-            name: 'value',
-            label: 'Default value'
+    Y.Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+        ATTRS: {
+        },
+        EDITFORM:  [{
+            name:'defaultVariableInstance',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'StringInstance',
+                type: 'hidden'
+            },{
+                name: 'id',
+                type: 'hidden'
+            },{
+                name: 'value',
+                label: 'Default value'
+            }]
+        }],
+        EDITMENU: [{
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
         }]
-    }],
-    EDITMENU: [{
-        text: "Delete",
-        value: {
-            op:'delete'
-        }
-    }]
-});
-/**
+    });
+    /**
      * StringInstance mapper
      */
-Y.Wegas.persistence.StringInstance = Y.Base.create("StringInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
-    EDITFORM: [{
-        name: 'value',
-        label: 'Text'
-    }]
-});
-/**
+    Y.Wegas.persistence.StringInstance = Y.Base.create("StringInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        EDITFORM: [{
+            name: 'value',
+            label: 'Text'
+        }]
+    });
+    /**
     * NumberDescriptor mapper
     */
-Y.Wegas.persistence.NumberDescriptor = Y.Base.create("NumberDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
-    ATTRS: {
-        minValue: {},
-        maxValue: {}
-    },
-    EDITFORM: [{
-        name: 'minValue',
-        label:'Minimum'
-    }, {
-        name: 'maxValue',
-        label: "Maximum"
-    },{
-        name:'defaultVariableInstance',
-        type:'group',
-        fields: [{
-            name: '@class',
-            value:'NumberInstance',
-            type: 'hidden'
+    Y.Wegas.persistence.NumberDescriptor = Y.Base.create("NumberDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+        ATTRS: {
+            minValue: {},
+            maxValue: {}
+        },
+        EDITFORM: [{
+            name: 'minValue',
+            label:'Minimum'
+        }, {
+            name: 'maxValue',
+            label: "Maximum"
         },{
-            name: 'id',
-            type: 'hidden'
-        },{
-            name: 'value',
-            label: 'Default value',
-            regexp: /^[0-9]*$/
+            name:'defaultVariableInstance',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'NumberInstance',
+                type: 'hidden'
+            },{
+                name: 'id',
+                type: 'hidden'
+            },{
+                name: 'value',
+                label: 'Default value',
+                regexp: /^[0-9]*$/
+            }]
+        }],
+        EDITMENU: [{
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
         }]
-    }],
-    EDITMENU: [{
-        text: "Delete",
-        value: {
-            op:'delete'
-        }
-    }]
-});
-/**
+    });
+    /**
      * NumberInstance mapper
      */
-Y.Wegas.persistence.NumberInstance = Y.Base.create("NumberInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
-    EDITFORM: [{
-        name: 'value',
-        label: 'Text',
-        regexp: /^[0-9]*$/
-    }]
-});
-/**
+    Y.Wegas.persistence.NumberInstance = Y.Base.create("NumberInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        EDITFORM: [{
+            name: 'value',
+            label: 'Text',
+            regexp: /^[0-9]*$/
+        }]
+    });
+    /**
      * ListDescriptor mapper
      */
-Y.Wegas.persistence.ListDescriptor = Y.Base.create("ListDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
-    ATTRS: {
-        items: {
-            value: []
-        }
-    },
-    EDITFORM: [{
-        name:'defaultVariableInstance',
-        type:'group',
-        fields: [{
-            name: '@class',
-            value:'ListInstance',
-            type: 'hidden'
+    Y.Wegas.persistence.ListDescriptor = Y.Base.create("ListDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+        ATTRS: {
+            items: {
+                value: []
+            }
+        },
+        EDITFORM: [{
+            name:'defaultVariableInstance',
+            type:'group',
+            fields: [{
+                name: '@class',
+                value:'ListInstance',
+                type: 'hidden'
+            },{
+                name: 'id',
+                type: 'hidden'
+            }]
+        }],
+        EDITMENU: [{
+            text: "Add element",
+            value: {
+                op:'addChild',
+                childClass: "VariableDescriptor"
+            }
         },{
-            name: 'id',
-            type: 'hidden'
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
         }]
-    }],
-    EDITMENU: [{
-        text: "Add element",
-        value: {
-            op:'addChild',
-            childClass: "VariableDescriptor"
-        }
-    },{
-        text: "Delete",
-        value: {
-            op:'delete'
-        }
-    }]
-});
-/*
+    });
+    /*
      * ListInstance mapper
      */
-Y.Wegas.persistence.ListInstance = Y.Base.create("ListInstance", Y.Wegas.persistence.VariableInstance, []);
+    Y.Wegas.persistence.ListInstance = Y.Base.create("ListInstance", Y.Wegas.persistence.VariableInstance, []);
 
 
     /**
@@ -534,6 +541,9 @@ Y.Wegas.persistence.ListInstance = Y.Base.create("ListInstance", Y.Wegas.persist
             },
             unread: {
                 value: true
+            },
+            replies: {
+                value: []
             }
         },
         EDITFORM: [{
