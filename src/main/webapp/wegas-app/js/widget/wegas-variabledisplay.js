@@ -16,7 +16,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
         },
 
         bindUI: function () {
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
 

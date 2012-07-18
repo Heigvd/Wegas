@@ -38,10 +38,10 @@ YUI.add('wegas-app', function (Y) {
             for (k in dataSources) {
                 if (dataSources.hasOwnProperty(k)) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
-                    this.dataSources[k] = this[k] = Y.Wegas[k] = new Y.DataSource.IO(dataSources[k]);
+                    this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = new Y.DataSource.IO(dataSources[k]);
                 }
             }
-            this.Game.after("response", function() {
+            this.GameFacade.after("response", function() {
                 Y.log("info", "Game has been loaded, rendering UI", "Wegas.App");
 
             }, this);
