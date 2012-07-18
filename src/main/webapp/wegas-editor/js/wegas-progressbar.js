@@ -5,6 +5,13 @@ YUI.add('wegas-progressbar', function (Y) {
     CONTENT_BOX = "contentBox";
 
     ProgressBar = Y.Base.create("wegas-progressbar", Y.Widget, [], {
+        labelNode:null,
+        valueNode:null,
+
+        initializer:function(){
+            this.labelNode = Y.Node.create("<div></div>");
+            this.valueNode = Y.Node.create("<div></div>");
+        },
         renderUI: function (){
             var bbStyle = this.get(BOUNDING_BOX).getDOMNode().style;
             bbStyle.border = "1px solid " + this.get("color");
@@ -12,10 +19,21 @@ YUI.add('wegas-progressbar', function (Y) {
             bbStyle.display = "inline-block";
             bbStyle.textAlign = "center";
             bbStyle.fontSize = this.get("height");
+            bbStyle.position = "relative";
+            this.labelNode.setStyles({
+                "backgroundColor": "transparent",
+                "position": "absolute",
+                "top": "0px",
+                "left": "0px",
+                "width": "100%"
+            });
+            this.get(BOUNDING_BOX).append(this.labelNode);
+
         },
         syncUI: function () {
             this.set("percent", this.get("percent"));
             this.set("color", this.get("color"));
+            this.set("label", this.get("label"));
         }
     },{
         ATTRS: {
@@ -23,11 +41,6 @@ YUI.add('wegas-progressbar', function (Y) {
                 value:100,
                 setter:function (v){
                     this.get(CONTENT_BOX).getDOMNode().style.width = v + "%";
-                    if(this.get("showValue")){
-                        this.get(CONTENT_BOX).setContent(v + "%");
-                    }else{
-                        this.get(CONTENT_BOX).setContent("");
-                    }
                     return v;
                 }
             },
@@ -44,8 +57,20 @@ YUI.add('wegas-progressbar', function (Y) {
                 value:false,
                 validator: Y.Lang.isBoolean,
                 setter:function (v){
-                    this.set("percent", this.get("percent"));
+                    this.set("label", this.get("label"));
                     return v;
+                }
+            },
+            label:{
+                value:"",
+                validator:Y.Lang.isString,
+                setter:function(s){
+                    if(this.get("showValue")){
+                        this.labelNode.setContent(s + " " + this.get("percent") + "%");
+                    }else{
+                        this.labelNode.setContent(s);
+                    }
+                    return s;
                 }
             }
         }
