@@ -46,7 +46,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         },
 
         syncUI: function () {
-            var cGameModel = Y.Wegas.GameModel.rest.getCurrentGameModel(),
+            var cGameModel = Y.Wegas.GameModelFacade.rest.getCurrentGameModel(),
             isEmpty = true;
 
             if (!cGameModel) return;
@@ -137,9 +137,9 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         },
 
         syncEditor: function () {
-            var cGameModel = Y.Wegas.GameModel.rest.getCurrentGameModel(),
+            var cGameModel = Y.Wegas.GameModelFacade.rest.getCurrentGameModel(),
             val = cGameModel.get("scriptLibrary")[this.selectField.getValue()] || "";
-            
+
             this.aceField.setValue(val);
         }
     });
