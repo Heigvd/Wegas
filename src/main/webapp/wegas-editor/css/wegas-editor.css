@@ -138,23 +138,28 @@ img.inputEx-ListField-delButton {
     background-color: white;
     -webkit-transition-property: max-height;
     -webkit-transition-duration: 0.5s;
-    -webkit-transition-timing-function: ease-out;
+    -webkit-transition-timing-function: linear;
+    -webkit-transition-delay: 0.3s;
     -moz-transition-property: max-height;
     -moz-transition-duration: 0.5s;
-    -moz-transition-timing-function: ease-out;
+    -moz-transition-timing-function: linear;
+    -moz-transition-delay: 0.3s;
     -ms-transition-property: max-height;
     -ms-transition-duration: 0.5s;
-    -ms-transition-timing-function: ease-out;
+    -ms-transition-timing-function: linear;
+    -ms-transition-delay: 0.3s;
     -o-transition-property: max-height;
     -o-transition-duration: 0.5s;
-    -o-transition-timing-function: ease-out;
+    -o-transition-timing-function: linear;
+    -o-transition-delay: 0.3s;
     transition-property: max-height;
     transition-duration: 0.5s;
-    transition-timing-function: ease-out;
+    transition-timing-function: linear;
+    transition-delay: 0.3s;
 }
 .wegas-tab-toolbar:hover > .wegas-tab-toolbar-panel{
     max-height: 200px;
-    overflow-x: auto;
+    overflow-y: auto;
 }
 .wegas-tab-toolbar .yui3-button {
     vertical-align: top;
@@ -629,24 +634,53 @@ td.wegas-treeview-icon-player {
     float:right;
     margin-top: 2px;
 }
-
+.fupload-descriptor{
+    background-color: white;
+}
 .fupload-progress{
+    background-color: white;
     border-top:1px solid lightgrey;
     font-weight: bold;
 }
 .fupload-detail{
-    display:none;
+    background-color: white;
+    overflow: hidden;
+    max-height: 0px;
     margin-bottom: 5px;
     margin-left: 15px;
     padding-left: 5px;
     border-left: 1px solid lightgrey;
+    -webkit-transition-property: max-height;
+    -webkit-transition-duration: 0.5s;
+    -webkit-transition-timing-function: linear;
+    -webkit-transition-delay: 0.1s;
+    -moz-transition-property: max-height;
+    -moz-transition-duration: 0.5s;
+    -moz-transition-timing-function: linear;
+    -moz-transition-delay: 0.1s;
+    -ms-transition-property: max-height;
+    -ms-transition-duration: 0.5s;
+    -ms-transition-timing-function: linear;
+    -ms-transition-delay: 0.1s;
+    -o-transition-property: max-height;
+    -o-transition-duration: 0.5s;
+    -o-transition-timing-function: linear;
+    -o-transition-delay: 0.1s;
+    transition-property: max-height;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
+    transition-delay: 0.1s;
 }
 .fupload-descriptor:hover > .fupload-detail{
-    display: block;
+    max-height: 50px;
 }
 
 .image-icon{
     background-image: url("../../wegas-editor/images/image_icon.png");
     background-repeat: no-repeat;
     background-size: 21px 18px;
+}
+
+.yui3-wegas-progressbar-hidden{
+    display:none !important;
 }

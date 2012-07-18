@@ -28,6 +28,26 @@ YUI.add('wegas-entity', function (Y) {
             return ret;                                                         // Return a copy of this's fields.
         },
         /**
+         * Cleaning out object by removing irrelevant informations such as null values
+         *
+         * @return {Entity} containing relevant informations needed by server
+         */
+        compressExport: function(){
+            var e = this.getAttrs();
+            delete e["initialized"];
+            delete e["destroyed"];
+            for(var i in e){                                                    //Removing irrelevant informations
+                if(e[i] === null){                                              //Null attributes
+                    //TODO : empty strings, objects ??
+                    delete e[i];
+                }
+                if(e.hasOwnProperty(i) && e[i] instanceof Y.Wegas.persistence.Entity){
+                    e[i] = e[i].compressExport()
+                }
+            }
+            return e;
+        },
+        /**
          * Returns the form configuration associated to this object, to be used a an inputex object.
          */
         getFormCfg: function () {
@@ -56,8 +76,13 @@ YUI.add('wegas-entity', function (Y) {
         }
     }, {
         ATTRS: {
-            id: {},
-            '@class': {}
+            id: {
+                writeOnce: "initOnly"
+            },
+            '@class': {
+                value: null,
+                readOnly: true
+            }
         },
 
         /**
@@ -288,12 +313,25 @@ YUI.add('wegas-entity', function (Y) {
         }
     }, {
         ATTRS: {
-            name: {},
+            name: {
+                value:null,
+                validator:function(s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
             descriptorId: {},
-            defaultVariableInstance: {},
+            defaultVariableInstance: {
+                value:null,
+                validator: function(o){
+                    return o instanceof Y.Wegas.persistence.VariableInstance;
+                }
+            },
             scope: {
                 valueFn: function(){
                     return new Y.Wegas.persistence.TeamScope();                 // Should the default scope be set server or client side?
+                },
+                validator:function(o){
+                    return o instanceof Y.Wegas.persistence.Scope;
                 }
             }
         },
@@ -312,7 +350,7 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.Scope = Y.Base.create("Scope", Y.Wegas.persistence.Entity, [], {
         getInstance: function (){
-            console.log("ERROR SHOULD BE OVERRIDDEN")
+            console.error("SHOULD BE OVERRIDDEN")
         }
     }, {
         ATTRS: {
@@ -326,6 +364,12 @@ YUI.add('wegas-entity', function (Y) {
         getInstance: function () {
             return this.get("variableInstances")[0];
         }
+    },{
+        ATTRS:{
+            "@class":{
+                value:"GameModelScope"
+            }
+        }
     });
     /**
      * GameScope mapper
@@ -333,6 +377,12 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.GameScope = Y.Base.create("GameScope", Y.Wegas.persistence.Scope, [], {
         getInstance: function (){
             return this.get("variableInstances")[0];
+        }
+    },{
+        ATTRS:{
+            "@class":{
+                value:"GameScope"
+            }
         }
     });
 
@@ -343,6 +393,12 @@ YUI.add('wegas-entity', function (Y) {
         getInstance: function (){
             return this.get("variableInstances")[Y.Wegas.app.get('currentTeam')];
         }
+    },{
+        ATTRS:{
+            "@class":{
+                value:"TeamScope"
+            }
+        }
     });
 
     /**
@@ -351,6 +407,12 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.PlayerScope = Y.Base.create("PlayerScope", Y.Wegas.persistence.Scope, [], {
         getInstance: function () {
             return this.get("variableInstances")[Y.Wegas.app.get('currentPlayer')];
+        }
+    },{
+        ATTRS:{
+            "@class":{
+                value:"PlayerScope"
+            }
         }
     });
 
@@ -367,6 +429,9 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS: {
+            "@class":{
+                value:"StringDescriptor"
+            }
         },
         EDITFORM:  [{
             name:'defaultVariableInstance',
@@ -394,16 +459,24 @@ YUI.add('wegas-entity', function (Y) {
      * StringInstance mapper
      */
     Y.Wegas.persistence.StringInstance = Y.Base.create("StringInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS:{
+            "@class":{
+                value:"StringInstance"
+            }
+        },
         EDITFORM: [{
             name: 'value',
             label: 'Text'
         }]
     });
     /**
-    * NumberDescriptor mapper
-    */
+     * NumberDescriptor mapper
+     */
     Y.Wegas.persistence.NumberDescriptor = Y.Base.create("NumberDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS: {
+            "@class":{
+                value:"NumberDescriptor"
+            },
             minValue: {},
             maxValue: {}
         },
@@ -440,6 +513,11 @@ YUI.add('wegas-entity', function (Y) {
      * NumberInstance mapper
      */
     Y.Wegas.persistence.NumberInstance = Y.Base.create("NumberInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS:{
+            "@class":{
+                value:"NumberInstance"
+            }
+        },
         EDITFORM: [{
             name: 'value',
             label: 'Text',
@@ -451,6 +529,9 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.ListDescriptor = Y.Base.create("ListDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS: {
+            "@class":{
+                value:"ListDescriptor"
+            },
             items: {
                 value: []
             }
@@ -483,13 +564,24 @@ YUI.add('wegas-entity', function (Y) {
     /*
      * ListInstance mapper
      */
-    Y.Wegas.persistence.ListInstance = Y.Base.create("ListInstance", Y.Wegas.persistence.VariableInstance, []);
+    Y.Wegas.persistence.ListInstance = Y.Base.create("ListInstance", Y.Wegas.persistence.VariableInstance, [], {},{
+        ATTRS:{
+            "@class":{
+                value:"ListInstance"
+            }
+        }
+    });
 
 
     /**
      * QuestionDescriptor mapper
      */
     Y.Wegas.persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", Y.Wegas.persistence.ListDescriptor, [], {}, {
+        ATTRS:{
+            "@class":{
+                value:"QuestionDescriptor"
+            }
+        },
         EDITFORM: [{
             name: 'label',
             label:'Label'
@@ -542,6 +634,9 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
         ATTRS: {
+            "@class":{
+                value:"QuestionInstance"
+            },
             active: {
                 value: true
             },
@@ -566,6 +661,11 @@ YUI.add('wegas-entity', function (Y) {
      * ChoiceDescriptor mapper
      */
     Y.Wegas.persistence.ChoiceDescriptor = Y.Base.create("ChoiceDescriptor", Y.Wegas.persistence.ListDescriptor, [], {}, {
+        ATTRS:{
+            "@class":{
+                value:"ChoiceDescriptor"
+            }
+        },
         EDITFORM: [{
             name: 'description',
             'type': 'html',
@@ -632,6 +732,9 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
         ATTRS: {
+            "@class":{
+                value:"ChoiceInstance"
+            },
             active: {
                 value: true
             }
@@ -648,6 +751,9 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS: {
+            "@class":{
+                value:"ResourceDescriptor"
+            },
             messages: {}
         },
         EDITFORM: [{
@@ -703,6 +809,11 @@ YUI.add('wegas-entity', function (Y) {
      * ResourceInstance mapper
      */
     Y.Wegas.persistence.ResourceInstance = Y.Base.create("ResourceInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
+        ATTRS:{
+            "@class":{
+                value:"ResourceInstance"
+            }
+        },
         EDITFORM: [{
             name: 'active',
             label:'Active',
@@ -730,6 +841,11 @@ YUI.add('wegas-entity', function (Y) {
      * TaskDescriptor mapper
      */
     Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+        ATTRS:{
+            "@class":{
+                value:"TaskDescriptor"
+            }
+        },
         EDITFORM: [{
             name: 'description',
             'type': 'html',
@@ -779,6 +895,11 @@ YUI.add('wegas-entity', function (Y) {
      * TaskInstance mapper
      */
     Y.Wegas.persistence.TaskInstance = Y.Base.create("TaskInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
+        ATTRS:{
+            "@class":{
+                value:"TaskInstance"
+            }
+        },
         EDITFORM: [{
             name: 'active',
             label:'Active',
@@ -799,6 +920,11 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     Y.Wegas.persistence.InboxDescriptor = Y.Base.create("", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+        ATTRS:{
+            "@class":{
+                value:"InboxDescriptor"
+            }
+        },
         EDITMENU: [{
             text: "Delete",
             value: {
@@ -811,6 +937,9 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.InboxInstance = Y.Base.create("InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS: {
+            "@class":{
+                value:"InboxInstance"
+            },
             messages: {}
         }
     });
@@ -820,6 +949,9 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.Message = Y.Base.create("Message", Y.Wegas.persistence.Entity, [], { }, {
         ATTRS: {
+            "@class":{
+                value:"Message"
+            },
             subject: {},
             body: {}
         }
@@ -840,6 +972,9 @@ YUI.add('wegas-entity', function (Y) {
             content: {},
             language: {
                 value: "JavaScript"
+            },
+            "@class":{
+                value:"Script"
             }
         }
     });

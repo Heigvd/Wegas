@@ -85,6 +85,10 @@ public class StateMachineInstance extends VariableInstance implements Serializab
         this.transitionHistory = transitionHistory;
     }
 
+    public void transitionHistoryAdd(Long id) {
+        this.transitionHistory.add(id);
+    }
+
     @Override
     public void merge(AbstractEntity a) {
         this.currentStateId = ((StateMachineInstance) a).getCurrentStateId();

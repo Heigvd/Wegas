@@ -200,7 +200,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer-min.js',
-                        requires: ['wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'statemachine-entities', 'selector-css3'],
+                        requires: ['wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'statemachine-entities'],
                         ix_provides: 'StateMachineViewer'
                     },
                     'wegas-statemachineviewercss': {
