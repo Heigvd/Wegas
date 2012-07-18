@@ -119,6 +119,11 @@
                     currentTeam: #{gameController.currentPlayer.team.id},
                     currentPlayer: #{gameController.currentPlayer.id},
                     cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
+
+                    /**
+                    * This field is used to override Entities edition menus.
+                    * Use the target class name as the key.
+                    */
                     dataSources: {
                         "GameModel": {
                             source: "rest/GameModel",
@@ -212,19 +217,6 @@
                                 }
                             ]
                         }
-                        /* "Team": {
-                            source: "rest/gm/1/Team",
-                            plugins: [
-                                {
-                                    fn: "DataSourceJSONSchema",
-                                    cfg: {
-                                        schema: {
-                                            resultListLocator: "."
-                                        }
-                                    }
-                                }, { fn: "DataSourceREST" }
-                            ]
-                        },*/
                     },
                     /**
                     * This field is used to override Entities edition menus.
@@ -296,26 +288,14 @@
                     }
                 };
 
-//                Config.forms.VariableDescriptor = [
-//                    { name: 'valueselector', label:'Variable is', type: 'keyvalue', availableFields: [
-//                    //        {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Config.forms.StringDescriptor},
-//                    //        {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
-//                            {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Config.forms.QuestionDescriptor },
-//                            {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor },
-//                            {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor },
-//                            {type: 'group', name: 'ResourceDescriptor', label: 'a resource',fields:  Config.forms.ResourceDescriptor },
-//                            {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Config.forms.TaskDescriptor },
-//                            {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Config.forms.DialogueDescriptor }
-//                        ]
-//                    }
-//                ];
+                Y.on('domready', function() {                                   // When dom is ready,
 
-                Y.on('domready', function() {
-                <ui:insert name="jsInitMethod">
-                    var app = new Y.Wegas.App(cfg);                             // Launch the app as soon as Dom is ready
+                    <ui:insert name="jsInitMethod">
+                    var app = new Y.Wegas.App(cfg);                             // launch the app
                     app.render();
-                </ui:insert>
-                 });
+                    </ui:insert>
+
+                });
 
             });
         </script>
