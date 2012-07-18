@@ -49,7 +49,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 defaultFn: this.openFile
             });
             this.fileUploader = new this.FileUploader({
-                visible:true
+                visible:true,
+                fileexplorer:this
             });
         },
         renderUI: function () {
@@ -66,9 +67,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 label: "/",
                 rightWidget: new Y.Wegas.WegasMenu({
                     items: [{
-                            label:"refresh",
-                            imgSrc:""
-                        },{
+                        label:"refresh",
+                        imgSrc:""
+                    },{
                         label:"add dir",
                         imgSrc:""
                     },{
@@ -386,7 +387,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     color:"lightgrey",
                     width: "100px",
                     height: "10px",
-                    percent: 0
+                    percent: 100,
+                    label:"Total Upload",
+                    showValue:true
                 });
                 this.uploader = new Y.UploaderHTML5({
                     fileFieldName: "file",
@@ -396,10 +399,15 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 this.publish("fileuploadcomplete");
             },
             renderUI: function (){
-
-                this.get(BOUNDING_BOX).insertBefore("<span>Uploader</span>", this.get(CONTENT_BOX));
-                this.overallProgress.render();
-                this.get(BOUNDING_BOX).insertBefore(this.overallProgress.get(BOUNDING_BOX), this.get(CONTENT_BOX));
+                try{
+                    this.get("fileexplorer").get("parent").addToolbarWidget(this.overallProgress);
+                    this._set(CONTENT_BOX, this.get("fileexplorer").get("parent").get("toolbarPanel").getDOMNode());
+                }catch(e){                                                      //FALLBACK, no toolbar
+                    this.get(BOUNDING_BOX).insertBefore("<span>Uploader</span>", this.get(CONTENT_BOX));
+                    this.overallProgress.render();
+                    this.get(BOUNDING_BOX).insertBefore(this.overallProgress.get(BOUNDING_BOX), this.get(CONTENT_BOX));
+                }
+                this.overallProgress.hide();
             },
             bindUI: function () {
                 this.events.totalProgress = this.uploader.on("totaluploadprogress", function(e){
@@ -442,7 +450,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 detailDiv.addClass(this.getClassName("detail"));
                 file.progressBar = new Y.Wegas.ProgressBar({
                     percent:0,
-                    width: "90%",
+                    width: "99%",
                     height: "4px",
                     color:"lightgrey"
                 });
@@ -456,7 +464,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             },
 
             upload: function (file){
-                this.show();
+                this.overallProgress.show();
                 file.treeLeaf.set("loading", true);
                 this.uploader.uploadThese([file],
                     Y.Wegas.app.get("dataSources").File.source + "upload" + file.treeLeaf.parentPath,
@@ -467,10 +475,17 @@ YUI.add('wegas-fileexplorer', function (Y) {
             }
         }, {
             NAME:"FileUploader",
-            CSS_PREFIX:"fupload"
+            CSS_PREFIX:"fupload",
+            ATTRS:{
+                fileexplorer:{
+                    value:null,
+                    writeOnce:"initOnly"
+                }
+            }
         })
 
     }, ATTRS);
+
 
 
 
