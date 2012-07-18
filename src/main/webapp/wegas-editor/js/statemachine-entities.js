@@ -48,6 +48,9 @@ Y.add("statemachine-entities", function(Y){
             defaultVariableInstance:{
                 valueFn: function(){
                     return new Y.Wegas.persistence.FSMInstance();
+                },
+                validator: function(o){
+                    return o instanceof Y.Wegas.persistence.FSMInstance;
                 }
             }
         },
@@ -79,8 +82,12 @@ Y.add("statemachine-entities", function(Y){
             "@class": {
                 value: "State"
             },
-            label: {},
-            onEnterEvent: {},
+            label: {
+                value:null
+            },
+            onEnterEvent: {
+                value:null
+            },
             transitions: {
                 value: []
             }
@@ -95,9 +102,15 @@ Y.add("statemachine-entities", function(Y){
             "@class": {
                 value: "Transition"
             },
-            triggerCondition: {},
-            preStateImpact: {},
-            nextStateId: {}
+            triggerCondition: {
+                value:null
+            },
+            preStateImpact: {
+                value:null
+            },
+            nextStateId: {
+                value:null
+            }
         }
     });
 
@@ -117,6 +130,9 @@ Y.add("statemachine-entities", function(Y){
             defaultVariableInstance:{
                 valueFn: function(){
                     return new Y.Wegas.persistence.TriggerInstance();
+                },
+                validator: function (o){
+                    return o instanceof Y.Wegas.persistence.TriggerInstance;
                 }
             }
         },
@@ -342,7 +358,12 @@ Y.add("statemachine-entities", function(Y){
             "@class": {
                 value: "DialogueTransition"
             },
-            actionText: {}
+            actionText: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            }
         }
     });
 
@@ -353,9 +374,10 @@ Y.add("statemachine-entities", function(Y){
         getAvailableActions: function(){
             var availableActions = [],
             i, transitions = this.get("transitions");
-            for (i in this.transitions){
-                if(this.transitions[i] instanceof Y.Wegas.persistence.DialogueTransition){
-                    availableActions.push(this.transitions[i]);
+            for (i in transitions){
+                if(transitions[i] instanceof Y.Wegas.persistence.DialogueTransition){
+                    //TODO: filter not active transitions
+                    availableActions.push(transitions[i]);
                 }
             }
             return availableActions;
@@ -366,7 +388,7 @@ Y.add("statemachine-entities", function(Y){
          * @param {String} The token to split by
          */
         getTexts: function ( token ) {
-            return this.text.split(token);
+            return this.get("text").split(token);
         },
 
         /**
@@ -376,14 +398,19 @@ Y.add("statemachine-entities", function(Y){
          * @param {String} Token to join the array
          */
         setText: function (a, token){
-            this.text = a.join(token);
+            this.set("text", a.join(token));
         }
     }, {
         ATTRS: {
             "@class": {
                 value: "DialogueState"
             },
-            text: {}
+            text: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            }
         }
     });
 });
