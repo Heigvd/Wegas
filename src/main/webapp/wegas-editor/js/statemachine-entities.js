@@ -323,7 +323,21 @@ Y.add("statemachine-entities", function(Y){
     /**
      * DialogueTransition Entity
      */
-    Y.Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Y.Wegas.persistence.Transition, [], {}, {
+    Y.Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Y.Wegas.persistence.Transition, [], {
+
+        /**
+         * Builds the REST request to trigger this specifique transition
+         * @param {Integer} The dialogue's id
+         * @return {String} an url to GET.
+         */
+        getTriggerURL: function(id){
+            return Y.Wegas.app.get("base") + "rest/GameMode/" +
+            Y.Wegas.app.get("currentGame")
+            + "/VariableDescriptor/StateMachine/" + id
+            + "/Player/" + Y.Wegas.app.get("currentPlayer")
+            + "/Do/" + this.get("id");
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "DialogueTransition"
