@@ -74,38 +74,33 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
 
         },
+
         /**
-         *
-         *  Recuresivly walk the provided stack, looking for an object with an
-         *  id corresponing to needle's and apply an operation based method.
-         *
-         *  @method lookupAndDo
+         *  @method updateCache
          *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
-         *  @param {Entity} needle Value to search for
-         *  @param {Array} stack An array of entities to look into
+         *  @param {entity} The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
          *  @for DataSourceREST
          */
-
-        updateCache: function (method, item) {
+        updateCache: function (method, entity) {
             var ret = false;
 
             switch (method) {
                 case "DELETE":
-                    ret = this.find("id", item, function(item, needle, index, stack) {
+                    ret = this.find("id", entity, function(entity, needle, index, stack) {
                         stack.splice(index, 1);
                         return true;
                     });
                     break;
                 default:
-                    ret = this.find("id", item, function(item, needle) {
-                        item.setAttrs(needle.getAttrs());
+                    ret = this.find("id", entity, function(entity, needle) {
+                        entity.setAttrs(needle.getAttrs());
                         return true;
                     });
                     break;
             }
             if (!ret) {
-                this.getCache().push(item);
+                this.getCache().push(entity);
             };
         },
 
@@ -113,25 +108,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
             Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
         },
         _failureHandler: function (e) {
-            console.log("DataSourceRest._failureHandler", e);
-            Y.log("Datasource reply:" + e, 'log', 'Y.Wegas.DataSourceRest');
-        // alert("Error sending REST post request!");
+            //console.log("DataSourceRest._failureHandler", e);
+            Y.error("Datasource reply:" + e, 'Y.Wegas.DataSourceRest');
         },
 
         /// *** Cache methods *** //
 
-        /**
-         * Retrieves an entity from the cache
-         */
-        getEntitiesBy: function (key, val) {
-            var host = this.get('host'), ret = [], i;
-            for (i in host.data) {                                              // We first check in the cache if the data is available
-                if (host.data.hasOwnProperty(i) && host.data[i][key] === val) {
-                    ret.push(host.data[i]);
-                }
-            }
-            return ret;
-        },
+
 
         /**
          * @deprecated, here for retrocompatibility
@@ -141,8 +124,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.find(key, val);
         },
         getCachedVariablesBy: function (key, val) {
-            Y.log("Function getCachedVariablesBy() is deprecated, use ???????(key, val)");
-            //return this.getEntitiesBy(key, val);
+            Y.log("Function getCachedVariablesBy() is deprecated, use filter(key, val)");
+            return this.filter(key, val);
         },
         getCachedVariableById: function (id) {
             Y.log("Function getCachedVariableById() is deprecated, use findById(key, val)");
@@ -171,9 +154,28 @@ YUI.add('wegas-datasourcerest', function (Y) {
         findById: function (id) {
             return this.find("id", id  * 1);                              // Cast to number
         },
-
+        /**
+         * Retrieves a list of entities from the cache
+         */
+        filter: function (key, val) {
+            var data = this.getCache(), ret = [], i;
+            for (i = 0; i < data.length; i += 1) {
+                if (this.testEntity(data[i], key, val)) {
+                    ret.push(data[i]);
+                }
+            }
+            return ret;
+        },
         /**
          *
+         *  Recuresivly walk the provided stack, looking for an object with an
+         *  id corresponing to needle's and apply an operation based method.
+         *
+         *  @method doFind
+         *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
+         *  @param {entity} The entity to update in the cache
+         *  @return {Boolean} `true` if object could be located and method applied
+         *  @for DataSourceREST
          */
         doFind: function(stack, key, needle, onFindFn) {
             return Y.Array.find(stack, function(item, index, array) {
@@ -203,7 +205,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
          */
         testEntity: function(entity, key, needle) {
             var value = ( entity.get ) ? entity.get(key) : entity[key],          // Normalize item and needle values
-                needleValue = (needle.get) ? needle.get(key) :  (typeof needle === 'object') ? needle[key] : needle;
+            needleValue = (needle.get) ? needle.get(key) :  (typeof needle === 'object') ? needle[key] : needle;
 
             return value === needleValue;
         },

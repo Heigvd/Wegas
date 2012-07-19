@@ -17,9 +17,9 @@ YUI.add('wegas-editor-buttons', function (Y) {
         bindUI: function () {
             Y.Wegas.NewButton.superclass.bindUI.apply(this, arguments);
             this.on("click", function(){
-                Y.Wegas.editor.showAddForm({
+                Y.Wegas.editor.showAddForm(Y.Wegas.persistence.Entity.revive({
                     "@class": this.get("targetClass")
-                }, null, Y.Wegas.app.dataSources[this.get("targetClass")]);
+                }), null, Y.Wegas.app.dataSources[this.get("targetClass")]);
             });
         }
     }, {
