@@ -12,6 +12,10 @@ Y.add("statemachine-entities", function(Y){
             currentStateId: {},
             "@class": {
                 value: "FSMInstance"
+            },
+            transitionHistory:{
+                value:[],
+                writeOnce:"initOnly"
             }
         },
         EDITFORM:  [{
@@ -26,7 +30,23 @@ Y.add("statemachine-entities", function(Y){
     Y.Wegas.persistence.FSMDescriptor = Y.Base.create("FSMDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
 
         // *** Lifecycle methods *** //
-
+        /**
+         * Find a transition by it's id
+         * @param The queried transition's id
+         */
+        getTransitionById: function(id){
+            var states = this.get("states"),
+            trs;
+            for (var i in states){
+                trs = states[i].get("transitions")
+                for(var t in trs){
+                    if(trs[t].get("id") == id){
+                        return trs[t];
+                    }
+                }
+            }
+            return null;
+        },
         // *** Private methods *** //
         getCurrentState: function(){
             return this.get("states")[this.getInstance().get("currentStateId")];
@@ -220,7 +240,44 @@ Y.add("statemachine-entities", function(Y){
      * DialogueDescriptor Entity
      */
 
-    Y.Wegas.persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", Y.Wegas.persistence.FSMDescriptor, [], {}, {
+    Y.Wegas.persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", Y.Wegas.persistence.FSMDescriptor, [], {
+
+        /**
+         * Triggers a Dialogue Transition programmatically
+         * @param {DialogueTransition} transition - the transition object to trigger.
+         * @param {Object} callbacks - {success:Function|String, failure:Function|String} - the callback functions to execute.
+         */
+        doTransition: function(transition, callbacks){
+            var request;
+            if(transition instanceof Y.Wegas.persistence.DialogueTransition){
+                if(!this.get("id") || !transition.get("id")){
+                    console.warn("Transition and Dialogue not persisted");
+                    return false;
+                }
+                request = "/StateMachine/" + this.get("id")
+                + "/Player/" + Y.Wegas.app.get("currentPlayer")
+                + "/Do/" + transition.get("id");
+                try{
+                    Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                        request: request,
+                        cfg: {
+                            method: "GET",
+                            headers:{
+                                'Content-Type': 'application/json; charset=utf-8'
+                            }
+                        },
+                        callback: callbacks
+                    });
+                }catch(e){
+                    //TODO : that
+                    console.error("will have to correct that, cache currently not updating", e.stack);
+                }
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "DialogueDescriptor"
@@ -337,15 +394,15 @@ Y.add("statemachine-entities", function(Y){
         }]
     });
     /**
-     * DialogueTransition Entity
-     */
+ * DialogueTransition Entity
+ */
     Y.Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Y.Wegas.persistence.Transition, [], {
 
         /**
-         * Builds the REST request to trigger this specifique transition
-         * @param {Integer} The dialogue's id
-         * @return {String} an url to GET.
-         */
+     * Builds the REST request to trigger this specifique transition
+     * @param {Integer} The dialogue's id
+     * @return {String} an url to GET.
+     */
         getTriggerURL: function(id){
             return Y.Wegas.app.get("base") + "rest/GameMode/" +
             Y.Wegas.app.get("currentGame")
@@ -368,8 +425,8 @@ Y.add("statemachine-entities", function(Y){
     });
 
     /**
-     * DialogueState Entity
-     */
+ * DialogueState Entity
+ */
     Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
         getAvailableActions: function(){
             var availableActions = [],
@@ -384,19 +441,19 @@ Y.add("statemachine-entities", function(Y){
         },
 
         /**
-         * Get an array of texts from the state's text, split by a token
-         * @param {String} The token to split by
-         */
+     * Get an array of texts from the state's text, split by a token
+     * @param {String} The token to split by
+     */
         getTexts: function ( token ) {
             return this.get("text").split(token);
         },
 
         /**
-         * Set the text with an array and a token
-         *
-         * @param {Array} Strings to join
-         * @param {String} Token to join the array
-         */
+     * Set the text with an array and a token
+     *
+     * @param {Array} Strings to join
+     * @param {String} Token to join the array
+     */
         setText: function (a, token){
             this.set("text", a.join(token));
         }
