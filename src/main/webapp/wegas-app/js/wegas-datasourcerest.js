@@ -79,15 +79,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *  Recuresivly walk the provided stack, looking for an object with an
          *  id corresponing to needle's and apply an operation based method.
          *
-         *  @method lookupAndDo
+         *  @method updateCache
          *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
-         *  @param {Entity} needle Value to search for
-         *  @param {Array} stack An array of entities to look into
+         *  @param {entity} The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
          *  @for DataSourceREST
          */
 
-        updateCache: function (method, item) {
+        updateCache: function (method, entity) {
             var ret = false;
 
             switch (method) {
@@ -123,11 +122,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
         /**
          * Retrieves an entity from the cache
          */
-        getEntitiesBy: function (key, val) {
-            var host = this.get('host'), ret = [], i;
-            for (i in host.data) {                                              // We first check in the cache if the data is available
-                if (host.data.hasOwnProperty(i) && host.data[i][key] === val) {
-                    ret.push(host.data[i]);
+        filter: function (key, val) {
+            var data = this.getCache(), ret = [], i;
+            for (i = 0; i < data.length; i += 1) {
+                if (this.testEntity(data[i], key, val)) {
+                    ret.push(data[i]);
                 }
             }
             return ret;
@@ -141,8 +140,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.find(key, val);
         },
         getCachedVariablesBy: function (key, val) {
-            Y.log("Function getCachedVariablesBy() is deprecated, use ???????(key, val)");
-            //return this.getEntitiesBy(key, val);
+            Y.log("Function getCachedVariablesBy() is deprecated, use filter(key, val)");
+            return this.filter(key, val);
         },
         getCachedVariableById: function (id) {
             Y.log("Function getCachedVariableById() is deprecated, use findById(key, val)");

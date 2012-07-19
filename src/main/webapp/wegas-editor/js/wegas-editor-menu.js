@@ -37,15 +37,15 @@ YUI.add('wegas-editor-menu', function(Y) {
             //this.move(mouseEvent.clientX + Y.DOM.docScrollX(), mouseEvent.clientY + Y.DOM.docScrollY());
             this.show();
         },
-        setMenuItems: function(data, dataSource) {
-            var menuItems = Y.Wegas.editor.get("editorMenus")[data["@class"]];
+        setMenuItems: function(entity, dataSource) {
+            var menuItems = entity.getMenuCfg();
 
             if (!menuItems) {
-                Y.log('error', 'Menu items are undefined.', "Wegas.Editor");
+                Y.error('Menu items are undefined.', "Wegas.Editor");
             }
 
             this._currentDataSource = dataSource;
-            this._currentData = data;
+            this._currentData = entity;
 
             this.menu.clearContent();
             this.menu.addItems(menuItems);
