@@ -35,6 +35,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         stateId: null,
         currentZoom: null,
         events: {},
+        cacheDialogue:null,
         nodes:{},
 
         initializer: function() {
@@ -74,6 +75,14 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.panel = this.get("parent").get("toolbarPanel");
             this.header = this.get("parent").get("toolbarNode");
             this.get("parent").addToolbarWidget(new Y.Button({
+                label:"load",
+                on:{
+                    'click': function (e){
+                        this.fire("load");
+                    }
+                }
+            })).set("type", "load");
+            this.get("parent").addToolbarWidget(new Y.Button({
                 label:"<span class=\"wegas-icon wegas-icon-new\"></span>New",
                 on:{
                     'click': function (e){
@@ -96,9 +105,13 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         },
 
         bindUI: function() {
+            this.events.toolbarNodeNew = this.on("button:load", function(e){
+                this.processMenu("load");
+            });
             this.events.toolbarNodeNew = this.on("button:new", function(e){
                 this.processMenu("new");
             });
+
             this.events.toolbarNodeSave = this.on("button:save", function(e){
                 this.processMenu("save");
             });
@@ -162,6 +175,26 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             delete this.nodes;
             delete this.events;
         },
+        loader: function(){
+            var tmp;
+            if(!this.panel.loader){
+                this.cacheDialogue = Y.Wegas.VariableDescriptorFacade.rest.filter("@class", "DialogueDescriptor");
+                tmp = "<select><option>Select</option>";
+                for(var i in this.cacheDialogue){
+                    tmp += "<option value='" + this.cacheDialogue[i].get("id") + "'>" + this.cacheDialogue[i].get("name") + "</option>";
+                }
+                tmp += "</select>";
+                this.panel.loader = Y.Node.create(tmp);
+                this.panel.append(this.panel.loader);
+                this.panel.loader.on("change", function(e){
+                    if(e.target.getDOMNode().value){
+                        this.set("entity", Y.Wegas.VariableDescriptorFacade.rest.find("id", parseInt(e.target.getDOMNode().value)));
+                    }
+                    this.panel.loader.remove(true);
+                    this.panel.loader = null;
+                }, this);
+            }
+        },
         rebuild: function(){
             var state, states, sm = this.get("entity");
             this.stateId = 1;
@@ -222,7 +255,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         processMenu: function(type){
             var entity;
             switch(type){
-                case "new":
+                case "load":
+                    this.loader();
+                    break;
+                    case "new":
                     entity = new Y.Wegas.persistence.DialogueDescriptor();
                     entity.setInitialStateId(1);
                     this.set("entity", entity);
@@ -230,7 +266,12 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 case "save":
                     entity = this.get("entity");
                     if(entity){
-                    //entity.save();        //FIXME : @FX entity est à sauver
+                        entity = JSON.parse(JSON.stringify(entity));
+                        if(entity.id){
+                            Y.Wegas.VariableDescriptorFacade.rest.put(entity);
+                        }else{
+                            Y.Wegas.VariableDescriptorFacade.rest.post(entity)
+                        }
                     //Y.Wegas.VariableDescriptorFacade.rest.put / post (entity, callback, scope)
                     }
                     break;
