@@ -981,20 +981,17 @@ YUI.add('wegas-entity', function (Y) {
 
 
     /*
-     * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORMS values here, so
+     * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORM values here, so
      * we can use other object's existing declaration.
      */
-//    Y.Wegas.persistence.VariableDescriptor.EDITFORMS
-//    [
-//                            {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Config.forms.StringDescriptor},
-//                            {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Config.forms.NumberDescriptor },
-//                            {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Config.forms.QuestionDescriptor },
-//                            {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Config.forms.ListDescriptor },
-//                            {type: 'group', name: 'TriggerDescriptor', label: 'a trigger',fields:  Config.forms.TriggerDescriptor },
-//                            {type: 'group', name: 'ResourceDescriptor', label: 'a resource',fields:  Config.forms.ResourceDescriptor },
-//                            {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Config.forms.TaskDescriptor },
-//                            {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Config.forms.DialogueDescriptor }
-//                        ]
-//                    }
-//                ]
+    Y.Wegas.persistence.VariableDescriptor.EDITFORM[0].availableFields = [
+        {type: 'group', name: 'StringDescriptor', label: 'a string',fields: Y.Wegas.persistence.StringDescriptor.EDITFORM},
+        {type: 'group', name: 'NumberDescriptor', label: 'a number',fields:  Y.Wegas.persistence.NumberDescriptor.EDITFORM },
+        {type: 'group', name: 'QuestionDescriptor', label: 'a question', fields: Y.Wegas.persistence.QuestionDescriptor.EDITFORM },
+        {type: 'group', name: 'ListDescriptor', label: 'a list',fields:  Y.Wegas.persistence.ListDescriptor.EDITFORM },
+        {type: 'group', name: 'ResourceDescriptor', label: 'a resource',fields:  Y.Wegas.persistence.ResourceDescriptor.EDITFORM },
+        {type: 'group', name: 'TaskDescriptor', label: 'a task',fields:  Y.Wegas.persistence.TaskDescriptor.EDITFORM },
+     // {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Y.Wegas.persistence.DialogueDescriptor.EDITFORM }
+     // {type: 'group', name: 'TriggerDescriptor', label: 'a trigger', fields:  Y.Wegas.persistence.TriggerDescriptor.EDITFORM },
+    ];
 });

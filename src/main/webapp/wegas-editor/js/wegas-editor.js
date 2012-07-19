@@ -30,13 +30,8 @@ YUI.add('wegas-editor', function(Y) {
         /**
          * Show the contextual edit menu
          */
-        showEditMenu: function (data, dataSource) {
-            var menuItems = this.get("editorMenus")[data["@class"]];
-            if (!menuItems) {
-                Y.log('error', 'Menu items are undefined.', "Wegas.Editor");
-                return;
-            }
-            this._editMenu.setMenuItems(data, dataSource);
+        showEditMenu: function (entity, dataSource) {
+            this._editMenu.setMenuItems(entity, dataSource);
             this._editMenu.show();
         },
 
@@ -89,8 +84,8 @@ YUI.add('wegas-editor', function(Y) {
         },
 
         showAddForm: function (data, parentData, dataSource) {
-            this.showEditForm(data, function (cfg) {
-                this.rest.post(cfg, parentData, {
+            this.showEditForm(data, function (newVal) {
+                this.rest.post(newVal, parentData, {
                     success: function () {
                         Y.Wegas.editor.showFormMsg("success", "Item has been added");
                         Y.Wegas.editor._form.setValue(data);
@@ -99,7 +94,7 @@ YUI.add('wegas-editor', function(Y) {
                         Y.Wegas.editor.showFormMsg("error", e.response.results.message || "Error while adding item");
                     }
                 });
-            }, null, dataSource);
+            }, dataSource);
         },
         showFormMsg: function (level, msg) {
             this.formWidget.showMessage(level, msg);
