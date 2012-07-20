@@ -1065,7 +1065,22 @@ YUI.add('wegas-entity', function (Y) {
             "@class":{
                 value:"Script"
             }
+        },
+        EDITFORM:[
+        {
+            name:"content",
+            label:"Script"
+        },
+        {
+            name:"language",
+            //type:"select",
+            type:"hidden",
+            value:"JavaScript",
+            choices:[{
+                    value:"JavaScript"
+            }]
         }
+        ]
     });
 
 
