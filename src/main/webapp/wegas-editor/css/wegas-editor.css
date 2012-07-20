@@ -49,6 +49,11 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     margin-left:-70px;
     width:65px;
 }
+/*div.inputEx-valid > div.inputEx-message {
+}*/
+div.inputEx-message {
+    margin: 0;
+}
 
 .inputEx-Button {
     padding: 3px 5px;
