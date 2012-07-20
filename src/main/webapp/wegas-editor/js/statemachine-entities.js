@@ -33,6 +33,7 @@ Y.add("statemachine-entities", function(Y){
         /**
          * Find a transition by it's id
          * @param The queried transition's id
+         * @return {Transition|null} the transition if it exists
          */
         getTransitionById: function(id){
             var states = this.get("states"),
@@ -47,6 +48,25 @@ Y.add("statemachine-entities", function(Y){
             }
             return null;
         },
+        /**
+         *  Succession of State - transition representing the path
+         *  for current user.
+         *  @return {Array} An array containing alternatively state/transition.
+         */
+        getFullHistory: function(){
+            var transitionHistory = this.getInstance().get("transitionHistory"),
+            fullHistory = [],
+            tmpTransition = null;
+            //TODO :Currently assuming it begins with initialState. May be wrong?
+            fullHistory.push(this.getState(this.getInitialStateId()));
+            for(var i = 0; i < transitionHistory.length; i+=1){
+                tmpTransition = this.getTransitionById(transitionHistory[i]);
+                fullHistory.push(tmpTransition);
+                fullHistory.push(this.getState(tmpTransition.get("nextStateId")));
+            }
+            return fullHistory;
+
+        },
         // *** Private methods *** //
         getCurrentState: function(){
             return this.get("states")[this.getInstance().get("currentStateId")];
@@ -56,6 +76,9 @@ Y.add("statemachine-entities", function(Y){
         },
         setInitialStateId: function(initialStateId) {
             this.get("defaultVariableInstance").set("currentStateId", initialStateId);
+        },
+        getState: function (identifier){
+            return this.get("states")[identifier];
         }
     }, {
         ATTRS: {
