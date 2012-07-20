@@ -145,8 +145,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *  @method find
          *  @for DataSourceREST
          */
-        find: function(key, needle, onFindFn) {
-            return this.doFind(this.getCache(), key, needle,  onFindFn);
+        find: function(key, val, onFindFn) {
+            return this.doFind(this.getCache(), key, val,  onFindFn);
         },
         /**
          * Retrieves an entity from the cache
@@ -185,7 +185,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     }
                     return true;
                 }
-                return this.walkEntity(item, Y.bind(this.findBy, this, needle, stack, key, onFindFn));
+                return this.walkEntity(item, Y.bind(this.doFind, this, needle, stack, key, onFindFn));
             }, this);
         },
 
@@ -195,7 +195,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         walkEntity: function(item, callback) {
             var acc = false;
             if (item.get && item.get("items")) {
-            // acc = callback(this.get("items"));
+                acc = callback(this.get("items"));
             }
             return acc;
         },

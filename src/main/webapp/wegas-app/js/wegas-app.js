@@ -22,7 +22,6 @@ YUI.add('wegas-app', function (Y) {
         // @todo Delete datasources
         },
         render: function () {
-
             this.initDataSources();
             this.renderUI();
             this.initCSS();

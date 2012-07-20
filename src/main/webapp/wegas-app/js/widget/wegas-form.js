@@ -51,7 +51,9 @@ YUI.add('wegas-form', function (Y) {
                         if (val.valueselector) {
                             val = val.valueselector;
                         }
-                        this.fire("submit", {value: val});
+                        this.fire("submit", {
+                            value: val
+                        });
                     }, this)
                 }
             }).render(toolbarNode);
@@ -94,16 +96,16 @@ YUI.add('wegas-form', function (Y) {
                     if (this.get("form")) {
                         this.get("form").destroy();
                     }
-
-                    Y.inputEx.use(val, Y.bind(function (fields) {
-                        var form = Y.inputEx({
-                            type: "group",
-                            fields: fields,
-                            parentEl: this.get(CONTENTBOX)
-                        });
+                    var formCfg = {
+                        type: "group",
+                        fields: val,
+                        parentEl: this.get(CONTENTBOX)
+                    };
+                    Y.inputEx.use(formCfg, Y.bind(function (formCfg) {
+                        var form = Y.inputEx(formCfg);
                         form.setValue(this.get("values"));
                         this.set("form", form);
-                    }, this, val));
+                    }, this, formCfg));
                 }
             }
         }
