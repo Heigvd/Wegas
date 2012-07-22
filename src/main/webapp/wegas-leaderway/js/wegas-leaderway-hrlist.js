@@ -13,7 +13,7 @@ YUI.add('wegas-leaderway', function (Y) {
         table: null,
         data: new Array(),
 
-        //*** Particular Methods ***/        
+        //*** Particular Methods ***/  
         getResourcesData: function(listResourcesDescriptor){
             var i, picture, resourceDescriptor, resourceInstance, needPicture = false;
             if(listResourcesDescriptor.items[0].getInstance().properties.picture != null){
@@ -84,6 +84,18 @@ YUI.add('wegas-leaderway', function (Y) {
                     label:"Occupation",
                     sortable:true
                 },
+                {
+                    key: "folder",
+                    formatter: '<input class="folder" type="button" name="folder" value="dossier">',
+                    label: ' ',
+                    allowHTML: true
+                },
+                {
+                    key: "speak",
+                    formatter: '<input class="speak" type="button" name="speak" value="Parler">',
+                    label: ' ',
+                    allowHTML: true
+                }
                 ]
             });
             this.table.render(this.get(CONTENTBOX));
@@ -95,7 +107,7 @@ YUI.add('wegas-leaderway', function (Y) {
             this.table.delegate('click', function (e) {
                 var tr_id = e.currentTarget._node.parentElement.parentElement.id,  
                 model = this.getRow(tr_id);
-                alert(model._node.childNodes[1].textContent);
+                alert('test : '+model._node.childNodes[1].textContent);
             }, '.yui3-datatable-data .speak', this.table);
             
             this.table.delegate('click', function (e) {

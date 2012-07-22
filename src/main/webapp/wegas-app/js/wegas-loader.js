@@ -25,7 +25,7 @@ YUI().use(function (Y) {
                         'wegas-chat',
                         'wegas-list',
                         /*Benjamin temp while I don't understand how to load "on the fly" your game*/
-                        'wegas-leaderway'
+                       'wegas-leaderway'
                         ]
                     },
                     'wegas-appcss': {
@@ -222,21 +222,27 @@ YUI().use(function (Y) {
                     },
                    /**Leaderway**/
                     'wegas-leaderway': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
-                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']
+                       path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue'],
+                        //ix_provides: ""
                     },
                     'wegas-leaderway-folder':{
-                        path: 'wegas-leaderway/js/wegas-leaderway-folder.js'
+                        path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
+                        requires: ['panel', 'wegas-leaderway-tasklist'],
+                        ix_provides: "Folder"
                     },
                     'wegas-leaderway-tasklist': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js'
+                        path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
+                        ix_provides: "TaskList"
                     },
                     'wegas-leaderway-score': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-score.js'
+                        path: 'wegas-leaderway/js/wegas-leaderway-score.js',
+                        ix_provides: "Score"
                     },
                     'wegas-leaderway-dialogue': {
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
-                        /*!!!*/requires:['charts', 'charts-legend']/*!!!*/
+                        /*!!!*/requires:['charts', 'charts-legend']/*!!!*/,
+                        ix_provides: "Dialogue"
                     },
                     
                     /** MMO **/

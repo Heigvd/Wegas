@@ -24,6 +24,14 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
 
         /***Particular Methode***/
+        clear: function(){
+            this.chart = null;
+            this.seriesName.length = 0
+            this.seriesValue.length = 0;
+            Y.one('.wegas-dialogue .chart').setHTML();
+            Y.one('.wegas-dialogue .dialogue .talk').setHTML();
+            Y.one('.wegas-dialogue .dialogue .response').setHTML();
+        },
         createChart: function(resourceDescriptor){
             var resourceInstance = resourceDescriptor.getInstance(),
             seriesCollection = [
@@ -105,14 +113,15 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             state = dialogue.states[dialogue.getInstance().currentStateId];
             text = state.text.split(new RegExp("[ ]+", "g"));
+            Y.one('.wegas-dialogue .dialogue .talk').insert('<p></p>');
             this.displayText(text);
         },
         
         displayText: function(text){
-            Y.one('.wegas-dialogue .dialogue .talk').insert(text[0]+'&nbsp');
+            Y.one('.wegas-dialogue .dialogue .talk p').insert(text[0]+'&nbsp');
             text.shift();
             if(text.length > 0){
-                setTimeout(function(){Y.Wegas.Dialogue.prototype.displayText(text)}, 100);
+                setTimeout(Y.bind(this.displayText, this, text), 100);
             }
             else{
                 this.displayResponse();
@@ -121,12 +130,16 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         
         displayResponse: function(){
             var i, dialogue = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "dialogues"),
-            state;
+            state, context = this;
             state = dialogue.states[dialogue.getInstance().currentStateId];
             Y.one('.wegas-dialogue .dialogue .response').insert('<ul class="responseElement"></ul>');
             for(i=0 ; i<state.transitions.length; i++){
-                Y.one('.wegas-dialogue .dialogue .response .responseElement').insert('<li>'+state.transitions[i].actionText+'</li>');
+                Y.one('.wegas-dialogue .dialogue .response .responseElement').insert('<li nextState="'+state.transitions[i].nextStateId+'">'+state.transitions[i].actionText+'</li>');
             }
+            Y.all('.wegas-dialogue .dialogue .response .responseElement li').on('click', function (e){
+                dialogue.getInstance().currentStateId = this.getAttribute('nextState')[0];
+                context.syncUI();
+            });
         },
         
         /***Lifecycle methode***/
@@ -137,6 +150,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 +'<div class="speaker-name">Leader</div>'
                 +'<div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
                 );
+            Y.all('.menu ').hide();
         },
           
         bindUI: function(){
@@ -147,8 +161,13 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         syncUI: function () {
             var listResourceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
             if(listResourceDescriptor == null) return;
+            this.clear();
             this.createChart(listResourceDescriptor.items[0]);
             this.readStateMachine();
+        },
+        
+        destroy: function(){
+            Y.all('.menu div').show();
         }
         
     }, {

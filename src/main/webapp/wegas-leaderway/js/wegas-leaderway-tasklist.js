@@ -12,15 +12,20 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         // *** Fields *** /
         table: null,
         data: new Array(),
+        selectedTaskDescriptor:null,
+        handlers: new Array(),
 
+        initializer: function() {
+            this.publish("rowSelected", {
+//               bubbling
+//               defautCb
+            });
+        },
         //*** Particular Methods ***/
-        getTasksData: function(){
+        getTasksData: function(listTasksDescriptor){
             var i, j, k, termData, workers = new Array(), taskDescriptor, taskInstance, resourceDescriptor, resourceInstance, comment,
-            listTasksDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
             listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),
-            currentWeekInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "week").getInstance(),  
-            currentSatisfactionInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "clientsSatisfaction").getInstance();
-            if(!listTasksDescriptor) return;
+            currentWeekInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "week").getInstance();
             for (i = 0; i < listTasksDescriptor.items.length; i++) {
                 workers.length = 0;
                 taskDescriptor = listTasksDescriptor.items[i];
@@ -36,16 +41,20 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     }
                 }
                 if(taskInstance.active){
-                    (workers.length <= 0)? termData = (taskInstance.properties.disappearAtWeek - currentWeekInstance.value) : termData = "-";
-                    (taskInstance.properties.comment)? comment = taskInstance.properties.comment : comment = "-";
+                    termData = (workers.length <= 0)?(taskInstance.properties.disappearAtWeek - currentWeekInstance.value) : "-";
+                    comment = new Array();
+                    if(taskInstance.properties.comment) comment.push(taskInstance.properties.comment);
+                    if(taskInstance.properties.workWithLeader == 'true') comment.push("S'effectue en coopération avec le leader.");
+                    if(comment.length <= 0) comment.push("-");
                     if(workers.length <= 0) workers.push("-");
                         this.data.push({
+                            id:taskDescriptor.id,
                             task:taskDescriptor.name,
                             skill:this.getSkillsets(taskInstance),
                             duration:taskInstance.duration,
                             term:termData,
                             salary:taskInstance.properties.salary,
-                            comment:comment,
+                            comment:comment.join(" "),
                             worker: workers.join(",")
                         })
                 }
@@ -59,11 +68,19 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             return temp.join("");
         },
+        
+        getSelectedTaskDescriptor: function(){
+            return this.selectedTaskDescriptor;
+        },
 
         // *** Lifecycle Methods *** //
         renderUI: function (){
             this.table = new Y.DataTable({
                 columns: [
+                {
+                    key:"id",
+                    className: 'hidden'
+                },
                 {
                     key:"task", 
                     label:"Mandat",
@@ -102,16 +119,33 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 ]
             });
             this.table.render(this.get(CONTENTBOX));
+            if(this.get('pickingMode')){
+                this.get(CONTENTBOX).addClass('modePicking');
+            }
         },
             
         bindUI: function() {
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
-            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handlers.push(Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this));
+            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
+            this.table.delegate('click', function (e) {
+                var i, listTasksDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"), taskDescriptorId;
+                taskDescriptorId = e.currentTarget._node.all[0].innerText;
+                for (i = 0; i < listTasksDescriptor.items.length; i++) {
+                    if(listTasksDescriptor.items[i].id == taskDescriptorId){
+                        this.selectedTaskDescriptor = listTasksDescriptor.items[i];
+                        this.fire("rowSelected", this.selectedTaskDescriptor);
+                        break;
+                    }
+                }
+            }, '.yui3-datatable-data tr', this);
         },
         
         syncUI: function () {
+            var cb = this.get(CONTENTBOX),
+            listTasksDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks");
+            if(!listTasksDescriptor) return;
             this.data.length = 0;
-            this.getTasksData();
+            this.getTasksData(listTasksDescriptor);
             this.table.addRows(this.data);
             if(this.data[0] == null){
                 this.table.showMessage("Aucun mandat n'est disponible.");
@@ -119,12 +153,22 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             else{
                 this.table.hideMessage();
             }
+        },
+        
+        destroy: function(){
+            var i;
+            this.table.destroy();
+            for (i=0; i<this.handlers.length;i++) {
+                this.handlers[i].detach();
+            }
         }
         
     },
     {
         ATTRS : {
-            content: { }
+           pickingMode : {
+               value: false
+           }
         }
     });
 

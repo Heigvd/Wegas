@@ -20,7 +20,7 @@
                         "type": "Button",
                         "label": ">",
                         "view": "button",
-                        "onClick": "importPackage(com.wegas.core.script);\nweek.value += 1;\n",
+                        "onClick": "importPackage(com.wegas.core.script);\nthis.finishCurrentWeek();",
                         "tooltips":"Semaine suivante"
                     },{
                         "type": "VariableDisplay",
@@ -67,14 +67,6 @@
                         "cssClass": "menu-folder",
                         "tooltips":"Dossiers des membres",
                         "subpageId": 2
-                    },
-{
-                        "type": "Button",
-                        "label": "Liste des membres",
-                        "targetPageLoaderId": "maindisplayarea",
-                        "cssClass": "menu-HRList",
-                        "tooltips":"Liste des membres",
-                        "subpageId": 3
                     },
                     {
                         "type": "Button",
@@ -132,12 +124,6 @@
         "label":"Folder",
         "type":"Folder",
         "cssClass":"leaderway-folder"
-    },
-    {
-        "id":3,
-        "label":"HRList",
-        "type":"HRList",
-        "cssClass":"leaderway-hrlist"
     },
     {
         "id":4,
