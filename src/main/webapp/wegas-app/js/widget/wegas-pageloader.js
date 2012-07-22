@@ -43,7 +43,7 @@ YUI.add('wegas-pageloader', function (Y) {
                             content: "Loading..."
                         }
                     }
-
+                    
                     try {
                         Y.Wegas.Widget.use(widgetCfg, Y.bind( function (cfg) {   // Load the subwidget dependencies
                             var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
