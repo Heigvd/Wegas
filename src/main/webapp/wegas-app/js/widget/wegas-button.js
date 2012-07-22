@@ -114,23 +114,24 @@ YUI.add('wegas-button', function (Y) {
         getUnreadCount:  function () {
             var i, instance,
                 dataSource = Y.Wegas.app.dataSources.VariableDescriptor,
-                descriptor = dataSource.rest.getCachedVariableBy('name', this.get('variable')),
-                instance = descriptor.getInstance(),
-                count = 0;
+                descriptor = dataSource.rest.find('name', this.get('variable')),
+                instance, count = 0, messages;
 
             if (!descriptor){
                 return 0;
             }
-            if (descriptor.items) {                                             // In ListDescriptors, we count the children instance's
-                for (i = 0; i < descriptor.items.length; i = i + 1) {
-                    instance = descriptor.items[i].getInstance();
+
+            if (descriptor.get("items")) {                                             // In ListDescriptors, we count the children instance's
+                for (i = 0; i < descriptor.get("items").length; i = i + 1) {
+                    instance = descriptor.get("items")[i].getInstance();
                     count += instance.unread ? 1 : 0;
                 }
             }
 
-            if (instance.messages) {                                             // In InboxVariableDescriptors, we count the replies
-                for (i = 0; i < instance.messages.length; i = i + 1) {
-                    count += instance.messages[i].unread ? 1 : 0;
+            messages = descriptor.getInstance().get("messages");
+            if (messages) {                                                     // In InboxVariableDescriptors, we count the replies
+                for (i = 0; i <messages.length; i = i + 1) {
+                    count += messages[i].unread ? 1 : 0;
                 }
             }
 

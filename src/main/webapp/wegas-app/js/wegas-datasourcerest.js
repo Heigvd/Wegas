@@ -14,7 +14,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
         'Content-Type': 'application/json; charset=utf-8',
         'Managed-Mode': 'true'
     };
-
+    /**
+     *  @class DataSourceREST
+     *  @module Wegas
+     *  @constructor
+     */
     DataSourceREST = function () {
         DataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -31,6 +35,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.get('host').data = [];
         },
 
+
+        /// *** Server requests methods *** //
         sendRequest: function (requestCfg) {
             requestCfg.callback = requestCfg.callback || {
                 success: this._successHandler,
@@ -42,74 +48,170 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.get('host').sendRequest(requestCfg);
         },
 
-        applyOperation: function (method, needle, stack) {
-            var i;
-            for (i = 0; i < stack.length; i += 1) {
-                if (stack[i].id === needle.id) {
-                    switch (method) {
-                        case "DELETE":
-                            //@fixme is there a memory leak here ??
-                            stack.splice(i, 1);
-                            //delete stack[i];
-                            return true;
-                        default:
-                            //stack[i] = Y.merge(stack[i], needle);
-                            delete stack[i];
-                            stack[i] = needle;
-                            return true;
+
+        beforeResponse: function (e) {
+            Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "info", "Wegas.RestDataSource");
+            e.data = this.getCache();
+            e.serverResponse = Y.Wegas.persistence.Entity.revive(e.response.results);
+
+            if (Lang.isArray(e.serverResponse)) {                               // Non-managed response: we apply the operation for each object in the returned array
+                for (i = 0; i < e.serverResponse.length; i += 1) {
+                    this.updateCache(e.cfg.method, e.serverResponse[i], this.getCache());
+                }
+            } else {
+                for (i = 0; i < e.serverResponse.get("entities").length; i += 1) {       // Update the cache with the Entites in the reply body
+                    this.updateCache(e.cfg.method, e.serverResponse.get("entities")[i], this.getCache());
+                }
+
+                for (i = 0; i < e.serverResponse.get("events").length; i += 1) {
+                    evt = e.serverResponse.get("events")[i];
+                    if (evt.get('@class') == "EntityUpdatedEvent") {
+                        for (i = 0; i < evt.updatedEntities.length; i += 1) {         // Update the cache with the entites in the reply
+                            this.updateCache("POST", evt.updatedEntities[i], this.getCache());
+                        }
                     }
                 }
             }
-            stack.push(needle);
-            return false;
-        },
-        beforeResponse: function (e) {
-            Y.log("Response received from " + this.get('host').get('source') + e.cfg.request, "info", "Wegas.RestDataSource");
-            e.data = this.get('host').data;
-            e.response.results = Y.Wegas.persistence.Entity.revive(e.response.results);
-            if (e.error) {
-                return;
-            }
-            this.updateCache(e);
-        },
-        updateCache: function (e) {
-            var i, results = e.response.results.entities || e.response.results;
 
-            for (i = 0; i < results.length; i += 1) {                // Treat reply
-                this.applyOperation(e.cfg.method, results[i], e.data);
+        },
+
+        /**
+         *  @method updateCache
+         *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
+         *  @param {entity} The entity to update in the cache
+         *  @return {Boolean} `true` if object could be located and method applied
+         *  @for DataSourceREST
+         */
+        updateCache: function (method, entity) {
+            var ret = false;
+
+            switch (method) {
+                case "DELETE":
+                    ret = this.find("id", entity, function(entity, needle, index, stack) {
+                        stack.splice(index, 1);
+                        return true;
+                    });
+                    break;
+                default:
+                    ret = this.find("id", entity, function(entity, needle) {
+                        entity.setAttrs(needle.getAttrs());
+                        return true;
+                    });
+                    break;
             }
+            if (!ret) {
+                this.getCache().push(entity);
+            };
         },
-        getCachedVariables: function () {
-            return this.get('host').data;
+
+        _successHandler: function (e) {
+            Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
         },
+        _failureHandler: function (e) {
+            //console.log("DataSourceRest._failureHandler", e);
+            Y.error("Datasource reply:" + e, 'Y.Wegas.DataSourceRest');
+        },
+
+        /// *** Cache methods *** //
+
+
+
+        /**
+         * @deprecated, here for retrocompatibility
+         */
         getCachedVariableBy: function (key, val) {
-            var host = this.get('host'), i;
-            for (i in host.data) {                                              // We first check in the cache if the data is available
-                if (host.data.hasOwnProperty(i) && host.data[i][key] === val) {
-                    return host.data[i];
-                }
-            }
-            return null;
+            Y.log("Function getCachedVariableBy() is deprecated, use find(key, val)");
+            return this.find(key, val);
         },
         getCachedVariablesBy: function (key, val) {
-            var host = this.get('host'), ret = [], i;
-            for (i in host.data) {                                              // We first check in the cache if the data is available
-                if (host.data.hasOwnProperty(i) && host.data[i][key] === val) {
-                    ret.push(host.data[i]);
+            Y.log("Function getCachedVariablesBy() is deprecated, use filter(key, val)");
+            return this.filter(key, val);
+        },
+        getCachedVariableById: function (id) {
+            Y.log("Function getCachedVariableById() is deprecated, use findById(key, val)");
+            return this.findById(id);                     // Cast to number
+        },
+
+        /**
+         * Retrieves all entities stored in the cache.
+         */
+        getCache: function () {
+            return this.get('host').data;
+        },
+
+        /**
+         * Retrieves an entity from the cache
+         *
+         *  @method find
+         *  @for DataSourceREST
+         */
+        find: function(key, val, onFindFn) {
+            return this.doFind(this.getCache(), key, val,  onFindFn);
+        },
+        /**
+         * Retrieves an entity from the cache
+         */
+        findById: function (id) {
+            return this.find("id", id  * 1);                              // Cast to number
+        },
+        /**
+         * Retrieves a list of entities from the cache
+         */
+        filter: function (key, val) {
+            var data = this.getCache(), ret = [], i;
+            for (i = 0; i < data.length; i += 1) {
+                if (this.testEntity(data[i], key, val)) {
+                    ret.push(data[i]);
                 }
             }
             return ret;
         },
-        getCachedVariableById: function (id) {
-            return this.getCachedVariableBy("id", id  * 1);                     // Cast to number
+        /**
+         *
+         *  Recuresivly walk the provided stack, looking for an object with an
+         *  id corresponing to needle's and apply an operation based method.
+         *
+         *  @method doFind
+         *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
+         *  @param {entity} The entity to update in the cache
+         *  @return {Boolean} `true` if object could be located and method applied
+         *  @for DataSourceREST
+         */
+        doFind: function(stack, key, needle, onFindFn) {
+            return Y.Array.find(stack, function(item, index, array) {
+                if (this.testEntity(item, key, needle)) {                       // We check the current element if it's a match
+                    if (onFindFn) {
+                        onFindFn(item, needle, array);
+                    }
+                    return true;
+                }
+                return this.walkEntity(item, Y.bind(this.doFind, this, needle, stack, key, onFindFn));
+            }, this);
         },
 
-        getById: function (id) {
-            this.sendRequest({
-                request: "/" + id
-            });
+        /**
+         *
+         */
+        walkEntity: function(item, callback) {
+            var acc = false;
+            if (item.get && item.get("items")) {
+                acc = callback(this.get("items"));
+            }
+            return acc;
         },
 
+        /**
+         *
+         */
+        testEntity: function(entity, key, needle) {
+            var value = ( entity.get ) ? entity.get(key) : entity[key],          // Normalize item and needle values
+            needleValue = (needle.get) ? needle.get(key) :  (typeof needle === 'object') ? needle[key] : needle;
+
+            return value === needleValue;
+        },
+
+
+        /* @deprecated from here */
         generateRequest: function (data) {
             return "/" + data.id;
         },
@@ -148,12 +250,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     method: "DELETE"
                 }
             });
-        },
-        _successHandler: function (e) {
-            Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
-        },
-        _failureHandler: function (e) {
-            // alert("Error sending REST post request!");
         }
 
     });
@@ -171,99 +267,19 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
 
-        updateCache: function (e) {
-            var cEl, i, j, k, instances,
-            results = e.response.results;
-
-            Y.log("Response received", "info", "Y.Wegas.VariableDescriptorDataSourceREST");
-
-            for (i = 0; i < results.entities.length; i += 1) {                  // Update the cache with the entites in the reply
-                cEl = results.entities[i];
-                if (Y.Lang.isObject(cEl)) {
-                    if (cEl['@class'].indexOf("Instance") !== -1) {
-                        instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
-                        for (k in instances) {
-                            if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
-                                instances[k] = Y.merge(instances[i], cEl);
-                            }
-                        }
-                    } else {
-                        this.applyOperation(e.cfg.method, cEl, e.data);
-                    }
-                }
-            }
-
-            if (results.events.length > 0 &&
-                results.events[0]['@class'] == "EntityUpdatedEvent") {
-                for (i = 0; i < results.events[0].updatedEntities.length; i += 1) {         // Update the cache with the entites in the reply
-                    cEl = results.events[0].updatedEntities[i];
-                    if (cEl['@class'].indexOf("Instance") !== -1) {
-                        instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
-                        for (k in instances) {
-                            if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
-                                instances[k] = Y.merge(instances[i], cEl);
-                            }
-                        }
-                    } else {
-                        this.applyOperation(e.cfg.method, cEl, e.data);
-                    }
-                }
-            }
-        },
         applyOperation: function (method, needle, stack) {
-            function applyOperationInner (method, needle, stack) {
-                var i, ret;
-                for (i = 0; i < stack.length; i += 1) {
-                    if (stack[i].id === needle.id) {
-                        switch (method) {
-                            case "DELETE":
-                                //@fixme is there a memory leak here ??
-                                stack.splice(i, 1);
-                                //delete stack[i];
-                                return true;
-                            default:
-                                //stack[i] = Y.merge(stack[i], needle);
-                                delete stack[i];
-                                stack[i] = needle;
-                                return true;
-                        }
+            if (needle.get("@class").indexOf("Instance") !== -1) {
+                instances = this.getCachedVariableById(cEl["descriptorId"]).scope.variableInstances;
+                for (k in instances) {
+                    if (instances.hasOwnProperty(k) && instances[k].id === cEl.id) {
+                        instances[k] = Y.merge(instances[i], cEl);
                     }
-                    //if (stack[i]["@class"] === "ListDescriptor") {                  // We override so the datasource will also look for objects in datasource childs
-                    // @fixme We use this property to detect ListDescriptors
-                    if (stack[i].items) {
-                        if (applyOperationInner(method, needle, stack[i].items)) {
-                            return true;
-                        }
-                    }
-
-                }
-                return false;
-            }
-            if (!applyOperationInner(method, needle, stack)) {
+                };
+            } else if (!this.lookupAndDo(method, needle, stack)) {
                 stack.push(needle);
-            }
+            };
         },
-        getCachedVariableBy: function (key, val) {
-            function getCachedVariableByInner(variables) {
-                var i, ret;
-                for (i in variables) {                                              // We first check in the cache if the data is available
-                    if (variables.hasOwnProperty(i)) {
-                        if (variables[i][key] === val) {
-                            return variables[i];
-                        }
-                        if (variables[i].items) {
-                            ret = getCachedVariableByInner(variables[i].items);
-                            if (ret) {
-                                return ret;
-                            }
-                        }
 
-                    }
-                }
-                return null;
-            }
-            return getCachedVariableByInner(this.get("host").data);
-        },
         put: function (data, callback) {
             if (data['@class'].indexOf("Instance") !== -1) {
                 this.sendRequest({
@@ -279,6 +295,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
             }
         },
+
         post: function (data, parentData, callback) {
             var request = "";
             if (parentData) {
@@ -316,7 +333,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(GameModelDataSourceREST, DataSourceREST, {
-        updateCache: function (e) {
+        updateCache2: function (e) {
             var cEl, i;
 
             for (i = 0; i < e.response.results.entities.length; i += 1) {
@@ -324,13 +341,16 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 if (!cEl) {
 
                 } else if (cEl['@class'] === "Team") {
-                    //@TODO is this case still in use ??
+                //@TODO is this case still in use ??
                 } else {
                     // @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
                     if (e.request.indexOf("ScriptLibrary") != -1) e.cfg.method = "POST";
                     this.applyOperation(e.cfg.method, cEl, e.data);
                 }
             }
+        },
+        getCurrentGameModel: function () {
+            return this.findById(Y.Wegas.app.get('currentGameModel'))
         }
     });
 
@@ -347,21 +367,21 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(GameDataSourceREST, DataSourceREST, {
 
-        updateCache: function (e) {
+        updateCache2: function (e) {
             var cEl, i, game, team;                                             // Treat reply
 
             Y.log("Response received", "info", "Y.Wegas.GameDataSourceREST");
 
-            for (i = 0; i < e.response.results.entities.length; i += 1) {
-                cEl = e.response.results.entities[i];
+            for (i = 0; i < e.response.results.get("entities").length; i += 1) {
+                cEl = e.response.results.get("entities")[i];
 
                 if (!cEl) {
 
-                } else if (cEl['@class'] === "Team") {
+                } else if (cEl.get('@class') === "Team") {
                     game = this.getCachedVariableBy('id', cEl.gameId);
                     this.applyOperation(e.cfg.method, cEl, game.teams);
 
-                } else if (cEl['@class'] === "Player") {
+                } else if (cEl.get('@class') === "Player") {
                     team = this.getTeamById(cEl.teamId);
                     this.applyOperation(e.cfg.method, cEl, team.players);
 
@@ -375,7 +395,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 return '/' + data.gameId + '/Team/' + data.id;
             } else if (data['@class'] === 'Player') {
                 return "/" + this.getGameByTeamId(data.teamId).id
-                    + '/Team/' + data.teamId + '/Player/' + data.id;
+                + '/Team/' + data.teamId + '/Player/' + data.id;
             } else {
                 return "/" + data.id;
             }
@@ -395,6 +415,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 GameDataSourceREST.superclass.post.call(this, data, parentData, callback);
             }
         },
+
+        /* Util methods */
         getCurrentGame: function () {
             return this.getCachedVariableById(Y.Wegas.app.get('currentGame'));
         },
@@ -405,15 +427,15 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.getTeamById(Y.Wegas.app.get('currentTeam'));
         },
         getPlayerById: function (playerId) {
-            var i, j, k, data = this.get('host').data;
+            var i, j, k, data = this.getCache();
 
             playerId = playerId * 1;                                            // Convert to number
 
             for (i = 0; i < data.length; i += 1) {
-                for (j = 0; j < data[i].teams.length; j += 1) {
-                    for (k = 0; k < data[i].teams[j].players.length; k += 1) {
-                        if (data[i].teams[j].players[k].id === playerId) {
-                            return data[i].teams[j].players[k];
+                for (j = 0; j < data[i].get("teams").length; j += 1) {
+                    for (k = 0; k < data[i].get("teams")[j].get("players").length; k += 1) {
+                        if (data[i].get("teams")[j].get("players")[k].id === playerId) {
+                            return data[i].get("teams")[j].get("players")[k];
                         }
                     }
                 }
@@ -435,14 +457,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return null;
         },
         getTeamById: function (teamId) {
-            var i, j, data = this.get('host').data;
+            var i, j, data = this.getCache();
 
             teamId = teamId * 1;                                                // Convert to number
 
             for (i = 0; i < data.length; i += 1) {
-                for (j = 0; j < data[i].teams.length; j += 1) {
-                    if (data[i].teams[j].id === teamId) {
-                        return data[i].teams[j];
+                for (j = 0; j < data[i].get("teams").length; j += 1) {
+                    if (data[i].get("teams")[j].get("id") === teamId) {
+                        return data[i].get("teams")[j];
                     }
                 }
             }
@@ -480,17 +502,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             // Strip the ["string keys"] and [1] array indexes
             locator = locator.
-                replace(/\[(['"])(.*?)\1\]/g,
-            function (x,$1,$2) {
-                keys[i]=$2;
-                return '.@'+(i++);
-            }).
-                replace(/\[(\d+)\]/g,
-            function (x,$1) {
-                keys[i]=parseInt($1,10)|0;
-                return '.@'+(i++);
-            }).
-                replace(/^\./,''); // remove leading dot
+            replace(/\[(['"])(.*?)\1\]/g,
+                function (x,$1,$2) {
+                    keys[i]=$2;
+                    return '.@'+(i++);
+                }).
+            replace(/\[(\d+)\]/g,
+                function (x,$1) {
+                    keys[i]=parseInt($1,10)|0;
+                    return '.@'+(i++);
+                }).
+            replace(/^\./,''); // remove leading dot
 
             // Validate against problematic characters.
             if (!/[^\w\.\$@]/.test(locator)) {
@@ -499,7 +521,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     /*if (path[i].charAt(0) === '@') {				// MODIFIED !!
 			path[i] = keys[parseInt(path[i].substr(1),10)];
 		    }*/
-                }
+                    }
             }
             else {
             }
@@ -529,7 +551,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             //}
             //else {
             uri += request;
-            //}
+        //}
         }
         Y.DataSource.Local.transactions[e.tId] = io(uri, cfg);
         return e.tId;

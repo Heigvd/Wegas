@@ -133,13 +133,18 @@ public class ContentConnector {
     }
 
     protected void save() throws RepositoryException {
-        session.save();
+        if (session.isLive()) {
+            session.save();
+        }
     }
 
     protected void close() throws RepositoryException {
-        if (session.isLive()) {
+        try {
             this.save();
-            session.logout();
+        } finally {
+            if (session.isLive()) {
+                session.logout();
+            }
         }
     }
 
@@ -184,7 +189,10 @@ public class ContentConnector {
      */
     @Override
     protected void finalize() throws Throwable {
-        this.close();
-        super.finalize();
+        try {
+            this.close();
+        } finally {
+            super.finalize();
+        }
     }
 }

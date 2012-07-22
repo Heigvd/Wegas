@@ -49,6 +49,11 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     margin-left:-70px;
     width:65px;
 }
+/*div.inputEx-valid > div.inputEx-message {
+}*/
+div.inputEx-message {
+    margin: 0;
+}
 
 .inputEx-Button {
     padding: 3px 5px;
@@ -92,39 +97,23 @@ img.inputEx-ListField-delButton {
     margin-left:-16px;
 }
 /* Tabs styles */
-/* FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview,
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview > .yui3-tabview-content ,
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd > .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel{
+/* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
+.yui3-skin-sam .wegas-layout .yui3-tabview,
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content ,
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel{
     height:inherit;
-}
-.yui-skin-sam .yui-layout .yui-layout-unit .yui-layout-bd {
-    overflow:initial;
 }
 .yui3-skin-sam .yui3-tabview-panel {
     padding:0px;
 }
 .yui3-skin-sam .yui3-tabview-panel  > .yui3-tab-panel > .yui3-tab-panel-content {
     position: absolute;
-    top: 28px;
     bottom: 0px;
     overflow: auto;
     padding:0;
     left:0px;
     right:0px;
     top: 57px;
-}
-/*.yui3-skin-sam .yui3-tabview-panel > .yui3-tab-panel > .yui3-tab-panel-content > div{
-    height: 100%;
-}*/
-.yui3-skin-sam .yui-layout-unit-right .yui3-tabview-panel > .yui3-tab-panel-content {
-    left:4px;
-}
-.yui3-skin-sam .yui-layout-unit-left .yui3-tabview-panel > .yui3-tab-panel-content {
-    right:4px;
-}
-.yui3-skin-sam #centerTabView > yui3-tabview-content > yui3-tabview-list > .yui3-tabview-panel > .yui3-tab-panel  > .yui3-tab-panel-content {
-    padding-right: 5px;
 }
 
 
@@ -135,17 +124,47 @@ img.inputEx-ListField-delButton {
     min-height: 26px;
     padding: 2px 0;
     border-bottom: 1px solid lightgray;
-    /*    background-color: #F2F2F2;*/
+    position: absolute;
+    width: 100%;
+    z-index: 20;
+    box-shadow: 0px 2px 5px grey;
 }
 .yui-layout-unit-right .wegas-tab-toolbar {
     padding-left:6px;
 }
-.wegas-tab-toolbar .title {
-    color: #2647A0;
-    padding: 5px 5px 0px;
-    font-size: 12pt;
-    font-weight: bold;
-    display: inline-block;
+.wegas-tab-toolbar-header{
+    vertical-align: top;
+    border: none;
+    min-height: 26px;
+}
+.wegas-tab-toolbar-panel {
+    overflow: hidden;
+    max-height: 0px;
+    background-color: white;
+    -webkit-transition-property: max-height;
+    -webkit-transition-duration: 0.5s;
+    -webkit-transition-timing-function: linear;
+    -webkit-transition-delay: 0.3s;
+    -moz-transition-property: max-height;
+    -moz-transition-duration: 0.5s;
+    -moz-transition-timing-function: linear;
+    -moz-transition-delay: 0.3s;
+    -ms-transition-property: max-height;
+    -ms-transition-duration: 0.5s;
+    -ms-transition-timing-function: linear;
+    -ms-transition-delay: 0.3s;
+    -o-transition-property: max-height;
+    -o-transition-duration: 0.5s;
+    -o-transition-timing-function: linear;
+    -o-transition-delay: 0.3s;
+    transition-property: max-height;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
+    transition-delay: 0.3s;
+}
+.wegas-tab-toolbar:hover > .wegas-tab-toolbar-panel{
+    max-height: 200px;
+    overflow-y: auto;
 }
 .wegas-tab-toolbar .yui3-button {
     vertical-align: top;
@@ -437,16 +456,16 @@ td.wegas-treeview-icon-player {
 }
 
 /* Edit Menu Styles */
-.wegas-editmenu {
+.wegas-editor-menu {
     position:absolute;
 }
-.wegas-editmenu-hidden {
+.wegas-editor-menu-hidden {
     display: none;
 }
-.ygtvcell > div.wegas-editmenu{
+.ygtvcell > div.wegas-editor-menu{
     display:none;
 }
-.ygtvcell:hover > div.wegas-editmenu{
+.ygtvcell:hover > div.wegas-editor-menu{
     display:block;
 }
 /* Top Menu bar */
@@ -620,24 +639,53 @@ td.wegas-treeview-icon-player {
     float:right;
     margin-top: 2px;
 }
-
+.fupload-descriptor{
+    background-color: white;
+}
 .fupload-progress{
+    background-color: white;
     border-top:1px solid lightgrey;
     font-weight: bold;
 }
 .fupload-detail{
-    display:none;
+    background-color: white;
+    overflow: hidden;
+    max-height: 0px;
     margin-bottom: 5px;
     margin-left: 15px;
     padding-left: 5px;
     border-left: 1px solid lightgrey;
+    -webkit-transition-property: max-height;
+    -webkit-transition-duration: 0.5s;
+    -webkit-transition-timing-function: linear;
+    -webkit-transition-delay: 0.1s;
+    -moz-transition-property: max-height;
+    -moz-transition-duration: 0.5s;
+    -moz-transition-timing-function: linear;
+    -moz-transition-delay: 0.1s;
+    -ms-transition-property: max-height;
+    -ms-transition-duration: 0.5s;
+    -ms-transition-timing-function: linear;
+    -ms-transition-delay: 0.1s;
+    -o-transition-property: max-height;
+    -o-transition-duration: 0.5s;
+    -o-transition-timing-function: linear;
+    -o-transition-delay: 0.1s;
+    transition-property: max-height;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
+    transition-delay: 0.1s;
 }
 .fupload-descriptor:hover > .fupload-detail{
-    display: block;
+    max-height: 50px;
 }
 
 .image-icon{
     background-image: url("../../wegas-editor/images/image_icon.png");
     background-repeat: no-repeat;
     background-size: 21px 18px;
+}
+
+.yui3-wegas-progressbar-hidden{
+    display:none !important;
 }

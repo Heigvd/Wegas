@@ -13,11 +13,7 @@ Authors
 
 Glassfish setup
 ------------------------
-<<<<<<< HEAD
-*   Install glassfish v>=3.1.2, full profile
-=======
-*   Install glassfish v>3.1.1, full profile
->>>>>>> upstream/master
+*   Install glassfish v >= 3.1.2, full profile
 *   PostgreSQL
     - Download and install from http://www.postgresql.org/download/
     - By default, Wegas will look for wegas_dev and wegas_test databases, using the username *user* and password *123*

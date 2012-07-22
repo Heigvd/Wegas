@@ -92,6 +92,7 @@ public class StateMachineRunner implements Serializable {
                         impacts.add(stateMachine.getCurrentState().getOnEnterEvent());
                         impacts.add(transition.getPreStateImpact());
                         passedTransitions.add(transition);
+                        stateMachine.transitionHistoryAdd(transition.getId());  // Adding transition.id to history
                         break;
                     }
                 }

@@ -5,11 +5,11 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-editmenu', function(Y) {
+YUI.add('wegas-editor-menu', function(Y) {
     var CONTENTBOX = 'contentBox',
         EditMenu;
 
-    EditMenu = Y.Base.create("wegas-editmenu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
+    EditMenu = Y.Base.create("wegas-editor-menu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack], {
 
         // *** Instance Members *** //
         _currentDataSource: null,
@@ -37,15 +37,15 @@ YUI.add('wegas-editmenu', function(Y) {
             //this.move(mouseEvent.clientX + Y.DOM.docScrollX(), mouseEvent.clientY + Y.DOM.docScrollY());
             this.show();
         },
-        setMenuItems: function(data, dataSource) {
-            var menuItems = Y.Wegas.editor.get("editorMenus")[data["@class"]];
+        setMenuItems: function(entity, dataSource) {
+            var menuItems = entity.getMenuCfg();
 
             if (!menuItems) {
-                Y.log('error', 'Menu items are undefined.', "Wegas.Editor");
+                Y.error('Menu items are undefined.', "Wegas.Editor");
             }
 
             this._currentDataSource = dataSource;
-            this._currentData = data;
+            this._currentData = entity;
 
             this.menu.clearContent();
             this.menu.addItems(menuItems);
@@ -75,7 +75,7 @@ YUI.add('wegas-editmenu', function(Y) {
             this.hide();
         }
     }, {
-        CSS_PREFIX: "wegas-editmenu"
+        CSS_PREFIX: "wegas-editor-menu"
     });
 
     Y.namespace('Wegas').EditMenu = EditMenu;

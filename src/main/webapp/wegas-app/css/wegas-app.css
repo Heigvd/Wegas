@@ -75,3 +75,37 @@ input[type="submit"], input[type="reset"] {
 .yui3-skin-sam .wegas-inbox .unread {
     font-weight:bold;
 }
+
+
+/* Wegas Layout Widget Styles */
+.yui3-skin-sam .wegas-layout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+.yui3-skin-sam .wegas-layout-content {
+    height:100%;
+    background:white;
+}
+.yui3-skin-sam .wegas-layout-left,
+.yui3-skin-sam .wegas-layout-center,
+.yui3-skin-sam .wegas-layout-right {
+    position: absolute;
+    height: 100% !important;
+}
+.yui3-skin-sam .wegas-layout-center {
+    margin-right: 6px;
+}
+.yui3-skin-sam .wegas-layout-left {
+    width: 300px;
+}
+.yui3-skin-sam .wegas-layout-right {
+    width: 300px;
+    right: 0;
+    padding-left: 7px;
+}
+.yui3-skin-sam .wegas-layout .yui3-resize-handle {
+    background: #F2F2F2;
+}

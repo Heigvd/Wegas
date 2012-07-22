@@ -9,12 +9,16 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.leadergame.persistence.DialogueState;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -33,7 +37,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
     @JsonSubTypes.Type(name = "ActiveResponse", value = ActiveResponse.class),
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
-public class State implements Serializable {
+public class State extends AbstractEntity {
 
     @Id
     @Column(name = "state_id")
@@ -49,6 +53,7 @@ public class State implements Serializable {
     public State() {
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -82,9 +87,11 @@ public class State implements Serializable {
         return "State{" + "id=" + id + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
 
-    public void merge(State newState) {
+    @Override
+    public void merge(AbstractEntity other) {
+        State newState = (State) other;
         this.label = newState.getLabel();
         this.onEnterEvent = newState.getOnEnterEvent();
-        this.transitions = newState.getTransitions();
+        this.transitions = ListUtils.mergeLists(this.transitions, newState.transitions);
     }
 }
