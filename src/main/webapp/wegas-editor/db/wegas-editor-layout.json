@@ -151,8 +151,7 @@
                 "label": "StateMachine Viewer",
                 "children": [{
                     "type": "StateMachineViewer"
-                }],
-                "toolbarLabel": "State machine viewer"
+                }]
             }, {
                 "type": "Tab",
                 "label": "Wysiwyg editor",

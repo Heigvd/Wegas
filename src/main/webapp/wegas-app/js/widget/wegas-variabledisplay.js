@@ -16,16 +16,16 @@ YUI.add('wegas-variabledisplay', function (Y) {
         },
 
         bindUI: function () {
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
 
         syncUI: function () {
-            var acc, angle_pourcent, maxVal, minVal, ctx, i, value_x, value_y, angle_value,
-                variableDescriptor, value;
-                variableDescriptor = this.get("dataSource").rest.getCachedVariableBy('name', this.get("variable"));
+            var acc, angle_pourcent, maxVal, minVal, ctx, i, value_x, value_y, angle_value, value,
+                variableDescriptor = this.get("dataSource").rest.find('name', this.get("variable"));
+
                 if (!variableDescriptor) {return;}
-                value = variableDescriptor.getInstance().value || "undefined";
+                value = variableDescriptor.getInstance().get("value") || "undefined";
 
             switch (this.get('view')) {
             case 'text':
@@ -39,19 +39,19 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 }
                 if (variableDescriptor) {
                     this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-box-label">'+this.get('label')+'</span>'
-                        +'<span class="wegas-variabledisplay-box-value">(' + value + '<span class="wegas-variabledisplay-box-valueMax">/'+variableDescriptor.maxValue+'</span>)</span>'
+                        +'<span class="wegas-variabledisplay-box-value">(' + value + '<span class="wegas-variabledisplay-box-valueMax">/'+variableDescriptor.get("maxValue")+'</span>)</span>'
                         +'<span class="wegas-variabledisplay-box-units">'+acc.join('')+'</span>');
                 }
                 else{
                     this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-box-label">'+this.get('label')+'</span>'
                         +'<span class="wegas-variabledisplay-box-value">(' + value + ')</span>'
-                        +'<span class="wegas-variabledisplay-box-units">'+acc.join('')+'</span>');   
+                        +'<span class="wegas-variabledisplay-box-units">'+acc.join('')+'</span>');
                 }
                 break;
             case 'fraction':
                 if(variableDescriptor){
-                    maxVal = variableDescriptor.maxValue;
-                    minVal = variableDescriptor.minValue;
+                    maxVal = variableDescriptor.get("maxValue");
+                    minVal = variableDescriptor.get("minValue");
                 }
                 this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-fraction-label">'+this.get('label')+'</span>'
                     +'<span class="wegas-variabledisplay-fraction-minValue">'+ minVal +'</span>'
@@ -63,7 +63,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
             case 'valuebox':
                 acc = [];
                 if (variableDescriptor) {
-                    for (i = variableDescriptor.minValue; i <= variableDescriptor.maxValue; i += 1) {
+                    for (i = variableDescriptor.get("minValue"); i <= variableDescriptor.get("maxValue"); i += 1) {
                         acc.push('<div class="wegas-valuebox-unit '
                             + ((i === value) ? "wegas-valuebox-selected" : "")
                             + '">' + i + '</div>');
@@ -72,6 +72,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-valuebox-label">'+this.get('label')+'</span>'
                     + '<div class="wegas-variabledisplay-valuebox-units">' + acc.join('')+"</div");
                 break;
+
             case 'gauge':
                 maxVal = 145;
                 minVal = 55;

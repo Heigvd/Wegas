@@ -1,7 +1,6 @@
 [{
         "id": 1,
         "label": "Main layout",
-        "@class": "Page",
         "type": "List",
         "cssClass": "layout",
         "children": [{
@@ -45,7 +44,7 @@
                         "view": "box",
                         "dataSource": "VariableDescriptor"
                     },
-                    { 
+                    {
                         "type": "VariableDisplay",
                         "cssClass":"indicators-block",
                         "label": "Temps restant",

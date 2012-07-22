@@ -27,7 +27,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     hidedelay: 100,
                     shadow: true
                 });
-                this.menu.render(cb._node);
+                this.menu.render(cb.getDOMNode());
             },
 
             // *** Methods *** /
@@ -65,7 +65,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     var questionId =  e.target.ancestor("tr").getAttribute("data-questionid"),
                     startTime = e.target.ancestor("td").getAttribute("data-startTime"),
                     question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId);
-
+                    console.log("Genmenu items: ", this._genMenuItems(question, startTime));
                     this._menu.setMenuItems(this._genMenuItems(question, startTime));
                     this._menu.get("boundingBox").appendTo(e.target.get('parentNode'));
                     this._menu.set("align", {
@@ -310,15 +310,6 @@ YUI.add('wegas-crimesim', function (Y) {
                     });
                 }
                 return ret;
-            }
-        }, {
-            ATTRS : {
-                classTxt: {
-                    value: "ScheduleDisplay"
-                },
-                type: {
-                    value: "ScheduleDisplay"
-                }
             }
         });
 
