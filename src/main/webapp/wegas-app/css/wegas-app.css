@@ -110,8 +110,49 @@ input[type="submit"], input[type="reset"] {
 .yui3-skin-sam .wegas-layout .yui3-resize-handle {
     background: #F2F2F2;
 }
+.wegas-layout-top .yui3-button {
+    border: none;
+    line-height: 1.9em;
+    font-weight: bold;
+    font-size: 11px;
+    color: black;
+    box-shadow: none;
+    background: url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+    padding: 3px 20px 3px 10px;
+}
+.wegas-layout-top .yui3-button-hover, .wegas-layout-top .yui3-button:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000',endColorstr='#26000000',GradientType=0);
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15)));
+    background-image: -webkit-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
+    background-image: -moz-linear-gradient(top, transparent,rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));
+    background-image: -ms-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
+    background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));
+    background-image: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
+}
 
 /* Menu styles */
 .yui3-menu-hidden {
     display:none;
+
+}
+.yui3-menu {
+    background:white;
+    border: 1px solid lightgray;
+    box-shadow: 0px 2px 5px grey;
+}
+.yui3-menu .yui3-button {
+    border: none;
+    line-height: 1.9em;
+    font-size: 11px;
+    color: black;
+    box-shadow: none;
+    padding: 3px 10px 3px 10px;
+    width:100%;
+    background: none;
+    text-align: left;
+}
+
+.yui3-menu  .yui3-button-hover, .yui3-menu  .yui3-button:hover {
+    background: darkgray;
+    color: white;
 }

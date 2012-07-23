@@ -20,9 +20,6 @@ YUI().use(function (Y) {
                         'wegas-entity', 'wegas-datasourcerest',
                         'wegas-widget', 'wegas-list', 'wegas-pageloader',
                         'wegas-button',
-
-                        /*Benjamin temp while I don't understand how to load "on the fly" your game*/
-                       'wegas-leaderway'
                         ]
                     },
                     'wegas-appcss': {
@@ -86,6 +83,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-inbox': {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
+                        requires: ["tabview"],
                         ix_provides: 'InboxDisplay'
                     },
                     'wegas-form': {
@@ -114,8 +112,9 @@ YUI().use(function (Y) {
                     'widgetmenu': {
                         path: 'wegas-app/js/widget/widgetmenu-min.js',
                         requires: ['plugin', 'widget', 'widget-parent', 'widget-child',
-                            'widget-position', 'widget-stack', 'widget-position-align',
-                            'widget-position-constrain', 'event-mouseenter', 'yui-later']
+                        'widget-position', 'widget-stack', 'widget-position-align',
+                        'widget-position-constrain', 'event-mouseenter', 'yui-later',
+                        'event-outside']
                     },
                     'treeview':{
                         path: 'wegas-editor/js/treeview-min.js',
@@ -129,12 +128,7 @@ YUI().use(function (Y) {
                         'wegas-app', 'wegas-form',
                         "wegas-editor-buttons", 'wegas-editor-menu', 'widgetmenu',
                         'wegas-editor-action',
-
-                        /* @fixme those should be included on the fly*/
-                        "wegas-console", 'wegas-fileexplorer',
-                        'wegas-layout', 'wegas-statemachineviewer',
-                        'wegas-treeview',
-
+                        'wegas-statemachineviewer', 'wegas-treeview',           // @fixme Zhose should be included on the fly
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
