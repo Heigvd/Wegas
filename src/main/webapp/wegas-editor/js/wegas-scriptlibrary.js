@@ -4,17 +4,9 @@
 
 YUI.add('wegas-scriptlibrary', function (Y) {
     var CONTENTBOX = 'contentBox',
-    CSSEditor;
+    ScriptLibrary;
 
-    /* @fixme hack so we can programatically add an element to a yui button */
-    Y.Button.prototype._uiSetLabel = function(value) {
-        var node = this._host,
-        attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
 
-        //        node.set(attr, value);
-        node.setContent(value);
-        return value;
-    };
 
     ScriptLibrary = Y.Base.create("wegas-scriptlibrary", Y.Widget, [Y.WidgetChild,  Y.Wegas.Widget], {
 
