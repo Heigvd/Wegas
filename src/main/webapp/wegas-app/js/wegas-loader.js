@@ -21,10 +21,6 @@ YUI().use(function (Y) {
                         'wegas-widget', 'wegas-list', 'wegas-pageloader',
                         'wegas-button',
 
-                        /* @fixme those should be included on the fly*/
-                        'wegas-text',  'wegas-tabview', 'wegas-datatable',
-                        'wegas-variabledisplay', 'wegas-chat', 'wegas-list',
-
                         /*Benjamin temp while I don't understand how to load "on the fly" your game*/
                         'wegas-leaderway'
                         ]
@@ -39,7 +35,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-entity': {
                         path: 'wegas-app/js/wegas-entity-min.js',
-                        requires: ['base']
+                        requires: ['base', 'wegas-inputex', 'inputex-jsonschema']
                     },
                     'statemachine-entities': {
                         path: 'wegas-editor/js/statemachine-entities-min.js',
@@ -57,8 +53,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: ['inputex-select', 'wegas-widget', 'plugin', 'button']
-                       /* ix_provides: 'Button'*/
+                        requires: ['inputex-select', 'wegas-widget', 'plugin', 'button'],
+                        ix_provides: 'Button'
                     },
                     'wegas-chat': {
                         path: 'wegas-app/js/widget/wegas-chat-min.js',
@@ -135,10 +131,9 @@ YUI().use(function (Y) {
                         'wegas-editor-action',
 
                         /* @fixme those should be included on the fly*/
-                        'wegas-logger', 'wegas-csseditor',
-                        'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
+                        "wegas-console", 'wegas-fileexplorer',
                         'wegas-layout', 'wegas-statemachineviewer',
-                        'wegas-wysiwygeditor', 'wegas-treeview',
+                        'wegas-treeview',
 
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
