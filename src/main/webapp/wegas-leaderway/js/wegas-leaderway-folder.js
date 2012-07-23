@@ -45,9 +45,9 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 resourceSelector.push('<div class="ID" style="display:none;"><p>');
                 resourceSelector.push(resourceDescriptor.get('id'));
                 resourceSelector.push('</p></div>');
-                if(resourceInstance.properties.picture != null){
+                if(resourceInstance.get('properties').picture != null){
                     resourceSelector.push('<div class="picture">');
-                    resourceSelector.push('<img src="'+resourceInstance.properties.picture+'" alt="picture" width="30" height="35" />');
+                    resourceSelector.push('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="30" height="35" />');
                     resourceSelector.push('</div>');
                 }
                 resourceSelector.push('<div class="name"><p>');
@@ -79,7 +79,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 textOccupation = (this.getOccupation(resourceInstance).indexOf("Libre") == -1)? "Occupé" : "Libre";
                 cb.all('.listResources .resourceSelector .ID').item(i).setHTML(resourceDescriptor.get('id'));
                 if(cb.all('.listResources .resourceSelector .picture')!=null){
-                    cb.all('.listResources .resourceSelector .picture').item(i).setHTML('<img src="'+resourceInstance.properties.picture+'" alt="picture" width="30" height="35" />');
+                    cb.all('.listResources .resourceSelector .picture').item(i).setHTML('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="30" height="35" />');
                 }
                 cb.all('.listResources .resourceSelector .name').item(i).setHTML(resourceDescriptor.get('name'));
                 cb.all('.listResources .resourceSelector .occupation').item(i).setHTML(textOccupation);
@@ -95,37 +95,37 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         syncFolderInformations: function(cb){
             var currentResourceInstance = this.currentResourceDescriptor.getInstance();
             cb.one('.folder .name').insert(this.currentResourceDescriptor.name);
-            if(currentResourceInstance.properties.surname){
-                cb.one('.folder .surname').insert(currentResourceInstance.properties.surname);   
+            if(currentResourceInstance.get('properties').surname){
+                cb.one('.folder .surname').insert(currentResourceInstance.get('properties').surname);   
             }
-            if(currentResourceInstance.properties.salary){
-                cb.one('.folder .salary-value').insert(currentResourceInstance.properties.salary);   
+            if(currentResourceInstance.get('properties').salary){
+                cb.one('.folder .salary-value').insert(currentResourceInstance.get('properties').salary);   
             }
-            if(currentResourceInstance.properties.picture != null){
-                cb.one('.folder .picture').insert('<img src="'+currentResourceInstance.properties.picture+'" alt="picture" width=120 height="140" />');
+            if(currentResourceInstance.get('properties').picture != null){
+                cb.one('.folder .picture').insert('<img src="'+currentResourceInstance.get('properties').picture+'" alt="picture" width=120 height="140" />');
             }
             this.addLevelOfLeadershipInformations(cb, currentResourceInstance);
-            cb.one('.folder .moral').insert(this.createGauge('Moral', parseInt(currentResourceInstance.moral)));
-            cb.one('.folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentResourceInstance.confidence)));
+            cb.one('.folder .moral').insert(this.createGauge('Moral', parseInt(currentResourceInstance.get('moral'))));
+            cb.one('.folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentResourceInstance.get('confidence'))));
             cb.one('.folder .occupation-value').insert(this.getOccupation(currentResourceInstance));
-            for (var key in currentResourceInstance.skillset){
-                cb.one('.folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentResourceInstance.skillset[key]))+'</div>');
+            for (var key in currentResourceInstance.get('skillset')){
+                cb.one('.folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentResourceInstance.get('skillset')[key]))+'</div>');
             }
-            cb.one('.folder .description-value').insert(this.currentResourceDescriptor.description);            
+            cb.one('.folder .description-value').insert(this.currentResourceDescriptor.get('description'));            
         },
         
         addLevelOfLeadershipInformations: function(cb, resourceInstance){
-            var i, leadershipInfo = new Array(), leadershipLevel;
-            if(resourceInstance.properties.leadershipLevel){
-                leadershipLevel = parseInt(resourceInstance.properties.leadershipLevel);
+            var i, leadershipInfo = new Array(), leadershipLevel, surname = resourceInstance.get('properties').surname;
+            if(resourceInstance.get('properties').leadershipLevel){
+                leadershipLevel = parseInt(resourceInstance.get('properties').leadershipLevel);
                 if(leadershipLevel >= 1 && leadershipLevel <=5){
                     leadershipInfo.push('<ul class="leadershipLevel-ul">');
                     leadershipInfo.push('<li class="leadershipLevel-label">Votre niveau de leadership avec ce membre est : </li>');
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+resourceInstance.properties.surname+" voit en vous un modèle à atteindre.</li>");
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+resourceInstance.properties.surname+" se rend compte de toute l'énergie que vous avez dépensé pour lui et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+resourceInstance.properties.surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la survie de l'entreprise. </li>");
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+resourceInstance.properties.surname+" suis vos directives car il vous considère et pense que vos choix sont justifiés.</li>");
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+resourceInstance.properties.surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");
+                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
+                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour lui et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
+                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la survie de l'entreprise. </li>");
+                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car il vous considère et pense que vos choix sont justifiés.</li>");
+                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");
                     leadershipInfo.push('</ul>');
                     cb.one('.leadershipLevel-value').insert(leadershipInfo.join(""));
                     
@@ -142,38 +142,38 @@ YUI.add('wegas-leaderway-folder', function (Y) {
 
         getOccupation: function(resourceInstance){
             var i, j, occupation = new Array(), sick=false,
-            taskListDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
-            listAbsenceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "absences"),
+            taskListDescriptor = Y.Wegas.VariableDescriptorFacade.rest.fin("name", "tasks"),
+            listAbsenceDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "absences"),
             taskDescriptor, taskInstance, taskSkills = new Array();
-            for (i = 0; i < listAbsenceDescriptor.items.length; i++) {
-                taskDescriptor = listAbsenceDescriptor.items[i];
+            for (i = 0; i < listAbsenceDescriptor.get('items').length; i++) {
+                taskDescriptor = listAbsenceDescriptor.get('items')[i];
                 taskInstance = taskDescriptor.getInstance();
-                if(taskInstance.active){
-                    for(j = 0; j < resourceInstance.assignments.length; j++){
-                        if(taskDescriptor.id == resourceInstance.assignments[j].taskDescriptorId){
+                if(taskInstance.get('active')){
+                    for(j = 0; j < resourceInstance.get('assignments').length; j++){
+                        if(taskDescriptor.get('id') == resourceInstance.get('assignments')[j].get('taskDescriptorId')){
                             sick=true;
                             occupation.push('Arrêt maladie (revient dans ');
-                            occupation.push(taskInstance.duration);
-                            (taskInstance.duration > 1)?occupation.push(' semaines).') : occupation.push(' semaine).');
+                            occupation.push(taskInstance.get('duration'));
+                            (taskInstance.get('duration') > 1)?occupation.push(' semaines).') : occupation.push(' semaine).');
                             break;
                         }
                     }
                 }
             }
             if(!sick){
-                for (i = 0; i < taskListDescriptor.items.length; i++) {
-                    for(j = 0; j < resourceInstance.assignments.length; j++){
-                        taskDescriptor = taskListDescriptor.items[i];
-                        if(taskDescriptor.id == resourceInstance.assignments[j].taskDescriptorId){
+                for (i = 0; i < taskListDescriptor.get('items').length; i++) {
+                    for(j = 0; j < resourceInstance.get('assignments').length; j++){
+                        taskDescriptor = taskListDescriptor.get('items')[i];
+                        if(taskDescriptor.get('id') == resourceInstance.get('assignments')[j].taskDescriptorId){
                             taskInstance = taskDescriptor.getInstance();
-                            for(var key in taskInstance.skillset){
-                                taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.skillset[key]+')</li>');
+                            for(var key in taskInstance.get('skillset')){
+                                taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.get('skillset')[key]+')</li>');
                             }
                             occupation.push('<div class="task">');
                             occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+taskDescriptor.name+'</span></div>');
                             occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>'+taskSkills.join("")+'</ul></div>');
-                            occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.properties.salary+'</span></div>');
-                            occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskInstance.duration+'</span></div>');
+                            occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.get('properties').salary+'</span></div>');
+                            occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskInstance.get('duration')+'</span></div>');
                             occupation.push("</div>");
                             sick=false;
                             taskSkills.length = 0;
@@ -227,7 +227,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             resInstance = this.currentResourceDescriptor.getInstance();
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
-                for(i=0 ;i<resInstance.assignments.length; i++){
+                for(i=0 ;i<resInstance.get('assignments').length; i++){
                     if(this.getOccupation(resourceInstance).indexOf("Libre") == -1){
                         showActiongGiveTask = false;   
                     }
@@ -242,23 +242,22 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         setTextSelectedTask: function(taskDescriptor){
-            var i, listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
-            selectedRowInformation = this.tasksChooser.get(CONTENTBOX).one('.yui3-widget-ft .selectedTask');
+            var selectedRowInformation = this.tasksChooser.get(CONTENTBOX).one('.yui3-widget-ft .selectedTask');
             selectedRowInformation.setHTML();
-            selectedRowInformation.insert("Mandat sélectionné : "+taskDescriptor.name);
+            selectedRowInformation.insert("Mandat sélectionné : "+taskDescriptor.get('name'));
         },
         
         assignTask: function(resourceDescriptor, taskDescriptor){
             var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback');
             if(taskDescriptor != null && resourceDescriptor != null){
-                Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     cfg: {
                         method: "POST",
                         data: Y.JSON.stringify({
                             "@class": "Script",
                             "language": "JavaScript",
-                            "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.id+","+taskDescriptor.id+");"
+                            "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.get('id')+","+taskDescriptor.get('id')+");"
                         })
                     }
                 });
@@ -349,7 +348,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
 
         bindUI: function(){
             var cb = this.get(CONTENTBOX);
-            this.handlers.push(Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this));
+            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
             this.handlers.push(this.tabview.after('rendered', this.bindActions(cb), this));
             this.handlers.push(this.tasksList.after('rowSelected', this.setTextSelectedTask, this));
@@ -366,10 +365,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
           
         syncUI: function() {
             var cb = this.get(CONTENTBOX),
-            listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
+            listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
             if(listResourcesDescriptor == null) return;
             if(!this.tasksList.rendered) this.tasksList.render(".tasksChooser-tasklist");
-            if(this.currentResourceDescriptor == null) this.currentResourceDescriptor = listResourcesDescriptor.items[0];
+            if(this.currentResourceDescriptor == null) this.currentResourceDescriptor = listResourcesDescriptor.get('items')[0];
             this.clearBeforeSync(cb);
             this.makeResourcesSelector(cb, listResourcesDescriptor);
             this.syncResourcesSelector(cb, listResourcesDescriptor);
