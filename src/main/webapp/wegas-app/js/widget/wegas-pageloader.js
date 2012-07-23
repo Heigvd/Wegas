@@ -25,6 +25,7 @@ YUI.add('wegas-pageloader', function (Y) {
         ATTRS : {
             pageId: {
                 setter: function (val) {
+                    console.log("setPageId", this.get("widget"), val)
                     var widgetCfg, oldWidget = this.get("widget");
 
                     if (!val) {
@@ -33,8 +34,8 @@ YUI.add('wegas-pageloader', function (Y) {
 
                     widgetCfg = Y.Wegas.PageFacade.rest.findById(val);
 
-                    if (widgetCfg && widgetCfg.id                               // If the widget is currently being loaded, escape
-                        && widgetCfg.id && this.widgetCfg && this.widgetCfg == widgetCfg.id) {
+                    if (widgetCfg && widgetCfg.id && this.widgetCfg             // If the widget is currently being loaded, escape
+                        && this.widgetCfg.id && this.widgetCfg.id == widgetCfg.id) {
                         return val;
                     }
                     this.widgetCfg = widgetCfg;
@@ -53,8 +54,11 @@ YUI.add('wegas-pageloader', function (Y) {
                         content: "Loading..."
                     };
 
+                    console.log("loading", widgetCfg);
                     try {
                         Y.Wegas.Widget.use(widgetCfg, Y.bind( function (cfg) {  // Load the subwidget dependencies
+
+                    console.log("rendering", cfg);
                             var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
                             widget.render(this.get(CONTENTBOX));
                             this.set("widget", widget);

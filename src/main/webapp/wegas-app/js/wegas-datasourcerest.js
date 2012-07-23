@@ -50,7 +50,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
 
         beforeResponse: function (e) {
-            var evt;
+            var evt, i;
 
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "info", "Wegas.RestDataSource");
             e.data = this.getCache();

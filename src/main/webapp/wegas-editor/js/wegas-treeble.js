@@ -1,30 +1,30 @@
-/** 
+/**
 * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
 
 YUI.add('wegas-treeble', function(Y) {
-    
+
     var CONTENTBOX = 'contentBox',
     YAHOO = Y.YUI2,
-    
+
     Treeble = Y.Base.create("wegas-treeble", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-	
+
         _dataSource: null,
         _pushButton: null,
         _table: null,
-	
-        initializer: function(cfg) {
+
+        initializer: function() {
             this._dataSource = Y.Wegas.app[this.get('dataSource')+"DataSource"];
         },
-	
+
         renderUI: function () {
             var cb = this.get(CONTENTBOX);
-	  
+
             /* this._pushButton = new YAHOO.widget.Button({			//Instantiate the "New" button
-		label:"New", 
+		label:"New",
 		container:cb._node
 	    });
-	    
+
 	    this._table = new Y.DataTable.Base({				// Instantiate the data table
 		columnset: this.get('columnset'),
 		plugins: [ Y.Plugin.DataTableSort ]
@@ -35,21 +35,21 @@ YUI.add('wegas-treeble', function(Y) {
 	    });
 	    this._table.render(cb);*/
            /* var my_data = [{id:"22", quan:"mm"}];
- 
+
             // treeble config to be set on root datasource
- 
+
             var schema =
             {
                 resultFields:
                 [
                 "id","quantity","year","title",
                 {
-                    key: 'kiddies', 
+                    key: 'kiddies',
                     parser: 'treebledatasource'
                 }
                 ]
             };
- 
+
             var schema_plugin_config =
             {
                 fn:  Y.Plugin.DataSourceArraySchema,
@@ -57,7 +57,7 @@ YUI.add('wegas-treeble', function(Y) {
                     schema:schema
                 }
             };
- 
+
             var treeble_config =
             {
                 generateRequest:        function() { },
@@ -65,33 +65,33 @@ YUI.add('wegas-treeble', function(Y) {
                 childNodesKey:          'kiddies',
                 totalRecordsReturnExpr: '.meta.totalRecords'
             };
- 
+
             // root data source
- 
+
             var root            = new Y.DataSource.Local({
                 source: data
             });
             root.treeble_config = Y.clone(treeble_config, true);
             root.plug(schema_plugin_config);
- 
+
             // TreebleDataSource
- 
+
             var ds = new Y.TreebleDataSource(
             {
                 root:             root,
                 paginateChildren: false,
                 uniqueIdKey:      'the-key-which-uniquely-identifies-each-record'
             });
- 
+
             // request data
- 
+
             var callback = {
                 success: function(e) {
                 },
                 error: function() {
                 }
             };
- 
+
             ds.sendRequest(
             {
                 request:
@@ -109,7 +109,7 @@ YUI.add('wegas-treeble', function(Y) {
 		    records:e.response.results
 		}));
 	    }, this);
-	    
+
 	    this._pushButton.on("click", function() {				// New button click event
 		Y.Wegas.editor.edit({
 		    "@class": "GameModel"
@@ -117,8 +117,8 @@ YUI.add('wegas-treeble', function(Y) {
 		    that._dataSource.rest.post(cfg);
 		});
 	    }, null, this);
-	    
-	    Y.delegate('click', function(e) {					// Listen for click events on the table  
+
+	    Y.delegate('click', function(e) {					// Listen for click events on the table
 		var target = e.currentTarget,
 		recordSet = this._table.get('recordset'),
 		record = recordSet.getRecord(target.ancestor('tr').get('id'));
@@ -126,15 +126,15 @@ YUI.add('wegas-treeble', function(Y) {
 		//columnSet = this.get('columnset');
 		//col = columnSet._conf.data.value.definitions[cellIndex],
 		//name= recordSet.getRecord(target.ancestor('tr').get('id')).getValue('name');
-		
+
 		this._dataSource.rest.getById(record.getValue('id'));
-		
+
 		this._dataSource.once('response', function(e) {
 		    Y.Wegas.editor.edit(e.response.results[0], function(cfg) {
 			that._dataSource.rest.put(cfg);
 		    });
 		})
-		
+
 	    }, this.get(CONTENTBOX), 'td', this);*/
         },
         syncUI: function() {
@@ -151,6 +151,6 @@ YUI.add('wegas-treeble', function(Y) {
             dataSource: {}
         }
     });
-    
+
     Y.namespace('Wegas').DataTable = DataTable;
 });
