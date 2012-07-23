@@ -41,6 +41,10 @@ YUI.add('wegas-csseditor', function (Y) {
                 label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
                 disabled: true
             }).render(el);
+        },
+        destroyer: function () {
+            //this.previewButton.delete()
+            //this.saveButton.delete()
         }
     });
 

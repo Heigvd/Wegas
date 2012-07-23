@@ -36,10 +36,10 @@ YUI.add('wegas-layout', function (Y) {
         },
 
         renderPosition: function (position) {
-            if (!this.get(position)) return;
 
-            var target = null,
-            cWidget = Y.Wegas.Widget.create(this.get(position).children[0]);
+            var i, cWidget, target = null, positionCfg = this.get(position);
+
+            if (!positionCfg) return;
 
             if (position === "top") {
                 target = this.getStdModNode("header");
@@ -70,7 +70,10 @@ YUI.add('wegas-layout', function (Y) {
                 // maxWidth: 300,
                 //});
             }
-            cWidget.render(target);
+            for (i = 0; i < positionCfg.children.length; i += 1) {
+                cWidget = Y.Wegas.Widget.create(positionCfg.children[i]);
+                cWidget.render(target);
+            }
         },
 
         /**

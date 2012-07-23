@@ -8,10 +8,12 @@ input[type="submit"], input[type="reset"] {
     border: none;
     background: none;
 }
+
 /* Datatable styles */
 .yui3-skin-sam .yui3-datatable caption {
     padding: 0;
 }
+
 /* List styles */
 .wegas-list-horizontal  > div {
     display:block;
@@ -20,8 +22,8 @@ input[type="submit"], input[type="reset"] {
 }
 .wegas-list-vertical  > div {
 }
-/* Inbox styles */
 
+/* Inbox styles */
 .yui3-skin-sam  .wegas-inbox .yui3-tabview-list {
     display: inline-block;
     float:left;
@@ -31,7 +33,6 @@ input[type="submit"], input[type="reset"] {
     border-right: 1px solid lightgray;
     width: 39.9%;
 }
-
 .yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
     display:inline-block;
     width:60%;
@@ -108,4 +109,9 @@ input[type="submit"], input[type="reset"] {
 }
 .yui3-skin-sam .wegas-layout .yui3-resize-handle {
     background: #F2F2F2;
+}
+
+/* Menu styles */
+.yui3-menu-hidden {
+    display:none;
 }
