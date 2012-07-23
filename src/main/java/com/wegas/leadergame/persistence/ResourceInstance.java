@@ -15,14 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.PreUpdate;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
@@ -239,7 +232,7 @@ public class ResourceInstance extends VariableInstance {
     public void setUndesiredSkillset(String undesiredSkillset) {
         this.undesiredSkillset = undesiredSkillset;
     }
-    
+
     /**
      * @return the moral
      */
@@ -253,9 +246,9 @@ public class ResourceInstance extends VariableInstance {
      */
     public void setMoral(Integer moral) {
             this.moral = moral;
-            this.moralHistory.add(moral);   
+            this.moralHistory.add(moral);
     }
-    
+
     /**
      * @return the moralHistory
      */
@@ -269,7 +262,7 @@ public class ResourceInstance extends VariableInstance {
     public void setMoralHistory(List<Integer> moralHistory) {
         this.moralHistory = moralHistory;
     }
-    
+
     /**
      * @param ref a index value corresponding to a value
      * @return the value corresponding at the 'ref' param in the moralHistory
@@ -285,8 +278,8 @@ public class ResourceInstance extends VariableInstance {
     public void setMoralHistory(Integer ref, Integer value) {
         this.moralHistory.set(ref, value);
     }
-   
-    
+
+
     /**
      * @return the confidence
      */
@@ -302,7 +295,7 @@ public class ResourceInstance extends VariableInstance {
             this.confidence = confidence;
             this.confidenceHistory.add(confidence);
     }
-    
+
     /**
      * @return the confidenceHistoric
      */
@@ -316,7 +309,7 @@ public class ResourceInstance extends VariableInstance {
     public void setConfidenceHistory(List<Integer> confidenceHistory) {
         this.confidenceHistory = confidenceHistory;
     }
-    
+
     /**
      * @param ref a index value corresponding to a value
      * @return the value corresponding at the 'ref' param in the confidenceHistory

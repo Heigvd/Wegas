@@ -151,7 +151,7 @@ YUI.add('wegas-entity', function (Y) {
                         if (value.hasOwnProperty(k)) {
                             v = walk(value, k);
                             if (v === undefined) {
-                                //delete value[k];
+                            //delete value[k];
                             } else {
                                 value[k] = v;
                             }
@@ -251,17 +251,17 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "New team",
-                value: {
-                    op:'addChild',
-                    childClass: "Team"
-                }
-            }, {
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "New team",
+            value: {
+                op:'addChild',
+                childClass: "Team"
+            }
+        }, {
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
 
     /**
@@ -287,17 +287,17 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "New player",
-                value: {
-                    op:'addChild',
-                    childClass: "Player"
-                }
-            }, {
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "New player",
+            value: {
+                op:'addChild',
+                childClass: "Player"
+            }
+        }, {
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
 
     /**
@@ -319,11 +319,11 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
 
     /**
@@ -342,23 +342,23 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITFORM : [{
-                name: 'name',
-                label:'Name',
-                required: true
-            }, {
-                name: 'password',
-                type: 'password',
-                label: 'New password',
-                showMsg: true,
-                id: 'firstPassword',
-                strengthIndicator: true,
-                capsLockWarning: true
-            }, {
-                type: 'password',
-                label: 'Confirmation',
-                showMsg: true,
-                confirm: 'firstPassword'
-            }]
+            name: 'name',
+            label:'Name',
+            required: true
+        }, {
+            name: 'password',
+            type: 'password',
+            label: 'New password',
+            showMsg: true,
+            id: 'firstPassword',
+            strengthIndicator: true,
+            capsLockWarning: true
+        }, {
+            type: 'password',
+            label: 'Confirmation',
+            showMsg: true,
+            confirm: 'firstPassword'
+        }]
     });
     /**
      * VariableDescriptor mapper
@@ -398,15 +398,15 @@ YUI.add('wegas-entity', function (Y) {
                     "@class": {
                         type: "string",
                         choices: [{
-                                value: "TeamScope",
-                                label: 'different for each team'
-                            }, {
-                                value: "PlayerScope",
-                                label: 'different for each user'
-                            }, {
-                                value: "GameModelScope",
-                                label: 'the same for everybody'
-                            }],
+                            value: "TeamScope",
+                            label: 'different for each team'
+                        }, {
+                            value: "PlayerScope",
+                            label: 'different for each user'
+                        }, {
+                            value: "GameModelScope",
+                            label: 'the same for everybody'
+                        }],
                         _inputex: {
                             label: 'Variable is'
                         }
@@ -420,12 +420,12 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
         }
-        //        EDITFORM:  [{
-        //            name: 'valueselector',
-        //            label:'Variable is',
-        //            type: 'keyvalue',
-        //            availableFields: []
-        //        }]
+    //        EDITFORM:  [{
+    //            name: 'valueselector',
+    //            label:'Variable is',
+    //            type: 'keyvalue',
+    //            availableFields: []
+    //        }]
     });
 
 
@@ -545,11 +545,11 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
     /**
      * StringInstance mapper
@@ -615,11 +615,11 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
     /**
      * NumberInstance mapper
@@ -663,17 +663,17 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "Add element",
-                value: {
-                    op:'addChild',
-                    childClass: "VariableDescriptor"
-                }
-            },{
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "Add element",
+            value: {
+                op:'addChild',
+                childClass: "VariableDescriptor"
+            }
+        },{
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
     /*
      * ListInstance mapper
@@ -700,7 +700,7 @@ YUI.add('wegas-entity', function (Y) {
                 value: false,
                 type: 'boolean',
                 _inputex: {
-                    label: 'Allow multiple replies',
+                    label: 'Allow multiple replies'
                 }
             },
             defaultVariableInstance: {
@@ -734,17 +734,17 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "Add a choice",
-                value: {
-                    op:'addChild',
-                    childClass: "ChoiceDescriptor"
-                }
-            }, {
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "Add a choice",
+            value: {
+                op:'addChild',
+                childClass: "ChoiceDescriptor"
+            }
+        }, {
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
 
     /**
@@ -919,6 +919,9 @@ YUI.add('wegas-entity', function (Y) {
                             label: "Moral"
                         }
                     },
+                    moralHistory: {
+                        type: "array"
+                    },
                     confidence: {
                         name: "confidence",
                         type: "string",
@@ -942,11 +945,11 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
 
     /**
@@ -963,6 +966,9 @@ YUI.add('wegas-entity', function (Y) {
             moral: {
                 type: "string"
             },
+            moralHistory: {
+                type: "array"
+            },
             confidence: {
                 type: "string"
             },
@@ -978,6 +984,10 @@ YUI.add('wegas-entity', function (Y) {
                     label: "Skills",
                     _type: "object"
                 }
+            },
+            assignments: {
+                type: "array",
+                value: []
             }
         }
     });
@@ -1041,11 +1051,11 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
 
     /**
@@ -1084,11 +1094,11 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                text: "Delete",
-                value: {
-                    op:'delete'
-                }
-            }]
+            text: "Delete",
+            value: {
+                op:'delete'
+            }
+        }]
     });
     /**
      * InboxInstance mapper
@@ -1126,7 +1136,7 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
         isValid: function (){
-            //TODO : FX a greffer :)
+        //TODO : FX a greffer :)
         },
         isEmpty: function () {
             return (this.content == null || this.content == "");
@@ -1141,8 +1151,8 @@ YUI.add('wegas-entity', function (Y) {
                 value: "JavaScript",
                 type: "string",
                 choices:[{
-                        value:"JavaScript"
-                    }],
+                    value:"JavaScript"
+                }],
                 _inputex: {
                     //type:"select",
                     type:"hidden"
@@ -1158,49 +1168,49 @@ YUI.add('wegas-entity', function (Y) {
     });
 
 
-    /*
+/*
      * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORM values here, so
      * we can use other object's existing declaration.
      */
-    //    Y.Wegas.persistence.VariableDescriptor.EDITFORM[0].availableFields = [
-    //    {
-    //        type: 'group',
-    //        name: 'StringDescriptor',
-    //        label: 'a string',
-    //        fields: Y.Wegas.persistence.StringDescriptor.EDITFORM
-    //    },
-    //
-    //    {
-    //        type: 'group',
-    //        name: 'NumberDescriptor',
-    //        label: 'a number',
-    //        fields:  Y.Wegas.persistence.NumberDescriptor.EDITFORM
-    //    },
-    //    {
-    //        type: 'group',
-    //        name: 'QuestionDescriptor',
-    //        label: 'a question',
-    //        fields: Y.Wegas.persistence.QuestionDescriptor.EDITFORM
-    //    },
-    //    {
-    //        type: 'group',
-    //        name: 'ListDescriptor',
-    //        label: 'a list',
-    //        fields:  Y.Wegas.persistence.ListDescriptor.EDITFORM
-    //    },
-    //    {
-    //        type: 'group',
-    //        name: 'ResourceDescriptor',
-    //        label: 'a resource',
-    //        fields:  Y.Wegas.persistence.ResourceDescriptor.EDITFORM
-    //    },
-    //    {
-    //        type: 'group',
-    //        name: 'TaskDescriptor',
-    //        label: 'a task',
-    //        fields:  Y.Wegas.persistence.TaskDescriptor.EDITFORM
-    //    },
-    //    // {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Y.Wegas.persistence.DialogueDescriptor.EDITFORM }
-    //    // {type: 'group', name: 'TriggerDescriptor', label: 'a trigger', fields:  Y.Wegas.persistence.TriggerDescriptor.EDITFORM },
-    //    ];
+//    Y.Wegas.persistence.VariableDescriptor.EDITFORM[0].availableFields = [
+//    {
+//        type: 'group',
+//        name: 'StringDescriptor',
+//        label: 'a string',
+//        fields: Y.Wegas.persistence.StringDescriptor.EDITFORM
+//    },
+//
+//    {
+//        type: 'group',
+//        name: 'NumberDescriptor',
+//        label: 'a number',
+//        fields:  Y.Wegas.persistence.NumberDescriptor.EDITFORM
+//    },
+//    {
+//        type: 'group',
+//        name: 'QuestionDescriptor',
+//        label: 'a question',
+//        fields: Y.Wegas.persistence.QuestionDescriptor.EDITFORM
+//    },
+//    {
+//        type: 'group',
+//        name: 'ListDescriptor',
+//        label: 'a list',
+//        fields:  Y.Wegas.persistence.ListDescriptor.EDITFORM
+//    },
+//    {
+//        type: 'group',
+//        name: 'ResourceDescriptor',
+//        label: 'a resource',
+//        fields:  Y.Wegas.persistence.ResourceDescriptor.EDITFORM
+//    },
+//    {
+//        type: 'group',
+//        name: 'TaskDescriptor',
+//        label: 'a task',
+//        fields:  Y.Wegas.persistence.TaskDescriptor.EDITFORM
+//    },
+//    // {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Y.Wegas.persistence.DialogueDescriptor.EDITFORM }
+//    // {type: 'group', name: 'TriggerDescriptor', label: 'a trigger', fields:  Y.Wegas.persistence.TriggerDescriptor.EDITFORM },
+//    ];
 });

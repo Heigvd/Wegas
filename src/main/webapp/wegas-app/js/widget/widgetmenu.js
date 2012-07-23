@@ -37,7 +37,7 @@ YUI.add('widgetmenu', function (Y) {
         render: function () {
             var host = this.get("host");
             host.on("click", function () {
-                var i, menu = this.getMenu(),
+                var menu = this.getMenu(),
                 children = this.get("children");
 
                 menu.set("align",{
@@ -52,7 +52,10 @@ YUI.add('widgetmenu', function (Y) {
                     Y.error("Error while adding subpage to tab (probably du to absence of Y.WidgetChild in config", err, WidgetMenu);
                 }
             }, this);
-            host.on("mouseleave", this.startMenuHideTimer, this);
+
+//            var cb = host.get("contentBox");
+//            cb.on("mouseenter", this.cancelMenuTimer, this);
+//            cb.on("mouseleave", this.startMenuHideTimer, this);
         },
 
         // *** Private methods *** //
@@ -61,11 +64,14 @@ YUI.add('widgetmenu', function (Y) {
             //console.log()
             if (!WidgetMenu.menu) {
                 WidgetMenu.menu = new Menu({
-                    width:"10em",
+                    width:"12em",
                     zIndex:1
                 });
-                WidgetMenu.menu.on("mouseenter", this.cancelMenuTimer, this);
-                WidgetMenu.menu.on("mouseleave", this.startMenuHideTimer, this);
+                var cb = WidgetMenu.menu.get("contentBox");
+
+                cb.on("mouseenter", this.cancelMenuTimer, this);
+                cb.on("mouseleave", this.startMenuHideTimer, this);
+               // cb.on("clickoutside", this.hideMenu, this);
                 WidgetMenu.menu.render();
             }
             return WidgetMenu.menu;
