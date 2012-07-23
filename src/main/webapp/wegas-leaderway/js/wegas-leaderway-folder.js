@@ -8,7 +8,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
     var CONTENTBOX = 'contentBox', Folder;
 
     Folder = Y.Base.create("wegas-folder", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        
+
         tabview: null,
         tasksChooser: null, 
         tasksList: null,
@@ -139,7 +139,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     }
             }
         },
-        
+
         getOccupation: function(resourceInstance){
             var i, j, occupation = new Array(), sick=false,
             taskListDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
@@ -186,7 +186,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             return occupation.join("");
         },
-         
+
         createGauge: function(label, nomberOfUnits){
             var gauge = new Array("");
             if(typeof nomberOfUnits === 'number'){
@@ -276,7 +276,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     feedbackNode.removeClass('red');
                 }, 5000);
         },
-        
+
         // *** Lifecycle Methods *** //
         renderUI: function(){
             var cb = this.get(CONTENTBOX);
@@ -346,7 +346,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             cb.insert('<div class="menuFolder"><div class="listResources"></div></div>');
             this.tabview.render(cb);
         },
-        
+
         bindUI: function(){
             var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this));

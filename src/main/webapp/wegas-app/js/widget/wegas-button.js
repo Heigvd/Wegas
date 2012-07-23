@@ -31,25 +31,24 @@ YUI.add('wegas-button', function (Y) {
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
-        //bindUI: function () {
-        //    if(this.get('tooltips')){
-        //        this.get(CONTENTBOX).on('mouseenter', function () {
-        //            this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
-        //                + this.get('tooltips')
-        //                +'</span>', 'before');
-        //        },this);
-        //        this.get(CONTENTBOX).on('mouseleave', function () {
-        //            Y.one('.wegas-button-tooltips').remove();
-        //        },this);
-        //    }
-        //}
-        }, {
-            // ATTRS: {
-            //    view: {},
-            //    tooltips:{}
-            // }
-            CSS_PREFIX:"yui3-button"
-        });
+        bindUI: function () {
+            if(this.get('tooltips')){
+                this.get(CONTENTBOX).on('mouseenter', function () {
+                    this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
+                        + this.get('tooltips')
+                        +'</span>', 'before');
+                },this);
+                this.get(CONTENTBOX).on('mouseleave', function () {
+                    Y.one('.wegas-button-tooltips').remove();
+                },this);
+            }
+        }
+    }, {
+        ATTRS: {
+            tooltips:{}
+        },
+        CSS_PREFIX:"yui3-button wegas-button"
+    });
 
     Y.namespace('Wegas').Button = Button;
 
@@ -126,8 +125,8 @@ YUI.add('wegas-button', function (Y) {
 
 
     /**
-    * Login button
-    */
+     * Login button
+     */
     LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
 
@@ -216,10 +215,6 @@ YUI.add('wegas-button', function (Y) {
         },
         bindUI: function () {
             this.get("host").on("click", function() {
-                if (this.get('targetPageLoaderId')) {
-                    var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                    targetPageLoader.set("pageId", this.get("subpageId"));
-                }
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     cfg: {
