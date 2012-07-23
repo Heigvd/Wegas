@@ -1,5 +1,4 @@
 {
-    "@class": "GameModel",
     "name": "Leaderway",
     "cssUri": "wegas-leaderway/css/wegas-leaderway.css",
     "widgetsUri": "wegas-leaderway/db/wegas-leaderway-pages.json",

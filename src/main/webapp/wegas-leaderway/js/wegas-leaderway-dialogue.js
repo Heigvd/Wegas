@@ -39,8 +39,8 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 {yDisplayName:'confiance'}
             ],
             rawSeries = [
-                resourceInstance.moralHistory,
-                resourceInstance.confidenceHistory,
+                resourceInstance.get('MoralHistory'),
+                resourceInstance.('getConfidenceHistory'),
             ];
             
             
@@ -69,18 +69,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             });
             this.chart.render(".chart");
         },
-        
-//        getSeriesCollections: function(){
-//            var reg=new RegExp("[ ,;]+", "g"),
-//            labels, seriesCollection = new Array(), i,
-//            numberOfSeries = 2;
-//            labels = this.get('chartSeriesLabels').split(reg),
-//            labels.splice(numberOfSeries );
-//            for(i=0; i<numberOfSeries; i++){
-//                seriesCollection.push({yDisplayName:labels[i]});
-//            }
-//            return seriesCollection;
-//        },
           
         getChartValues: function(numberOfValues, rawSeries){
             var i, j, fitSeries = new Array(), serieRawData = new Array(), serieFitData = new Array();
@@ -105,13 +93,13 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         readStateMachine: function(){
-            var dialogue = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "dialogues"),
+            var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues"),
             state, text = new Array();
             if(dialogue == null){
                 Y.one('.wegas-dialogue .dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 return;
             }
-            state = dialogue.states[dialogue.getInstance().currentStateId];
+            state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
             text = state.text.split(new RegExp("[ ]+", "g"));
             Y.one('.wegas-dialogue .dialogue .talk').insert('<p></p>');
             this.displayText(text);
@@ -129,15 +117,15 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         displayResponse: function(){
-            var i, dialogue = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "dialogues"),
+            var i, dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues"),
             state, context = this;
-            state = dialogue.states[dialogue.getInstance().currentStateId];
+            state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
             Y.one('.wegas-dialogue .dialogue .response').insert('<ul class="responseElement"></ul>');
-            for(i=0 ; i<state.transitions.length; i++){
-                Y.one('.wegas-dialogue .dialogue .response .responseElement').insert('<li nextState="'+state.transitions[i].nextStateId+'">'+state.transitions[i].actionText+'</li>');
+            for(i=0 ; i<state.get('transitions').length; i++){
+                Y.one('.wegas-dialogue .dialogue .response .responseElement').insert('<li nextState="'+state.get('transitions')[i].get('nextStateId')+'">'+state.get('transitions')[i].get('actionText')+'</li>');
             }
             Y.all('.wegas-dialogue .dialogue .response .responseElement li').on('click', function (e){
-                dialogue.getInstance().currentStateId = this.getAttribute('nextState')[0];
+                dialogue.getInstance().get('currentStateId') = this.getAttribute('nextState')[0];
                 context.syncUI();
             });
         },
@@ -154,15 +142,15 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
           
         bindUI: function(){
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
           
         syncUI: function () {
-            var listResourceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
+            var listResourceDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
             if(listResourceDescriptor == null) return;
             this.clear();
-            this.createChart(listResourceDescriptor.items[0]);
+            this.createChart(listResourceDescriptor.get('items')[0]);
             this.readStateMachine();
         },
         
@@ -172,7 +160,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         
     }, {
         ATTRS : {
-            content: {}
         }
     });
 
