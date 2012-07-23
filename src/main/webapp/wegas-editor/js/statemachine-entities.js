@@ -9,19 +9,21 @@ Y.add("statemachine-entities", function(Y){
      */
     Y.Wegas.persistence.FSMInstance = Y.Base.create("FSMInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
         ATTRS: {
-            currentStateId: {},
             "@class": {
                 value: "FSMInstance"
             },
+            currentStateId: {
+                type: "string",
+                _inputex: {
+                    label: "Current state id"
+                }
+            },
             transitionHistory:{
-                value:[],
-                writeOnce:"initOnly"
+                value: [],
+                writeOnce: "initOnly",
+                type: "array"
             }
-        },
-        EDITFORM:  [{
-            name: 'currentStateId',
-            label: "Current state id"
-        }]
+        }
     });
 
     /*
@@ -94,6 +96,123 @@ Y.add("statemachine-entities", function(Y){
                 },
                 validator: function(o){
                     return o instanceof Y.Wegas.persistence.FSMInstance;
+                },
+                properties: {
+                    '@class': {
+                        type: "string",
+                        _inputex: {
+                            _type:'hidden',
+                            value:'FSMInstance'
+                        }
+                    },
+                    id: {
+                        type: "string",
+                        _inputex: {
+                            _type:'hidden'
+                        }
+                    },
+                    currentStateId: {
+                        type: "string",
+                        _inputex: {
+                            label: 'Initial state id'
+                        }
+                    }
+                }
+            },
+            states: {
+                _inputex: {
+                    _type:'hashlist',
+                    label: 'States',
+                    elementType: {
+                        type:'group',
+                        fields: [{
+                            name: '@class',
+                            value:'DialogueState',
+                            type: 'hidden'
+                        },{
+                            name: 'id',
+                            type: 'string',
+                            label: "Id",
+                            disabled: true
+                        }, {
+                            name: 'label',
+                            label: 'Label'
+                        }, {
+                            name: 'text',
+                            label: 'Text',
+                            type: 'text',
+                            rows: 8
+                        }, {
+                            name: 'onEnterEvent',
+                            type:'group',
+                            fields: [{
+                                name: '@class',
+                                value:'Script',
+                                type: 'hidden'
+                            }, {
+                                name: 'language',
+                                value:'JavaScript',
+                                type: 'hidden'
+                            }, {
+                                name: 'content',
+                                'type': 'text',
+                                label:'On enter',
+                                rows: 3
+                            }]
+                        }, {
+                            name: 'transitions',
+                            label: 'Transitions',
+                            type: 'list',
+                            elementType: {
+                                type:'group',
+                                fields: [{
+                                    name: '@class',
+                                    value:'DialogueTransition',
+                                    type: 'hidden'
+                                }, {
+                                    name: 'triggerCondition',
+                                    type:'group',
+                                    fields: [{
+                                        name: '@class',
+                                        value:'Script',
+                                        type: 'hidden'
+                                    }, {
+                                        name: 'language',
+                                        value:'JavaScript',
+                                        type: 'hidden'
+                                    }, {
+                                        name: 'content',
+                                        'type': 'hidden',
+                                        label:'Condition',
+                                        rows: 3
+                                    }]
+                                }, {
+                                    name: 'actionText',
+                                    label: 'Action/User input'
+                                }, {
+                                    name: 'nextStateId',
+                                    label: 'Next state id'
+                                }, {
+                                    name: 'preStateImpact',
+                                    type:'group',
+                                    fields: [{
+                                        name: '@class',
+                                        value:'Script',
+                                        type: 'hidden'
+                                    }, {
+                                        name: 'language',
+                                        value:'JavaScript',
+                                        type: 'hidden'
+                                    }, {
+                                        name: 'content',
+                                        'type': 'text',
+                                        label:'On transition',
+                                        rows: 8
+                                    }]
+                                }]
+                            }
+                        }]
+                    }
                 }
             }
         },
@@ -170,73 +289,67 @@ Y.add("statemachine-entities", function(Y){
             "@class": {
                 value: "TriggerDescriptor"
             },
-            defaultVariableInstance:{
-                valueFn: function(){
-                    return new Y.Wegas.persistence.TriggerInstance();
-                },
-                validator: function (o){
-                    return o instanceof Y.Wegas.persistence.TriggerInstance;
+            triggerEvent: {
+                properties:{
+                    '@class': {
+                        type: 'string',
+                        _inputex: {
+                            _type: 'hidden',
+                            value: 'Script'
+                        }
+                    },
+                    language: {
+                        type: 'string',
+                        choices:[{
+                            value: 'JavaScript'
+                        }],
+                        _inputex: {
+                            label: 'Language'
+                        }
+                    },
+                    content: {
+                        type: 'string',
+                        _inputex: {
+                            _type: 'text',
+                            label: 'Condition'
+                        }
+                    }
+                }
+            },
+            postTriggerEvent: {
+                properties:{
+                    '@class':{
+                        type:'string',
+                        _inputex: {
+                            _type: 'hidden',
+                            value: 'Script'
+                        }
+                    },
+                    language: {
+                        type:'string',
+                        choices:[{
+                            value: 'JavaScript'
+                        }],
+                        _inputex: {
+                            label: 'Language'
+                        }
+                    },
+                    content: {
+                        type:'string',
+                        _inputex: {
+                            _type: 'text',
+                            label: 'Impact'
+                        }
+                    }
+                }
+            },
+            oneShot: {
+                type: 'boolean',
+                _inputex: {
+                    label: 'Only once'
                 }
             }
-        },
-        EDITFORM: [{
-            name:'defaultVariableInstance',
-            disabled:true,
-            type:'group',
-            fields: [{
-                name: '@class',
-                value:'TriggerInstance',
-                type: 'hidden'
-            }, {
-                name: 'id',
-                type: 'hidden'
-            }, {
-                name: 'currentStateId',
-                label: 'Initial state'
-            }]
-        }, {
-            name:'triggerEvent',
-            type:'group',
-            fields:[{
-                name:'@class',
-                value:'Script',
-                type:'hidden'
-            }, {
-                name:'language',
-                label:'Language',
-                type:'select',
-                choices:[{
-                    value:'JavaScript'
-                }]
-            }, {
-                name:'content',
-                label:'Condition',
-                type:'text'
-            }]
-        }, {
-            name:'postTriggerEvent',
-            type:'group',
-            fields:[{
-                name:'@class',
-                value:'Script',
-                type:'hidden'
-            }, {
-                name:'language',
-                label:'Language',
-                type:'select',
-                choices:[{
-                    value:'JavaScript'
-                }]
-            }, {
-                name:'content',
-                label:'Impact',
-                type:'text'
-            }]
-        }, {
-            name: 'oneShot',
-            label:'Only once',
-            type:'boolean'
-        }]
+        }
     });
 
     /*
@@ -246,13 +359,15 @@ Y.add("statemachine-entities", function(Y){
         ATTRS: {
             "@class": {
                 value: "TriggerInstance"
+            },
+            currentStateId: {
+                type: "string",
+                _inputex: {
+                    label: "Trigger state",
+                    disabled:true
+                }
             }
-        },
-        EDITFORM: [{
-            name: 'currentStateId',
-            label: "Trigger state",
-            disabled:true
-        }]
+        }
     });
 
     /**********************************/
@@ -305,127 +420,18 @@ Y.add("statemachine-entities", function(Y){
             "@class": {
                 value: "DialogueDescriptor"
             }
-        },
-        EDITFORM: [{
-            name:'defaultVariableInstance',
-            type:'group',
-            fields: [{
-                name: '@class',
-                value:'FSMInstance',
-                type: 'hidden'
-            }, {
-                name: 'id',
-                type: 'hidden'
-            }, {
-                name: 'currentStateId',
-                label: "Initial state id"
-            }]
-        }, {
-            name: 'states',
-            label: 'States',
-            type:'hashlist',
-            'elementType': {
-                type:'group',
-                fields: [{
-                    name: '@class',
-                    value:'DialogueState',
-                    type: 'hidden'
-                },{
-                    name: 'id',
-                    type: 'string',
-                    label: "Id",
-                    disabled: true
-                }, {
-                    name: 'label',
-                    label: 'Label'
-                }, {
-                    name: 'text',
-                    label: 'Text',
-                    type: 'text',
-                    rows: 8
-                }, {
-                    name: 'onEnterEvent',
-                    type:'group',
-                    fields: [{
-                        name: '@class',
-                        value:'Script',
-                        type: 'hidden'
-                    }, {
-                        name: 'language',
-                        value:'JavaScript',
-                        type: 'hidden'
-                    }, {
-                        name: 'content',
-                        'type': 'text',
-                        label:'On enter',
-                        rows: 3
-                    }]
-                }, {
-                    name: 'transitions',
-                    label: 'Transitions',
-                    type: 'list',
-                    elementType: {
-                        type:'group',
-                        fields: [{
-                            name: '@class',
-                            value:'DialogueTransition',
-                            type: 'hidden'
-                        }, {
-                            name: 'triggerCondition',
-                            type:'group',
-                            fields: [{
-                                name: '@class',
-                                value:'Script',
-                                type: 'hidden'
-                            }, {
-                                name: 'language',
-                                value:'JavaScript',
-                                type: 'hidden'
-                            }, {
-                                name: 'content',
-                                'type': 'hidden',
-                                label:'Condition',
-                                rows: 3
-                            }]
-                        }, {
-                            name: 'actionText',
-                            label: 'Action/User input'
-                        }, {
-                            name: 'nextStateId',
-                            label: 'Next state id'
-                        }, {
-                            name: 'preStateImpact',
-                            type:'group',
-                            fields: [{
-                                name: '@class',
-                                value:'Script',
-                                type: 'hidden'
-                            }, {
-                                name: 'language',
-                                value:'JavaScript',
-                                type: 'hidden'
-                            }, {
-                                name: 'content',
-                                'type': 'text',
-                                label:'On transition',
-                                rows: 8
-                            }]
-                        }]
-                    }
-                }]
-            }
-        }]
+        }
     });
     /**
- * DialogueTransition Entity
- */
+     * DialogueTransition Entity
+     */
     Y.Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Y.Wegas.persistence.Transition, [], {
 
         /**
-     * Builds the REST request to trigger this specifique transition
-     * @param {Integer} The dialogue's id
-     * @return {String} an url to GET.
-     */
+         * Builds the REST request to trigger this specifique transition
+         * @param {Integer} The dialogue's id
+         * @return {String} an url to GET.
+         */
         getTriggerURL: function(id){
             return Y.Wegas.app.get("base") + "rest/GameMode/" +
             Y.Wegas.app.get("currentGame")
@@ -448,8 +454,8 @@ Y.add("statemachine-entities", function(Y){
     });
 
     /**
- * DialogueState Entity
- */
+     * DialogueState Entity
+     */
     Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
         getAvailableActions: function(){
             var availableActions = [],
@@ -464,19 +470,19 @@ Y.add("statemachine-entities", function(Y){
         },
 
         /**
-     * Get an array of texts from the state's text, split by a token
-     * @param {String} The token to split by
-     */
+         * Get an array of texts from the state's text, split by a token
+         * @param {String} The token to split by
+         */
         getTexts: function ( token ) {
             return this.get("text").split(token);
         },
 
         /**
-     * Set the text with an array and a token
-     *
-     * @param {Array} Strings to join
-     * @param {String} Token to join the array
-     */
+         * Set the text with an array and a token
+         *
+         * @param {Array} Strings to join
+         * @param {String} Token to join the array
+         */
         setText: function (a, token){
             this.set("text", a.join(token));
         }

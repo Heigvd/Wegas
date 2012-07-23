@@ -112,8 +112,9 @@ YUI().use(function (Y) {
                     'widgetmenu': {
                         path: 'wegas-app/js/widget/widgetmenu-min.js',
                         requires: ['plugin', 'widget', 'widget-parent', 'widget-child',
-                            'widget-position', 'widget-stack', 'widget-position-align',
-                            'widget-position-constrain', 'event-mouseenter', 'yui-later']
+                        'widget-position', 'widget-stack', 'widget-position-align',
+                        'widget-position-constrain', 'event-mouseenter', 'yui-later',
+                        'event-outside']
                     },
                     'treeview':{
                         path: 'wegas-editor/js/treeview-min.js',
@@ -227,9 +228,9 @@ YUI().use(function (Y) {
                     },
                     /**Leaderway**/
                     'wegas-leaderway': {
-                       path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
                         requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue'],
-                        //ix_provides: ""
+                    //ix_provides: ""
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
