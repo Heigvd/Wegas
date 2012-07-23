@@ -9,6 +9,16 @@ YUI.add('wegas-button', function (Y) {
     BOUNDINGBOX = 'boundingBox',
     LoginButton,
     Button;
+    
+    /* @fixme hack so we can programatically add an element to a yui button */
+    Y.Button.prototype._uiSetLabel = function(value) {
+        var node = this._host,
+        attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
+
+        //        node.set(attr, value);
+        node.setContent(value);
+        return value;
+    };
 
     Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget], {
         //

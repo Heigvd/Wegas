@@ -40,7 +40,6 @@ YUI.add('wegas-editor-action', function (Y) {
                 tab = Y.Wegas.TabView.getTab( host.get("label"), this.get("tabSelector"));
                 if (!tab) {
                     tab = Y.Wegas.TabView.createTab( host.get("label"), this.get("tabSelector"));
-                    tab.add(this.get("subpage"));
 
                     Y.Wegas.Widget.use(this.get("subpage"),  Y.bind(function (tab) {// Load the subpage dependencies
                         tab.add(this.get("subpage"));                           // Render the subpage

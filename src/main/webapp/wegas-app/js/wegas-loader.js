@@ -137,7 +137,7 @@ YUI().use(function (Y) {
                         /* @fixme those should be included on the fly*/
                         'wegas-logger', 'wegas-csseditor',
                         'wegas-editor-topmenu', "wegas-console", 'wegas-fileexplorer',
-                        'wegas-scriptlibrary', 'wegas-layout', 'wegas-statemachineviewer',
+                        'wegas-layout', 'wegas-statemachineviewer',
                         'wegas-wysiwygeditor', 'wegas-treeview',
 
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file

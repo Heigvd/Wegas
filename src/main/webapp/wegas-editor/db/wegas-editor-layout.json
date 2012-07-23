@@ -1,12 +1,42 @@
 {
     "id": 2003,
     "type" : "Layout",
-
     "top" : {
         "height": 25,
         "scroll": null,
         "zIndex": 2,
         "children": [{
+            "type": "Button",
+            "label": "Developer",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": [{
+                        "type": "Button",
+                        "label": "Log",
+                        "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "subpage": {
+                                    "type": "Logger"
+                                }
+                            }
+                        }]
+                    }, {
+                        "type": "Button",
+                        "label": "Wysiwyg script editor",
+                        "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "subpage": {
+                                    "type": "WysiwygEditor"
+                                }
+                            }
+                        }]
+                    }]
+                }
+            }]
+        },{
             "type": "Button",
             "label": "Scenarist",
             "plugins": [{
@@ -26,6 +56,17 @@
                         }]
                     },{
                         "type": "Button",
+                        "label": "Files",
+                        "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "subpage": {
+                                    "type": "FileExplorer"
+                                }
+                            }
+                        }]
+                    },{
+                        "type": "Button",
                         "label": "Scripts",
                         "plugins": [{
                             "fn": "OpenTabAction",
@@ -38,20 +79,30 @@
                     }]
                 }
             }]
-        }, {
+        },{
             "type": "Button",
-            "label": "Developer",
+            "label": "Animator",
             "plugins": [{
                 "fn": "WidgetMenu",
                 "cfg": {
                     "children": [{
                         "type": "Button",
-                        "label": "Log",
+                        "label": "Players",
                         "plugins": [{
                             "fn": "OpenTabAction",
                             "cfg": {
                                 "subpage": {
-                                    "type": "Logger"
+                                    "type": "DataTable",
+                                    "dataSource": "User",
+                                    "columnset": [ {
+                                        "key":"id",
+                                        "sortable": true
+                                    }, {
+                                        "key":"name",
+                                        "sortable": true
+                                    }, {
+                                        "key":"@class"
+                                    }]
                                 }
                             }
                         }]
@@ -94,23 +145,6 @@
                     "dataSource": "Page"
                 }],
                 "toolbarLabel": "Pages"
-            },{
-                "type": "Tab",
-                "label": "Users",
-                "children": [{
-                    "type": "DataTable",
-                    "dataSource": "User",
-                    "columnset": [ {
-                        "key":"id",
-                        "sortable": true
-                    }, {
-                        "key":"name",
-                        "sortable": true
-                    }, {
-                        "key":"@class"
-                    }]
-                } ],
-                "toolbarLabel": "Users"
             }]
         }]
     },
@@ -152,12 +186,6 @@
                 "label": "StateMachine Viewer",
                 "children": [{
                     "type": "StateMachineViewer"
-                }]
-            }, {
-                "type": "Tab",
-                "label": "Wysiwyg editor",
-                "children": [{
-                    "type": "WysiwygEditor"
                 }]
             }]
         }]
