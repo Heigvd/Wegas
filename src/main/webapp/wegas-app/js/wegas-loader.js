@@ -240,15 +240,17 @@ YUI().use(function (Y) {
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
-                        requires: ['panel', 'wegas-leaderway-tasklist'],
+                        requires: ['tabview', 'panel', 'wegas-leaderway-tasklist'],
                         ix_provides: "Folder"
                     },
                     'wegas-leaderway-tasklist': {
                         path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
+                        requires: ['datatable'],
                         ix_provides: "TaskList"
                     },
                     'wegas-leaderway-score': {
                         path: 'wegas-leaderway/js/wegas-leaderway-score.js',
+                        requires: ['datatable'],
                         ix_provides: "Score"
                     },
                     'wegas-leaderway-dialogue': {

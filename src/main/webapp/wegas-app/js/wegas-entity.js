@@ -700,7 +700,7 @@ YUI.add('wegas-entity', function (Y) {
                 value: false,
                 type: 'boolean',
                 _inputex: {
-                    label: 'Allow multiple replies',
+                    label: 'Allow multiple replies'
                 }
             },
             defaultVariableInstance: {
