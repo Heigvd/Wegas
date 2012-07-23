@@ -157,7 +157,7 @@
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
-                "pageId": 2
+                "pageId": 7
             }]
     },
     {
@@ -165,12 +165,6 @@
         "label":"Folder",
         "type":"Folder",
         "cssClass":"leaderway-folder"
-    },
-    {
-        "id":3,
-        "label":"HRList",
-        "type":"HRList",
-        "cssClass":"leaderway-hrlist"
     },
     {
         "id":4,
