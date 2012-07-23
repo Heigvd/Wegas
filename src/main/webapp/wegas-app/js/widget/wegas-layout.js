@@ -43,7 +43,7 @@ YUI.add('wegas-layout', function (Y) {
 
             if (position === "top") {
                 target = this.getStdModNode("header");
-
+                
             } else if (position === "bottom") {
                 target = this.getStdModNode("footer");
 
@@ -124,9 +124,9 @@ YUI.add('wegas-layout', function (Y) {
             }
         },
         TEMPLATES: {
-            header : '<div class="yui-widget-hd"></div>',
+            header : '<div class="yui-widget-hd wegas-layout-top"></div>',
             body : '<div class="yui-widget-bd"><div class="wegas-layout-left"></div><div class="wegas-layout-center"></div><div class="wegas-layout-right"></div></div>',
-            footer : '<div class="yui-widget-ft"></div>'
+            footer : '<div class="yui-widget-ft wegas-layout-bottom"></div>'
         }
     });
 
