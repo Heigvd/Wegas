@@ -18,6 +18,7 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
         },
 
         renderUI: function () {
+            return;
             var cb = this.get("contentBox"), code, syntax;
 
             cb.append("<textarea style=\"width:100%;200px\">VariableDescriptor.getInstance(self);</textarea>");

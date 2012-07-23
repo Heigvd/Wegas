@@ -1,62 +1,63 @@
 {
     "id": 2003,
     "type" : "Layout",
-    "right": {
-        "width": 50,
-        "resize": true,
-        "collapse": false,
-        "scroll": true,
-        "animate": true,
-        "children": [{
-            "type": "TabView",
-            "id": "rightTabView",
-            "children": [{
-                "type": "Tab",
-                "label": "Console",
-                "children": [{
-                    "type": "Console",
-                    "class": "wegas-console"
-                }],
-                "toolbarChildren": [{
-                    "type": "SelectPlayer"
-                }]
-            },
-            {
-                "type": "Tab",
-                "label": "Chat",
-                "toolbarLabel": "Chat",
-                "children": [{
-                    "type": "Chat"
-                }]
-            }, {
-                "type": "Tab",
-                "label": "Scripts",
-                "children": [{
-                    "type": "ScriptLibrary"
-                }]
-            }, {
-                "type": "Tab",
-                "label": "CSS",
-                "children": [{
-                    "type": "CSSEditor",
-                    "class": "wegas-csseditor"
-                }]
-            }, {
-                "type": "Tab",
-                "label": "Log",
-                "toolbarLabel": "Log",
-                "children": [{
-                    "type": "Logger"
-                }]
-            }]
-        }]
-    },
+
     "top" : {
         "height": 25,
         "scroll": null,
         "zIndex": 2,
         "children": [{
-            "type": "EditorTopMenu"
+            "type": "Button",
+            "label": "Scenarist",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": [{
+                        "type": "Button",
+                        "label": "Styles",
+                        "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "subpage": {
+                                    "type": "CSSEditor",
+                                    "class": "wegas-csseditor"
+                                }
+                            }
+                        }]
+                    },{
+                        "type": "Button",
+                        "label": "Scripts",
+                        "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "subpage": {
+                                    "type": "ScriptLibrary"
+                                }
+                            }
+                        }]
+                    }]
+                }
+            }]
+        }, {
+            "type": "Button",
+            "label": "Developer",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": [{
+                        "type": "Button",
+                        "label": "Log",
+                        "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "subpage": {
+                                    "type": "Logger"
+                                }
+                            }
+                        }]
+                    }]
+                }
+            }]
         }]
     },
     "left": {
@@ -157,6 +158,36 @@
                 "label": "Wysiwyg editor",
                 "children": [{
                     "type": "WysiwygEditor"
+                }]
+            }]
+        }]
+    },
+    "right": {
+        "width": 50,
+        "resize": true,
+        "collapse": false,
+        "scroll": true,
+        "animate": true,
+        "children": [{
+            "type": "TabView",
+            "id": "rightTabView",
+            "children": [{
+                "type": "Tab",
+                "label": "Console",
+                "children": [{
+                    "type": "Console",
+                    "class": "wegas-console"
+                }],
+                "toolbarChildren": [{
+                    "type": "SelectPlayer"
+                }]
+            },
+            {
+                "type": "Tab",
+                "label": "Chat",
+                "toolbarLabel": "Chat",
+                "children": [{
+                    "type": "Chat"
                 }]
             }]
         }]

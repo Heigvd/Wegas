@@ -17,16 +17,33 @@ YUI.add('wegas-tabview', function (Y) {
                 Y.Wegas.app.fire("layout:resize");
             });
         }
+    }, {
+        tabs: {},
+        getTab: function (id) {
+            return TabView.tabs[id];
+        },
+        createTab: function (id, tabViewSelector, tabCfg) {
+            tabCfg = tabCfg || {};
+            Y.mix(tabCfg, {
+                type: "Tab",
+                label: id
+            });
+            if (!TabView.tabs[id]) {
+                var tabView = Y.Widget.getByNode(tabViewSelector);
+                TabView.tabs[id] = tabView.add(tabCfg).item(0);
+            }
+            return TabView.tabs[id];
+        }
     });
 
 
     /**
-    * Extension enabling a Tab to be a parent of another Widget.
-    *
-    * @modified from original WidgetParent module
-    *
-    * @module widget-parent
-    */
+     * Extension enabling a Tab to be a parent of another Widget.
+     *
+     * @modified from original WidgetParent module
+     *
+     * @module widget-parent
+     */
     function Parent(config) {
 
         this.publish("addChild", {
@@ -82,8 +99,8 @@ YUI.add('wegas-tabview', function (Y) {
 
 
     /**
-    * Custom Tab implementation
-    */
+     * Custom Tab implementation
+     */
     Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Parent], {
 
         // *** Private Fields *** //
@@ -121,9 +138,9 @@ YUI.add('wegas-tabview', function (Y) {
 
             }
             widget.render(this.get("toolbarNode"));
-//            widget.on("click", function(e){
-//                this.get("children").fire("toolbarEvent", e);
-//            }, this);
+            //            widget.on("click", function(e){
+            //                this.get("children").fire("toolbarEvent", e);
+            //            }, this);
             widget.addTarget(this.item(0));
             return widget;
         }

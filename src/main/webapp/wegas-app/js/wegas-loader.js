@@ -19,10 +19,11 @@ YUI().use(function (Y) {
                         requires: ['stylesheet', 'wegas-appcss',
                         'wegas-entity', 'wegas-datasourcerest',
                         'wegas-widget', 'wegas-list', 'wegas-pageloader',
+                        'wegas-button',
 
                         /* @fixme those should be included on the fly*/
                         'wegas-text',  'wegas-tabview', 'wegas-datatable',
-                        'wegas-variabledisplay', 'wegas-button', 'wegas-chat', 'wegas-list',
+                        'wegas-variabledisplay', 'wegas-chat', 'wegas-list',
 
                         /*Benjamin temp while I don't understand how to load "on the fly" your game*/
                        'wegas-leaderway'
@@ -56,8 +57,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: ['inputex-select', 'wegas-widget', 'plugin'],
-                        ix_provides: 'Button'
+                        requires: ['inputex-select', 'wegas-widget', 'plugin', 'button']
+                       /* ix_provides: 'Button'*/
                     },
                     'wegas-chat': {
                         path: 'wegas-app/js/widget/wegas-chat-min.js',
@@ -113,12 +114,25 @@ YUI().use(function (Y) {
                         ix_provides: 'hashlist'
                     },
 
+                    /** Common Widgets **/
+                    'widgetmenu': {
+                        path: 'wegas-app/js/widget/widgetmenu-min.js',
+                        requires: ['plugin', 'widget', 'widget-parent', 'widget-child',
+                            'widget-position', 'widget-stack', 'widget-position-align',
+                            'widget-position-constrain', 'event-mouseenter', 'yui-later']
+                    },
+                    'treeview':{
+                        path: 'wegas-editor/js/treeview-min.js',
+                        requires: ['widget', 'widget-parent', 'widget-child']
+                    },
+
                     /** Editor **/
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
                         'wegas-app', 'wegas-form',
-                        "wegas-editor-buttons", 'wegas-editor-menu',
+                        "wegas-editor-buttons", 'wegas-editor-menu', 'widgetmenu',
+                        'wegas-editor-action',
 
                         /* @fixme those should be included on the fly*/
                         'wegas-logger', 'wegas-csseditor',
@@ -135,9 +149,8 @@ YUI().use(function (Y) {
                     },
 
                     /** Editor's Widgets **/
-                    'treeview':{
-                        path: 'wegas-editor/js/treeview-min.js',
-                        requires: ['widget', 'widget-parent', 'widget-child']
+                    'wegas-editor-action': {
+                        path: 'wegas-editor/js/wegas-editor-action-min.js'
                     },
                     'wegas-logger': {
                         path: 'wegas-editor/js/wegas-logger-min.js',
