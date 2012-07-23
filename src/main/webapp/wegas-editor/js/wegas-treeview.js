@@ -28,7 +28,7 @@ YUI.add('wegas-treeview', function (Y) {
 
             // Render YUI2 TreeView widget
             // Y.on('domready', Y.bind(function () {                               // @hack to ensure YUI libs are properly
-            console.log("renderUi", this.get("dataSource"), YAHOO.widget.TreeView);
+            Y.log("renderUi()", "log", "Y.Wegas.WTreeView");
             this.treeView = new YAHOO.widget.TreeView(node.getDOMNode());
             this.treeView.singleNodeHighlight = true;
             this.treeView.render();

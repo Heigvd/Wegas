@@ -199,6 +199,14 @@ YUI.add('wegas-entity', function (Y) {
             }
         }
     });
+    Y.Wegas.persistence.EntityUpdatedEvent = Y.Base.create("EntityUpdatedEvent", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            updatedEntities: {
+                value: []
+            }
+        }
+    });
+
     /**
      * GameModel mapper
      */
@@ -1090,7 +1098,9 @@ YUI.add('wegas-entity', function (Y) {
             "@class":{
                 value:"InboxInstance"
             },
-            messages: {}
+            messages: {
+                value: []
+            }
         }
     });
 
@@ -1103,7 +1113,11 @@ YUI.add('wegas-entity', function (Y) {
                 value:"Message"
             },
             subject: {},
-            body: {}
+            body: {},
+            unread : {
+                value: false,
+                type: "boolean"
+            }
         }
     });
 
