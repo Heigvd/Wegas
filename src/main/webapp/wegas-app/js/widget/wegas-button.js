@@ -10,69 +10,62 @@ YUI.add('wegas-button', function (Y) {
     LoginButton,
     Button;
 
-    Button = Y.Base.create("wegas-button", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-
-        // *** Private fields *** //
-        childWidget: null,
-
-        // *** Lifecycle Methods *** //
-        renderUI: function () {
-        },
-
-        bindUI: function () {
-            this.get(CONTENTBOX).on('click', function () {
-
-                if (this.get('onClick')) {                                      // If there is an onclick impact, send it to the server
-                    Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
-                        request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-                        cfg: {
-                            method: "POST",
-                            data: Y.JSON.stringify({
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": this.get("onClick")
-                            })
-                        }
-                    });
-                }
-
-                if (this.get('targetPageLoaderId')) {                            // If there is already a widget displayed, we remove it
-                    var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                    targetPageLoader.set("pageId", this.get("subpageId"));
-                }
-            }, this);
-            if(this.get('tooltips')){
-                this.get(CONTENTBOX).on('mouseenter', function () {
-                    this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
-                        + this.get('tooltips')
-                        +'</span>', 'before');
-                },this);
-                this.get(CONTENTBOX).on('mouseleave', function () {
-                    Y.one('.wegas-button-tooltips').remove();
-                },this);
-            }
-        },
-        syncUI: function () {                                                   // Update the button display
-            switch (this.get('view')) {
-                case 'button':
-                    this.get(CONTENTBOX).setContent('<input type="submit" value="' + this.get('label') + '"></input>');
-                    break;
-                case 'text':
-                default:
-                    this.get(CONTENTBOX).setContent("<span>" + this.get('label') + "</span>");
-                    break;
-            }
-        }
-    }, {
-        ATTRS : {
-            onClick: {},
-            label: {},
-            subpageId: {},
-            targetPageLoaderId: {},
-            view: {},
-            tooltips:{}
-        }
-    });
+    Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget], {
+        //
+        //        // *** Private fields *** //
+        //        childWidget: null,
+        //
+        //        // *** Lifecycle Methods *** //
+        //        renderUI: function () {
+        //        },
+        //
+        //        bindUI: function () {
+        //            this.get(CONTENTBOX).on('click', function () {
+        //
+        //                if (this.get('onClick')) {                                      // If there is an onclick impact, send it to the server
+        //                    Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
+        //                        request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+        //                        cfg: {
+        //                            method: "POST",
+        //                            data: Y.JSON.stringify({
+        //                                "@class": "Script",
+        //                                "language": "JavaScript",
+        //                                "content": this.get("onClick")
+        //                            })
+        //                        }
+        //                    });
+        //                }
+        //
+        //                if (this.get('targetPageLoaderId')) {                            // If there is already a widget displayed, we remove it
+        //                    var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+        //                    targetPageLoader.set("pageId", this.get("subpageId"));
+        //                }
+        //            }, this);
+        //            if(this.get('tooltips')){
+        //                this.get(CONTENTBOX).on('mouseenter', function () {
+        //                    this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
+        //                        + this.get('tooltips')
+        //                        +'</span>', 'before');
+        //                },this);
+        //                this.get(CONTENTBOX).on('mouseleave', function () {
+        //                    Y.one('.wegas-button-tooltips').remove();
+        //                },this);
+        //            }
+        //        },
+        //        syncUI: function () {                                                   // Update the button display
+        //            switch (this.get('view')) {
+        //                case 'button':
+        //                    this.get(CONTENTBOX).setContent('<input type="submit" value="' + this.get('label') + '"></input>');
+        //                    break;
+        //                case 'text':
+        //                default:
+        //                    this.get(CONTENTBOX).setContent("<span>" + this.get('label') + "</span>");
+        //                    break;
+        //            }
+        //        }
+        }, {
+            CSS_PREFIX:"yui3-button"
+        });
 
     Y.namespace('Wegas').Button = Button;
 
@@ -96,8 +89,8 @@ YUI.add('wegas-button', function (Y) {
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),
-                target = cb.one(".unread-count"),
-                unreadCount = this.getUnreadCount();
+            target = cb.one(".unread-count"),
+            unreadCount = this.getUnreadCount();
 
             if (!target) {                                                      // If the counter span has not been rendered, do it
                 cb.append('<span class="unread-count"></span>');
@@ -113,9 +106,9 @@ YUI.add('wegas-button', function (Y) {
 
         getUnreadCount:  function () {
             var i, instance,
-                dataSource = Y.Wegas.app.dataSources.VariableDescriptor,
-                descriptor = dataSource.rest.find('name', this.get('variable')),
-                instance, count = 0, messages;
+            dataSource = Y.Wegas.app.dataSources.VariableDescriptor,
+            descriptor = dataSource.rest.find('name', this.get('variable')),
+            instance, count = 0, messages;
 
             if (!descriptor){
                 return 0;

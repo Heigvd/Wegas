@@ -10,7 +10,7 @@ YUI.add('wegas-editor', function(Y) {
 
     var Editor = Y.Base.create("wegas-editor", Y.Wegas.App, [], {
 
-        _tab: null,
+        tab: null,
         _form: null,
         _editMenu: null,
 
@@ -46,12 +46,9 @@ YUI.add('wegas-editor', function(Y) {
             this.currentEntity = entity;
             //widget = Y.Widget.getByNode('#centerTabView');
 
-            if (!this._tab) {
+            if (!this.tab) {
                 this.tabView = Y.Widget.getByNode('#rightTabView');
-                this._tab = this.tabView.add({
-                    type: "Tab",
-                    label: "Edit"
-                }).item(0);
+                this.tab = Y.Wegas.TabView.createTab("Edit", '#rightTabView');
 
                 this.formWidget = new Y.Wegas.FormWidget();
 
@@ -60,14 +57,14 @@ YUI.add('wegas-editor', function(Y) {
                 }, this);
 
                 this.formWidget.on("cancel", function (e) {
-                        this.tabView.remove(this._tab.get('index'));
-                        this.tabView.selectChild(0);
-                        // this._tab.destroy();
-                         this._tab = null;
+                    this.tabView.remove(this.tab.get('index'));
+                    this.tabView.selectChild(0);
+                    // this.tab.destroy();
+                    this.tab = null;
                 }, this);
-                this._tab.add(this.formWidget);
+                this.tab.add(this.formWidget);
             }
-            this.tabView.selectChild(this.tabView.size() - 1);
+            this.tabView.selectChild(this.tab.get("index"));
             this.formWidget.setForm(entity.toJSON(), entity.getFormCfg());
         },
         showUpdateForm: function (entity, dataSource) {

@@ -27,21 +27,16 @@ YUI.add('wegas-treeview', function (Y) {
             var node = this.get(CONTENTBOX).append('<div></div>');
 
             // Render YUI2 TreeView widget
-           // Y.on('domready', Y.bind(function () {                               // @hack to ensure YUI libs are properly
-           console.log("renderUi", this.get("dataSource"), YAHOO.widget.TreeView);
-                this.treeView = new YAHOO.widget.TreeView(node.getDOMNode());
-                this.treeView.singleNodeHighlight = true;
-                this.treeView.render();
-           // }, this));;
+            // Y.on('domready', Y.bind(function () {                               // @hack to ensure YUI libs are properly
+            console.log("renderUi", this.get("dataSource"), YAHOO.widget.TreeView);
+            this.treeView = new YAHOO.widget.TreeView(node.getDOMNode());
+            this.treeView.singleNodeHighlight = true;
+            this.treeView.render();
+        // }, this));;
         },
 
         bindUI: function () {
-            this.dataSource.after("response", function (e) {                    // Listen updates on the target datasource
-                var treeViewElements = this.genTreeViewElements(e.data);
-                this.treeView.removeChildren(this.treeView.getRoot());
-                this.treeView.buildTreeFromObject(treeViewElements);
-                this.treeView.render();
-            }, this);
+            this.dataSource.after("response", this.syncUI, this);               // Listen updates on the target datasource
 
             this.treeView.subscribe("clickEvent", function (e) {                // When a leaf is clicked
                 YAHOO.log(e.node.index + " label was clicked", "info", "Wegas.WTreeView");
@@ -66,6 +61,10 @@ YUI.add('wegas-treeview', function (Y) {
         },
 
         syncUI: function () {
+            var treeViewElements = this.genTreeViewElements(this.dataSource.rest.getCache());
+            this.treeView.removeChildren(this.treeView.getRoot());
+            this.treeView.buildTreeFromObject(treeViewElements);
+            this.treeView.render();
         },
 
         destroyer: function () {
@@ -217,9 +216,9 @@ YUI.add('wegas-treeview', function (Y) {
 
                     if (el.get &&
                         (this.get("excludeClasses") === null
-                        || !this.get('excludeClasses').hasOwnProperty(el['@class']))
-                    && (this.get('includeClasses') === null
-                        || this.get('includeClasses').hasOwnProperty(el['@class']))) {
+                            || !this.get('excludeClasses').hasOwnProperty(el['@class']))
+                        && (this.get('includeClasses') === null
+                            || this.get('includeClasses').hasOwnProperty(el['@class']))) {
                         switch (el.get('@class')) {
                             case 'StringDescriptor':
                             case 'NumberDescriptor':
