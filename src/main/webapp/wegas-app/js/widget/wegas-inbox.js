@@ -31,22 +31,23 @@ YUI.add('wegas-inbox', function (Y) {
         },
 
         syncUI: function () {
-            var i, msg, tab,
+            var i, msg, tab, from,
                 inboxVariable = this.dataSource.rest.getCachedVariableBy('name', this.get('variable')).getInstance(),
+                messages = inboxVariable.get("messages"),
                 selectedIndex = 0,
                 tabs = [];
 
             this.isSyncing = true;
             this.tabView.removeAll();
-            for (i = 0; i < inboxVariable.messages.length; i += 1) {
-                msg = inboxVariable.messages[inboxVariable.messages.length - i - 1];
-                msg.from = msg.from || "admin@wegas.com";
+            for (i = messages.length - 1; i >= 0; i -= 1) {
+                msg = messages[i];
+                from  = msg.get("from") || "admin@wegas.com";
                 tab = new Y.Tab({
-                    label: '<div class="' + (msg.unread ? "unread" : "read") + '"><div class="left">' + msg.from + '</div>'
-                        + '<div class="right">' + msg.subject + '</div></div>',
-                    content: '<div class="subject">Subject: ' + msg.subject + '</div>'
-                        + '<div class="from">From: ' + msg.from + '</div>'
-                        + '<div class="body">' + msg.body + '</div>'
+                    label: '<div class="' + (msg.get("unread") ? "unread" : "read") + '"><div class="left">' + from + '</div>'
+                        + '<div class="right">' + msg.get("subject") + '</div></div>',
+                    content: '<div class="subject">Subject: ' + msg.get("subject") + '</div>'
+                        + '<div class="from">From: ' + from + '</div>'
+                        + '<div class="body">' + msg.get("body") + '</div>'
                 });
                 tab.msg = msg;
                 tabs.push(tab);
@@ -57,7 +58,7 @@ YUI.add('wegas-inbox', function (Y) {
             }
             this.tabView.add(tabs);
 
-            if (inboxVariable.messages.length === 0) {
+            if (messages.length === 0) {
                 this.tabView.add({
                     label: '',
                     content: '<center><em>You have no messages</em></center>'
@@ -81,12 +82,12 @@ YUI.add('wegas-inbox', function (Y) {
             if (e.newVal && e.newVal.msg) {
                 this.msg = e.newVal.msg;
 
-                if (e.newVal.msg.unread) {                                      // If the message is currently unread,
+                if (e.newVal.msg.get("unread")) {                                      // If the message is currently unread,
                     this.timer = Y.later(2000, this, function () {              // we send a request to mark it as read
                         Y.log("Sending message read update", "info",  "InboxDisplay");
-                        this.msg.unread = false;
+                        this.msg.set("unread", false);
                         this.dataSource.rest.sendRequest({
-                            request: "/InboxDescriptor/Message/" + this.msg.id,
+                            request: "/InboxDescriptor/Message/" + this.msg.get("id"),
                             cfg: {
                                 method: "PUT",
                                 data: Y.JSON.stringify(this.msg)

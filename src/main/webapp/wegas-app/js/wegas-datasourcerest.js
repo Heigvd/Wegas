@@ -50,7 +50,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
 
         beforeResponse: function (e) {
-            var evt, i;
+            var evt, entity, i;
 
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "info", "Wegas.RestDataSource");
             e.data = this.getCache();
@@ -62,14 +62,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             } else {
                 for (i = 0; i < e.serverResponse.get("entities").length; i += 1) {       // Update the cache with the Entites in the reply body
-                    this.updateCache(e.cfg.method, e.serverResponse.get("entities")[i]);
+                    entity = e.serverResponse.get("entities")[i];
+                    if (Y.Lang.isObject(entity)) {
+                        this.updateCache(e.cfg.method,entity);
+                    }
                 }
 
                 for (i = 0; i < e.serverResponse.get("events").length; i += 1) {
                     evt = e.serverResponse.get("events")[i];
-                    if (evt.get('@class') == "EntityUpdatedEvent") {
-                        for (i = 0; i < evt.updatedEntities.length; i += 1) {         // Update the cache with the entites in the reply
-                            this.updateCache("POST", evt.updatedEntities[i]);
+                    if (evt instanceof Y.Wegas.persistence.EntityUpdatedEvent) {
+                        for (i = 0; i < evt.get("updatedEntities").length; i += 1) {         // Update the cache with the entites in the reply
+                            this.updateCache("POST", evt.get("updatedEntities")[i]);
                         }
                     }
                 }
