@@ -9,7 +9,7 @@ YUI.add('wegas-button', function (Y) {
     BOUNDINGBOX = 'boundingBox',
     LoginButton,
     Button;
-    
+
     /* @fixme hack so we can programatically add an element to a yui button */
     Y.Button.prototype._uiSetLabel = function(value) {
         var node = this._host,
@@ -20,65 +20,45 @@ YUI.add('wegas-button', function (Y) {
         return value;
     };
 
+    /**
+     *  Custom Button implementation. Adds Y.WidgetChild and Y.Wegas.Widget extensions
+     *  to the original Y.Button
+     *
+     *  @class Y.Wegas.Button
+     *
+     */
     Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget], {
-        //
-        //        // *** Private fields *** //
-        //        childWidget: null,
-        //
-        //        // *** Lifecycle Methods *** //
-        //        renderUI: function () {
-        //        },
-        //
-        //        bindUI: function () {
-        //            this.get(CONTENTBOX).on('click', function () {
-        //
-        //                if (this.get('onClick')) {                                      // If there is an onclick impact, send it to the server
-        //                    Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
-        //                        request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-        //                        cfg: {
-        //                            method: "POST",
-        //                            data: Y.JSON.stringify({
-        //                                "@class": "Script",
-        //                                "language": "JavaScript",
-        //                                "content": this.get("onClick")
-        //                            })
-        //                        }
-        //                    });
-        //                }
-        //
-        //                if (this.get('targetPageLoaderId')) {                            // If there is already a widget displayed, we remove it
-        //                    var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-        //                    targetPageLoader.set("pageId", this.get("subpageId"));
-        //                }
-        //            }, this);
-        //            if(this.get('tooltips')){
-        //                this.get(CONTENTBOX).on('mouseenter', function () {
-        //                    this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
-        //                        + this.get('tooltips')
-        //                        +'</span>', 'before');
-        //                },this);
-        //                this.get(CONTENTBOX).on('mouseleave', function () {
-        //                    Y.one('.wegas-button-tooltips').remove();
-        //                },this);
-        //            }
-        //        },
-        //        syncUI: function () {                                                   // Update the button display
-        //            switch (this.get('view')) {
-        //                case 'button':
-        //                    this.get(CONTENTBOX).setContent('<input type="submit" value="' + this.get('label') + '"></input>');
-        //                    break;
-        //                case 'text':
-        //                default:
-        //                    this.get(CONTENTBOX).setContent("<span>" + this.get('label') + "</span>");
-        //                    break;
-        //            }
-        //        }
+        // *** Private fields *** //
+
+        // *** Lifecycle Methods *** //
+        //bindUI: function () {
+        //    if(this.get('tooltips')){
+        //        this.get(CONTENTBOX).on('mouseenter', function () {
+        //            this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
+        //                + this.get('tooltips')
+        //                +'</span>', 'before');
+        //        },this);
+        //        this.get(CONTENTBOX).on('mouseleave', function () {
+        //            Y.one('.wegas-button-tooltips').remove();
+        //        },this);
+        //    }
+        //}
         }, {
+            // ATTRS: {
+            //    view: {},
+            //    tooltips:{}
+            // }
             CSS_PREFIX:"yui3-button"
         });
 
     Y.namespace('Wegas').Button = Button;
 
+
+    /**
+     *  Plugin which adds an unread message counter to a widget.
+     *
+     * @class Y.Wegas.UnreadCount
+     */
     var UnreadCount = function () {
         UnreadCount.superclass.constructor.apply(this, arguments);
     };
@@ -144,6 +124,10 @@ YUI.add('wegas-button', function (Y) {
 
     Y.namespace('Plugin').UnreadCount = UnreadCount;
 
+
+    /**
+    * Login button
+    */
     LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
 
@@ -176,4 +160,84 @@ YUI.add('wegas-button', function (Y) {
     });
 
     Y.namespace('Wegas').LoginButton = LoginButton;
+
+    /**
+     *  @class OpenPageAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var OpenPageAction = function () {
+        OpenPageAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(OpenPageAction, {
+        NS: "wegas",
+        NAME: "OpenPageAction"
+    });
+
+    Y.extend(OpenPageAction, Y.Plugin.Base, {
+        initializer: function () {
+            this.doAfter("bindUI", this.bindUI, this);
+        },
+        bindUI: function () {
+            this.get("host").on("click", function() {
+                if (this.get('targetPageLoaderId')) {
+                    var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                    targetPageLoader.set("pageId", this.get("subpageId"));
+                }
+            }, this);
+        }
+    }, {
+        ATTRS: {
+            subpageId: {},
+            targetPageLoaderId: {}
+        }
+    });
+
+    Y.namespace("Plugin").OpenPageAction = OpenPageAction;
+
+    /**
+     *  @class ExecuteScriptAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var ExecuteScriptAction = function () {
+        ExecuteScriptAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(ExecuteScriptAction, {
+        NS: "wegas",
+        NAME: "ExecuteScriptAction"
+    });
+
+    Y.extend(ExecuteScriptAction, Y.Plugin.Base, {
+        initializer: function () {
+            this.doAfter("bindUI", this.bindUI, this);
+        },
+        bindUI: function () {
+            this.get("host").on("click", function() {
+                if (this.get('targetPageLoaderId')) {
+                    var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                    targetPageLoader.set("pageId", this.get("subpageId"));
+                }
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify({
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": this.get("onClick")
+                        })
+                    }
+                });
+            }, this);
+        }
+    }, {
+        ATTRS: {
+            onClick: {}
+        }
+    });
+
+    Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
 });

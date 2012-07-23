@@ -33,7 +33,7 @@ YUI.add('wegas-app', function (Y) {
 
             // @todo Shall we use browser native parser ?
             // Y.JSON.useNativeParse = true;
-            
+
             for (k in dataSources) {
                 if (dataSources.hasOwnProperty(k)) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
@@ -140,8 +140,9 @@ YUI.add('wegas-app', function (Y) {
                 setter: function (val) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
                     if (cPlayer) {
-                        this.set('currentTeam', cPlayer.teamId);
-                    }   // When current player is updated, we also update current team
+                        // @fixme
+                       // this.set('currentTeam', cPlayer.teamId);              // When current player is updated, we also update current team
+                    }
                     return val;
                 }
             }
