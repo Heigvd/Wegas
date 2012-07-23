@@ -92,28 +92,30 @@ YUI.add('wegas-inputex', function(Y) {
      * @hack Let inputex also get requirement from selectfields, lists
      */
     Y.inputEx.getRawModulesFromDefinition = function(inputexDef) {
+        function walk(cfg) {                                                    // recursive for group,forms,list,combine, etc...
+            var type = cfg.type || 'string',
+            modules = [YUI_config.groups.inputex.modulesByType[type]];
 
-        var type = inputexDef.type || 'string',
-        module = YUI_config.groups.inputex.modulesByType[type],
-        modules = [module];
+            if(cfg.fields) {
+                Y.Array.each(cfg.fields, function(field) {
+                    modules = modules.concat( walk(field) );
+                }, this);
+            }
+            if(cfg.availableFields) {
+                Y.Array.each(cfg.availableFields, function(field) {
+                    modules = modules.concat( walk(field) );
+                }, this);
+            }
 
-        // recursive for group,forms,list,combine, etc...
-        if(inputexDef.fields) {
-            Y.Array.each(inputexDef.fields, function(field) {
-                modules = modules.concat( this.getModulesFromDefinition(field) );
-            }, this);
-        }
-        Y.Array.each(inputexDef.availableFields, function(field) {
-            modules = modules.concat( this.getModulesFromDefinition(field) );
-        }, this);
-
-        if (inputexDef.elementType) {
-             modules = modules.concat( this.getModulesFromDefinition(inputexDef.elementType) );
-        }
+            if (cfg.elementType) {
+                modules = modules.concat( walk(cfg)  );
+            }
+            return modules;
         // TODO: list elementType
         // TODO: inplaceedit  editorField
-
-        return modules;
+        }
+        var ret =  walk(inputexDef);
+        return ret;
     }
 
     /*

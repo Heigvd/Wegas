@@ -23,9 +23,8 @@ YUI.add('wegas-app', function (Y) {
         },
         render: function () {
             this.initDataSources();
-            this.renderUI();
-            this.initCSS();
             this.requestDataSources();
+            this.initCSS();
         },
 
         // *** Private methods ** //
@@ -34,16 +33,35 @@ YUI.add('wegas-app', function (Y) {
 
             // @todo Shall we use browser native parser ?
             // Y.JSON.useNativeParse = true;
+            
             for (k in dataSources) {
                 if (dataSources.hasOwnProperty(k)) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
                     this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = new Y.DataSource.IO(dataSources[k]);
+                    this.dataSources[k].once("response", this.onInitialRequest, this);
                 }
             }
-            this.GameFacade.after("response", function() {
-                Y.log("info", "Game has been loaded, rendering UI", "Wegas.App");
+        },
 
-            }, this);
+        requestDataSources: function () {
+            var k, ds;
+            this.requestCounter = 0;
+            for (k in this.dataSources) {
+                if (this.dataSources.hasOwnProperty(k) && k !== "File") {
+                    ds = this.dataSources[k].rest ? this.dataSources[k].rest : this.dataSources[k];
+                    ds.sendRequest({
+                        request: ""
+                    });
+
+                    this.requestCounter += 1;
+                }
+            }
+        },
+        onInitialRequest: function (e) {
+            this.requestCounter -= 1;
+            if (this.requestCounter == 0) {
+                this.renderUI();
+            }
         },
         initCSS: function () {
             var css = this.get('cssStylesheets'),
@@ -69,17 +87,6 @@ YUI.add('wegas-app', function (Y) {
 
             for (i = 0; i < css.length; i += 1) {
                 Y.io(this.get('base') + css[i] + '?id=' + App.genId(), callback);   // Load the page css
-            }
-        },
-        requestDataSources: function () {
-            var k, ds;
-            for (k in this.dataSources) {
-                if (this.dataSources.hasOwnProperty(k) && k !== "File") {
-                    ds = this.dataSources[k].rest ? this.dataSources[k].rest : this.dataSources[k];
-                    ds.sendRequest({
-                        request: ""
-                    });
-                }
             }
         },
 
