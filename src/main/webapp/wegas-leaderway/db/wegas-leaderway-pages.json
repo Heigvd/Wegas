@@ -18,9 +18,13 @@
                     },{
                         "type": "Button",
                         "label": ">",
-                        "view": "button",
-                        "onClick": "importPackage(com.wegas.core.script);\nweek.value += 1;\n",
-                        "tooltips":"Semaine suivante"
+                        "tooltips":"Semaine suivante",
+                        "plugins": [{
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "onClick": "importPackage(com.wegas.core.script);\nweek.value += 1;\n"
+                                }
+                            }]
                     },{
                         "type": "VariableDisplay",
                         "label": "Budget : ",
@@ -62,56 +66,86 @@
                     {
                         "type": "Button",
                         "label": "Dossiers",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-folder",
                         "tooltips":"Dossiers des membres",
-                        "subpageId": 2
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 2,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
                     },
                     {
                         "type": "Button",
                         "label": "Liste des membres",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-HRList",
                         "tooltips":"Liste des membres",
-                        "subpageId": 3
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 3,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
                     },
                     {
                         "type": "Button",
                         "label": "Mandats",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-tasklist",
                         "tooltips":"Liste des mandats",
-                        "subpageId": 4
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 4,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
                     },
                     {
                         "type": "Button",
                         "label": "E-mail",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-email",
                         "tooltips":"Réception e-mail",
-                        "subpageId": 5,
                         "plugins": [{
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": "inbox"
+                                }
+                            },{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 5,
+                                    "targetPageLoaderId": "maindisplayarea"
                                 }
                             }]
                     },
                     {
                         "type": "Button",
                         "label": "Score",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-score",
                         "tooltips":"Score des entreprises (temporaire)",
-                        "subpageId": 6
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 6,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+
                     },
                     {
                         "type": "Button",
                         "label": "Dialogue",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-tasklist",
                         "tooltips":"dialogue(temporaire)",
-                        "subpageId": 7
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 7,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
                     },
                     {
                         "type": "LoginButton",

@@ -8,11 +8,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
     var CONTENTBOX = 'contentBox', Folder;
 
     Folder = Y.Base.create("wegas-folder", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        
+
         tabview: null,
         currentResourceDescriptor: null,
         currentResourceId:0,
-        
+
         //*** Particular Methods ***/
         clearBeforeSync: function(){
             //is .empty() function more correct?
@@ -28,7 +28,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             Y.one('.leaderway-folder .folder .skillsets-value').setHTML();
             Y.one('.leaderway-folder .folder .description-value').setHTML();
         },
-     
+
         makeListResources: function(listResourcesDescriptor){
             var i, resourceSelector = new Array(), resourceInstance, resourceExist=false, resourceDescriptor;
             for(i=0; i<listResourcesDescriptor.items.length; i++){
@@ -59,10 +59,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 }
                 if(!resourceExist) target = listResourcesDescriptor.items[0].id;
                 this.currentResourceId = target;
-                this.syncUI();  
+                this.syncUI();
             },this);
         },
-        
+
         setCurrentResourceDescriptor: function(listResourcesDescriptor){
             var i, resourceDescriptor;
             this.currentResourceDescriptor = listResourcesDescriptor.items[0];
@@ -74,15 +74,15 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 }
             }
         },
-        
+
         syncFolderInformations: function(){
             var currentResourceInstance = this.currentResourceDescriptor.getInstance();
             Y.one('.leaderway-folder .folder .name').insert(this.currentResourceDescriptor.name);
             if(currentResourceInstance.properties.surname){
-                Y.one('.leaderway-folder .folder .surname').insert(currentResourceInstance.properties.surname);   
+                Y.one('.leaderway-folder .folder .surname').insert(currentResourceInstance.properties.surname);
             }
             if(currentResourceInstance.properties.salary){
-                Y.one('.leaderway-folder .folder .salary-value').insert(currentResourceInstance.properties.salary);   
+                Y.one('.leaderway-folder .folder .salary-value').insert(currentResourceInstance.properties.salary);
             }
             if(currentResourceInstance.properties.picture != null){
                 Y.one('.leaderway-folder .folder .picture').insert('<img src="'+currentResourceInstance.properties.picture+'" alt="picture" width=120 height="140" />');
@@ -94,9 +94,9 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             for (var key in currentResourceInstance.skillset){
                 Y.one('.leaderway-folder .folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentResourceInstance.skillset[key]))+'</div>');
             }
-            Y.one('.leaderway-folder .folder .description-value').insert(this.currentResourceDescriptor.description);            
+            Y.one('.leaderway-folder .folder .description-value').insert(this.currentResourceDescriptor.description);
         },
-        
+
         addLevelOfLeadershipInformations: function(resourceInstance){
             var i, leadershipInfo = new Array(), leadershipLevel;
             if(resourceInstance.properties.leadershipLevel){
@@ -111,7 +111,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+resourceInstance.properties.surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");
                     leadershipInfo.push('</ul>');
                     Y.one('.leaderway-folder .leadershipLevel').insert(leadershipInfo.join(""));
-                    
+
                     Y.all('.leaderway-folder .leadershipLevel-info').item(5-leadershipLevel).addClass('currentLevel');
                     for(i=0 ; i<=leadershipLevel-1 ; i++){
                         Y.all('.leaderway-folder .leadershipLevel-info').item(4-i).addClass('levelActive');
@@ -122,7 +122,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     }
             }
         },
-        
+
         getOccupation: function(resourceInstance){
             var i, j, occupation = new Array(), sick=false, taskListDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"),
             listAbsenceDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "absences"), taskDescriptor, taskInstance, taskSkills = new Array();
@@ -167,7 +167,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             return occupation.join("");
         },
-         
+
         createGauge: function(label, nomberOfUnits){
             var gauge = new Array("");
             if(typeof nomberOfUnits === 'number'){
@@ -191,14 +191,15 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             return gauge.join("");
         },
-        
-    
+
+
         syncArchivesInformations: function(){
             Y.one('.archives').insert("<p>Aucune archive de discussion n'est actuellement disponible.</p>");
         },
-        
+
         // *** Lifecycle Methods *** //
         renderUI: function (){
+            return;
             this.tabview = new Y.TabView({
                 children: [{
                     label: 'Dossier',
@@ -228,13 +229,15 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             this.get(CONTENTBOX).insert('<div class="menuFolder"><div class="listResources"></div><div class="speakButton"><p>Discuter</p></div></div>');
             this.tabview.render(this.get(CONTENTBOX));
         },
-        
+
         bindUI: function(){
+            return;
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
-          
+
         syncUI: function () {
+            return;
             var listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
             if(listResourcesDescriptor == null) return;
             this.clearBeforeSync();

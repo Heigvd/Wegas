@@ -152,11 +152,6 @@ YUI().use(function (Y) {
                         requires: ['console', 'console-filters'],
                         ix_provides: 'Logger'
                     },
-                    'wegas-editor-topmenu': {
-                        path: 'wegas-editor/js/wegas-editor-topmenu-min.js',
-                        requires: [],
-                        ix_provides: 'EditorTopMenu'
-                    },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
                         requires: ["button", 'inputex-select'],
