@@ -22,7 +22,7 @@
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
-                                    "onClick": "importPackage(com.wegas.core.script);\nweek.value += 1;\n"
+                                    "onClick": "importPackage(com.wegas.core.script);\nthis.finishCurrentWeek()\n"
                                 }
                             }]
                     },{
@@ -75,21 +75,7 @@
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
                             }]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "Liste des membres",
-                        "cssClass": "menu-HRList",
-                        "tooltips":"Liste des membres",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 3,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
-                    },
-                    {
+                    }, {
                         "type": "Button",
                         "label": "Mandats",
                         "cssClass": "menu-tasklist",
