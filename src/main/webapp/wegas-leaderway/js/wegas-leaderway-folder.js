@@ -36,14 +36,14 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if(cb.one('.listResources .resourceSelector') != null) return;
             var i, j, k, resourceSelector = new Array(), resourceInstance,
             resourceDescriptor, textOccupation;
-            for(i=0; i<listResourcesDescriptor.items.length; i++){
+            for(i=0; i<listResourcesDescriptor.get('items').length; i++){
                 resourceSelector.length = 0;
-                resourceDescriptor = listResourcesDescriptor.items[i];
+                resourceDescriptor = listResourcesDescriptor.get('items')[i];
                 resourceInstance = resourceDescriptor.getInstance();
                 textOccupation = (this.getOccupation(resourceInstance).indexOf("Libre") == -1)? "Occupé" : "Libre";
                 resourceSelector.push('<div class="resourceSelector">');
                 resourceSelector.push('<div class="ID" style="display:none;"><p>');
-                resourceSelector.push(resourceDescriptor.id);
+                resourceSelector.push(resourceDescriptor.get('id'));
                 resourceSelector.push('</p></div>');
                 if(resourceInstance.properties.picture != null){
                     resourceSelector.push('<div class="picture">');
@@ -51,7 +51,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     resourceSelector.push('</div>');
                 }
                 resourceSelector.push('<div class="name"><p>');
-                resourceSelector.push(resourceDescriptor.name);
+                resourceSelector.push(resourceDescriptor.get('name'));
                 resourceSelector.push('</p></div>');
                 resourceSelector.push('<div class="occupation"><p>');
                 resourceSelector.push(textOccupation);
@@ -61,11 +61,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             this.handlers.push(cb.all('.listResources .resourceSelector').on('click', function (e) {
                var newResource = null, resourceID = parseInt(e.currentTarget._node.childNodes[0].innerText);
-                for(i=0; i<listResourcesDescriptor.items.length; i++){
-                    resourceDescriptor = listResourcesDescriptor.items[i];
+                for(i=0; i<listResourcesDescriptor.get('items').length; i++){
+                    resourceDescriptor = listResourcesDescriptor.get('items')[i];
                     if(resourceDescriptor.id == resourceID) newResource = resourceDescriptor;
                 }
-                if(newResource == null) newResource = listResourcesDescriptor.items[0];
+                if(newResource == null) newResource = listResourcesDescriptor.get('items')[0];
                 this.currentResourceDescriptor = newResource;
                 this.syncUI();  
             },this));
@@ -73,17 +73,17 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         
         syncResourcesSelector: function(cb, listResourcesDescriptor){
             var i, resourceDescriptor, resourceInstance, textOccupation;
-            for(i=0; i<listResourcesDescriptor.items.length; i++){
-                resourceDescriptor = listResourcesDescriptor.items[i];
+            for(i=0; i<listResourcesDescriptor.get('items').length; i++){
+                resourceDescriptor = listResourcesDescriptor.get('items')[i];
                 resourceInstance = resourceDescriptor.getInstance();
                 textOccupation = (this.getOccupation(resourceInstance).indexOf("Libre") == -1)? "Occupé" : "Libre";
-                cb.all('.listResources .resourceSelector .ID').item(i).setHTML(resourceDescriptor.id);
+                cb.all('.listResources .resourceSelector .ID').item(i).setHTML(resourceDescriptor.get('id'));
                 if(cb.all('.listResources .resourceSelector .picture')!=null){
                     cb.all('.listResources .resourceSelector .picture').item(i).setHTML('<img src="'+resourceInstance.properties.picture+'" alt="picture" width="30" height="35" />');
                 }
-                cb.all('.listResources .resourceSelector .name').item(i).setHTML(resourceDescriptor.name);
+                cb.all('.listResources .resourceSelector .name').item(i).setHTML(resourceDescriptor.get('name'));
                 cb.all('.listResources .resourceSelector .occupation').item(i).setHTML(textOccupation);
-                if(resourceDescriptor.id == this.currentResourceDescriptor.id){
+                if(resourceDescriptor.get('id') == this.currentResourceDescriptor.get('id')){
                     cb.all('.listResources .resourceSelector').item(i).addClass('selected');
                 }
                 else{
