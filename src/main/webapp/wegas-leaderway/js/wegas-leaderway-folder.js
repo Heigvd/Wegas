@@ -199,7 +199,6 @@ YUI.add('wegas-leaderway-folder', function (Y) {
 
         // *** Lifecycle Methods *** //
         renderUI: function (){
-            return;
             this.tabview = new Y.TabView({
                 children: [{
                     label: 'Dossier',
@@ -231,13 +230,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
 
         bindUI: function(){
-            return;
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
 
         syncUI: function () {
-            return;
             var listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
             if(listResourcesDescriptor == null) return;
             this.clearBeforeSync();
