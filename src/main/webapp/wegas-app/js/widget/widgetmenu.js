@@ -45,13 +45,11 @@ YUI.add('widgetmenu', function (Y) {
                     points: ["tl", "bl"]
                 });
                 this.showMenu();
-                //menu.removeAll();
-                for (i = 0; i < children.length; i++) {
-                    try {
-                        menu.add(children[i]);
-                    } catch(err) {
-                        Y.error("Error while adding subpage to tab (probably du to absence of Y.WidgetChild in config", err, WidgetMenu);
-                    }
+                menu.removeAll();
+                try {
+                    menu.add(children);
+                } catch(err) {
+                    Y.error("Error while adding subpage to tab (probably du to absence of Y.WidgetChild in config", err, WidgetMenu);
                 }
             }, this);
             host.on("mouseleave", this.startMenuHideTimer, this);
