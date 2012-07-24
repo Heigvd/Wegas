@@ -24,36 +24,36 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         //*** Particular Methods ***/
         getTasksData: function(listTasksDescriptor){
             var i, j, k, termData, workers = new Array(), taskDescriptor, taskInstance, resourceDescriptor, resourceInstance, comment,
-            listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources"),
-            currentWeekInstance = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "week").getInstance();
-            for (i = 0; i < listTasksDescriptor.items.length; i++) {
+            listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources"),
+            currentWeekInstance = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week").getInstance();
+            for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
                 workers.length = 0;
-                taskDescriptor = listTasksDescriptor.items[i];
+                taskDescriptor = listTasksDescriptor.get('items')[i];
                 taskInstance = taskDescriptor.getInstance();
-                for(j=0; j<listResourcesDescriptor.items.length; j++){
-                    resourceDescriptor = listResourcesDescriptor.items[j];
+                for(j=0; j<listResourcesDescriptor.get('items').length; j++){
+                    resourceDescriptor = listResourcesDescriptor.get('items')[j];
                     resourceInstance = resourceDescriptor.getInstance();
-                    for(k=0; k<resourceInstance.assignments.length; k++){
-                        if(taskDescriptor.id == resourceInstance.assignments[k].taskDescriptorId){
-                            workers.push(resourceDescriptor.name);
+                    for(k=0; k<resourceInstance.get('assignments').length; k++){
+                        if(taskDescriptor.get('id') == resourceInstance.get('assignments')[k].get('taskDescriptorId')){
+                            workers.push(resourceDescriptor.get('name'));
                             break;
                         }
                     }
                 }
-                if(taskInstance.active){
-                    termData = (workers.length <= 0)?(taskInstance.properties.disappearAtWeek - currentWeekInstance.value) : "-";
+                if(taskInstance.get('active')){
+                    termData = (workers.length <= 0)?(taskInstance.get('properties').disappearAtWeek - currentWeekInstance.get('value')) : "-";
                     comment = new Array();
-                    if(taskInstance.properties.comment) comment.push(taskInstance.properties.comment);
-                    if(taskInstance.properties.workWithLeader == 'true') comment.push("S'effectue en coopération avec le leader.");
+                    if(taskInstance.get('properties').comment) comment.push(taskInstance.get('properties').comment);
+                    if(taskInstance.get('properties').workWithLeader == 'true') comment.push("S'effectue en coopération avec le leader.");
                     if(comment.length <= 0) comment.push("-");
                     if(workers.length <= 0) workers.push("-");
                         this.data.push({
-                            id:taskDescriptor.id,
-                            task:taskDescriptor.name,
+                            id:taskDescriptor.get('id'),
+                            task:taskDescriptor.get('name'),
                             skill:this.getSkillsets(taskInstance),
-                            duration:taskInstance.duration,
+                            duration:taskInstance.get('duration'),
                             term:termData,
-                            salary:taskInstance.properties.salary,
+                            salary:taskInstance.get('properties').salary,
                             comment:comment.join(" "),
                             worker: workers.join(",")
                         })
@@ -63,8 +63,8 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         
         getSkillsets: function(taskInstance){
             var temp = new Array();
-            for (var key in taskInstance.skillset){
-                temp.push(key+' ('+taskInstance.skillset[key]+')\n');
+            for (var key in taskInstance.get('skillset')){
+                temp.push(key+' ('+taskInstance.get('skillset')[key]+')\n');
             }
             return temp.join("");
         },
@@ -128,11 +128,11 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             this.handlers.push(Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
             this.table.delegate('click', function (e) {
-                var i, listTasksDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"), taskDescriptorId;
+                var i, listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"), taskDescriptorId;
                 taskDescriptorId = e.currentTarget._node.all[0].innerText;
-                for (i = 0; i < listTasksDescriptor.items.length; i++) {
-                    if(listTasksDescriptor.items[i].id == taskDescriptorId){
-                        this.selectedTaskDescriptor = listTasksDescriptor.items[i];
+                for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
+                    if(listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId){
+                        this.selectedTaskDescriptor = listTasksDescriptor.get('items')[i];
                         this.fire("rowSelected", this.selectedTaskDescriptor);
                         break;
                     }
@@ -140,9 +140,9 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }, '.yui3-datatable-data tr', this);
         },
         
-        syncUI: function () {
+        syncUI: function (){
             var cb = this.get(CONTENTBOX),
-            listTasksDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks");
+            listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks");
             if(!listTasksDescriptor) return;
             this.data.length = 0;
             this.getTasksData(listTasksDescriptor);

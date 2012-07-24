@@ -60,7 +60,7 @@ body{
     display:none;
 }
 
-.indicators .wegas-button{
+.indicators .button{
     margin: 36px 30px 0 5px;
 }
 
@@ -144,76 +144,43 @@ body{
     border-bottom: 1px solid;
 }
 
-.menu div{
+.menu .button{
     margin-right:20px;
     overflow:hidden;
     background-repeat: no-repeat;
     background-position: center;
+    border-width:0;
+    box-shadow: none;
+    background-color:transparent;
+    height:40px;
+    width:40px;
+    font-size: 0;
+}
+.menu .button:hover{
+    box-shadow:0px 0px 0px 1px rgba(0, 0, 0, 0.251) inset, 0px 2px 0px rgba(255, 255, 255, 0.298) inset, 0px 1px 2px rgba(0, 0, 0, 0.149);
+    background-color:#DFC69F;
+    border-radius: 10px;
+    cursor:pointer; 
 }
 
 .menu .menu-HRList{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/hrlist.png");
-    height:40px;
-    width:40px;
-    font-size: 0;
-}
-
-.menu .menu-HRList:hover{
-    background-color:#DFC69F;
-    border-radius: 10px;
-    cursor:pointer;
 }
 
 .menu .menu-folder{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/homme.png");
-    height:40px;
-    width:40px;
-    font-size: 0;
-}
-
-.menu .menu-folder:hover{
-    background-color:#DFC69F;
-    border-radius: 10px;
-    cursor:pointer;
 }
 
 .menu .menu-tasklist{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/liste.png");
-    height:40px;
-    width:40px;
-    font-size: 0;
-}
-
-.menu .menu-tasklist:hover{
-    background-color:#DFC69F;
-    border-radius: 10px;
-    cursor:pointer;
 }
 
 .menu .menu-email{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/email.png");
-    height:40px;
-    width:40px;
-    font-size: 0;
-}
-
-.menu .menu-email:hover{
-    background-color:#DFC69F;
-    border-radius: 10px;
-    cursor:pointer;
 }
 
 .menu .menu-score{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/awards.png");
-    height:40px;
-    width:40px;
-    font-size: 0;
-}
-
-.menu .menu-score:hover{
-    background-color:#DFC69F;
-    border-radius: 10px;
-    cursor:pointer;
 }
 
 .menu .wegas-login{
@@ -221,7 +188,7 @@ body{
     margin:15px 0 0 0;
 }
 
-.menu .wegas-button-tooltips{
+.menu .button .wegas-button-tooltips{
     margin:10px 0 0 40px;
 }
 
