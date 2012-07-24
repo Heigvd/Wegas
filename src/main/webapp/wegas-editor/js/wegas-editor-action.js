@@ -58,6 +58,87 @@ YUI.add('wegas-editor-action', function (Y) {
     });
 
     Y.namespace("Plugin").OpenTabAction = OpenTabAction;
+
+    /**
+     *  @class NewAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var NewAction = function () {
+        NewAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(NewAction, {
+        NS: "wegas",
+        NAME: "NewAction"
+    });
+
+    Y.extend(NewAction, Y.Plugin.Base, {
+        initializer: function () {
+            this.doAfter("bindUI", this.bindUI, this);
+        },
+        bindUI: function () {
+            this.get("host").on("click", function() {
+                Y.Wegas.editor.showAddForm(Y.Wegas.persistence.Entity.revive({
+                    "@class": this.get("targetClass")
+                }), null, Y.Wegas.app.dataSources[this.get("targetClass")]);
+            }, this);
+        }
+    }, {
+        ATTRS: {
+            targetClass: { }
+        }
+    });
+
+    Y.namespace("Plugin").NewAction = NewAction;
+
+    /**
+     *  @class NewAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var ResetAction = function () {
+        ResetAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(ResetAction, {
+        NS: "wegas",
+        NAME: "ResetAction"
+    });
+
+    Y.extend(ResetAction, Y.Plugin.Base, {
+        initializer: function () {
+            this.doAfter("bindUI", this.bindUI, this);
+        },
+        bindUI: function () {
+            this.get("host").on("click", function() {
+
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                    request: '/reset'
+                });
+            }, this);
+        }
+    }, {
+        ATTRS: {
+            targetClass: { }
+        }
+    });
+
+    Y.namespace("Plugin").ResetAction = ResetAction;
+
+
+    Y.Wegas.ResetButton = Y.Base.create("reset-button", Y.Button, [], {
+        bindUI: function () {
+            Y.Wegas.NewButton.superclass.bindUI.apply(this, arguments);
+            this.on("click", function(){
+                Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
+                    request: '/reset'
+                });
+            });
+        }
+    }, {
+        CSS_PREFIX:"yui3-button"
+    });
 });
 
 

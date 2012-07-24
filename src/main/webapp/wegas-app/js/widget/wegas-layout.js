@@ -43,7 +43,7 @@ YUI.add('wegas-layout', function (Y) {
 
             if (position === "top") {
                 target = this.getStdModNode("header");
-                
+
             } else if (position === "bottom") {
                 target = this.getStdModNode("footer");
 
@@ -74,6 +74,7 @@ YUI.add('wegas-layout', function (Y) {
                 cWidget = Y.Wegas.Widget.create(positionCfg.children[i]);
                 cWidget.render(target);
             }
+            this._syncUIStdMod();
         },
 
         /**
