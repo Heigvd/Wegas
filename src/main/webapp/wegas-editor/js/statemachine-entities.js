@@ -84,9 +84,6 @@ Y.add("statemachine-entities", function(Y){
         }
     }, {
         ATTRS: {
-            states: {
-                value: {}
-            },
             "@class": {
                 value: "FSMDescriptor"
             },
@@ -120,6 +117,8 @@ Y.add("statemachine-entities", function(Y){
                 }
             },
             states: {
+                value:{},
+                writeOnce:"initOnly",
                 _inputex: {
                     _type:'hashlist',
                     label: 'States',
