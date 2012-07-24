@@ -13,13 +13,17 @@
                 "cfg": {
                     "children": [{
                         "type": "Button",
-                        "label": "Log",
+                        "label": "Console",
                         "plugins": [{
                             "fn": "OpenTabAction",
                             "cfg": {
                                 "subpage": {
-                                    "type": "Logger"
-                                }
+                                    "type": "Console",
+                                    "class": "wegas-console"
+                                },
+                                "toolbarChildren": [{
+                                    "type": "SelectPlayer"
+                                }]
                             }
                         }]
                     }, {
@@ -30,6 +34,17 @@
                             "cfg": {
                                 "subpage": {
                                     "type": "WysiwygEditor"
+                                }
+                            }
+                        }]
+                    },{
+                        "type": "Button",
+                        "label": "Log",
+                        "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "subpage": {
+                                    "type": "Logger"
                                 }
                             }
                         }]
@@ -194,12 +209,6 @@
                     "type": "FileExplorer"
                 }],
                 "toolbarLabel": "File explorer"
-            },{
-                "type": "Tab",
-                "label": "StateMachine Viewer",
-                "children": [{
-                    "type": "StateMachineViewer"
-                }]
             }]
         }]
     },
@@ -212,17 +221,7 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
-            "children": [{
-                "type": "Tab",
-                "label": "Console",
-                "children": [{
-                    "type": "Console",
-                    "class": "wegas-console"
-                }],
-                "toolbarChildren": [{
-                    "type": "SelectPlayer"
-                }]
-            },
+            "children": [
             {
                 "type": "Tab",
                 "label": "Chat",

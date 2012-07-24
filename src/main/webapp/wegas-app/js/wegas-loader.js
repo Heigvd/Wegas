@@ -16,8 +16,10 @@ YUI().use(function (Y) {
                     /** Base **/
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
-                        requires: ['stylesheet', 'wegas-appcss',
-                        'wegas-entity', 'wegas-datasourcerest',
+                        requires: [
+                        'wegas-datasourcerest',
+                        'wegas-entity', 'statemachine-entities',
+                        'stylesheet', 'wegas-appcss',
                         'wegas-widget', 'wegas-list', 'wegas-pageloader',
                         'wegas-button',
                         ]
@@ -125,9 +127,9 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-app', 'wegas-form',
-                        "wegas-editor-buttons", 'wegas-editor-action', 'widgetmenu',
-                        'wegas-statemachineviewer',                             // @fixme Zhose should be included on the fly
+                        'wegas-app', 'widgetmenu',
+                        "wegas-editor-buttons", 'wegas-editor-action',  'wegas-form',
+                        //'wegas-statemachineviewer',                             // @fixme Zhose should be included on the fly
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -309,7 +311,8 @@ YUI().use(function (Y) {
                         requires: ['jsplumb']
                     },
                     'jsplumb-yui-all': {
-                        path:'yui.jsPlumb-1.3.10-all.js'
+                        path:'yui.jsPlumb-1.3.10-all-min.js',
+                        requires: ["anim", "dd"]
                     },
                     'jsbezier': {
                         path: 'jsBezier-0.3-min.js'
