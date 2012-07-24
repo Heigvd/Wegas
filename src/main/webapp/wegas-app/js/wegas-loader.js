@@ -126,9 +126,8 @@ YUI().use(function (Y) {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
                         'wegas-app', 'wegas-form',
-                        "wegas-editor-buttons", 'wegas-editor-menu', 'widgetmenu',
-                        'wegas-editor-action',
-                        'wegas-statemachineviewer', 'wegas-treeview',           // @fixme Zhose should be included on the fly
+                        "wegas-editor-buttons", 'wegas-editor-action', 'widgetmenu',
+                        'wegas-statemachineviewer',                             // @fixme Zhose should be included on the fly
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -148,8 +147,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
-                        requires: ["button", 'inputex-select'],
-                        ix_provides: 'NewButton'
+                        requires: ['inputex-select'],
+                        ix_provides: 'SelectPlayer'
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -165,9 +164,9 @@ YUI().use(function (Y) {
                         path: 'wegas-editor/js/wegas-editor-menu-min.js',
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"]
                     },
-                    'wegas-treeview': {
-                        path: 'wegas-editor/js/wegas-treeview-min.js',
-                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize', 'resize', "yui2-treeview", 'wegas-menu', 'event'],
+                    'wegas-editor-treeview': {
+                        path: 'wegas-editor/js/wegas-editor-treeview-min.js',
+                        requires: [ 'wegas-widget',  "treeview", "widgetmenu"],
                         ix_provides: 'WTreeView'
                     },
                     'wegas-datatable': {

@@ -32,6 +32,9 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     padding:.2em 5px 0 0;
     margin-left:-135px;
 }
+.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label:first-letter {
+  text-transform: uppercase;
+}
 .inputEx-Group div.inputEx-fieldWrapper > div.inputEx-Field {
     width:99.8%;
 }
@@ -406,6 +409,10 @@ img.inputEx-ListField-delButton {
     top: -9999px;
     left: -9999px;
     position: absolute !important;
+}
+/* Editor treeview styles */
+.yui3-treenode-content-header, .yui3-treeleaf-content-header {
+    cursor:pointer;
 }
 /* YUI 2 TreeView Styles */
 .ygtvlabel, .ygtvlabel:link, .ygtvlabel:visited, .ygtvlabel:hover {

@@ -39,7 +39,7 @@ YUI.add('wegas-treeview', function (Y) {
             this.dataSource.after("response", this.syncUI, this);               // Listen updates on the target datasource
 
             this.treeView.subscribe("clickEvent", function (e) {                // When a leaf is clicked
-                YAHOO.log(e.node.index + " label was clicked", "info", "Wegas.WTreeView");
+                Y.log(e.node.index + " label was clicked", "info", "Wegas.WTreeView");
                 // Either show the edit menu
                 if (e.event.target.className === "wegas-treeview-editmenubutton") {
                     Y.Wegas.editor.showEditMenu(e.node.data, this.dataSource);
@@ -72,6 +72,126 @@ YUI.add('wegas-treeview', function (Y) {
         },
 
         // ** Private methods ** //
+
+        genTreeViewElements: function (elements) {
+            var ret = [], i, el, text;
+
+            for (i in elements) {
+                if (elements.hasOwnProperty(i)) {
+                    el = elements[i];
+
+                    if (el.get &&
+                        (this.get("excludeClasses") === null
+                            || !this.get('excludeClasses').hasOwnProperty(el['@class']))
+                        && (this.get('includeClasses') === null
+                            || this.get('includeClasses').hasOwnProperty(el['@class']))) {
+
+                        switch (el.get('@class')) {
+                            case 'StringDescriptor':
+                            case 'NumberDescriptor':
+                            case 'InboxDescriptor':
+                            case 'ChoiceDescriptor':
+                            case 'TriggerDescriptor':
+                            case 'TaskDescriptor':
+                            case 'ResourceDescriptor':
+                            case 'DialogueDescriptor':
+                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
+                                ret.push({
+                                    type: 'html',
+                                    html: text + EDITBUTTONTPL,
+                                    title: text,
+                                    children: this.genScopeTreeViewElements(el),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-' + el.get('@class'))
+                                });
+
+                                break;
+
+                            case 'ListDescriptor':
+                            case 'QuestionDescriptor':
+                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
+                                ret.push({
+                                    type: 'html',
+                                    html: text + EDITBUTTONTPL,
+                                    title: text,
+                                    //children: this.genScopeTreeViewElements(el),
+                                    children: this.genTreeViewElements(el.get("items")),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-'+el.get('@class'))
+                                });
+                                break;
+                            case 'Page':
+                                text = 'Page: ' + el.label;
+                                ret.push({
+                                    type: 'Text',
+                                    label: text,
+                                    title: text,
+                                    expanded: true,
+                                    children: this.genPageTreeViewElements(el.children),
+                                    data: el
+                                });
+                                break;
+
+                            case 'GameModel':
+                                text = 'Game model: ' + el.get("name");
+                                ret.push({
+                                    //  type:'Text',
+                                    label: text,
+                                    //  title: text,
+                                    expanded: true,
+                                    children: this.genTreeViewElements(el.get("games")),
+                                    data: el
+                                });
+                                break;
+                            case 'Game':
+                                text = 'Game: ' + el.get("name") + ' (token:' + el.get("token") + ')';
+                                ret.push({
+                                    type: 'html',
+                                    html: text + EDITBUTTONTPL,
+                                    title: text,
+                                    expanded: true,
+                                    children: this.genTreeViewElements(el.get("teams")),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-game')
+                                });
+                                break;
+                            case 'Team':
+                                text = 'Team: ' + el.get("name");
+                                ret.push({
+                                    type: 'html',
+                                    html: text + EDITBUTTONTPL,
+                                    title: text,
+                                    expanded: false,
+                                    children: this.genTreeViewElements(el.get("players")),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-team')
+                                });
+                                break;
+                            case 'Player':
+                                ret.push({
+                                    type: 'html',
+                                    html: 'Player: ' + el.get("name") + EDITBUTTONTPL,
+                                    title: 'Player: ' + el.get("name"),
+                                    data: el,
+                                    contentStyle: this.getClassName('icon-player')
+                                });
+                                break;
+                            default:
+                                text = el.get('@class') + ': ' + el.get("name");
+                                ret.push({
+                                    type: 'Text',
+                                    label: text,
+                                    title: text,
+                                    data: el
+                                });
+                                break;
+                        }
+                    }
+                }
+            }
+            return ret;
+        },
+
         genVariableInstanceElements: function (label, el) {
             var l;
 
@@ -191,13 +311,14 @@ YUI.add('wegas-treeview', function (Y) {
                     label = '';
                     switch (el.get("scope").get('@class')) {
                         case 'PlayerScope':
-                            player = Y.Wegas.app.dataSources.Game.rest.getPlayerById(i);
+                            player = Y.Wegas.GameFacade.rest.getPlayerById(i);
                             label = (player) ? player.name : "undefined";
                             break;
                         case 'TeamScope':
-                            team = Y.Wegas.app.dataSources.Game.rest.getTeamById(i);
+                            team = Y.Wegas.GameFacade.rest.getTeamById(i);
                             label = (team) ? team.name : "undefined";
                             break;
+                        case 'GameScope':
                         case 'GameModelScope':
                             label = 'Global';
                             break;
@@ -206,133 +327,9 @@ YUI.add('wegas-treeview', function (Y) {
                 }
             }
             return children;
-        },
-        genTreeViewElements: function (elements) {
-            var ret = [], i, el, text;
-
-            for (i in elements) {
-                if (elements.hasOwnProperty(i)) {
-                    el = elements[i];
-
-                    if (el.get &&
-                        (this.get("excludeClasses") === null
-                            || !this.get('excludeClasses').hasOwnProperty(el['@class']))
-                        && (this.get('includeClasses') === null
-                            || this.get('includeClasses').hasOwnProperty(el['@class']))) {
-                        switch (el.get('@class')) {
-                            case 'StringDescriptor':
-                            case 'NumberDescriptor':
-                            case 'InboxDescriptor':
-                            case 'ChoiceDescriptor':
-                            case 'TriggerDescriptor':
-                            case 'TaskDescriptor':
-                            case 'ResourceDescriptor':
-                            case 'DialogueDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
-                                ret.push({
-                                    type: 'html',
-                                    html: text + EDITBUTTONTPL,
-                                    title: text,
-                                    children: this.genScopeTreeViewElements(el),
-                                    data: el,
-                                    contentStyle: this.getClassName('icon-' + el.get('@class'))
-                                });
-
-                                break;
-
-                            case 'ListDescriptor':
-                            case 'QuestionDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
-                                ret.push({
-                                    type: 'html',
-                                    html: text + EDITBUTTONTPL,
-                                    title: text,
-                                    //children: this.genScopeTreeViewElements(el),
-                                    children: this.genTreeViewElements(el.get("items")),
-                                    data: el,
-                                    contentStyle: this.getClassName('icon-'+el.get('@class'))
-                                });
-                                break;
-                            case 'Page':
-                                text = 'Page: ' + el.label;
-                                ret.push({
-                                    type: 'Text',
-                                    label: text,
-                                    title: text,
-                                    expanded: true,
-                                    children: this.genPageTreeViewElements(el.children),
-                                    data: el
-                                });
-                                break;
-
-                            case 'GameModel':
-                                text = 'Game model: ' + el.name;
-                                ret.push({
-                                    //  type:'Text',
-                                    label: text,
-                                    //  title: text,
-                                    expanded: true,
-                                    children: this.genTreeViewElements(el.games),
-                                    data: el
-                                });
-                                break;
-                            case 'Game':
-                                text = 'Game: ' + el.name + ' (token:' + el.token + ')';
-                                ret.push({
-                                    type: 'html',
-                                    html: text + EDITBUTTONTPL,
-                                    title: text,
-                                    expanded: true,
-                                    children: this.genTreeViewElements(el.teams),
-                                    data: el,
-                                    contentStyle: this.getClassName('icon-game')
-                                });
-                                break;
-                            case 'Team':
-                                text = 'Team: ' + el.name;
-                                ret.push({
-                                    type: 'html',
-                                    html: text + EDITBUTTONTPL,
-                                    title: text,
-                                    expanded: false,
-                                    children: this.genTreeViewElements(el.players),
-                                    data: el,
-                                    contentStyle: this.getClassName('icon-team')
-                                });
-                                break;
-                            case 'Player':
-                                ret.push({
-                                    type: 'html',
-                                    html: 'Player: ' + el.name + EDITBUTTONTPL,
-                                    title: 'Player: ' + el.name,
-                                    data: el,
-                                    contentStyle: this.getClassName('icon-player')
-                                });
-                                break;
-                            default:
-                                text = el.get('@class') + ': ' + el.get("name");
-                                ret.push({
-                                    type: 'Text',
-                                    label: text,
-                                    title: text,
-                                    data: el
-                                });
-                                break;
-                        }
-                    }
-                }
-            }
-            return ret;
         }
-
     }, {
         ATTRS : {
-            classTxt: {
-                value: 'TreeView'
-            },
-            type: {
-                value: "TreeView"
-            },
             includeClasses: {
                 value: null
             },

@@ -15,7 +15,7 @@ YUI.add('wegas-entity', function (Y) {
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
     //Y.Base._ATTR_CFG =
-    Y.Base._ATTR_CFG.push("type", "properties", "_inputex");
+    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "enum", "default");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
     /**
@@ -130,7 +130,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             '@class': {
                 value: "null",
-                readOnly: true,
+                writeOnce: "initOnly",
                 type: 'string',
                 _inputex: {
                     _type: 'hidden'
@@ -246,8 +246,11 @@ YUI.add('wegas-entity', function (Y) {
                 }
             },
             teams: {
+                type: "array",
                 value: [],
-                type: "array"
+                _inputex: {
+                    _type: "hidden"
+                }
             }
         },
         EDITMENU: [{
@@ -277,7 +280,10 @@ YUI.add('wegas-entity', function (Y) {
             },
             players: {
                 type: "array",
-                value: []
+                value: [],
+                _inputex: {
+                    _type: "hidden"
+                }
             },
             gameId: {
                 type: "string",
@@ -504,13 +510,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * VariableInstance mapper
      */
-    Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], { }, {
-        ATTRS: {
-            value: {
-                type: "string"
-            }
-        }
-    });
+    Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, []);
     /**
      * StringDescriptor mapper
      */
@@ -560,11 +560,7 @@ YUI.add('wegas-entity', function (Y) {
                 value:"StringInstance"
             },
             value: {
-                type: "string",
-                _inputex: {
-                    label: 'Text'
-
-                }
+                type: "string"
             }
         }
     });
@@ -578,12 +574,14 @@ YUI.add('wegas-entity', function (Y) {
             },
             minValue: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     label:'Minimum'
                 }
             },
             maxValue: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     label:'Maximum'
                 }
@@ -632,7 +630,6 @@ YUI.add('wegas-entity', function (Y) {
             value: {
                 type: "string",
                 _inputex: {
-                    label: 'Text',
                     regexp: /^[0-9]*$/
                 }
             }
@@ -724,13 +721,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             description: {
                 type: "string",
-                _inputex: {
-                    _type: "html",
-                    label:'Description',
-                    opts: {
-                        height: '80px'
-                    }
-                }
+                format: "html"
             }
         },
         EDITMENU: [{
@@ -807,9 +798,8 @@ YUI.add('wegas-entity', function (Y) {
             },
             description: {
                 type: 'string',
+                format: "html",
                 _inputex: {
-                    label:'Description',
-                    _type: 'html',
                     opts: {
                         height: '50px'
                     }
@@ -817,9 +807,8 @@ YUI.add('wegas-entity', function (Y) {
             },
             feedback: {
                 type: 'string',
+                format: "html",
                 _inputex: {
-                    label:'Feedback',
-                    _type: 'html',
                     opts: {
                         height: '50px'
                     }
@@ -843,8 +832,8 @@ YUI.add('wegas-entity', function (Y) {
                     },
                     content: {
                         type: 'string',
+                        format: "text",
                         _inputex: {
-                            _type: 'text',
                             label:'Impact',
                             rows: 3
                         }
@@ -882,13 +871,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             description: {
                 type: "string",
-                _inputex: {
-                    _type: 'html',
-                    label:'Description',
-                    opts: {
-                        height: '80px'
-                    }
-                }
+                    format: 'html'
             },
             defaultVariableInstance: {
                 properties: {
@@ -1041,13 +1024,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             description: {
                 type: 'string',
-                _inputex: {
-                    _type: 'html',
-                    label:'Description',
-                    opts: {
-                        height: '80px'
-                    }
-                }
+                    format: 'html'
             }
         },
         EDITMENU: [{
@@ -1160,9 +1137,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             content: {
                 type: "string",
-                _inputex: {
-                    _type: "text"
-                }
+                format: "text"
             }
         }
     });
