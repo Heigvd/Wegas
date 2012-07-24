@@ -72,6 +72,18 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         getSelectedTaskDescriptor: function(){
             return this.selectedTaskDescriptor;
         },
+        
+        selectRow: function(e){
+            var i, listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),taskDescriptorId;
+            taskDescriptorId = e.currentTarget._node.all[0].innerText;
+            for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
+                if(listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId){
+                    this.selectedTaskDescriptor = listTasksDescriptor.get('items')[i];
+                    this.fire("rowSelected", {taskDescriptor: this.selectedTaskDescriptor});
+                    break;
+                }
+            }
+        },
 
         // *** Lifecycle Methods *** //
         renderUI: function (){
@@ -128,15 +140,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             this.handlers.push(Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
             this.table.delegate('click', function (e) {
-                var i, listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"), taskDescriptorId;
-                taskDescriptorId = e.currentTarget._node.all[0].innerText;
-                for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
-                    if(listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId){
-                        this.selectedTaskDescriptor = listTasksDescriptor.get('items')[i];
-                        this.fire("rowSelected", this.selectedTaskDescriptor);
-                        break;
-                    }
-                }
+                this.selectRow(e);
             }, '.yui3-datatable-data tr', this);
         },
         

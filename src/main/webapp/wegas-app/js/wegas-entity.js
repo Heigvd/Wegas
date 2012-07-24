@@ -969,6 +969,9 @@ YUI.add('wegas-entity', function (Y) {
             moralHistory: {
                 type: "array"
             },
+            confidenceHistory: {
+                type: "array"
+            },
             confidence: {
                 type: "string"
             },

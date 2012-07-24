@@ -12,6 +12,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         chart: null,
         seriesName: new Array(),
         seriesValue:new Array(),
+        handlers: new Array(),
         
         chartTooltip: {
             markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex){
@@ -24,13 +25,13 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
 
         /***Particular Methode***/
-        clear: function(){
+        clear: function(cb){
             this.chart = null;
             this.seriesName.length = 0
             this.seriesValue.length = 0;
-            Y.one('.wegas-dialogue .chart').setHTML();
-            Y.one('.wegas-dialogue .dialogue .talk').setHTML();
-            Y.one('.wegas-dialogue .dialogue .response').setHTML();
+            cb.one('.chart').setHTML();
+            cb.one('.dialogue .talk').setHTML();
+            cb.one('.dialogue .response').setHTML();
         },
         createChart: function(resourceDescriptor){
             var resourceInstance = resourceDescriptor.getInstance(),
@@ -39,8 +40,8 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 {yDisplayName:'confiance'}
             ],
             rawSeries = [
-                resourceInstance.get('MoralHistory'),
-                resourceInstance.('getConfidenceHistory'),
+                resourceInstance.get('moralHistory'),
+                resourceInstance.get('confidenceHistory'),
             ];
             
             
@@ -92,39 +93,39 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             return fitSeries;
         },
         
-        readStateMachine: function(){
+        readStateMachine: function(cb){
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues"),
             state, text = new Array();
             if(dialogue == null){
-                Y.one('.wegas-dialogue .dialogue .talk').insert("Aucun dialogue n'est disponible.");
+                cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 return;
             }
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
             text = state.text.split(new RegExp("[ ]+", "g"));
-            Y.one('.wegas-dialogue .dialogue .talk').insert('<p></p>');
-            this.displayText(text);
+            cb.one('.dialogue .talk').insert('<p></p>');
+            this.displayText(cb, text);
         },
         
-        displayText: function(text){
-            Y.one('.wegas-dialogue .dialogue .talk p').insert(text[0]+'&nbsp');
+        displayText: function(cb, text){
+            cb.one('.dialogue .talk p').insert(text[0]+'&nbsp');
             text.shift();
             if(text.length > 0){
-                setTimeout(Y.bind(this.displayText, this, text), 100);
+                setTimeout(Y.bind(this.displayText, this, cb, text), 100);
             }
             else{
-                this.displayResponse();
+                this.displayResponse(cb);
             }
         },
         
-        displayResponse: function(){
-            var i, dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues"),
-            state, context = this;
+        displayResponse: function(cb){
+            var i, state, context = this,
+            dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues");
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            Y.one('.wegas-dialogue .dialogue .response').insert('<ul class="responseElement"></ul>');
+            cb.one('.dialogue .response').insert('<ul class="responseElement"></ul>');
             for(i=0 ; i<state.get('transitions').length; i++){
-                Y.one('.wegas-dialogue .dialogue .response .responseElement').insert('<li nextState="'+state.get('transitions')[i].get('nextStateId')+'">'+state.get('transitions')[i].get('actionText')+'</li>');
+                cb.one('.dialogue .response .responseElement').insert('<li nextState="'+state.get('transitions')[i].get('nextStateId')+'">'+state.get('transitions')[i].get('actionText')+'</li>');
             }
-            Y.all('.wegas-dialogue .dialogue .response .responseElement li').on('click', function (e){
+            /*delegate here ! */cb.all('.dialogue .response .responseElement li').on('click', function (e){
                 dialogue.getInstance().get('currentStateId') = this.getAttribute('nextState')[0];
                 context.syncUI();
             });
@@ -132,35 +133,42 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         
         /***Lifecycle methode***/
         renderUI: function (){
-            this.get(CONTENTBOX).setContent(
+            var cb = this.get(CONTENTBOX);
+            cb.setContent(
                 '<div class="pictures"></div>'
                 +'<div style="width: 250px; height: 200px;" class="chart"></div>'
                 +'<div class="speaker-name">Leader</div>'
                 +'<div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
                 );
-            Y.all('.menu ').hide();
+            cb.all('.menu ').hide();
         },
           
         bindUI: function(){
-            Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
-            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
+            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
         },
           
         syncUI: function () {
+            var cb = this.get(CONTENTBOX);
             var listResourceDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
             if(listResourceDescriptor == null) return;
-            this.clear();
+            this.clear(cb);
             this.createChart(listResourceDescriptor.get('items')[0]);
-            this.readStateMachine();
+            this.readStateMachine(cb);
         },
         
         destroy: function(){
-            Y.all('.menu div').show();
+            var i, cb = this.get(CONTENTBOX);
+            cb.all('.menu div').show();
+            this.chart().destroy();
+            this.tabview.destroy();
+            for (i=0; i<this.handlers.length;i++) {
+                this.handlers[i].detach();
+            }
         }
         
     }, {
-        ATTRS : {
-        }
+        ATTRS : {}
     });
 
     Y.namespace('Wegas').Dialogue = Dialogue;

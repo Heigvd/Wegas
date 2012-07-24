@@ -36,10 +36,10 @@ YUI.add('wegas-button', function (Y) {
                 this.get(CONTENTBOX).on('mouseenter', function () {
                     this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
                         + this.get('tooltips')
-                        +'</span>', 'before');
+                        +'</span>');
                 },this);
                 this.get(CONTENTBOX).on('mouseleave', function () {
-                    Y.one('.wegas-button-tooltips').remove();
+                  //  Y.one('.wegas-button-tooltips').remove();
                 },this);
             }
         }
@@ -97,7 +97,7 @@ YUI.add('wegas-button', function (Y) {
             var i, instance,
             dataSource = Y.Wegas.app.dataSources.VariableDescriptor,
             descriptor = dataSource.rest.find('name', this.get('variable')),
-            instance, count = 0, messages;
+            count = 0, messages;
 
             if (!descriptor){
                 return 0;
