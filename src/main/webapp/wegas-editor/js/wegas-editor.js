@@ -11,28 +11,14 @@ YUI.add('wegas-editor', function(Y) {
     var Editor = Y.Base.create("wegas-editor", Y.Wegas.App, [], {
 
         tab: null,
-        _form: null,
-        _editMenu: null,
+        form: null,
+
+        // *** Lifecycle Methods *** //
 
         initializer: function () {
             Y.Wegas.editor = this;
-            this._editMenu = new Y.Wegas.EditMenu({
-                zIndex: 2,
-                render: true,
-                visible: true
-            });
         },
         destructor : function () {
-        },
-
-        // *** Editor Menu Methods *** //
-
-        /**
-         * Show the contextual edit menu
-         */
-        showEditMenu: function (entity, dataSource) {
-            this._editMenu.setMenuItems(entity, dataSource);
-            this._editMenu.show();
         },
 
         // *** Editor Form Methods *** //
@@ -85,7 +71,7 @@ YUI.add('wegas-editor', function(Y) {
                 this.rest.post(newVal, parentData, {
                     success: function () {
                         Y.Wegas.editor.showFormMsg("success", "Item has been added");
-                        Y.Wegas.editor._form.setValue(data);
+                        Y.Wegas.editor.form.setValue(data);
                     },
                     failure: function (e) {
                         Y.Wegas.editor.showFormMsg("error", e.response.results.message || "Error while adding item");
