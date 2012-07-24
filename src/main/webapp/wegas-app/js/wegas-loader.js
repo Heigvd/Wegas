@@ -227,21 +227,23 @@ YUI().use(function (Y) {
                     },
                     /**Leaderway**/
                     'wegas-leaderway': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
-                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue'],
-                    //ix_provides: ""
+                       path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']//,
+                        //ix_provides: ""
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
-                        requires: ['panel', 'wegas-leaderway-tasklist'],
+                        requires: ['tabview', 'panel', 'wegas-leaderway-tasklist'],
                         ix_provides: "Folder"
                     },
                     'wegas-leaderway-tasklist': {
                         path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
+                        requires: ['datatable'],
                         ix_provides: "TaskList"
                     },
                     'wegas-leaderway-score': {
                         path: 'wegas-leaderway/js/wegas-leaderway-score.js',
+                        requires: ['datatable'],
                         ix_provides: "Score"
                     },
                     'wegas-leaderway-dialogue': {
