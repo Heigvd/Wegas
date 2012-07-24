@@ -21,7 +21,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         'Content-Type': 'application/json; charset=utf-8'
     };
 
-    StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.WidgetParent], {
+    StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
         //TODO : zoom on simple scroll (ie without altKey), move panel with mouse (overflow hidden); zoom disabled
         //Zoom and Endpoint pos, sould mult by zoom
         //DRAG and Zoom, same problem

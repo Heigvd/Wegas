@@ -116,104 +116,104 @@ Y.add("statemachine-entities", function(Y){
                     }
                 }
             },
-            states: {
-                value:{},
-                writeOnce:"initOnly",
-                _inputex: {
-                    _type:'hashlist',
-                    label: 'States',
-                    elementType: {
-                        type:'group',
-                        fields: [{
-                            name: '@class',
-                            value:'DialogueState',
-                            type: 'hidden'
-                        },{
-                            name: 'id',
-                            type: 'string',
-                            label: "Id",
-                            disabled: true
-                        }, {
-                            name: 'label',
-                            label: 'Label'
-                        }, {
-                            name: 'text',
-                            label: 'Text',
-                            type: 'text',
-                            rows: 8
-                        }, {
-                            name: 'onEnterEvent',
-                            type:'group',
-                            fields: [{
-                                name: '@class',
-                                value:'Script',
-                                type: 'hidden'
-                            }, {
-                                name: 'language',
-                                value:'JavaScript',
-                                type: 'hidden'
-                            }, {
-                                name: 'content',
-                                'type': 'text',
-                                label:'On enter',
-                                rows: 3
-                            }]
-                        }, {
-                            name: 'transitions',
-                            label: 'Transitions',
-                            type: 'list',
-                            elementType: {
-                                type:'group',
-                                fields: [{
-                                    name: '@class',
-                                    value:'DialogueTransition',
-                                    type: 'hidden'
-                                }, {
-                                    name: 'triggerCondition',
-                                    type:'group',
-                                    fields: [{
-                                        name: '@class',
-                                        value:'Script',
-                                        type: 'hidden'
-                                    }, {
-                                        name: 'language',
-                                        value:'JavaScript',
-                                        type: 'hidden'
-                                    }, {
-                                        name: 'content',
-                                        'type': 'hidden',
-                                        label:'Condition',
-                                        rows: 3
-                                    }]
-                                }, {
-                                    name: 'actionText',
-                                    label: 'Action/User input'
-                                }, {
-                                    name: 'nextStateId',
-                                    label: 'Next state id'
-                                }, {
-                                    name: 'preStateImpact',
-                                    type:'group',
-                                    fields: [{
-                                        name: '@class',
-                                        value:'Script',
-                                        type: 'hidden'
-                                    }, {
-                                        name: 'language',
-                                        value:'JavaScript',
-                                        type: 'hidden'
-                                    }, {
-                                        name: 'content',
-                                        'type': 'text',
-                                        label:'On transition',
-                                        rows: 8
-                                    }]
-                                }]
-                            }
-                        }]
-                    }
-                }
-            }
+//            states: {
+//                value:{},
+//                writeOnce:"initOnly",
+//                _inputex: {
+//                    _type:'hashlist',
+//                    label: 'States',
+//                    elementType: {
+//                        type:'group',
+//                        fields: [{
+//                            name: '@class',
+//                            value:'DialogueState',
+//                            type: 'hidden'
+//                        },{
+//                            name: 'id',
+//                            type: 'string',
+//                            label: "Id",
+//                            disabled: true
+//                        }, {
+//                            name: 'label',
+//                            label: 'Label'
+//                        }, {
+//                            name: 'text',
+//                            label: 'Text',
+//                            type: 'text',
+//                            rows: 8
+//                        }, {
+//                            name: 'onEnterEvent',
+//                            type:'group',
+//                            fields: [{
+//                                name: '@class',
+//                                value:'Script',
+//                                type: 'hidden'
+//                            }, {
+//                                name: 'language',
+//                                value:'JavaScript',
+//                                type: 'hidden'
+//                            }, {
+//                                name: 'content',
+//                                'type': 'text',
+//                                label:'On enter',
+//                                rows: 3
+//                            }]
+//                        }, {
+//                            name: 'transitions',
+//                            label: 'Transitions',
+//                            type: 'list',
+//                            elementType: {
+//                                type:'group',
+//                                fields: [{
+//                                    name: '@class',
+//                                    value:'DialogueTransition',
+//                                    type: 'hidden'
+//                                }, {
+//                                    name: 'triggerCondition',
+//                                    type:'group',
+//                                    fields: [{
+//                                        name: '@class',
+//                                        value:'Script',
+//                                        type: 'hidden'
+//                                    }, {
+//                                        name: 'language',
+//                                        value:'JavaScript',
+//                                        type: 'hidden'
+//                                    }, {
+//                                        name: 'content',
+//                                        'type': 'hidden',
+//                                        label:'Condition',
+//                                        rows: 3
+//                                    }]
+//                                }, {
+//                                    name: 'actionText',
+//                                    label: 'Action/User input'
+//                                }, {
+//                                    name: 'nextStateId',
+//                                    label: 'Next state id'
+//                                }, {
+//                                    name: 'preStateImpact',
+//                                    type:'group',
+//                                    fields: [{
+//                                        name: '@class',
+//                                        value:'Script',
+//                                        type: 'hidden'
+//                                    }, {
+//                                        name: 'language',
+//                                        value:'JavaScript',
+//                                        type: 'hidden'
+//                                    }, {
+//                                        name: 'content',
+//                                        'type': 'text',
+//                                        label:'On transition',
+//                                        rows: 8
+//                                    }]
+//                                }]
+//                            }
+//                        }]
+//                    }
+//                }
+//            }
         },
         EDITMENU: [{
             text: "Edit",

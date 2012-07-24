@@ -32,20 +32,8 @@ YUI.add('wegas-editor-action', function (Y) {
         tab: null,
 
         initializer: function () {
-            this.doAfter("bindUI", this.bindUI, this);
-        },
-        bindUI: function () {
-            this.get("host").on("click", function() {
-                var host = this.get("host"),
-                tab = Y.Wegas.TabView.getTab( host.get("label"), this.get("tabSelector"));
-                if (!tab) {
-                    tab = Y.Wegas.TabView.createTab( host.get("label"), this.get("tabSelector"));
-
-                    Y.Wegas.Widget.use(this.get("subpage"),  Y.bind(function (tab) {// Load the subpage dependencies
-                        tab.add(this.get("subpage"));                           // Render the subpage
-                    }, this, tab));
-                }
-                tab.get("parent").selectChild(tab.get("index"));
+            this.afterHostEvent("click", function() {
+                Y.Wegas.TabView.findTabAndLoadWidget( this.get("host").get("label"), this.get("tabSelector"), null, this.get("subpage"));
             }, this);
         }
     }, {
@@ -75,10 +63,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(NewAction, Y.Plugin.Base, {
         initializer: function () {
-            this.doAfter("bindUI", this.bindUI, this);
-        },
-        bindUI: function () {
-            this.get("host").on("click", function() {
+            this.afterHostEvent("click", function() {
                 Y.Wegas.editor.showAddForm(Y.Wegas.persistence.Entity.revive({
                     "@class": this.get("targetClass")
                 }), null, Y.Wegas.app.dataSources[this.get("targetClass")]);
@@ -108,10 +93,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(ResetAction, Y.Plugin.Base, {
         initializer: function () {
-            this.doAfter("bindUI", this.bindUI, this);
-        },
-        bindUI: function () {
-            this.get("host").on("click", function() {
+            this.afterHostEvent("click", function() {
 
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: '/reset'
@@ -125,20 +107,6 @@ YUI.add('wegas-editor-action', function (Y) {
     });
 
     Y.namespace("Plugin").ResetAction = ResetAction;
-
-
-    Y.Wegas.ResetButton = Y.Base.create("reset-button", Y.Button, [], {
-        bindUI: function () {
-            Y.Wegas.NewButton.superclass.bindUI.apply(this, arguments);
-            this.on("click", function(){
-                Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
-                    request: '/reset'
-                });
-            });
-        }
-    }, {
-        CSS_PREFIX:"yui3-button"
-    });
 });
 
 
