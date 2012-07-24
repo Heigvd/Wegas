@@ -17,7 +17,7 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: ['stylesheet', 'wegas-appcss',
-                        'wegas-entity', 'wegas-datasourcerest',
+                        'wegas-entity', 'statemachine-entities', 'wegas-datasourcerest',
                         'wegas-widget', 'wegas-list', 'wegas-pageloader',
                         'wegas-button',
                         ]
