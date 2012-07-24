@@ -58,11 +58,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
 
             Y.log('renderUI()', 'log', "Wegas.FileExplorer");
             this.treeView = new Y.TreeView({
-                type: "treeview",
                 srcNode: cb
             });
             this.rootNode = new Y.TreeNode({
-                type: "treenode",
                 collapsed: false,
                 label: "/",
                 rightWidget: new Y.Wegas.WegasMenu({
