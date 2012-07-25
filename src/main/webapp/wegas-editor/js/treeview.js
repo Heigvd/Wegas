@@ -16,7 +16,7 @@ YUI.add('treeview', function (Y) {
     },
     RIGHTWIDGETSETTERFN = function (v){
         if(this.get("rightWidget") !== v && this.get("rightWidget")){// Remove existing child
-            if (this.get("rightWidget") instanceof Y.node) {        // Case 1: Y.Node
+            if (this.get("rightWidget") instanceof Y.Node) {        // Case 1: Y.Node
                 this.get("rightWidget").remove();
             } else {
                 this.get("rightWidget").get(BOUNDING_BOX).remove(); // Case 2: Y.Widget
@@ -61,7 +61,6 @@ YUI.add('treeview', function (Y) {
     });
 
     Y.TreeNode = Y.Base.create("treenode", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
-        //TODO : fire labelClick, iconClick and click
         BOUNDING_TEMPLATE: "<li></li>",
         CONTENT_TEMPLATE: "<ul></ul>",
         toggleNode: null,
@@ -78,10 +77,19 @@ YUI.add('treeview', function (Y) {
                 defaultFn: this.toggleTree
             });
             this.publish("nodeExpanded", {
-                broadcast: true
+                bubbles: true
             });
             this.publish("nodeCollapsed", {
-                broadcast: true
+                bubbles: true
+            });
+            this.publish("iconClick",{
+                bubbles: true
+            });
+            this.publish("labelClick",{
+                bubbles: true
+            });
+            this.publish("click",{
+                bubbles: true
             });
         },
 
@@ -109,6 +117,24 @@ YUI.add('treeview', function (Y) {
                 });
             },
             this);
+            this.eventInstances.fullClick = this.get(CONTENT_BOX).one("."+this.getClassName("content", "header")).on("click", function(e){
+                var node = e.target;
+                if(node.hasClass(this.getClassName("content", "icon"))){
+                    this.fire("iconClick", {
+                        node: this
+                    });
+                }
+                if(node.hasClass(this.getClassName("content", "label"))){
+                    this.fire("labelClick", {
+                        node: this
+                    });
+                }
+                this.fire("click", {
+                    node: this,
+                    domEvent: e
+                });
+                e.stopImmediatePropagation();
+            }, this);
         },
 
         syncUI:function(){
@@ -257,13 +283,13 @@ YUI.add('treeview', function (Y) {
 
         initializer : function () {
             this.publish("iconClick",{
-                broadcast: true
+                bubbles: true
             });
             this.publish("labelClick",{
-                broadcast: true
+                bubbles: true
             });
             this.publish("click",{
-                broadcast: true
+                bubbles: true
             });
         },
 
@@ -278,26 +304,24 @@ YUI.add('treeview', function (Y) {
             header.append("<div id=\"" + this.get("id") + "_right\" class=\"" + this.getClassName("content", "rightwidget") + "\">");
         },
         bindUI: function () {
-            this.events.labelClick = this.labelNode.on("click",function(e){
+            this.events.fullClick = this.get(CONTENT_BOX).one("."+this.getClassName("content", "header")).on("click", function(e){
+                var node = e.target;
                 e.stopImmediatePropagation();
-                this.fire("labelClick", {
-                    node:this
-                });
+                if(node.hasClass(this.getClassName("content", "icon"))){
+                    this.fire("iconClick", {
+                        node: this
+                    });
+                }
+                if(node.hasClass(this.getClassName("content", "label"))){
+                    this.fire("labelClick", {
+                        node: this
+                    });
+                }
                 this.fire("click", {
                     node: this,
                     domEvent: e
                 });
-            },this);
-            this.events.labelClick = this.iconNode.on("click",function(e){
-                e.stopImmediatePropagation();
-                this.fire("iconClick", {
-                    node: this
-                });
-                this.fire("click", {
-                    node: this,
-                    domEvent: e
-                });
-            },this);
+            }, this);
         },
         syncUI: function () {
             this.set("label", this.get("label"));
