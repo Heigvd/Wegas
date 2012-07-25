@@ -176,6 +176,7 @@
         "id":7,
         "label":"Dialogue",
         "type":"Dialogue",
-        "cssClass":"leaderway-dialogue"
+        "cssClass":"leaderway-dialogue",
+        "toHide":".menu"
     }
 ]

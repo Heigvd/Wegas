@@ -29,7 +29,11 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             this.chart = null;
             this.seriesName.length = 0
             this.seriesValue.length = 0;
+            cb.one('.pictures .backgroundLayer').setHTML();
+            cb.one('.pictures .questionLayer').setHTML();
+            cb.one('.pictures .answerLayer').setHTML();
             cb.one('.chart').setHTML();
+            cb.one('.speaker-name').setHTML();
             cb.one('.dialogue .talk').setHTML();
             cb.one('.dialogue .response').setHTML();
         },
@@ -95,19 +99,59 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         
         readStateMachine: function(cb){
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues"),
-            state, text = new Array();
+            state, rawText, jsonText, text = new Array();
             if(dialogue == null){
                 cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 return;
             }
+            cb.one('.pictures .backgroundLayer').hide();
+            cb.one('.pictures .questionLayer').hide();
+            cb.one('.pictures .answerLayer').hide();
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            text = state.text.split(new RegExp("[ ]+", "g"));
+            rawText = state.get('text');
+            jsonText = JSON.parse(rawText);
+            text = jsonText.text.split(new RegExp(" ", "g"));
+            cb.one('.speaker-name').setHTML(jsonText.speakerName);
             cb.one('.dialogue .talk').insert('<p></p>');
-            this.displayText(cb, text);
+            this.renderHTMLImages(cb.one('.pictures .backgroundLayer'), jsonText.backgroundImages);
+            this.renderHTMLImages(cb.one('.pictures .questionLayer'), jsonText.questionImages);
+            this.renderHTMLImages(cb.one('.pictures .answerLayer'), jsonText.answerImages);
+            cb.one('.pictures .backgroundLayer').show();
+            cb.one('.pictures .questionLayer').show();
+            setTimeout(Y.bind(this.displayText, this, cb, text), 500);
+        },
+        
+        renderHTMLImages: function(node, imageObjects){
+            var i, key, imageHTML = new Array();
+            for(i=0; i<imageObjects.length; i++){
+                imageHTML.push('<img src="');
+                imageHTML.push(imageObjects[i].link);
+                imageHTML.push('" ');
+                if(imageObjects[i].height){
+                    imageHTML.push('height="');
+                    imageHTML.push(imageObjects[i].height);
+                    imageHTML.push('" ');     
+                } 
+                if(imageObjects[i].width){
+                    imageHTML.push('width="');
+                    imageHTML.push(imageObjects[i].width);
+                    imageHTML.push('" ');   
+                }
+                imageHTML.push('style="');
+                imageHTML.push('position:absolute;');
+                for (key in imageObjects[i].css){
+                    imageHTML.push(key);
+                    imageHTML.push(':');
+                    imageHTML.push(imageObjects[i].css[key]);
+                    imageHTML.push('; ');                       
+                }
+                imageHTML.push('" />'); 
+                node.insert(imageHTML.join(""));
+            }
         },
         
         displayText: function(cb, text){
-            cb.one('.dialogue .talk p').insert(text[0]+'&nbsp');
+            cb.one('.dialogue .talk p').insert(text[0]+' &thinsp;');
             text.shift();
             if(text.length > 0){
                 setTimeout(Y.bind(this.displayText, this, cb, text), 100);
@@ -120,13 +164,20 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         displayResponse: function(cb){
             var i, state, context = this,
             dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues");
+            cb.one('.pictures .questionLayer').hide();
+            cb.one('.pictures .answerLayer').show();
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
             cb.one('.dialogue .response').insert('<ul class="responseElement"></ul>');
             for(i=0 ; i<state.get('transitions').length; i++){
                 cb.one('.dialogue .response .responseElement').insert('<li nextState="'+state.get('transitions')[i].get('nextStateId')+'">'+state.get('transitions')[i].get('actionText')+'</li>');
             }
             /*delegate here ! */cb.all('.dialogue .response .responseElement li').on('click', function (e){
-                dialogue.getInstance().get('currentStateId') = this.getAttribute('nextState')[0];
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                    request:dialogue.get('id')+"/Player/"+Y.Wegas.app.get('currentPlayer')+"/Do/"+state.get('nextStateId'),
+                    cfg: {
+                        method: "GET"
+                    }
+                });
                 context.syncUI();
             });
         },
@@ -135,12 +186,18 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         renderUI: function (){
             var cb = this.get(CONTENTBOX);
             cb.setContent(
-                '<div class="pictures"></div>'
-                +'<div style="width: 250px; height: 200px;" class="chart"></div>'
-                +'<div class="speaker-name">Leader</div>'
-                +'<div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
+                '<div class="pictures">\n\
+                    <div class="backgroundLayer" style="absolute"></div>\n\
+                    <div class="questionLayer" style="absolute"></div>\n\
+                    <div class="answerLayer" style="absolute"></div>\n\
+                 </div>\n\
+                 <div style="width: 250px; height: 200px;" class="chart"></div>\n\
+                 <div class="speaker-name"></div>\n\
+                 <div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
                 );
-            cb.all('.menu ').hide();
+            if(this.get('toHide')){
+                Y.all(this.get('toHide')).hide();   
+            }
         },
           
         bindUI: function(){
@@ -160,15 +217,16 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         destroy: function(){
             var i, cb = this.get(CONTENTBOX);
             cb.all('.menu div').show();
-            this.chart().destroy();
-            this.tabview.destroy();
+            this.chart.destroy();
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
             }
         }
         
     }, {
-        ATTRS : {}
+        ATTRS : {
+            toHide:{}
+        }
     });
 
     Y.namespace('Wegas').Dialogue = Dialogue;

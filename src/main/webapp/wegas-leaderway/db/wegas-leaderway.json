@@ -350,9 +350,7 @@
             "name" : "dialogues",
             "defaultVariableInstance" : {
                 "@class" : "FSMInstance",
-                "currentStateId" : 1,
-                "hiddenTransitions" : ["Un list avec les ID des transition qui sont cachées, vraiment pas encore fonctionel"],
-                "transitionHistory" : ["READ ONLY (SOON)"],
+                "currentStateId" : 1
             },
             "scope" : {
                 "@class" : "TeamScope"
@@ -360,7 +358,7 @@
             "states" : {
                 "1" : {
                     "@class" : "DialogueState",
-                    "text" : "Le Text qui doit apparaître dans cet état 1",
+                    "text" : "{\"speakerName\":\"Boniface\",\"text\":\"Bonjours, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343217993-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [{
                             "@class" : "DialogueTransition",
                             "actionText" : "Si je fais ça, je vais dans l'état 2",
@@ -380,7 +378,7 @@
                 },
                 "2" : {
                     "@class" : "DialogueState",
-                    "text" : "Le Text2 qui doit apparaître dans cet état 2",
+                    "text":"{\"speakerName\":\"Boniface\",\"text\":\"Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\",\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343217993-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [],
                     "onEnterEvent" : {
                         "@class" : "Script",

@@ -1066,6 +1066,20 @@ YUI.add('wegas-entity', function (Y) {
             }
         }
     });
+    
+    /**
+     * Assignement mapper
+     */
+    Y.Wegas.persistence.Assignment = Y.Base.create("Assignment", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS:{
+            "@class":{
+                value:"TaskInstance"
+            },
+            taskDescriptorId: {
+                type: 'string'
+            }
+        }
+    });
 
     Y.Wegas.persistence.InboxDescriptor = Y.Base.create("", Y.Wegas.persistence.VariableDescriptor, [], {}, {
         ATTRS:{

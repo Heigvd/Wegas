@@ -164,7 +164,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 for (i = 0; i < taskListDescriptor.get('items').length; i++) {
                     for(j = 0; j < resourceInstance.get('assignments').length; j++){
                         taskDescriptor = taskListDescriptor.get('items')[i];
-                        if(taskDescriptor.get('id') == resourceInstance.get('assignments')[j].taskDescriptorId){
+                        if(taskDescriptor.get('id') == resourceInstance.get('assignments')[j].get('taskDescriptorId')){
                             taskInstance = taskDescriptor.getInstance();
                             for(var key in taskInstance.get('skillset')){
                                 taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.get('skillset')[key]+')</li>');
@@ -248,7 +248,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         assignTask: function(resourceDescriptor, taskDescriptor){
-            var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback');
+            var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback'), success = false;
             if(taskDescriptor != null && resourceDescriptor != null){
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
@@ -259,20 +259,25 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                             "language": "JavaScript",
                             "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.get('id')+","+taskDescriptor.get('id')+");"
                         }),
-                        on: {
-                            success: Dispatch.start,
-                            failure: Dispatch.complete
+                        on: { //not work, do the both :-(
+                            success: this.assignTaskResult(true, feedbackNode),
+                            failure: this.assignTaskResult(false, feedbackNode)
                         }
                     }
                 });
+            }
+            this.syncUI();
+        },
+        
+        assignTaskResult: function(success, feedbackNode){
+            if(success){
                 feedbackNode.addClass('green');
                 feedbackNode.insert("Le mandat à été délégué !");
             }
             else{
                 feedbackNode.addClass('red');
                 feedbackNode.insert("Le mandat n'a pas pu être délégué.");
-            }
-            this.syncUI();
+            } 
             setTimeout(function(){
                 feedbackNode.setHTML();
                 feedbackNode.removeClass('green');
