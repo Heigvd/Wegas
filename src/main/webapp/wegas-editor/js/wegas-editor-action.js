@@ -175,7 +175,7 @@ YUI.add('wegas-editor-action', function (Y) {
      *  @constructor
      */
     var EditFSMAction = function () {
-        DeleteEntityAction.superclass.constructor.apply(this, arguments);
+        EditFSMAction.superclass.constructor.apply(this, arguments);
     };
 
     Y.mix(EditFSMAction, {

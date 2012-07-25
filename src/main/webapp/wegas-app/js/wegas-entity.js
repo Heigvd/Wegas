@@ -157,6 +157,7 @@ YUI.add('wegas-entity', function (Y) {
             id: {
                 writeOnce: "initOnly",
                 type:'string',
+                optional: true,                                                 // The id is optional for entites that have not been persisted
                 _inputex: {
                     _type: 'hidden'
                 }
@@ -301,7 +302,6 @@ YUI.add('wegas-entity', function (Y) {
                 type: "string"
             },
             players: {
-                type: "array",
                 value: [],
                 _inputex: {
                     _type: "hidden"
@@ -309,6 +309,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             gameId: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     _type: "hidden"
                 }
@@ -340,6 +341,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             teamId: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     _type: "hidden"
                 }
