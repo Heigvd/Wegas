@@ -98,7 +98,7 @@ YUI.add('wegas-editor-action', function (Y) {
         execute: function() {
             var host = this.get("host");
             Y.Wegas.editor.showUpdateForm(host.get("entity"),                   // Display the edit form
-                host.get("dataSource"));
+            host.get("dataSource"));
         },
         initializer: function () {
             this.afterHostEvent("click", this.execute, this);
@@ -123,22 +123,10 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(AddEntityChildAction, Y.Plugin.Base, {
         execute: function() {
-
-
-                Y.Wegas.editor.edit({
-                    '@class': this.get("childClass")
-                }, function (value) {
-                    this._currentDataSource.rest.post(value, this._currentData);
-                }, null, this);
-            Y.Wegas.editor.showUpdateForm(host.get("entity"),                   // Display the edit form
-                host.get("dataSource"));
-
-            Y.Wegas.editor.edit({
-                '@class': this.get("childClass")
-            }, function (value) {
-                var host = this.get("host");
-                host.get("dataSource").rest.post(value, host.get("entity").toJSON());
-            }, null, this);
+            var host = this.get("host");
+            Y.Wegas.editor.showAddForm(Y.Wegas.persistence.Entity.revive({      // Display the add form
+                "@class": this.get("childClass")
+            }), host.get("entity"), host.get("dataSource"));
         },
         initializer: function () {
             this.afterHostEvent("click", this.execute, this);
@@ -198,11 +186,11 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.extend(EditFSMAction, Y.Plugin.Base, {
         execute: function() {
             Y.Wegas.TabView.findTabAndLoadWidget("State machine editor",        // Load and display the editor in a new tab
-                "#centerTabView", null, {
-                    type: "StateMachineViewer"
-                }, Y.bind(function (entity, widget) {
-                    widget.set("entity", entity);
-                }, this, this.get("host").get("entity")));
+            "#centerTabView", null, {
+                type: "StateMachineViewer"
+            }, Y.bind(function (entity, widget) {
+                widget.set("entity", entity);
+            }, this, this.get("host").get("entity")));
         },
         initializer: function () {
             this.afterHostEvent("click", this.execute, this);
