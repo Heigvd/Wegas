@@ -1,5 +1,14 @@
-/**
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
  *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
+/**
  * Wegas loader, contains module definitions.
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -19,9 +28,9 @@ YUI().use(function (Y) {
                         requires: [
                         'wegas-datasourcerest',
                         'wegas-entity', 'statemachine-entities',
-                        'stylesheet', 'wegas-appcss',
-                        'wegas-widget', 'wegas-list', 'wegas-pageloader',
-                        'wegas-button',
+                        'stylesheet', 'wegas-widget', 'wegas-list',
+                        'wegas-pageloader', 'wegas-button',
+                        //'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
                     'wegas-appcss': {
@@ -169,7 +178,7 @@ YUI().use(function (Y) {
                     'wegas-editor-treeview': {
                         path: 'wegas-editor/js/wegas-editor-treeview-min.js',
                         requires: [ 'wegas-widget',  "treeview", "widgetmenu"],
-                        ix_provides: 'WTreeView'
+                        ix_provides: 'EditorTreeView'
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',

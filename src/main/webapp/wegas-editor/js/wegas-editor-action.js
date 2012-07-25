@@ -116,7 +116,7 @@ YUI.add('wegas-editor-action', function (Y) {
         AddEntityChildAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(EditEntityAction, {
+    Y.mix(AddEntityChildAction, {
         NS: "wegas",
         NAME: "AddEntityChildAction"
     });
@@ -278,6 +278,15 @@ YUI.add('wegas-editor-action', function (Y) {
             label: {
                 value: "Delete"
             }
+        }
+    });
+
+    /**
+     * Shortcut to create a Button with an OpenTabAction plugin
+     */
+     Y.Wegas.OpenTabButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        initializer: function (cfg) {
+            this.plug(OpenTabAction, cfg);
         }
     });
 });

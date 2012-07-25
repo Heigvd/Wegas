@@ -441,13 +441,13 @@ YUI.add('wegas-entity', function (Y) {
             type: "EditEntityButton"
         }, {
             type: "DeleteEntityButton"
+        }],
+        EDITFORM:  [{
+            name: 'valueselector',
+            label:'Variable is',
+            type: 'keyvalue',
+            availableFields: []
         }]
-    //        EDITFORM:  [{
-    //            name: 'valueselector',
-    //            label:'Variable is',
-    //            type: 'keyvalue',
-    //            availableFields: []
-    //        }]
     });
 
 
@@ -667,17 +667,12 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
         },
-        EDITMENU: [{
+        EDITMENU: [ {
             type: "EditEntityButton"
         }, {
-            type: "Button",
+            type: "AddEntityChildButton",
             label: "Add child",
-            plugins: [{
-                fn: "AddEntityChildAction",
-                cfg: {
-                    childClass: "VariableDescriptor"
-                }
-            }]
+            childClass: "VariableDescriptor"
         }, {
             type: "DeleteEntityButton"
         }]

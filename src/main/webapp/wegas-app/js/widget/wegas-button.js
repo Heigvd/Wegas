@@ -238,4 +238,14 @@ YUI.add('wegas-button', function (Y) {
     });
 
     Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
+
+
+    /**
+     * Shortcut to create a Button with an OpenPageAction plugin
+     */
+    Y.Wegas.OpenPageButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        initializer: function (cfg) {
+            this.plug(OpenPageAction, cfg);
+        }
+    });
 });
