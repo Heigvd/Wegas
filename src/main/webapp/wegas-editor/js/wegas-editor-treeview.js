@@ -89,7 +89,10 @@ YUI.add('wegas-editor-treeview', function (Y) {
             menuItems = entity.getMenuCfg(this.dataSource),
             domTarget = (e.domEvent) ? e.domEvent.target : e.details[0].domEvent.target;
 
+
             e.halt(true);                                                       // Stop the event so parent TreeNodes events wont execute
+            e.stopPropagation();
+            e.preventDefault();
 
             if (menuItems.length == 0) {
                 return;

@@ -284,7 +284,7 @@ YUI.add('wegas-entity', function (Y) {
         EDITMENU: [{
             type: "EditEntityButton"
         },{
-            type: "AddEntityButton",
+            type: "AddEntityChildButton",
             label: "Add team",
             childClass: "Team"
         }, {

@@ -66,9 +66,9 @@ YUI.add('wegas-editor', function(Y) {
             }, dataSource);
         },
 
-        showAddForm: function (data, parentData, dataSource) {
-            this.showEditForm(data, function (newVal) {
-                this.rest.post(newVal, parentData, {
+        showAddForm: function (entity, parentData, dataSource) {
+            this.showEditForm(entity, function (newVal) {
+                this.rest.post(newVal, parentData.toJSON(), {
                     success: function () {
                         Y.Wegas.editor.showFormMsg("success", "Item has been added");
                         Y.Wegas.editor.form.setValue(data);

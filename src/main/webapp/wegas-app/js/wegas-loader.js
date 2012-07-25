@@ -37,7 +37,7 @@ YUI().use(function (Y) {
                         requires: ['base', 'wegas-inputex', 'inputex-jsonschema']
                     },
                     'statemachine-entities': {
-                        path: 'wegas-editor/js/statemachine-entities-min.js',
+                        path: 'wegas-app/js/statemachine-entities-min.js',
                         requires: ['wegas-entity']
                     },
 
@@ -176,9 +176,13 @@ YUI().use(function (Y) {
                         requires: ['datatable', 'datatable-sort' ],
                         ix_provides: 'DataTable'
                     },
+                    'wegas-menucss':{
+                        path: 'wegas-app/css/wegas-menu.css',
+                        type:'css'
+                    },
                     'wegas-menu': {
-                        path:'wegas-editor/js/wegas-menu-min.js',
-                        requires:['button'],
+                        path:'wegas-app/js/widget/wegas-menu-min.js',
+                        requires:['button', 'wegas-menucss'],
                         ix_provides: 'WegasMenu'
                     },
                     'wegas-scriptlibrary': {
@@ -186,9 +190,13 @@ YUI().use(function (Y) {
                         requires: [ 'ace-javascript', 'button' ],
                         ix_provides: 'ScriptLibrary'
                     },
+                    'wegas-fileexplorercss':{
+                        path: 'wegas-editor/css/wegas-fileexplorer.css',
+                        type:'css'
+                    },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
-                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar'],
+                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar', 'wegas-fileexplorercss'],
                         ix_provides: "FileExplorer"
                     },
                     'wegas-progressbar': {

@@ -61,6 +61,7 @@ YUI.add('treeview', function (Y) {
     });
 
     Y.TreeNode = Y.Base.create("treenode", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
+        //TODO : fire labelClick, iconClick and click
         BOUNDING_TEMPLATE: "<li></li>",
         CONTENT_TEMPLATE: "<ul></ul>",
         toggleNode: null,
