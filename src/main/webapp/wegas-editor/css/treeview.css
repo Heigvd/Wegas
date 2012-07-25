@@ -59,13 +59,27 @@
 
 .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-rightwidget{
-    float: right;
-    margin-top:3px;
+    position: absolute;
+    right:5px;
+    display: inline-block;
 }
 .yui3-treenode-content-header,
 .yui3-treeleaf-content-header{
     padding:2px;
 }
+.yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
+.yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{
+    opacity:0;
+    transition: opacity 0.3s linear 0.5s;
+    -webkit-transition: opacity 0.3s linear 0.5s;
+}
+.yui3-treenode-content-header:hover > .yui3-treenode-content-rightwidget,
+.yui3-treeleaf-content-header:hover > .yui3-treeleaf-content-rightwidget{
+    opacity:1;
+    transition: opacity 0.2s linear 0.05s;
+    -webkit-transition: opacity 0.2s linear 0.05s;
+}
+
 .yui3-treenode-content-label,
 .yui3-treeleaf-content-label{
     display:inline-block;

@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -19,21 +29,39 @@ YUI.add('wegas-tabview', function (Y) {
         }
     }, {
         tabs: {},
+
         getTab: function (id) {
             return TabView.tabs[id];
         },
         createTab: function (id, tabViewSelector, tabCfg) {
-            tabCfg = tabCfg || {};
-            Y.mix(tabCfg, {
-                type: "Tab",
-                label: id
-            });
             if (!TabView.tabs[id]) {
                 var tabView = Y.Widget.getByNode(tabViewSelector);
+
+                tabCfg = tabCfg || {};
+                Y.mix(tabCfg, {
+                    type: "Tab",
+                    label: id
+                });
                 TabView.tabs[id] = tabView.add(tabCfg).item(0);
             }
             return TabView.tabs[id];
+        },
+        /**
+         *  Helper function
+         */
+        findTabAndLoadWidget: function (id, tabViewSelector, tabCfg, widgetCfg, fn) {
+            var tab = TabView.getTab( id, tabViewSelector, tabCfg);
+            if (!tab) {
+                tab = TabView.createTab( id, tabViewSelector, tabCfg);
+                tab.load(widgetCfg, fn);                              // load the widget
+            } else {
+                if (fn) {
+                    fn(tab.item(0));
+                }
+            }
+            tab.set("selected", 2);
         }
+
     });
 
 
@@ -143,6 +171,20 @@ YUI.add('wegas-tabview', function (Y) {
             //            }, this);
             widget.addTarget(this.item(0));
             return widget;
+        },
+        /**
+         * Retrieves the given widget configuration and add it to the tab
+         *
+         * @function load
+         *
+         */
+        load: function ( cfg, callback ) {
+            Y.Wegas.Widget.use(cfg,  Y.bind(function (cfg, callback) {          // Load the subpage dependencies
+                var widgets = this.add(cfg);                                    // Render the subpage
+                if (callback) {
+                    callback(widgets.item(0));                                  // Trigger the callback
+                }
+            }, this, cfg, callback));
         }
     }, {
         ATTRS : {

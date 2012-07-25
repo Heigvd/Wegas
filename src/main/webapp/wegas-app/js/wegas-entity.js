@@ -1,9 +1,20 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 YUI.add('wegas-entity', function (Y) {
     "use strict";
+
 
     var IDATTRDEF = {
         type: "string",
@@ -14,7 +25,6 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    //Y.Base._ATTR_CFG =
     Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "enum", "default");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
@@ -26,7 +36,8 @@ YUI.add('wegas-entity', function (Y) {
         /**
          * Serialize to a json object.
          *
-         * @function getObject
+         * @method toJSON
+         * @return {object}
          */
         toJSON: function () {
             var k, ret = this.getAttrs();
@@ -96,11 +107,16 @@ YUI.add('wegas-entity', function (Y) {
         /**
          * Returns the edition menu associated to this object, to be used a an inputex object.
          */
-        getMenuCfg: function () {
-            var menus = Y.Wegas.app.get('editorMenus'),
+        getMenuCfg: function ( dataSource ) {
+            var i, menus = Y.Wegas.app.get('editorMenus'),
+            //    staticMenus =
             menu = menus[this.get('@class')] || menus[this.get("type")] ||      // Select first server defined forms, based on the @class or the type attribute
-            this.constructor.EDITMENU || [];                                    // And if no form is defined we return the default one defined in the entity
+            this.getStatic("EDITMENU")[0] || [];                                    // And if no form is defined we return the default one defined in the entity
 
+            for (i = 0; i < menu.length; i += 1 ) {                             // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
+                menu[i].entity = this;
+                menu[i].dataSource = dataSource;
+            }
             return menu;
         },
 
@@ -109,21 +125,39 @@ YUI.add('wegas-entity', function (Y) {
          *  cfg (ATTRS), used in Y.Wegas.Entity.getFormCfg().
          */
         getAttrCfgs : function() {
-            var c = this.constructor, attrs = [];
+            return this._aggregateAttrs(this.getStatic("ATTRS"));
+        },
+        getStatic: function(key) {
+            var c = this.constructor, ret = [];
 
             while (c) {
-                if (c.ATTRS) {                                                  // Add to attributes
-                    attrs[attrs.length] = c.ATTRS;
+                if (c[key]) {                                                  // Add to attributes
+                    ret[ret.length] = c[key];
                 }
                 c = c.superclass ? c.superclass.constructor : null;
             }
-            return this._aggregateAttrs(attrs);
+            return ret;
         }
     }, {
+        _buildCfg: {
+        //statics: ["EDITMENU"],
+        //custom: {
+        //    EDITMENU: function (prop, Receiver, Supplier) {
+        //        var c = Supplier.constructor;
+        //        while (!Receiver.EDITMENU && c) {
+        //            if (c.EDITMENU) {                                                  // Add to attributes
+        //                Receiver.EDITMENU = c.EDITMENU
+        //            }
+        //            c = c.superclass ? c.superclass.constructor : null;
+        //        }
+        //    }
+        //}
+        },
         ATTRS: {
             id: {
                 writeOnce: "initOnly",
                 type:'string',
+                optional: true,                                                 // The id is optional for entites that have not been persisted
                 _inputex: {
                     _type: 'hidden'
                 }
@@ -137,6 +171,7 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
         },
+        EDITMENU: [],
 
         /**
          *  This method takes a parsed json object and instantiate them based
@@ -234,16 +269,10 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.Game = Y.Base.create("Game", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label:'Name'
-                }
+                type: "string"
             },
             token: {
-                type: "string",
-                _inputex: {
-                    label:'Token'
-                }
+                type: "string"
             },
             teams: {
                 type: "array",
@@ -254,16 +283,13 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "New team",
-            value: {
-                op:'addChild',
-                childClass: "Team"
-            }
+            type: "EditEntityButton"
+        },{
+            type: "AddEntityChildButton",
+            label: "Add team",
+            childClass: "Team"
         }, {
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "DeleteEntityButton"
         }]
     });
 
@@ -273,13 +299,9 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.Team = Y.Base.create("Team", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label: "Name"
-                }
+                type: "string"
             },
             players: {
-                type: "array",
                 value: [],
                 _inputex: {
                     _type: "hidden"
@@ -287,22 +309,25 @@ YUI.add('wegas-entity', function (Y) {
             },
             gameId: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     _type: "hidden"
                 }
             }
         },
         EDITMENU: [{
-            text: "New player",
-            value: {
-                op:'addChild',
-                childClass: "Player"
-            }
+            type: "EditEntityButton"
+        },{
+            type: "Button",
+            label: "Add player",
+            plugins: [{
+                fn: "AddEntityChildAction",
+                cfg: {
+                    childClass: "Player"
+                }
+            }]
         }, {
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "DeleteEntityButton"
         }]
     });
 
@@ -312,23 +337,20 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.Player = Y.Base.create("Player", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label: "Name"
-                }
+                type: "string"
             },
             teamId: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     _type: "hidden"
                 }
             }
         },
         EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "EditEntityButton"
+        },{
+            type: "DeleteEntityButton"
         }]
     });
 
@@ -338,10 +360,7 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.User = Y.Base.create("User", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label: "Name"
-                }
+                type: "string"
             },
             password: {
                 type: "string"
@@ -380,17 +399,11 @@ YUI.add('wegas-entity', function (Y) {
                 validator:function(s){
                     return s === null || Y.Lang.isString(s);
                 },
-                type: "string",
-                _inputex: {
-                    label:'Name'
-                }
+                type: "string"
             },
             label: {
                 type: "string",
-                _inputex: {
-                    label:'Label',
-                    required: false
-                }
+                optional: true
             },
             scope: {
                 valueFn: function(){
@@ -425,13 +438,18 @@ YUI.add('wegas-entity', function (Y) {
                     return o instanceof Y.Wegas.persistence.VariableInstance;
                 }
             }
-        }
-    //        EDITFORM:  [{
-    //            name: 'valueselector',
-    //            label:'Variable is',
-    //            type: 'keyvalue',
-    //            availableFields: []
-    //        }]
+        },
+        EDITMENU: [{
+            type: "EditEntityButton"
+        }, {
+            type: "DeleteEntityButton"
+        }],
+        EDITFORM:  [{
+            name: 'valueselector',
+            label:'Variable is',
+            type: 'keyvalue',
+            availableFields: []
+        }]
     });
 
 
@@ -510,7 +528,11 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * VariableInstance mapper
      */
-    Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, []);
+    Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], {}, {
+        EDITMENU: [{
+            type: "EditEntityButton"
+        }]
+    });
     /**
      * StringDescriptor mapper
      */
@@ -543,13 +565,7 @@ YUI.add('wegas-entity', function (Y) {
 
                 }
             }
-        },
-        EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
-        }]
+        }
     });
     /**
      * StringInstance mapper
@@ -611,13 +627,7 @@ YUI.add('wegas-entity', function (Y) {
 
                 }
             }
-        },
-        EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
-        }]
+        }
     });
     /**
      * NumberInstance mapper
@@ -659,17 +669,14 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
         },
-        EDITMENU: [{
-            text: "Add element",
-            value: {
-                op:'addChild',
-                childClass: "VariableDescriptor"
-            }
-        },{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+        EDITMENU: [ {
+            type: "EditEntityButton"
+        }, {
+            type: "AddEntityChildButton",
+            label: "Add child",
+            childClass: "VariableDescriptor"
+        }, {
+            type: "DeleteEntityButton"
         }]
     });
     /*
@@ -725,16 +732,18 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "Add a choice",
-            value: {
-                op:'addChild',
-                childClass: "ChoiceDescriptor"
-            }
+            type: "EditEntityButton"
         }, {
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "Button",
+            label: "Add choice",
+            plugins: [{
+                fn: "AddEntityChildAction",
+                cfg: {
+                    childClass: "ChoiceDescriptor"
+                }
+            }]
+        }, {
+            type: "DeleteEntityButton"
         }]
     });
 
@@ -871,7 +880,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             description: {
                 type: "string",
-                    format: 'html'
+                format: 'html'
             },
             defaultVariableInstance: {
                 properties: {
@@ -926,13 +935,7 @@ YUI.add('wegas-entity', function (Y) {
                     }
                 }
             }
-        },
-        EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
-        }]
+        }
     });
 
     /**
@@ -1027,15 +1030,9 @@ YUI.add('wegas-entity', function (Y) {
             },
             description: {
                 type: 'string',
-                    format: 'html'
+                format: 'html'
             }
-        },
-        EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
-        }]
+        }
     });
 
     /**
@@ -1086,13 +1083,7 @@ YUI.add('wegas-entity', function (Y) {
             "@class":{
                 value:"InboxDescriptor"
             }
-        },
-        EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
-        }]
+        }
     });
     /**
      * InboxInstance mapper

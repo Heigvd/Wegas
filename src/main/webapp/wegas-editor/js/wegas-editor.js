@@ -1,9 +1,17 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
- *
- *
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 
 YUI.add('wegas-editor', function(Y) {
     "use strict";
@@ -51,6 +59,7 @@ YUI.add('wegas-editor', function(Y) {
                 this.tab.add(this.formWidget);
             }
             this.tabView.selectChild(this.tab.get("index"));
+            this.formWidget.emptyMessage();
             this.formWidget.setForm(entity.toJSON(), entity.getFormCfg());
         },
         showUpdateForm: function (entity, dataSource) {
@@ -66,12 +75,12 @@ YUI.add('wegas-editor', function(Y) {
             }, dataSource);
         },
 
-        showAddForm: function (data, parentData, dataSource) {
-            this.showEditForm(data, function (newVal) {
-                this.rest.post(newVal, parentData, {
-                    success: function () {
+        showAddForm: function (entity, parentData, dataSource) {
+            this.showEditForm(entity, function (newVal) {
+                this.rest.post(newVal, (parentData) ? parentData.toJSON() : parentData , {
+                    success: function (e) {
+                        Y.Wegas.editor.showUpdateForm(e.response.entity, dataSource);
                         Y.Wegas.editor.showFormMsg("success", "Item has been added");
-                        Y.Wegas.editor.form.setValue(data);
                     },
                     failure: function (e) {
                         Y.Wegas.editor.showFormMsg("error", e.response.results.message || "Error while adding item");

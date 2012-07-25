@@ -1,17 +1,24 @@
-/**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
  *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
  */
 
-
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
 
 YUI.add('wegas-editor-treeview', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', WTreeView,
+    var CONTENTBOX = 'contentBox', EditorTreeView,
     EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>";
 
-    WTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    EditorTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         // *** Private fields ** //
         dataSource: null,
@@ -25,91 +32,68 @@ YUI.add('wegas-editor-treeview', function (Y) {
         renderUI: function () {
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
+            this.menu = new Y.Wegas.Menu();
         },
 
         bindUI: function () {
-
             this.dataSource.after("response", this.syncUI, this);               // Listen updates on the target datasource
 
-            this.treeView.on("*:click", function (e) {
-                 Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.WTreeView");
-                // Either show the edit menu
-//                if (e.event.target.className === "wegas-treeview-editmenubutton") {  // Either show the edit menu
-//                    Y.Wegas.editor.showEditMenu(e.node.data, this.dataSource);
-//                    Y.Wegas.editor._editMenu.get("boundingBox").appendTo(e.event.target.parentNode);
-//                    Y.Wegas.editor._editMenu.set("align", {
-//                        node: e.event.target,
-//                        points: ["tr", "br"]
-//                    });
-//                } else {                                                        // Or display the edit tab
-                    Y.Wegas.editor.showUpdateForm(e.target.get("data"), this.dataSource);
-            }, this);
-            return;
-
-            // Hide the menu as soon as user mouses out
-            this.get(CONTENTBOX).delegate('mouseleave', Y.Wegas.editor._editMenu.hide, '.ygtvrow');
+            this.treeView.on("*:click", this.onTreeViewClick, this);
         },
 
         syncUI: function () {
             var treeViewElements = this.genTreeViewElements(this.dataSource.rest.getCache());
-            //var node = new Y.TreeNode();
+            this.treeView.removeAll();
             this.treeView.add(treeViewElements);
-            return;
-            this.treeView.add({
-                children: [{
-                    type: "TreeNode",
-                    collapsed: false,
-                    label: "/",
-                    rightWidget: new Y.Wegas.WegasMenu({
-                        items: [{
-                            label:"refresh",
-                            imgSrc:""
-                        },{
-                            label:"add dir",
-                            imgSrc:""
-                        },{
-                            label:"add file",
-                            imgSrc:""
-                        } ],
-                        horizontal: true,
-                        params:{
-                            path: ""
-                        }
-                    })
-                }],
-                type: "TreeNode",
-                collapsed: false,
-                label: "/"
-            });
-
         },
 
         destroyer: function () {
             this.treeView.destroy();
+            this.menu.destroy();
         },
-
-
 
         // ** Private methods ** //
 
-        onNodeClick: function (e) {
+        setItemsByEntity: function(entity, dataSource) {
 
         },
 
+        // *** Private Methods *** //
+        onTreeViewClick: function (e) {
+            Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");
+
+            var entity = e.node.get("data"),
+            menuItems = entity.getMenuCfg(this.dataSource),
+            domTarget = e.domEvent.target;
+
+            if (menuItems.length == 0) {
+                return;
+            }
+
+            this.menu.removeAll();                                              // Populate the menu with the elements associated to the
+            this.menu.add(menuItems);
+
+            if (domTarget && domTarget.hasClass("wegas-treeview-editmenubutton")){           // If user clicked on the edit button
+                this.menu.attachTo(domTarget);                                  // Display the edit button next to it
+            } else {                                                            // Otherwise the user clicked on the node
+                this.menu.item(0).fire("click");                                // Excute the actions associated to the first item of the menu
+            }
+        },
+
         genTreeViewElements: function (elements) {
-            var ret = [], i, el, text;
+            var ret = [], i, el, elClass, text;
 
             for (i in elements) {
                 if (elements.hasOwnProperty(i)) {
                     el = elements[i];
+                    elClass = (el.get) ? el.get('@class') : el['type'];
 
-                    if (el.get &&
-                        (this.get("excludeClasses") === null
-                            || !this.get('excludeClasses').hasOwnProperty(el['@class']))
-                        && (this.get('includeClasses') === null
-                            || this.get('includeClasses').hasOwnProperty(el['@class']))) {
+                    if ((this.get("excludeClasses") === null
+                        || !this.get('excludeClasses').hasOwnProperty(elClass))
+                    && (this.get('includeClasses') === null
+                        || this.get('includeClasses').hasOwnProperty(elClass))) {
 
-                        switch (el.get('@class')) {
+                        switch (elClass) {
                             case 'StringDescriptor':
                             case 'NumberDescriptor':
                             case 'InboxDescriptor':
@@ -121,11 +105,12 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
                                 ret.push({
                                     type: 'TreeNode',
-                                    label: text + EDITBUTTONTPL,
+                                    label: text,
                                     children: this.genScopeTreeViewElements(el),
                                     data: el,
-                                    iconCSS: "wegas-icon-variabledescriptor",
-                                    //iconCSS: "wegas-icon-" + el.get('@class')
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                    iconCSS: "wegas-icon-variabledescriptor"
+                                //iconCSS: "wegas-icon-" + el.get('@class')
                                 });
                                 break;
 
@@ -134,74 +119,74 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
                                 ret.push({
                                     type: 'TreeNode',
-                                    label: text + EDITBUTTONTPL,
+                                    label: text,
                                     children: this.genTreeViewElements(el.get("items")),
+                                    data: el,
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                                break;
+
+                            case 'Game':
+                                text = 'Game: ' + el.get("name") + ' (token:' + el.get("token") + ')';
+                                ret.push({
+                                    type: 'TreeNode',
+                                    label: text,
+                                    collapsed: false,
+                                    children: this.genTreeViewElements(el.get("teams")),
+                                    data: el,
+                                    iconCSS: 'wegas-icon-game',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                                break;
+
+                            case 'Team':
+                                text = 'Team: ' + el.get("name");
+                                ret.push({
+                                    type: 'TreeNode',
+                                    label: text,
+                                    children: this.genTreeViewElements(el.get("players")),
+                                    data: el,
+                                    iconCSS: 'wegas-icon-team',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                                break;
+
+                            case 'Player':
+                                ret.push({
+                                    label: 'Player: ' + el.get("name"),
+                                    data: el,
+                                    iconCSS: 'wegas-icon-player',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                                break;
+
+                            case 'GameModel':
+                                text = 'Game model: ' + el.get("name");
+                                ret.push({
+                                    label: text,
+                                    //  title: text,
+                                    expanded: true,
+                                    children: this.genTreeViewElements(el.get("games")),
                                     data: el
                                 });
                                 break;
 
-                            case 'Page':
-                                text = 'Page: ' + el.label;
-                                //                                ret.push({
-                                //                                    type: 'Text',
-                                //                                    label: text,
-                                //                                    title: text,
-                                //                                    expanded: true,
-                                //                                    children: this.genPageTreeViewElements(el.children),
-                                //                                    data: el
-                                //                                });
+                            case 'List':
+                            case 'Folder':
+                            case "TaskList":
+                            case "InboxDisplay":
+                            case "Score":
+                            case "Layout":
+                            case "Dialogue":
+                                ret = ret.concat(this.genPageTreeViewElements(el));
                                 break;
 
-                            //                            case 'GameModel':
-                            //                                text = 'Game model: ' + el.get("name");
-                            //                                ret.push({
-                            //                                    //  type:'Text',
-                            //                                    label: text,
-                            //                                    //  title: text,
-                            //                                    expanded: true,
-                            //                                    children: this.genTreeViewElements(el.get("games")),
-                            //                                    data: el
-                            //                                });
-                            //                                break;
-                            //                            case 'Game':
-                            //                                text = 'Game: ' + el.get("name") + ' (token:' + el.get("token") + ')';
-                            //                                ret.push({
-                            //                                    type: 'html',
-                            //                                    html: text + EDITBUTTONTPL,
-                            //                                    title: text,
-                            //                                    expanded: true,
-                            //                                    children: this.genTreeViewElements(el.get("teams")),
-                            //                                    data: el,
-                            //                                    contentStyle: this.getClassName('icon-game')
-                            //                                });
-                            //                                break;
-                            //                            case 'Team':
-                            //                                text = 'Team: ' + el.get("name");
-                            //                                ret.push({
-                            //                                    type: 'html',
-                            //                                    html: text + EDITBUTTONTPL,
-                            //                                    title: text,
-                            //                                    expanded: false,
-                            //                                    children: this.genTreeViewElements(el.get("players")),
-                            //                                    data: el,
-                            //                                    contentStyle: this.getClassName('icon-team')
-                            //                                });
-                            //                                break;
-                            //                            case 'Player':
-                            //                                ret.push({
-                            //                                    type: 'html',
-                            //                                    html: 'Player: ' + el.get("name") + EDITBUTTONTPL,
-                            //                                    title: 'Player: ' + el.get("name"),
-                            //                                    data: el,
-                            //                                    contentStyle: this.getClassName('icon-player')
-                            //                                });
-                            //                                break;
                             default:
                                 text = el.get('@class') + ': ' + el.get("name");
-                                //                                ret.push({
-                                //                                    title: text,
-                                //                                    data: el
-                                //                                });
+                                ret.push({
+                                    label: text,
+                                    data: el
+                                });
                                 break;
                         }
                     }
@@ -282,20 +267,19 @@ YUI.add('wegas-editor-treeview', function (Y) {
         },
 
         genPageTreeViewElements: function (elts) {
-            var ret = [], j, text, el,
-            type2text = {
-                PMGChoiceDisplay: "Choice displayer"
-            };
+            var ret = [], j, text, el;
+            if (!Y.Lang.isArray(elts)) {
+                elts = [ elts ]
+            }
 
             for (j = 0; j < elts.length; j += 1) {
                 el = elts[j];
-                text = (type2text[el.type] || el.type) + ': ' + (el.label || el.name || el.id || 'unnamed');
+                text =  el.type + ': ' + (el.label || el.name || el.id || 'unnamed');
                 switch (el.type) {
                     case 'List':
                         ret.push({
-                            type: 'Text',
+                            type: 'TreeNode',
                             label: 'List: ' + (el.label || 'unnamed'),
-                            title: 'List: ' + (el.label || 'unnamed'),
                             data: el,
                             children: this.genPageTreeViewElements(el.children)
                         });
@@ -303,34 +287,25 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     case 'VariableDisplay':
                         text = 'Variable displayer: ' + (el.variable);
                         ret.push({
-                            type: 'Text',
                             label: text,
-                            title: text,
                             data: el
                         });
                         break;
                     case 'Text':
                         ret.push({
-                            type: 'Text',
                             label: 'Text: ' + el.content.substring(0, 15) + "...",
-                            title: el.content,
                             data: el
                         });
                         break;
                     case 'Button':
                         ret.push({
-                            type: 'Text',
                             label: text,
-                            title: text,
-                            data: el,
-                            children: (el.subpage) ? this.genPageTreeViewElements([el.subpage]) : []
+                            data: el
                         });
                         break;
                     default:
                         ret.push({
-                            type: 'Text',
                             label: text,
-                            title: text,
                             data: el
                         });
                         break;
@@ -352,5 +327,5 @@ YUI.add('wegas-editor-treeview', function (Y) {
     });
 
 
-    Y.namespace('Wegas').WTreeView = WTreeView;
+    Y.namespace('Wegas').EditorTreeView = EditorTreeView;
 });
