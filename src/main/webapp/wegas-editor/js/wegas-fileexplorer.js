@@ -6,14 +6,6 @@ YUI.add('wegas-fileexplorer', function (Y) {
     CONTENTBOX = 'contentBox',
     DEFAULTHEADERS = {
         'Content-Type': 'application/json; charset=utf-8'
-    },
-    ATTRS = {
-        path: {
-            value: "/",
-            setter: function(val){
-                return "^/.*".test(val) ? val : "/" + val;
-            }
-        }
     };
 
     //TODO: notes, preview!
@@ -23,7 +15,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         // ** Private fields ** //
         treeView: null,
         rootNode: null,
-        events: {},
+        events: null,
         rootPath:"/",
         uploader:null,
         fileUploader:null,
@@ -36,6 +28,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         initializer: function() {
             this.gameModelId = Y.Wegas.app.get("currentGameModel");
             this.rootPath = "/";
+            this.events = {};
             this.uploader = new Y.UploaderHTML5({
                 width: "100px",
                 fileFieldName: "file",
@@ -68,15 +61,20 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 rightWidget: new Y.Wegas.WegasMenu({
                     items: [{
                         label:"refresh",
-                        imgSrc:""
+                        data:"refresh"
                     },{
-                        label:"add dir",
-                        imgSrc:""
-                    },{
-                        label:"add file",
-                        imgSrc:""
-                    } ],
+                        label:"add",
+                        cssClass:"",
+                        items:[{
+                            label:"add dir",
+                            data:"add dir"
+                        },{
+                            label:"add file",
+                            data:"add file"
+                        }]
+                    }],
                     horizontal: true,
+                    eventTarget: this,
                     params:{
                         path: ""
                     }
@@ -107,7 +105,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 }
             }, this);
             this.events.itemClickHandler = this.treeView.on("wegas-menu:itemClick", function(e){
-                this.processMenuClick(e.item, e.parent, e.params);
+                this.processMenuClick(e.data, e.target.get("parent"), e.params);
             },this);
             this.events.dirCreateEvent = this.fakeFile.after("uploadcomplete", function(e){
                 this.pathToNode(this.rootNode, JSON.parse(e.data).path).expand();
@@ -117,11 +115,13 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 this.uploader.parentNode.set("rightWidget", new Y.Wegas.WegasMenu({
                     items: [{
                         label:"upload",
-                        imgSrc:""
+                        cssClass:"",
+                        data:"upload"
                     },
                     {
                         label: "cancel",
-                        imgSrc: ""
+                        cssClass: "",
+                        data:"cancel"
                     }],
                     horizontal: true,
                     params:{
@@ -261,17 +261,21 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
                             label:"refresh",
-                            imgSrc:""
+                            data:"refresh"
                         },{
-                            label:"add dir",
-                            imgSrc:""
+                            label:"add",
+                            cssClass:"",
+                            items:[{
+                                label:"add dir",
+                                data:"add dir"
+                            },{
+                                label:"add file",
+                                data:"add file"
+                            }]
                         },{
                             label:"delete",
-                            imgSrc:""
-                        },
-                        {
-                            label:"add file",
-                            imgSrc:""
+                            cssClass:"",
+                            data:"delete"
                         }],
                         horizontal: true,
                         params:{
@@ -285,7 +289,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
                             label:"delete",
-                            imgSrc:""
+                            cssClass:"",
+                            data:"delete"
                         }],
                         horizontal: true,
                         params:{
@@ -481,10 +486,21 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     value:null,
                     writeOnce:"initOnly"
                 }
+
             }
         })
 
-    }, ATTRS);
+    },{
+        ATTRS:{
+            path: {
+                value: "/",
+                setter: function(val){
+                    return "^/.*".test(val) ? val : "/" + val;
+                }
+
+            }
+        }
+    });
 
 
 
