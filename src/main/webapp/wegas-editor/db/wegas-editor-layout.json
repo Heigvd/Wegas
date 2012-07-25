@@ -137,14 +137,9 @@
                 "type": "Tab",
                 "label": "Variables",
                 "toolbarChildren": [{
-                    "type": "Button",
+                    "type": "NewEntityButton",
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    "plugins": [{
-                        "fn": "NewAction",
-                        "cfg": {
-                            "targetClass": "VariableDescriptor"
-                        }
-                    }]
+                    "targetClass": "VariableDescriptor"
                 }, {
                     "type": "Button",
                     "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
@@ -193,14 +188,9 @@
                     "dataSource": "Game"
                 }],
                 "toolbarChildren": [{
-                    "type": "Button",
+                    "type": "NewEntityButton",
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    "plugins": [{
-                        "fn": "NewAction",
-                        "cfg": {
-                            "targetClass": "Game"
-                        }
-                    }]
+                    "targetClass": "Game"
                 }]
             }, {
                 "type": "Tab",

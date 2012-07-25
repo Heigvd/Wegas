@@ -15,6 +15,7 @@
 YUI.add('wegas-entity', function (Y) {
     "use strict";
 
+
     var IDATTRDEF = {
         type: "string",
         _inputex: {
@@ -24,7 +25,6 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    //Y.Base._ATTR_CFG =
     Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "enum", "default");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
@@ -109,8 +109,9 @@ YUI.add('wegas-entity', function (Y) {
          */
         getMenuCfg: function ( dataSource ) {
             var i, menus = Y.Wegas.app.get('editorMenus'),
+            //    staticMenus =
             menu = menus[this.get('@class')] || menus[this.get("type")] ||      // Select first server defined forms, based on the @class or the type attribute
-            this.constructor.EDITMENU || [];                                    // And if no form is defined we return the default one defined in the entity
+            this.getStatic("EDITMENU")[0] || [];                                    // And if no form is defined we return the default one defined in the entity
 
             for (i = 0; i < menu.length; i += 1 ) {                             // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
                 menu[i].entity = this;
@@ -124,17 +125,34 @@ YUI.add('wegas-entity', function (Y) {
          *  cfg (ATTRS), used in Y.Wegas.Entity.getFormCfg().
          */
         getAttrCfgs : function() {
-            var c = this.constructor, attrs = [];
+            return this._aggregateAttrs(this.getStatic("ATTRS"));
+        },
+        getStatic: function(key) {
+            var c = this.constructor, ret = [];
 
             while (c) {
-                if (c.ATTRS) {                                                  // Add to attributes
-                    attrs[attrs.length] = c.ATTRS;
+                if (c[key]) {                                                  // Add to attributes
+                    ret[ret.length] = c[key];
                 }
                 c = c.superclass ? c.superclass.constructor : null;
             }
-            return this._aggregateAttrs(attrs);
+            return ret;
         }
     }, {
+        _buildCfg: {
+        //statics: ["EDITMENU"],
+        //custom: {
+        //    EDITMENU: function (prop, Receiver, Supplier) {
+        //        var c = Supplier.constructor;
+        //        while (!Receiver.EDITMENU && c) {
+        //            if (c.EDITMENU) {                                                  // Add to attributes
+        //                Receiver.EDITMENU = c.EDITMENU
+        //            }
+        //            c = c.superclass ? c.superclass.constructor : null;
+        //        }
+        //    }
+        //}
+        },
         ATTRS: {
             id: {
                 writeOnce: "initOnly",
@@ -152,6 +170,7 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
         },
+        EDITMENU: [],
 
         /**
          *  This method takes a parsed json object and instantiate them based
@@ -263,14 +282,11 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            type: "Button",
-            label: "New team",
-            plugins: [{
-                fn: "AddEntityChildAction",
-                cfg: {
-                    childClass: "Team"
-                }
-            }]
+            type: "EditEntityButton"
+        },{
+            type: "AddEntityButton",
+            label: "Add team",
+            childClass: "Team"
         }, {
             type: "DeleteEntityButton"
         }]
@@ -299,8 +315,10 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
+            type: "EditEntityButton"
+        },{
             type: "Button",
-            label: "New team",
+            label: "Add player",
             plugins: [{
                 fn: "AddEntityChildAction",
                 cfg: {
@@ -308,10 +326,7 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }]
         }, {
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "DeleteEntityButton"
         }]
     });
 
@@ -331,6 +346,8 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
+            type: "EditEntityButton"
+        },{
             type: "DeleteEntityButton"
         }]
     });
@@ -419,7 +436,12 @@ YUI.add('wegas-entity', function (Y) {
                     return o instanceof Y.Wegas.persistence.VariableInstance;
                 }
             }
-        }
+        },
+        EDITMENU: [{
+            type: "EditEntityButton"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     //        EDITFORM:  [{
     //            name: 'valueselector',
     //            label:'Variable is',
@@ -504,7 +526,11 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * VariableInstance mapper
      */
-    Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, []);
+    Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], {}, {
+        EDITMENU: [{
+            type: "EditEntityButton"
+        }]
+    });
     /**
      * StringDescriptor mapper
      */
@@ -537,10 +563,7 @@ YUI.add('wegas-entity', function (Y) {
 
                 }
             }
-        },
-        EDITMENU: [{
-            type: "DeleteEntityButton"
-        }]
+        }
     });
     /**
      * StringInstance mapper
@@ -602,12 +625,7 @@ YUI.add('wegas-entity', function (Y) {
 
                 }
             }
-        },
-        EDITMENU: [{
-            type: "EditEntityButton"
-        }, {
-            type: "DeleteEntityButton"
-        }]
+        }
     });
     /**
      * NumberInstance mapper
@@ -650,16 +668,18 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "Add element",
-            value: {
-                op:'addChild',
-                childClass: "VariableDescriptor"
-            }
-        },{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "EditEntityButton"
+        }, {
+            type: "Button",
+            label: "Add child",
+            plugins: [{
+                fn: "AddEntityChildAction",
+                cfg: {
+                    childClass: "VariableDescriptor"
+                }
+            }]
+        }, {
+            type: "DeleteEntityButton"
         }]
     });
     /*
@@ -715,16 +735,18 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "Add a choice",
-            value: {
-                op:'addChild',
-                childClass: "ChoiceDescriptor"
-            }
+            type: "EditEntityButton"
         }, {
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "Button",
+            label: "Add choice",
+            plugins: [{
+                fn: "AddEntityChildAction",
+                cfg: {
+                    childClass: "ChoiceDescriptor"
+                }
+            }]
+        }, {
+            type: "DeleteEntityButton"
         }]
     });
 
@@ -916,13 +938,7 @@ YUI.add('wegas-entity', function (Y) {
                     }
                 }
             }
-        },
-        EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
-        }]
+        }
     });
 
     /**
@@ -1016,13 +1032,7 @@ YUI.add('wegas-entity', function (Y) {
                 type: 'string',
                 format: 'html'
             }
-        },
-        EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
-        }]
+        }
     });
 
     /**
@@ -1059,13 +1069,7 @@ YUI.add('wegas-entity', function (Y) {
             "@class":{
                 value:"InboxDescriptor"
             }
-        },
-        EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
-        }]
+        }
     });
     /**
      * InboxInstance mapper

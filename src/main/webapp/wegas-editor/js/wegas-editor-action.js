@@ -50,20 +50,20 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.namespace("Plugin").OpenTabAction = OpenTabAction;
 
     /**
-     *  @class NewAction
+     *  @class NewEntityAction
      *  @module Wegas
      *  @constructor
      */
-    var NewAction = function () {
-        NewAction.superclass.constructor.apply(this, arguments);
+    var NewEntityAction = function () {
+        NewEntityAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(NewAction, {
+    Y.mix(NewEntityAction, {
         NS: "wegas",
-        NAME: "NewAction"
+        NAME: "NewEntityAction"
     });
 
-    Y.extend(NewAction, Y.Plugin.Base, {
+    Y.extend(NewEntityAction, Y.Plugin.Base, {
         initializer: function () {
             this.afterHostEvent("click", function() {
                 Y.Wegas.editor.showAddForm(Y.Wegas.persistence.Entity.revive({
@@ -77,38 +77,8 @@ YUI.add('wegas-editor-action', function (Y) {
         }
     });
 
-    Y.namespace("Plugin").NewAction = NewAction;
+    Y.namespace("Plugin").NewEntityAction = NewEntityAction;
 
-    /**
-     *  @class NewAction
-     *  @module Wegas
-     *  @constructor
-     */
-    var ResetAction = function () {
-        ResetAction.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.mix(ResetAction, {
-        NS: "wegas",
-        NAME: "ResetAction"
-    });
-
-    Y.extend(ResetAction, Y.Plugin.Base, {
-        initializer: function () {
-            this.afterHostEvent("click", function() {
-
-                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: '/reset'
-                });
-            }, this);
-        }
-    }, {
-        ATTRS: {
-            targetClass: { }
-        }
-    });
-
-    Y.namespace("Plugin").ResetAction = ResetAction;
 
     /**
      *  @class EditEntityAction
@@ -138,22 +108,6 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.namespace("Plugin").EditEntityAction = EditEntityAction;
 
     /**
-     * Shortcut to create a Button with an EditEntityAction plugin
-     */
-    Y.Wegas.EditEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
-        bindUI: function () {
-            this.plug(EditEntityAction);
-            this.set("label", "Edit");                                          // @fixme hack because the ATTR's value is not taken into account
-        }
-    }, {
-        ATTRS:{
-            label: {
-                value: "Edit"
-            }
-        }
-    });
-
-    /**
      *  @class AddEntityChildAction
      *  @module Wegas
      *  @constructor
@@ -169,6 +123,13 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(AddEntityChildAction, Y.Plugin.Base, {
         execute: function() {
+
+
+                Y.Wegas.editor.edit({
+                    '@class': this.get("childClass")
+                }, function (value) {
+                    this._currentDataSource.rest.post(value, this._currentData);
+                }, null, this);
             Y.Wegas.editor.showUpdateForm(host.get("entity"),                   // Display the edit form
                 host.get("dataSource"));
 
@@ -217,6 +178,104 @@ YUI.add('wegas-editor-action', function (Y) {
     });
 
     Y.namespace("Plugin").DeleteEntityAction = DeleteEntityAction;
+
+
+
+    /**
+     *  @class EditFSMAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var EditFSMAction = function () {
+        DeleteEntityAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(EditFSMAction, {
+        NS: "wegas",
+        NAME: "EditFSMAction"
+    });
+
+    Y.extend(EditFSMAction, Y.Plugin.Base, {
+        execute: function() {
+            Y.Wegas.TabView.findTabAndLoadWidget("State machine editor",        // Load and display the editor in a new tab
+                "#centerTabView", null, {
+                    type: "StateMachineViewer"
+                }, Y.bind(function (entity, widget) {
+                    widget.set("entity", entity);
+                }, this, this.get("host").get("entity")));
+        },
+        initializer: function () {
+            this.afterHostEvent("click", this.execute, this);
+        }
+    });
+
+    Y.namespace("Plugin").EditFSMAction = EditFSMAction;
+
+    /**
+     *  @class ResetAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var ResetAction = function () {
+        ResetAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(ResetAction, {
+        NS: "wegas",
+        NAME: "ResetAction"
+    });
+
+    Y.extend(ResetAction, Y.Plugin.Base, {
+        initializer: function () {
+            this.afterHostEvent("click", function() {
+
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                    request: '/reset'
+                });
+            }, this);
+        }
+    }, {
+        ATTRS: {
+            targetClass: { }
+        }
+    });
+
+    Y.namespace("Plugin").ResetAction = ResetAction;
+
+
+    // *** Buttons *** //
+    /**
+     * Shortcut to create a Button with an NewEntityAction plugin
+     */
+    Y.Wegas.NewEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        initializer: function (cfg) {
+            this.plug(NewEntityAction, cfg);
+        }
+    });
+
+    /**
+     * Shortcut to create a Button with an EditEntityAction plugin
+     */
+    Y.Wegas.EditEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        bindUI: function () {
+            this.plug(EditEntityAction);
+            this.set("label", "Edit");                                          // @fixme hack because the ATTR's value is not taken into account
+        }
+    }, {
+        ATTRS:{
+            label: {
+                value: "Edit"
+            }
+        }
+    });
+    /**
+     * Shortcut to create a Button with an AddEntityChildAction plugin
+     */
+    Y.Wegas.AddEntityChildButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        initializer: function (cfg) {
+            this.plug(AddEntityChildAction, cfg);
+        }
+    });
 
     /**
      * Shortcut to create a Button with an DeleteEntityAction plugin
