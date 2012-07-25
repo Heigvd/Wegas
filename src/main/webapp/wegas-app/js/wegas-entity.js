@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -26,7 +36,8 @@ YUI.add('wegas-entity', function (Y) {
         /**
          * Serialize to a json object.
          *
-         * @function getObject
+         * @method toJSON
+         * @return {object}
          */
         toJSON: function () {
             var k, ret = this.getAttrs();
@@ -96,11 +107,15 @@ YUI.add('wegas-entity', function (Y) {
         /**
          * Returns the edition menu associated to this object, to be used a an inputex object.
          */
-        getMenuCfg: function () {
-            var menus = Y.Wegas.app.get('editorMenus'),
+        getMenuCfg: function ( dataSource ) {
+            var i, menus = Y.Wegas.app.get('editorMenus'),
             menu = menus[this.get('@class')] || menus[this.get("type")] ||      // Select first server defined forms, based on the @class or the type attribute
             this.constructor.EDITMENU || [];                                    // And if no form is defined we return the default one defined in the entity
 
+            for (i = 0; i < menu.length; i += 1 ) {                             // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
+                menu[i].entity = this;
+                menu[i].dataSource = dataSource;
+            }
             return menu;
         },
 
@@ -234,16 +249,10 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.Game = Y.Base.create("Game", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label:'Name'
-                }
+                type: "string"
             },
             token: {
-                type: "string",
-                _inputex: {
-                    label:'Token'
-                }
+                type: "string"
             },
             teams: {
                 type: "array",
@@ -254,16 +263,16 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "New team",
-            value: {
-                op:'addChild',
-                childClass: "Team"
-            }
+            type: "Button",
+            label: "New team",
+            plugins: [{
+                fn: "AddEntityChildAction",
+                cfg: {
+                    childClass: "Team"
+                }
+            }]
         }, {
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "DeleteEntityButton"
         }]
     });
 
@@ -273,10 +282,7 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.Team = Y.Base.create("Team", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label: "Name"
-                }
+                type: "string"
             },
             players: {
                 type: "array",
@@ -293,11 +299,14 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "New player",
-            value: {
-                op:'addChild',
-                childClass: "Player"
-            }
+            type: "Button",
+            label: "New team",
+            plugins: [{
+                fn: "AddEntityChildAction",
+                cfg: {
+                    childClass: "Player"
+                }
+            }]
         }, {
             text: "Delete",
             value: {
@@ -312,10 +321,7 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.Player = Y.Base.create("Player", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label: "Name"
-                }
+                type: "string"
             },
             teamId: {
                 type: "string",
@@ -325,10 +331,7 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "DeleteEntityButton"
         }]
     });
 
@@ -338,10 +341,7 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.User = Y.Base.create("User", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label: "Name"
-                }
+                type: "string"
             },
             password: {
                 type: "string"
@@ -380,17 +380,11 @@ YUI.add('wegas-entity', function (Y) {
                 validator:function(s){
                     return s === null || Y.Lang.isString(s);
                 },
-                type: "string",
-                _inputex: {
-                    label:'Name'
-                }
+                type: "string"
             },
             label: {
                 type: "string",
-                _inputex: {
-                    label:'Label',
-                    required: false
-                }
+                optional: true
             },
             scope: {
                 valueFn: function(){
@@ -545,10 +539,7 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "DeleteEntityButton"
         }]
     });
     /**
@@ -613,10 +604,9 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "EditEntityButton"
+        }, {
+            type: "DeleteEntityButton"
         }]
     });
     /**
@@ -871,7 +861,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             description: {
                 type: "string",
-                    format: 'html'
+                format: 'html'
             },
             defaultVariableInstance: {
                 properties: {
@@ -1024,7 +1014,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             description: {
                 type: 'string',
-                    format: 'html'
+                format: 'html'
             }
         },
         EDITMENU: [{

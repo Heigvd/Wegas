@@ -1,7 +1,5 @@
 /**
  *
- * @FIXME Why is the type in lowercase
- *
  *
  */
 
