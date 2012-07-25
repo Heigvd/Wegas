@@ -415,15 +415,13 @@ img.inputEx-ListField-delButton {
     cursor:pointer;
 }
 .yui3-treeview .wegas-treeview-editmenubutton {
-    padding-left: 20px;
-    width:20px;
-    height:20px;
-    cursor:pointer;
-    background: transparent url(../images/wegas-editor-sprite.png) 2px -333px no-repeat;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background: transparent url(../images/wegas-editor-sprite.png) 2px -332px no-repeat;
+    margin: 3px 5px;
+    display: inline-block;
 }
-/*.yui3-treenode-content-header:hover .wegas-treeview-editmenubutton,
-.yui3-treeleaf-content-header:hover .wegas-treeview-editmenubutton {
-}*/
 
 /* Treeview icons */
 .wegas-icon-game,

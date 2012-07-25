@@ -54,9 +54,9 @@ YUI.add('treeview', function (Y) {
     }, {
         NAME:'treeview',
         ATTRS:{
-        },
-        defaultChildType: {
-            value: "TreeLeaf"
+            defaultChildType: {
+                value: "TreeLeaf"
+            }
         }
     });
 
