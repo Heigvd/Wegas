@@ -32,6 +32,9 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     padding:.2em 5px 0 0;
     margin-left:-135px;
 }
+.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label:first-letter {
+  text-transform: uppercase;
+}
 .inputEx-Group div.inputEx-fieldWrapper > div.inputEx-Field {
     width:99.8%;
 }
@@ -407,51 +410,43 @@ img.inputEx-ListField-delButton {
     left: -9999px;
     position: absolute !important;
 }
-/* YUI 2 TreeView Styles */
-.ygtvlabel, .ygtvlabel:link, .ygtvlabel:visited, .ygtvlabel:hover {
-    white-space: nowrap;
+/* Editor treeview styles */
+.yui3-treenode-content-header, .yui3-treeleaf-content-header {
+    cursor:pointer;
 }
-.ygtv-highlight1 .ygtvlabel, .ygtv-highlight1 .ygtvlabel:link,
-.ygtv-highlight1 .ygtvlabel:visited, .ygtv-highlight1 .ygtvlabel:hover {
-    background: transparent;
-}
-.ygtv-highlight1 {
-    background: #bcc4eb;
-}
-.ygtvfocus, .ygtvfocus .ygtvlabel, .ygtvfocus .ygtvlabel:hover {
-    background-color:transparent;
-}
-.ygtvcontent .wegas-treeview-editmenubutton {
+.wegas-treeview-editmenubutton {
     padding-left: 20px;
     width:20px;
     height:20px;
     cursor:pointer;
 }
-.ygtvcontent:hover .wegas-treeview-editmenubutton {
+.yui3-treenode-content-header:hover .wegas-treeview-editmenubutton,
+.yui3-treeleaf-content-header:hover .wegas-treeview-editmenubutton {
+
     background: transparent url(../images/wegas-editor-sprite.png) 2px -333px no-repeat;
 }
-/* YUI 2 Treeview icons */
-td.wegas-treeview-icon-game,
-td.wegas-treeview-icon-gamemodel,
-td.wegas-treeview-icon-team,
-td.wegas-treeview-icon-player  {
+
+/* Treeview icons */
+.wegas-icon-game,
+.wegas-icon-gamemodel,
+.wegas-icon-team,
+.wegas-icon-player  {
     padding-top: 4px;
     height: 18px;
     padding-left: 20px;
     display: block;
 
 }
-td.wegas-treeview-icon-gamemodel {
+.yui3-skin-sam .wegas-icon-gamemodel {
     background: transparent url(../images/wegas-editor-sprite.png) 0 -514px no-repeat;
 }
-td.wegas-treeview-icon-game {
+.yui3-skin-sam .wegas-icon-game {
     background: transparent url(../images/wegas-editor-sprite.png) 0 -514px no-repeat;
 }
-td.wegas-treeview-icon-team {
+.yui3-skin-sam .wegas-icon-team {
     background: transparent url(../images/wegas-editor-sprite.png) 0 -621px no-repeat;
 }
-
-td.wegas-treeview-icon-player {
+.yui3-skin-sam .wegas-icon-player {
     background: transparent url(../images/wegas-editor-sprite.png) 0 -590px no-repeat;
 }
 

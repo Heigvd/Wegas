@@ -16,19 +16,19 @@ YUI.add('wegas-leaderway', function (Y) {
         //*** Particular Methods ***/  
         getResourcesData: function(listResourcesDescriptor){
             var i, picture, resourceDescriptor, resourceInstance, needPicture = false;
-            if(listResourcesDescriptor.items[0].getInstance().properties.picture != null){
+            if(listResourcesDescriptor.get(items)[0].getInstance().get('properties').picture != null){
                 needPicture = true;
                 this.table.addColumn({ key: 'picture', label: 'Portrait', allowHTML: true }, 0);
             }
-            for (i = 0; i < listResourcesDescriptor.items.length; i++) {
-                resourceDescriptor = listResourcesDescriptor.items[i];
+            for (i = 0; i < listResourcesDescriptor.get('items').length; i++) {
+                resourceDescriptor = listResourcesDescriptor.get('items')[i];
                 resourceInstance = resourceDescriptor.getInstance();
                 if(needPicture){
-                     picture = '<img src="'+resourceInstance.properties.picture+'" alt="picture" width="60" height="70" />';
+                     picture = '<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="60" height="70" />';
                      this.data.push({
                         picture:picture,
-                        name:resourceDescriptor.name,
-                        surname:resourceInstance.properties.surname,
+                        name:resourceDescriptor.get('name'),
+                        surname:resourceInstance.get('properties').surname,
                         occupation:this.getOccupation(resourceInstance),
                         folder:i,
                         speak:i
@@ -36,8 +36,8 @@ YUI.add('wegas-leaderway', function (Y) {
                 }
                 else{
                     this.data.push({
-                        name:resourceDescriptor.name,
-                        surname:resourceInstance.properties.surname,
+                        name:resourceDescriptor.get('name'),
+                        surname:resourceInstance.get('properties').surname,
                         occupation:this.getOccupation(resourceInstance),
                         folder:i,
                         speak:i
@@ -47,15 +47,15 @@ YUI.add('wegas-leaderway', function (Y) {
         },
         
         getOccupation: function(resourceInstance){
-            var occupation, listDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "tasks"), taskDescriptor;
-            if(resourceInstance.assignments.length == 0){
+            var occupation, listDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"), taskDescriptor;
+            if(resourceInstance.get('assignments').length == 0){
                 occupation = 'Libre';
             }
             else{
-                for (var i = 0; i < listDescriptor.items.length; i = i + 1) {
-                        taskDescriptor = listDescriptor.items[i];
-                        if(taskDescriptor.id == resourceInstance.assignments[0].taskDescriptorId){
-                            occupation = taskDescriptor.name;
+                for (var i = 0; i < listDescriptor.get('items').length; i = i + 1) {
+                        taskDescriptor = listDescriptor.get('items')[i];
+                        if(taskDescriptor.get('id') == resourceInstance.get('assignments')[0].get('taskDescriptorId')){
+                            occupation = taskDescriptor.get('name');
                             break;
                         }
                 }
@@ -102,7 +102,7 @@ YUI.add('wegas-leaderway', function (Y) {
         },
             
         bindUI: function() {
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
             this.table.delegate('click', function (e) {
                 var tr_id = e.currentTarget._node.parentElement.parentElement.id,  
@@ -111,12 +111,12 @@ YUI.add('wegas-leaderway', function (Y) {
             }, '.yui3-datatable-data .speak', this.table);
             
             this.table.delegate('click', function (e) {
-                //afficher le widget "folder et passer l'id du membre."
+                alert('todo');
             }, '.yui3-datatable-data .folder', this.table);
         },
         
         syncUI: function (){
-            var listResourcesDescriptor = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableBy("name", "resources");
+            var listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
             if(listResourcesDescriptor == null) return;
             this.data.length = 0;
             this.getResourcesData(listResourcesDescriptor);
@@ -129,7 +129,6 @@ YUI.add('wegas-leaderway', function (Y) {
     },
     {
         ATTRS : {
-            content: { }
         }
     });
 

@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -10,7 +20,7 @@ YUI.add('wegas-button', function (Y) {
     LoginButton,
     Button;
 
-    /* @fixme hack so we can programatically add an element to a yui button */
+    /* @fixme So we can display html tag inside a button */
     Y.Button.prototype._uiSetLabel = function(value) {
         var node = this._host,
         attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
@@ -45,7 +55,9 @@ YUI.add('wegas-button', function (Y) {
         }
     }, {
         ATTRS: {
-            tooltips:{}
+            tooltips: {},
+            entity: {},                                                         // @fixme Those two attributes are used in the editor to delete and update an item
+            dataSource: {}
         },
         CSS_PREFIX:"yui3-button wegas-button"
     });
@@ -75,6 +87,7 @@ YUI.add('wegas-button', function (Y) {
         initializer: function () {
             Y.Wegas.app.dataSources.VariableDescriptor.after("response",        // If data changes, refresh
                 this.syncUI, this);
+            this.syncUI();
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),
@@ -94,26 +107,24 @@ YUI.add('wegas-button', function (Y) {
         },
 
         getUnreadCount:  function () {
-            var i, instance,
-            dataSource = Y.Wegas.app.dataSources.VariableDescriptor,
-            descriptor = dataSource.rest.find('name', this.get('variable')),
-            instance, count = 0, messages;
+            var i, instance, messages, count = 0,
+            descriptor = Y.Wegas.VariableDescriptorFacade.rest.find('name', this.get('variable'));
 
             if (!descriptor){
                 return 0;
             }
 
-            if (descriptor.get("items")) {                                             // In ListDescriptors, we count the children instance's
+            if (descriptor.get("items")) {                                      // For ListDescriptors, we count the children instance's
                 for (i = 0; i < descriptor.get("items").length; i = i + 1) {
                     instance = descriptor.get("items")[i].getInstance();
-                    count += instance.unread ? 1 : 0;
+                    count += instance.get("unread") ? 1 : 0;
                 }
             }
 
-            messages = descriptor.getInstance().get("messages");
-            if (messages) {                                                     // In InboxVariableDescriptors, we count the replies
+            messages = descriptor.getInstance().get("messages");                // For InboxVariableDescriptors, we count the replies
+            if (messages) {
                 for (i = 0; i <messages.length; i = i + 1) {
-                    count += messages[i].unread ? 1 : 0;
+                    count += messages[i].get("unread") ? 1 : 0;
                 }
             }
 
@@ -130,7 +141,7 @@ YUI.add('wegas-button', function (Y) {
     LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
 
-            Y.Wegas.app.dataSources.Game.after("response", this.syncUI, this);
+            Y.Wegas.GameFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
         },
         syncUI: function () {
@@ -176,14 +187,9 @@ YUI.add('wegas-button', function (Y) {
 
     Y.extend(OpenPageAction, Y.Plugin.Base, {
         initializer: function () {
-            this.doAfter("bindUI", this.bindUI, this);
-        },
-        bindUI: function () {
-            this.get("host").on("click", function() {
-                if (this.get('targetPageLoaderId')) {
-                    var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                    targetPageLoader.set("pageId", this.get("subpageId"));
-                }
+            this.afterHostEvent("click", function() {
+                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                targetPageLoader.set("pageId", this.get("subpageId"));
             }, this);
         }
     }, {
@@ -211,10 +217,7 @@ YUI.add('wegas-button', function (Y) {
 
     Y.extend(ExecuteScriptAction, Y.Plugin.Base, {
         initializer: function () {
-            this.doAfter("bindUI", this.bindUI, this);
-        },
-        bindUI: function () {
-            this.get("host").on("click", function() {
+            this.afterHostEvent("click", function() {
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     cfg: {
