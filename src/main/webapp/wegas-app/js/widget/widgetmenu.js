@@ -65,7 +65,8 @@ YUI.add('widgetmenu', function (Y) {
 
     Y.namespace('Plugin').WidgetMenu = WidgetMenu;
 
-    Y.namespace('Wegas').Menu = Y.Base.create("menu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetParent], {
+    Y.namespace('Wegas').Menu = Y.Base.create("menu", Y.Widget,
+        [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetParent, Y.WidgetPositionConstrain], {
 
         // *** private fields *** //
 
@@ -115,6 +116,9 @@ YUI.add('widgetmenu', function (Y) {
         }
     }, {
         ATTRS: {
+            constrain: {
+                value: true
+            },
             zIndex:{
                 value: 1
             },

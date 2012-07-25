@@ -216,7 +216,10 @@ Y.add("statemachine-entities", function(Y){
             }*/
         },
         EDITMENU: [{
-            type: "EditEntityButton"
+            type: "EditEntityButton",
+            plugins: [{
+               fn: "EditFSMAction"
+            }]
         },{
             type: "DeleteEntityButton"
         }]
