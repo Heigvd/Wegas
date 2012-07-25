@@ -38,8 +38,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
         bindUI: function () {
             this.dataSource.after("response", this.syncUI, this);               // Listen updates on the target datasource
 
-            this.treeView.on("treeleaf:click", this.onTreeViewClick, this);
-            this.treeView.on("treenode:click", this.onTreeViewClick, this);
+            this.treeView.on("*:click", this.onTreeViewClick, this);
         },
 
         syncUI: function () {
@@ -60,39 +59,12 @@ YUI.add('wegas-editor-treeview', function (Y) {
         },
 
         // *** Private Methods *** //
-        _onMenuClick: function (p_sType, args) {
-            var menuItem = args[1],
-            action = menuItem.value;
-
-            switch (action.op) {
-                case "addChild":
-                    Y.Wegas.editor.edit({
-                        '@class': action.childClass
-                    }, function (value) {
-                        this._currentDataSource.rest.post(value, this._currentData);
-                    }, null, this);
-                    break;
-                case "delete":
-                    this._currentDataSource.rest.deleteObject(this._currentData);
-                    break;
-                case "smeditor":
-                    Y.Widget.getByNode(".yui3-wegas-statemachineviewer").set("entity", this._currentData); //TODO: create elsewhere
-                    break;
-            }
-            this.hide();
-        },
         onTreeViewClick: function (e) {
-
             Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");
 
-            var entity = e.target.get("data"),
+            var entity = e.node.get("data"),
             menuItems = entity.getMenuCfg(this.dataSource),
-            domTarget = (e.domEvent) ? e.domEvent.target : e.details[0].domEvent.target;
-
-
-            e.halt(true);                                                       // Stop the event so parent TreeNodes events wont execute
-            e.stopPropagation();
-            e.preventDefault();
+            domTarget = e.domEvent.target;
 
             if (menuItems.length == 0) {
                 return;

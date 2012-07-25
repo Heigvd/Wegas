@@ -244,7 +244,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             }
             e.cfg.node.set("loading", false);
             if(callback){
-                Y.bind(callback, this)(e);
+                callback.call(this, e);
             }
         },
 
