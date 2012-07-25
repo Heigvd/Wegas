@@ -76,6 +76,7 @@ YUI.add('wegas-form', function (Y) {
             msgNode.removeClass("info");
             msgNode.removeClass("warn");
             msgNode.removeClass("error");
+            msgNode.removeClass("success");
             msgNode.one('.content').setContent();
         },
         showMessage: function(level, txt) {

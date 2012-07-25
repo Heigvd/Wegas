@@ -51,6 +51,7 @@ YUI.add('wegas-editor', function(Y) {
                 this.tab.add(this.formWidget);
             }
             this.tabView.selectChild(this.tab.get("index"));
+            this.formWidget.emptyMessage();
             this.formWidget.setForm(entity.toJSON(), entity.getFormCfg());
         },
         showUpdateForm: function (entity, dataSource) {
