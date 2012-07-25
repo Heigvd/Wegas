@@ -115,7 +115,7 @@ Y.add("statemachine-entities", function(Y){
                         }
                     }
                 }
-            },
+            }/*,
             states: {
                 value:{},
                 writeOnce:"initOnly",
@@ -213,7 +213,7 @@ Y.add("statemachine-entities", function(Y){
                         }]
                     }
                 }
-            }
+            }*/
         },
         EDITMENU: [{
             text: "Edit",
