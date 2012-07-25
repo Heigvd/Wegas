@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -181,7 +191,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return Y.Array.find(stack, function(item, index, array) {
                 if (this.testEntity(item, key, needle)) {                       // We check the current element if it's a match
                     if (onFindFn) {
-                        onFindFn(item, needle, array);
+                        onFindFn(item, needle, index, array);
                     }
                     return true;
                 }
@@ -239,9 +249,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 callback: callback
             });
         },
-        deleteObject: function (data) {
+        deleteObject: function (entity) {
             this.sendRequest({
-                request: this.generateRequest(data),
+                request: this.generateRequest(entity.toJSON()),
                 cfg: {
                     method: "DELETE"
                 }

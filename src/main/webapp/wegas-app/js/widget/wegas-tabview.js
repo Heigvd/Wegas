@@ -44,6 +44,8 @@ YUI.add('wegas-tabview', function (Y) {
             if (!tab) {
                 tab = TabView.createTab( id, tabViewSelector, tabCfg);
                 tab.load(widgetCfg, fn);                              // load the widget
+            } else {
+                fn(tab.item(0));
             }
             tab.set("selected", 2);
         }
