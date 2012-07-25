@@ -65,9 +65,12 @@ div.inputEx-message {
     float:none !important;
     clear:both !important;
 }
-.inputEx-CombineField > .inputEx-fieldWrapper {
-    padding:0;
+.inputEx-CombineField > div.inputEx-label {
+    width: 127px;
 }
+/*.inputEx-CombineField > .inputEx-fieldWrapper {
+    padding:0;
+}*/
 /* Inputex List styles */
 div.inputEx-ListField {
     position: relative;
