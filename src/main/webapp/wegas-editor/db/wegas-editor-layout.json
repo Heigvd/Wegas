@@ -13,13 +13,17 @@
                 "cfg": {
                     "children": [{
                         "type": "Button",
-                        "label": "Log",
+                        "label": "Console",
                         "plugins": [{
                             "fn": "OpenTabAction",
                             "cfg": {
                                 "subpage": {
-                                    "type": "Logger"
-                                }
+                                    "type": "Console",
+                                    "class": "wegas-console"
+                                },
+                                "toolbarChildren": [{
+                                    "type": "SelectPlayer"
+                                }]
                             }
                         }]
                     }, {
@@ -30,6 +34,17 @@
                             "cfg": {
                                 "subpage": {
                                     "type": "WysiwygEditor"
+                                }
+                            }
+                        }]
+                    },{
+                        "type": "Button",
+                        "label": "Log",
+                        "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "subpage": {
+                                    "type": "Logger"
                                 }
                             }
                         }]
@@ -122,12 +137,20 @@
                 "type": "Tab",
                 "label": "Variables",
                 "toolbarChildren": [{
-                    "type": "NewButton",
+                    "type": "Button",
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    "targetClass": "VariableDescriptor"
+                    "plugins": [{
+                        "fn": "NewAction",
+                        "cfg": {
+                            "targetClass": "VariableDescriptor"
+                        }
+                    }]
                 }, {
-                    "type": "ResetButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart"
+                    "type": "Button",
+                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
+                    "plugins": [{
+                        "fn": "ResetAction"
+                    }]
                 }],
                 "children": [
                 {
@@ -170,9 +193,14 @@
                     "dataSource": "Game"
                 }],
                 "toolbarChildren": [{
-                    "type": "NewButton",
+                    "type": "Button",
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    "targetClass": "Game"
+                    "plugins": [{
+                        "fn": "NewAction",
+                        "cfg": {
+                            "targetClass": "Game"
+                        }
+                    }]
                 }]
             }, {
                 "type": "Tab",
@@ -181,12 +209,6 @@
                     "type": "FileExplorer"
                 }],
                 "toolbarLabel": "File explorer"
-            },{
-                "type": "Tab",
-                "label": "StateMachine Viewer",
-                "children": [{
-                    "type": "StateMachineViewer"
-                }]
             }]
         }]
     },
@@ -199,17 +221,7 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
-            "children": [{
-                "type": "Tab",
-                "label": "Console",
-                "children": [{
-                    "type": "Console",
-                    "class": "wegas-console"
-                }],
-                "toolbarChildren": [{
-                    "type": "SelectPlayer"
-                }]
-            },
+            "children": [
             {
                 "type": "Tab",
                 "label": "Chat",

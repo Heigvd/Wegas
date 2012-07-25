@@ -16,8 +16,10 @@ YUI().use(function (Y) {
                     /** Base **/
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
-                        requires: ['stylesheet', 'wegas-appcss',
-                        'wegas-entity', 'wegas-datasourcerest',
+                        requires: [
+                        'wegas-datasourcerest',
+                        'wegas-entity', 'statemachine-entities',
+                        'stylesheet', 'wegas-appcss',
                         'wegas-widget', 'wegas-list', 'wegas-pageloader',
                         'wegas-button',
                         ]
@@ -125,10 +127,9 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-app', 'wegas-form',
-                        "wegas-editor-buttons", 'wegas-editor-menu', 'widgetmenu',
-                        'wegas-editor-action',
-                        'wegas-statemachineviewer', 'wegas-treeview',           // @fixme Zhose should be included on the fly
+                        'wegas-app', 'widgetmenu',
+                        "wegas-editor-buttons", 'wegas-editor-action',  'wegas-form',
+                        //'wegas-statemachineviewer',                             // @fixme Zhose should be included on the fly
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -148,8 +149,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
-                        requires: ["button", 'inputex-select'],
-                        ix_provides: 'NewButton'
+                        requires: ['inputex-select'],
+                        ix_provides: 'SelectPlayer'
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -165,9 +166,9 @@ YUI().use(function (Y) {
                         path: 'wegas-editor/js/wegas-editor-menu-min.js',
                         requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"]
                     },
-                    'wegas-treeview': {
-                        path: 'wegas-editor/js/wegas-treeview-min.js',
-                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize', 'resize', "yui2-treeview", 'wegas-menu', 'event'],
+                    'wegas-editor-treeview': {
+                        path: 'wegas-editor/js/wegas-editor-treeview-min.js',
+                        requires: [ 'wegas-widget',  "treeview", "widgetmenu"],
                         ix_provides: 'WTreeView'
                     },
                     'wegas-datatable': {
@@ -236,21 +237,23 @@ YUI().use(function (Y) {
                     },
                     /**Leaderway**/
                     'wegas-leaderway': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
-                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue'],
-                    //ix_provides: ""
+                       path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']//,
+                        //ix_provides: ""
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
-                        requires: ['panel', 'wegas-leaderway-tasklist'],
+                        requires: ['tabview', 'panel', 'wegas-leaderway-tasklist'],
                         ix_provides: "Folder"
                     },
                     'wegas-leaderway-tasklist': {
                         path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
+                        requires: ['datatable'],
                         ix_provides: "TaskList"
                     },
                     'wegas-leaderway-score': {
                         path: 'wegas-leaderway/js/wegas-leaderway-score.js',
+                        requires: ['datatable'],
                         ix_provides: "Score"
                     },
                     'wegas-leaderway-dialogue': {
@@ -316,7 +319,8 @@ YUI().use(function (Y) {
                         requires: ['jsplumb']
                     },
                     'jsplumb-yui-all': {
-                        path:'yui.jsPlumb-1.3.10-all.js'
+                        path:'yui.jsPlumb-1.3.10-all-min.js',
+                        requires: ["anim", "dd"]
                     },
                     'jsbezier': {
                         path: 'jsBezier-0.3-min.js'

@@ -1,3 +1,8 @@
+/**
+ *
+ *
+ */
+
 YUI.add('treeview', function (Y) {
     var getClassName = Y.ClassNameManager.getClassName,
     TREEVIEW = 'treeview',
@@ -21,12 +26,13 @@ YUI.add('treeview', function (Y) {
         },
         renderUI:function() {
         }
-    },
-    {
+    }, {
         NAME:'treeview',
         ATTRS:{
-
-    }
+        },
+        defaultChildType: {
+            value: "TreeLeaf"
+        }
     });
 
     Y.TreeNode = Y.Base.create("treenode", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
@@ -143,9 +149,7 @@ YUI.add('treeview', function (Y) {
         destroyChild: function (item, index){
             item.destroy();
         }
-    },
-
-    {
+    }, {
         NAME : "TreeNode",
         ATTRS : {
             label : {
@@ -214,20 +218,23 @@ YUI.add('treeview', function (Y) {
                     this.currentIconCSS = v;
                     return v;
                 }
-            }
+            },
+            defaultChildType: {
+                value: "TreeLeaf"
+            },
+            data: {}
         }
-    }
-    );
+    });
 
     /**
-         * TreeLeaf widget. Default child type for TreeView.
-         * It extends  WidgetChild, please refer to it's documentation for more info.
-         * @class TreeLeaf
-         * @constructor
-         * @uses WidgetChild
-         * @extends Widget
-         * @param {Object} config User configuration object.
-         */
+     * TreeLeaf widget. Default child type for TreeView.
+     * It extends  WidgetChild, please refer to it's documentation for more info.
+     * @class TreeLeaf
+     * @constructor
+     * @uses WidgetChild
+     * @extends Widget
+     * @param {Object} config User configuration object.
+     */
     Y.TreeLeaf = Y.Base.create("treeleaf", Y.Widget, [Y.WidgetChild], {
 
 
@@ -370,7 +377,8 @@ YUI.add('treeview', function (Y) {
                     this.currentIconCSS = v;
                     return v;
                 }
-            }
+            },
+            data: {}
         }
     });
 });
