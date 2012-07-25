@@ -941,6 +941,9 @@ YUI.add('wegas-entity', function (Y) {
             moralHistory: {
                 type: "array"
             },
+            confidenceHistory: {
+                type: "array"
+            },
             confidence: {
                 type: "string"
             },
@@ -1038,6 +1041,20 @@ YUI.add('wegas-entity', function (Y) {
                     label: "Skillset",
                     _type: "object"
                 }
+            }
+        }
+    });
+    
+    /**
+     * Assignement mapper
+     */
+    Y.Wegas.persistence.Assignment = Y.Base.create("Assignment", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS:{
+            "@class":{
+                value:"TaskInstance"
+            },
+            taskDescriptorId: {
+                type: 'string'
             }
         }
     });
