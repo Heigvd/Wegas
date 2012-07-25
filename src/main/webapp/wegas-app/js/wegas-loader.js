@@ -1,5 +1,14 @@
-/**
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
  *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
+/**
  * Wegas loader, contains module definitions.
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -16,10 +25,12 @@ YUI().use(function (Y) {
                     /** Base **/
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
-                        requires: ['stylesheet', 'wegas-appcss',
-                        'wegas-entity', 'statemachine-entities', 'wegas-datasourcerest',
-                        'wegas-widget', 'wegas-list', 'wegas-pageloader',
-                        'wegas-button',
+                        requires: [
+                        'wegas-datasourcerest',
+                        'wegas-entity', 'statemachine-entities',
+                        'stylesheet', 'wegas-widget', 'wegas-list',
+                        'wegas-pageloader', 'wegas-button',
+                        //'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
                     'wegas-appcss': {
@@ -35,7 +46,7 @@ YUI().use(function (Y) {
                         requires: ['base', 'wegas-inputex', 'inputex-jsonschema']
                     },
                     'statemachine-entities': {
-                        path: 'wegas-editor/js/statemachine-entities-min.js',
+                        path: 'wegas-app/js/statemachine-entities-min.js',
                         requires: ['wegas-entity']
                     },
 
@@ -125,9 +136,9 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-app', 'wegas-form',
-                        "wegas-editor-buttons", 'wegas-editor-action', 'widgetmenu',
-                        'wegas-statemachineviewer',                             // @fixme Zhose should be included on the fly
+                        'wegas-app', 'widgetmenu',
+                        "wegas-editor-buttons", 'wegas-editor-action',  'wegas-form',
+                        //'wegas-statemachineviewer',                             // @fixme Zhose should be included on the fly
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -167,16 +178,20 @@ YUI().use(function (Y) {
                     'wegas-editor-treeview': {
                         path: 'wegas-editor/js/wegas-editor-treeview-min.js',
                         requires: [ 'wegas-widget',  "treeview", "widgetmenu"],
-                        ix_provides: 'WTreeView'
+                        ix_provides: 'EditorTreeView'
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
                         requires: ['datatable', 'datatable-sort' ],
                         ix_provides: 'DataTable'
                     },
+                    'wegas-menucss':{
+                        path: 'wegas-app/css/wegas-menu.css',
+                        type:'css'
+                    },
                     'wegas-menu': {
-                        path:'wegas-editor/js/wegas-menu-min.js',
-                        requires:['button'],
+                        path:'wegas-app/js/widget/wegas-menu-min.js',
+                        requires:['button', 'wegas-menucss'],
                         ix_provides: 'WegasMenu'
                     },
                     'wegas-scriptlibrary': {
@@ -184,9 +199,13 @@ YUI().use(function (Y) {
                         requires: [ 'ace-javascript', 'button' ],
                         ix_provides: 'ScriptLibrary'
                     },
+                    'wegas-fileexplorercss':{
+                        path: 'wegas-editor/css/wegas-fileexplorer.css',
+                        type:'css'
+                    },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
-                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar'],
+                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar', 'wegas-fileexplorercss'],
                         ix_provides: "FileExplorer"
                     },
                     'wegas-progressbar': {
@@ -309,7 +328,8 @@ YUI().use(function (Y) {
                         requires: ['jsplumb']
                     },
                     'jsplumb-yui-all': {
-                        path:'yui.jsPlumb-1.3.10-all.js'
+                        path:'yui.jsPlumb-1.3.10-all-min.js',
+                        requires: ["anim", "dd"]
                     },
                     'jsbezier': {
                         path: 'jsBezier-0.3-min.js'

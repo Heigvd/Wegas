@@ -21,7 +21,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         'Content-Type': 'application/json; charset=utf-8'
     };
 
-    StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.WidgetParent], {
+    StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
         //TODO : zoom on simple scroll (ie without altKey), move panel with mouse (overflow hidden); zoom disabled
         //Zoom and Endpoint pos, sould mult by zoom
         //DRAG and Zoom, same problem
@@ -162,6 +162,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 this.get("entity").set("scope", new Y.Wegas.persistence[e.target.getDOMNode().value]());
             }, this);
         },
+        syncUI: function(){
+            this.set("entity", this.get("entity"));
+        },
         destructor: function (){
             var i;
             jp.unload();
@@ -204,17 +207,19 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 item.destroy();
             });
             this.renderPanel();
-            for(state in sm.get("states")){
-                this.addState(30, 30, parseInt(state), sm.get("states")[state]);
-            }
-
-            this.each(function () {
-                try{
-                    this.makeAllOutgoingTransitions();
-                }catch(e){
-                    console.error("Transition", this, e);
+            if(this.get("entity")){
+                for(state in sm.get("states")){
+                    this.addState(30, 30, parseInt(state), sm.get("states")[state]);
                 }
-            });
+
+                this.each(function () {
+                    try{
+                        this.makeAllOutgoingTransitions();
+                    }catch(e){
+                        console.error("Transition", this, e);
+                    }
+                });
+            }
 
         },
         addState: function(x, y, id, entity){
@@ -258,7 +263,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 case "load":
                     this.loader();
                     break;
-                    case "new":
+                case "new":
                     entity = new Y.Wegas.persistence.DialogueDescriptor();
                     entity.setInitialStateId(1);
                     this.set("entity", entity);

@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -10,7 +20,7 @@ YUI.add('wegas-button', function (Y) {
     LoginButton,
     Button;
 
-    /* @fixme hack so we can programatically add an element to a yui button */
+    /* @fixme So we can display html tag inside a button */
     Y.Button.prototype._uiSetLabel = function(value) {
         var node = this._host,
         attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
@@ -45,7 +55,9 @@ YUI.add('wegas-button', function (Y) {
         }
     }, {
         ATTRS: {
-            tooltips: {}
+            tooltips: {},
+            entity: {},                                                         // @fixme Those two attributes are used in the editor to delete and update an item
+            dataSource: {}
         },
         CSS_PREFIX:"yui3-button wegas-button"
     });
@@ -226,4 +238,14 @@ YUI.add('wegas-button', function (Y) {
     });
 
     Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
+
+
+    /**
+     * Shortcut to create a Button with an OpenPageAction plugin
+     */
+    Y.Wegas.OpenPageButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        initializer: function (cfg) {
+            this.plug(OpenPageAction, cfg);
+        }
+    });
 });

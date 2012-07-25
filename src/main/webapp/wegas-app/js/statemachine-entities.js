@@ -115,7 +115,7 @@ Y.add("statemachine-entities", function(Y){
                         }
                     }
                 }
-            },
+            }/*,
             states: {
                 value:{},
                 writeOnce:"initOnly",
@@ -213,18 +213,15 @@ Y.add("statemachine-entities", function(Y){
                         }]
                     }
                 }
-            }
+            }*/
         },
         EDITMENU: [{
-            text: "Edit",
-            value: {
-                op:'smeditor'
-            }
+            type: "EditEntityButton",
+            plugins: [{
+               fn: "EditFSMAction"
+            }]
         },{
-            text: "Delete",
-            value: {
-                op:'delete'
-            }
+            type: "DeleteEntityButton"
         }]
     });
 

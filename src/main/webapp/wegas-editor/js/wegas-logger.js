@@ -1,37 +1,44 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
 
-/** 
-* @author Francois-Xavier Aeberhard <fx@red-agent.com>
-*/
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
 
 YUI.add('wegas-logger', function(Y) {
+    "use strict"
     var CONTENTBOX = 'contentBox',
-    
-    
+
     Logger = Y.Base.create("wegas-logger", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-	
-	_console: null,
-	
-	renderUI: function () {
+
+        console: null,
+
+        renderUI: function () {
+            Y.log('renderUI()', 'log', "Wegas.Logger");
+
             var node = Y.Node.create('<div style="height:50px"></div>');
-           
-            
+
             this.get(CONTENTBOX).appendChild(node);
-            
-	    this._console = new Y.Console({ 
-		logSource: Y.Global,
-		plugins: [ Y.Plugin.ConsoleFilters ],
-		width: '100%',
-		/*height: '300px',*/
-		style: 'block'						//'inline'
-		//height: '98%',
-		//newestOnTop: false,
-		//logLevel :'log'
-	    }).render(node);
-	    Y.log('renderUI()', 'log', "Wegas.Logger");
-	}
-    }, {
-	ATTRS : { }
+
+            this.console = new Y.Console({
+                logSource: Y.Global,
+                plugins: [ Y.Plugin.ConsoleFilters ],
+                width: '100%',
+                style: 'block'                                                  // 'inline'
+            //height: '300px',
+            //height: '98%',
+            //newestOnTop: false,
+            //logLevel :'log'
+            }).render(node);
+        }
     });
-    
+
     Y.namespace('Wegas').Logger = Logger;
 });

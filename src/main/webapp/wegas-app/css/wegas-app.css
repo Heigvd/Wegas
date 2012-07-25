@@ -156,3 +156,8 @@ input[type="submit"], input[type="reset"] {
     background: darkgray;
     color: white;
 }
+
+/*PROGRESSBAR*/
+.yui3-wegas-progressbar-hidden{
+    display:none !important;
+}

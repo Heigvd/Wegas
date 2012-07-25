@@ -12,27 +12,34 @@
                 "fn": "WidgetMenu",
                 "cfg": {
                     "children": [{
-                        "type": "Button",
-                        "label": "Log",
-                        "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "subpage": {
-                                    "type": "Logger"
-                                }
-                            }
+                        "type": "OpenTabButton",
+                        "label": "Console",
+                        "subpage": {
+                            "type": "Console",
+                            "class": "wegas-console"
+                        },
+                        "toolbarChildren": [{
+                            "type": "SelectPlayer"
                         }]
                     }, {
-                        "type": "Button",
+                        "type": "OpenTabButton",
                         "label": "Wysiwyg script editor",
-                        "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "subpage": {
-                                    "type": "WysiwygEditor"
-                                }
-                            }
-                        }]
+                        "subpage": {
+                            "type": "WysiwygEditor"
+                        }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Pages",
+                        "subpage": {
+                            "type": "EditorTreeView",
+                            "dataSource": "Page"
+                        }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Log",
+                        "subpage": {
+                            "type": "Logger"
+                        }
                     }]
                 }
             }]
@@ -43,39 +50,24 @@
                 "fn": "WidgetMenu",
                 "cfg": {
                     "children": [{
-                        "type": "Button",
+                        "type": "OpenTabButton",
                         "label": "Styles",
-                        "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "subpage": {
-                                    "type": "CSSEditor",
-                                    "class": "wegas-csseditor"
-                                }
-                            }
-                        }]
+                        "subpage": {
+                            "type": "CSSEditor",
+                            "class": "wegas-csseditor"
+                        }
                     },{
-                        "type": "Button",
+                        "type": "OpenTabButton",
                         "label": "Files",
-                        "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "subpage": {
-                                    "type": "FileExplorer"
-                                }
-                            }
-                        }]
+                        "subpage": {
+                            "type": "FileExplorer"
+                        }
                     },{
-                        "type": "Button",
+                        "type": "OpenTabButton",
                         "label": "Scripts",
-                        "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "subpage": {
-                                    "type": "ScriptLibrary"
-                                }
-                            }
-                        }]
+                        "subpage": {
+                            "type": "ScriptLibrary"
+                        }
                     }]
                 }
             }]
@@ -86,26 +78,21 @@
                 "fn": "WidgetMenu",
                 "cfg": {
                     "children": [{
-                        "type": "Button",
+                        "type": "OpenTabButton",
                         "label": "Players",
-                        "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "subpage": {
-                                    "type": "DataTable",
-                                    "dataSource": "User",
-                                    "columnset": [ {
-                                        "key":"id",
-                                        "sortable": true
-                                    }, {
-                                        "key":"name",
-                                        "sortable": true
-                                    }, {
-                                        "key":"@class"
-                                    }]
-                                }
-                            }
-                        }]
+                        "subpage": {
+                            "type": "DataTable",
+                            "dataSource": "User",
+                            "columnset": [ {
+                                "key":"id",
+                                "sortable": true
+                            }, {
+                                "key":"name",
+                                "sortable": true
+                            }, {
+                                "key":"@class"
+                            }]
+                        }
                     }]
                 }
             }]
@@ -122,14 +109,9 @@
                 "type": "Tab",
                 "label": "Variables",
                 "toolbarChildren": [{
-                    "type": "Button",
+                    "type": "NewEntityButton",
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    "plugins": [{
-                        "fn": "NewAction",
-                        "cfg": {
-                            "targetClass": "VariableDescriptor"
-                        }
-                    }]
+                    "targetClass": "VariableDescriptor"
                 }, {
                     "type": "Button",
                     "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
@@ -139,20 +121,12 @@
                 }],
                 "children": [
                 {
-                    "type": "WTreeView",
+                    "type": "EditorTreeView",
                     "dataSource": "VariableDescriptor",
                     "excludeClasses": {
                         "MCQDescriptor": true
                     }
                 }]
-            }, {
-                "type": "Tab",
-                "label": "Pages",
-                "children": [{
-                    "type": "WTreeView",
-                    "dataSource": "Page"
-                }],
-                "toolbarLabel": "Pages"
             }]
         }]
     },
@@ -174,18 +148,13 @@
                 "type": "Tab",
                 "label": "Games",
                 "children": [{
-                    "type": "WTreeView",
+                    "type": "EditorTreeView",
                     "dataSource": "Game"
                 }],
                 "toolbarChildren": [{
-                    "type": "Button",
+                    "type": "NewEntityButton",
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    "plugins": [{
-                        "fn": "NewAction",
-                        "cfg": {
-                            "targetClass": "Game"
-                        }
-                    }]
+                    "targetClass": "Game"
                 }]
             }, {
                 "type": "Tab",
@@ -194,12 +163,6 @@
                     "type": "FileExplorer"
                 }],
                 "toolbarLabel": "File explorer"
-            },{
-                "type": "Tab",
-                "label": "StateMachine Viewer",
-                "children": [{
-                    "type": "StateMachineViewer"
-                }]
             }]
         }]
     },
@@ -212,17 +175,7 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
-            "children": [{
-                "type": "Tab",
-                "label": "Console",
-                "children": [{
-                    "type": "Console",
-                    "class": "wegas-console"
-                }],
-                "toolbarChildren": [{
-                    "type": "SelectPlayer"
-                }]
-            },
+            "children": [
             {
                 "type": "Tab",
                 "label": "Chat",
