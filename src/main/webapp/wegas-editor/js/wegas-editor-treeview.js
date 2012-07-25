@@ -86,33 +86,22 @@ YUI.add('wegas-editor-treeview', function (Y) {
             Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.WTreeView");
 
             var entity = e.target.get("data"),
-            menuItems = entity.getMenuCfg(this.dataSource);
+            menuItems = entity.getMenuCfg(this.dataSource),
+            domTarget = (e.domEvent) ? e.domEvent.target : e.details[0].domEvent.target;
 
             e.halt(true);                                                       // Stop the event so parent TreeNodes events wont execute
-            // Either show the edit menu
-            //                if (e.event.target.className === "wegas-treeview-editmenubutton") {  // Either show the edit menu
-            //                    Y.Wegas.editor.showEditMenu(e.node.data, this.dataSource);
-            //                    Y.Wegas.editor._editMenu.get("boundingBox").appendTo(e.event.target.parentNode);
-            //                    Y.Wegas.editor._editMenu.set("align", {
-            //                        node: e.event.target,
-            //                        points: ["tr", "br"]
-            //                    });
-            //                } else {
-            if (menuItems) {
-                this.menu.removeAll();                                          // Display the edit menu
-                this.menu.add(menuItems);
-                this.menu.attachTo(e.target.get("contentBox"));
+
+            if (menuItems.length == 0) {
+                return;
             }
 
-            Y.Wegas.editor.showUpdateForm(entity, this.dataSource);             // Display the edit form
+            this.menu.removeAll();                                              // Populate the menu with the elements associated to the
+            this.menu.add(menuItems);
 
-            if (entity instanceof Y.Wegas.persistence.FSMDescriptor) {          // If the entity is an fsm descriptor, load and display the editor in a new tab
-                Y.Wegas.TabView.findTabAndLoadWidget( "State machine editor",
-                    "#centerTabView", null, {
-                        type: "StateMachineViewer"
-                    }, Y.bind(function (entity, widget) {
-                        widget.set("entity", entity);
-                    }, this, entity));
+            if (domTarget && domTarget.hasClass("wegas-treeview-editmenubutton")){           // If user clicked on the edit button
+                this.menu.attachTo(domTarget);                                  // Display the edit button next to it
+            } else {                                                            // Otherwise the user clicked on the node
+                this.menu.item(0).fire("click");                                // Excute the actions associated to the first item of the menu
             }
         },
 
@@ -141,10 +130,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
                                 ret.push({
                                     type: 'TreeNode',
-                                    label: text + EDITBUTTONTPL,
+                                    label: text,
                                     children: this.genScopeTreeViewElements(el),
                                     data: el,
-                                    iconCSS: "wegas-icon-variabledescriptor"
+                                    iconCSS: "wegas-icon-variabledescriptor",
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 //iconCSS: "wegas-icon-" + el.get('@class')
                                 });
                                 break;
@@ -154,9 +144,10 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
                                 ret.push({
                                     type: 'TreeNode',
-                                    label: text + EDITBUTTONTPL,
+                                    label: text,
                                     children: this.genTreeViewElements(el.get("items")),
-                                    data: el
+                                    data: el,
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                                 break;
 
@@ -164,11 +155,12 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 text = 'Game: ' + el.get("name") + ' (token:' + el.get("token") + ')';
                                 ret.push({
                                     type: 'TreeNode',
-                                    label: text + EDITBUTTONTPL,
+                                    label: text,
                                     collapsed: false,
                                     children: this.genTreeViewElements(el.get("teams")),
                                     data: el,
-                                    iconCSS: this.getClassName('icon-game')
+                                    iconCSS: 'wegas-icon-game',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                                 break;
 
@@ -176,18 +168,20 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 text = 'Team: ' + el.get("name");
                                 ret.push({
                                     type: 'TreeNode',
-                                    label: text + EDITBUTTONTPL,
+                                    label: text,
                                     children: this.genTreeViewElements(el.get("players")),
                                     data: el,
-                                    iconCSS: this.getClassName('icon-team')
+                                    iconCSS: 'wegas-icon-team',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                                 break;
 
                             case 'Player':
                                 ret.push({
-                                    label: 'Player: ' + el.get("name") + EDITBUTTONTPL,
+                                    label: 'Player: ' + el.get("name"),
                                     data: el,
-                                    iconCSS: this.getClassName('icon-player')
+                                    iconCSS: 'wegas-icon-player',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                                 break;
 
