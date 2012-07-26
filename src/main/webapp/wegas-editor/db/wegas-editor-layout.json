@@ -6,6 +6,10 @@
         "scroll": null,
         "zIndex": 2,
         "children": [{
+            "type": "Text",
+            "content": "Editor",
+            "cssClass": "wegas-editor-title"
+        }, {
             "type": "Button",
             "label": "Developer",
             "plugins": [{

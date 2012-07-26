@@ -35,13 +35,12 @@ YUI.add('wegas-pageloader', function (Y) {
         ATTRS : {
             pageId: {
                 setter: function (val) {
-                    var widgetCfg, oldWidget = this.get("widget");
-
                     if (!val) {
                         return val;
                     }
 
-                    widgetCfg = Y.Wegas.PageFacade.rest.findById(val);
+                    var widgetCfg = Y.Wegas.PageFacade.rest.findById(val),
+                    oldWidget = this.get("widget");
 
                     if (widgetCfg && widgetCfg.id && this.widgetCfg             // If the widget is currently being loaded, escape
                         && this.widgetCfg.id && this.widgetCfg.id == widgetCfg.id) {
@@ -58,7 +57,7 @@ YUI.add('wegas-pageloader', function (Y) {
                     }
 
                     widgetCfg = widgetCfg || {
-                       /* id: val,*/
+                        // id: Y.Wegas.App.genId(),
                         type: "Text",
                         content: "Loading..."
                     };

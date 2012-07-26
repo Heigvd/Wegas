@@ -296,11 +296,14 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            type: "EditEntityButton"
+            type: "Button",
+            label: "Explore",
+            plugins: [{
+                fn: "LoadTreeviewNode"
+            }]
         },{
-            type: "AddEntityChildButton",
-            label: "Add game",
-            childClass: "Game"
+            type: "EditEntityButton",
+            label: "Properties"
         }, {
             type: "DeleteEntityButton"
         }]

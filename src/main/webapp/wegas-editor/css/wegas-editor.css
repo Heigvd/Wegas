@@ -1,15 +1,16 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+*/
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
-
-/* Layout styles */
-.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd,
-.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd {
-    background-color: white;
-}
-.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd-nohd {
-    border:none;
-}
 
 /* InputEx Styles */
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
@@ -52,8 +53,6 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     margin-left:-70px;
     width:65px;
 }
-/*div.inputEx-valid > div.inputEx-message {
-}*/
 div.inputEx-message {
     margin: 0;
 }
@@ -94,6 +93,7 @@ a.inputEx-List-link {
     right: 10px;
     top: 0px;
 }
+
 /* The "add"" button */
 div.inputEx-ListField >  a.inputEx-List-link {
     bottom:3px;
@@ -102,12 +102,13 @@ div.inputEx-ListField >  a.inputEx-List-link {
 img.inputEx-ListField-delButton {
     margin-left:-16px;
 }
-/* Tabs styles */
+
+/* TabView styles */
 /* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
 .yui3-skin-sam .wegas-layout .yui3-tabview,
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content ,
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel{
-    height:inherit;
+    height: inherit;
 }
 .yui3-skin-sam .yui3-tabview-panel {
     padding:0px;
@@ -121,7 +122,6 @@ img.inputEx-ListField-delButton {
     right:0px;
     top: 57px;
 }
-
 
 /** Toolbar styles **/
 .wegas-tab-toolbar {
@@ -212,7 +212,6 @@ img.inputEx-ListField-delButton {
     overflow: hidden;
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
 }
-
 .yui3-skin-sam .wegas-icon-reset {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px -300px;
 }
@@ -262,7 +261,20 @@ img.inputEx-ListField-delButton {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px -870px;
 }
 
-/* Console style */
+/* Console Widget Styles */
+.wegas-console div.inputEx-Field {
+    float:none;
+}
+.wegas-console .results {
+    overflow: auto;
+    position: absolute;
+    top: 155px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+/* YUI3: Console style */
 .yui3-console-hd {
     display:none;
 }
@@ -291,18 +303,6 @@ img.inputEx-ListField-delButton {
     height:auto !important;
     position: absolute;
     bottom: 0px;
-    left: 0;
-    right: 0;
-}
-/* Console Styles */
-.wegas-console div.inputEx-Field {
-    float:none;
-}
-.wegas-console .results {
-    overflow: auto;
-    position: absolute;
-    top: 155px;
-    bottom: 0;
     left: 0;
     right: 0;
 }
@@ -380,7 +380,7 @@ img.inputEx-ListField-delButton {
     top: 4px;
 }
 
-/* Add file/image panel styles */
+/* YUI2 RTE: Add file/image panel styles */
 .yui-skin-sam .yui-editor-panel button {
     padding: 4px 4px 0;
     margin: -2px 0px 0 4px;
@@ -398,7 +398,7 @@ img.inputEx-ListField-delButton {
 .yui-skin-sam .yui-editor-panel .ft {
     border: 1px solid lightgray;
 }
-/* Code source plugin */
+/* YUI2 RTE: View source code plugin */
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-editcode span.yui-toolbar-icon,
 .yui-skin-sam .yui-toolbar-container .yui-button-editcode-selected span.yui-toolbar-icon {
     background: transparent url(../images/wegas-editor-sprite.png) 2px -805px no-repeat;
@@ -413,76 +413,45 @@ img.inputEx-ListField-delButton {
     left: -9999px;
     position: absolute !important;
 }
+
 /* Editor treeview styles */
-.yui3-treenode-content-header, .yui3-treeleaf-content-header {
+.wegas-editor-treeview .yui3-treenode-content-header,
+.wegas-editor-treeview .yui3-treeleaf-content-header {
     cursor:pointer;
 }
-.yui3-treeview .wegas-treeview-editmenubutton {
+.wegas-editor-treeview .wegas-treeview-editmenubutton {
     width: 20px;
     height: 20px;
     cursor: pointer;
-    background: transparent url(../images/wegas-editor-sprite.png) 2px -332px no-repeat;
-    margin: 3px 5px;
+    background: transparent url(../images/wegas-editor-sprite.png) 2px -334px no-repeat;
+    margin: 2px 5px;
     display: inline-block;
 }
 
-/* Treeview icons */
+/* Editor treeview icons */
 .wegas-icon-game,
 .wegas-icon-gamemodel,
 .wegas-icon-team,
 .wegas-icon-player,
 .wegas-icon-variabledescriptor {
-    position: relative;
-    top: 4px;
+    margin: -4px 0 -6px;
+    height: 24px;
 }
 .yui3-skin-sam .wegas-icon-gamemodel {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -517px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -514px no-repeat;
 }
 .yui3-skin-sam .wegas-icon-game {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -517px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -550px no-repeat;
+
 }
 .yui3-skin-sam .wegas-icon-team {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -624px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -621px no-repeat;
 }
 .yui3-skin-sam .wegas-icon-player {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -593px no-repeat;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -590px no-repeat;
 }
 .wegas-icon-variabledescriptor {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -978px no-repeat;
-}
-
-/* Edit Menu Styles */
-.wegas-editor-menu {
-    position:absolute;
-}
-.wegas-editor-menu-hidden {
-    display: none;
-}
-.ygtvcell > div.wegas-editor-menu{
-    display:none;
-}
-.ygtvcell:hover > div.wegas-editor-menu{
-    display:block;
-}
-/* Top Menu bar */
-
-.yui-skin-sam #topmenubar {
-    background: white;
-    border: none;
-}
-.yui-skin-sam #topmenubar .yuimenubaritemlabel {
-    color: #6d6d6d;
-    border-color: transparent;
-    line-height: 1.9em;
-    font-weight: bold;
-    font-size:11px;
-    padding-top: 2px;
-}
-.yui-skin-sam #topmenubar .yuimenubaritem-selected {
-    background: lightgray;
-}
-.yui-skin-sam .yuimenubarnav .yuimenubaritem {
-    border-right: solid 1px transparent;
+    background: transparent url(../images/wegas-editor-sprite.png) 0 -974px no-repeat;
 }
 
 /* System messages */
@@ -587,3 +556,44 @@ img.inputEx-ListField-delButton {
     vertical-align: top;
 }
 
+/* Editor layout styles */
+.wegas-layout-top > div {
+    display: inline-block;
+    vertical-align: top;
+}
+.wegas-layout-top .wegas-editor-title {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 1.9em;
+    color: #6E6E6E;
+    margin: 0px 15px;
+}
+.wegas-layout-top .yui3-button {
+    border: none;
+    font-weight: bold;
+    font-size: 11px;
+    line-height: 1.9em;
+    color: #6E6E6E;
+    box-shadow: none;
+    background: url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+    padding: 3px 20px 3px 10px;
+    margin-top: 7px;
+}
+.wegas-layout-top .yui3-button-hover, .wegas-layout-top .yui3-button:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000',endColorstr='#26000000',GradientType=0),
+        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+    background: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15))),
+        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+    background: -webkit-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
+        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+    background: -moz-linear-gradient(top, transparent,rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15)),
+        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+    background: -ms-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
+        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+    background: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15)),
+        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+    background: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
+        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
+}
+
+/* Lobby layout styles */
