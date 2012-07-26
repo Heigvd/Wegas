@@ -401,7 +401,8 @@ Y.add("statemachine-entities", function(Y){
                             cfg: {
                                 method: "GET",
                                 headers:{
-                                    'Content-Type': 'application/json; charset=utf-8'
+                                    'Content-Type': 'application/json; charset=utf-8',
+                                    'Managed-Mode':'true'
                                 }
                             },
                             callback: callbacks
