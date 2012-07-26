@@ -363,12 +363,14 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.Wegas.EditEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
         bindUI: function () {
             this.plug(EditEntityAction);
-            this.set("label", "Edit");                                          // @fixme hack because the ATTR's value is not taken into account
+            if (!this.get("label")) {
+                this.set("label", "Edit");                                      // @fixme hack because the ATTR's value is not taken into account
+            }
         }
     }, {
-        ATTRS:{
+        ATTRS: {
             label: {
-                value: "Edit"
+                value: "Y.ButtonCore.ATTRS.label.value"
             }
         }
     });
@@ -387,7 +389,9 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.Wegas.DeleteEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
         bindUI: function () {
             this.plug(DeleteEntityAction);
-            this.set("label", "Delete");                                        // @fixme hack because the ATTR's value is not taken into account
+            if (!this.get("label")) {
+                this.set("label", "Delete");                                    // @fixme hack because the ATTR's value is not taken into account
+            }
         }
     }, {
         ATTRS:{
