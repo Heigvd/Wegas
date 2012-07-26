@@ -220,15 +220,16 @@ YUI.add('wegas-entity', function (Y) {
         readObject: function (o) {
             var classDef = Y.Wegas.persistence.Entity;
 
-            if (o["@class"] && o["@class"].indexOf("Descriptor") !== -1) {                     // @Hack so VariableDescriptors are instantiated even if they dont have a mapping
-                classDef = Y.Wegas.persistence.VariableDescriptor;
-            }
-            if (o["@class"] && o["@class"].indexOf("Instance") !== -1) {                       // @Hack so VariableInstances are instantiated even if they dont have a mapping
-                classDef = Y.Wegas.persistence.VariableInstance;
-            }
             if (o["@class"] && Y.Wegas.persistence[o["@class"]]) {
                 // console.log(o["@class"] );
-                classDef = Y.Wegas.persistence[o["@class"]] || classDef;
+                classDef = Y.Wegas.persistence[o["@class"]];
+            }else{
+                if (o["@class"] && o["@class"].indexOf("Descriptor") !== -1) {                     // @Hack so VariableDescriptors are instantiated even if they dont have a mapping
+                    classDef = Y.Wegas.persistence.VariableDescriptor;
+                }
+                if (o["@class"] && o["@class"].indexOf("Instance") !== -1) {                       // @Hack so VariableInstances are instantiated even if they dont have a mapping
+                    classDef = Y.Wegas.persistence.VariableInstance;
+                }
             }
             return new classDef(o);
         }
