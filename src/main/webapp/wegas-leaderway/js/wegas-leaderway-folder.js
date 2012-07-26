@@ -40,18 +40,24 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 resourceSelector.length = 0;
                 resourceDescriptor = listResourcesDescriptor.get('items')[i];
                 resourceInstance = resourceDescriptor.getInstance();
-                textOccupation = (this.getOccupation(resourceInstance).indexOf("Libre") == -1)? "Occupé" : "Libre";
+                switch(this.getOccupationObject(resourceInstance).code){
+                    case 0 : textOccupation = "Libre";
+                        break;
+                        case 1 : textOccupation = "Occupé";
+                        break;
+                        default : textOccupation = "Malade";
+                }
                 resourceSelector.push('<div class="resourceSelector">');
                 resourceSelector.push('<div class="ID" style="display:none;"><p>');
                 resourceSelector.push(resourceDescriptor.get('id'));
                 resourceSelector.push('</p></div>');
                 if(resourceInstance.get('properties').picture != null){
                     resourceSelector.push('<div class="picture">');
-                    resourceSelector.push('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="30" height="35" />');
+                    resourceSelector.push('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="35" height="35" />');
                     resourceSelector.push('</div>');
                 }
                 resourceSelector.push('<div class="name"><p>');
-                resourceSelector.push(resourceDescriptor.get('name'));
+                resourceSelector.push(resourceInstance.get('properties').surname);
                 resourceSelector.push('</p></div>');
                 resourceSelector.push('<div class="occupation"><p>');
                 resourceSelector.push(textOccupation);
@@ -59,7 +65,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 resourceSelector.push('</div>');
                 cb.one('.listResources').insert(resourceSelector.join(""));
             }
-            this.handlers.push(cb.all('.listResources .resourceSelector').on('click', function (e) {
+            this.handlers.push(cb.one('.listResources').delegate('click', function (e) {
                 var newResource = null, resourceID = parseInt(e.currentTarget._node.childNodes[0].innerText);
                 for(i=0; i<listResourcesDescriptor.get('items').length; i++){
                     resourceDescriptor = listResourcesDescriptor.get('items')[i];
@@ -68,7 +74,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 if(newResource == null) newResource = listResourcesDescriptor.get('items')[0];
                 this.currentResourceDescriptor = newResource;
                 this.syncUI();  
-            },this));
+            }, '.resourceSelector', this));
         },
         
         syncResourcesSelector: function(cb, listResourcesDescriptor){
@@ -76,12 +82,18 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             for(i=0; i<listResourcesDescriptor.get('items').length; i++){
                 resourceDescriptor = listResourcesDescriptor.get('items')[i];
                 resourceInstance = resourceDescriptor.getInstance();
-                textOccupation = (this.getOccupation(resourceInstance).indexOf("Libre") == -1)? "Occupé" : "Libre";
+                switch(this.getOccupationObject(resourceInstance).code){
+                    case 0 : textOccupation = "Libre";
+                        break;
+                        case 1 : textOccupation = "Occupé";
+                        break;
+                        default : textOccupation = "Malade";
+                }
                 cb.all('.listResources .resourceSelector .ID').item(i).setHTML(resourceDescriptor.get('id'));
                 if(cb.all('.listResources .resourceSelector .picture')!=null){
-                    cb.all('.listResources .resourceSelector .picture').item(i).setHTML('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="30" height="35" />');
+                    cb.all('.listResources .resourceSelector .picture').item(i).setHTML('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="35" height="35" />');
                 }
-                cb.all('.listResources .resourceSelector .name').item(i).setHTML(resourceDescriptor.get('name'));
+                cb.all('.listResources .resourceSelector .name').item(i).setHTML(resourceInstance.get('properties').surname);
                 cb.all('.listResources .resourceSelector .occupation').item(i).setHTML(textOccupation);
                 if(resourceDescriptor.get('id') == this.currentResourceDescriptor.get('id')){
                     cb.all('.listResources .resourceSelector').item(i).addClass('selected');
@@ -102,12 +114,12 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 cb.one('.folder .salary-value').insert(currentResourceInstance.get('properties').salary);   
             }
             if(currentResourceInstance.get('properties').picture != null){
-                cb.one('.folder .picture').insert('<img src="'+currentResourceInstance.get('properties').picture+'" alt="picture" width=120 height="140" />');
+                cb.one('.folder .picture').insert('<img src="'+currentResourceInstance.get('properties').picture+'" alt="picture" width=140 height="140" />');
             }
             this.addLevelOfLeadershipInformations(cb, currentResourceInstance);
             cb.one('.folder .moral').insert(this.createGauge('Moral', parseInt(currentResourceInstance.get('moral'))));
             cb.one('.folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentResourceInstance.get('confidence'))));
-            cb.one('.folder .occupation-value').insert(this.getOccupation(currentResourceInstance));
+            cb.one('.folder .occupation-value').insert(this.getTextOccupation(currentResourceInstance));
             for (var key in currentResourceInstance.get('skillset')){
                 cb.one('.folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentResourceInstance.get('skillset')[key]))+'</div>');
             }
@@ -120,12 +132,21 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 leadershipLevel = parseInt(resourceInstance.get('properties').leadershipLevel);
                 if(leadershipLevel >= 1 && leadershipLevel <=5){
                     leadershipInfo.push('<ul class="leadershipLevel-ul">');
-                    leadershipInfo.push('<li class="leadershipLevel-label">Votre niveau de leadership avec ce membre est : </li>');
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour lui et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la survie de l'entreprise. </li>");
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car il vous considère et pense que vos choix sont justifiés.</li>");
-                    leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");
+                    leadershipInfo.push('<li class="leadershipLevel-label">Votre niveau de leadership avec '+surname+' est : </li>');
+                    if(resourceInstance.get('properties').male == 'true'){
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour lui et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la survie de l'entreprise. </li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car il vous considère et pense que vos choix sont justifiés.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");   
+                    }
+                    else{
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper. </li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'elle en a le devoir.</li>");
+                    }
                     leadershipInfo.push('</ul>');
                     cb.one('.leadershipLevel-value').insert(leadershipInfo.join(""));
                     
@@ -140,21 +161,18 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
         },
 
-        getOccupation: function(resourceInstance){
-            var i, j, occupation = new Array(), sick=false,
+        getOccupationObject: function(resourceInstance){
+            var i, j, occupationObject = null, sick=false,
             taskListDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),
             listAbsenceDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "absences"),
-            taskDescriptor, taskInstance, taskSkills = new Array();
+            taskDescriptor;
             for (i = 0; i < listAbsenceDescriptor.get('items').length; i++) {
                 taskDescriptor = listAbsenceDescriptor.get('items')[i];
-                taskInstance = taskDescriptor.getInstance();
-                if(taskInstance.get('active')){
+                if(taskDescriptor.getInstance().get('active')){
                     for(j = 0; j < resourceInstance.get('assignments').length; j++){
                         if(taskDescriptor.get('id') == resourceInstance.get('assignments')[j].get('taskDescriptorId')){
                             sick=true;
-                            occupation.push('Arrêt maladie (revient dans ');
-                            occupation.push(taskInstance.get('duration'));
-                            (taskInstance.get('duration') > 1)?occupation.push(' semaines).') : occupation.push(' semaine).');
+                            occupationObject = {code:2, taskDescriptor: taskDescriptor};
                             break;
                         }
                     }
@@ -165,24 +183,40 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     for(j = 0; j < resourceInstance.get('assignments').length; j++){
                         taskDescriptor = taskListDescriptor.get('items')[i];
                         if(taskDescriptor.get('id') == resourceInstance.get('assignments')[j].get('taskDescriptorId')){
-                            taskInstance = taskDescriptor.getInstance();
-                            for(var key in taskInstance.get('skillset')){
-                                taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.get('skillset')[key]+')</li>');
-                            }
-                            occupation.push('<div class="task">');
-                            occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+taskDescriptor.name+'</span></div>');
-                            occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>'+taskSkills.join("")+'</ul></div>');
-                            occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.get('properties').salary+'</span></div>');
-                            occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskInstance.get('duration')+'</span></div>');
-                            occupation.push("</div>");
-                            sick=false;
-                            taskSkills.length = 0;
+                            occupationObject = {code:1, taskDescriptor: taskDescriptor};
                         }
                     }
                 }
             }
-            if(occupation.length <= 0){
-                occupation.push('Libre pour un mandat, travail habituel.');
+            if(occupationObject == null){
+                occupationObject = {code:0, taskDescriptor: null};
+            }
+            return occupationObject;
+        },
+        
+        getTextOccupation: function(resourceInstance){
+            var occupationObject, occupation = new Array(), taskInstance, taskSkills = new Array();
+            occupationObject = this.getOccupationObject(resourceInstance);
+            if(occupationObject.taskDescriptor != null) taskInstance = occupationObject.taskDescriptor.getInstance();
+            switch(occupationObject.code){
+                case 0 :
+                    occupation.push('Libre pour un mandat, travail habituel.');
+                    break;
+                case 1 :
+                        for(var key in taskInstance.get('skillset')){
+                            taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.get('skillset')[key]+')</li>');
+                        }
+                        occupation.push('<div class="task">');
+                        occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+occupationObject.taskDescriptor.name+'</span></div>');
+                        occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>'+taskSkills.join("")+'</ul></div>');
+                        occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.get('properties').salary+'</span></div>');
+                        occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskInstance.get('duration')+'</span></div>');
+                        occupation.push("</div>");
+                    break;
+                default :
+                    occupation.push('Arrêt maladie (revient dans ');
+                    occupation.push(taskInstance.get('duration'));
+                    (taskInstance.get('duration') > 1)?occupation.push(' semaines).') : occupation.push(' semaine).');
             }
             return occupation.join("");
         },
@@ -217,9 +251,13 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         bindActions: function(cb){
-            this.handlers.push(cb.one('.actions .giveTask').on('click', function (e) {
+            var listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
+            this.handlers.push(cb.one('.actions').delegate('click', function (e) {
                 if(this.tasksChooser != null) this.tasksChooser.show();
-            }, this));
+            }, '.giveTask', this));
+            this.handlers.push(cb.one('.actions').delegate('click', function (e) {
+                alert('todo');
+            }, '.speak', this));            
         },
         
         syncAction: function(cb){
@@ -228,7 +266,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
                 for(i=0 ;i<resInstance.get('assignments').length; i++){
-                    if(this.getOccupation(resourceInstance).indexOf("Libre") == -1){
+                    if(this.getOccupationObject(resourceInstance).code > 0){
                         showActiongGiveTask = false;   
                     }
                 }
@@ -248,7 +286,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         assignTask: function(resourceDescriptor, taskDescriptor){
-            var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback'), success = false;
+            var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback');
             if(taskDescriptor != null && resourceDescriptor != null){
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),

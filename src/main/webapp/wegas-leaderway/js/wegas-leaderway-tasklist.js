@@ -139,14 +139,13 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         bindUI: function() {
             this.handlers.push(Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-            this.table.delegate('click', function (e) {
+            this.handlers.push(this.table.delegate('click', function (e) {
                 this.selectRow(e);
-            }, '.yui3-datatable-data tr', this);
+            }, '.yui3-datatable-data tr', this));
         },
         
         syncUI: function (){
-            var cb = this.get(CONTENTBOX),
-            listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks");
+            var listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks");
             if(!listTasksDescriptor) return;
             this.data.length = 0;
             this.getTasksData(listTasksDescriptor);

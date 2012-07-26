@@ -98,8 +98,8 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         readStateMachine: function(cb){
-            var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues"),
-            state, rawText, jsonText, text = new Array();
+            var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialoguesLucien"),
+            state, rawText, jsonText, text, splittedText = new Array();
             if(dialogue == null){
                 cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 return;
@@ -110,7 +110,8 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
             rawText = state.get('text');
             jsonText = JSON.parse(rawText);
-            text = jsonText.text.split(new RegExp(" ", "g"));
+            text = jsonText.text[Math.floor(Math.random()*jsonText.length)];
+            splittedText = text.split(new RegExp(" ", "g"));
             cb.one('.speaker-name').setHTML(jsonText.speakerName);
             cb.one('.dialogue .talk').insert('<p></p>');
             this.renderHTMLImages(cb.one('.pictures .backgroundLayer'), jsonText.backgroundImages);
@@ -118,7 +119,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             this.renderHTMLImages(cb.one('.pictures .answerLayer'), jsonText.answerImages);
             cb.one('.pictures .backgroundLayer').show();
             cb.one('.pictures .questionLayer').show();
-            setTimeout(Y.bind(this.displayText, this, cb, text), 500);
+            setTimeout(Y.bind(this.displayText, this, cb, splittedText), 500);
         },
         
         renderHTMLImages: function(node, imageObjects){

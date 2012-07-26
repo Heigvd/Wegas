@@ -329,9 +329,9 @@ body{
 
 .wegas-folder .leaderway-folder .folder .picture{
     position:absolute;
-    left:820px;
+    left:800px;
     height:140px;
-    width:120px;
+    width:140px;
 }
 
 .wegas-folder .leaderway-folder .folder .picture img{
@@ -402,7 +402,8 @@ body{
 }
 
 .wegas-folder .leaderway-folder .folder .gauge{
-    margin:0 150px 20px 0;
+    margin-bottom:20px;
+    width:350px;
     float:left;
 }
 

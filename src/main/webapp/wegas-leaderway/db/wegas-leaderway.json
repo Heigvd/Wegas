@@ -89,28 +89,104 @@
             "name": "resources",
             "items":[{
                     "@class": "ResourceDescriptor",
-                    "name": "Salzmann",
+                    "name": "Salmero",
                     "description":"Test de description.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
-                        "moral":80,
-                        "confidence":50,
+                        "moral":72,
+                        "confidence":27,
                         "properties":{
-                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/1/read/portraitFernand.png",
                             "surname":"Fernand",
-                            "salary":1200,
-                            "leadershipLevel":2,
+                            "male":true,
+                            "salary":4000,
+                            "leadershipLevel":1,
                             "lastWorkQuality":70,
                             "wish":"",
                             "hate":"",
-                            "frankness":85,
+                            "frankness":90,
                             "numberOfWorkWithLeader":0,
                             "totalExperienceGained":0,
-                            "learningCoefficient":1
+                            "learningCoefficient":0.7,
+                            "dialogue":""
                         },
                         "skillset":{
-                            "Design graphique":30,
-                            "Négociation":75
+                            "Design graphique":15,
+                            "Développement de base de données":32,
+                            "Développement logiciel":26,
+                            "Langages Web":29,
+                            "Modélisation des traitements":44,
+                            "Negociation": 84
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "ResourceDescriptor",
+                    "name": "Brossard",
+                    "description":"Test de description.",
+                    "defaultVariableInstance":{
+                        "@class":"ResourceInstance",
+                        "moral":45,
+                        "confidence":30,
+                        "properties":{
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/1/read/portraitDaniela.png",
+                            "surname":"Daniela",
+                            "male":false,
+                            "salary":3800,
+                            "leadershipLevel":1,
+                            "lastWorkQuality":48,
+                            "wish":"",
+                            "hate":"",
+                            "frankness":65,
+                            "numberOfWorkWithLeader":0,
+                            "totalExperienceGained":0,
+                            "learningCoefficient":0.6,
+                            "dialogue":""
+                        },
+                        "skillset":{
+                            "Design graphique":84,
+                            "Développement de base de données":24,
+                            "Développement logiciel":5,
+                            "Langages Web":44,
+                            "Modélisation des traitements":19,
+                            "Negociation": 60
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "ResourceDescriptor",
+                    "name": "Vogt",
+                    "description":"Test de description.",
+                    "defaultVariableInstance":{
+                        "@class":"ResourceInstance",
+                        "moral":50,
+                        "confidence":34,
+                        "properties":{
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/1/read/portraitJessica.png",
+                            "surname":"Jessica",
+                            "male":false,
+                            "salary":3300,
+                            "leadershipLevel":1,
+                            "lastWorkQuality":52,
+                            "wish":"",
+                            "hate":"",
+                            "frankness":66,
+                            "numberOfWorkWithLeader":0,
+                            "totalExperienceGained":0,
+                            "learningCoefficient":1,
+                            "dialogue":""
+                        },
+                        "skillset":{
+                            "Design graphique":12,
+                            "Développement de base de données":49,
+                            "Développement logiciel":31,
+                            "Langages Web":67,
+                            "Modélisation des traitements":38,
+                            "Negociation": 8
                         }
                     },
                     "scope": {
@@ -122,27 +198,30 @@
                     "description":"sans description",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
-                        "moral":95,
-                        "confidence":40,
+                        "moral":85,
+                        "confidence":37,
                         "properties":{
-                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
-                            "surname":"Hercule",
-                            "salary":1500,
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/53/read/portraitHector.png",
+                            "surname":"Hector",
+                            "male":true,
+                            "salary":3400,
                             "leadershipLevel":1,
-                            "lastWorkQuality":75,
-                            "wish":"Développement logiciel",
-                            "hate":"Design graphique",
-                            "frankness":85,
+                            "lastWorkQuality":89,
+                            "wish":"",
+                            "hate":"",
+                            "frankness":80,
                             "numberOfWorkWithLeader":0, 
                             "totalExperienceGained":0,
-                            "learningCoefficient":1
+                            "learningCoefficient":1.2,
+                            "dialogue":""
                         },
                         "skillset":{
-                            "Langages Web":85,
-                            "Développement de base de données":78,
-                            "Modélisation des traitements":86,
-                            "Développement logiciel":80,
-                            "Design graphique":34
+                            "Design graphique":4,
+                            "Développement de base de données":34,
+                            "Développement logiciel":64,
+                            "Langages Web":40,
+                            "Modélisation des traitements":65,
+                            "Negociation": 2
                         }
                     },
                     "scope": {
@@ -150,29 +229,34 @@
                     }
                 },{
                     "@class": "ResourceDescriptor",
-                    "name": "Boniface",
+                    "name": "Torr",
                     "description":"Description du personnage",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
-                        "moral":60,
-                        "confidence":70,
+                        "moral":50,
+                        "confidence":9,
                         "properties":{
-                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
-                            "surname":"Laurentin",
-                            "salary":1300,
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/1/read/portraitLucien.png",
+                            "surname":"Lucien",
+                            "male":true,
+                            "salary":3500,
                             "leadershipLevel":1,
-                            "lastWorkQuality":60,
+                            "lastWorkQuality":66,
                             "wish":"",
-                            "hate":"Négociation",
-                            "frankness":35,
+                            "hate":"",
+                            "frankness":10,
                             "numberOfWorkWithLeader":0,
                             "totalExperienceGained":0,
-                            "learningCoefficient":1
+                            "learningCoefficient":1,
+                            "dialogue":""
                         },
                         "skillset":{
-                            "Langages Web":67,
-                            "Développement de base de données":44,
-                            "Design graphique":57
+                            "Design graphique":12,
+                            "Développement de base de données":72,
+                            "Développement logiciel":25,
+                            "Langages Web":26,
+                            "Modélisation des traitements":34,
+                            "Negociation": 45
                         }
                     },
                     "scope": {
@@ -347,7 +431,7 @@
         },
         {
             "@class" : "DialogueDescriptor",
-            "name" : "dialogues",
+            "name" : "dialoguesLucien",
             "defaultVariableInstance" : {
                 "@class" : "FSMInstance",
                 "currentStateId" : 1
@@ -358,7 +442,7 @@
             "states" : {
                 "1" : {
                     "@class" : "DialogueState",
-                    "text" : "{\"speakerName\":\"Boniface\",\"text\":\"Bonjours, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343217993-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "text" : "{\"speakerName\":\"Boniface\",\"text\":[\"Texte aléatoire 1 : Bonjours, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 2 : Salut, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 3 : Ciao, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343217993-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [{
                             "@class" : "DialogueTransition",
                             "actionText" : "Si je fais ça, je vais dans l'état 2",
