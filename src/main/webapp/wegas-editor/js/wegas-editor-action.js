@@ -16,40 +16,6 @@ YUI.add('wegas-editor-action', function (Y) {
     "use strict";
 
     /**
-     *  @class OpenTabAction
-     *  @module Wegas
-     *  @constructor
-     */
-    var OpenTabAction = function () {
-        OpenTabAction.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.mix(OpenTabAction, {
-        NS: "wegas",
-        NAME: "OpenTabAction"
-    });
-
-    Y.extend(OpenTabAction, Y.Plugin.Base, {
-
-        tab: null,
-
-        initializer: function () {
-            this.afterHostEvent("click", function() {
-                Y.Wegas.TabView.findTabAndLoadWidget( this.get("host").get("label"), this.get("tabSelector"), null, this.get("subpage"));
-            }, this);
-        }
-    }, {
-        ATTRS: {
-            tabSelector: {
-                value: '#centerTabView'
-            },
-            subpage: {}
-        }
-    });
-
-    Y.namespace("Plugin").OpenTabAction = OpenTabAction;
-
-    /**
      *  @class NewEntityAction
      *  @module Wegas
      *  @constructor
@@ -248,11 +214,11 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.extend(EditFSMAction, Y.Plugin.Base, {
         execute: function() {
             Y.Wegas.TabView.findTabAndLoadWidget("State machine editor",        // Load and display the editor in a new tab
-            "#centerTabView", null, {
-                type: "StateMachineViewer"
-            }, Y.bind(function (entity, widget) {
-                widget.set("entity", entity);
-            }, this, this.get("host").get("entity")));
+                "#centerTabView", null, {
+                    type: "StateMachineViewer"
+                }, Y.bind(function (entity, widget) {
+                    widget.set("entity", entity);
+                }, this, this.get("host").get("entity")));
         },
         initializer: function () {
             this.afterHostEvent("click", this.execute, this);
@@ -292,6 +258,174 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.namespace("Plugin").ResetAction = ResetAction;
 
+    /**
+     *  @class OpenTabAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var OpenTabAction = function () {
+        OpenTabAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(OpenTabAction, {
+        NS: "wegas",
+        NAME: "OpenTabAction"
+    });
+
+    Y.extend(OpenTabAction, Y.Plugin.Base, {
+
+        tab: null,
+
+        initializer: function () {
+            this.afterHostEvent("click", function() {
+                Y.Wegas.TabView.findTabAndLoadWidget( this.get("host").get("label"),
+                    this.get("tabSelector"), {
+                        toolbarChildren: this.get("toolbarChildren")
+                    }, this.get("subpage"));
+            }, this);
+        }
+    }, {
+        ATTRS: {
+            tabSelector: {
+                value: '#centerTabView'
+            },
+            subpage: {},
+            toolbarChildren: {}
+        }
+    });
+
+    Y.namespace("Plugin").OpenTabAction = OpenTabAction;
+
+    /**
+     *  @class OpenTabAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var OpenTabAction = function () {
+        OpenTabAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(OpenTabAction, {
+        NS: "wegas",
+        NAME: "OpenTabAction"
+    });
+
+    Y.extend(OpenTabAction, Y.Plugin.Base, {
+
+        tab: null,
+
+        initializer: function () {
+            this.afterHostEvent("click", function() {
+                Y.Wegas.TabView.findTabAndLoadWidget( this.get("host").get("label"),
+                    this.get("tabSelector"), {
+                        toolbarChildren: this.get("toolbarChildren")
+                    }, this.get("subpage"));
+            }, this);
+        }
+    }, {
+        ATTRS: {
+            tabSelector: {
+                value: '#centerTabView'
+            },
+            subpage: {},
+            toolbarChildren: {}
+        }
+    });
+
+    Y.namespace("Plugin").OpenTabAction = OpenTabAction;
+
+
+
+    /**
+     *  @class OpenGameAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var OpenGameAction = function () {
+        OpenGameAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(OpenGameAction, {
+        NS: "wegas",
+        NAME: "OpenGameAction"
+    });
+
+    Y.extend(OpenGameAction, Y.Plugin.Base, {
+        initializer: function () {
+            this.afterHostEvent( "click", function () {
+                var params, entity = this.get( "host" ).get( "entity" );
+
+                if ( entity instanceof Y.Wegas.persistence.GameModel ) {
+                    params = "gameModelId=" + entity.get( "id" );
+                } else if ( entity instanceof Y.Wegas.persistence.Player ) {
+                    params = "id=" + entity.get( "id" );
+                }  else {
+                    params = "gameId=" + entity.get( "id" );
+                }
+
+                window.open( Y.Wegas.app.get( "base" ) + this.get("editorUrl") + params );
+            }, this );
+        }
+    }, {
+        ATTRS: {
+            editorUrl: {
+                value: 'wegas-editor/view/editor.html?'
+            }
+        }
+    });
+
+    Y.namespace( "Plugin" ).OpenGameAction = OpenGameAction;
+
+    /**
+     *  @class LoadTreeviewNodeAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var LoadTreeviewNodeAction = function () {
+        LoadTreeviewNodeAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(LoadTreeviewNodeAction, {
+        NS: "wegas",
+        NAME: "LoadTreeviewNodeAction"
+    });
+
+    Y.extend(LoadTreeviewNodeAction, Y.Plugin.Base, {
+
+        tab: null,
+
+        initializer: function () {
+            this.afterHostEvent("click", function() {
+                var host = this.get("host"),
+                entityId = host.get("entity").get("id"),
+                tabId = this.get("tabId") || host.get("label"),
+                tabCfg = {
+                    label: host.get("entity").get("name") || "Unnamed"
+                },
+                tab = Y.Wegas.TabView.createTab( tabId,
+                    this.get("tabSelector"), tabCfg );
+                tab.set("selected", 2);
+
+                tab.CHILDREN[0].set("emptyMessage", "This game model has no games.");
+
+                Y.Wegas.GameFacade.set("source",                                // Change the source attribute on the datasource
+                    Y.Wegas.app.get("base") + "rest/GameModel/" + entityId + "/Game");
+                Y.Wegas.GameFacade.sendRequest({
+                    request: "/"
+                });
+            });
+        }
+    }, {
+        ATTRS: {
+            tabId: {},
+            tabSelector: {
+                value: '#centerTabView'
+            }
+        }
+    });
+
+    Y.namespace("Plugin").LoadTreeviewNodeAction = LoadTreeviewNodeAction;
+
 
     // *** Buttons *** //
     /**
@@ -309,12 +443,14 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.Wegas.EditEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
         bindUI: function () {
             this.plug(EditEntityAction);
-            this.set("label", "Edit");                                          // @fixme hack because the ATTR's value is not taken into account
+            if (!this.get("label")) {
+                this.set("label", "Edit");                                      // @fixme hack because the ATTR's value is not taken into account
+            }
         }
     }, {
-        ATTRS:{
+        ATTRS: {
             label: {
-                value: "Edit"
+                value: "Y.ButtonCore.ATTRS.label.value"
             }
         }
     });
@@ -333,7 +469,9 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.Wegas.DeleteEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
         bindUI: function () {
             this.plug(DeleteEntityAction);
-            this.set("label", "Delete");                                        // @fixme hack because the ATTR's value is not taken into account
+            if (!this.get("label")) {
+                this.set("label", "Delete");                                    // @fixme hack because the ATTR's value is not taken into account
+            }
         }
     }, {
         ATTRS:{

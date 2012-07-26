@@ -21,13 +21,9 @@ YUI.add('wegas-editor-treeview', function (Y) {
     EditorTreeView = Y.Base.create("wegas-editor-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         // *** Private fields ** //
-        dataSource: null,
         treeView: null,
 
         // ** Lifecycle methods ** //
-        initializer: function () {
-            this.dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
-        },
 
         renderUI: function () {
             this.treeView = new Y.TreeView();
@@ -36,20 +32,35 @@ YUI.add('wegas-editor-treeview', function (Y) {
         },
 
         bindUI: function () {
-            if (this.dataSource) {
-                this.dataSource.after("response", this.syncUI, this);           // Listen updates on the target datasource
+            if ( this.get( "dataSource" ) ) {
+                this.get( "dataSource" ).after( "response", this.syncUI, this );// Listen updates on the target datasource
             }
-            this.treeView.on("*:click", this.onTreeViewClick, this);
+            this.treeView.on( "*:click", this.onTreeViewClick, this );
         },
 
         syncUI: function () {
-            if (!this.dataSource) {
-                this.get(CONTENTBOX).setContent("Unable to find datasource")
+            this.set( "dataSource", this.get( "dataSource" ));
+
+            if ( !this.get( "dataSource" ) ) {
+                this.get( CONTENTBOX ).append( "Unable to find datasource" );
                 return;
             }
-            var treeViewElements = this.genTreeViewElements(this.dataSource.rest.getCache());
+
+            var cb = this.get( CONTENTBOX ),
+            ds = this.get("dataSource"),
+            selector = this.get( "dataSelector" ),
+            entities =  ( selector ) ? ds.rest.find( selector.key, selector.val ) : ds.rest.getCache(),
+            msg = this.get( CONTENTBOX ).one( ".wegas-smallmessage" );
+
+            if (msg) {
+                msg.remove(true);
+            }
             this.treeView.removeAll();
-            this.treeView.add(treeViewElements);
+            if ( entities.length == 0 ) {
+                this.get( CONTENTBOX ).append( '<div class="wegas-smallmessage">' + this.get( "emptyMessage" ) + '</div>' );
+                return;
+            }
+            this.treeView.add( this.genTreeViewElements( entities ) );
         },
 
         destroyer: function () {
@@ -57,18 +68,12 @@ YUI.add('wegas-editor-treeview', function (Y) {
             this.menu.destroy();
         },
 
-        // ** Private methods ** //
-
-        setItemsByEntity: function(entity, dataSource) {
-
-        },
-
         // *** Private Methods *** //
         onTreeViewClick: function (e) {
             Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");
 
             var entity = e.node.get("data"),
-            menuItems = entity.getMenuCfg(this.dataSource),
+            menuItems = entity.getMenuCfg( this.get( "dataSource" ) ),
             domTarget = e.domEvent.target;
 
             if (menuItems.length == 0) {
@@ -326,10 +331,21 @@ YUI.add('wegas-editor-treeview', function (Y) {
             excludeClasses: {
                 value: null
             },
-            dataSource: {}
+            emptyMessage: {
+                value: "No data to display"
+            },
+            dataSelector: {},
+            dataSource: {
+                setter: function ( val ) {
+                    if ( Y.Lang.isString( val ) ) {
+                        val = Y.Wegas.app.dataSources[val];
+                    }
+                    return val;
+                }
+            }
         }
     });
 
 
-    Y.namespace('Wegas').EditorTreeView = EditorTreeView;
+    Y.namespace( 'Wegas' ).EditorTreeView = EditorTreeView;
 });

@@ -34,46 +34,58 @@ YUI.add('wegas-app', function (Y) {
         },
         render: function () {
             this.initDataSources();
-            this.requestDataSources();
             this.initCSS();
         },
 
         // *** Private methods ** //
+        /**
+         * @method initDataSources
+         */
         initDataSources: function () {
-            var k, dataSources = this.get('dataSources');
+            var k, dataSource, sender, dataSources = this.get('dataSources');
 
             // @todo Shall we use browser native parser ?
             // Y.JSON.useNativeParse = true;
 
+            this.requestCounter = 0;
+
             for (k in dataSources) {
                 if (dataSources.hasOwnProperty(k)) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
-                    this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = new Y.DataSource.IO(dataSources[k]);
-                    this.dataSources[k].once("response", this.onInitialRequest, this);
+                    dataSource = new Y.Wegas.DataSource(dataSources[k]);
+                    this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = dataSource;
+
+                    if (dataSource.get("initialRequest") !== undefined) {
+                        sender = dataSource.rest ? dataSource.rest : dataSource;
+                        dataSource.once("response", this.onInitialRequest, this);
+                        sender.sendRequest({
+                            request: dataSource.get("initialRequest")
+                        });
+
+                        this.requestCounter += 1;
+                    }
                 }
             }
         },
 
-        requestDataSources: function () {
-            var k, ds;
-            this.requestCounter = 0;
-            for (k in this.dataSources) {
-                if (this.dataSources.hasOwnProperty(k) && k !== "File") {
-                    ds = this.dataSources[k].rest ? this.dataSources[k].rest : this.dataSources[k];
-                    ds.sendRequest({
-                        request: ""
-                    });
-
-                    this.requestCounter += 1;
-                }
-            }
-        },
+        /**
+         *  Listen to the datasources initial requests and run the renderUI()
+         *  method when they all arrived.
+         *
+         *  @method onInitialRequest
+         *  @private
+         *  @parameter {Y.Event}
+         */
         onInitialRequest: function (e) {
             this.requestCounter -= 1;
             if (this.requestCounter == 0) {
                 this.renderUI();
             }
         },
+
+        /**
+         * @method initCSS
+         */
         initCSS: function () {
             var css = this.get('cssStylesheets'),
             i,

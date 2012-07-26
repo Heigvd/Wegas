@@ -29,7 +29,7 @@ YUI.add('wegas-pageloader', function (Y) {
         },
 
         syncUI: function () {
-            this.set("pageId", this.get("pageId"))
+            this.set("pageId", this.get("pageId"));
         }
     }, {
         ATTRS : {
