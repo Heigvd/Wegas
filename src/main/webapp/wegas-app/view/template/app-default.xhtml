@@ -136,8 +136,8 @@
                     dataSources: {
                         "GameModel": {
                             source: "rest/GameModel",
-                            plugins: [
-                                {
+                            initialRequest: "",
+                            plugins: [{
                                     fn: "DataSourceJSONSchema",
                                     cfg: {
                                         schema: {
@@ -147,11 +147,11 @@
                                     }
                                 }, {
                                     fn: "GameModelDataSourceREST"
-                                }
-                            ]
+                                }]
                         },
                         "Game": {
-                            source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
+                            source: "rest/GameModel/#{gameController.currentGameModel.id}/Game/#{gameController.currentGame.id}",
+                            initialRequest: "",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -184,6 +184,7 @@
                         },
                         "User": {
                             source: "rest/User",
+                            initialRequest: "",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
@@ -199,6 +200,7 @@
                         },
                         "VariableDescriptor": {
                             source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                            initialRequest: "",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",

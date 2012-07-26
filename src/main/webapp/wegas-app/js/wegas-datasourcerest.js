@@ -24,6 +24,15 @@ YUI.add('wegas-datasourcerest', function (Y) {
         'Content-Type': 'application/json; charset=utf-8',
         'Managed-Mode': 'true'
     };
+
+    Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
+
+        }, {
+            ATTRS: {
+                initialRequest: {}
+            }
+        });
+
     /**
      *  @class DataSourceREST
      *  @module Wegas
@@ -41,8 +50,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.extend(DataSourceREST, Y.Plugin.Base, {
 
         initializer: function () {
-            this.doBefore("_defResponseFn", this.beforeResponse, this);
             this.get('host').data = [];
+
+            this.doBefore( "_defResponseFn", this.beforeResponse, this );       // When the host receives some result, we parse the result
+            this.afterHostEvent( "sourceChange", this.clearCache, this );       // When the source changes, we clear the cache
         },
 
         /**
@@ -150,6 +161,16 @@ YUI.add('wegas-datasourcerest', function (Y) {
          */
         getCache: function () {
             return this.get('host').data;
+        },
+        /**
+         *
+         */
+        clearCache: function () {
+            var i, cache = this.getCache();
+            for (i = 0; i < cache.length; i = i + 1) {
+                cache[i].destroy();
+            }
+            cache.length = 0;
         },
 
         /**
@@ -398,7 +419,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     return true;
                 }
             }
-             if (entity.get && entity.get("items")) {
+            if (entity.get && entity.get("items")) {
                 if (callback(entity.get("items"))) {
                     return true;
                 }
