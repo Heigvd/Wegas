@@ -18,7 +18,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
     var CONTENTBOX = 'contentBox', EditorTreeView,
     EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>";
 
-    EditorTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    EditorTreeView = Y.Base.create("wegas-editor-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         // *** Private fields ** //
         dataSource: null,
@@ -168,10 +168,10 @@ YUI.add('wegas-editor-treeview', function (Y) {
                             case 'GameModel':
                                 text = 'Game model: ' + el.get("name");
                                 ret.push({
-                                    type: "TreeNode",
                                     label: text,
-                                    children: this.genTreeViewElements(el.get("games")),
-                                    data: el
+                                    data: el,
+                                    iconCSS: 'wegas-icon-gamemodel',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                                 break;
 

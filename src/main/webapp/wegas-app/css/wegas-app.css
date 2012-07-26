@@ -1,4 +1,18 @@
-/* Default style */
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+*/
+
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+*/
+
+/* Override some browser styles */
 input[type="submit"], input[type="reset"] {
     padding:2px 4px;
 }
@@ -7,11 +21,6 @@ input[type="submit"], input[type="reset"] {
 .yui3-skin-sam .yui3-tabview-panel {
     border: none;
     background: none;
-}
-
-/* Datatable styles */
-.yui3-skin-sam .yui3-datatable caption {
-    padding: 0;
 }
 
 /* List styles */
@@ -110,25 +119,6 @@ input[type="submit"], input[type="reset"] {
 .yui3-skin-sam .wegas-layout .yui3-resize-handle {
     background: #F2F2F2;
 }
-.wegas-layout-top .yui3-button {
-    border: none;
-    line-height: 1.9em;
-    font-weight: bold;
-    font-size: 11px;
-    color: black;
-    box-shadow: none;
-    background: url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
-    padding: 3px 20px 3px 10px;
-}
-.wegas-layout-top .yui3-button-hover, .wegas-layout-top .yui3-button:hover {
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000',endColorstr='#26000000',GradientType=0);
-    background-image: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15)));
-    background-image: -webkit-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
-    background-image: -moz-linear-gradient(top, transparent,rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));
-    background-image: -ms-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
-    background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));
-    background-image: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
-}
 
 /* Menu styles */
 .yui3-menu-hidden {
@@ -157,7 +147,7 @@ input[type="submit"], input[type="reset"] {
     color: white;
 }
 
-/*PROGRESSBAR*/
+/* PROGRESSBAR */
 .yui3-wegas-progressbar-hidden{
     display:none !important;
 }

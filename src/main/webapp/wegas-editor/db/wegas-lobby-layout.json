@@ -3,32 +3,9 @@
     "type" : "Layout",
     "top" : {
         "children": [{
-            "type": "Button",
-            "label": "Developer",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": []
-                }
-            }]
-        },{
-            "type": "Button",
-            "label": "Scenarist",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": []
-                }
-            }]
-        },{
-            "type": "Button",
-            "label": "Animator",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": []
-                }
-            }]
+            "type": "Text",
+            "content": "Lobby",
+            "cssClass": "wegas-editor-title"
         }]
     },
     "left": {
