@@ -24,7 +24,7 @@ YUI.add('wegas-scripteval', function (Y) {
             }, this);
         },
         scopedEval: function(script){
-            while(!this.upToDate){                                              //Loop, value could change while we build context
+            if(!this.upToDate){                                                 //Only compute if new value
                 this.buildContext();
             }
             return ((new Function( "with(this) { return "+ script +";}")).call(this.context));

@@ -1160,6 +1160,10 @@ YUI.add('wegas-entity', function (Y) {
                     type:"hidden"
                 }
             },
+            id:{// An Embeddable has no ID !!! Forcing it
+                value:undefined,
+                readOnly:true
+            },
             content: {
                 type: "string",
                 format: "text"
