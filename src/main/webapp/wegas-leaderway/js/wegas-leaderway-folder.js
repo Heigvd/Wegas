@@ -160,7 +160,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 }
             }
         },
-
+        /**
+         * 0 = libre
+         * 1 = occupé
+         * 2 = malade
+         */
         getOccupationObject: function(resourceInstance){
             var i, j, occupationObject = null, sick=false,
             taskListDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),
@@ -251,31 +255,30 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
         
         bindActions: function(cb){
-            var listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
             this.handlers.push(cb.one('.actions').delegate('click', function (e) {
                 if(this.tasksChooser != null) this.tasksChooser.show();
             }, '.giveTask', this));
             this.handlers.push(cb.one('.actions').delegate('click', function (e) {
-                alert('todo');
+                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                targetPageLoader.once("widgetChange", function(e) {
+                    console.log(e.newVal.setCurrentDialogue(currentResourceDescriptor.getInstance().getProperties('dialogue')));
+                },{resourceDescriptor:this.currentResourceDescriptor});
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));
+
             }, '.speak', this));            
         },
         
         syncAction: function(cb){
-            var i, resInstance, showActiongGiveTask = true, resourceInstance;
-            resInstance = this.currentResourceDescriptor.getInstance();
+            var resourceInstance, occupation;
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
-                for(i=0 ;i<resInstance.get('assignments').length; i++){
-                    if(this.getOccupationObject(resourceInstance).code > 0){
-                        showActiongGiveTask = false;   
-                    }
-                }
-            }
-            if(showActiongGiveTask){
-                cb.one('.actions .giveTask').show();
-            }
-            else{
-                cb.one('.actions .giveTask').hide();
+                cb.one('.actions .giveTask').setHTML("Donner un Mandat à  "+resourceInstance.get('properties').surname);
+                cb.one('.actions .speak').setHTML("S'entretenir avec "+resourceInstance.get('properties').surname);
+                occupation = this.getOccupationObject(resourceInstance).code;
+                if(occupation == 0) cb.one('.actions .giveTask').show();
+                else cb.one('.actions .giveTask').hide();
+                if(occupation < 2) cb.one('.actions .speak').show();
+                else  cb.one('.actions .speak').hide();
             }
         },
         
@@ -357,8 +360,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     <div class="actions">\n\
                         <div class="feedback"></div>\n\
                         <div class="actions-list">\n\
-                            <div class="speak action">S\'entretenir</div>\n\
-                            <div class="giveTask action">Donner un mandat</div>\n\
+                            <div class="speak action"></div>\n\
+                            <div class="giveTask action"></div>\n\
                         </div>\n\
                     </div>'
                 }]
@@ -436,7 +439,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
         }
     }, {
-        ATTRS : {}
+        ATTRS : {
+            dialoguePageId: {},
+            targetPageLoaderId: {}
+        }
     });
 
     Y.namespace('Wegas').Folder = Folder;

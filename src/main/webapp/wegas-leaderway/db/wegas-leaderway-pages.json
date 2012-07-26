@@ -150,7 +150,9 @@
         "id":2,
         "label":"Folder",
         "type":"Folder",
-        "cssClass":"leaderway-folder"
+        "cssClass":"leaderway-folder",
+        "dialoguePageId": 6,
+        "targetPageLoaderId": "maindisplayarea"
     },
     {
         "id":4,

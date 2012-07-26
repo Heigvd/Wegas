@@ -472,9 +472,8 @@ body{
     border:outset 1px #6F89A2;
     border-radius: 5px;
     background-color: white;
-    min-width: 100px;
-    min-height:60px;
-    padding-top:50px;
+    width: 100px;
+    height:100px;
     text-align: center;
 }
 
@@ -655,7 +654,7 @@ body{
     padding-left:20px;
 }
 
-.wegas-dialogue .leaderway-dialogue .dialogue .response .responseElement:hover{
+.wegas-dialogue .leaderway-dialogue .dialogue .response .responseElements:hover{
     list-style-image: url("http://localhost:8080/Wegas/wegas-leaderway/images/fleche.png");
     cursor: pointer;
     font-style: normal;

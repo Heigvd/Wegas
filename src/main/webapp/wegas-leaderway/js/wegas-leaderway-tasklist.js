@@ -35,7 +35,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     resourceInstance = resourceDescriptor.getInstance();
                     for(k=0; k<resourceInstance.get('assignments').length; k++){
                         if(taskDescriptor.get('id') == resourceInstance.get('assignments')[k].get('taskDescriptorId')){
-                            workers.push(resourceDescriptor.get('name'));
+                            workers.push(resourceInstance.get('properties').surname);
                             break;
                         }
                     }

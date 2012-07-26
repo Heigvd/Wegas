@@ -49,7 +49,7 @@ YUI.add('wegas-button', function (Y) {
                         +'</span>');
                 },this);
                 this.get(CONTENTBOX).on('mouseleave', function () {
-                  //  Y.one('.wegas-button-tooltips').remove();
+                    Y.one('.wegas-button-tooltips').remove();
                 },this);
             }
         }
