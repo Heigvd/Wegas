@@ -13,7 +13,7 @@ Y.add("statemachine-entities", function(Y){
                 value: "FSMInstance"
             },
             currentStateId: {
-                type: "string",
+                type: "number",
                 _inputex: {
                     label: "Current state id"
                 }
@@ -21,7 +21,15 @@ Y.add("statemachine-entities", function(Y){
             transitionHistory:{
                 value: [],
                 writeOnce: "initOnly",
-                type: "array"
+                type: "uneditable",
+                _inputex:{
+                    label:"Transition History"
+//                    ,
+//                    elementType:{
+//                        type:"number",
+//                        readonly:true
+//                    }
+                }
             }
         }
     });
@@ -413,7 +421,7 @@ Y.add("statemachine-entities", function(Y){
                     }
                     return true;
                 }else{
-                    console.warn("Transition not allowed");
+                    console.warn("Transition Condition : false");
                     return false;
                 }
             }else{
