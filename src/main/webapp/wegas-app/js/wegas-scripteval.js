@@ -15,30 +15,39 @@ YUI.add('wegas-scripteval', function (Y) {
 
     ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base,[],{
         context : null,
+        upToDate : false,
         initializer: function(){
             this.context = {};
+            this.upToDate = false;
             this.afterHostEvent("response", function(e){
-                var data = this.get("host").data;
-                this.context = {};
-                for(var i in data){
-                    this.context[data[i].get('name')] = JSON.parse(JSON.stringify(data[i].getInstance()));
-                    if(data[i] instanceof Y.Wegas.persistence.ListDescriptor){
-                        this.context[data[i].get('name')].items = [];
-                        for(var j in data[i].get("items")){
-                            this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance())));
-                        }
-                    }
-                }
-                /*SANDBOX*/
-                Y.mix(this.context,{
-                    window:undefined,
-                    Y:undefined,
-                    YUI:undefined
-                });
+                this.upToDate = false;
             }, this);
         },
         scopedEval: function(script){
+            while(!this.upToDate){                                              //Loop, value could change while we build context
+                this.buildContext();
+            }
             return ((new Function( "with(this) { return "+ script +";}")).call(this.context));
+        },
+        buildContext: function(){
+            var data = this.get("host").data;
+            this.upToDate = true;
+            this.context = {};
+            for(var i in data){
+                this.context[data[i].get('name')] = JSON.parse(JSON.stringify(data[i].getInstance()));
+                if(data[i] instanceof Y.Wegas.persistence.ListDescriptor){
+                    this.context[data[i].get('name')].items = [];
+                    for(var j in data[i].get("items")){
+                        this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance())));
+                    }
+                }
+            }
+            /*SANDBOX*/
+            Y.mix(this.context,{
+                window:undefined,
+                Y:undefined,
+                YUI:undefined
+            });
         }
     }, {
         NS:"script",
