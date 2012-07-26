@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.leadergame.persistence;
+package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import javax.persistence.Entity;

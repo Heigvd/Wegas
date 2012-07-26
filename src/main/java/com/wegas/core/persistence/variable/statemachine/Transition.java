@@ -12,7 +12,7 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.UserInput;
-import com.wegas.leadergame.persistence.DialogueTransition;
+import com.wegas.leaderway.persistence.DialogueTransition;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonSubTypes;

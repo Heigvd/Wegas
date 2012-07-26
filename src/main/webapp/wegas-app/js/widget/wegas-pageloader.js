@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -15,7 +25,7 @@ YUI.add('wegas-pageloader', function (Y) {
         },
 
         bindUI: function () {
-            Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
+            //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
         },
 
         syncUI: function () {

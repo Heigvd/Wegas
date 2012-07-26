@@ -1,0 +1,93 @@
+{
+    "id": 2003,
+    "type" : "Layout",
+    "top" : {
+        "children": [{
+            "type": "Button",
+            "label": "Developer",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": []
+                }
+            }]
+        },{
+            "type": "Button",
+            "label": "Scenarist",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": []
+                }
+            }]
+        },{
+            "type": "Button",
+            "label": "Animator",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": []
+                }
+            }]
+        }]
+    },
+    "left": {
+        "children": [{
+            "type": "TabView",
+            "id": "leftTabView",
+            "children": [{
+                "type": "Tab",
+                "label": "Variables",
+                "toolbarChildren": [{
+                    "type": "NewEntityButton",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    "targetClass": "GameModel"
+                }],
+                "children": [
+                {
+                    "type": "EditorTreeView",
+                    "dataSource": "GameModel"
+                }]
+            }]
+        }]
+    },
+    "center": {
+        "children": [{
+            "id": "centerTabView",
+            "type": "TabView",
+            "children": [{
+                "type": "Tab",
+                "label": "Games",
+                "children": [{
+                    "type": "EditorTreeView",
+                    "dataSource": "Game"
+                }],
+                "toolbarChildren": [{
+                    "type": "NewEntityButton",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    "targetClass": "Game"
+                }]
+            }]
+        }]
+    },
+    "right": {
+        "width": 50,
+        "resize": true,
+        "collapse": false,
+        "scroll": true,
+        "animate": true,
+        "children": [{
+            "type": "TabView",
+            "id": "rightTabView",
+            "children": [
+            {
+                "type": "Tab",
+                "label": "Chat",
+                "toolbarLabel": "Chat",
+                "children": [{
+                    "type": "Chat"
+                }]
+            }]
+        }]
+    }
+}

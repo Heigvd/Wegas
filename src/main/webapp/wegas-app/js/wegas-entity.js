@@ -262,19 +262,48 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label:'Name'
-                }
+                type: "string"
             },
             games: {
                 type: "array",
-                value: []
+                value: [],
+                _inputex: {
+                    _type:'hidden'
+                }
+
             },
-            scriptLibrary: {
-                value: {}
+            widgetsUri: {
+                type: "string",
+                choices: [{
+                    value:"wegas-leaderway/db/wegas-leaderway-pages.json",
+                    label:"Leaderway"
+                }, {
+                    value:"wegas-crimesim/db/wegas-leaderway-crimesim.json",
+                    label:"Crimesim"
+                }, {
+                    value:"wegas-mmo/db/wegas-leaderway-mmo.json",
+                    label:"Programming Game"
+                }],
+                _inputex: {
+                    label: "Layout"
+                }
+            },
+            cssUri: {
+                type: "string",
+                _inputex: {
+                    label: "CSS Stylesheet"
+                }
             }
-        }
+        },
+        EDITMENU: [{
+            type: "EditEntityButton"
+        },{
+            type: "AddEntityChildButton",
+            label: "Add game",
+            childClass: "Game"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -1044,7 +1073,7 @@ YUI.add('wegas-entity', function (Y) {
             }
         }
     });
-    
+
     /**
      * Assignement mapper
      */

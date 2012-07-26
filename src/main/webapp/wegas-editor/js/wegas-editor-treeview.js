@@ -36,12 +36,17 @@ YUI.add('wegas-editor-treeview', function (Y) {
         },
 
         bindUI: function () {
-            this.dataSource.after("response", this.syncUI, this);               // Listen updates on the target datasource
-
+            if (this.dataSource) {
+                this.dataSource.after("response", this.syncUI, this);           // Listen updates on the target datasource
+            }
             this.treeView.on("*:click", this.onTreeViewClick, this);
         },
 
         syncUI: function () {
+            if (!this.dataSource) {
+                this.get(CONTENTBOX).setContent("Unable to find datasource")
+                return;
+            }
             var treeViewElements = this.genTreeViewElements(this.dataSource.rest.getCache());
             this.treeView.removeAll();
             this.treeView.add(treeViewElements);
@@ -163,9 +168,8 @@ YUI.add('wegas-editor-treeview', function (Y) {
                             case 'GameModel':
                                 text = 'Game model: ' + el.get("name");
                                 ret.push({
+                                    type: "TreeNode",
                                     label: text,
-                                    //  title: text,
-                                    expanded: true,
                                     children: this.genTreeViewElements(el.get("games")),
                                     data: el
                                 });
