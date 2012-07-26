@@ -14,14 +14,13 @@
             "id": "leftTabView",
             "children": [{
                 "type": "Tab",
-                "label": "Variables",
+                "label": "Game models",
                 "toolbarChildren": [{
                     "type": "NewEntityButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
                     "targetClass": "GameModel"
                 }],
-                "children": [
-                {
+                "children": [{
                     "type": "EditorTreeView",
                     "dataSource": "GameModel"
                 }]
@@ -33,15 +32,17 @@
             "id": "centerTabView",
             "type": "TabView",
             "children": [{
+                "id": "gamesTreeViewTab",
                 "type": "Tab",
                 "label": "Games",
                 "children": [{
                     "type": "EditorTreeView",
-                    "dataSource": "Game"
+                    "dataSource": "Game",
+                    "emptyMessage": "Click in the left column to select a game."
                 }],
                 "toolbarChildren": [{
                     "type": "NewEntityButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
                     "targetClass": "Game"
                 }]
             }]

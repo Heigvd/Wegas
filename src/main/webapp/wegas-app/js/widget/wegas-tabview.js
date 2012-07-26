@@ -34,15 +34,17 @@ YUI.add('wegas-tabview', function (Y) {
             return TabView.tabs[id];
         },
         createTab: function (id, tabViewSelector, tabCfg) {
-            if (!TabView.tabs[id]) {
-                var tabView = Y.Widget.getByNode(tabViewSelector);
-
+            if (!TabView.tabs[id]) {                                            // If the tab does not exist,
+                var tabView = Y.Widget.getByNode(tabViewSelector);              // Look for the parent
                 tabCfg = tabCfg || {};
                 Y.mix(tabCfg, {
                     type: "Tab",
-                    label: id
+                    label: id,
+                    id: id
                 });
-                TabView.tabs[id] = tabView.add(tabCfg).item(0);
+                tabView.add(tabCfg);                                            // Instantiate a new tab
+            } else {                                                            // Otherwise,
+                TabView.tabs[id].setAttrs(tabCfg)                               // update the tab config
             }
             return TabView.tabs[id];
         },
@@ -50,13 +52,14 @@ YUI.add('wegas-tabview', function (Y) {
          *  Helper function
          */
         findTabAndLoadWidget: function (id, tabViewSelector, tabCfg, widgetCfg, fn) {
-            var tab = TabView.getTab( id, tabViewSelector, tabCfg);
-            if (!tab) {
-                tab = TabView.createTab( id, tabViewSelector, tabCfg);
-                tab.load(widgetCfg, fn);                              // load the widget
-            } else {
+            var tab = TabView.getTab( id );                                     // Look for the tab
+            if (!tab) {                                                         // If it does not exist,
+                tab = TabView.createTab( id, tabViewSelector, tabCfg);          // create a new one
+                tab.load(widgetCfg, fn);                                        // and load the widget in it.
+            } else {                                                            // Otherwise,
+                tab.setAttrs(tabCfg);                                           // update the tab config
                 if (fn) {
-                    fn(tab.item(0));
+                    fn(tab.item(0));                                            // and trigger the callback
                 }
             }
             tab.set("selected", 2);
@@ -102,12 +105,12 @@ YUI.add('wegas-tabview', function (Y) {
         //  Widget method overlap
         Y.after(this._renderChildren, this, "renderUI");
         Y.after(this._bindUIParent, this, "bindUI");
-        //        this.after("selectionChange", this._afterSelectionChange);
-        //        this.after("selectedChange", this._afterParentSelectedChange);
-        //        this.after("activeDescendantChange", this._afterActiveDescendantChange);
+        this.after("selectionChange", this._afterSelectionChange);
+        this.after("selectedChange", this._afterParentSelectedChange);
+        this.after("activeDescendantChange", this._afterActiveDescendantChange);
 
         this._hDestroyChild = this.after("*:destroy", this._afterDestroyChild);
-    //        this.after("*:focusedChange", this._updateActiveDescendant);
+        this.after("*:focusedChange", this._updateActiveDescendant);
 
     }
 
@@ -118,10 +121,12 @@ YUI.add('wegas-tabview', function (Y) {
         var renderTo = this._childrenContainer || this.get("panelNode").one(".yui3-tab-panel-content");        // @modified
 
         this._childrenContainer = renderTo;
-
+        if (!this.CHILDREN) {                                                   // @hack keep a reference to children, since tab does not carry the entire add operation
+            this.CHILDREN = [];
+        }
         this.each(function (child) {
-            child.render(renderTo);
-        });
+            this.CHILDREN.push(child.render(renderTo));
+        }, this);
     }
     Parent.prototype._createChild =  Y.WidgetParent.prototype._createChild;
 
@@ -134,11 +139,16 @@ YUI.add('wegas-tabview', function (Y) {
         // *** Private Fields *** //
 
         // *** Lifecycle Methods *** //
+        initializer: function(cfg) {
+            Tab.superclass.initializer.apply(this, arguments);
+            TabView.tabs[cfg.id] = this;
+        },
+
         renderUI: function () {
             Tab.superclass.renderUI.apply(this, arguments);
-
             this.renderToolbar();
         },
+
         bindUI: function () {
             Tab.superclass.bindUI.apply(this, arguments);
         },
