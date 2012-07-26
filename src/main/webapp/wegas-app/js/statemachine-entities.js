@@ -391,25 +391,30 @@ Y.add("statemachine-entities", function(Y){
                     console.warn("Transition and Dialogue not persisted");
                     return false;
                 }
-                request = "/StateMachine/" + this.get("id")
-                + "/Player/" + Y.Wegas.app.get("currentPlayer")
-                + "/Do/" + transition.get("id");
-                try{
-                    Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                        request: request,
-                        cfg: {
-                            method: "GET",
-                            headers:{
-                                'Content-Type': 'application/json; charset=utf-8'
-                            }
-                        },
-                        callback: callbacks
-                    });
-                }catch(e){
-                    //TODO : that
-                    console.error("will have to correct that, cache currently not updating", e.stack);
+                if(!transition.get("triggerCondition") || transition.get("triggerCondition").localEval()){
+                    request = "/StateMachine/" + this.get("id")
+                    + "/Player/" + Y.Wegas.app.get("currentPlayer")
+                    + "/Do/" + transition.get("id");
+                    try{
+                        Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                            request: request,
+                            cfg: {
+                                method: "GET",
+                                headers:{
+                                    'Content-Type': 'application/json; charset=utf-8'
+                                }
+                            },
+                            callback: callbacks
+                        });
+                    }catch(e){
+                        //TODO : that
+                        console.error("will have to correct that, cache currently not updating", e.stack);
+                    }
+                    return true;
+                }else{
+                    console.warn("Transition not allowed");
+                    return false;
                 }
-                return true;
             }else{
                 return false;
             }
@@ -461,8 +466,9 @@ Y.add("statemachine-entities", function(Y){
             i, transitions = this.get("transitions");
             for (i in transitions){
                 if(transitions[i] instanceof Y.Wegas.persistence.DialogueTransition){
-                    //TODO: filter not active transitions
-                    availableActions.push(transitions[i]);
+                    if(!transitions[i].get("triggerCondition") || transitions[i].get("triggerCondition").localEval()){
+                        availableActions.push(transitions[i]);
+                    }
                 }
             }
             return availableActions;

@@ -26,7 +26,7 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
-                        'wegas-datasourcerest',
+                        'wegas-datasourcerest', 'wegas-scripteval',
                         'wegas-entity', 'statemachine-entities',
                         'stylesheet', 'wegas-widget', 'wegas-list',
                         'wegas-pageloader', 'wegas-button',
@@ -40,6 +40,10 @@ YUI().use(function (Y) {
                     'wegas-datasourcerest': {
                         path: 'wegas-app/js/wegas-datasourcerest-min.js',
                         requires: ['plugin', 'json', 'array-extras', 'io-base', "datasource-io", "datasource-jsonschema", "datasource-cache"]
+                    },
+                    'wegas-scripteval':{
+                        path:'wegas-app/js/wegas-scripteval-min.js',
+                        requires:['plugin']
                     },
                     'wegas-entity': {
                         path: 'wegas-app/js/wegas-entity-min.js',
