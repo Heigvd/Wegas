@@ -297,6 +297,86 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.namespace("Plugin").OpenTabAction = OpenTabAction;
 
     /**
+     *  @class OpenTabAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var OpenTabAction = function () {
+        OpenTabAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(OpenTabAction, {
+        NS: "wegas",
+        NAME: "OpenTabAction"
+    });
+
+    Y.extend(OpenTabAction, Y.Plugin.Base, {
+
+        tab: null,
+
+        initializer: function () {
+            this.afterHostEvent("click", function() {
+                Y.Wegas.TabView.findTabAndLoadWidget( this.get("host").get("label"),
+                    this.get("tabSelector"), {
+                        toolbarChildren: this.get("toolbarChildren")
+                    }, this.get("subpage"));
+            }, this);
+        }
+    }, {
+        ATTRS: {
+            tabSelector: {
+                value: '#centerTabView'
+            },
+            subpage: {},
+            toolbarChildren: {}
+        }
+    });
+
+    Y.namespace("Plugin").OpenTabAction = OpenTabAction;
+
+
+
+    /**
+     *  @class OpenGameAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var OpenGameAction = function () {
+        OpenGameAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(OpenGameAction, {
+        NS: "wegas",
+        NAME: "OpenGameAction"
+    });
+
+    Y.extend(OpenGameAction, Y.Plugin.Base, {
+        initializer: function () {
+            this.afterHostEvent( "click", function () {
+                var params, entity = this.get( "host" ).get( "entity" );
+
+                if ( entity instanceof Y.Wegas.persistence.GameModel ) {
+                    params = "gameModelId=" + entity.get( "id" );
+                } else if ( entity instanceof Y.Wegas.persistence.Player ) {
+                    params = "id=" + entity.get( "id" );
+                }  else {
+                    params = "gameId=" + entity.get( "id" );
+                }
+
+                window.open( Y.Wegas.app.get( "base" ) + this.get("editorUrl") + params );
+            }, this );
+        }
+    }, {
+        ATTRS: {
+            editorUrl: {
+                value: 'wegas-editor/view/editor.html?'
+            }
+        }
+    });
+
+    Y.namespace( "Plugin" ).OpenGameAction = OpenGameAction;
+
+    /**
      *  @class LoadTreeviewNodeAction
      *  @module Wegas
      *  @constructor

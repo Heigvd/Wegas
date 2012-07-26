@@ -67,10 +67,6 @@ YUI.add('wegas-pageloader', function (Y) {
                             var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
                             widget.render(this.get(CONTENTBOX));
                             this.set("widget", widget);
-
-                            if (cfg.content !== "Loading...") {
-                                this.fire("pageLoaded", { pageWidget: widget});
-                            }
                         }, this, widgetCfg));
                     } catch (e) {
                         Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
