@@ -61,10 +61,10 @@ YUI.add('treeview', function (Y) {
             visibleRightWidget:{
                 value:false,
                 validator: Y.Lang.isBoolean
+            },
+            defaultChildType: {
+                value: "TreeLeaf"
             }
-        },
-        defaultChildType: {
-            value: "TreeLeaf"
         }
     });
 

@@ -44,6 +44,22 @@
                         "subpage": {
                             "type": "Logger"
                         }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Users",
+                        "subpage": {
+                            "type": "DataTable",
+                            "dataSource": "User",
+                            "columnset": [ {
+                                "key":"id",
+                                "sortable": true
+                            }, {
+                                "key":"name",
+                                "sortable": true
+                            }, {
+                                "key":"@class"
+                            }]
+                        }
                     }]
                 }
             }]
@@ -85,18 +101,14 @@
                         "type": "OpenTabButton",
                         "label": "Players",
                         "subpage": {
-                            "type": "DataTable",
-                            "dataSource": "User",
-                            "columnset": [ {
-                                "key":"id",
-                                "sortable": true
-                            }, {
-                                "key":"name",
-                                "sortable": true
-                            }, {
-                                "key":"@class"
-                            }]
-                        }
+                            "type": "EditorTreeView",
+                            "dataSource": "Game"
+                        },
+                        "toolbarChildren": [{
+                            "type": "NewEntityButton",
+                            "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                            "targetClass": "Game"
+                        }]
                     }]
                 }
             }]
@@ -147,18 +159,6 @@
                 "children": [{
                     "type": "PageLoader",
                     "pageId": 1
-                }]
-            }, {
-                "type": "Tab",
-                "label": "Games",
-                "children": [{
-                    "type": "EditorTreeView",
-                    "dataSource": "Game"
-                }],
-                "toolbarChildren": [{
-                    "type": "NewEntityButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    "targetClass": "Game"
                 }]
             }]
         }]
