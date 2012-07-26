@@ -104,21 +104,23 @@ Y.add("statemachine-entities", function(Y){
                     },
                     id: {
                         type: "string",
+                        optional: true,                                         // The id is optional for entites that have not been persisted
                         _inputex: {
-                            _type:'hidden'
+                            _type: "hidden"
                         }
                     },
                     currentStateId: {
                         type: "string",
+                        optional: true,
                         _inputex: {
                             label: 'Initial state id'
                         }
                     }
                 }
-            }/*,
+            },
             states: {
                 value:{},
-                writeOnce:"initOnly",
+                writeOnce:"initOnly"/*,
                 _inputex: {
                     _type:'hashlist',
                     label: 'States',
@@ -212,13 +214,13 @@ Y.add("statemachine-entities", function(Y){
                             }
                         }]
                     }
-                }
-            }*/
+                }*/
+            }
         },
         EDITMENU: [{
             type: "EditEntityButton",
             plugins: [{
-               fn: "EditFSMAction"
+                fn: "EditFSMAction"
             }]
         },{
             type: "DeleteEntityButton"
@@ -358,6 +360,7 @@ Y.add("statemachine-entities", function(Y){
             },
             currentStateId: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     label: "Trigger state",
                     disabled:true
@@ -495,4 +498,19 @@ Y.add("statemachine-entities", function(Y){
             }
         }
     });
+
+
+    /**
+     * @hack
+     */
+    Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields.push(
+        Y.mix({
+            name: 'TriggerDescriptor',
+            label: 'a trigger'
+        }, new Y.Wegas.persistence.TriggerDescriptor().getFormCfg()),
+        Y.mix({
+            name: 'DialogueDescriptor',
+            label: 'a dialogue'
+        }, new Y.Wegas.persistence.DialogueDescriptor().getFormCfg()));
+
 });

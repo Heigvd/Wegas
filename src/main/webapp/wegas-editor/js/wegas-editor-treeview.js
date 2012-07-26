@@ -18,7 +18,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
     var CONTENTBOX = 'contentBox', EditorTreeView,
     EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>";
 
-    EditorTreeView = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    EditorTreeView = Y.Base.create("wegas-editor-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         // *** Private fields ** //
         dataSource: null,
@@ -36,12 +36,17 @@ YUI.add('wegas-editor-treeview', function (Y) {
         },
 
         bindUI: function () {
-            this.dataSource.after("response", this.syncUI, this);               // Listen updates on the target datasource
-
+            if (this.dataSource) {
+                this.dataSource.after("response", this.syncUI, this);           // Listen updates on the target datasource
+            }
             this.treeView.on("*:click", this.onTreeViewClick, this);
         },
 
         syncUI: function () {
+            if (!this.dataSource) {
+                this.get(CONTENTBOX).setContent("Unable to find datasource")
+                return;
+            }
             var treeViewElements = this.genTreeViewElements(this.dataSource.rest.getCache());
             this.treeView.removeAll();
             this.treeView.add(treeViewElements);
@@ -164,10 +169,9 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 text = 'Game model: ' + el.get("name");
                                 ret.push({
                                     label: text,
-                                    //  title: text,
-                                    expanded: true,
-                                    children: this.genTreeViewElements(el.get("games")),
-                                    data: el
+                                    data: el,
+                                    iconCSS: 'wegas-icon-gamemodel',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                                 break;
 

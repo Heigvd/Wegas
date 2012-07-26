@@ -7,10 +7,10 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.leadergame.persistence;
+package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.statemachine.State;
+import com.wegas.core.persistence.variable.statemachine.Transition;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
@@ -19,31 +19,27 @@ import javax.persistence.Lob;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-public class DialogueState extends State {
-    /**
-     *
-     */
+public class DialogueTransition extends Transition {
     @Lob
-    private String text;
+    private String actionText;
 
     /**
-     * @return the text
+     * @return the actionText
      */
-    public String getText() {
-        return text;
+    public String getActionText() {
+        return actionText;
     }
 
     /**
-     * @param text the text to set
+     * @param actionText the actionText to set
      */
-    public void setText(String text) {
-        this.text = text;
+    public void setActionText(String actionText) {
+        this.actionText = actionText;
     }
 
     @Override
     public void merge(AbstractEntity other){
-        this.text = ((DialogueState) other).text;
+        this.actionText = ((DialogueTransition) other).actionText;
         super.merge(other);
     }
-
 }

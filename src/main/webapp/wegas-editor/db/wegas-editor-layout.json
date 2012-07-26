@@ -6,6 +6,10 @@
         "scroll": null,
         "zIndex": 2,
         "children": [{
+            "type": "Text",
+            "content": "Editor",
+            "cssClass": "wegas-editor-title"
+        }, {
             "type": "Button",
             "label": "Developer",
             "plugins": [{
@@ -156,13 +160,6 @@
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                     "targetClass": "Game"
                 }]
-            }, {
-                "type": "Tab",
-                "label": "File explorer",
-                "children": [{
-                    "type": "FileExplorer"
-                }],
-                "toolbarLabel": "File explorer"
             }]
         }]
     },

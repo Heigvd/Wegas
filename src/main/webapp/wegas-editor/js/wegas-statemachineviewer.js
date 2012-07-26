@@ -384,9 +384,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             }
             this.events.editState= this.get(CONTENT_BOX).delegate("click",function(e){
                 if(this.get("entity").get("onEnterEvent")){
-                    Y.Wegas.editor.showEditForm(this.get("entity").get("onEnterEvent"), this.setOnEnterEvent, this);
+                    Y.Wegas.Plugin.EditEntityAction.showEditForm(this.get("entity").get("onEnterEvent"),  Y.bind(this.setOnEnterEvent, this));
                 }else{
-                    Y.Wegas.editor.showEditForm(new Y.Wegas.persistence.Script(), this.setOnEnterEvent, this);
+                    Y.Wegas.Plugin.EditEntityAction.showEditForm(new Y.Wegas.persistence.Script(), Y.bind(this.setOnEnterEvent, this));
                 }
             },".state-edit",this);
             this.events.transitionDelete = this.on("wegas-transition:destroy", function(e){

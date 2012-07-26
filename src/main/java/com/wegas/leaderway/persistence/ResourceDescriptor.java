@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.leadergame.persistence;
+package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -18,7 +18,7 @@ import javax.persistence.Entity;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
+public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -33,7 +33,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
-        TaskDescriptor other = (TaskDescriptor) a;
+
+        ResourceDescriptor other = (ResourceDescriptor) a;
         this.setDescription(other.getDescription());
     }
 
