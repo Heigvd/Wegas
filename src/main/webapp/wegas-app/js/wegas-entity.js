@@ -300,9 +300,30 @@ YUI.add('wegas-entity', function (Y) {
             type: "Button",
             label: "Explore",
             plugins: [{
-                fn: "LoadTreeviewNode"
+                fn: "LoadTreeviewNodeAction",
+                cfg: {
+                    tabId: "gamesTreeViewTab"
+                }
             }]
-        },{
+        },
+        //        {
+        //            type: "Button",
+        //            label: "Open in editor",
+        //            plugins: [{
+        //                fn: "OpenGameAction"
+        //            }]
+        //        },
+        //         {
+        //            type: "AddEntityChildButton",
+        //            label: "Add game",
+        //            childClass: "Game"
+        //        },
+        //{
+        //                    "type": "NewEntityButton",
+        //                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
+        //                    "targetClass": "GameModel"
+        //                }
+        {
             type: "EditEntityButton",
             label: "Properties"
         }, {
@@ -330,11 +351,12 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            type: "EditEntityButton"
-        },{
             type: "AddEntityChildButton",
             label: "Add team",
             childClass: "Team"
+        }, {
+            type: "EditEntityButton",
+            label: "Properties"
         }, {
             type: "DeleteEntityButton"
         }]
@@ -357,7 +379,8 @@ YUI.add('wegas-entity', function (Y) {
             gameId: IDATTRDEF
         },
         EDITMENU: [{
-            type: "EditEntityButton"
+            type: "EditEntityButton",
+            label: "Properties"
         },{
             type: "Button",
             label: "Add player",
@@ -383,7 +406,8 @@ YUI.add('wegas-entity', function (Y) {
             teamId: IDATTRDEF
         },
         EDITMENU: [{
-            type: "EditEntityButton"
+            type: "EditEntityButton",
+            label: "Properties"
         },{
             type: "DeleteEntityButton"
         }]
