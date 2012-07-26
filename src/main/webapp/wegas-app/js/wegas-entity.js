@@ -299,9 +299,23 @@ YUI.add('wegas-entity', function (Y) {
             type: "Button",
             label: "Explore",
             plugins: [{
-                fn: "LoadTreeviewNode"
+                fn: "LoadTreeviewNodeAction",
+                cfg: {
+                    tabId: "gamesTreeViewTab"
+                }
             }]
-        },{
+        },
+        //         {
+        //            type: "AddEntityChildButton",
+        //            label: "Add game",
+        //            childClass: "Game"
+        //        },
+        //{
+        //                    "type": "NewEntityButton",
+        //                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
+        //                    "targetClass": "GameModel"
+        //                }
+        {
             type: "EditEntityButton",
             label: "Properties"
         }, {
@@ -330,7 +344,7 @@ YUI.add('wegas-entity', function (Y) {
         },
         EDITMENU: [{
             type: "EditEntityButton"
-        },{
+        }, {
             type: "AddEntityChildButton",
             label: "Add team",
             childClass: "Team"

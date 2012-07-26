@@ -486,6 +486,13 @@ img.inputEx-ListField-delButton {
 .wegas-systemmessage.error .icon {
     background: url(../images/wegas-icon-error-48.png) no-repeat;
 }
+.wegas-smallmessage {
+    padding: 20px;
+    margin: 20px;
+    text-align: center;
+    font-style: italic;
+}
+
 /* Panel Widget Styles */
 .yui3-skin-sam .yui3-panel .yui3-widget-hd {
     background: white;

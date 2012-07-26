@@ -16,6 +16,7 @@
                         dataSources: {
                             "GameModel": {
                                 source: "rest/GameModel",
+                                initialRequest: "",
                                 plugins: [
                                     {
                                         fn: "DataSourceJSONSchema",
@@ -31,7 +32,7 @@
                                 ]
                             },
                             "Game": {
-                                source: "rest/GameModel/1/Game",
+                                source: "rest/GameModel/",
                                 plugins: [
                                     {
                                         fn: "DataSourceJSONSchema",
