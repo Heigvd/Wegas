@@ -10,7 +10,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
 
     //TODO: notes, preview!
 
-    FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.WidgetParent, Y.Wegas.Widget, Y.WidgetChild], {
+    FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.Wegas.Widget], {
 
         // ** Private fields ** //
         treeView: null,
@@ -51,23 +51,27 @@ YUI.add('wegas-fileexplorer', function (Y) {
 
             Y.log('renderUI()', 'log', "Wegas.FileExplorer");
             this.treeView = new Y.TreeView({
-                srcNode: cb
+                srcNode: cb,
+                visibleRightWidget:true
             });
             this.rootNode = new Y.TreeNode({
                 collapsed: false,
                 label: "/",
                 rightWidget: new Y.Wegas.WegasMenu({
                     items: [{
-                        label:"refresh",
+                        label:"",
+                        cssClass:"wegas-icon-refresh",
                         data:"refresh"
                     },{
-                        label:"add",
-                        cssClass:"",
+                        label:"",
+                        cssClass:"wegas-icon-new",
                         items:[{
-                            label:"add dir",
+                            label:"Dir",
+                            cssClass:"wegas-icon-newdir",
                             data:"add dir"
                         },{
-                            label:"add file",
+                            label:"File",
+                            cssClass:"wegas-icon-newfile",
                             data:"add file"
                         }]
                     }],
@@ -80,7 +84,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             });
             this.treeView.add(this.rootNode);
             this.rootNode.path = this.rootPath;
-            this.add(this.uploader);
+            this.uploader.render();
             this.uploader.hide();
             this.treeView.render();
             this.fileUploader.render(this.get(CONTENT_BOX));
@@ -112,13 +116,13 @@ YUI.add('wegas-fileexplorer', function (Y) {
             this.uploader.on("fileselect", function(e){
                 this.uploader.parentNode.set("rightWidget", new Y.Wegas.WegasMenu({
                     items: [{
-                        label:"upload",
-                        cssClass:"",
+                        label:"Upload",
+                        cssClass:"wegas-icon-upload",
                         data:"upload"
                     },
                     {
-                        label: "cancel",
-                        cssClass: "",
+                        label: "Cancel",
+                        cssClass: "wegas-icon-cancel",
                         data:"cancel"
                     }],
                     horizontal: true,
@@ -168,6 +172,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
 
         processMenuClick: function (action, node, params) {
             var path, method, name, file;
+            if(!action){
+                return;
+            }
             switch(action){
                 case 'cancel':
                     node.destroy();
@@ -244,7 +251,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             }
             e.cfg.node.set("loading", false);
             if(callback){
-                Y.bind(callback, this)(e);
+                callback.apply(this, [e]);
             }
         },
 
@@ -258,21 +265,24 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     label: data.name,
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
-                            label:"refresh",
+                            label:"",
+                            cssClass:"wegas-icon-refresh",
                             data:"refresh"
                         },{
-                            label:"add",
-                            cssClass:"",
+                            label:"",
+                            cssClass:"wegas-icon-new",
                             items:[{
-                                label:"add dir",
+                                label:"Dir",
+                                cssClass:"wegas-icon-newdir",
                                 data:"add dir"
                             },{
-                                label:"add file",
+                                label:"File",
+                                cssClass:"wegas-icon-newfile",
                                 data:"add file"
                             }]
                         },{
-                            label:"delete",
-                            cssClass:"",
+                            label:"",
+                            cssClass:"wegas-icon-delete",
                             data:"delete"
                         }],
                         horizontal: true,
@@ -286,8 +296,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     label: data.name + " [" + data.mimeType + "]",
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
-                            label:"delete",
-                            cssClass:"",
+                            label:"",
+                            cssClass:"wegas-icon-delete",
                             data:"delete"
                         }],
                         horizontal: true,
@@ -346,6 +356,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 node.expand(false);
                 this.uploader.show();
                 this.uploader.enable();
+                //In case rightWidget opacity change.
+                //this.uploader.get(BOUNDING_BOX).get("parentNode").setStyle("opacity", 1); //force opacity to 1 on rightWidget
             }
             return true;
         },

@@ -26,7 +26,6 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <netbeans.hint.license>wegas</netbeans.hint.license>
 
         <shiro.version>1.2.0</shiro.version>
@@ -43,6 +42,8 @@
         <compiler-plugin-version>2.3.2</compiler-plugin-version>
 
         <skipTests>true</skipTests>
+        <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
+        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
     </properties>
 
     <dependencies>
