@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -124,6 +134,13 @@ YUI.add('wegas-inputex', function(Y) {
     Y.inputEx.KeyValueField.prototype.getValue = function () {
         return this.inputs[1].getValue();
     };
+    /*
+     * @hack prevents KeyValueField to return the selector field
+     */
+//    Y.inputEx.KeyValueField.prototype.setValue = function (val, e) {
+//        Y.inputEx.KeyValueField.superclass.setValue.apply(this, arguments)
+//        this.inputs[1].setValue(val);
+//    };
     /*
      * @hack Automatically add the "optional" message when necessary
      */

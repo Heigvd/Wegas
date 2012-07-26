@@ -4,7 +4,9 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
+
     <f:loadBundle basename="wegas-app.wegasapp" var="wegasConfig"/>
+
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title><ui:insert name="title">Wegas - 0.2</ui:insert></title>
@@ -63,50 +65,56 @@
             YUI_config.groups.esprima.base = '/Wegas/lib/';
             YUI_config.groups.jsplumb.base = '/Wegas/' + YUI_config.groups.jsplumb.base;
 
+            <ui:fragment rendered="#{wegasConfig.assets_local}">
+            YUI_config.groups.yui2 = {                                          // Set up local version of yui2
+                base: '/Wegas/lib/yui2in3/build/',
+                // combine: true,
+                // comboBase: 'http://myserver.com/combo?',
+                // root: '/2in3/build/',
+                patterns:  {
+                    'yui2-': {
+                        configFn: function(me) {
+                            if(/-skin|reset|fonts|grids|base/.test(me.name)) {
+                                me.type = 'css';
+                                me.path = me.path.replace(/\.js/, '.css');
+                                me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
+                            }
+                        }
+                    }
+                }
+
+            };
+            </ui:fragment>
+
+            // Set up some YUI3 default parameters. Will be use for every call to
+            // the YUI(cfg) function. Can be overridden by the cfg parameter.
+            YUI_config.useBrowserConsole = true;
+            YUI_config.charset = 'utf-8';
+            YUI_config.lang = 'en';
+            YUI_config.insertBefore = 'customstyles';
+            YUI_config.gallery = 'gallery-2011.02.18-23-10';
+            YUI_config.throwFail = true;
+            YUI_config.debug = true;
+            YUI_config.errorFn = function(e) {
+                Y.log('Uncaught error: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
+            };
+            //YUI_config.filter = 'raw';                                        // Allows to select normal or minified version of dependencies
+            //YUI_config.filters = { event: 'debug' };                          // Like filter, but can be set for each module
+            //YUI_config.loadOptional = true;
+            //YUI_config.timeout = 10000;
+            //YUI_config.logExclude = { event : true };
+            //YUI_config.logInclude = { event : true },
             /**<!--
                 base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
                     { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
             -->**/
+        </script>
+
+        <ui:insert name="body">
+        <script type="text/javascript">
             var Y = YUI({
-                charset: 'utf-8',
-                lang: 'en',
-                insertBefore: 'customstyles',
-                gallery: 'gallery-2011.02.18-23-10',
-                throwFail:true,
-                useBrowserConsole: true,
-                debug: true,
                 //filter: 'raw',
-                //loadOptional: true,
-                //debug: Config.debug,
-                //timeout: 10000,
-                //filters: { event: 'debug' },
-                //logExclude: { event : true },
-                //logInclude: { event : true },
-                errorFn: function(e) {
-                    Y.log('Uncaught error: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
-                },
-                groups: {
-                        <ui:fragment rendered="#{wegasConfig.assets_local}">
-                        /* Set up local version of yui2 TODO: remove that dependency !*/
-                    yui2: {
-                        base: '/Wegas/lib/yui2in3/build/',
-                        // combine: true,
-                        // comboBase: 'http://myserver.com/combo?',
-                        // root: '/2in3/build/',
-                        patterns:  {
-                            'yui2-': {
-                                configFn: function(me) {
-                                    if(/-skin|reset|fonts|grids|base/.test(me.name)) {
-                                        me.type = 'css';
-                                        me.path = me.path.replace(/\.js/, '.css');
-                                        me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                        </ui:fragment>
-                    }
+                //filters: { event: 'debug' }
             }).use(
                 <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
             function (Y) {
@@ -300,5 +308,6 @@
 
             });
         </script>
+        </ui:insert>
     </h:body>
 </html>

@@ -13,7 +13,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.leadergame.persistence.DialogueState;
+import com.wegas.leaderway.persistence.DialogueState;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;

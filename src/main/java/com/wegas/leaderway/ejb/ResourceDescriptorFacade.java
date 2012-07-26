@@ -7,14 +7,14 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.leadergame.ejb;
+package com.wegas.leaderway.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.leadergame.persistence.ResourceDescriptor;
-import com.wegas.leadergame.persistence.ResourceInstance;
-import com.wegas.leadergame.persistence.TaskDescriptor;
+import com.wegas.leaderway.persistence.ResourceDescriptor;
+import com.wegas.leaderway.persistence.ResourceInstance;
+import com.wegas.leaderway.persistence.TaskDescriptor;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
