@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.leadergame.rest;
+package com.wegas.leaderway.rest;
 
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
