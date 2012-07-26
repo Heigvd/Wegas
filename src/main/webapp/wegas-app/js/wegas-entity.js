@@ -298,7 +298,7 @@ YUI.add('wegas-entity', function (Y) {
         },
         EDITMENU: [{
             type: "Button",
-            label: "Open",
+            label: "Explore",
             plugins: [{
                 fn: "LoadTreeviewNodeAction",
                 cfg: {
@@ -306,6 +306,13 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }]
         },
+        //        {
+        //            type: "Button",
+        //            label: "Open in editor",
+        //            plugins: [{
+        //                fn: "OpenGameAction"
+        //            }]
+        //        },
         //         {
         //            type: "AddEntityChildButton",
         //            label: "Add game",
@@ -344,12 +351,12 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-            type: "EditEntityButton",
-            label: "Properties"
-        }, {
             type: "AddEntityChildButton",
             label: "Add team",
             childClass: "Team"
+        }, {
+            type: "EditEntityButton",
+            label: "Properties"
         }, {
             type: "DeleteEntityButton"
         }]
