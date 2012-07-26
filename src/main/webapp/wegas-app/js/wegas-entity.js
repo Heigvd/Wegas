@@ -1137,6 +1137,9 @@ YUI.add('wegas-entity', function (Y) {
         isValid: function (){
         //TODO : FX a greffer :)
         },
+        localEval: function(){
+            return Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
+        },
         isEmpty: function () {
             return (this.content == null || this.content == "");
         }
