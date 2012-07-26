@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -21,7 +31,6 @@ YUI.add('wegas-form', function (Y) {
 
         renderUI: function () {
             this.renderToolbar();
-
             this.get(CONTENTBOX).setContent('<div class="wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>');
         },
 
@@ -76,6 +85,7 @@ YUI.add('wegas-form', function (Y) {
             msgNode.removeClass("info");
             msgNode.removeClass("warn");
             msgNode.removeClass("error");
+            msgNode.removeClass("success");
             msgNode.one('.content').setContent();
         },
         showMessage: function(level, txt) {
@@ -91,21 +101,19 @@ YUI.add('wegas-form', function (Y) {
             },
             form: {},
             formCfg: {
-                value: [],
                 setter: function (val) {
-                    if (this.get("form")) {
+                    if (this.get("form")) {                                     // If there is alread a form instantiated, we destroy it
                         this.get("form").destroy();
                     }
-                    var formCfg = {
-                        type: "group",
-                        fields: val,
-                        parentEl: this.get(CONTENTBOX)
-                    };
-                    Y.inputEx.use(formCfg, Y.bind(function (formCfg) {
-                        var form = Y.inputEx(formCfg);
-                        form.setValue(this.get("values"));
+
+                    val.parentEl = this.get(CONTENTBOX);                        //  Set up the form parentEl attribute, so it knows where to render
+
+                    Y.inputEx.use(val, Y.bind(function (formCfg) {              // Load form dependencies
+                        var form = Y.inputEx(formCfg);                          // Initialize and render form
+                        form.setValue(this.get("values"));                      // Sync form with "values" ATTR
                         this.set("form", form);
-                    }, this, formCfg));
+                    }, this, val));
+                    return val;
                 }
             }
         }

@@ -12,11 +12,12 @@ YUI.add('wegas-leaderway', function (Y) {
         // *** Fields *** /
         table: null,
         data: new Array(),
+        handlers: new Array(),
 
         //*** Particular Methods ***/  
         getResourcesData: function(listResourcesDescriptor){
             var i, picture, resourceDescriptor, resourceInstance, needPicture = false;
-            if(listResourcesDescriptor.get(items)[0].getInstance().get('properties').picture != null){
+            if(listResourcesDescriptor.get('items')[0].getInstance().get('properties').picture != null){
                 needPicture = true;
                 this.table.addColumn({ key: 'picture', label: 'Portrait', allowHTML: true }, 0);
             }
@@ -90,26 +91,14 @@ YUI.add('wegas-leaderway', function (Y) {
                     label: ' ',
                     allowHTML: true
                 },
-                {
-                    key: "speak",
-                    formatter: '<input class="speak" type="button" name="speak" value="Parler">',
-                    label: ' ',
-                    allowHTML: true
-                }
                 ]
             });
             this.table.render(this.get(CONTENTBOX));
         },
             
         bindUI: function() {
-            Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
-            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
-            this.table.delegate('click', function (e) {
-                var tr_id = e.currentTarget._node.parentElement.parentElement.id,  
-                model = this.getRow(tr_id);
-                alert('test : '+model._node.childNodes[1].textContent);
-            }, '.yui3-datatable-data .speak', this.table);
-            
+            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
+            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
             this.table.delegate('click', function (e) {
                 alert('todo');
             }, '.yui3-datatable-data .folder', this.table);
@@ -124,12 +113,18 @@ YUI.add('wegas-leaderway', function (Y) {
             if(this.data[0] == null){
                 this.table.showMessage("Personne n'est disponible.");
             }
-        }
+        },
         
+        destroy: function(){
+            var i;
+            this.table.destroy();
+            for (i=0; i<this.handlers.length;i++) {
+                this.handlers[i].detach();
+            }
+        }
     },
     {
-        ATTRS : {
-        }
+        ATTRS : {}
     });
 
     Y.namespace('Wegas').HRList = HRList;

@@ -15,13 +15,13 @@
 YUI.add('wegas-entity', function (Y) {
     "use strict";
 
-
     var IDATTRDEF = {
         type: "string",
+        optional: true,                                                         // The id is optional for entites that have not been persisted
         _inputex: {
             _type: "hidden"
         }
-    };
+    }, Entity;
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
@@ -31,7 +31,13 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * Entity is used to represent db objects.
      */
-    Y.namespace('Wegas.persistence').Entity = Y.Base.create("Entity", Y.Base, [], {
+    Entity = Y.Base.create("Entity", Y.Base, [], {
+
+        // *** Lifecycle methods *** //
+
+        initializer: function(cfg) {
+            Entity.ENTITIES_HASH[this.name] = false;
+        },
 
         /**
          * Serialize to a json object.
@@ -75,20 +81,23 @@ YUI.add('wegas-entity', function (Y) {
          * Returns the form configuration associated to this object, to be used a an inputex object.
          */
         getFormCfg: function () {
-            var forms = Y.Wegas.app.get('editorForms'),
-            form = forms[this.get('@class')] || forms[this.get("type")]         // Select first server defined forms, based on the @class or the type attribute
-            //||  this.constructor.EDITFORM                                     // And if no form is defined we return the default one defined in the entity
-            ;
+            var i, form, forms;
+
+            // forms = Y.Wegas.app.get('editorForms'),                          // Select first server defined forms, based on the @class or the type attribute
+            // form = forms[this.get('@class')] || forms[this.get("type")]
+            form = form ||  this.constructor.EDITFORM;                          // And if no form is defined we check if there is a default one defined in the entity
 
             if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
                 var schemaMap, attrCfgs = this.getAttrCfgs();
                 delete attrCfgs["initialized"];                                 // Remove values coming from Y.Base implementation
                 delete attrCfgs["destroyed"];
 
+                for (i in attrCfgs) {
+                    attrCfgs[i]["default"] = attrCfgs[i].value;
+                }
+
                 schemaMap = {
                     Entity: {
-                        id:'Entity',
-                        type:'object',
                         properties: attrCfgs
                     }
                 };
@@ -99,7 +108,7 @@ YUI.add('wegas-entity', function (Y) {
                         'showMsg':true
                     }
                 });
-                form = builder.schemaToInputEx(schemaMap.Entity).fields;
+                form = builder.schemaToInputEx(schemaMap.Entity);
             }
             return form || [];
         },
@@ -140,27 +149,26 @@ YUI.add('wegas-entity', function (Y) {
         }
     }, {
         _buildCfg: {
-        //statics: ["EDITMENU"],
-        //custom: {
-        //    EDITMENU: function (prop, Receiver, Supplier) {
-        //        var c = Supplier.constructor;
-        //        while (!Receiver.EDITMENU && c) {
-        //            if (c.EDITMENU) {                                                  // Add to attributes
-        //                Receiver.EDITMENU = c.EDITMENU
-        //            }
-        //            c = c.superclass ? c.superclass.constructor : null;
-        //        }
-        //    }
-        //}
+            //statics: ["EDITMENU"],
+            custom: {
+                HASH: function (prop, Receiver, Supplier) {
+
+                    Entity.ENTITIES_HASH[Receiver.name] = true
+
+                //var c = Supplier.constructor;
+                //while (!Receiver.EDITMENU && c) {
+                //    if (c.EDITMENU) {                                                  // Add to attributes
+                //        Receiver.EDITMENU = c.EDITMENU
+                //    }
+                //    c = c.superclass ? c.superclass.constructor : null;
+                //}
+                }
+            }
         },
         ATTRS: {
-            id: {
-                writeOnce: "initOnly",
-                type:'string',
-                _inputex: {
-                    _type: 'hidden'
-                }
-            },
+            id: Y.mix(IDATTRDEF, {
+                writeOnce: "initOnly"
+            }),
             '@class': {
                 value: "null",
                 writeOnce: "initOnly",
@@ -170,7 +178,13 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
         },
+
         EDITMENU: [],
+
+        /**
+         * Holds a reference to all declared entity classes
+         */
+        ENTITIES_HASH: {},
 
         /**
          *  This method takes a parsed json object and instantiate them based
@@ -219,11 +233,12 @@ YUI.add('wegas-entity', function (Y) {
             return new classDef(o);
         }
     });
+    Y.namespace('Wegas.persistence').Entity = Entity;
 
     /**
      * ServerResponse mapper
      */
-    Y.Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Y.Base.create("ManagedModeResponseFilter$ServerResponse", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Y.Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
         ATTRS: {
             entities: {
                 value: []
@@ -247,19 +262,51 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string",
-                _inputex: {
-                    label:'Name'
-                }
+                type: "string"
             },
             games: {
                 type: "array",
-                value: []
+                value: [],
+                _inputex: {
+                    _type:'hidden'
+                }
+
             },
-            scriptLibrary: {
-                value: {}
+            widgetsUri: {
+                type: "string",
+                choices: [{
+                    value:"wegas-leaderway/db/wegas-leaderway-pages.json",
+                    label:"Leaderway"
+                }, {
+                    value:"wegas-crimesim/db/wegas-leaderway-crimesim.json",
+                    label:"Crimesim"
+                }, {
+                    value:"wegas-mmo/db/wegas-leaderway-mmo.json",
+                    label:"Programming Game"
+                }],
+                _inputex: {
+                    label: "Layout"
+                }
+            },
+            cssUri: {
+                type: "string",
+                _inputex: {
+                    label: "CSS Stylesheet"
+                }
             }
-        }
+        },
+        EDITMENU: [{
+            type: "Button",
+            label: "Explore",
+            plugins: [{
+                fn: "LoadTreeviewNode"
+            }]
+        },{
+            type: "EditEntityButton",
+            label: "Properties"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -301,18 +348,12 @@ YUI.add('wegas-entity', function (Y) {
                 type: "string"
             },
             players: {
-                type: "array",
                 value: [],
                 _inputex: {
                     _type: "hidden"
                 }
             },
-            gameId: {
-                type: "string",
-                _inputex: {
-                    _type: "hidden"
-                }
-            }
+            gameId: IDATTRDEF
         },
         EDITMENU: [{
             type: "EditEntityButton"
@@ -338,12 +379,7 @@ YUI.add('wegas-entity', function (Y) {
             name: {
                 type: "string"
             },
-            teamId: {
-                type: "string",
-                _inputex: {
-                    _type: "hidden"
-                }
-            }
+            teamId: IDATTRDEF
         },
         EDITMENU: [{
             type: "EditEntityButton"
@@ -441,13 +477,13 @@ YUI.add('wegas-entity', function (Y) {
             type: "EditEntityButton"
         }, {
             type: "DeleteEntityButton"
-        }]
-    //        EDITFORM:  [{
-    //            name: 'valueselector',
-    //            label:'Variable is',
-    //            type: 'keyvalue',
-    //            availableFields: []
-    //        }]
+        }],
+        EDITFORM:  {
+            name: 'valueselector',
+            label:'Variable is',
+            type: 'keyvalue',
+            availableFields: []
+        }
     });
 
 
@@ -548,12 +584,7 @@ YUI.add('wegas-entity', function (Y) {
                             _type: 'hidden'
                         }
                     },
-                    id: {
-                        type: "string",
-                        _inputex: {
-                            _type: 'hidden'
-                        }
-                    },
+                    id: IDATTRDEF,
                     value: {
                         type: "string",
                         _inputex: {
@@ -609,12 +640,7 @@ YUI.add('wegas-entity', function (Y) {
                             _type: 'hidden'
                         }
                     },
-                    id: {
-                        type: "string",
-                        _inputex: {
-                            _type: 'hidden'
-                        }
-                    },
+                    id: IDATTRDEF,
                     value: {
                         type: "string",
                         _inputex: {
@@ -663,21 +689,16 @@ YUI.add('wegas-entity', function (Y) {
                             _type: "hidden"
                         }
                     },
-                    "id": IDATTRDEF
+                    id: IDATTRDEF
                 }
             }
         },
-        EDITMENU: [{
+        EDITMENU: [ {
             type: "EditEntityButton"
         }, {
-            type: "Button",
+            type: "AddEntityChildButton",
             label: "Add child",
-            plugins: [{
-                fn: "AddEntityChildAction",
-                cfg: {
-                    childClass: "VariableDescriptor"
-                }
-            }]
+            childClass: "VariableDescriptor"
         }, {
             type: "DeleteEntityButton"
         }]
@@ -894,13 +915,7 @@ YUI.add('wegas-entity', function (Y) {
                             value:'ResourceInstance'
                         }
                     },
-                    id: {
-                        type: "string",
-                        name: 'id',
-                        _inputex: {
-                            _type: 'hidden'
-                        }
-                    },
+                    id: IDATTRDEF,
                     active: {
                         type: 'boolean',
                         _inputex: {
@@ -958,6 +973,9 @@ YUI.add('wegas-entity', function (Y) {
             moralHistory: {
                 type: "array"
             },
+            confidenceHistory: {
+                type: "array"
+            },
             confidence: {
                 type: "string"
             },
@@ -998,12 +1016,7 @@ YUI.add('wegas-entity', function (Y) {
                             value:'TaskInstance'
                         }
                     },
-                    id: {
-                        type: 'string',
-                        _inputex: {
-                            _type: 'hidden'
-                        }
-                    },
+                    id: IDATTRDEF,
                     active: {
                         type: 'boolean',
                         _inputex: {
@@ -1060,6 +1073,20 @@ YUI.add('wegas-entity', function (Y) {
                     label: "Skillset",
                     _type: "object"
                 }
+            }
+        }
+    });
+
+    /**
+     * Assignement mapper
+     */
+    Y.Wegas.persistence.Assignment = Y.Base.create("Assignment", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS:{
+            "@class":{
+                value:"TaskInstance"
+            },
+            taskDescriptorId: {
+                type: 'string'
             }
         }
     });
@@ -1137,49 +1164,34 @@ YUI.add('wegas-entity', function (Y) {
     });
 
 
-/*
+    /*
      * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORM values here, so
      * we can use other object's existing declaration.
      */
-//    Y.Wegas.persistence.VariableDescriptor.EDITFORM[0].availableFields = [
-//    {
-//        type: 'group',
-//        name: 'StringDescriptor',
-//        label: 'a string',
-//        fields: Y.Wegas.persistence.StringDescriptor.EDITFORM
-//    },
-//
-//    {
-//        type: 'group',
-//        name: 'NumberDescriptor',
-//        label: 'a number',
-//        fields:  Y.Wegas.persistence.NumberDescriptor.EDITFORM
-//    },
-//    {
-//        type: 'group',
-//        name: 'QuestionDescriptor',
-//        label: 'a question',
-//        fields: Y.Wegas.persistence.QuestionDescriptor.EDITFORM
-//    },
-//    {
-//        type: 'group',
-//        name: 'ListDescriptor',
-//        label: 'a list',
-//        fields:  Y.Wegas.persistence.ListDescriptor.EDITFORM
-//    },
-//    {
-//        type: 'group',
-//        name: 'ResourceDescriptor',
-//        label: 'a resource',
-//        fields:  Y.Wegas.persistence.ResourceDescriptor.EDITFORM
-//    },
-//    {
-//        type: 'group',
-//        name: 'TaskDescriptor',
-//        label: 'a task',
-//        fields:  Y.Wegas.persistence.TaskDescriptor.EDITFORM
-//    },
-//    // {type: 'group', name: 'DialogueDescriptor', label: 'a dialogue',fields:  Y.Wegas.persistence.DialogueDescriptor.EDITFORM }
-//    // {type: 'group', name: 'TriggerDescriptor', label: 'a trigger', fields:  Y.Wegas.persistence.TriggerDescriptor.EDITFORM },
-//    ];
+    Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields = [
+    Y.mix({
+        name: 'NumberDescriptor',
+        label: 'a number'
+    }, new Y.Wegas.persistence.NumberDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'StringDescriptor',
+        label: 'a string'
+    }, new Y.Wegas.persistence.StringDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'QuestionDescriptor',
+        label: 'a question'
+    }, new Y.Wegas.persistence.QuestionDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'ListDescriptor',
+        label: 'a list'
+    }, new Y.Wegas.persistence.ListDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'ResourceDescriptor',
+        label: 'a number'
+    }, new Y.Wegas.persistence.ResourceDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'TaskDescriptor',
+        label: 'a task'
+    }, new Y.Wegas.persistence.TaskDescriptor().getFormCfg())
+    ];
 });

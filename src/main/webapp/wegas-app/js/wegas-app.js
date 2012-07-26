@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -8,18 +18,19 @@ YUI.add('wegas-app', function (Y) {
     var	App = Y.Base.create("wegas-app", Y.Base, [ ], {
 
         // ** Private fields ** //
+        /**
+         * Holds a reference to all the dataSources used in the game
+         */
         dataSources: [],
-        _rootWidgetCfg: null,
-        _rootWidget: null,
-
-        pageLoader: null,
 
         // ** Lifecycle methods ** //
         initializer: function () {
             Y.Wegas.app = this;
         },
         destructor : function () {
-        // @todo Delete datasources
+            for (var i = 0; i < this.dataSources.length; i = i + 1) {
+                this.dataSources[i].destroy();
+            }
         },
         render: function () {
             this.initDataSources();
@@ -91,10 +102,6 @@ YUI.add('wegas-app', function (Y) {
         },
 
         renderUI: function() {
-
-            this.pageLoader = new Y.Wegas.PageLoader();
-            this.pageLoader.render();
-
             Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + App.genId(), {
                 context: this,
                 on: {
@@ -102,20 +109,26 @@ YUI.add('wegas-app', function (Y) {
                         //Y.log("RedCMS.onWidgetReloadContentReceived():"+  o.responseText, 'log');
                         var cfg;
                         try {
-                            cfg = Y.JSON.parse(o.responseText);				// Process the JSON data returned from the server
-                        } catch (jsonException) {
+                            cfg = Y.JSON.parse(o.responseText);			// Process the JSON data returned from the server
+                        } catch (e) {
                             alert("Wegas.App.initUI(): JSON Parse failed!");
                             return;
                         }
-                        cfg.id = -100;
-                        this.dataSources.Page.data.push(cfg);
 
-                        try {
-                            this.pageLoader.set("pageId", -100);
-                           // this._rootWidget.render();
-                        } catch (renderException) {
-                            Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
-                        }
+                        Y.Wegas.Widget.use(cfg, Y.bind( function (cfg) {        // Load the subwidget dependencies
+                            var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
+                            widget.render();
+                        }, this, cfg));
+
+                    //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
+                    //this.pageLoader.render();
+                    // cfg.id = -100;
+                    // this.dataSources.Page.data.push(cfg);
+                    //try {
+                    //    this.pageLoader.set("pageId", -100);
+                    //} catch (renderException) {
+                    //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
+                    //}
                     }
                 }
             });
@@ -140,8 +153,8 @@ YUI.add('wegas-app', function (Y) {
                 setter: function (val) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
                     if (cPlayer) {
-                        // @fixme
-                       // this.set('currentTeam', cPlayer.teamId);              // When current player is updated, we also update current team
+                    // @fixme
+                    // this.set('currentTeam', cPlayer.teamId);              // When current player is updated, we also update current team
                     }
                     return val;
                 }

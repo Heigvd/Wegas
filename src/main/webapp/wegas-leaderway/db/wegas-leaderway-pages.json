@@ -143,7 +143,7 @@
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
-                "pageId": 6
+                "pageId": 2
             }]
     },
     {
@@ -176,6 +176,7 @@
         "id":7,
         "label":"Dialogue",
         "type":"Dialogue",
-        "cssClass":"leaderway-dialogue"
+        "cssClass":"leaderway-dialogue",
+        "toHide":".menu"
     }
 ]

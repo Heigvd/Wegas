@@ -34,7 +34,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
      
         makeResourcesSelector: function(cb, listResourcesDescriptor){
             if(cb.one('.listResources .resourceSelector') != null) return;
-            var i, j, k, resourceSelector = new Array(), resourceInstance,
+            var i, resourceSelector = new Array(), resourceInstance,
             resourceDescriptor, textOccupation;
             for(i=0; i<listResourcesDescriptor.get('items').length; i++){
                 resourceSelector.length = 0;
@@ -60,10 +60,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 cb.one('.listResources').insert(resourceSelector.join(""));
             }
             this.handlers.push(cb.all('.listResources .resourceSelector').on('click', function (e) {
-               var newResource = null, resourceID = parseInt(e.currentTarget._node.childNodes[0].innerText);
+                var newResource = null, resourceID = parseInt(e.currentTarget._node.childNodes[0].innerText);
                 for(i=0; i<listResourcesDescriptor.get('items').length; i++){
                     resourceDescriptor = listResourcesDescriptor.get('items')[i];
-                    if(resourceDescriptor.id == resourceID) newResource = resourceDescriptor;
+                    if(resourceDescriptor.get('id') == resourceID) newResource = resourceDescriptor;
                 }
                 if(newResource == null) newResource = listResourcesDescriptor.get('items')[0];
                 this.currentResourceDescriptor = newResource;
@@ -94,7 +94,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         
         syncFolderInformations: function(cb){
             var currentResourceInstance = this.currentResourceDescriptor.getInstance();
-            cb.one('.folder .name').insert(this.currentResourceDescriptor.name);
+            cb.one('.folder .name').insert(this.currentResourceDescriptor.get('name'));
             if(currentResourceInstance.get('properties').surname){
                 cb.one('.folder .surname').insert(currentResourceInstance.get('properties').surname);   
             }
@@ -136,13 +136,13 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 }
                 else{
                     cb.one('.leadershipLevel').insert('<div class="error">Leadership level must to be between 1 to 5)</div>')
-                    }
+                }
             }
         },
 
         getOccupation: function(resourceInstance){
             var i, j, occupation = new Array(), sick=false,
-            taskListDescriptor = Y.Wegas.VariableDescriptorFacade.rest.fin("name", "tasks"),
+            taskListDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),
             listAbsenceDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "absences"),
             taskDescriptor, taskInstance, taskSkills = new Array();
             for (i = 0; i < listAbsenceDescriptor.get('items').length; i++) {
@@ -164,7 +164,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 for (i = 0; i < taskListDescriptor.get('items').length; i++) {
                     for(j = 0; j < resourceInstance.get('assignments').length; j++){
                         taskDescriptor = taskListDescriptor.get('items')[i];
-                        if(taskDescriptor.get('id') == resourceInstance.get('assignments')[j].taskDescriptorId){
+                        if(taskDescriptor.get('id') == resourceInstance.get('assignments')[j].get('taskDescriptorId')){
                             taskInstance = taskDescriptor.getInstance();
                             for(var key in taskInstance.get('skillset')){
                                 taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.get('skillset')[key]+')</li>');
@@ -241,14 +241,14 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
         },
         
-        setTextSelectedTask: function(taskDescriptor){
+        setTextSelectedTask: function(eventContainTask){
             var selectedRowInformation = this.tasksChooser.get(CONTENTBOX).one('.yui3-widget-ft .selectedTask');
             selectedRowInformation.setHTML();
-            selectedRowInformation.insert("Mandat sélectionné : "+taskDescriptor.get('name'));
+            selectedRowInformation.insert("Mandat sélectionné : "+eventContainTask.taskDescriptor.get('name'));
         },
         
         assignTask: function(resourceDescriptor, taskDescriptor){
-            var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback');
+            var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback'), success = false;
             if(taskDescriptor != null && resourceDescriptor != null){
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
@@ -258,22 +258,31 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                             "@class": "Script",
                             "language": "JavaScript",
                             "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.get('id')+","+taskDescriptor.get('id')+");"
-                        })
+                        }),
+                        on: { //not work, do the both :-(
+                            success: this.assignTaskResult(true, feedbackNode),
+                            failure: this.assignTaskResult(false, feedbackNode)
+                        }
                     }
                 });
+            }
+            this.syncUI();
+        },
+        
+        assignTaskResult: function(success, feedbackNode){
+            if(success){
                 feedbackNode.addClass('green');
                 feedbackNode.insert("Le mandat à été délégué !");
             }
             else{
                 feedbackNode.addClass('red');
                 feedbackNode.insert("Le mandat n'a pas pu être délégué.");
-            }
-                this.syncUI();
-                setTimeout(function(){
-                    feedbackNode.setHTML();
-                    feedbackNode.removeClass('green');
-                    feedbackNode.removeClass('red');
-                }, 5000);
+            } 
+            setTimeout(function(){
+                feedbackNode.setHTML();
+                feedbackNode.removeClass('green');
+                feedbackNode.removeClass('red');
+            }, 5000);
         },
 
         // *** Lifecycle Methods *** //
@@ -316,32 +325,34 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     </div>'
                 }]
             });
-                this.tasksChooser = new Y.Panel({
-                    contentBox : Y.Node.create('<div class="tasksChooser"></div>'),
-                    bodyContent: '<div class="tasksChooser-tasklist"></div>',
-                    width      : 950,
-                    zIndex    : 100,
-                    centered   : true,
-                    modal      : true,
-                    render     : cb,
-                    visible    : false,
-                    buttons    : {
-                        footer: [
-                            {
-                                name  : 'cancel',
-                                label : 'Annuler',
-                                action: 'onCancel'
-                            },
-                            {
-                                name     : 'proceed',
-                                label    : 'Assigner le mandat',
-                                action   : 'onOK'
-                            }
-                        ]
+            this.tasksChooser = new Y.Panel({
+                contentBox : Y.Node.create('<div class="tasksChooser"></div>'),
+                bodyContent: '<div class="tasksChooser-tasklist"></div>',
+                width      : 950,
+                zIndex    : 100,
+                centered   : true,
+                modal      : true,
+                render     : cb,
+                visible    : false,
+                buttons    : {
+                    footer: [
+                    {
+                        name  : 'cancel',
+                        label : 'Annuler',
+                        action: 'onCancel'
+                    },
+                    {
+                        name     : 'proceed',
+                        label    : 'Assigner le mandat',
+                        action   : 'onOK'
                     }
+                    ]
+                }
             });
             this.tasksChooser.get(CONTENTBOX).one('.yui3-widget-ft span').insert('<div class="selectedTask"></div>', 'before')
-            this.tasksList = new Y.Wegas.TaskList({pickingMode:true});
+            this.tasksList = new Y.Wegas.TaskList({
+                pickingMode:true
+            });
             cb.insert('<div class="menuFolder"><div class="listResources"></div></div>');
             this.tabview.render(cb);
         },
@@ -387,9 +398,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
         }
     }, {
-        ATTRS : {
-            content: { }
-        }
+        ATTRS : {}
     });
 
     Y.namespace('Wegas').Folder = Folder;

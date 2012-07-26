@@ -65,7 +65,8 @@ YUI.add('wegas-leaderway-score', function (Y) {
     },
     {
         ATTRS : {
-            title: { }
+            title: {
+                value: 'Top 5 des meilleurs entreprises.'}
         }
     });
 

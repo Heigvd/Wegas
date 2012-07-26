@@ -251,7 +251,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             }
             e.cfg.node.set("loading", false);
             if(callback){
-                callback.apply(this, [e]);
+                callback.call(this, e);
             }
         },
 
