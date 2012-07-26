@@ -11,7 +11,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.leadergame.persistence.DialogueDescriptor;
+import com.wegas.leaderway.persistence.DialogueDescriptor;
 import java.util.*;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;

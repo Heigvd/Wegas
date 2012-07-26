@@ -66,31 +66,32 @@ YUI.add('wegas-datasourcerest', function (Y) {
         * @private
         */
         beforeResponse: function (e) {
-            var evt, entity, i;
+            var evt, i,
+            response = Y.Wegas.persistence.Entity.revive(e.response.results);   // Transform javascript object litterals to Y.Wegas.persistence.Entity's
 
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
 
-            e.serverResponse = Y.Wegas.persistence.Entity.revive(e.response.results);   // Transform javascript object litterals to Y.Wegas.persistence.Entity's
-            e.data = this.getCache();                                           // Provides with a pointer to the datasource current content
+            e.response.serverResponse = response
+            e.response.data = this.getCache();                                  // Provides with a pointer to the datasource current content
 
             if (e.error) {                                                      // If there was an server error, do not update the cache
                 return;
             }
 
-            if (Lang.isArray(e.serverResponse)) {                               // Non-managed response: we apply the operation for each object in the returned array
-                for (i = 0; i < e.serverResponse.length; i += 1) {
-                    this.updateCache(e.cfg.method, e.serverResponse[i]);
+            if (Lang.isArray(response)) {                               // Non-managed response: we apply the operation for each object in the returned array
+                for (i = 0; i < response.length; i += 1) {
+                    this.updateCache(e.cfg.method, response[i]);
                 }
             } else {
-                for (i = 0; i < e.serverResponse.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
-                    entity = e.serverResponse.get("entities")[i];
-                    if (Y.Lang.isObject(entity)) {
-                        this.updateCache(e.cfg.method,entity);
+                for (i = 0; i < response.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
+                    e.response.entity = response.get("entities")[i];
+                    if (Y.Lang.isObject(e.response.entity)) {
+                        this.updateCache(e.cfg.method, e.response.entity);
                     }
                 }
 
-                for (i = 0; i < e.serverResponse.get("events").length; i += 1) {
-                    evt = e.serverResponse.get("events")[i];
+                for (i = 0; i < response.get("events").length; i += 1) {
+                    evt = response.get("events")[i];
                     if (evt instanceof Y.Wegas.persistence.EntityUpdatedEvent) {// Case 1: EntityUpdatedEvent
                         for (i = 0; i < evt.get("updatedEntities").length; i += 1) {  // Update the cache with the entites contained in the reply
                             this.updateCache("POST", evt.get("updatedEntities")[i]);
@@ -126,8 +127,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     break;
             }
             if (ret === null) {
-                this.getCache().push(entity);
+                this.addToCache(entity);
             };
+        },
+
+        addToCache: function (entity) {
+            this.getCache().push(entity);
         },
 
         _successHandler: function (e) {
@@ -188,15 +193,20 @@ YUI.add('wegas-datasourcerest', function (Y) {
         doFind: function(key, needle, onFindFn, stack) {
             //Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.DataSourceRest');
             var onWalkFn = Y.bind(this.doFind, this, key, needle, onFindFn);
-            return Y.Array.find(stack, function(item, index, array) {
+
+            this.ret = null;
+
+            Y.Array.find(stack, function(item, index, array) {
                 if (this.testEntity(item, key, needle)) {                       // We check the current element if it's a match
                     if (onFindFn) {
                         onFindFn(item, needle, index, array);
                     }
+                    this.ret = item;
                     return true;
                 }
                 return this.walkEntity(item, onWalkFn);
             }, this);
+            return this.ret;
         },
 
         /**
@@ -388,7 +398,22 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     return true;
                 }
             }
+             if (entity.get && entity.get("items")) {
+                if (callback(entity.get("items"))) {
+                    return true;
+                }
+            }
             return false;
+        },
+
+        addToCache: function (entity) {
+            if (entity instanceof Y.Wegas.persistence.Team) {
+                this.findById(entity.get("gameId")).get("teams").push(entity)
+            } else if (entity instanceof Y.Wegas.persistence.Player) {
+                this.findById(entity.get("teamId")).get("players").push(entity)
+            } else {
+                this.getCache().push(entity);
+            }
         },
         generateRequest: function (data) {
             if (data['@class'] === 'Team') {

@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -15,7 +25,7 @@ YUI.add('wegas-pageloader', function (Y) {
         },
 
         bindUI: function () {
-            Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
+            //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
         },
 
         syncUI: function () {
@@ -25,13 +35,12 @@ YUI.add('wegas-pageloader', function (Y) {
         ATTRS : {
             pageId: {
                 setter: function (val) {
-                    var widgetCfg, oldWidget = this.get("widget");
-
                     if (!val) {
                         return val;
                     }
 
-                    widgetCfg = Y.Wegas.PageFacade.rest.findById(val);
+                    var widgetCfg = Y.Wegas.PageFacade.rest.findById(val),
+                    oldWidget = this.get("widget");
 
                     if (widgetCfg && widgetCfg.id && this.widgetCfg             // If the widget is currently being loaded, escape
                         && this.widgetCfg.id && this.widgetCfg.id == widgetCfg.id) {
@@ -48,7 +57,7 @@ YUI.add('wegas-pageloader', function (Y) {
                     }
 
                     widgetCfg = widgetCfg || {
-                       /* id: val,*/
+                        // id: Y.Wegas.App.genId(),
                         type: "Text",
                         content: "Loading..."
                     };

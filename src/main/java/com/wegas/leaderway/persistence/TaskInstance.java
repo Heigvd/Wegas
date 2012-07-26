@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.leadergame.persistence;
+package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -71,7 +71,7 @@ public class TaskInstance extends VariableInstance {
     public void setActive(Boolean active) {
         this.active = active;
     }
-    
+
     /**
      * @return the duration
      */
@@ -117,7 +117,7 @@ public class TaskInstance extends VariableInstance {
     public String getProperty(String key) {
         return this.properties.get(key);
     }
-    
+
     /**
      * @return the skillset
      */
