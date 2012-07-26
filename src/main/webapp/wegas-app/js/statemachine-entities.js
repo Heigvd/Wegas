@@ -117,10 +117,10 @@ Y.add("statemachine-entities", function(Y){
                         }
                     }
                 }
-            }/*,
+            },
             states: {
                 value:{},
-                writeOnce:"initOnly",
+                writeOnce:"initOnly"/*,
                 _inputex: {
                     _type:'hashlist',
                     label: 'States',
@@ -214,8 +214,8 @@ Y.add("statemachine-entities", function(Y){
                             }
                         }]
                     }
-                }
-            }*/
+                }*/
+            }
         },
         EDITMENU: [{
             type: "EditEntityButton",

@@ -12,7 +12,8 @@ YUI.add('treeview', function (Y) {
     BOUNDING_BOX = "boundingBox",
     classNames = {
         loading : getClassName(TREENODE, "loading"),
-        collapsed : getClassName(TREENODE,"collapsed")
+        collapsed : getClassName(TREENODE,"collapsed"),
+        visibleRightWidget : getClassName(TREEVIEW,"visible-right")
     },
     RIGHTWIDGETSETTERFN = function (v){
         if(this.get("rightWidget") !== v && this.get("rightWidget")){// Remove existing child
@@ -50,13 +51,20 @@ YUI.add('treeview', function (Y) {
         bindUI : function() {
         },
         renderUI:function() {
+            if(this.get("visibleRightWidget")){
+                this.get(CONTENT_BOX).addClass(classNames.visibleRightWidget);
+            }
         }
     }, {
         NAME:'treeview',
         ATTRS:{
-            defaultChildType: {
-                value: "TreeLeaf"
+            visibleRightWidget:{
+                value:false,
+                validator: Y.Lang.isBoolean
             }
+        },
+        defaultChildType: {
+            value: "TreeLeaf"
         }
     });
 

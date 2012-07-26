@@ -215,7 +215,16 @@ img.inputEx-ListField-delButton {
 .yui3-skin-sam .wegas-icon-reset {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px -300px;
 }
+.yui3-skin-sam .wegas-icon-refresh {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -300px;
+}
 .yui3-skin-sam .wegas-icon-new {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
+}
+.yui3-skin-sam .wegas-icon-newfile {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
+}
+.yui3-skin-sam .wegas-icon-newdir {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
 }
 .yui3-skin-sam .wegas-icon-play {
