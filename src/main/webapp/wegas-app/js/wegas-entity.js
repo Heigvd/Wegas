@@ -1162,7 +1162,12 @@ YUI.add('wegas-entity', function (Y) {
         //TODO : FX a greffer :)
         },
         localEval: function(){
-            return Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
+            try{
+                return Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
+            }catch(e){
+                console.error("SCRIPT plugin failed");
+                return null;
+            }
         },
         isEmpty: function () {
             return (this.content == null || this.content == "");

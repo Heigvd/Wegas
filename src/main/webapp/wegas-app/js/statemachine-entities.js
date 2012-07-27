@@ -417,7 +417,7 @@ Y.add("statemachine-entities", function(Y){
                         });
                     }catch(e){
                         //TODO : that
-                        console.error("will have to correct that, cache currently not updating", e.stack);
+                        console.error("REST plugin failed");
                     }
                     return true;
                 }else{
