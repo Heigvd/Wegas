@@ -420,6 +420,17 @@
                     "scope": {
                         "@class": "TeamScope"
                     }
+                },{
+                    "@class": "TaskDescriptor",
+                    "name": "sickness2",
+                    "description":"",
+                    "defaultVariableInstance":{
+                        "@class":"TaskInstance",
+                        "duration":2
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
                 }],
             "defaultVariableInstance":{
                 "@class": "NumberInstance",
@@ -445,8 +456,32 @@
                     "text" : "{\"speakerName\":\"Lucien\",\"texts\":[\"Texte aléatoire 1 : Bonjours, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 2 : Salut, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 3 : Ciao, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [{
                             "@class" : "DialogueTransition",
-                            "actionText" : "Si je fais ça, je vais dans l'état 2",
+                            "actionText" : "Aller à l'état 2",
                             "nextStateId" : 2,
+                            "preStateImpact" : {
+                                "@class" : "Script",
+                                "content" : "Un script exécuté au passage de la transition (n'est pour le moment pas évalué)",
+                                "language" : "JavaScript"
+                            }
+                        },{
+                            "@class" : "DialogueTransition",
+                            "actionText" : "Aller à l'état 3",
+                            "nextStateId" : 3,
+                            "triggerCondition" : {
+                                    "@class" : "Script",
+                                    "content" : "budget.value <= 29000;",
+                                    "language" : "JavaScript"
+                            },
+                            "preStateImpact" : {
+                                "@class" : "Script",
+                                "content" : "Un script exécuté au passage de la transition (n'est pour le moment pas évalué)",
+                                "language" : "JavaScript"
+                            }
+                        },
+{
+                            "@class" : "DialogueTransition",
+                            "actionText" : "Aller à l'état 4",
+                            "nextStateId" : 4,
                             "preStateImpact" : {
                                 "@class" : "Script",
                                 "content" : "Un script exécuté au passage de la transition (n'est pour le moment pas évalué)",
@@ -457,11 +492,31 @@
                 },
                 "2" : {
                     "@class" : "DialogueState",
-                    "text":"{\"speakerName\":\"Lucien\",\"texts\":[\"Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "text":"{\"speakerName\":\"Lucien\",\"texts\":[\"Etat 2, Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [],
                     "onEnterEvent" : {
                         "@class" : "Script",
-                        "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self).setMoral(30);",
+                        "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self).setMoral(15);",
+                        "language" : "JavaScript"
+                    }
+                },
+                "3" : {
+                    "@class" : "DialogueState",
+                    "text":"{\"speakerName\":\"Lucien\",\"texts\":[\"Etat 3, Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "transitions" : [],
+                    "onEnterEvent" : {
+                        "@class" : "Script",
+                        "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self).setMoral(19);",
+                        "language" : "JavaScript"
+                    }
+                },
+                "4" : {
+                    "@class" : "DialogueState",
+                    "text":"{\"speakerName\":\"Lucien\",\"texts\":[\"Etat 4, Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "transitions" : [],
+                    "onEnterEvent" : {
+                        "@class" : "Script",
+                        "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self).setMoral(50);",
                         "language" : "JavaScript"
                     }
                 }

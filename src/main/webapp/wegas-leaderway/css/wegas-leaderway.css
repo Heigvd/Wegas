@@ -654,7 +654,11 @@ body{
     padding-left:20px;
 }
 
-.wegas-dialogue .leaderway-dialogue .dialogue .response .responseElements:hover{
+.wegas-dialogue .leaderway-dialogue .dialogue .response li{
+    margin-bottom:10px;
+}
+
+.wegas-dialogue .leaderway-dialogue .dialogue .response li:hover{
     list-style-image: url("http://localhost:8080/Wegas/wegas-leaderway/images/fleche.png");
     cursor: pointer;
     font-style: normal;

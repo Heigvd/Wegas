@@ -178,7 +178,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             this.handlers.push(cb.one('.dialogue .response .responseElements').delegate('click', function (e){
                 dialogue.doTransition(availableTransitions[e.currentTarget._node.attributes[0].nodeValue]);
-                this.syncUI();
             }, 'li', this));
         },
         

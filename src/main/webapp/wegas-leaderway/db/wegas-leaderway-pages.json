@@ -121,19 +121,6 @@
 
                     },
                     {
-                        "type": "Button",
-                        "label": "Dialogue",
-                        "cssClass": "menu-tasklist",
-                        "tooltips":"dialogue(temporaire)",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 7,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
-                    },
-                    {
                         "type": "LoginButton",
                         "label":"Login button",
                         "cssClass": "menu-loginbutton"

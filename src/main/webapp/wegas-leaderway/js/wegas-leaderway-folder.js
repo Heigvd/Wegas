@@ -293,6 +293,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if(taskDescriptor != null && resourceDescriptor != null){
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    headers:{
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Managed-Mode':'true'
+                        
+                    },
                     cfg: {
                         method: "POST",
                         data: Y.JSON.stringify({
