@@ -294,6 +294,9 @@ YUI.add('wegas-entity', function (Y) {
                 _inputex: {
                     label: "CSS Stylesheet"
                 }
+            },
+            scriptLibrary:{
+                value:{}
             }
         },
         EDITMENU: [{
