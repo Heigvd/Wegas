@@ -465,23 +465,23 @@ body{
     text-align: center;
 }
 
-.wegas-folder .leaderway-folder .actions .actions-list .action{
+.wegas-folder .leaderway-folder .actions .action{
     display:inline-block;
     margin:0 20px 0 0;
-    padding:5px;
+    padding: 10px;
     border:outset 1px #6F89A2;
     border-radius: 5px;
     background-color: white;
-    width: 100px;
-    height:100px;
+    width: 80px;
+    height:80px;
     text-align: center;
+    overflow: hidden;
 }
 
-.wegas-folder .leaderway-folder .actions .actions-list .action:hover{
+.wegas-folder .leaderway-folder .actions .action:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }
-
 /*---------action->tasklist--------*/
 .wegas-folder .yui3-panel .yui3-widget-ft{
     overflow:hidden;

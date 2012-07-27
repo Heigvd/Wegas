@@ -13,7 +13,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         seriesName: new Array(),
         seriesValue:new Array(),
         handlers: new Array(),
-        currentDialogue: "dialogueLucien", //debug
+        currentDialogue: null,
         
         chartTooltip: {
             markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex){
@@ -99,6 +99,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         readStateMachine: function(cb){
+            if(this.currentDialogue == null) return;
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
             state, rawText, jsonText, texts, splittedText = new Array();
             if(dialogue == null){
@@ -120,7 +121,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             this.renderJSONImages(cb.one('.pictures .answerLayer'), jsonText.answerImages);
             cb.one('.pictures .backgroundLayer').show();
             cb.one('.pictures .questionLayer').show();
-            setTimeout(Y.bind(this.displayText, this, cb, splittedText), 500);
+            setTimeout(Y.bind(this.displayText, this, cb, splittedText), 400);
         },
         
         renderJSONImages: function(node, imageObjects){
@@ -164,21 +165,27 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         displayResponse: function(cb){
-            var i, state, dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
+            if(this.currentDialogue == null) return;
+            var i, state, availableTransitions,
+            dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
             cb.one('.pictures .questionLayer').hide();
             cb.one('.pictures .answerLayer').show();
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
+            availableTransitions = state.getAvailableActions();
             cb.one('.dialogue .response').insert('<ul class="responseElements"></ul>');
-            for(i=0 ; i<state.get('transitions').length; i++){
-                cb.one('.dialogue .response .responseElements').insert('<li nextState="'+state.get('transitions')[i].get('nextStateId')+'">'+state.get('transitions')[i].get('actionText')+'</li>');
+            for(i=0 ; i<availableTransitions.length; i++){
+                cb.one('.dialogue .response .responseElements').insert('<li nextstate="'+i+'">'+availableTransitions[i].get('actionText')+'</li>');
             }
-            cb.one('.dialogue .response .responseElements').delegate('click', function (e){
-                   dialogue.doTransition(state.get('transitions')[0]);
-            }, 'li', this);
+            this.handlers.push(cb.one('.dialogue .response .responseElements').delegate('click', function (e){
+                dialogue.doTransition(availableTransitions[e.currentTarget._node.attributes[0].nodeValue]);
+                this.syncUI();
+            }, 'li', this));
         },
         
         setCurrentDialogue: function(newDialogueRef){
+            if(!typeof newDialogueRef === "string") return;
             this.currentDialogue = newDialogueRef;
+            this.syncUI();
         },
         
         /***Lifecycle methode***/

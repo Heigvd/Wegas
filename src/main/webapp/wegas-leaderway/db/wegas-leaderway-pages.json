@@ -151,7 +151,7 @@
         "label":"Folder",
         "type":"Folder",
         "cssClass":"leaderway-folder",
-        "dialoguePageId": 6,
+        "dialoguePageId": 7,
         "targetPageLoaderId": "maindisplayarea"
     },
     {

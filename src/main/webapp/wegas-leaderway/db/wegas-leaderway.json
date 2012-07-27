@@ -442,16 +442,11 @@
             "states" : {
                 "1" : {
                     "@class" : "DialogueState",
-                    "text" : "{\"speakerName\":\"Lucien\",\"texts\":[\"Texte aléatoire 1 : Bonjours, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 2 : Salut, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 3 : Ciao, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343217993-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "text" : "{\"speakerName\":\"Lucien\",\"texts\":[\"Texte aléatoire 1 : Bonjours, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 2 : Salut, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 3 : Ciao, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [{
                             "@class" : "DialogueTransition",
                             "actionText" : "Si je fais ça, je vais dans l'état 2",
                             "nextStateId" : 2,
-                            "triggerCondition" : {
-                                "@class" : "Script",
-                                "content" : "C'est possible d'avoir un script aussi ...",
-                                "language" : "JavaScript"
-                            },
                             "preStateImpact" : {
                                 "@class" : "Script",
                                 "content" : "Un script exécuté au passage de la transition (n'est pour le moment pas évalué)",
@@ -462,7 +457,7 @@
                 },
                 "2" : {
                     "@class" : "DialogueState",
-                    "text":"{\"speakerName\":\"Lucien\",\"texts\":\"Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\",\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343217993-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "text":"{\"speakerName\":\"Lucien\",\"texts\":[\"Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [],
                     "onEnterEvent" : {
                         "@class" : "Script",

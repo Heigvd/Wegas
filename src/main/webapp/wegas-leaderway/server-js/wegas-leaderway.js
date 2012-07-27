@@ -224,32 +224,44 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
 }
 
 /**
- * Decreases all absences duration (taskInstance from absences list).
- * If duration <= 0, set the moral value of the owner resource to 40 and 
- * recalculate the teamMotivation value.
+ * Decrease absence duration by switch the current absenceTask with a other absenceTask wich have a duration 1 time smaller.
+ * If the duration must reach 0, remove this assignation, set the resource 'moral' to 40 and recalculate the teamMotivation's value.
+ * If duration is smaller than 0, deactivate the task.
  */
 function checkAbsencesEnd(){
-    var i, j, k, gm = self.getGameModel(), assignment,
+    var i, j, k, l, gm = self.getGameModel(), assignment, duration,
     listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absenceInstance,
-    listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance;
-    for(i=0; i< listAbsences.items.size();i++){
-        absenceInstance = listAbsences.items.get(i).getInstance(self);
-        if(absenceInstance.getActive() == true){
-            absenceInstance.setDuration(absenceInstance.getDuration()-1);
-            if(absenceInstance.duration <= 0){
-                absenceInstance.setActive(false);
-                for(j=0; j< listResources.items.size();j++){
-                    resourceInstance = listResources.items.get(j).getInstance(self);
-                    for(k=0; k< resourceInstance.getAssignments().size();k++){
-                        assignment = resourceInstance.getAssignments().get(k);
-                        if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId()){
-                            resourceInstance.setMoral(40);
-                            this.calculateTeamMotivation();
+    listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance,
+    assignmentToRemove = new Array();
+    for(i=0; i<listResources.items.size();i++){
+        resourceInstance = listResources.items.get(i).getInstance(self);
+        for(j=0; j<resourceInstance.getAssignments().size();j++){
+        assignment = resourceInstance.getAssignments().get(j);
+            for(k=0; k<listAbsences.items.size();k++){
+                absenceInstance = listAbsences.items.get(k).getInstance(self);       
+                if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive == true){
+                    duration = absenceInstance.getDuration();
+                    if(duration <= 0){
+                        absenceInstance.setActive(false);   
+                    }
+                    else if(duration == 1){
+                        assignmentToRemove.push(j);
+                    }
+                    else{
+                        for(l=0; l<listAbsences.items.size();l++){
+                            if(listAbsences.items[l].getInstance(self).getDuration() == duration-1){
+                                assignment[j].setTaskDescriptorId(listAbsences.items[l].getInstance(self).getDescriptorId);
+                            }
                         }
                     }
                 }
-            }   
+            }
         }
+        for(j=assignmentToRemove.length; j>=0;j--){
+            resourceInstance.resourceInstance.getAssignments().remove(assignmentToRemove[j]);
+        }
+        resourceInstance.setMoral(40);
+        this.calculateTeamMotivation()
     }
 }
 
@@ -381,6 +393,7 @@ function checkMoral(){
                 case moral<10 :
                     if(randomNumber<0.33){
                         /*to do sendIngameMail : resource say 'adios'*/
+                        /*Ambience bad ?*/
                         resourceInstance.active(false);
                     }
                     else{
@@ -478,18 +491,23 @@ function getScore(){
 }
 
 /**
- * create & assign a new task 'sick' to resource
- * add this new variable into the 'absences' list variable
+ * Assign a task 'sick' to resource wich have a duration egal to the given duration
  * @param Integer resourceDescriptorId, the resourceDescriptor to sicken
  * @param Integer duration the duration of the sickness.
  */
 function sickenResource(resourceDescriptorId, duration){
     var i, resInstance, taskDescriptor, gm=self.getGameModel(),
-    listResources = VariableDescriptorFacade.findByName(gm, 'resources');
-    //taskDescriptor =;
+    listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
+    listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');
     for(i=0; i<listResources.items.size(); i++){
         if(resourceDescriptorId == listResources.items.get(i).id){
             resInstance = listResources.items.get(i).getInstance(self);
+        }
+    }
+    for(i=0; i<listAbsences.items.size(); i++){
+        if(listAbsences.items[i].getInstance().getDuration() == duration){
+            taskDescriptor = listAbsences.items[i];
+            break;
         }
     }
     if(resInstance != null){

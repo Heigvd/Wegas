@@ -261,7 +261,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             this.handlers.push(cb.one('.actions').delegate('click', function (e) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 targetPageLoader.once("widgetChange", function(e) {
-                    console.log(e.newVal.setCurrentDialogue(currentResourceDescriptor.getInstance().getProperties('dialogue')));
+                    e.newVal.setCurrentDialogue(this.resourceDescriptor.getInstance().get('properties').dialogue);
                 },{resourceDescriptor:this.currentResourceDescriptor});
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
 
@@ -272,8 +272,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var resourceInstance, occupation;
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
-                cb.one('.actions .giveTask').setHTML("Donner un Mandat à  "+resourceInstance.get('properties').surname);
-                cb.one('.actions .speak').setHTML("S'entretenir avec "+resourceInstance.get('properties').surname);
+                cb.one('.actions .giveTask').setHTML("<p>Donner un Mandat à  "+resourceInstance.get('properties').surname+"</p>");
+                cb.one('.actions .speak').setHTML("<p>S'entretenir avec "+resourceInstance.get('properties').surname+"</p>");
                 occupation = this.getOccupationObject(resourceInstance).code;
                 if(occupation == 0) cb.one('.actions .giveTask').show();
                 else cb.one('.actions .giveTask').hide();
