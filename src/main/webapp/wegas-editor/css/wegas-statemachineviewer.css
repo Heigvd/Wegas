@@ -86,7 +86,15 @@
     background-position: 0px -943px;
     background-repeat: no-repeat;
 }
-
+.transition-edit{
+    position:absolute;
+    display:inline-block;
+    width:18px;
+    height:24px;
+    background:url("../images/wegas-editor-sprite.png");
+    background-position: 0px -943px;
+    background-repeat: no-repeat;
+}
 .droppable-state{
     box-shadow: 0px 0px 20px #009933;
 }

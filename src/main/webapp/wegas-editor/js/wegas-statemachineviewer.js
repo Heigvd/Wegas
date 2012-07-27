@@ -384,9 +384,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             }
             this.events.editState= this.get(CONTENT_BOX).delegate("click",function(e){
                 if(this.get("entity").get("onEnterEvent")){
-                    Y.Wegas.Plugin.EditEntityAction.showEditForm(this.get("entity").get("onEnterEvent"),  Y.bind(this.setOnEnterEvent, this));
+                    Y.Plugin.EditEntityAction.showEditForm(this.get("entity").get("onEnterEvent"),  Y.bind(this.setOnEnterEvent, this));
                 }else{
-                    Y.Wegas.Plugin.EditEntityAction.showEditForm(new Y.Wegas.persistence.Script(), Y.bind(this.setOnEnterEvent, this));
+                    Y.Plugin.EditEntityAction.showEditForm(new Y.Wegas.persistence.Script(), Y.bind(this.setOnEnterEvent, this));
                 }
             },".state-edit",this);
             this.events.transitionDelete = this.on("wegas-transition:destroy", function(e){
@@ -552,12 +552,12 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             if(this.actionNode){
                 this.get(CONTENT_BOX).append(this.actionNode);
                 this.actionNode.setContent(this.get("entity").get("actionText"));
-            }
-            if(this.get("entity").get("triggerCondition")){
+            }else if(this.get("entity").get("triggerCondition")){
                 this.add(new Y.Wegas.Script({
                     entity:this.get("entity").get("triggerCondition")
                 }));
             }
+            this.get(CONTENT_BOX).append("<div class='transition-edit'></div>");
         },
         bindUI: function (){
             this.events.modalClick = this.get(BOUNDING_BOX).on("click", function(e){
@@ -576,7 +576,13 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     this.get("entity").set("actionText", val);
                 }, this);
             }
-
+            this.events.editTransition= this.get(CONTENT_BOX).delegate("click",function(e){
+                if(this.get("entity").get("triggerCondition")){
+                    Y.Plugin.EditEntityAction.showEditForm(this.get("entity").get("triggerCondition"),  Y.bind(this.setTriggerCondition, this));
+                }else{
+                    Y.Plugin.EditEntityAction.showEditForm(new Y.Wegas.persistence.Script(), Y.bind(this.setTriggerCondition, this));
+                }
+            },".transition-edit",this);
 
             this.events.scriptUpdate = this.on("wegas-script:scriptContentUpdated", function (e){
                 this.connector.setLabel(e.content);
@@ -620,6 +626,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             jp.detach(this.connector, {
                 fireEvent:true
             });
+        },
+        setTriggerCondition: function (entity){
+            entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.persistence.Entity.readObject(entity);
+            this.get("entity").set("triggerCondition", entity);
         },
         createLabel: function () {
             if(this.get("entity") instanceof Y.Wegas.persistence.DialogueTransition){

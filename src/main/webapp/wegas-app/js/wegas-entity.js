@@ -1161,6 +1161,9 @@ YUI.add('wegas-entity', function (Y) {
         isValid: function (){
         //TODO : FX a greffer :)
         },
+        localEval: function(){
+            return Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
+        },
         isEmpty: function () {
             return (this.content == null || this.content == "");
         }
@@ -1180,6 +1183,10 @@ YUI.add('wegas-entity', function (Y) {
                     //type:"select",
                     type:"hidden"
                 }
+            },
+            id:{// An Embeddable has no ID !!! Forcing it
+                value:undefined,
+                readOnly:true
             },
             content: {
                 type: "string",
