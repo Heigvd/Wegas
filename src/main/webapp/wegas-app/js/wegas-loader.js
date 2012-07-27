@@ -333,7 +333,7 @@ YUI().use(function (Y) {
                     },
                     'jsplumb-yui-all': {
                         path:'yui.jsPlumb-1.3.10-all-min.js',
-                        requires: ["anim", "dd"]
+                        requires: ["node", "dd", "anim"/*, "node-event-simulate"*/]
                     },
                     'jsbezier': {
                         path: 'jsBezier-0.3-min.js'
