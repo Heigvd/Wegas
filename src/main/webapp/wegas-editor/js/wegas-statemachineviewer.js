@@ -32,6 +32,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         CONTENT_TEMPLATE: null,
         panel: null,
         header: null,
+        jpLoaded :false,
         stateId: null,
         currentZoom: null,
         events: {},
@@ -41,7 +42,14 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         initializer: function() {
             this.currentZoom = 1;
             this.stateId = 1;
+            this.jpLoaded = false;
             // Waiting for jsPlumb
+            this.publish("jsPlumbLoaded",{
+                bubbles:false,
+                fireOnce:true,
+                async:true,
+                broadcast:true
+            })
             window.jsPlumb.ready(Y.bind(function(){
                 this.initJsPlumb();
             }, this));
@@ -53,10 +61,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 Endpoint : ["Dot", {
                     radius : 6
                 }],
-                //            Connector : [ "Flowchart", {
-                //                stub:[40, 40],
-                //                gap:10
-                //            } ],
+                //                Connector : [ "Flowchart", {
+                //                    stub:[40, 40],
+                //                    gap:10
+                //                } ],
                 Connector : ["StateMachine", {
                     curviness:60,
                     proximityLimit:100
@@ -92,6 +100,8 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 e.getParameter("transition").destroy();
                 return true;
             });
+            this.jpLoaded = true;
+            this.fire("jsPlumbLoaded");
             this.rebuild();
         },
         renderUI: function() {
@@ -203,6 +213,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             }
         },
         rebuild: function(){
+            if(!this.jpLoaded){
+                return false;
+            }
             var state, states, sm = this.get("entity");
             this.stateId = 1;
             this.nodes = {};
@@ -224,9 +237,13 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     }
                 });
             }
+            return true;
 
         },
         addState: function(x, y, id, entity){
+            if(!this.jpLoaded){
+                return null;
+            }
             var state, config;
             config = {
                 sid: id,
@@ -249,6 +266,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.nodes[id.toString()] = state;
             this.get("entity").get("states")[id.toString()] = state.get("entity");
             this.stateId = Math.max(this.stateId, parseInt(id) + 1);
+            return state;
         },
         renderPanel: function(){
             if(!this.get("entity") || !this.get("entity").get("scope")){
