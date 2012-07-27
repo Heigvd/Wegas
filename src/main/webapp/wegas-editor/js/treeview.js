@@ -127,6 +127,7 @@ YUI.add('treeview', function (Y) {
             this);
             this.eventInstances.fullClick = this.get(CONTENT_BOX).one("."+this.getClassName("content", "header")).on("click", function(e){
                 var node = e.target;
+                e.stopImmediatePropagation();
                 if(node.hasClass(this.getClassName("content", "icon"))){
                     this.fire("iconClick", {
                         node: this
@@ -141,7 +142,7 @@ YUI.add('treeview', function (Y) {
                     node: this,
                     domEvent: e
                 });
-                e.stopImmediatePropagation();
+
             }, this);
         },
 

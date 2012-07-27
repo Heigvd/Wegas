@@ -37,11 +37,6 @@ public class StateMachineInstance extends VariableInstance implements Serializab
 
     @Column(name = "currentstate_id")
     private Long currentStateId;
-    @ManyToMany(cascade = CascadeType.REFRESH, targetEntity = Transition.class)
-    @JoinTable(name = "hiddenTransition", joinColumns =
-    @JoinColumn(name = "FSMinstance_id"), inverseJoinColumns =
-    @JoinColumn(name = "transition_id"))
-    private List<Transition> hiddenTransitions = new ArrayList<>();
     @ElementCollection
     @CollectionTable(name = "transitionHistory")
     @Column(name = "transitionId")
@@ -69,21 +64,13 @@ public class StateMachineInstance extends VariableInstance implements Serializab
         this.currentStateId = currentStateId;
     }
 
-    public List<Transition> getHiddenTransitions() {
-        return hiddenTransitions;
-    }
-
-    public void setHiddenTransitions(List<Transition> hiddenTransitions) {
-        this.hiddenTransitions = hiddenTransitions;
-    }
-
     public List<Long> getTransitionHistory() {
         return transitionHistory;
     }
 
-    public void setTransitionHistory(List<Long> transitionHistory) {
-        this.transitionHistory = transitionHistory;
-    }
+//    public void setTransitionHistory(List<Long> transitionHistory) {
+//        this.transitionHistory = transitionHistory;
+//    }
 
     public void transitionHistoryAdd(Long id) {
         this.transitionHistory.add(id);
@@ -92,6 +79,7 @@ public class StateMachineInstance extends VariableInstance implements Serializab
     @Override
     public void merge(AbstractEntity a) {
         this.currentStateId = ((StateMachineInstance) a).getCurrentStateId();
+        this.transitionHistory = ((StateMachineInstance) a).getTransitionHistory();
     }
 
     @Override
