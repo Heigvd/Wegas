@@ -110,7 +110,11 @@ public class ScriptFacade {
         Object result = null;
         String script = "";
         for (Script s : scripts) {                                              // Evaluate each script
-            script += s.getContent() + ";";
+            try {
+                script += s.getContent() + ";";
+            } catch (NullPointerException ex) {
+                //script does not exist
+            }
             //result = engine.eval(s.getContent());
         }
         result = engine.eval(script);
