@@ -90,7 +90,7 @@
             "items":[{
                     "@class": "ResourceDescriptor",
                     "name": "Salmero",
-                    "description":"Test de description.",
+                    "description":"Fernand est franc et n'hésitera pas à vous dire ce qui ne lui convient pas. Engagé pour ses talents de négociateur, il a de l’intérêt pour le web. Expérimenté par une vie de travail, il semble retissant à l'apprentissage de nouvelles méthodes.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
                         "moral":72,
@@ -111,11 +111,11 @@
                             "dialogue":""
                         },
                         "skillset":{
-                            "Design graphique":15,
-                            "Développement de base de données":32,
-                            "Développement logiciel":26,
-                            "Langages Web":29,
-                            "Modélisation des traitements":44,
+                            "Design graphique":35,
+                            "Développement de base de données":14,
+                            "Développement logiciel":0,
+                            "Langages Web":32,
+                            "Modélisation des traitements":25,
                             "Negociation": 84
                         }
                     },
@@ -125,7 +125,7 @@
                 },{
                     "@class": "ResourceDescriptor",
                     "name": "Brossard",
-                    "description":"Test de description.",
+                    "description":"Employé de longue date, elle s'est fait un nom grâce à ses talents de graphiste. Son expérience l’a rend compétentes dans la plupart des tâches et lui permet d’apprend vite. Elle n'hésitera que rarement à vous prévenir si quelque chose la dérange.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
                         "moral":45,
@@ -142,16 +142,16 @@
                             "frankness":65,
                             "numberOfWorkWithLeader":0,
                             "totalExperienceGained":0,
-                            "learningCoefficient":0.6,
+                            "learningCoefficient":1.2,
                             "dialogue":""
                         },
                         "skillset":{
-                            "Design graphique":84,
-                            "Développement de base de données":24,
-                            "Développement logiciel":5,
+                            "Design graphique":73,
+                            "Développement de base de données":23,
+                            "Développement logiciel":0,
                             "Langages Web":44,
-                            "Modélisation des traitements":19,
-                            "Negociation": 60
+                            "Modélisation des traitements":10,
+                            "Negociation": 54
                         }
                     },
                     "scope": {
@@ -160,7 +160,7 @@
                 },{
                     "@class": "ResourceDescriptor",
                     "name": "Vogt",
-                    "description":"Test de description.",
+                    "description":"Jessica a fini sa formation récemment et connait bien les dernières bonnes pratiques concernant les langages Web. Elle a quelque peu de la peine à prendre le point de vue des clients, ce qui la relativement mauvaise en design par exemple.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
                         "moral":50,
@@ -174,7 +174,7 @@
                             "lastWorkQuality":52,
                             "wish":"",
                             "hate":"",
-                            "frankness":66,
+                            "frankness":50,
                             "numberOfWorkWithLeader":0,
                             "totalExperienceGained":0,
                             "learningCoefficient":1,
@@ -183,8 +183,8 @@
                         "skillset":{
                             "Design graphique":12,
                             "Développement de base de données":49,
-                            "Développement logiciel":31,
-                            "Langages Web":67,
+                            "Développement logiciel":24,
+                            "Langages Web":62,
                             "Modélisation des traitements":38,
                             "Negociation": 8
                         }
@@ -195,7 +195,7 @@
                 },{
                     "@class": "ResourceDescriptor",
                     "name": "Auguste",
-                    "description":"sans description",
+                    "description":"Hector est un développeur logiciel plutôt compétent, alliant connaissances théoriques fraîches et expérience pratique. Parfois un peu brusque, il vous expliquera assez vite son opinion sur les choses qui le dérangent.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
                         "moral":85,
@@ -209,14 +209,14 @@
                             "lastWorkQuality":89,
                             "wish":"",
                             "hate":"",
-                            "frankness":80,
+                            "frankness":85,
                             "numberOfWorkWithLeader":0, 
                             "totalExperienceGained":0,
                             "learningCoefficient":1.2,
                             "dialogue":""
                         },
                         "skillset":{
-                            "Design graphique":4,
+                            "Design graphique":5,
                             "Développement de base de données":34,
                             "Développement logiciel":64,
                             "Langages Web":40,
@@ -230,7 +230,7 @@
                 },{
                     "@class": "ResourceDescriptor",
                     "name": "Torr",
-                    "description":"Description du personnage",
+                    "description":"Lucien est le cadet de l'équipe. Il a consacrés toutes ses études aux bases de données. Assez mystérieux et peu bavard, il ne donne que rarement son avis sur les décisions prises. Même celles qui le concerne directement.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
                         "moral":50,

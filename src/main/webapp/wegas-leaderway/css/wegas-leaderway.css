@@ -435,7 +435,7 @@ body{
 
 .wegas-folder .wegas-folder-content .folder .description{
     margin-bottom: 30px;
-    padding-top:15px;
+    padding:15px 25px 0 0;
 }
 
 /*-----folder-archives-----*/

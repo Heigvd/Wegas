@@ -107,12 +107,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         syncFolderInformations: function(cb){
             var currentResourceInstance = this.currentResourceDescriptor.getInstance();
             cb.one('.folder .name').insert(this.currentResourceDescriptor.get('name'));
-            if(currentResourceInstance.get('properties').surname){
-                cb.one('.folder .surname').insert(currentResourceInstance.get('properties').surname);   
-            }
-            if(currentResourceInstance.get('properties').salary){
-                cb.one('.folder .salary-value').insert(currentResourceInstance.get('properties').salary);   
-            }
+            cb.one('.folder .surname').insert(currentResourceInstance.get('properties').surname);   
+            cb.one('.folder .salary-value').insert(currentResourceInstance.get('properties').salary);   
             if(currentResourceInstance.get('properties').picture != null){
                 cb.one('.folder .picture').insert('<img src="'+currentResourceInstance.get('properties').picture+'" alt="picture" width=140 height="140" />');
             }
@@ -122,7 +118,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             cb.one('.folder .occupation-value').insert(this.getTextOccupation(currentResourceInstance));
             for (var key in currentResourceInstance.get('skillset')){
                 cb.one('.folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentResourceInstance.get('skillset')[key]))+'</div>');
-            }
+            }           
             cb.one('.folder .description-value').insert(this.currentResourceDescriptor.get('description'));            
         },
         
@@ -291,6 +287,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         assignTask: function(resourceDescriptor, taskDescriptor){
             var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback');
             if(taskDescriptor != null && resourceDescriptor != null){
+                console.log(resourceDescriptor.get('id')+","+taskDescriptor.get('id'))
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
