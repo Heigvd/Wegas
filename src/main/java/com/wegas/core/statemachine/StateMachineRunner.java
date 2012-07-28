@@ -66,7 +66,7 @@ public class StateMachineRunner implements Serializable {
         run = true;
         if (stateMachines.isEmpty()) {                                          // load stateMachines only once
             GameModel gamemodel = gameManager.getCurrentGameModel();
-            List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel,StateMachineDescriptor.class);
+            List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel, StateMachineDescriptor.class);
             for (VariableDescriptor stateMachineDescriptor : stateMachineDescriptors) {
                 stateMachines.add((StateMachineInstance) stateMachineDescriptor.getScope().getVariableInstance(gameManager.getCurrentPlayer()));
             }
@@ -80,8 +80,7 @@ public class StateMachineRunner implements Serializable {
                 Boolean validTransition = false;
                 try {
                     validTransition = (Boolean) scriptManager.eval(gameManager.getCurrentPlayer(), transition.getTriggerCondition());
-                }
-                catch (ScriptException ex) {
+                } catch (ScriptException ex) {
                     logger.error("Script Failed : {} returned: {}", transition.getTriggerCondition(), ex);
                 }
                 if (validTransition) {
@@ -89,7 +88,9 @@ public class StateMachineRunner implements Serializable {
                         logger.warn("Loop detected, already marked {} IN {}", transition, passedTransitions);
                     } else {
                         stateMachine.setCurrentStateId(transition.getNextStateId());
-                        impacts.add(stateMachine.getCurrentState().getOnEnterEvent());
+                        if (stateMachine.getCurrentState().getOnEnterEvent() != null) {
+                            impacts.add(stateMachine.getCurrentState().getOnEnterEvent());
+                        }
                         impacts.add(transition.getPreStateImpact());
                         passedTransitions.add(transition);
                         stateMachine.transitionHistoryAdd(transition.getId());  // Adding transition.id to history
@@ -103,8 +104,7 @@ public class StateMachineRunner implements Serializable {
         run = false;
         try {
             scriptManager.eval(gameManager.getCurrentPlayer(), impacts);
-        }
-        catch (ScriptException ex) {
+        } catch (ScriptException ex) {
             logger.error("Script Failed : {} returned: {}", impacts, ex);
         }
     }
