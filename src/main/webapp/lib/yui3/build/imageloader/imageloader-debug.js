@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('imageloader', function(Y) {
 
 /**
@@ -668,4 +662,4 @@ YUI.add('imageloader', function(Y) {
 
 
 
-}, '3.5.0' ,{requires:['base-base', 'node-style', 'node-screen']});
+}, '@VERSION@' ,{requires:['base-base', 'node-style', 'node-screen']});

@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('graphics', function(Y) {
 
 /**
@@ -1130,4 +1124,4 @@ Y.GraphicBase = GraphicBase;
 	 */
 
 
-}, '3.5.0' ,{requires:['event-custom', 'node', 'pluginhost']});
+}, '@VERSION@' ,{requires:['event-custom', 'node', 'pluginhost', 'classnamemanager', 'matrix']});

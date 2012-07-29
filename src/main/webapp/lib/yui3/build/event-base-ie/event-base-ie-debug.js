@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 (function() {
 
 var stateChangeListener,
@@ -306,4 +300,4 @@ if (imp && (!imp.hasFeature('Events', '2.0'))) {
 }
 
 
-}, '3.5.0' ,{after:['event-base'], requires:['node-base']});
+}, '@VERSION@' ,{after:['event-base'], requires:['node-base']});

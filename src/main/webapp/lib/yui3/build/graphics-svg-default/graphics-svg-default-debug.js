@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('graphics-svg-default', function(Y) {
 
 Y.Graphic = Y.SVGGraphic;
@@ -15,4 +9,4 @@ Y.Path = Y.SVGPath;
 Y.Drawing = Y.SVGDrawing;
 
 
-}, '3.5.0' ,{skinnable:false});
+}, '@VERSION@' ,{skinnable:false});

@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('io-upload-iframe', function(Y) {
 
 /**
@@ -294,4 +288,4 @@ Y.mix(Y.IO.prototype, {
 });
 
 
-}, '3.5.0' ,{requires:['io-base','node-base']});
+}, '@VERSION@' ,{requires:['io-base','node-base']});

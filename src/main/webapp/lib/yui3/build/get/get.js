@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('get', function(Y) {
 
 /*jslint boss:true, expr:true, laxbreak: true */
@@ -525,7 +519,7 @@ Y.Get = Get = {
             // True if this browser fires an event when a dynamically injected
             // link node fails to load. This is currently true for Firefox 9+
             // and WebKit 535.24+.
-            cssFail: ua.gecko >= 9 || ua.webkit >= 535.24,
+            cssFail: ua.gecko >= 9 || ua.compareVersions(ua.webkit, 535.24) >= 0,
 
             // True if this browser fires an event when a dynamically injected
             // link node finishes loading. This is currently true for IE, Opera,
@@ -533,8 +527,10 @@ Y.Get = Get = {
             // DOM 0 "onload" event, but not "load". All versions of IE fire
             // "onload".
             // davglass: Seems that Chrome on Android needs this to be false.
-            cssLoad: ((!ua.gecko && !ua.webkit) || 
-                ua.gecko >= 9 || ua.webkit >= 535.24) && !(ua.chrome && ua.chrome <=18),
+            cssLoad: (
+                    (!ua.gecko && !ua.webkit) || ua.gecko >= 9 ||
+                    ua.compareVersions(ua.webkit, 535.24) >= 0
+                ) && !(ua.chrome && ua.chrome <= 18),
 
             // True if this browser preserves script execution order while
             // loading scripts in parallel as long as the script node's `async`
@@ -1098,8 +1094,8 @@ Transaction.prototype = {
         }
 
         // Inject the node.
-        if (isScript && ua.ie && ua.ie < 9) {
-            // Script on IE6, 7, and 8.
+        if (isScript && ua.ie && (ua.ie < 9 || (document.documentMode && document.documentMode < 9))) {
+            // Script on IE < 9, and IE 9+ when in IE 8 or older modes, including quirks mode.
             node.onreadystatechange = function () {
                 if (/loaded|complete/.test(node.readyState)) {
                     node.onreadystatechange = null;
@@ -1252,4 +1248,4 @@ Transaction.prototype = {
 };
 
 
-}, '3.5.0' ,{requires:['yui-base']});
+}, '@VERSION@' ,{requires:['yui-base']});

@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('yui-log', function(Y) {
 
 /**
@@ -50,7 +44,8 @@ INSTANCE.log = function(msg, cat, src, silent) {
     // or the event call stack contains a consumer of the yui:log event
     if (c.debug) {
         // apply source filters
-        if (src) {
+        src = src || "";
+        if (typeof src !== "undefined") {
             excl = c.logExclude;
             incl = c.logInclude;
             if (incl && !(src in incl)) {
@@ -112,4 +107,4 @@ INSTANCE.message = function() {
 };
 
 
-}, '3.5.0' ,{requires:['yui-base']});
+}, '@VERSION@' ,{requires:['yui-base']});

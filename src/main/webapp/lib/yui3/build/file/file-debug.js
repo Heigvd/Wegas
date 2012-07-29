@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('file', function(Y) {
 
     /**
@@ -34,4 +28,4 @@ YUI.add('file', function(Y) {
  }
 
 
-}, '3.5.0' ,{requires:['file-flash', 'file-html5']});
+}, '@VERSION@' ,{requires:['file-flash', 'file-html5']});

@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('button-core', function(Y) {
 
 /**
@@ -250,4 +244,4 @@ Y.mix(Button.prototype, Y.AttributeCore.prototype);
 Y.ButtonCore = Button;
 
 
-}, '3.5.0' ,{requires:['attribute-core', 'classnamemanager', 'node-base']});
+}, '@VERSION@' ,{requires:['attribute-core', 'classnamemanager', 'node-base']});

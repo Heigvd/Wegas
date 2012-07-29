@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('app-base', function(Y) {
 
 /**
@@ -25,6 +19,9 @@ Provides a top-level application component which manages navigation and views.
 
 // TODO: Better handling of lifecycle for registered views:
 //
+//   * [!] Just redo basically everything with view management so there are no
+//     pre-`activeViewChange` side effects and handle the rest of these things:
+//
 //   * Seems like any view created via `createView` should listen for the view's
 //     `destroy` event and use that to remove it from the `_viewsInfoMap`. I
 //     should look at what ModelList does for Models as a reference.
@@ -33,6 +30,9 @@ Provides a top-level application component which manages navigation and views.
 //     needed if we have a `getView(name, create)` method, and already doing the
 //     above? We could do `app.getView('foo').destroy()` and it would be removed
 //     from the `_viewsInfoMap` as well.
+//
+//   * Should we wait to call a view's `render()` method inside of the
+//     `_attachView()` method?
 //
 //   * Should named views support a collection of instances instead of just one?
 //
@@ -48,7 +48,7 @@ var Lang    = Y.Lang,
 
     win = Y.config.win,
 
-    App;
+    AppBase;
 
 /**
 Provides a top-level application component which manages navigation and views.
@@ -72,7 +72,7 @@ management.
 @uses PjaxBase
 @since 3.5.0
 **/
-App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
+AppBase = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
     // -- Public Properties ----------------------------------------------------
 
     /**
@@ -283,14 +283,15 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
     @see View.render()
     **/
     render: function () {
-        var container           = this.get('container'),
+        var CLASS_NAMES         = Y.App.CLASS_NAMES,
+            container           = this.get('container'),
             viewContainer       = this.get('viewContainer'),
             activeView          = this.get('activeView'),
             activeViewContainer = activeView && activeView.get('container'),
             areSame             = container.compareTo(viewContainer);
 
-        container.addClass(App.CSS_CLASS);
-        viewContainer.addClass(App.VIEWS_CSS_CLASS);
+        container.addClass(CLASS_NAMES.app);
+        viewContainer.addClass(CLASS_NAMES.views);
 
         // Prevents needless shuffling around of nodes and maintains DOM order.
         if (activeView && !viewContainer.contains(activeViewContainer)) {
@@ -309,6 +310,10 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
     Sets which view is active/visible for the application. This will set the
     app's `activeView` attribute to the specified `view`.
 
+    The `view` will be "attached" to this app, meaning it will be both rendered
+    into this app's `viewContainer` node and all of its events will bubble to
+    the app. The previous `activeView` will be "detached" from this app.
+
     When a string-name is provided for a view which has been registered on this
     app's `views` object, the referenced metadata will be used and the
     `activeView` will be set to either a preserved view instance, or a new
@@ -322,15 +327,17 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
     @example
         var app = new Y.App({
             views: {
-                users: {
+                usersView: {
                     // Imagine that `Y.UsersView` has been defined.
                     type: Y.UsersView
                 }
-            }
+            },
+
+            users: new Y.ModelList()
         });
 
         app.route('/users/', function () {
-            this.showView('users');
+            this.showView('usersView', {users: this.get('users')});
         });
 
         app.render();
@@ -338,26 +345,44 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
 
     @method showView
     @param {String|View} view The name of a view defined in the `views` object,
-        or a view instance.
+        or a view instance which should become this app's `activeView`.
     @param {Object} [config] Optional configuration to use when creating a new
-        view instance.
+        view instance. This config object can also be used to update an existing
+        or preserved view's attributes when `options.update` is `true`.
     @param {Object} [options] Optional object containing any of the following
         properties:
       @param {Function} [options.callback] Optional callback function to call
         after new `activeView` is ready to use, the function will be passed:
           @param {View} options.callback.view A reference to the new
             `activeView`.
-      @param {Boolean} [options.prepend] Whether the new view should be
+      @param {Boolean} [options.prepend=false] Whether the `view` should be
         prepended instead of appended to the `viewContainer`.
+      @param {Boolean} [options.render] Whether the `view` should be rendered.
+        **Note:** If no value is specified, a view instance will only be
+        rendered if it's newly created by this method.
+      @param {Boolean} [options.update=false] Whether an existing view should
+        have its attributes updated by passing the `config` object to its
+        `setAttrs()` method. **Note:** This option does not have an effect if
+        the `view` instance is created as a result of calling this method.
     @param {Function} [callback] Optional callback Function to call after the
         new `activeView` is ready to use. **Note:** this will override
-        `options.callback`. The function will be passed the following:
+        `options.callback` and it can be specified as either the third or fourth
+        argument. The function will be passed the following:
       @param {View} callback.view A reference to the new `activeView`.
     @chainable
     @since 3.5.0
     **/
     showView: function (view, config, options, callback) {
-        var viewInfo;
+        var viewInfo, created;
+
+        options || (options = {});
+
+        // Support the callback function being either the third or fourth arg.
+        if (callback) {
+            options = Y.merge(options, {callback: callback});
+        } else if (Lang.isFunction(options)) {
+            options = {callback: options};
+        }
 
         if (Lang.isString(view)) {
             viewInfo = this.getViewInfo(view);
@@ -368,32 +393,38 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
             // `preserve` when detaching?
             if (viewInfo && viewInfo.preserve && viewInfo.instance) {
                 view = viewInfo.instance;
+
                 // Make sure there's a mapping back to the view metadata.
                 this._viewInfoMap[Y.stamp(view, true)] = viewInfo;
             } else {
-                view = this.createView(view, config);
-                view.render();
+                // TODO: Add the app as a bubble target during construction, but
+                // make sure to check that it isn't already in `bubbleTargets`!
+                // This will allow the app to be notified for about _all_ of the
+                // view's events. **Note:** This should _only_ happen if the
+                // view is created _after_ `activeViewChange`.
+
+                view    = this.createView(view, config);
+                created = true;
             }
         }
 
-        // TODO: Add `options.update` to update to view with the `config`, if
-        // needed. This could also call `setAttrs()` when the specified `view`
-        // already a View instance. Is this be too much overloading of the API?
-
-        // TODO: Add `options.render` to provide a way to control whether a view
-        // is rendered or not; by default, `render()` will only be called if
-        // this method created the View.
-
-        options || (options = {});
-
-        if (callback) {
-            options.callback = callback;
-        } else if (Lang.isFunction(options)) {
-            options = {callback: options};
+        // Update the specified or preserved `view` when signaled to do so.
+        // There's no need to updated a view if it was _just_ created.
+        if (options.update && !created) {
+            view.setAttrs(config);
         }
 
-        // TODO: Should the `callback` _always_ be called, even when the
-        // `activeView` does not change?
+        // TODO: Hold off on rendering the view until after it has been
+        // "attached", and move the call to render into `_attachView()`.
+
+        // When a value is specified for `options.render`, prefer it because it
+        // represents the developer's intent. When no value is specified, the
+        // `view` will only be rendered if it was just created.
+        if ('render' in options) {
+            options.render && view.render();
+        } else if (created) {
+            view.render();
+        }
 
         return this._set('activeView', view, {options: options});
     },
@@ -407,8 +438,8 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
 
     @method _attachView
     @param {View} view View to attach.
-    @param {Boolean} prepend Whether the view should be prepended instead of
-      appended to the `viewContainer`.
+    @param {Boolean} prepend=false Whether the view should be prepended instead
+      of appended to the `viewContainer`.
     @protected
     @since 3.5.0
     **/
@@ -426,6 +457,9 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
         // TODO: Attach events here for persevered Views?
         // See related TODO in `_detachView`.
 
+        // TODO: Actually render the view here so that it gets "attached" before
+        // it gets rendered?
+
         // Insert view into the DOM.
         viewContainer[prepend ? 'prepend' : 'append'](view.get('container'));
     },
@@ -439,7 +473,8 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
     @see View._destroyContainer()
     **/
     _destroyContainer: function () {
-        var container     = this.get('container'),
+        var CLASS_NAMES   = Y.App.CLASS_NAMES,
+            container     = this.get('container'),
             viewContainer = this.get('viewContainer'),
             areSame       = container.compareTo(viewContainer);
 
@@ -449,11 +484,11 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
             this.detachEvents();
 
             // Clean-up `yui3-app` CSS class on the `container`.
-            container && container.removeClass(App.CSS_CLASS);
+            container && container.removeClass(CLASS_NAMES.app);
 
             if (areSame) {
                 // Clean-up `yui3-app-views` CSS class on the `container`.
-                container && container.removeClass(App.VIEWS_CSS_CLASS);
+                container && container.removeClass(CLASS_NAMES.views);
             } else {
                 // Destroy and purge the `viewContainer`.
                 viewContainer && viewContainer.remove(true);
@@ -531,20 +566,6 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
         }
 
         return value;
-    },
-
-    /**
-    Gets the current full URL. When `html5` is false, the URL will first be
-    upgraded before it's returned.
-
-    @method _getURL
-    @return {String} URL.
-    @protected
-    @see Router._getURL()
-    **/
-    _getURL: function () {
-        var url = Y.getLocation().toString();
-        return this._html5 ? url : this._upgradeURL(url);
     },
 
     /**
@@ -644,15 +665,11 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
     @see PjaxBase._navigate()
     **/
     _navigate: function (url, options) {
-        url = this._upgradeURL(url);
-
-        options || (options = {});
-
         if (!this.get('serverRouting')) {
             // Force navigation to be enhanced and handled by the app when
             // `serverRouting` is falsy because the server might not be able to
             // properly handle the request.
-            Lang.isValue(options.force) || (options.force = true);
+            options = Y.merge({force: true}, options);
         }
 
         return PjaxBase.prototype._navigate.call(this, url, options);
@@ -731,8 +748,15 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
         after new `activeView` is ready to use, the function will be passed:
           @param {View} options.callback.view A reference to the new
             `activeView`.
-      @param {Boolean} [options.prepend] Whether the new view should be
+      @param {Boolean} [options.prepend=false] Whether the `view` should be
         prepended instead of appended to the `viewContainer`.
+      @param {Boolean} [options.render] Whether the `view` should be rendered.
+        **Note:** If no value is specified, a view instance will only be
+        rendered if it's newly created by this method.
+      @param {Boolean} [options.update=false] Whether an existing view should
+        have its attributes updated by passing the `config` object to its
+        `setAttrs()` method. **Note:** This option does not have an effect if
+        the `view` instance is created as a result of calling this method.
     @protected
     @since 3.5.0
     **/
@@ -754,47 +778,6 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
         this._detachView(oldView);
 
         callback && callback.call(this, newView);
-    },
-
-    /**
-    Upgrades a hash-based URL to a full-path URL, if necessary.
-
-    The specified `url` will be upgraded if its of the same origin as the
-    current URL and has a path-like hash. URLs that don't need upgrading will be
-    returned as-is.
-
-    @example
-        app._upgradeURL('http://example.com/#/foo/'); // => 'http://example.com/foo/';
-
-    @method _upgradeURL
-    @param {String} url The URL to upgrade from hash-based to full-path.
-    @return {String} The upgraded URL, or the specified URL untouched.
-    @protected
-    @since 3.5.0
-    **/
-    _upgradeURL: function (url) {
-        // We should not try to upgrade paths for external URLs.
-        if (!this._hasSameOrigin(url)) {
-            return url;
-        }
-
-        // TODO: Should the `root` be removed first, and the hash only
-        // considered if in the form of '/#/'?
-        var hash       = (url.match(/#(.*)$/) || [])[1] || '',
-            hashPrefix = Y.HistoryHash.hashPrefix;
-
-        // Strip any hash prefix, like hash-bangs.
-        if (hashPrefix && hash.indexOf(hashPrefix) === 0) {
-            hash = hash.replace(hashPrefix, '');
-        }
-
-        // If the hash looks like a URL path, assume it is, and upgrade it!
-        if (hash && hash.charAt(0) === '/') {
-            // Re-join with configured `root` before resolving.
-            url = this._resolveURL(this._joinURL(hash));
-        }
-
-        return url;
     },
 
     // -- Protected Event Handlers ---------------------------------------------
@@ -827,7 +810,7 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
         @type View
         @default null
         @readOnly
-        @see AppBase.showView()
+        @see App.Base.showView()
         @since 3.5.0
         **/
         activeView: {
@@ -981,7 +964,7 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
         @since 3.5.0
         **/
         serverRouting: {
-            value    : undefined,
+            valueFn  : function () { return Y.App.serverRouting; },
             writeOnce: 'initOnly'
         },
 
@@ -1018,31 +1001,6 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
         }
     },
 
-    // TODO: Should these go on the `prototype`?
-    // TODO: These should also just go in a `CLASS_NAMES` object.
-
-    /**
-    CSS class added to an app's `container` node.
-
-    @property CSS_CLASS
-    @type String
-    @default "yui3-app"
-    @static
-    @since 3.5.0
-    **/
-    CSS_CLASS: getClassName('app'),
-
-    /**
-    CSS class added to an app's `viewContainer` node.
-
-    @property VIEWS_CSS_CLASS
-    @type String
-    @default "yui3-app-views"
-    @static
-    @since 3.5.0
-    **/
-    VIEWS_CSS_CLASS: getClassName('app', 'views'),
-
     /**
     Properties that shouldn't be turned into ad-hoc attributes when passed to
     App's constructor.
@@ -1057,7 +1015,7 @@ App = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
 });
 
 // -- Namespace ----------------------------------------------------------------
-Y.namespace('App').Base = App;
+Y.namespace('App').Base = AppBase;
 
 /**
 Provides a top-level application component which manages navigation and views.
@@ -1090,7 +1048,31 @@ instance will be **auto-mixed** on to the `Y.App` class. Consider this example:
 @uses App.Transitions
 @since 3.5.0
 **/
-Y.App = Y.mix(Y.Base.create('app', Y.App.Base, []), Y.App, true);
+Y.App = Y.mix(Y.Base.create('app', AppBase, []), Y.App, true);
+
+/**
+CSS classes used by `Y.App`.
+
+@property CLASS_NAMES
+@type Object
+@default {}
+@static
+@since 3.6.0
+**/
+Y.App.CLASS_NAMES = {
+    app  : getClassName('app'),
+    views: getClassName('app', 'views')
+};
+
+/**
+Default `serverRouting` attribute value for all apps.
+
+@property serverRouting
+@type Boolean
+@default undefined
+@static
+@since 3.6.0
+**/
 
 
-}, '3.5.0' ,{requires:['classnamemanager', 'pjax-base', 'router', 'view']});
+}, '@VERSION@' ,{requires:['classnamemanager', 'pjax-base', 'router', 'view']});

@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('attribute-extras', function(Y) {
 
     /**
@@ -146,4 +140,4 @@ YUI.add('attribute-extras', function(Y) {
     Y.AttributeExtras = AttributeExtras;
 
 
-}, '3.5.0' );
+}, '@VERSION@' );

@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('cache-base', function(Y) {
 
 /**
@@ -435,4 +429,4 @@ Y.extend(Cache, Y.Base, {
 Y.Cache = Cache;
 
 
-}, '3.5.0' ,{requires:['base']});
+}, '@VERSION@' ,{requires:['base']});

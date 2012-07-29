@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('autocomplete-sources', function(Y) {
 
 /**
@@ -80,8 +74,7 @@ Y.mix(ACBase.prototype, {
         // Private internal _sendRequest method that will be assigned to
         // ioSource.sendRequest once io-base and json-parse are available.
         function _sendRequest(request) {
-            var cacheKey = request.request,
-                query    = request.query;
+            var cacheKey = request.request;
 
             // Return immediately on a cached response.
             if (that._cache && cacheKey in that._cache) {
@@ -479,4 +472,4 @@ Y.mix(ACBase.SOURCE_TYPES, {
 }, true);
 
 
-}, '3.5.0' ,{requires:['autocomplete-base'], optional:['io-base', 'json-parse', 'jsonp', 'yql']});
+}, '@VERSION@' ,{requires:['autocomplete-base'], optional:['io-base', 'json-parse', 'jsonp', 'yql']});

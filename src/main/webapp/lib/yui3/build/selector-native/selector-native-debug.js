@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('selector-native', function(Y) {
 
 (function(Y) {
@@ -201,7 +195,7 @@ var Selector = {
             selector = replaced.selector;
 
         if (selector) {
-            selector = selector.replace(',', '\uE007', 'g');
+            selector = selector.replace(/,/g, '\uE007');
             replaced.selector = selector;
             selector = Y.Selector._restoreSelector(replaced);
         }
@@ -378,4 +372,4 @@ Y.mix(Y.Selector, Selector, true);
 })(Y);
 
 
-}, '3.5.0' ,{requires:['dom-base']});
+}, '@VERSION@' ,{requires:['dom-base']});

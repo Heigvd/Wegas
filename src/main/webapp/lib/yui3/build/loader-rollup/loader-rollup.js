@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('loader-rollup', function(Y) {
 
 /**
@@ -102,4 +96,4 @@ Y.Loader.prototype._rollup = function() {
 };
 
 
-}, '3.5.0' ,{requires:['loader-base']});
+}, '@VERSION@' ,{requires:['loader-base']});

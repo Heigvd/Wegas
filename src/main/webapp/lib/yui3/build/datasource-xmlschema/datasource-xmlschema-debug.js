@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datasource-xmlschema', function(Y) {
 
 /**
@@ -105,4 +99,4 @@ Y.extend(DataSourceXMLSchema, Y.Plugin.Base, {
 Y.namespace('Plugin').DataSourceXMLSchema = DataSourceXMLSchema;
 
 
-}, '3.5.0' ,{requires:['datasource-local', 'plugin', 'dataschema-xml']});
+}, '@VERSION@' ,{requires:['datasource-local', 'plugin', 'dataschema-xml']});

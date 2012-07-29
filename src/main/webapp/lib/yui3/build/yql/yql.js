@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('yql', function(Y) {
 
     /**
@@ -31,6 +25,18 @@ YUI.add('yql', function(Y) {
         }
         if (!params.env) {
             params.env = Y.YQLRequest.ENV;
+        }
+
+        this._context = this;
+
+        if (opts && opts.context) {
+            this._context = opts.context;
+            delete opts.context;
+        }
+        
+        if (params && params.context) {
+            this._context = params.context;
+            delete params.context;
         }
         
         this._params = params;
@@ -60,10 +66,44 @@ YUI.add('yql', function(Y) {
         _callback: null,
         /**
         * @private
+        * @property _success
+        * @description Holder for the success callback argument
+        */
+        _success: null,
+        /**
+        * @private
+        * @property _failure
+        * @description Holder for the failure callback argument
+        */
+        _failure: null,
+        /**
+        * @private
         * @property _params
         * @description Holder for the params argument
         */
         _params: null,
+        /**
+        * @private
+        * @property _context
+        * @description The context to execute the callback in
+        */
+        _context: null,
+        /**
+        * @private
+        * @method _internal
+        * @description Internal Callback Handler
+        */
+        _internal: function(r) {
+            if (this._failure) {
+                if (r.error) {
+                    this._failure.call(this._context, r.error);
+                } else {
+                    this._success.apply(this._context, arguments);
+                }
+            } else {
+                this._success.apply(this._context, arguments);
+            }
+        },
         /**
         * @method send
         * @description The method that executes the YQL Request.
@@ -82,6 +122,19 @@ YUI.add('yql', function(Y) {
             url += ((this._opts && this._opts.base) ? this._opts.base : Y.YQLRequest.BASE_URL) + qs;
             
             var o = (!Y.Lang.isFunction(this._callback)) ? this._callback : { on: { success: this._callback } };
+
+            o.on = o.on || {};
+
+            if (o.on.failure) {
+                this._failure = o.on.failure;
+            }
+
+            if (o.on.success) {
+                this._success = o.on.success;
+            }
+
+            o.on.success = Y.bind(this._internal, this);
+
             if (o.allowCache !== false) {
                 o.allowCache = true;
             }
@@ -141,4 +194,4 @@ YUI.add('yql', function(Y) {
 
 
 
-}, '3.5.0' ,{requires:['jsonp', 'jsonp-url']});
+}, '@VERSION@' ,{requires:['jsonp', 'jsonp-url']});

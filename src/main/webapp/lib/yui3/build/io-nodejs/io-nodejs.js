@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('io-nodejs', function(Y) {
 
 /*global Y: false, Buffer: false, clearInterval: false, clearTimeout: false, console: false, exports: false, global: false, module: false, process: false, querystring: false, require: false, setInterval: false, setTimeout: false, __filename: false, __dirname: false */   
@@ -18,6 +12,8 @@ YUI.add('io-nodejs', function(Y) {
     if (!Y.IO.request) {
         Y.IO.request = require('request');
     }
+
+    var codes = require('http').STATUS_CODES;
 
 
     /**
@@ -76,13 +72,26 @@ YUI.add('io-nodejs', function(Y) {
 
                 config.notify('start', transaction, config);
                 config.method = config.method || 'GET';
+                config.method = config.method.toUpperCase();
 
                 var rconf = {
                     method: config.method,
                     uri: uri
                 };
+
                 if (config.data) {
-                    rconf.body = config.data;
+                    if (Y.Lang.isObject(config.data)) {
+                        if (Y.QueryString && Y.QueryString.stringify) {
+                            rconf.body = Y.QueryString.stringify(config.data);
+                        } else {
+                        }
+                    } else if (Y.Lang.isString(config.data)) {
+                        rconf.body = config.data;
+                    }
+                    if (rconf.method === 'GET') {
+                        rconf.uri += (rconf.uri.indexOf('?') > -1 ? '&' : '?') + rconf.body;
+                        rconf.body = '';
+                    }
                 }
                 if (config.headers) {
                     rconf.headers = config.headers;
@@ -104,6 +113,7 @@ YUI.add('io-nodejs', function(Y) {
                         transaction.c = {
                             status: data.statusCode,
                             statusCode: data.statusCode,
+                            statusText: codes[data.statusCode],
                             headers: data.headers,
                             responseText: data.body,
                             responseXML: null,
@@ -132,4 +142,4 @@ YUI.add('io-nodejs', function(Y) {
 
 
 
-}, '3.5.0' ,{requires:['io-base']});
+}, '@VERSION@' ,{requires:['io-base']});

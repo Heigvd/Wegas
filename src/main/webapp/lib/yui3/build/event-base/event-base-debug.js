@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 (function () {
 var GLOBAL_ENV = YUI.Env;
 
@@ -1380,4 +1374,4 @@ Y.Env.evt.plugins.contentready = {
 };
 
 
-}, '3.5.0' ,{requires:['event-custom-base']});
+}, '@VERSION@' ,{requires:['event-custom-base']});

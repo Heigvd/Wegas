@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('intl', function(Y) {
 
 var _mods = {},
@@ -153,4 +147,4 @@ Y.augment(Y.Intl, Y.EventTarget);
 Y.Intl.publish("intl:langChange", {emitFacade:true});
 
 
-}, '3.5.0' ,{requires:['event-custom', 'intl-base']});
+}, '@VERSION@' ,{requires:['event-custom', 'intl-base']});

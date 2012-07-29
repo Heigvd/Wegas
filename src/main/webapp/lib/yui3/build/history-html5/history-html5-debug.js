@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('history-html5', function(Y) {
 
 /**
@@ -181,4 +175,4 @@ if (useHistoryHTML5 === true || (useHistoryHTML5 !== false &&
 }
 
 
-}, '3.5.0' ,{optional:['json'], requires:['event-base', 'history-base', 'node-base']});
+}, '@VERSION@' ,{optional:['json'], requires:['event-base', 'history-base', 'node-base']});

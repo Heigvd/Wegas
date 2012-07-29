@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('clickable-rail', function(Y) {
 
 /**
@@ -215,5 +209,4 @@ Y.ClickableRail = Y.mix(ClickableRail, {
 }, true);
 
 
-
-}, '3.5.0' ,{requires:['slider-base']});
+}, '@VERSION@' ,{requires:['slider-base']});

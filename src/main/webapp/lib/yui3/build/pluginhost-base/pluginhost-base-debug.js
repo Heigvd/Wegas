@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('pluginhost-base', function(Y) {
 
     /**
@@ -86,7 +80,10 @@ YUI.add('pluginhost-base', function(Y) {
         
                     if (this.hasPlugin(ns)) {
                         // Update config
-                        this[ns].setAttrs(config);
+                        if (this[ns].setAttrs) {
+                            this[ns].setAttrs(config);
+                        }
+                        else { Y.log("Attempt to replug an already attached plugin, and we can't setAttrs, because it's not Attribute based: " + ns); }
                     } else {
                         // Create new instance
                         this[ns] = new Plugin(config);
@@ -122,7 +119,9 @@ YUI.add('pluginhost-base', function(Y) {
         
                 if (ns) {
                     if (this[ns]) {
-                        this[ns].destroy();
+                        if (this[ns].destroy) {
+                            this[ns].destroy();
+                        }
                         delete this[ns];
                     }
                     if (plugins[ns]) {
@@ -181,4 +180,4 @@ YUI.add('pluginhost-base', function(Y) {
     Y.namespace("Plugin").Host = PluginHost;
 
 
-}, '3.5.0' ,{requires:['yui-base']});
+}, '@VERSION@' ,{requires:['yui-base']});

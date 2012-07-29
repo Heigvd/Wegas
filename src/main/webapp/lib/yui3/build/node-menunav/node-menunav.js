@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('node-menunav', function(Y) {
 
 /**
@@ -2187,4 +2181,4 @@ Y.namespace('Plugin');
 Y.Plugin.NodeMenuNav = NodeMenuNav;
 
 
-}, '3.5.0' ,{requires:['node', 'classnamemanager', 'node-focusmanager', 'plugin']});
+}, '@VERSION@' ,{requires:['node', 'classnamemanager', 'node-focusmanager', 'plugin']});

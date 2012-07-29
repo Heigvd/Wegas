@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('widget-position', function(Y) {
 
 /**
@@ -278,4 +272,4 @@ YUI.add('widget-position', function(Y) {
     Y.WidgetPosition = Position;
 
 
-}, '3.5.0' ,{requires:['base-build', 'node-screen', 'widget']});
+}, '@VERSION@' ,{requires:['base-build', 'node-screen', 'widget']});

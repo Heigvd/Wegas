@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('test-console', function(Y) {
 
 /**
@@ -101,4 +95,4 @@ Y.namespace('Test').Console = Y.extend(TestConsole, Y.Console, {
 });
 
 
-}, '3.5.0' ,{skinnable:true, requires:['console-filters', 'test']});
+}, '@VERSION@' ,{skinnable:true, requires:['console-filters', 'test']});

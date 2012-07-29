@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('autocomplete-list', function(Y) {
 
 /**
@@ -300,7 +294,7 @@ List = Y.Base.create('autocompleteList', Y.Widget, [
     **/
     _ariaSay: function (stringId, subs) {
         var message = this.get('strings.' + stringId);
-        this._ariaNode.setContent(subs ? Lang.sub(message, subs) : message);
+        this._ariaNode.set('text', subs ? Lang.sub(message, subs) : message);
     },
 
     /**
@@ -336,7 +330,7 @@ List = Y.Base.create('autocompleteList', Y.Widget, [
         }
 
         // Attach inputNode events.
-        this._listEvents.concat([
+        this._listEvents = this._listEvents.concat([
             inputNode.after('blur',  this._afterListInputBlur, this),
             inputNode.after('focus', this._afterListInputFocus, this)
         ]);
@@ -349,7 +343,7 @@ List = Y.Base.create('autocompleteList', Y.Widget, [
     @protected
     **/
     _bindList: function () {
-        this._listEvents.concat([
+        this._listEvents = this._listEvents.concat([
             Y.one('doc').after('click', this._afterDocClick, this),
             Y.one('win').after('windowresize', this._syncPosition, this),
 
@@ -548,6 +542,10 @@ List = Y.Base.create('autocompleteList', Y.Widget, [
         // becomes visible. Toggling a bogus class on the body forces a repaint
         // that fixes the issue.
         if (Y.UA.ie === 7) {
+            // Note: We don't actually need to use ClassNameManager here. This
+            // class isn't applying any actual styles; it's just frobbing the
+            // body element to force a repaint. The actual class name doesn't
+            // really matter.
             Y.one('body')
                 .addClass('yui3-ie7-sucks')
                 .removeClass('yui3-ie7-sucks');
@@ -617,9 +615,8 @@ List = Y.Base.create('autocompleteList', Y.Widget, [
         var boundingBox = this._boundingBox,
             target      = e.target;
 
-        if (target !== this._inputNode && target !== boundingBox &&
-                !boundingBox.one(target.get('id'))) {
-
+        if(target !== this._inputNode && target !== boundingBox &&
+                target.ancestor('#' + boundingBox.get('id'), true)){
             this.hide();
         }
     },
@@ -890,4 +887,4 @@ for API docs.
 Y.AutoComplete = List;
 
 
-}, '3.5.0' ,{lang:['en'], skinnable:true, after:['autocomplete-sources'], requires:['autocomplete-base', 'event-resize', 'node-screen', 'selector-css3', 'shim-plugin', 'widget', 'widget-position', 'widget-position-align']});
+}, '@VERSION@' ,{after:['autocomplete-sources'], lang:['en'], skinnable:true, requires:['autocomplete-base', 'event-resize', 'node-screen', 'selector-css3', 'shim-plugin', 'widget', 'widget-position', 'widget-position-align']});

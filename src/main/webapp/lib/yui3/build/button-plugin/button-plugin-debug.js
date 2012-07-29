@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('button-plugin', function(Y) {
 
 /**
@@ -135,4 +129,4 @@ ButtonPlugin.createNode = function(node, config) {
 Y.namespace('Plugin').Button = ButtonPlugin;
 
 
-}, '3.5.0' ,{requires:['button-core', 'cssbutton', 'node-pluginhost']});
+}, '@VERSION@' ,{requires:['button-core', 'cssbutton', 'node-pluginhost']});
