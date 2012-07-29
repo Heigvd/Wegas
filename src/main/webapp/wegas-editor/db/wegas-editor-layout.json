@@ -10,6 +10,8 @@
             "content": "Editor",
             "cssClass": "wegas-editor-title"
         }, {
+            "type": "SelectPlayerButton"
+        },{
             "type": "Button",
             "label": "Developer",
             "plugins": [{
@@ -23,7 +25,7 @@
                             "class": "wegas-console"
                         },
                         "toolbarChildren": [{
-                            "type": "SelectPlayer"
+                            "type": "SelectPlayerButton"
                         }]
                     }, {
                         "type": "OpenTabButton",
@@ -154,7 +156,7 @@
                 "type": "Tab",
                 "label": "Preview",
                 "toolbarChildren": [{
-                    "type": "SelectPlayer"
+                    "type": "SelectPlayerButton"
                 }],
                 "children": [{
                     "type": "PageLoader",

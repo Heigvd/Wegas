@@ -65,9 +65,15 @@ YUI().use(function (Y) {
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: ['inputex-select', 'wegas-widget', 'plugin', 'button'],
+                        requires: [ 'wegas-widget', 'wegas-tooltip', 'plugin', 'button' ],
                         ix_provides: 'Button'
                     },
+                    'wegas-tooltip': {
+                        path: 'wegas-app/js/widget/wegas-tooltip-min.js',
+                        requires: [ "event-mouseenter", "widget", "widget-position", "widget-stack" ],
+                        ix_provides: 'Button'
+                    },
+
                     'wegas-chat': {
                         path: 'wegas-app/js/widget/wegas-chat-min.js',
                         ix_provides: 'Chat'
@@ -162,12 +168,12 @@ YUI().use(function (Y) {
                     },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
-                        requires: ['inputex-select'],
-                        ix_provides: 'SelectPlayer'
+                        requires: [ 'inputex-select', 'widgetmenu', 'button' ],
+                        ix_provides: 'SelectPlayerButton'
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
-                        requires: ['ace-css'],
+                        requires: [ 'ace-css' ],
                         ix_provides: 'CSSEditor'
                     },
                     'wegas-console': {
@@ -175,18 +181,14 @@ YUI().use(function (Y) {
                         requires: ['ace-javascript'],
                         ix_provides: 'Console'
                     },
-                    'wegas-editor-menu': {
-                        path: 'wegas-editor/js/wegas-editor-menu-min.js',
-                        requires: ['widget', 'widget-position', 'widget-position-align', 'widget-stack', "yui2-menu"]
-                    },
                     'wegas-editor-treeview': {
                         path: 'wegas-editor/js/wegas-editor-treeview-min.js',
-                        requires: [ 'wegas-widget',  "treeview", "widgetmenu"],
+                        requires: [ 'wegas-widget',  "treeview", "widgetmenu" ],
                         ix_provides: 'EditorTreeView'
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
-                        requires: ['datatable', 'datatable-sort' ],
+                        requires: [ 'datatable', 'datatable-sort' ],
                         ix_provides: 'DataTable'
                     },
                     'wegas-menucss':{

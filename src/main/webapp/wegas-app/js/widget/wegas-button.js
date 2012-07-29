@@ -41,16 +41,17 @@ YUI.add('wegas-button', function (Y) {
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
-        bindUI: function () {
-            if(this.get('tooltips')){
-                this.get(CONTENTBOX).on('mouseenter', function () {
-                    this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
-                        + this.get('tooltips')
-                        +'</span>');
-                },this);
-                this.get(CONTENTBOX).on('mouseleave', function () {
-                  //  Y.one('.wegas-button-tooltips').remove();
-                },this);
+        initializer: function () {
+            Button.superclass.initializer.apply( this, arguments);
+            this.publish( "click", {
+                emitFacade: true,
+                bubbles: true
+            });
+
+            if ( this.get( "tooltips" ) ) {
+                this.plug(Y.Plugin.Tooltip, {
+                    content: this.get( "tooltips" )
+                });
             }
         }
     }, {
@@ -140,7 +141,6 @@ YUI.add('wegas-button', function (Y) {
      */
     LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
-
             Y.Wegas.GameFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
         },
