@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('autocomplete-filters-accentfold', function(Y) {
 
 /**
@@ -139,4 +133,4 @@ Y.mix(Y.namespace('AutoCompleteFilters'), {
 });
 
 
-}, '3.5.0' ,{requires:['array-extras', 'text-accentfold', 'text-wordbreak']});
+}, '@VERSION@' ,{requires:['array-extras', 'text-accentfold', 'text-wordbreak']});

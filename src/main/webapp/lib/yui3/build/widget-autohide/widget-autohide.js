@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('widget-autohide', function(Y) {
 
 /**
@@ -239,4 +233,4 @@ WidgetAutohide.prototype = {
 Y.WidgetAutohide = WidgetAutohide;
 
 
-}, '3.5.0' ,{requires:['base-build','widget','event-outside','event-key']});
+}, '@VERSION@' ,{requires:['base-build','widget','event-outside','event-key']});

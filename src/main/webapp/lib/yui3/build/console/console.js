@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('console', function(Y) {
 
 /**
@@ -844,11 +838,11 @@ Y.Console = Y.extend(Console, Y.Widget,
             after  = e.newVal;
 
         if ((!prop || prop === TITLE) && before.title !== after.title) {
-            cb.all(DOT+C_CONSOLE_TITLE).setContent(after.title);
+            cb.all(DOT+C_CONSOLE_TITLE).setHTML(after.title);
         }
 
         if ((!prop || prop === PAUSE) && before.pause !== after.pause) {
-            cb.all(DOT+C_PAUSE_LABEL).setContent(after.pause);
+            cb.all(DOT+C_PAUSE_LABEL).setHTML(after.pause);
         }
 
         if ((!prop || prop === CLEAR) && before.clear !== after.clear) {
@@ -933,7 +927,7 @@ Y.Console = Y.extend(Console, Y.Widget,
         bb[method](C_COLLAPSED);
 
         if (button) {
-            button.setContent(str);
+            button.setHTML(str);
         }
 
         this._uiSetHeight(v ? this._head.get('offsetHeight'): this.get(HEIGHT));
@@ -1520,4 +1514,4 @@ Y.Console = Y.extend(Console, Y.Widget,
 });
 
 
-}, '3.5.0' ,{lang:['en', 'es', 'ja'], requires:['substitute','widget','yui-log']});
+}, '@VERSION@' ,{requires:['substitute','widget','yui-log'], lang:['en', 'es', 'ja']});

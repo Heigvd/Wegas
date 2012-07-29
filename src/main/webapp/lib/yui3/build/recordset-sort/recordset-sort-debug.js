@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('recordset-sort', function(Y) {
 
 /**
@@ -209,4 +203,4 @@ Y.namespace("Plugin").RecordsetSort = RecordsetSort;
 
 
 
-}, '3.5.0' ,{requires:['arraysort','recordset-base','plugin']});
+}, '@VERSION@' ,{requires:['arraysort','recordset-base','plugin']});

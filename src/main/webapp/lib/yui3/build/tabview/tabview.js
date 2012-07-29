@@ -1,13 +1,7 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('tabview', function(Y) {
 
 /**
- * The TabView module
+ * The TabView module 
  *
  * @module tabview
  */
@@ -18,7 +12,7 @@ var _queries = Y.TabviewBase._queries,
     getClassName = Y.ClassNameManager.getClassName,
 
     /**
-     * Provides a tabbed widget interface
+     * Provides a tabbed widget interface 
      * @param config {Object} Object literal specifying tabview configuration properties.
      *
      * @class TabView
@@ -59,7 +53,7 @@ var _queries = Y.TabviewBase._queries,
 
         if (tablist) {
             tablist.setAttrs({
-                //'aria-labelledby':
+                //'aria-labelledby': 
                 role: 'tablist'
             });
         }
@@ -81,9 +75,9 @@ var _queries = Y.TabviewBase._queries,
         this.after('addChild', this._afterChildAdded);
         this.after('removeChild', this._afterChildRemoved);
     },
-
+    
     renderUI: function() {
-        var contentBox = this.get('contentBox');
+        var contentBox = this.get('contentBox'); 
         this._renderListBox(contentBox);
         this._renderPanelBox(contentBox);
         this._childrenContainer = this.get('listNode');
@@ -149,7 +143,7 @@ var _queries = Y.TabviewBase._queries,
     PANEL_TEMPLATE: '<div class="' + _classNames.tabviewPanel + '"></div>',
 
     ATTRS: {
-        defaultChildType: {
+        defaultChildType: {  
             value: 'Tab'
         },
 
@@ -224,12 +218,12 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
             this._add();
         }
     },
- 
-   _initAria: function() {
+
+    _initAria: function() {
         var anchor = this.get('contentBox'),
             id = anchor.get('id'),
             panel = this.get('panelNode');
-
+ 
         if (!id) {
             id = Y.guid();
             anchor.set('id', id);
@@ -237,8 +231,8 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
         //  Apply the ARIA roles, states and properties to each tab
         anchor.set('role', 'tab');
         anchor.get('parentNode').set('role', 'presentation');
-
-
+ 
+ 
         //  Apply the ARIA roles, states and properties to each panel
         panel.setAttrs({
             role: 'tabpanel',
@@ -280,7 +274,7 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
             panel.appendChild(this.get('panelNode'));
         }
     },
-
+    
     _remove: function() {
         this.get('boundingBox').remove();
         this.get('panelNode').remove();
@@ -288,15 +282,15 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
 
     _onActivate: function(e) {
          if (e.target === this) {
-             //  Prevent the browser from navigating to the URL specified by the
+             //  Prevent the browser from navigating to the URL specified by the 
              //  anchor's href attribute.
              e.domEvent.preventDefault();
              e.target.set('selected', 1);
          }
     },
-
+    
     initializer: function() {
-       this.publish(this.get('triggerEvent'), {
+       this.publish(this.get('triggerEvent'), { 
            defaultFn: this._onActivate
        });
     },
@@ -346,7 +340,7 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
     ATTRS: {
         /**
          * @attribute triggerEvent
-         * @default "click"
+         * @default "click" 
          * @type String
          */
         triggerEvent: {
@@ -357,7 +351,7 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
          * @attribute label
          * @type HTML
          */
-        label: {
+        label: { 
             setter: '_defLabelSetter',
             validator: Lang.isString
         },
@@ -385,11 +379,11 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
             },
             valueFn: '_defPanelNodeValueFn'
         },
-
+        
         tabIndex: {
             value: null,
             validator: '_validTabIndex'
-        }
+        }        
 
     },
 
@@ -404,4 +398,4 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
 });
 
 
-}, '3.5.0' ,{requires:['node-pluginhost', 'node-focusmanager', 'tabview-base', 'widget', 'widget-parent', 'widget-child']});
+}, '@VERSION@' ,{requires:['node-pluginhost', 'node-focusmanager', 'tabview-base', 'widget', 'widget-parent', 'widget-child']});

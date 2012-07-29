@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datatable-datasource-deprecated', function(Y) {
 
 /**
@@ -186,4 +180,4 @@ Y.namespace("Plugin").DataTableDataSource = DataTableDataSource;
 
 
 
-}, '3.5.0' ,{requires:['datatable-base-deprecated','plugin','datasource-local']});
+}, '@VERSION@' ,{requires:['datatable-base-deprecated','plugin','datasource-local']});

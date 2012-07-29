@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('attribute-events', function(Y) {
 
     /**
@@ -92,11 +86,31 @@ YUI.add('attribute-events', function(Y) {
          *
          * @method setAttrs
          * @param {Object} attrs  An object with attributes name/value pairs.
+         * @param {Object} opts  Properties to mix into the event payload. These are shared and mixed into each set 
          * @return {Object} A reference to the host object.
          * @chainable
          */
         setAttrs : function(attrs, opts) {
             return this._setAttrs(attrs, opts);
+        },
+
+        /**
+         * Implementation behind the public setAttrs method, to set multiple attribute values.
+         *
+         * @method _setAttrs
+         * @protected
+         * @param {Object} attrs  An object with attributes name/value pairs.
+         * @param {Object} opts  Properties to mix into the event payload. These are shared and mixed into each set 
+         * @return {Object} A reference to the host object.
+         * @chainable
+         */
+        _setAttrs : function(attrs, opts) {
+            for (var attr in attrs) {
+                if ( attrs.hasOwnProperty(attr) ) {
+                    this.set(attr, attrs[attr], opts);
+                }
+            }
+            return this;
         },
 
         /**
@@ -176,4 +190,4 @@ YUI.add('attribute-events', function(Y) {
     Y.AttributeEvents = AttributeEvents;
 
 
-}, '3.5.0' ,{requires:['event-custom']});
+}, '@VERSION@' ,{requires:['event-custom']});

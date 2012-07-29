@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datatype-number-parse', function(Y) {
 
 /**
@@ -40,4 +34,4 @@ Y.mix(Y.namespace("DataType.Number"), {
 Y.namespace("Parsers").number = Y.DataType.Number.parse;
 
 
-}, '3.5.0' );
+}, '@VERSION@' );

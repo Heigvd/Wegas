@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('pjax', function(Y) {
 
 /**
@@ -337,4 +331,4 @@ Y.Pjax = Y.Base.create('pjax', Y.Router, [Y.PjaxBase], {
 });
 
 
-}, '3.5.0' ,{requires:['pjax-base', 'io-base']});
+}, '@VERSION@' ,{requires:['pjax-base', 'io-base']});

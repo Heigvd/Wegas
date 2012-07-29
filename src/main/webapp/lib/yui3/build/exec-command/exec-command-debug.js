@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('exec-command', function(Y) {
 
 
@@ -419,6 +413,12 @@ YUI.add('exec-command', function(Y) {
                 */
                 list: function(cmd, tag) {
                     var inst = this.getInstance(), html, self = this,
+                        /*
+                        The yui3- class name below is not a skinnable class,
+                        it's a utility class used internally by editor and 
+                        stripped when completed, calling getClassName on this
+                        is a waste of resources.
+                        */
                         DIR = 'dir', cls = 'yui3-touched',
                         dir, range, div, elm, n, str, s, par, list, lis,
                         useP = (inst.host.editorPara ? true : false),
@@ -715,4 +715,4 @@ YUI.add('exec-command', function(Y) {
 
 
 
-}, '3.5.0' ,{skinnable:false, requires:['frame']});
+}, '@VERSION@' ,{requires:['frame'], skinnable:false});

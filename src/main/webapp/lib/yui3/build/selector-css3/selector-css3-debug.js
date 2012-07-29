@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('selector-css3', function(Y) {
 
 /**
@@ -155,4 +149,4 @@ Y.Selector.combinators['~'] = {
 };
 
 
-}, '3.5.0' ,{requires:['selector-native', 'selector-css2']});
+}, '@VERSION@' ,{requires:['selector-native', 'selector-css2']});

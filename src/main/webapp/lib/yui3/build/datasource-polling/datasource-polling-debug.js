@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datasource-polling', function(Y) {
 
 /**
@@ -38,7 +32,7 @@ Pollable.prototype = {
      *
      * @method setInterval
      * @param msec {Number} Length of interval in milliseconds.
-     * @param request {Object} An object literal with the following properties:
+     * @param [request] {Object} An object literal with the following properties:
      *     <dl>
      *     <dt><code>request</code></dt>
      *     <dd>The request to send to the live data source, if any.</dd>
@@ -96,4 +90,4 @@ Pollable.prototype = {
 Y.augment(Y.DataSource.Local, Pollable);
 
 
-}, '3.5.0' ,{requires:['datasource-local']});
+}, '@VERSION@' ,{requires:['datasource-local']});

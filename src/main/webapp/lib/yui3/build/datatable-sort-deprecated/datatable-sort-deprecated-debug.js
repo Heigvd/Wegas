@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datatable-sort-deprecated', function(Y) {
 
 /**
@@ -368,4 +362,4 @@ Y.namespace("Plugin").DataTableSort = DataTableSort;
 
 
 
-}, '3.5.0' ,{requires:['datatable-base-deprecated','plugin','recordset-sort'], lang:['en']});
+}, '@VERSION@' ,{requires:['datatable-base-deprecated','plugin','recordset-sort'], lang:['en']});

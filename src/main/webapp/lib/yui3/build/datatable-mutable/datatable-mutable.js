@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datatable-mutable', function(Y) {
 
 /**
@@ -633,4 +627,4 @@ Fired by the `moveColumn` method.
 
 
 
-}, '3.5.0' ,{requires:['datatable-base']});
+}, '@VERSION@' ,{requires:['datatable-base']});

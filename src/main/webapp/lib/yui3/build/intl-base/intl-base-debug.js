@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('intl-base', function(Y) {
 
 /**
@@ -91,4 +85,4 @@ Y.mix(Y.namespace('Intl'), {
 });
 
 
-}, '3.5.0' ,{requires:['yui-base']});
+}, '@VERSION@' ,{requires:['yui-base']});

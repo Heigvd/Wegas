@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('substitute', function(Y) {
 
 /**
@@ -163,4 +157,4 @@ YUI.add('substitute', function(Y) {
 
 
 
-}, '3.5.0' ,{optional:['dump'], requires:['yui-base']});
+}, '@VERSION@' ,{optional:['dump'], requires:['yui-base']});

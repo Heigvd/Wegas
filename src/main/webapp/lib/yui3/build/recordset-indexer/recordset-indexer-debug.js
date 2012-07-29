@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('recordset-indexer', function(Y) {
 
 /**
@@ -230,4 +224,4 @@ Y.namespace("Plugin").RecordsetIndexer = RecordsetIndexer;
 
 
 
-}, '3.5.0' ,{requires:['recordset-base','plugin']});
+}, '@VERSION@' ,{requires:['recordset-base','plugin']});

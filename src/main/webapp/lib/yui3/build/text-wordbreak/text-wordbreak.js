@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('text-wordbreak', function(Y) {
 
 /**
@@ -365,4 +359,4 @@ WordBreak = {
 Text.WordBreak = WordBreak;
 
 
-}, '3.5.0' ,{requires:['array-extras', 'text-data-wordbreak']});
+}, '@VERSION@' ,{requires:['array-extras', 'text-data-wordbreak']});

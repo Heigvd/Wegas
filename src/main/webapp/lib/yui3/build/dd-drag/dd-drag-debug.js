@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('dd-drag', function(Y) {
 
 
@@ -1146,9 +1140,11 @@ YUI.add('dd-drag', function(Y) {
         * @description This method performs the alignment before the element move.
         * @param {Array} eXY The XY to move the element to, usually comes from the mousemove DOM event.
         */
-        _alignNode: function(eXY) {
+        _alignNode: function(eXY, scroll) {
             this._align(eXY);
-            this._moveNode();
+            if (!scroll) {
+                this._moveNode();
+            }
         },
         /**
         * @private
@@ -1200,7 +1196,7 @@ YUI.add('dd-drag', function(Y) {
         */
         _defDragFn: function(e) {
             if (this.get('move')) {
-                if (e.scroll) {
+                if (e.scroll && e.scroll.node) {
                     e.scroll.node.set('scrollTop', e.scroll.top);
                     e.scroll.node.set('scrollLeft', e.scroll.left);
                 }
@@ -1266,4 +1262,4 @@ YUI.add('dd-drag', function(Y) {
 
 
 
-}, '3.5.0' ,{skinnable:false, requires:['dd-ddm-base']});
+}, '@VERSION@' ,{requires:['dd-ddm-base'], skinnable:false});

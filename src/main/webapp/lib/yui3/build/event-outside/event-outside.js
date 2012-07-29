@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('event-outside', function(Y) {
 
 /**
@@ -103,4 +97,4 @@ Y.Array.each(nativeEvents, function (event) {
 });
 
 
-}, '3.5.0' ,{requires:['event-synthetic']});
+}, '@VERSION@' ,{requires:['event-synthetic']});

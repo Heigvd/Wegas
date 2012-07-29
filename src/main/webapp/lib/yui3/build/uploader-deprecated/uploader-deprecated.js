@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('uploader-deprecated', function(Y) {
 
 /**
@@ -597,4 +591,4 @@ Y.extend(Uploader, Y.Base, {
 Y.Uploader = Uploader;
 
 
-}, '3.5.0' ,{requires:['swf', 'base', 'node', 'event-custom']});
+}, '@VERSION@' ,{requires:['swf', 'base', 'node', 'event-custom']});

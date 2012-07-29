@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('anim-color', function(Y) {
 
 /**
@@ -51,4 +45,4 @@ Y.each(['backgroundColor',
 );
 
 
-}, '3.5.0' ,{requires:['anim-base']});
+}, '@VERSION@' ,{requires:['anim-base']});

@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datatype-date-math', function(Y) {
 
 /**
@@ -118,7 +112,7 @@ Y.mix(Y.namespace("DataType.Date"), {
 		newMonth = (newMonth % 12 + 12) % 12;
 		
 		var newDate = new Date (oDate.getTime());
-		newDate.setYear(newYear);
+		newDate.setFullYear(newYear);
 		newDate.setMonth(newMonth);
 		
 		return newDate;
@@ -137,7 +131,7 @@ Y.mix(Y.namespace("DataType.Date"), {
 		var newYear = oDate.getFullYear() + numYears;
 		var newDate = new Date(oDate.getTime());
 		
-		newDate.setYear(newYear);
+		newDate.setFullYear(newYear);
 		return newDate;
 	},
 
@@ -208,4 +202,4 @@ Y.mix(Y.namespace("DataType.Date"), {
 });
 
 
-}, '3.5.0' ,{requires:['yui-base']});
+}, '@VERSION@' ,{requires:['yui-base']});

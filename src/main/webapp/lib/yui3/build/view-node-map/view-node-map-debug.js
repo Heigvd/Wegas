@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('view-node-map', function(Y) {
 
 /**
@@ -54,6 +48,7 @@ a mapping of Nodes to View instances.
     HTMLElement.
 @return {View} Closest View instance associated with the given Node, or `null`
     if no associated View instance was found.
+@static
 @since 3.5.0
 **/
 NodeMap.getByNode = function (node) {
@@ -86,4 +81,4 @@ NodeMap.prototype = {
 Y.View.NodeMap = NodeMap;
 
 
-}, '3.5.0' ,{requires:['view']});
+}, '@VERSION@' ,{requires:['view']});

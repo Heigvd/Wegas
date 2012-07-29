@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('editor-tab', function(Y) {
 
 
@@ -71,4 +65,4 @@ YUI.add('editor-tab', function(Y) {
     Y.Plugin.EditorTab = EditorTab;
 
 
-}, '3.5.0' ,{skinnable:false, requires:['editor-base']});
+}, '@VERSION@' ,{requires:['editor-base'], skinnable:false});

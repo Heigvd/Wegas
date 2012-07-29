@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('dd-ddm', function(Y) {
 
 
@@ -127,4 +121,4 @@ YUI.add('dd-ddm', function(Y) {
 
 
 
-}, '3.5.0' ,{skinnable:false, requires:['dd-ddm-base', 'event-resize']});
+}, '@VERSION@' ,{requires:['dd-ddm-base', 'event-resize'], skinnable:false});

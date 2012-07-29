@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('dataschema-base', function(Y) {
 
 /**
@@ -70,4 +64,4 @@ Y.namespace("DataSchema").Base = SchemaBase;
 Y.namespace("Parsers");
 
 
-}, '3.5.0' ,{requires:['base']});
+}, '@VERSION@' ,{requires:['base']});

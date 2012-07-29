@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('event-move', function(Y) {
 
 /**
@@ -520,4 +514,4 @@ define(GESTURE_MOVE_END, {
 });
 
 
-}, '3.5.0' ,{requires:['node-base','event-touch','event-synthetic']});
+}, '@VERSION@' ,{requires:['node-base','event-touch','event-synthetic']});

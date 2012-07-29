@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('widget-parent', function(Y) {
 
 /**
@@ -872,4 +866,4 @@ Y.augment(Parent, Y.ArrayList);
 Y.WidgetParent = Parent;
 
 
-}, '3.5.0' ,{requires:['base-build', 'arraylist', 'widget']});
+}, '@VERSION@' ,{requires:['base-build', 'arraylist', 'widget']});

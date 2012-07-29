@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('node-screen', function(Y) {
 
 /**
@@ -243,4 +237,4 @@ Y.Node.prototype.inRegion = function(node2, all, altRegion) {
 };
 
 
-}, '3.5.0' ,{requires:['node-base', 'dom-screen']});
+}, '@VERSION@' ,{requires:['node-base', 'dom-screen']});

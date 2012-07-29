@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('widget-stack', function(Y) {
 
 /**
@@ -441,4 +435,4 @@ YUI.add('widget-stack', function(Y) {
     Y.WidgetStack = Stack;
 
 
-}, '3.5.0' ,{requires:['base-build', 'widget']});
+}, '@VERSION@' ,{requires:['base-build', 'widget']});

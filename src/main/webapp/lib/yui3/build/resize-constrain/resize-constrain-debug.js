@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('resize-constrain', function(Y) {
 
 var Lang = Y.Lang,
@@ -458,4 +452,4 @@ Y.namespace('Plugin');
 Y.Plugin.ResizeConstrained = ResizeConstrained;
 
 
-}, '3.5.0' ,{requires:['resize-base', 'plugin'], skinnable:false});
+}, '@VERSION@' ,{requires:['resize-base', 'plugin'], skinnable:false});

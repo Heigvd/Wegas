@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('yui-log-nodejs', function(Y) {
 
 var sys = require(process.binding('natives').util ? 'util' : 'sys'),
@@ -25,7 +19,7 @@ Y.consoleColor = function(str, num) {
     if (!num) {
         num = '32';
     }
-    return "\033[" + num +"m" + str + "\033[0m"
+    return "\u001b[" + num +"m" + str + "\u001b[0m";
 };
 
 
@@ -83,4 +77,4 @@ if (!Y.config.logFn) {
 
 
 
-}, '3.5.0' ,{requires:['yui-log']});
+}, '@VERSION@' ,{requires:['yui-log']});

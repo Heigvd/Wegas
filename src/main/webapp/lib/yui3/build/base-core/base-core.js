@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('base-core', function(Y) {
 
     /**
@@ -30,6 +24,7 @@ YUI.add('base-core', function(Y) {
         INITIALIZED = "initialized",
         DESTROYED = "destroyed",
         INITIALIZER = "initializer",
+        VALUE = "value",
         OBJECT_CONSTRUCTOR = Object.prototype.constructor,
         DEEP = "deep",
         SHALLOW = "shallow",
@@ -451,6 +446,7 @@ YUI.add('base-core', function(Y) {
                 i,
                 clone,
                 cfgPropsHash = this._attrCfgHash(),
+                aggAttr,
                 aggAttrs = {};
 
             if (allAttrs) {
@@ -461,8 +457,6 @@ YUI.add('base-core', function(Y) {
                         if (attrs.hasOwnProperty(attr)) {
 
                             // Protect config passed in
-                            //cfg = Y.mix({}, attrs[attr], true, cfgProps);
-                            //cfg = Y.Object(attrs[attr]);
                             cfg = _wlmix({}, attrs[attr], cfgPropsHash);
 
                             val = cfg.value;
@@ -484,13 +478,17 @@ YUI.add('base-core', function(Y) {
                                 attr = path.shift();
                             }
 
-                            if (path && aggAttrs[attr] && aggAttrs[attr].value) {
-                                O.setValue(aggAttrs[attr].value, path, val);
+                            aggAttr = aggAttrs[attr];
+                            if (path && aggAttr && aggAttr.value) {
+                                O.setValue(aggAttr.value, path, val);
                             } else if (!path) {
-                                if (!aggAttrs[attr]) {
+                                if (!aggAttr) {
                                     aggAttrs[attr] = cfg;
                                 } else {
-                                    _wlmix(aggAttrs[attr], cfg, cfgPropsHash);
+                                    if (aggAttr.valueFn && VALUE in cfg) {
+                                        aggAttr.valueFn = null;    
+                                    }
+                                    _wlmix(aggAttr, cfg, cfgPropsHash);
                                 }
                             }
                         }
@@ -613,4 +611,4 @@ YUI.add('base-core', function(Y) {
     Y.BaseCore = BaseCore;
 
 
-}, '3.5.0' ,{requires:['attribute-core']});
+}, '@VERSION@' ,{requires:['attribute-core']});

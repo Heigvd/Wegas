@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datatable-scroll-deprecated', function(Y) {
 
 /**
@@ -735,4 +729,4 @@ Y.extend(DataTableScroll, Y.Plugin.Base, {
 Y.namespace("Plugin").DataTableScroll = DataTableScroll;
 
 
-}, '3.5.0' ,{requires:['datatable-base-deprecated','plugin']});
+}, '@VERSION@' ,{requires:['datatable-base-deprecated','plugin']});

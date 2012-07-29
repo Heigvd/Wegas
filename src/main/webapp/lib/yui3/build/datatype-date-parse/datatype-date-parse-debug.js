@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('datatype-date-parse', function(Y) {
 
 /**
@@ -49,4 +43,4 @@ Y.mix(Y.namespace("DataType.Date"), {
 Y.namespace("Parsers").date = Y.DataType.Date.parse;
 
 
-}, '3.5.0' );
+}, '@VERSION@' );

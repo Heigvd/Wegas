@@ -1,9 +1,3 @@
-/*
-YUI 3.5.0 (build 5089)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
 YUI.add('node-style', function(Y) {
 
 (function(Y) {
@@ -109,4 +103,4 @@ Y.NodeList.importMethod(Y.Node.prototype, ['getStyle', 'getComputedStyle', 'setS
 })(Y);
 
 
-}, '3.5.0' ,{requires:['dom-style', 'node-base']});
+}, '@VERSION@' ,{requires:['dom-style', 'node-base']});
