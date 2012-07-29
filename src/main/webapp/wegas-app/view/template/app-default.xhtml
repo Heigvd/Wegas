@@ -22,7 +22,7 @@
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
             <!-- YUI -->
             <!-- CDN  -->
-            <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.5.0/build/cssfonts/fonts-min.css&amp;3.5.0/build/cssreset/reset-min.css&amp;3.5.0/build/cssgrids/grids-min.css&amp;3.5.0/build/widget-base/assets/skins/sam/widget-base.css&amp;3.5.0/build/node-menunav/assets/skins/sam/node-menunav.css" />
+            <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.6.0PR3/build/cssfonts/fonts-min.css&amp;3.6.0PR3/build/cssreset/reset-min.css&amp;3.6.0PR3/build/cssgrids/grids-min.css&amp;3.6.0PR3/build/widget-base/assets/skins/sam/widget-base.css&amp;3.6.0PR3/build/node-menunav/assets/skins/sam/node-menunav.css" />
         </ui:fragment>
 
         <ui:fragment rendered="#{wegasConfig.assets_local}">
@@ -43,7 +43,7 @@
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
             <!-- YUI Base -->
             <!-- CDN -->
-            <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.5.0/build/yui/yui-min.js&amp;3.5.0/build/loader/loader-min.js"></script>
+            <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.6.0PR3/build/yui/yui-min.js&amp;3.6.0PR3/build/loader/loader-min.js"></script>
         </ui:fragment>
         <ui:fragment rendered="#{wegasConfig.assets_local}">
             <!-- Self hosted -->
@@ -150,8 +150,8 @@
                                 }]
                         },
                         "Game": {
-                            source: "rest/GameModel/#{gameController.currentGameModel.id}/Game/#{gameController.currentGame.id}",
-                            initialRequest: "",
+                            source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
+                            initialRequest: "/#{gameController.currentGame.id}",
                             plugins: [
                                 {
                                     fn: "DataSourceJSONSchema",
