@@ -6,7 +6,7 @@
         "children": [{
                 "label": "indicateurs",
                 "type": "List",
-                "cssClass": "indicators",
+                "cssClass": "leaderway-indicators",
                 "direction": "horizontal",
                 "children": [{
                         "type": "VariableDisplay",
@@ -60,7 +60,7 @@
             {
                 "label": "Menu",
                 "type": "List",
-                "cssClass": "menu",
+                "cssClass": "leaderway-menu",
                 "direction": "horizontal",
                 "children": [
                     {
@@ -118,13 +118,17 @@
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
                             }]
-
                     },
                     {
                         "type": "LoginButton",
                         "label":"Login button",
                         "cssClass": "menu-loginbutton"
                     }]
+            },
+            {
+                "type": "Text",
+                "cssClass": "leaderway-feedback",
+                "content": ""
             },
             {
                 "type": "PageLoader",
@@ -138,14 +142,18 @@
         "label":"Folder",
         "type":"Folder",
         "cssClass":"leaderway-folder",
-        "dialoguePageId": 7,
+        "folderPageId": "2",
+        "taskListPageId": "4",
+        "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     },
     {
         "id":4,
         "label":"TaskList",
         "type":"TaskList",
-        "cssClass":"leaderway-tasklist"
+        "cssClass":"leaderway-tasklist",
+        "pickingMode":"true",
+        "targetPageLoaderId": "maindisplayarea"
     },
     {
         "id":5,
@@ -166,6 +174,7 @@
         "label":"Dialogue",
         "type":"Dialogue",
         "cssClass":"leaderway-dialogue",
-        "toHide":".menu"
+        "toHide":".leaderway-menu",
+        "taskListPageId":6
     }
 ]

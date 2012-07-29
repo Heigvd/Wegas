@@ -33,7 +33,7 @@ body{
 }
 
 /*--------------------------------Indicators----------------------------------*/
-.indicators{
+.leaderway-indicators{
     background-color:#eed4aa;
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/indicators_background.png");
     background-repeat: repeat-x;
@@ -45,36 +45,36 @@ body{
     border-bottom: 1px solid;
 }
 
-.indicators-fraction{
+.leaderway-indicators .indicators-fraction{
     margin-top: 41px;
 }
 
-.indicators-text{
+ .leaderway-indicators .indicators-text{
     margin: 41px 20px 0 0;
     width:140px;
     text-align: left;
 }
 
-.indicators-fraction .wegas-variabledisplay-fraction-minSeparator,
-.indicators-fraction .wegas-variabledisplay-fraction-minValue{
+.leaderway-indicators .indicators-fraction .wegas-variabledisplay-fraction-minSeparator,
+.leaderway-indicators .indicators-fraction .wegas-variabledisplay-fraction-minValue{
     display:none;
 }
 
-.indicators .button{
+.leaderway-indicators  button{
     margin: 36px 30px 0 5px;
     float:left;
 }
 
-.indicators .button .wegas-button-tooltips{
+.leaderway-indicators  button .wegas-button-tooltips{
     margin: 0 0 0 25px;
 }
 
 
-.indicators-gauge{
+.leaderway-indicators .indicators-gauge{
     margin:24px 20px 0 0;
 }
 
-.indicators-gauge .wegas-variabledisplay-box-units{
+.leaderway-indicators .indicators-gauge .wegas-variabledisplay-box-units{
     display:block;
     background-color:#93C34F;
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gauge_background_large.png");
@@ -87,7 +87,7 @@ body{
     overflow: hidden;
 }
 
-.indicators-gauge .wegas-variabledisplay-box-unit{
+.leaderway-indicators .indicators-gauge .wegas-variabledisplay-box-unit{
     display:block;
     background-color:#6F89A2;    
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/gaugeFiller-background.png");
@@ -97,35 +97,35 @@ body{
     height:20px;
 }
 
-.indicators-gauge .wegas-variabledisplay-box-value{
+.leaderway-indicators .indicators-gauge .wegas-variabledisplay-box-value{
     margin-left: 5px;
     font-size: 0.8em;
 }
 
-.wegas-variabledisplay:last-child{
+.leaderway-indicators .wegas-variabledisplay:last-child{
     float:right;
 }
 
-.indicators-block{
+.leaderway-indicators .indicators-block{
     width:110px;
     margin:5px 0 0 0;
     float:right;
 }
 
-.indicators-block .wegas-variabledisplay-box-label{
+.leaderway-indicators .indicators-block .wegas-variabledisplay-box-label{
     margin-right:5px;
 }
 
-.indicators-block .wegas-variabledisplay-box-valueMax{
+.leaderway-indicators .indicators-block .wegas-variabledisplay-box-valueMax{
     display:none;
 }
 
-.indicators-block .wegas-variabledisplay-box-units{
+.leaderway-indicators .indicators-block .wegas-variabledisplay-box-units{
     display: block;
     width:110px;
 }
 
-.indicators-block .wegas-variabledisplay-box-unit{
+.leaderway-indicators .indicators-block .wegas-variabledisplay-box-unit{
     width:7px;
     height:15px;
     margin:0 2px 2px 0;
@@ -134,7 +134,7 @@ body{
     float:left;
 }
 /*-----------------------------------menu-------------------------------------*/
-.menu{
+.leaderway-menu{
     background-color:#E1D2B9;
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/menu_background.png");
     background-repeat: repeat-x;
@@ -145,7 +145,7 @@ body{
     border-bottom: 1px solid;
 }
 
-.menu .button{
+.leaderway-menu .button{
     margin-right:20px;
     overflow:hidden;
     background-repeat: no-repeat;
@@ -157,40 +157,57 @@ body{
     width:40px;
     font-size: 0;
 }
-.menu .button:hover{
+.leaderway-menu .button:hover{
     box-shadow:0px 0px 0px 1px rgba(0, 0, 0, 0.251) inset, 0px 2px 0px rgba(255, 255, 255, 0.298) inset, 0px 1px 2px rgba(0, 0, 0, 0.149);
     background-color:#DFC69F;
     border-radius: 10px;
     cursor:pointer; 
 }
 
-.menu .button .wegas-button-tooltips{
+.leaderway-menu .button .wegas-button-tooltips{
     margin: 10px 0 0 40px;
 }
 
-.menu .menu-HRList{
+.leaderway-menu .menu-HRList{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/hrlist.png");
 }
 
-.menu .menu-folder{
+.leaderway-menu .menu-folder{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/homme.png");
 }
 
-.menu .menu-tasklist{
+.leaderway-menu .menu-tasklist{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/liste.png");
 }
 
-.menu .menu-email{
+.leaderway-menu .menu-email{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/email.png");
 }
 
-.menu .menu-score{
+.leaderway-menu .menu-score{
     background-image:url("http://localhost:8080/Wegas/wegas-leaderway/images/awards.png");
 }
 
-.menu .wegas-login{
+.leaderway-menu .wegas-login{
     float:right;
     margin:15px 0 0 0;
+}
+
+/*---------------------------------Feedback-----------------------------------*/
+.leaderway-feedback{
+    display:none;
+    padding:5px;
+    text-align:center;
+    overflow: hidden;
+    background-color:white;
+}
+
+.leaderway-feedback .green{
+    color:green;
+}
+
+.leaderway-feedback .red{
+    color:red;
 }
 
 /*----------------------------------RHList------------------------------------*/
@@ -445,20 +462,6 @@ body{
 
 /*-----folder-actions-----*/
 
-.wegas-folder .leaderway-folder .actions .feedback{
-    text-align:center;
-    min-height:20px;
-    padding:5px;
-}
-
-.wegas-folder .leaderway-folder .actions .green{
-    color:green;
-}
-
-.wegas-folder .leaderway-folder .actions .red{
-    color:red;
-}
-
 .wegas-folder .leaderway-folder .actions .actions-list{
     min-height: 150px;
     width:98%;
@@ -481,17 +484,6 @@ body{
 .wegas-folder .leaderway-folder .actions .action:hover{
     background-color:#BFDAFF;
     cursor:pointer;
-}
-/*---------action->tasklist--------*/
-.wegas-folder .yui3-panel .yui3-widget-ft{
-    overflow:hidden;
-}
-
-.wegas-folder .tasksChooser .yui3-widget-ft .selectedTask{
-    float:left;
-    padding:5px;
-    width: 70%;
-    text-align:left;
 }
 /*---------------------------------tasklist-----------------------------------*/
 .wegas-tasklist .yui3-datatable-content  table{
@@ -542,6 +534,47 @@ body{
     cursor: pointer;
 }
 
+.wegas-tasklist .modePicking .resourceName{
+    padding:10px;
+    text-align:center;
+    font-size: 1.2em;
+}
+
+.wegas-tasklist .modePicking .footer{
+    padding:10px;
+    overflow: hidden;
+    clear:both;
+}
+
+.wegas-tasklist .modePicking .assignInfo{
+    padding:10px;
+    margin-top:5px;
+    width:650px;
+    float:left;
+}
+
+.wegas-tasklist .modePicking .footer .buttons{
+    margin:5px;
+    float:right;
+    width:230px;
+}
+
+.wegas-tasklist .modePicking .footer .buttons div{
+    display: inline-block;
+    padding: 10px;
+    margin-left:20px;
+    border:outset 1px #6F89A2;
+    border-radius: 5px;
+    background-color: #DCE5EF;
+    overflow: hidden;
+    width:70px;
+    text-align:center;
+}
+
+.wegas-tasklist .modePicking .footer .buttons div:hover{
+    background-color:#BFDAFF;
+    cursor:pointer;
+}
 /*------------------------------------Score-----------------------------------*/
 .wegas-score .leaderway-score .scoreTitle{
     font-size: 1.2em;

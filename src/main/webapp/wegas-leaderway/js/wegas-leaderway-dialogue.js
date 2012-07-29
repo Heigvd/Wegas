@@ -39,7 +39,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.dialogue .response').setHTML();
         },
         createChart: function(resourceDescriptor){
-            var resourceInstance = resourceDescriptor.getInstance(),
+            var i, resourceInstance = resourceDescriptor.getInstance(),
             seriesCollection = [
                 {yDisplayName:'moral'},
                 {yDisplayName:'confiance'}
@@ -101,7 +101,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         readStateMachine: function(cb){
             if(this.currentDialogue == null) return;
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
-            state, rawText, jsonText, texts, splittedText = new Array();
+            state, content, rawContent, texts, splittedText = new Array();
             if(dialogue == null){
                 cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 return;
@@ -110,18 +110,38 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.pictures .questionLayer').hide();
             cb.one('.pictures .answerLayer').hide();
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            rawText = state.get('text');
-            jsonText = JSON.parse(rawText);
-            texts = jsonText.texts[Math.floor(Math.random()*jsonText.texts.length)];
+            rawContent = state.get('text');
+            content = JSON.parse(rawContent);
+            this.displayWidget(dialogue, content);
+            texts = content.texts[Math.floor(Math.random()*content.texts.length)];
             splittedText = texts.split(new RegExp(" ", "g"));
-            cb.one('.speaker-name').setHTML(jsonText.speakerName);
+            cb.one('.speaker-name').setHTML(content.speakerName);
             cb.one('.dialogue .talk').insert('<p></p>');
-            this.renderJSONImages(cb.one('.pictures .backgroundLayer'), jsonText.backgroundImages);
-            this.renderJSONImages(cb.one('.pictures .questionLayer'), jsonText.questionImages);
-            this.renderJSONImages(cb.one('.pictures .answerLayer'), jsonText.answerImages);
+            this.renderJSONImages(cb.one('.pictures .backgroundLayer'), content.backgroundImages);
+            this.renderJSONImages(cb.one('.pictures .questionLayer'), content.questionImages);
+            (content.answerImages)? this.renderJSONImages(cb.one('.pictures .answerLayer'), content.answerImages) :  this.renderJSONImages(cb.one('.pictures .answerLayer'), content.questionImages);
             cb.one('.pictures .backgroundLayer').show();
             cb.one('.pictures .questionLayer').show();
             setTimeout(Y.bind(this.displayText, this, cb, splittedText), 400);
+        },
+        
+        displayWidget: function(dialogue, content){
+            if(content.subpageId && content.targetPageLoaderId){
+                var targetPageLoader = Y.Wegas.PageLoader.find(content.targetPageLoaderId);
+                targetPageLoader.once("widgetChange", function(e) {
+                    if(content.functionAfterTransition){
+                        try{
+                            eval(content.functionAfterTransition);
+                        }
+                        catch(e){
+                            console.log('unable to execute function : '+content.functionAfterTransition)
+                        }
+                    }
+                });
+                if(content.newStateId) dialogue.getInstance().set('currentStateId', content.newStateId);
+                if(this.get('toHide')) Y.all(this.get('toHide')).show();   
+                targetPageLoader.set("pageId", content.subpageId);
+            }
         },
         
         renderJSONImages: function(node, imageObjects){
@@ -200,9 +220,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                  <div class="speaker-name"></div>\n\
                  <div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
                 );
-            if(this.get('toHide')){
-                Y.all(this.get('toHide')).hide();   
-            }
+            if(this.get('toHide')) Y.all(this.get('toHide')).hide();
         },
           
         bindUI: function(){
@@ -230,8 +248,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         
     }, {
         ATTRS : {
-            toHide:{}
-            
+            toHide:{
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            }
         }
     });
 

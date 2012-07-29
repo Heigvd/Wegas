@@ -17,9 +17,11 @@ importPackage(javax.naming);
 function finishCurrentWeek(){
     var gm = self.getGameModel(),
     weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),
+    actions = VariableDescriptorFacade.findByName(gm, 'actions'),
     weekInstance = weekDescriptor.getInstance(self);
     if(weekInstance.getValue() < weekDescriptor.getMaxValue()){
         weekInstance.setValue(weekInstance.getValue()+1);
+        actions.getInstance(self).setValue(10);
         this.checkTasksEnd();
         this.checkAbsencesEnd();
         this.removeDeactivatedAssignements();

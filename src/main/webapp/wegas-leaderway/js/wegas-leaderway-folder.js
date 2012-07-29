@@ -10,13 +10,16 @@ YUI.add('wegas-leaderway-folder', function (Y) {
     Folder = Y.Base.create("wegas-folder", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         tabview: null,
-        tasksChooser: null, 
-        tasksList: null,
         currentResourceDescriptor: null,
         handlers: new Array(),
         
         //*** Particular Methods ***/
-        // .empty create an error, use sethtml() instead
+        setResourceDescriptor: function(resourceDescriptor){
+            this.currentResourceDescriptor = resourceDescriptor;
+            this.syncUI();
+        },
+
+        // .empty create an error, use setHTML() instead
         clearBeforeSync: function(cb){
             cb.one('.folder .name').setHTML();
             cb.one('.folder .surname').setHTML();
@@ -72,8 +75,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     if(resourceDescriptor.get('id') == resourceID) newResource = resourceDescriptor;
                 }
                 if(newResource == null) newResource = listResourcesDescriptor.get('items')[0];
-                this.currentResourceDescriptor = newResource;
-                this.syncUI();  
+                this.setResourceDescriptor(newResource);
             }, '.resourceSelector', this));
         },
         
@@ -207,7 +209,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                             taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.get('skillset')[key]+')</li>');
                         }
                         occupation.push('<div class="task">');
-                        occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+occupationObject.taskDescriptor.name+'</span></div>');
+                        occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+occupationObject.taskDescriptor.get('name')+'</span></div>');
                         occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>'+taskSkills.join("")+'</ul></div>');
                         occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.get('properties').salary+'</span></div>');
                         occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskInstance.get('duration')+'</span></div>');
@@ -252,16 +254,20 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         
         bindActions: function(cb){
             this.handlers.push(cb.one('.actions').delegate('click', function (e) {
-                if(this.tasksChooser != null) this.tasksChooser.show();
+                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.switchToPickingMode(this.resourceDescriptor, this.folderPageId);
+                },{resourceDescriptor:this.currentResourceDescriptor, folderPageId :  this.get('folderPageId')});
+                targetPageLoader.set("pageId", this.get('taskListPageId'));
             }, '.giveTask', this));
+            
             this.handlers.push(cb.one('.actions').delegate('click', function (e) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue(this.resourceDescriptor.getInstance().get('properties').dialogue);
                 },{resourceDescriptor:this.currentResourceDescriptor});
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
-
-            }, '.speak', this));            
+            }, '.speak', this));  
         },
         
         syncAction: function(cb){
@@ -282,50 +288,6 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var selectedRowInformation = this.tasksChooser.get(CONTENTBOX).one('.yui3-widget-ft .selectedTask');
             selectedRowInformation.setHTML();
             selectedRowInformation.insert("Mandat sélectionné : "+eventContainTask.taskDescriptor.get('name'));
-        },
-        
-        assignTask: function(resourceDescriptor, taskDescriptor){
-            var feedbackNode = this.get(CONTENTBOX).one('.actions .feedback');
-            if(taskDescriptor != null && resourceDescriptor != null){
-                console.log(resourceDescriptor.get('id')+","+taskDescriptor.get('id'))
-                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-                    headers:{
-                        'Content-Type': 'application/json; charset=utf-8',
-                        'Managed-Mode':'true'
-                        
-                    },
-                    cfg: {
-                        method: "POST",
-                        data: Y.JSON.stringify({
-                            "@class": "Script",
-                            "language": "JavaScript",
-                            "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.get('id')+","+taskDescriptor.get('id')+");"
-                        }),
-                        on: { //not work, do the both :-(
-                            success: this.assignTaskResult(true, feedbackNode),
-                            failure: this.assignTaskResult(false, feedbackNode)
-                        }
-                    }
-                });
-            }
-            this.syncUI();
-        },
-        
-        assignTaskResult: function(success, feedbackNode){
-            if(success){
-                feedbackNode.addClass('green');
-                feedbackNode.insert("Le mandat à été délégué !");
-            }
-            else{
-                feedbackNode.addClass('red');
-                feedbackNode.insert("Le mandat n'a pas pu être délégué.");
-            } 
-            setTimeout(function(){
-                feedbackNode.setHTML();
-                feedbackNode.removeClass('green');
-                feedbackNode.removeClass('red');
-            }, 5000);
         },
 
         // *** Lifecycle Methods *** //
@@ -368,34 +330,6 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     </div>'
                 }]
             });
-            this.tasksChooser = new Y.Panel({
-                contentBox : Y.Node.create('<div class="tasksChooser"></div>'),
-                bodyContent: '<div class="tasksChooser-tasklist"></div>',
-                width      : 950,
-                zIndex    : 100,
-                centered   : true,
-                modal      : true,
-                render     : cb,
-                visible    : false,
-                buttons    : {
-                    footer: [
-                    {
-                        name  : 'cancel',
-                        label : 'Annuler',
-                        action: 'onCancel'
-                    },
-                    {
-                        name     : 'proceed',
-                        label    : 'Assigner le mandat',
-                        action   : 'onOK'
-                    }
-                    ]
-                }
-            });
-            this.tasksChooser.get(CONTENTBOX).one('.yui3-widget-ft span').insert('<div class="selectedTask"></div>', 'before')
-            this.tasksList = new Y.Wegas.TaskList({
-                pickingMode:true
-            });
             cb.insert('<div class="menuFolder"><div class="listResources"></div></div>');
             this.tabview.render(cb);
         },
@@ -405,23 +339,12 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
             this.handlers.push(this.tabview.after('rendered', this.bindActions(cb), this));
-            this.handlers.push(this.tasksList.after('rowSelected', this.setTextSelectedTask, this));
-            this.tasksChooser.onOK = Y.bind(function(e){
-                var taskDescriptor;
-                taskDescriptor = this.tasksList.getSelectedTaskDescriptor();
-                this.tasksChooser.hide();
-                this.assignTask(this.currentResourceDescriptor, taskDescriptor);
-            }, this);
-            this.tasksChooser.onCancel = function(e){
-                this.hide();
-            }
         },
           
         syncUI: function() {
             var cb = this.get(CONTENTBOX),
             listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
             if(listResourcesDescriptor == null) return;
-            if(!this.tasksList.rendered) this.tasksList.render(".tasksChooser-tasklist");
             if(this.currentResourceDescriptor == null) this.currentResourceDescriptor = listResourcesDescriptor.get('items')[0];
             this.clearBeforeSync(cb);
             this.makeResourcesSelector(cb, listResourcesDescriptor);
@@ -434,16 +357,36 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         destroy: function(){
             var i;
             this.tabview.destroy();
-            this.tasksChooser.destroy();
-            this.tasksList.destroy();
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
             }
         }
     }, {
         ATTRS : {
-            dialoguePageId: {},
-            targetPageLoaderId: {}
+            folderPageId: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            taskListPageId: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            dialoguePageId: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            targetPageLoaderId: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            }
         }
     });
 
