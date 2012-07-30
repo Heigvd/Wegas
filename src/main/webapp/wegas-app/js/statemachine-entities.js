@@ -119,10 +119,11 @@ Y.add("statemachine-entities", function(Y){
                         }
                     },
                     currentStateId: {
-                        type: "string",
+                        type: "number",
                         optional: true,
                         _inputex: {
-                            label: 'Initial state id'
+                            label: 'Initial state id',
+                            value: 1
                         }
                     }
                 }

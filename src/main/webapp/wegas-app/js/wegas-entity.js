@@ -50,11 +50,11 @@ YUI.add('wegas-entity', function (Y) {
             delete ret["initialized"];                                          // Remove values coming from Y.Base implementation
             delete ret["destroyed"];
 
-            for (k in ret) {
-                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
-                    ret[k] = ret[k].toJSON();
-                }
-            }
+            //            for (k in ret) {
+            //                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
+            //                    ret[k] = ret[k].toJSON();
+            //                }
+            //                }
             return ret;                                                         // Return a copy of this's fields.
         },
         /**
@@ -76,6 +76,34 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
             return e;
+        },
+        /**
+         * Create a new JSON Object from this entity, filtered out by mask
+         * @method JSONclone
+         * @param {Array} mask
+         * @return {Object} a filtered out clone
+         */
+        JSONclone: function(mask){
+            var k, i, e = JSON.parse(JSON.stringify(this));
+            mask = Y.Lang.isArray(mask) ? mask : [];
+            mask.push("initialized", "destroyed");
+            return Y.clone(e, true, function(value, key, output, input){
+                if(mask.indexOf(key) != -1){
+                    return false;
+                }else{
+                    return true;
+                }
+            });
+
+        },
+        /**
+         * Create a new Entity from this entity
+         *
+         * @method copy
+         * @return {Entity} a usable copy
+         */
+        copy: function (){
+            return Y.Wegas.persistence.Entity.revive(this.JSONclone(["id","variableInstances"]));;
         },
         /**
          * Returns the form configuration associated to this object, to be used a an inputex object.
@@ -453,6 +481,11 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.VariableDescriptor = Y.Base.create("VariableDescriptor", Y.Wegas.persistence.Entity, [], {
         getInstance: function () {
             return this.get("scope").getInstance();
+        },
+        copy: function(){
+            var e = Y.Wegas.persistence.Entity.prototype.copy.call(this);
+            e.set("name", e.get("name") + "_copy");
+            return e;
         }
     }, {
         ATTRS: {

@@ -29,7 +29,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
 
-        CONTENT_TEMPLATE: null,
+        CONTENT_TEMPLATE: "<div></div>",
         panel: null,
         header: null,
         jpLoaded :false,
@@ -377,7 +377,21 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.events.deleteState = this.get(CONTENT_BOX).delegate("click", function (e){
                 this.deleteSelf();
             },".state-delete", this);
-            jp.draggable(this.get(BOUNDING_BOX));
+            jp.draggable(this.get(BOUNDING_BOX), {
+                plugins:[{
+                    fn:Y.Plugin.DDConstrained,
+                    cfg:{
+                        constrain:this.get("parent").get(CONTENT_BOX),
+                        gutter: "30 10 10 10"
+                    }
+                }/*,
+                {
+                    fn:Y.Plugin.DDNodeScroll,
+                    cfg:{
+                        node:this.get("parent").get(BOUNDING_BOX).get("parentNode")
+                    }
+                }*/]
+            });
             jp.makeTarget(this.get(BOUNDING_BOX), {
                 dropOptions:{
                     hoverClass:"droppable-state"
