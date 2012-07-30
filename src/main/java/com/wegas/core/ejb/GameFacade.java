@@ -55,7 +55,7 @@ public class GameFacade extends AbstractFacadeImpl<Game>{
      * @return
      * @throws NoResultException
      */
-    public Game getGameByToken(String token) throws NoResultException {
+    public Game findByToken(String token) throws NoResultException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<Game> game = cq.from(Game.class);
@@ -83,5 +83,4 @@ public class GameFacade extends AbstractFacadeImpl<Game>{
     public EntityManager getEntityManager() {
         return em;
     }
-
 }

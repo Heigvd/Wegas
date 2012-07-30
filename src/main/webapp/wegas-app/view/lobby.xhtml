@@ -1,67 +1,108 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <ui:composition template="template/page-default.xhtml">
-        <ui:define name="title">
-            <h:outputText value="#{wegasAppBundle.LobbyPage_Title}"></h:outputText>
-        </ui:define>
+    <ui:composition template="/wegas-app/view/template/app-default.xhtml">
+
         <ui:define name="body">
-
             <style type="text/css">
-                .yui-g {
-                    width:300px;
-                    height:300px;
-                    display:inline-block;
-                    float:left;
-                    padding:10px;
-                    margin :10px;
-                    border: 1px outset gray;
-                    font-family: Arial, Helvetica;
+                .wegas-systemmessage {
+                    margin: 0;
+                    margin-bottom: 25px;
+                }
+                .wegas-tab-toolbar {
+                    box-shadow: none;
+                    border: none;
+                }
+                .wegas-joingamewidget {
+                    padding: 20px;
+                }
+                .wegas-joingamewidget button {
+                    margin: 5px 0 25px 206px;
+                }
+                .wegas-joingamewidget .inputEx-label {
+                    width: 200px;
                 }
             </style>
+            <script type="text/javascript">
+                var Y = YUI().use("wegas-app", "wegas-editor", function (Y) {
+                    var cfg = {
+                        base : "/Wegas/",
+                        layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
+                        lang : 'en-US',
+                        debug : true,
+                        dataSources: {
+                            "GameModel": {
+                                source: "rest/GameModel",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                // resultFields: ["name", "id", "@class", "errors"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "GameModelDataSourceREST"
+                                    }
+                                ]
+                            },
+                            "Game": {
+                                source: "rest/GameModel/1/Game",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                // resultFields: ["name", "id", "@class", "errors"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "GameDataSourceREST"
+                                    }
+                                ]
+                            },
+                            "RegisteredGames": {
+                                source: "rest/RegisteredGames",
+                                initialRequest: "/#{lobbyController.currentUser.id}",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                // resultFields: ["name", "id", "@class", "errors"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "GameDataSourceREST"
+                                    }
+                                ]
+                            }
+                        }
+                    };
 
-            <div class="yui-g">
+                    Y.Wegas.persistence.Game.EDITMENU.splice(0, 0, {            // We allow the player to open its pages with the widget
+                        type: "Button",
+                        label: "Open in editor",
+                        plugins: [{
+                                fn: "OpenGameAction",
+                                cfg: {
+                                    editorUrl: "wegas-app/view/play.html?"
+                                }
+                            }]
+                    });
 
-                <h1>#{wegasAppBundle.LobbyPage_Games_Title}</h1>
-                <h:form>
-                    <ui:repeat value="#{lobbyController.players}" var="player" >
-                        #{player.team.game.name}
-
-                        <h:link value="#{wegasAppBundle.LobbyPage_Games_ResumeLink}" outcome="playGame"  >
-                            <f:param name="id" value="#{player.id}" />
-                        </h:link>
-                        <br />
-                    </ui:repeat>
-                </h:form>
-
-                <h:outputText value="#{wegasAppBundle.LobbyPage_Games_Empty}" rendered="#{empty lobbyController.players}"/>
-
-            </div>
-            <div class="yui-g">
-
-                <h1>#{wegasAppBundle.LobbyPage_JoinGame_Title}</h1>
-
-                #{wegasAppBundle.LobbyPage_JoinGame_Text}
-
-                <br />
-
-                <h:panelGroup id="messagePanel" layout="block">
-                    <br />
-                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
-                    <br />
-                </h:panelGroup>
-
-                <h:form>
-                    <h:inputText id="gameToken" value="#{lobbyController.gameToken}" title="#{wegasAppBundle.LobbyPage_JoinGame_TokenTitle}" />
-                    <h:commandButton action="#{lobbyController.joinGame}" value="#{wegasAppBundle.LobbyPage_JoinGame_Link}"/>
-                </h:form>
-            </div>
+                    Y.on('domready', function() {                               // When dom is ready,
+                        var editor = new Y.Wegas.Editor(cfg);                   // Launch the editor as soon as Dom is ready
+                        editor.render();
+                    });
+                });
+            </script>
         </ui:define>
-
     </ui:composition>
-
 </html>

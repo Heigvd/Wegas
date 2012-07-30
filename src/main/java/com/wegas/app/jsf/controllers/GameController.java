@@ -12,11 +12,13 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.UserFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -66,7 +68,12 @@ public class GameController implements Serializable {
     /**
      *
      */
-    private Player currentPlayer;
+    @EJB
+    private UserFacade userFacade;
+    /**
+     *
+     */
+    private Player currentPlayer = null;
 
     /**
      *
@@ -77,15 +84,23 @@ public class GameController implements Serializable {
         final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
             currentPlayer = playerFacade.find(this.getPlayerId());
-        } else if (this.gameModelId != null) {                                       // If we only have a gameModel id, we select the 1st player of the 1st team of the 1st game
+        } else if (this.gameModelId != null) {                                  // If we only have a gameModel id, we select the 1st player of the 1st team of the 1st game
             final GameModel gameModel = gameModelFacade.find(this.gameModelId);
             currentPlayer = gameModel.getGames().get(0).getTeams().get(0).getPlayers().get(0);
-        } else if (this.gameId != null) {                                       // If we only have a gameModel id, we select the 1st player of the 1st team of the 1st game
-            final Game game = gameFacade.find(this.gameId);
-            currentPlayer = game.getTeams().get(0).getPlayers().get(0);
+        } else if (this.gameId != null) {                                       // If we only have a gameModel id,
+            try {
+                currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,// we try to check if current shiro user is registered to the target game
+                        userFacade.getCurrentUser().getId());
+            }
+            catch (Exception e) {                                             // If we still have nothing
+                List<Player> players = playerFacade.findPlayersByGameId(this.gameId);
+                if (!players.isEmpty()) {
+                    currentPlayer = players.get(0);                             // we take the first player we find
+                }
+            }
         }
-        if (currentPlayer == null) {                                            // If no player could be found, we redirect to the lobby
-            externalContext.dispatch("/wegas-editor/view/lobby.xhtml");
+        if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
+            externalContext.dispatch("/wegas-app/view/error/gameerror.xhtml");
         }
     }
 

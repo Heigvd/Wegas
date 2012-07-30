@@ -30,6 +30,9 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
 @Inheritance(strategy = InheritanceType.JOINED)
+@NamedQueries({
+    @NamedQuery(name = "findTeamByToken", query = "SELECT team FROM Team team WHERE team.token =  :token")
+})
 @XmlType(name = "Team")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Team extends AbstractEntity {
@@ -46,6 +49,11 @@ public class Team extends AbstractEntity {
      */
     @NotNull
     private String name;
+    /**
+     *
+     */
+    @NotNull
+    private String token;
     /**
      *
      */
@@ -76,6 +84,14 @@ public class Team extends AbstractEntity {
     public void merge(AbstractEntity a) {
         Team t = (Team) a;
         this.setName(t.getName());
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if (this.getToken() == null) {
+            this.setToken(this.getName().replace(" ", "-"));
+        }
     }
 
     /**
@@ -137,7 +153,6 @@ public class Team extends AbstractEntity {
         return id;
     }
 
-
     /**
      *
      * @return
@@ -159,5 +174,19 @@ public class Team extends AbstractEntity {
      */
     public int getGameId() {
         return gameId;
+    }
+
+    /**
+     * @return the token
+     */
+    public String getToken() {
+        return token;
+    }
+
+    /**
+     * @param token the token to set
+     */
+    public void setToken(String token) {
+        this.token = token;
     }
 }

@@ -18,6 +18,16 @@ YUI.add('wegas-inputex', function(Y) {
     var inputEx = Y.inputEx,
     lang = Y.Lang;
 
+    /**
+     *  @hack So we can easily change classs on inputex fields
+     */
+    Y.inputEx.Field.prototype.addClassName = function ( className ) {
+        Y.one( this.divEl ).addClass( className );
+    };
+    Y.inputEx.Field.prototype.removeClassName = function ( className ) {
+        Y.one( this.divEl ).removeClass( className );
+    };
+
     YUI_config.groups.inputex.modulesByType.html = "wegas-inputex-rte";         // @fix so inputex will use our own widgets when using f = Y.inpuex(cfg)
     YUI_config.groups.inputex.modulesByType.hashlist = "wegas-inputex-hashlist";
     /**
@@ -121,8 +131,8 @@ YUI.add('wegas-inputex', function(Y) {
                 modules = modules.concat( walk(cfg)  );
             }
             return modules;
-        // TODO: list elementType
-        // TODO: inplaceedit  editorField
+            // TODO: list elementType
+            // TODO: inplaceedit  editorField
         }
         var ret =  walk(inputexDef);
         return ret;
@@ -137,10 +147,10 @@ YUI.add('wegas-inputex', function(Y) {
     /*
      * @hack prevents KeyValueField to return the selector field
      */
-//    Y.inputEx.KeyValueField.prototype.setValue = function (val, e) {
-//        Y.inputEx.KeyValueField.superclass.setValue.apply(this, arguments)
-//        this.inputs[1].setValue(val);
-//    };
+    //    Y.inputEx.KeyValueField.prototype.setValue = function (val, e) {
+    //        Y.inputEx.KeyValueField.superclass.setValue.apply(this, arguments)
+    //        this.inputs[1].setValue(val);
+    //    };
     /*
      * @hack Automatically add the "optional" message when necessary
      */
@@ -157,8 +167,8 @@ YUI.add('wegas-inputex', function(Y) {
         }
         this.options.readonly = options.readonly;
         this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
-        inputEx.browserAutocomplete :
-        (options.autocomplete === false || options.autocomplete === "off") ? false : true;
+            inputEx.browserAutocomplete :
+            (options.autocomplete === false || options.autocomplete === "off") ? false : true;
         this.options.trim = (options.trim === true) ? true : false;
     };
 });

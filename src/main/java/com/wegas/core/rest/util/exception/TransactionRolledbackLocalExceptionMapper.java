@@ -33,7 +33,6 @@ public class TransactionRolledbackLocalExceptionMapper extends AbstractException
      */
     @Override
     public Response toResponse(TransactionRolledbackLocalException exception) {
-        logger.error("Caught an error");
         return processException(exception.getCause());
     }
 }

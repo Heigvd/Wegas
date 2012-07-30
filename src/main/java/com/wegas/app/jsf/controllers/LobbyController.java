@@ -131,7 +131,7 @@ public class LobbyController implements Serializable {
      */
     public String joinGame() {
         try {
-            this.currentGame = gameFacade.getGameByToken(this.gameToken);
+            this.currentGame = gameFacade.findByToken(this.gameToken);
             return "gameJoined";
         }
         catch (EJBException e) {

@@ -33,7 +33,6 @@ public class ScriptExceptionMapper extends AbstractExceptionMapper
      */
     @Override
     public Response toResponse(ScriptException exception) {
-        logger.error("Caught an error");
         return processException(exception);
     }
 }

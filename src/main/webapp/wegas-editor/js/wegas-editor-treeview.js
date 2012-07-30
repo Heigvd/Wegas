@@ -348,4 +348,31 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
 
     Y.namespace( 'Wegas' ).EditorTreeView = EditorTreeView;
+
+    var LobbyTreeView = Y.Base.create("wegas-editor-treeview", Y.Wegas.EditorTreeView, [], {
+
+        genTreeViewElements: function (elements) {
+            var ret = [], i, el;
+
+            for (i in elements) {
+                if (elements.hasOwnProperty(i)) {
+                    el = elements[i];
+
+                    switch ( el.get( '@class' )) {
+                        case 'Game':
+                            ret.push({
+                                label: el.get("name"),
+                                data: el,
+                                iconCSS: 'wegas-icon-game'
+                            });
+                            break;
+
+                    }
+                }
+            }
+            return ret;
+        }
+    });
+
+    Y.namespace( 'Wegas' ).LobbyTreeView = LobbyTreeView;
 });

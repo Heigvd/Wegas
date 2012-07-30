@@ -33,7 +33,6 @@ public class ServletExceptionMapper extends AbstractExceptionMapper
      */
     @Override
     public Response toResponse(ServletException exception) {
-        logger.error("Caught an error");
         return processException(exception.getCause());
     }
 }

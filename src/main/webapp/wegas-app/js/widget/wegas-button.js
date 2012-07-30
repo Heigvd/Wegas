@@ -150,10 +150,10 @@ YUI.add('wegas-button', function (Y) {
             name = "undefined";
 
             if (cPlayer) {
-                name = cPlayer.name;
+                name = cPlayer.get( "name" );
             }
             if (cTeam) {
-                name = cTeam.name + ":" + name;
+                name = cTeam.get( "name" ) + ":" + name;
             }
 
             this.get(CONTENTBOX).setContent('[' + name + '] <a href="' + Y.Wegas.app.get('base') + 'wegas-app/view/logout.html">logout</a>');

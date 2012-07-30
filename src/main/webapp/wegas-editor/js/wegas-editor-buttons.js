@@ -24,11 +24,9 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
      * @param {Object} cfg The button config object
      */
     var SelectPlayerButton= Y.Base.create( "button", Y.Wegas.Button, [], {
-        //        renderUI: function () {
-        //        },
+
         bindUI: function () {
             SelectPlayerButton.superclass.bindUI.apply( this, arguments );
-
             this.plug(Y.Plugin.WidgetMenu);
 
             this.menus.on( "button:click", function ( e ) {
@@ -40,14 +38,12 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
         },
 
         syncUI: function() {
-            SelectPlayerButton.superclass.syncUI.apply( this, arguments );
-
-            var j, k, cTeam, cPlayer, menuItems = [],
+            SelectPlayerButton.superclass.bindUI.apply( this, arguments );
+            var j, k, cTeam, menuItems = [],
             cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame(),
             cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer();
 
             this.set( "label", "Current player: " + cPlayer.get( "name" ) );      // Update the label
-
 
             for (j = 0; j < cGame.get("teams").length; j = j + 1) {
                 cTeam = cGame.get("teams")[j];
@@ -76,4 +72,60 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
     });
 
     Y.namespace("Wegas").SelectPlayerButton = SelectPlayerButton;
+
+       /**
+     * @class SelectGameButton
+     * @constructor
+     * @extends Widget
+     * @param {Object} cfg The button config object
+     */
+    var SelectGameButton= Y.Base.create( "button", Y.Wegas.Button, [], {
+
+        bindUI: function () {
+            SelectGameButton.superclass.bindUI.apply( this, arguments );
+            this.plug(Y.Plugin.WidgetMenu);
+
+            this.menus.on( "button:click", function ( e ) {
+                Y.Wegas.app.set( 'currentPlayer', e.target.get("entity").get( "id" ) );
+            });
+
+            Y.Wegas.app.dataSources.Game.after( "response", this.syncUI, this );
+        },
+
+        syncUI: function() {
+            SelectGameButton.superclass.syncUI.apply( this, arguments );
+
+            var j, k, menuItems = [],
+            cGame = Y.Wegas.app.dataSources.Game.rest.getCurrentGame();
+
+            this.set( "label", "Current game: " + cGame.get( "name" ) );      // Update the label
+
+
+//            for (j = 0; j < cGame.get("teams").length; j = j + 1) {
+//                cTeam = cGame.get("teams")[j];
+//
+//                // if ( cTeam.get("players").length == 0 ) {
+//                //    continue;
+//                // }
+//
+//                menuItems.push({
+//                    "type": "Text",
+//                    "content": "<b>" + cTeam.get("name") + "</b>"
+//                });
+//
+//                for (k = 0; k < cTeam.get("players").length; k = k + 1) {
+//                    cPlayer = cTeam.get("players")[k];
+//                    menuItems.push({
+//                        type: "Button",
+//                        "label": cPlayer.get("name"),
+//                        entity: cPlayer
+//                    });
+//                }
+//            }
+//
+//            this.menus.set("children", menuItems);
+        }
+    });
+
+    Y.namespace("Wegas").SelectGameButton = SelectGameButton;
 });

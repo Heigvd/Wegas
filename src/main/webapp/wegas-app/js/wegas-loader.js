@@ -112,6 +112,11 @@ YUI().use(function (Y) {
                         requires: ['wegas-widget', 'wegas-inputex'],
                         ix_provides: "FormWidget"
                     },
+                    'wegas-joingamewidget': {
+                        path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
+                        requires: ['wegas-widget', 'inputex-select', 'inputex-string', 'button'],
+                        ix_provides: "JoinGameWidget"
+                    },
 
                     /** Inputex Fields **/
                     'wegas-inputex': {
@@ -184,7 +189,7 @@ YUI().use(function (Y) {
                     'wegas-editor-treeview': {
                         path: 'wegas-editor/js/wegas-editor-treeview-min.js',
                         requires: [ 'wegas-widget',  "treeview", "widgetmenu" ],
-                        ix_provides: 'EditorTreeView'
+                        ix_provides: [ 'EditorTreeView', "LobbyTreeView" ]
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
@@ -252,9 +257,9 @@ YUI().use(function (Y) {
                     },
                     /**Leaderway**/
                     'wegas-leaderway': {
-                       path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
                         requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']//,
-                        //ix_provides: ""
+                    //ix_provides: ""
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
@@ -378,7 +383,7 @@ YUI().use(function (Y) {
     Y.mix(YUI_config.groups, CONFIG.groups);
 
     function loadModules(group) {
-        var modules = group.modules,
+        var i, modules = group.modules,
         moduleName,
         allModules = [],
         modulesByType = {};
@@ -387,7 +392,14 @@ YUI().use(function (Y) {
                 allModules.push(moduleName);                                    // Build a list of all modules
 
                 if (modules[moduleName].ix_provides) {                          // Build a reverse index on which module provides what type
-                    modulesByType[modules[moduleName].ix_provides] = moduleName;
+
+                    if (Y.Lang.isArray(modules[moduleName].ix_provides)) {
+                        for (var i = 0; i < modules[moduleName].ix_provides.length; i = i + 1) {
+                            modulesByType[modules[moduleName].ix_provides[i]] = moduleName;
+                        }
+                    } else {
+                        modulesByType[modules[moduleName].ix_provides] = moduleName;
+                    }
                 }
 
             }
