@@ -56,7 +56,7 @@ YUI.add('wegas-editor-action', function (Y) {
     };
 
     Y.mix(EditEntityAction, {
-        NS: "wegas",
+        NS: "editentity",
         NAME: "EditEntityAction"
     });
 

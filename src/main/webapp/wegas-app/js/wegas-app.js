@@ -54,15 +54,9 @@ YUI.add('wegas-app', function (Y) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
                     dataSource = new Y.Wegas.DataSource(dataSources[k]);
                     this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = dataSource;
-
-                    if (dataSource.get("initialRequest") !== undefined) {
-                        sender = dataSource.rest ? dataSource.rest : dataSource;
-                        dataSource.once("response", this.onInitialRequest, this);
-                        sender.sendRequest({
-                            request: dataSource.get("initialRequest")
-                        });
-
-                        this.requestCounter += 1;
+                    dataSource.once("response", this.onInitialRequest, this);
+                    if ( Y.Lang.isNumber( dataSource.sendInitialRequest() ) ) {           // Send an initial request
+                        this.requestCounter += 1;                               // If the request was sent, we update the counter, which is used n the onInitialRequest() callback
                     }
                 }
             }
@@ -130,6 +124,7 @@ YUI.add('wegas-app', function (Y) {
                         Y.Wegas.Widget.use(cfg, Y.bind( function (cfg) {        // Load the subwidget dependencies
                             var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
                             widget.render();
+                            this.fire("render");                                   // Fire a render event for some eventual post processing
                         }, this, cfg));
 
                     //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
@@ -141,6 +136,7 @@ YUI.add('wegas-app', function (Y) {
                     //} catch (renderException) {
                     //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
                     //}
+
                     }
                 }
             });

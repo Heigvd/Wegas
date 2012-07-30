@@ -100,7 +100,7 @@ public class GameModelFacadeTest {
         Game g = new Game(NAME, TOKEN);
         gf.create(gameModel.getId(), g);
 
-        Game g2 = gf.getGameByToken(TOKEN);
+        Game g2 = gf.findByToken(TOKEN);
         Assert.assertEquals(NAME, g2.getName());
 
         Team t = new Team();

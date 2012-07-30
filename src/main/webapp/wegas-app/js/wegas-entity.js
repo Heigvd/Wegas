@@ -367,6 +367,9 @@ YUI.add('wegas-entity', function (Y) {
      */
     Y.Wegas.persistence.Team = Y.Base.create("Team", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
+            '@class': {
+                value: "Team"
+            },
             name: {
                 type: "string"
             },

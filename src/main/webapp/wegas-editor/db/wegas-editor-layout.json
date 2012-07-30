@@ -10,8 +10,10 @@
             "content": "Editor",
             "cssClass": "wegas-editor-title"
         }, {
+            "type": "SelectGameButton"
+        }, {
             "type": "SelectPlayerButton"
-        },{
+        }, {
             "type": "Button",
             "label": "Developer",
             "plugins": [{

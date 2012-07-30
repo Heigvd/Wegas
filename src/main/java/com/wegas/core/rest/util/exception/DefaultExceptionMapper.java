@@ -9,7 +9,7 @@
  */
 package com.wegas.core.rest.util.exception;
 
-import javax.transaction.RollbackException;
+import javax.ejb.EJBException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Provider
-public class RollbackExceptionMapper extends AbstractExceptionMapper
-        implements ExceptionMapper<RollbackException> {
+public class DefaultExceptionMapper extends AbstractExceptionMapper
+        implements ExceptionMapper<Exception> {
 
-    final private Logger logger = LoggerFactory.getLogger(RollbackExceptionMapper.class);
+    final private Logger logger = LoggerFactory.getLogger(DefaultExceptionMapper.class);
 
     /**
      *
@@ -32,7 +32,7 @@ public class RollbackExceptionMapper extends AbstractExceptionMapper
      * @return
      */
     @Override
-    public Response toResponse(RollbackException exception) {
-        return processException(exception.getCause());
+    public Response toResponse(Exception exception) {
+        return processException(exception);
     }
 }

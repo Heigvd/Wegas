@@ -18,6 +18,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -25,7 +26,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @LocalBean
-public class TeamFacade extends AbstractFacadeImpl<Team>  {
+public class TeamFacade extends AbstractFacadeImpl<Team> {
 
     /**
      *
@@ -56,23 +57,32 @@ public class TeamFacade extends AbstractFacadeImpl<Team>  {
         g.getGameModel().propagateDefaultVariableInstance(false);
     }
 
+    public Team findByToken(String token) {
+        Query findByRootGameModelId = em.createNamedQuery("findTeamByToken");
+        findByRootGameModelId.setParameter("token", token);
+        return (Team) findByRootGameModelId.getSingleResult();
+    }
+
     /**
      *
      * @param teamId
      * @param userId
      * @return
      */
-    public Player joinTeam(Long teamId, Long userId) {
+    public Player joinTeam(Team team, User user) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        User u = userFacade.find(userId);
-        Team t = this.find(teamId);
         Player p = new Player();
-        p.setUser(u);
-        t.addPlayer(p);
+        p.setUser(user);
+        team.addPlayer(p);
         em.flush();
         em.refresh(p);
-        t.getGame().getGameModel().propagateDefaultVariableInstance(false);
+        team.getGame().getGameModel().propagateDefaultVariableInstance(false);
         return p;
+    }
+
+    public Player joinTeam(Long teamId, Long userId) {
+        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
+        return this.joinTeam(this.find(teamId), userFacade.find(userId));
     }
 
     /**

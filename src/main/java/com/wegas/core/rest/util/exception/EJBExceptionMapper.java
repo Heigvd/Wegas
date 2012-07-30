@@ -33,7 +33,6 @@ public class EJBExceptionMapper extends AbstractExceptionMapper
      */
     @Override
     public Response toResponse(EJBException exception) {
-        logger.error("Caught an error");
         return processException(exception.getCause());
     }
 }

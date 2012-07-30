@@ -13,6 +13,9 @@
 */
 
 /* InputEx Styles */
+div.inputEx-hidden {
+    display: none;
+}
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }

@@ -28,7 +28,10 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @Entity
 //@Table(uniqueConstraints =
 //@UniqueConstraint(columnNames = {"name"}))
-@Inheritance(strategy = InheritanceType.JOINED)
+@NamedQueries({
+    @NamedQuery(name = "findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
+    @NamedQuery(name = "findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId")
+})
 @XmlRootElement
 @XmlType(name = "Player", propOrder = {"@class", "id", "name"})
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -58,7 +61,7 @@ public class Player extends AbstractEntity {
      */
     @ManyToOne(cascade = {CascadeType.PERSIST})
     @XmlTransient
-   // @XmlInverseReference(mappedBy = "players")
+    // @XmlInverseReference(mappedBy = "players")
     @JsonBackReference(value = "player-user")
     private User user;
     /**
@@ -67,7 +70,7 @@ public class Player extends AbstractEntity {
     @ManyToOne
     @NotNull
     @XmlTransient
-   // @XmlInverseReference(mappedBy = "players")
+    // @XmlInverseReference(mappedBy = "players")
     @JsonBackReference(value = "player-team")
     @JoinColumn(name = "parentteam_id")
     private Team team;
@@ -105,7 +108,6 @@ public class Player extends AbstractEntity {
     public Long getId() {
         return id;
     }
-
 
     /**
      * @return the user
@@ -169,6 +171,7 @@ public class Player extends AbstractEntity {
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
     }
+
     /**
      *
      * @return

@@ -26,12 +26,21 @@ YUI.add('wegas-datasourcerest', function (Y) {
     };
 
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
-
-        }, {
-            ATTRS: {
-                initialRequest: {}
+        sendInitialRequest: function () {
+            if ( this.get( "initialRequest" ) !== undefined ) {                 // Use this condition so we allow empty strin e.g. ""
+                var sender = ( this.rest ) ? this.rest : this;
+                return sender.sendRequest({
+                    request: this.get( "initialRequest" )
+                });
+            } else {
+                return null;
             }
-        });
+        }
+    }, {
+        ATTRS: {
+            initialRequest: {}
+        }
+    });
 
     /**
      *  @class DataSourceREST
@@ -69,13 +78,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
             requestCfg.cfg = requestCfg.cfg || {};
             requestCfg.cfg.headers =  requestCfg.cfg.headers || DEFAULTHEADERS;
 
-            this.get('host').sendRequest(requestCfg);
+            return this.get('host').sendRequest(requestCfg);
         },
 
         /**
-        * @method beforeResponse
-        * @private
-        */
+         * @method beforeResponse
+         * @private
+         */
         beforeResponse: function (e) {
             var evt, i,
             response = Y.Wegas.persistence.Entity.revive(e.response.results);   // Transform javascript object litterals to Y.Wegas.persistence.Entity's
@@ -89,7 +98,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 return;
             }
 
-            if (Lang.isArray(response)) {                               // Non-managed response: we apply the operation for each object in the returned array
+            if (Lang.isArray(response)) {                                       // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < response.length; i += 1) {
                     this.updateCache(e.cfg.method, response[i]);
                 }
@@ -139,7 +148,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             if (ret === null) {
                 this.addToCache(entity);
-            };
+            }
         },
 
         addToCache: function (entity) {
@@ -244,10 +253,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *
          */
         testEntity: function(entity, key, needle) {
-            var value = ( entity.get ) ? entity.get(key) : entity[key],          // Normalize item and needle values
-            needleValue = (needle.get) ? needle.get(key) :  (typeof needle === 'object') ? needle[key] : needle;
-
-            return value === needleValue;
+            return this.get("testFn")( entity, key, needle );
         },
 
         generateRequest: function (data) {
@@ -303,6 +309,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
         getCachedVariableById: function (id) {
             Y.log("Function getCachedVariableById() is deprecated, use findById(key, val)");
             return this.findById(id);                     // Cast to number
+        }
+    }, {
+        ATTRS: {
+            testFn : {
+                value: function(entity, key, needle) {
+                    var value = ( entity.get ) ? entity.get(key) : entity[key], // Normalize item and needle values
+                    needleValue = (needle.get) ? needle.get(key) :  (typeof needle === 'object') ? needle[key] : needle;
+
+                    return value === needleValue;
+                }
+            }
         }
     });
 
@@ -479,8 +496,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.find("id", playerId * 1);
         },
         /**
-         *
-         */
+             *
+             */
         getGameByTeamId: function (teamId) {
             var i, j, data = this.getCache();
 
@@ -496,8 +513,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return null;
         },
         /**
-         *
-         */
+             *
+             */
         getTeamByPlayerId: function (playerId) {
             var i, j, k, cTeam, data = getCache();
             for (i = 0; i < data.length; i += 1) {
@@ -517,8 +534,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
 
     /**
-     * FIXME We redefine this so we can use a "." selector and a "@..." field name
-     */
+         * FIXME We redefine this so we can use a "." selector and a "@..." field name
+         */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],

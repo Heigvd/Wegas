@@ -12,7 +12,6 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.user.User;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableDescriptor_;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;

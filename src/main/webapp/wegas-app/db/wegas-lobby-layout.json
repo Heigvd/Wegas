@@ -1,0 +1,39 @@
+{
+    "id": 2003,
+    "type" : "Layout",
+    "top" : {
+        "children": [{
+            "type": "Text",
+            "content": "Lobby",
+            "cssClass": "wegas-editor-title"
+        }]
+    },
+    "left": {
+        "children": [{
+            "type": "TabView",
+            "id": "leftTabView",
+            "children": [{
+                "type": "Tab",
+                "label": "Your games",
+                "children": [{
+                    "type": "LobbyTreeView",
+                    "dataSource": "RegisteredGames",
+                    "emptyMessage": "You are not registered in any game."
+                }]
+            }]
+        }]
+    },
+    "center": {
+        "children": [{
+            "id": "centerTabView",
+            "type": "TabView",
+            "children": [{
+                "type": "Tab",
+                "label": "Join a game",
+                "children": [{
+                    "type": "JoinGameWidget"
+                }]
+            }]
+        }]
+    }
+}

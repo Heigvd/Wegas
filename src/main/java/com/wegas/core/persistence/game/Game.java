@@ -86,10 +86,12 @@ public class Game extends NamedEntity implements Serializable {
     /**
      *
      */
+
     @PrePersist
+    @PreUpdate
     public void prePersist() {
-        if (this.token == null) {
-            this.setToken(this.getName().replace(" ", ""));
+        if (this.getToken() == null) {
+            this.setToken(this.getName().replace(" ", "-"));
         }
     }
 
