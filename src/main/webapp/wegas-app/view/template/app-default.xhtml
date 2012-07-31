@@ -136,7 +136,7 @@
                     dataSources: {
                         "GameModel": {
                             source: "rest/GameModel",
-                            initialRequest: "",
+                            initialRequest: "/#{gameController.currentGameModel.id}",
                             plugins: [{
                                     fn: "DataSourceJSONSchema",
                                     cfg: {

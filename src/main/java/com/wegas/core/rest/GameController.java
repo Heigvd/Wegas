@@ -94,7 +94,9 @@ public class GameController extends AbstractRestController<GameFacade> {
         try {
             game = gameFacade.findByToken(token);                               // We check if there is game with given token
         }
-        catch (Exception e) {                                                   // if none was found,
+        catch (Exception e) {
+        }
+        if (game = null) {                                                      // If none was found,
             try {
                 team = teamFacade.findByToken(token);                           // we try to lookup for a team entity.
                 game = team.getGame();

@@ -58,9 +58,9 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     }
 
     public Team findByToken(String token) {
-        Query findByRootGameModelId = em.createNamedQuery("findTeamByToken");
-        findByRootGameModelId.setParameter("token", token);
-        return (Team) findByRootGameModelId.getSingleResult();
+        Query findByToken = em.createNamedQuery("findTeamByToken");
+        findByToken.setParameter("token", token);
+        return (Team) findByToken.getSingleResult();
     }
 
     /**
@@ -73,16 +73,20 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         Player p = new Player();
         p.setUser(user);
-        team.addPlayer(p);
-        em.flush();
-        em.refresh(p);
-        team.getGame().getGameModel().propagateDefaultVariableInstance(false);
+        this.joinTeam(team, p);
         return p;
     }
 
     public Player joinTeam(Long teamId, Long userId) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         return this.joinTeam(this.find(teamId), userFacade.find(userId));
+    }
+
+    public void joinTeam(Team team, Player player) {
+        team.addPlayer(player);
+        em.flush();
+        em.refresh(player);
+        team.getGame().getGameModel().propagateDefaultVariableInstance(false);
     }
 
     /**
@@ -93,10 +97,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     public Player createPlayer(Long teamId, Player p) {
         Team t = this.find(teamId);
-        t.addPlayer(p);
-        em.flush();
-        em.refresh(p);
-        t.getGame().getGameModel().propagateDefaultVariableInstance(false);
+        this.joinTeam(t, p);
         return p;
     }
 

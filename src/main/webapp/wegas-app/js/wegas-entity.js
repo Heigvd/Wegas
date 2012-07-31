@@ -294,6 +294,11 @@ YUI.add('wegas-entity', function (Y) {
                 _inputex: {
                     label: "CSS Stylesheet"
                 }
+            },
+            scriptLibrary: {
+                _inputex: {
+                    _type: "hidden"
+                }
             }
         },
         EDITMENU: [{
@@ -371,6 +376,9 @@ YUI.add('wegas-entity', function (Y) {
                 value: "Team"
             },
             name: {
+                type: "string"
+            },
+            token: {
                 type: "string"
             },
             players: {
@@ -706,7 +714,11 @@ YUI.add('wegas-entity', function (Y) {
                 value:"ListDescriptor"
             },
             items: {
-                value: []
+                type: "array",
+                value: [],
+                _inputex: {
+                    _type: "hidden"
+                }
             },
             defaultVariableInstance: {
                 properties: {
@@ -817,7 +829,10 @@ YUI.add('wegas-entity', function (Y) {
             },
             replies: {
                 value: [],
-                type: "array"
+                type: "array",
+                _inputex: {
+                    _type: "hidden"
+                }
             }
         }
     });
@@ -834,7 +849,7 @@ YUI.add('wegas-entity', function (Y) {
                 type: "string"
             },
             cost: {
-
+                type: "string",
                 value: 1
             },
             defaultVariableInstance: {
@@ -905,7 +920,7 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-     * ChoiceInstance mapper
+     * MCQ ChoiceInstance mapper
      */
     Y.Wegas.persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
         ATTRS: {
@@ -918,6 +933,25 @@ YUI.add('wegas-entity', function (Y) {
                 _inputex: {
                     label:'Active'
                 }
+            }
+        }
+    });
+    /**
+     * MCQ Reply mapper
+     */
+    Y.Wegas.persistence.Reply = Y.Base.create("Reply", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class":{
+                value:"Reply"
+            },
+            choiceDescriptorId: {
+                type: "string",
+                _inputex: {
+                    _type: 'hidden'
+                }
+            },
+            startTime: {
+                type: "string"
             }
         }
     });

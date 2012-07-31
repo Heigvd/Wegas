@@ -160,7 +160,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         _failureHandler: function (e) {
             //console.log("DataSourceRest._failureHandler", e);
-            Y.error("Datasource reply:" + e, 'Y.Wegas.DataSourceRest');
+            Y.error("Datasource reply:", e, 'Y.Wegas.DataSourceRest');
         },
 
         /// *** Cache methods *** //
