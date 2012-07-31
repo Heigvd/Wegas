@@ -58,34 +58,14 @@ YUI.add('wegas-entity', function (Y) {
             return ret;                                                         // Return a copy of this's fields.
         },
         /**
-         * Cleaning out object by removing irrelevant informations such as null values
-         *
-         * @return {Entity} containing relevant informations needed by server
-         */
-        compressExport: function(){
-            var e = this.getAttrs();
-            delete e["initialized"];
-            delete e["destroyed"];
-            for(var i in e){                                                    //Removing irrelevant informations
-                if(e[i] === null){                                              //Null attributes
-                    //TODO : empty strings, objects ??
-                    delete e[i];
-                }
-                if(e.hasOwnProperty(i) && e[i] instanceof Y.Wegas.persistence.Entity){
-                    e[i] = e[i].compressExport()
-                }
-            }
-            return e;
-        },
-        /**
          * Create a new JSON Object from this entity, filtered out by mask
          * @method JSONclone
-         * @param {Array} mask
+         * @param {Array} mask or {String}* a list of params
          * @return {Object} a filtered out clone
          */
         JSONclone: function(mask){
             var k, i, e = JSON.parse(JSON.stringify(this));
-            mask = Y.Lang.isArray(mask) ? mask : [];
+            mask = Y.Lang.isArray(mask) ? mask : arguments;
             mask.push("initialized", "destroyed");
             return Y.clone(e, true, function(value, key, output, input){
                 if(mask.indexOf(key) != -1){
@@ -99,11 +79,11 @@ YUI.add('wegas-entity', function (Y) {
         /**
          * Create a new Entity from this entity
          *
-         * @method copy
-         * @return {Entity} a usable copy
+         * @method clone
+         * @return {Entity} a usable clone
          */
-        copy: function (){
-            return Y.Wegas.persistence.Entity.revive(this.JSONclone(["id","variableInstances"]));;
+        clone: function (){
+            return Entity.revive(this.JSONclone(["id","variableInstances"]));;
         },
         /**
          * Returns the form configuration associated to this object, to be used a an inputex object.
@@ -491,8 +471,8 @@ YUI.add('wegas-entity', function (Y) {
         getInstance: function () {
             return this.get("scope").getInstance();
         },
-        copy: function(){
-            var e = Y.Wegas.persistence.Entity.prototype.copy.call(this);
+        clone: function(){
+            var e = Y.Wegas.persistence.VariableDescriptor.superclass.clone.call(this);
             e.set("name", e.get("name") + "_copy");
             return e;
         }
