@@ -29,9 +29,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
 
-        CONTENT_TEMPLATE: null,
+        CONTENT_TEMPLATE: "<div></div>",
         panel: null,
         header: null,
+        jpLoaded :false,
         stateId: null,
         currentZoom: null,
         events: {},
@@ -39,37 +40,69 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         nodes:{},
 
         initializer: function() {
-            jp = window.jsPlumb.getInstance();
             this.currentZoom = 1;
-            /*
-             * jsPlumb Config
-             */
-            jp.Defaults.Container = this.get(CONTENT_BOX);
-            jp.Defaults.Anchor = "Continuous";
-            jp.Defaults.Endpoint = ["Dot", {
-                radius : 6
-            }];
-            //            jp.Defaults.Connector = [ "Flowchart", {
-            //                stub:[40, 40],
-            //                gap:10
-            //            } ];
-            jp.Defaults.Connector = ["StateMachine", {
-                curviness:60,
-                proximityLimit:100
-            }];
-            jp.Defaults.ConnectionOverlays = [["Arrow", {
-                location : 1,
-                width: 15
-            }]];
-            jp.Defaults.PaintStyle = {
-                lineWidth : 3,
-                strokeStyle : "#11F",
-                outlineColor:"white",
-                outlineWidth:3
-            };
             this.stateId = 1;
-
-
+            this.jpLoaded = false;
+            // Waiting for jsPlumb
+            this.publish("jsPlumbLoaded",{
+                bubbles:false,
+                fireOnce:true,
+                async:true,
+                broadcast:true
+            })
+            window.jsPlumb.ready(Y.bind(function(){
+                this.initJsPlumb();
+            }, this));
+        },
+        initJsPlumb: function(){
+            jp = window.jsPlumb.getInstance({
+                Container : this.get(CONTENT_BOX),
+                Anchor : "Continuous",
+                Endpoint : ["Dot", {
+                    radius : 6
+                }],
+                //                Connector : [ "Flowchart", {
+                //                    stub:[40, 40],
+                //                    gap:10
+                //                } ],
+                Connector : ["StateMachine", {
+                    curviness:60,
+                    proximityLimit:100
+                }],
+                ConnectionOverlays : [["Arrow", {
+                    location : 1,
+                    width: 15
+                }]],
+                PaintStyle : {
+                    lineWidth : 3,
+                    strokeStyle : "#11F",
+                    outlineColor:"white",
+                    outlineWidth:3
+                }
+            });
+            this.events.transitionDeleted = jp.bind("jsPlumbConnectionDetached", function(e){
+                //Clean panel
+                try{
+                    jp.deleteEndpoint(e.sourceEndpoint);
+                    jp.deleteEndpoint(e.targetEndpoint);
+                }catch(e){
+                    console.log("warn", e);
+                }
+            });
+            this.events.deleteTransition = jp.bind("beforeDetach", function(e){
+                var transitions;
+                transitions = e.getParameter("transition").source.get("entity").get("transitions");
+                for(var i in transitions){
+                    if(transitions[i] === e.getParameter("transition").get("entity") ){
+                        transitions.splice(i,1);
+                    }
+                }
+                e.getParameter("transition").destroy();
+                return true;
+            });
+            this.jpLoaded = true;
+            this.fire("jsPlumbLoaded");
+            this.rebuild();
         },
         renderUI: function() {
             this.panel = this.get("parent").get("toolbarPanel");
@@ -122,26 +155,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     this.addState(e.clientX - this.get(CONTENT_BOX).getX() - 30, e.clientY - this.get(CONTENT_BOX).getY() - 30, this.stateId);
                 }
             }, this);
-            this.events.deleteTransition = jp.bind("beforeDetach", function(e){
-                var transitions;
-                transitions = e.getParameter("transition").source.get("entity").get("transitions");
-                for(var i in transitions){
-                    if(transitions[i] === e.getParameter("transition").get("entity") ){
-                        transitions.splice(i,1);
-                    }
-                }
-                e.getParameter("transition").destroy();
-                return true;
-            });
-            this.events.transitionDeleted = jp.bind("jsPlumbConnectionDetached", function(e){
-                //Clean panel
-                try{
-                    jp.deleteEndpoint(e.sourceEndpoint);
-                    jp.deleteEndpoint(e.targetEndpoint);
-                }catch(e){
-                    console.log("warn", e);
-                }
-            });
+
             this.events.smUpdate = this.after("entityChange", function (e){
                 this.rebuild();
             });
@@ -163,7 +177,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             }, this);
         },
         syncUI: function(){
-            this.set("entity", this.get("entity"));
+
         },
         destructor: function (){
             var i;
@@ -199,6 +213,9 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             }
         },
         rebuild: function(){
+            if(!this.jpLoaded){
+                return false;
+            }
             var state, states, sm = this.get("entity");
             this.stateId = 1;
             this.nodes = {};
@@ -220,9 +237,13 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     }
                 });
             }
+            return true;
 
         },
         addState: function(x, y, id, entity){
+            if(!this.jpLoaded){
+                return null;
+            }
             var state, config;
             config = {
                 sid: id,
@@ -245,6 +266,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.nodes[id.toString()] = state;
             this.get("entity").get("states")[id.toString()] = state.get("entity");
             this.stateId = Math.max(this.stateId, parseInt(id) + 1);
+            return state;
         },
         renderPanel: function(){
             if(!this.get("entity") || !this.get("entity").get("scope")){
@@ -355,7 +377,21 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.events.deleteState = this.get(CONTENT_BOX).delegate("click", function (e){
                 this.deleteSelf();
             },".state-delete", this);
-            jp.draggable(this.get(BOUNDING_BOX));
+            jp.draggable(this.get(BOUNDING_BOX), {
+                plugins:[{
+                    fn:Y.Plugin.DDConstrained,
+                    cfg:{
+                        constrain:this.get("parent").get(CONTENT_BOX),
+                        gutter: "30 10 10 10"
+                    }
+                }/*,
+                {
+                    fn:Y.Plugin.DDNodeScroll,
+                    cfg:{
+                        node:this.get("parent").get(BOUNDING_BOX).get("parentNode")
+                    }
+                }*/]
+            });
             jp.makeTarget(this.get(BOUNDING_BOX), {
                 dropOptions:{
                     hoverClass:"droppable-state"

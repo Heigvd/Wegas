@@ -13,6 +13,7 @@ Y.add("statemachine-entities", function(Y){
                 value: "FSMInstance"
             },
             currentStateId: {
+                value:1,
                 type: "number",
                 _inputex: {
                     label: "Current state id"
@@ -24,11 +25,11 @@ Y.add("statemachine-entities", function(Y){
                 type: "uneditable",
                 _inputex:{
                     label:"Transition History"
-//                    ,
-//                    elementType:{
-//                        type:"number",
-//                        readonly:true
-//                    }
+                //                    ,
+                //                    elementType:{
+                //                        type:"number",
+                //                        readonly:true
+                //                    }
                 }
             }
         }
@@ -111,17 +112,18 @@ Y.add("statemachine-entities", function(Y){
                         }
                     },
                     id: {
-                        type: "string",
+                        type: "number",
                         optional: true,                                         // The id is optional for entites that have not been persisted
                         _inputex: {
                             _type: "hidden"
                         }
                     },
                     currentStateId: {
-                        type: "string",
+                        type: "number",
                         optional: true,
                         _inputex: {
-                            label: 'Initial state id'
+                            label: 'Initial state id',
+                            value: 1
                         }
                     }
                 }
@@ -295,6 +297,28 @@ Y.add("statemachine-entities", function(Y){
             "@class": {
                 value: "TriggerDescriptor"
             },
+            defaultVariableInstance:{
+                valueFn: function(){
+                    return new Y.Wegas.persistence.TriggerInstance();
+                },
+                properties: {
+                    '@class': {
+                        type: "string",
+                        _inputex: {
+                            _type:'hidden',
+                            value:'TriggerInstance'
+                        }
+                    },
+                    currentStateId: {
+                        type: "number",
+                        optional: true,
+                        _inputex: {
+                            label: 'Initial state id',
+                            _type:'hidden'
+                        }
+                    }
+                }
+            },
             triggerEvent: {
                 properties:{
                     '@class': {
@@ -417,7 +441,7 @@ Y.add("statemachine-entities", function(Y){
                         });
                     }catch(e){
                         //TODO : that
-                        console.error("will have to correct that, cache currently not updating", e.stack);
+                        console.error("REST plugin failed");
                     }
                     return true;
                 }else{
