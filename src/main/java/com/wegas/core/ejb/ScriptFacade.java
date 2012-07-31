@@ -89,12 +89,20 @@ public class ScriptFacade {
      * @throws ScriptException
      */
     public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
+        while (scripts.remove(null)) {
+        }                                           //remove null scripts
         if (scripts.isEmpty()) {
             return null;
         }
 
         ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
-        ScriptEngine engine = mgr.getEngineByName(scripts.get(0).getLanguage());
+        ScriptEngine engine;
+        try {
+            engine = mgr.getEngineByName(scripts.get(0).getLanguage());
+        } catch (NullPointerException ex) {
+            logger.error("Wrong language ?", ex.getMessage(), ex.getStackTrace());
+            return null;
+        }
         // Invocable invocableEngine = (Invocable) engine;
 
         variableInstanceManager.setCurrentPlayer(player);                       // Set up request's execution context
@@ -110,7 +118,11 @@ public class ScriptFacade {
         Object result = null;
         String script = "";
         for (Script s : scripts) {                                              // Evaluate each script
-            script += s.getContent() + ";";
+            try {
+                script += s.getContent() + ";";
+            } catch (NullPointerException ex) {
+                //script does not exist
+            }
             //result = engine.eval(s.getContent());
         }
         result = engine.eval(script);

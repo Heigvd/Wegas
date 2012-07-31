@@ -88,6 +88,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
 
         for (Transition transition : transitions) {
             if (transition instanceof DialogueTransition && transition.getId() == transitionId) {
+                //TODO : eval attached script (AND)
                 stateMachineInstanceEntity.setCurrentStateId(transition.getNextStateId());
                 stateMachineInstanceEntity.transitionHistoryAdd(transitionId);
                 if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {

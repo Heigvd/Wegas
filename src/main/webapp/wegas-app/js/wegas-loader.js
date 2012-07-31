@@ -226,7 +226,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer-min.js',
-                        requires: ['wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'statemachine-entities'],
+                        requires: ['dd-constrain','wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'statemachine-entities'],
                         ix_provides: 'StateMachineViewer'
                     },
                     'wegas-statemachineviewercss': {
@@ -340,7 +340,7 @@ YUI().use(function (Y) {
                     },
                     'jsplumb-yui-all': {
                         path:'yui.jsPlumb-1.3.10-all-min.js',
-                        requires: ["anim", "dd"]
+                        requires: ["node", "dd", "anim"/*, "node-event-simulate"*/]
                     },
                     'jsbezier': {
                         path: 'jsBezier-0.3-min.js'
