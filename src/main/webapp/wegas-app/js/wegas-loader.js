@@ -135,8 +135,8 @@ YUI().use(function (Y) {
                     },
 
                     /** Common Widgets **/
-                    'widgetmenu': {
-                        path: 'wegas-app/js/widget/widgetmenu-min.js',
+                    'wegas-widgetmenu': {
+                        path: 'wegas-app/js/widget/wegas-widgetmenu-min.js',
                         requires: ['plugin', 'widget', 'widget-parent', 'widget-child',
                         'widget-position', 'widget-stack', 'widget-position-align',
                         'widget-position-constrain', 'event-mouseenter', 'yui-later',
@@ -151,7 +151,7 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-app', 'widgetmenu',
+                        'wegas-app', 'wegas-widgetmenu',
                         "wegas-editor-buttons", 'wegas-editor-action',  'wegas-form',
                         //'wegas-statemachineviewer',                             // @fixme Zhose should be included on the fly
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
@@ -173,7 +173,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
-                        requires: [ 'inputex-select', 'widgetmenu', 'button' ],
+                        requires: [ 'inputex-select', 'wegas-widgetmenu', 'button' ],
                         ix_provides: 'SelectPlayerButton'
                     },
                     'wegas-csseditor': {
@@ -188,7 +188,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-editor-treeview': {
                         path: 'wegas-editor/js/wegas-editor-treeview-min.js',
-                        requires: [ 'wegas-widget',  "treeview", "widgetmenu" ],
+                        requires: [ 'wegas-widget',  "treeview", "wegas-widgetmenu" ],
                         ix_provides: [ 'EditorTreeView', "LobbyTreeView" ]
                     },
                     'wegas-datatable': {
@@ -252,7 +252,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-crimesim': {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
-                        requires: ['wegas-widget', 'widget-position', 'widget-position-align', 'widget-stack'],
+                        requires: ['wegas-widget', 'widget-position', 'widget-position-align', 'widget-stack' ],
                         ix_provides: "ScheduleDisplay"
                     },
                     /**Leaderway**/

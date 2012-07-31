@@ -46,8 +46,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 return;
             }
 
-            var cb = this.get( CONTENTBOX ),
-            ds = this.get("dataSource"),
+            var ds = this.get("dataSource"),
             selector = this.get( "dataSelector" ),
             entities =  ( selector ) ? ds.rest.find( selector.key, selector.val ) : ds.rest.getCache(),
             msg = this.get( CONTENTBOX ).one( ".wegas-smallmessage" );
@@ -150,7 +149,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'Team':
-                                text = 'Team: ' + el.get("name");
+                                text = 'Team: ' + el.get("name") + ' (token: ' + el.get("token") + ")";
                                 ret.push({
                                     type: 'TreeNode',
                                     label: text,

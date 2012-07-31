@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('widgetmenu', function (Y) {
+YUI.add('wegas-widgetmenu', function (Y) {
     "use strict";
 
     /**

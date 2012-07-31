@@ -693,7 +693,7 @@
                 "impact":{
                     "@class":"Script",
                     "language":"JavaScript",
-                    "content":"importPackage(com.wegas.core.script);\nvar mailer = Factory.lookupBean(\"MessagingFacade\");\n\nmailer.send(\"normal\", self, \"test\", \"test\", \"test\");\nhumanResources.value-=2;"
+                    "content":"var mailer = lookupBean(\"MessagingFacade\");\n\nmailer.send(\"normal\", self, \"test\", \"test\", \"test\");\nhumanResources.value-=2;"
                 },
                 "feedback":"juste",
                 "duration":0,

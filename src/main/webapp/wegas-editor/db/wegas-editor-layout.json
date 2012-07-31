@@ -7,7 +7,7 @@
         "zIndex": 2,
         "children": [{
             "type": "Text",
-            "content": "Editor",
+            "content": "",
             "cssClass": "wegas-editor-title"
         }, {
             "type": "SelectGameButton"
@@ -31,22 +31,15 @@
                         }]
                     }, {
                         "type": "OpenTabButton",
-                        "label": "Wysiwyg script editor",
-                        "subpage": {
-                            "type": "WysiwygEditor"
-                        }
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Pages",
-                        "subpage": {
-                            "type": "EditorTreeView",
-                            "dataSource": "Page"
-                        }
-                    }, {
-                        "type": "OpenTabButton",
                         "label": "Log",
                         "subpage": {
                             "type": "Logger"
+                        }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Wysiwyg script editor",
+                        "subpage": {
+                            "type": "WysiwygEditor"
                         }
                     }, {
                         "type": "OpenTabButton",
@@ -91,6 +84,13 @@
                         "label": "Scripts",
                         "subpage": {
                             "type": "ScriptLibrary"
+                        }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Pages",
+                        "subpage": {
+                            "type": "EditorTreeView",
+                            "dataSource": "Page"
                         }
                     }]
                 }

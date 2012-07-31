@@ -1,7 +1,6 @@
 [{
         "id": 1,
         "label": "Main layout",
-        "@class": "Page",
         "type": "List",
         "cssClass": "layout",
         "children": [{
@@ -19,7 +18,12 @@
                         "type": "Button",
                         "label": "Next period",
                         "view": "button",
-                        "onClick": "importPackage(com.wegas.core.script);\nperiod.value += 1;\nvar qdf = Factory.lookupBean(\"QuestionDescriptorFacade\");\nqdf.setCurrentTime(evidences.descriptor, self, period.value);\nhumanResources.value = 15;\n"
+                        "plugins": [{
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "onClick": "period.value += 1;\nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\nqdf.setCurrentTime(evidences.descriptor, self, period.value);\nhumanResources.value = 15;\n"
+                                }
+                            }]
                     },{
                         "type": "VariableDisplay",
                         "label": "Costs",
@@ -33,8 +37,7 @@
                         "view": "box",
                         "dataSource": "VariableDescriptor"
                     }]
-            },
-            {
+            }, {
                 "id":"menu",
                 "label": "Menu",
                 "type": "List",
@@ -43,16 +46,25 @@
                 "children": [{
                         "type": "Button",
                         "label": "Accueil",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpageId": 2
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 2,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
                     },{
                         "type": "Button",
                         "label": "Questions",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpageId": 3,
                         "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 3,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }, {
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": "questions"
@@ -61,16 +73,25 @@
                     }, {
                         "type": "Button",
                         "label": "Pièces",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpageId": 4
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 4,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
                     },{
                         "type": "Button",
                         "label": "Mails",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpageId": 5,
                         "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 5,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            },{
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": "inbox"
