@@ -88,7 +88,7 @@ YUI.add('wegas-button', function (Y) {
         initializer: function () {
             Y.Wegas.app.dataSources.VariableDescriptor.after("response",        // If data changes, refresh
                 this.syncUI, this);
-            this.syncUI();
+            this.afterHostEvent("render", this.syncUI, this);
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),

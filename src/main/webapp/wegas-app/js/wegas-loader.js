@@ -252,7 +252,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-crimesim': {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
-                        requires: ['wegas-widget', 'widget-position', 'widget-position-align', 'widget-stack' ],
+                        requires: ['wegas-widget', 'wegas-widgetmenu' ],
                         ix_provides: "ScheduleDisplay"
                     },
                     /**Leaderway**/

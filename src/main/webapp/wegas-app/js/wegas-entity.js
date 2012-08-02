@@ -102,7 +102,7 @@ YUI.add('wegas-entity', function (Y) {
          * @method copy
          * @return {Entity} a usable copy
          */
-        copy: function (){
+        copy: function () {
             return Y.Wegas.persistence.Entity.revive(this.JSONclone(["id","variableInstances"]));;
         },
         /**
@@ -603,8 +603,8 @@ YUI.add('wegas-entity', function (Y) {
      * TeamScope mapper
      */
     Y.Wegas.persistence.TeamScope = Y.Base.create("TeamScope", Y.Wegas.persistence.Scope, [], {
-        getInstance: function (){
-            return this.get("variableInstances")[Y.Wegas.app.get('currentTeam')];
+        getInstance: function ( playerId ){
+            return this.get("variableInstances")[ Y.Wegas.app.get('currentTeam') ];
         }
     },{
         ATTRS:{
@@ -633,6 +633,11 @@ YUI.add('wegas-entity', function (Y) {
      * VariableInstance mapper
      */
     Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            descriptorId: {
+                type: "string"
+            }
+        },
         EDITMENU: [{
             type: "EditEntityButton"
         }]

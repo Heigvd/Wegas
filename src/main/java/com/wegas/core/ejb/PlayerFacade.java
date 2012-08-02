@@ -10,21 +10,17 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Game_;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 /**
  *
@@ -72,7 +68,13 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         Query findByRootGameModelId = em.createNamedQuery("findPlayerByGameIdAndUserId");
         findByRootGameModelId.setParameter("gameId", gameId);
         findByRootGameModelId.setParameter("userId", userId);
-        return (Player) findByRootGameModelId.getSingleResult();
+
+        try {
+            return (Player) findByRootGameModelId.getSingleResult();
+        }
+        catch (NoResultException e) {
+            throw (EJBException) new EJBException(e).initCause(e);
+        }
     }
 
     public List<Player> findPlayersByGameId(Long gameId) {

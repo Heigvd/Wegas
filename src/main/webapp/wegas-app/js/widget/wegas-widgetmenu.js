@@ -49,11 +49,11 @@ YUI.add('wegas-widgetmenu', function (Y) {
         // *** Private methods *** //
 
         getMenu: function () {
-            if ( !this.menu ) {
-                this.menu = new Y.Wegas.Menu();
+            if ( !WidgetMenu.menu ) {
+                WidgetMenu.menu = new Y.Wegas.Menu();
             //this.menu.addTarget( this );
             }
-            return this.menu;
+            return WidgetMenu.menu;
         }
     }, {
         ATTRS: {
