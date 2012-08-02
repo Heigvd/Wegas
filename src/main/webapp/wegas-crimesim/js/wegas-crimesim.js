@@ -81,7 +81,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
                 cb = this.get(CONTENTBOX).one(".schedule-questions"),
 
-                currentTime = periodInstance.value - period.get("minValue");
+                currentTime = periodInstance.get( "value" ) - period.get( "minValue" );
 
 
                 this._perPeriodLoad = perPeriodLoad;
@@ -197,12 +197,15 @@ YUI.add('wegas-crimesim', function (Y) {
                 period = periodDesc.getInstance(),
                 acc = ['<div class="schedule-icon-close"></div><h1>',
                 question.get("label") || question.get("name") || "undefined",
-                '</h1><div class="content">', question.get("description"), '</div>'];
+                '</h1><div class="content">',
+                question.get("description") || "<em>No description</em>",
+                '</div>'];
 
                 this.currentQuestionId = questionId;
 
-                if (questionInstance.get("replies").length > 0) {
-                    acc.push('<h2>Anaylses</h2>');
+                acc.push('<h2>Anaylses</h2>');
+                if (questionInstance.get("replies").length === 0) {
+                    acc.push('<div class="content"><em>No analyses planified</em></div>');
                 }
                 for (i = 0; i < questionInstance.get("replies").length; i += 1) {
 

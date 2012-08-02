@@ -9,11 +9,8 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.UserFacade;
+import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -92,27 +89,25 @@ public class GameController extends AbstractRestController<GameFacade> {
         Game game = null;
         Team team = null;
         try {
-            game = gameFacade.findByToken(token);                               // We check if there is game with given token
+            team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
+            game = team.getGame();
         }
-        catch (Exception e) {
-        }
-        if (game = null) {                                                      // If none was found,
+        catch (PersistenceException e2) {
             try {
-                team = teamFacade.findByToken(token);                           // we try to lookup for a team entity.
-                game = team.getGame();
+                game = gameFacade.findByToken(token);                           // We check if there is game with given token
             }
-            catch (Exception e2) {
+            catch (PersistenceException e) {
                 throw new Exception("Could not find any game associated with this token.");
             }
         }
         try {                                                                   // We check if logged user is already registered in the target game
             playerFacade.findByGameIdAndUserId(
                     game.getId(), userFacade.getCurrentUser().getId());
+            throw new Exception("You are already registered to this game.");    // There user is already registered to target game
         }
-        catch (Exception e) {                                                   // If there is no NoResultException, everything is ok, we can return the game
+        catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
             return ( team != null ) ? team : game;
         }
-        throw new Exception("You are already registered to this game.");        // There user is already registered to target game
     }
 
     @GET

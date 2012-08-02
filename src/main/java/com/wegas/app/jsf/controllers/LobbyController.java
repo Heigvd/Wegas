@@ -14,6 +14,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.UserFacade;
+import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -93,12 +94,10 @@ public class LobbyController implements Serializable {
 
         final Subject subject = SecurityUtils.getSubject();
         try {
-
             return userFacade.getUserByPrincipal(subject.getPrincipal().toString());
-
         }
-        catch (EJBException e) {                                              // If the user is logged in but we cannot find a
-            if (e.getCausedByException() instanceof NoResultException) {        // corresponding account, that means we need to create one.
+        catch (EJBException e) {                                                   // If the user is logged in but we cannot find a
+            if (e.getCause() instanceof PersistenceException ) {                // corresponding account, that means we need to create one.
                 User newUser = new User();
                 newUser.setName(subject.getPrincipal().toString());
                 userFacade.create(newUser);
@@ -129,7 +128,7 @@ public class LobbyController implements Serializable {
      *
      * @return
      */
-    public String joinGame() {
+    public String joinGame() throws EJBException {
         try {
             this.currentGame = gameFacade.findByToken(this.gameToken);
             return "gameJoined";

@@ -48,8 +48,8 @@
             "@class":"TeamScope"
         },
         "tags":[],
-        "minValue":null,
-        "maxValue":null
+        "minValue":1,
+        "maxValue":15
     },{
         "@class":"NumberDescriptor",
         "id":14,
