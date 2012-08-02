@@ -148,4 +148,12 @@ public class Assignment extends AbstractEntity {
     public Long getTaskDescriptorId() {
         return this.taskDescriptorId;
     }
+    
+    /**
+     *
+     * @return
+     */
+    public Long setTaskDescriptorId(long newTaskDescriptorId) {
+        return this.taskDescriptorId = newTaskDescriptorId;
+    }
 }
