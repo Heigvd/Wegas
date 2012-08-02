@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -25,20 +35,17 @@ YUI.add('wegas-crimesim', function (Y) {
             bindUI: function () {
                 var cb = this.get(CONTENTBOX);
 
-                cb.delegate("click", function (e) {                             // Show the "action available" menu on cell click
-                    var questionId =  e.target.ancestor("tr").getAttribute("data-questionid"),
-                    startTime = e.target.ancestor("td").getAttribute("data-startTime"),
-                    question = Y.Wegas.app.dataSources.VariableDescriptor.rest.getCachedVariableById(questionId);
-                    console.log("Genmenu items: ", this.genMenuItems(question, startTime));
-
+                cb.delegate("click", function (e) {                             // Show the available menu options on cell click
+                    var questionId =  e.target.ancestor( "tr" ).getAttribute("data-questionid"),
+                    startTime = e.target.ancestor( "td" ).getAttribute("data-startTime"),
+                    question = Y.Wegas.VariableDescriptorFacade.rest.findById( questionId );
 
                     this.menu.removeAll();                                      // Populate the menu
                     this.menu.add( this.genMenuItems(question, startTime) );
-
                     this.menu.attachTo( e.target );                             // Display the menu button next to the arrow
                 }, ".schedule-available .icon", this);
 
-                this.menu.on("*:click", this.onMenuClick, this)                 // Listen for the choice menu click event
+                this.menu.on( "button:click", this.onMenuClick, this );         // Listen for the choice menu click event
 
                 cb.delegate("click", function (e) {                             // Show the question detail on left label click
                     var questionId = e.target.ancestor("tr").getAttribute("data-questionid");
@@ -59,25 +66,24 @@ YUI.add('wegas-crimesim', function (Y) {
             },
 
             syncUI: function () {
-                this._syncSchedule();
+                this.syncSchedule();
                 if ( this.currentQuestionId ) {
                     this.syncDetailsPanel( this.currentQuestionId );
                 }
             },
 
             // *** Model methods *** //
-            getChoiceDescriptor: function(id) {
-                return Y.Wegas.VariableDescriptorFacade.rest.findById(id);
-            },
 
             // *** Rendering methods *** //
-            _syncSchedule: function () {
+            syncSchedule: function () {
                 var perPeriodBudget = 15, perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
                 questionInstance,  reply, i, j, k, question, cols, replies, names,
                 questionsVarDesc = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items"),
                 questionInstances = [],
                 period = Y.Wegas.VariableDescriptorFacade.rest.find('name', "period"),
                 periodInstance = period.getInstance(),
+                maxValue = period.get("maxValue"),
+                totalPeriods = period.get("maxValue") - period.get("minValue"),
                 acc = [ '<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>' ],
                 cb = this.get(CONTENTBOX).one(".schedule-questions"),
 
@@ -91,7 +97,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     return;
                 }
 
-                for (i = period.get("minValue"); i <= period.get("maxValue"); i += 1) {
+                for (i = period.get("minValue"); i <= maxValue; i += 1) {
                     acc.push('<th class="schedule-maincolum"><div>' + i + '</div></th>'); // Generate table header
                     perPeriodLoad.push(0);                                      // Default value for perPeriodLoad calculation
                 }
@@ -123,7 +129,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     names = [];
                     replies = [];
 
-                    for (j = 0; j <= period.get("maxValue") - period.get("minValue"); j += 1) {   // Initially, all time slots are available
+                    for (j = 0; j <= totalPeriods; j += 1) {                    // Initially, all time slots are available
                         if (j >= currentTime) {
                             cols.push(["schedule-item", "schedule-available"]);
                         } else {
@@ -136,7 +142,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     for (j = 0; j < questionInstance.get("replies").length; j += 1) {
                         reply = questionInstance.get("replies")[j];
                         cIndex = reply.get("startTime");
-                        choiceDescriptor = this.getChoiceDescriptor(reply.get("choiceDescriptorId"));
+                        choiceDescriptor = reply.getChoiceDescriptor(),
                         choiceInstance = choiceDescriptor.getInstance();
 
                         cols[cIndex] = ["schedule-unavailable", "schedule-task",
@@ -156,13 +162,13 @@ YUI.add('wegas-crimesim', function (Y) {
                         cols[cIndex].push((choiceInstance.get("active")) ? "schedule-active" : "schedule-inactive");
                     }
 
-                    for (j = 0; j <= period.get("maxValue") - period.get("minValue"); j += 1) {
+                    for (j = 0; j <= totalPeriods; j += 1) {
                         if (j > currentTime) {
-                            cols[j].push("schedule-future");    // Mark cells in the future
+                            cols[j].push("schedule-future");                    // Mark cells in the future
                         } else if (j < currentTime) {
-                            cols[j].push("schedule-past");      // Mark cells in the past
+                            cols[j].push("schedule-past");                      // Mark cells in the past
                         } else {
-                            cols[j].push("schedule-present");   // Mark cells in the past
+                            cols[j].push("schedule-present");                   // Mark cells in the past
                         }
                     }
 
@@ -195,6 +201,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 questionInstance = question.getInstance(),
                 periodDesc = Y.Wegas.VariableDescriptorFacade.rest.find('name', "period"),
                 period = periodDesc.getInstance(),
+                currentTime = period.get("value") - periodDesc.get("minValue"),
                 acc = ['<div class="schedule-icon-close"></div><h1>',
                 question.get("label") || question.get("name") || "undefined",
                 '</h1><div class="content">',
@@ -207,18 +214,20 @@ YUI.add('wegas-crimesim', function (Y) {
                 if (questionInstance.get("replies").length === 0) {
                     acc.push('<div class="content"><em>No analyses planified</em></div>');
                 }
+
                 for (i = 0; i < questionInstance.get("replies").length; i += 1) {
 
                     reply = questionInstance.get("replies")[i];
 
-                    var choiceDescriptor = this.getChoiceDescriptor(reply.get("choiceDescriptorId"));
+                    var choiceDescriptor = reply.getChoiceDescriptor(),
+                    status = reply.getStatus( currentTime );
 
                     acc.push('<div class="schedule-detail-reply"><h3>Period ',
-                        reply.get("startTime") - periodDesc.get("minValue"), ': ', choiceDescriptor.get("name") || "undefined",
+                        currentTime + 1 , ': ', choiceDescriptor.get("name") || "undefined",
                         '</h3><div class="content">');
-                    if ((reply.get("startTime") + choiceDescriptor.get("duration")) <= period.get("value") - periodDesc.get("minValue")) {
+                    if (status === 0) {
                         acc.push(choiceDescriptor.answer);
-                    } else if (reply.get("startTime") <= period.get("value") - periodDesc.get("minValue")) {
+                    } else if (status === 1) {
                         acc.push("analysis in progress");
                     } else {
                         acc.push("analysis planified");
@@ -250,13 +259,12 @@ YUI.add('wegas-crimesim', function (Y) {
                     request: "/QuestionDescriptor/CancelReply/" + replyId
                 });
             },
-            onMenuClick: function (e, args) {
-                var menuItem = args[1],
-                choice = menuItem.value.reply;
+            onMenuClick: function (e) {
+                var data = e.target.get( "entity" );
 
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/QuestionDescriptor/SelectReply/" + choice.get("id")
-                    + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + menuItem.value.get("startTime") + "/"
+                    request: "/QuestionDescriptor/SelectReply/" + data.choice.get("id")
+                    + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/"
                 });
             },
             genMenuItems: function (question, startTime) {
@@ -267,8 +275,8 @@ YUI.add('wegas-crimesim', function (Y) {
                     ret.push({
                         type: "Button",
                         label: choice.get( "label" ) || choice.get( "name" ) || "undefined",
-                        value: {
-                            reply: choice,
+                        entity: {
+                            choice: choice,
                             startTime: startTime
                         },
                         disabled: (!choiceInstance.get("active") || this._perPeriodLoad[startTime] + choice.get("cost")  > perPeriodBudget)

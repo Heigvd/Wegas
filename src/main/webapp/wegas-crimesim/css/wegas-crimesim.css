@@ -308,24 +308,24 @@
     margin-bottom: 20px;
 }
 .wegas-mcqtabview  input {
-    margin: 5px;
     float: right;
     padding:5px;
 }
 .wegas-mcqtabview .replies {
 }
 .wegas-mcqtabview .reply {
-    margin-bottom: 5px;
-    margin-bottom: 20px;
-/*    margin: 5px;*/
+    margin: 5px;
+    margin-bottom: 10px;
 }
 .wegas-mcqtabview .reply.first-child {
     border:none;
 }
-.wegas-mcqtabview .reply bold {
-    font-weight: bold;
-    display:block;
-    margin-bottom:10px;
+.wegas-mcqtabview .reply .name {
+/*    font-weight: bold;*/
+}
+.wegas-mcqtabview .reply content {
+/*    font-weight: bold;*/
+    margin-bottom:5px;
 }
 .wegas-mcqtabview .unread {
     font-weight:bold;

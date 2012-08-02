@@ -104,7 +104,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-inbox': {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
-                        requires: ["tabview"],
+                        requires: [ "tabview" ],
                         ix_provides: 'InboxDisplay'
                     },
                     'wegas-form': {
@@ -240,14 +240,13 @@ YUI().use(function (Y) {
 
                     /** Project Management Game **/
                     'wegas-projectmanagementgame': {
-                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js',
-                        ix_provides: "todo"
+                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
                     },
 
                     /** CrimeSim **/
                     'wegas-mcqtabview': {
                         path: 'wegas-crimesim/js/wegas-mcqtabview-min.js',
-                        requires: ['tabview'],
+                        requires: [ 'tabview' ],
                         ix_provides: "MCQTabView"
                     },
                     'wegas-crimesim': {
