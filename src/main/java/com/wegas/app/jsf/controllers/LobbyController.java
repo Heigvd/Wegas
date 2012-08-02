@@ -20,9 +20,11 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.user.User;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.faces.bean.ManagedBean;
@@ -31,7 +33,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.NoResultException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 
@@ -79,6 +80,10 @@ public class LobbyController implements Serializable {
      *
      */
     private Player currentPlayer;
+    /**
+     *
+     */
+    private User currentUser;
 
     /**
      *
@@ -88,9 +93,18 @@ public class LobbyController implements Serializable {
 
     /**
      *
+     * @throws IOException if the target we dispatch to do not exist
+     */
+    @PostConstruct
+    public void init() throws IOException {
+        this.setCurrentUser(findUser());
+    }
+
+    /**
+     *
      * @return
      */
-    public User getCurrentUser() {
+    public User findUser() {
 
         final Subject subject = SecurityUtils.getSubject();
         try {
@@ -106,22 +120,6 @@ public class LobbyController implements Serializable {
                 throw e;
             }
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    public List<Player> getPlayers() {
-        return this.getCurrentUser().getPlayers();
-    }
-
-    /**
-     *
-     * @return
-     */
-    public List<GameModel> getGameModels() {
-        return gameModelFacade.findAll();
     }
 
     /**
@@ -158,6 +156,22 @@ public class LobbyController implements Serializable {
     public String joinTeam() {
         setCurrentPlayer(teamEntityFacade.joinTeam(this.getSelectedTeam().getId(), getCurrentUser().getId()));
         return "teamJoined";
+    }
+
+    /**
+     *
+     * @return
+     */
+    public List<Player> getPlayers() {
+        return this.getCurrentUser().getPlayers();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public List<GameModel> getGameModels() {
+        return gameModelFacade.findAll();
     }
 
     /**
@@ -208,6 +222,20 @@ public class LobbyController implements Serializable {
      */
     public void setCurrentPlayer(final Player currentPlayer) {
         this.currentPlayer = currentPlayer;
+    }
+
+    /**
+     * @return the currentUser
+     */
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    /**
+     * @param currentUser the currentUser to set
+     */
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 
     /**

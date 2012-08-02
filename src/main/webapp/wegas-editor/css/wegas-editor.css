@@ -598,6 +598,9 @@ img.inputEx-ListField-delButton {
     padding: 3px 20px 3px 10px;
     margin-top: 7px;
 }
+.wegas-layout-top .wegas-login {
+    float:right  !important;
+}
 .wegas-layout-top .yui3-button-hover, .wegas-layout-top .yui3-button:hover {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000',endColorstr='#26000000',GradientType=0),
         url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;

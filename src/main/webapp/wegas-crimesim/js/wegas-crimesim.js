@@ -24,24 +24,26 @@ YUI.add('wegas-crimesim', function (Y) {
     ScheduleDisplay = Y.Base.create("wegas-crimesim-scheduledisplay", Y.Widget,
         [Y.WidgetChild, Y.Wegas.Widget], {
 
+            CONTENT_TEMPLATE: '<div><div class="schedule-questions"></div><div class="schedule-detail"></div></div>',
+
             // *** Fields *** /
             menu: null,
 
             // *** Lifecycle Methods *** //
             renderUI: function () {
                 this.menu = new Y.Wegas.Menu();
-                this.get(CONTENTBOX).setContent('<div class="schedule-questions"></div><div class="schedule-detail"></div>');
             },
+
             bindUI: function () {
                 var cb = this.get(CONTENTBOX);
 
                 cb.delegate("click", function (e) {                             // Show the available menu options on cell click
-                    var questionId =  e.target.ancestor( "tr" ).getAttribute("data-questionid"),
-                    startTime = e.target.ancestor( "td" ).getAttribute("data-startTime"),
+                    var questionId =  e.target.ancestor( "tr" ).getAttribute( "data-questionid" ),
+                    startTime = e.target.ancestor( "td" ).getAttribute( "data-startTime" ) * 1,
                     question = Y.Wegas.VariableDescriptorFacade.rest.findById( questionId );
 
                     this.menu.removeAll();                                      // Populate the menu
-                    this.menu.add( this.genMenuItems(question, startTime) );
+                    this.menu.add( this.genMenuItems( question, startTime ) );
                     this.menu.attachTo( e.target );                             // Display the menu button next to the arrow
                 }, ".schedule-available .icon", this);
 
@@ -72,8 +74,6 @@ YUI.add('wegas-crimesim', function (Y) {
                 }
             },
 
-            // *** Model methods *** //
-
             // *** Rendering methods *** //
             syncSchedule: function () {
                 var perPeriodBudget = 15, perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
@@ -86,9 +86,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 totalPeriods = period.get("maxValue") - period.get("minValue"),
                 acc = [ '<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>' ],
                 cb = this.get(CONTENTBOX).one(".schedule-questions"),
-
                 currentTime = periodInstance.get( "value" ) - period.get( "minValue" );
-
 
                 this._perPeriodLoad = perPeriodLoad;
 
@@ -108,7 +106,7 @@ YUI.add('wegas-crimesim', function (Y) {
                     questionInstance = question.getInstance();
                     for (j = 0; j < questionInstance.get("replies").length; j += 1) {
                         reply = questionInstance.get("replies")[j];
-                        choiceDescriptor = this.getChoiceDescriptor(reply.get("choiceDescriptorId"));
+                        choiceDescriptor = reply.getChoiceDescriptor();
                         perPeriodLoad[reply.get("startTime")] += choiceDescriptor.get("cost");
                     }
                     questionInstances.push(questionInstance);
@@ -118,13 +116,12 @@ YUI.add('wegas-crimesim', function (Y) {
                     question = questionsVarDesc[i];
                     questionInstance = questionInstances[i];
 
-                    if (!questionInstance.get("active")) {
+                    if (!questionInstance.get("active")) {                      // Do not render inactive questions
                         continue;
                     }
 
                     acc.push('<tr data-questionId="' + question.get("id") + '"><td class="schedule-leftcolum" >' +
                         (question.get("label") || question.get("name") || "undefined") + "</td>");
-
                     cols = [];
                     names = [];
                     replies = [];
@@ -195,7 +192,7 @@ YUI.add('wegas-crimesim', function (Y) {
             currentQuestionId: null,
 
             syncDetailsPanel: function (questionId) {
-                var i, reply,
+                var i, reply, choiceDescriptor, status,
                 targetNode = this.get(CONTENTBOX).one(".schedule-detail"),
                 question = Y.Wegas.VariableDescriptorFacade.rest.findById(questionId),
                 questionInstance = question.getInstance(),
@@ -206,6 +203,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 question.get("label") || question.get("name") || "undefined",
                 '</h1><div class="content">',
                 question.get("description") || "<em>No description</em>",
+                '<div class="schedule-gallery"></div>',
                 '</div>'];
 
                 this.currentQuestionId = questionId;
@@ -216,15 +214,14 @@ YUI.add('wegas-crimesim', function (Y) {
                 }
 
                 for (i = 0; i < questionInstance.get("replies").length; i += 1) {
-
                     reply = questionInstance.get("replies")[i];
-
-                    var choiceDescriptor = reply.getChoiceDescriptor(),
+                    choiceDescriptor = reply.getChoiceDescriptor();
                     status = reply.getStatus( currentTime );
 
                     acc.push('<div class="schedule-detail-reply"><h3>Period ',
                         currentTime + 1 , ': ', choiceDescriptor.get("name") || "undefined",
                         '</h3><div class="content">');
+
                     if (status === 0) {
                         acc.push(choiceDescriptor.answer);
                     } else if (status === 1) {
@@ -240,12 +237,14 @@ YUI.add('wegas-crimesim', function (Y) {
                     position: 'display',
                     display:"block"
                 });
+
+                // @todo @cyril Render gallery widget here
+                targetNode.one(".schedule-gallery").setContent("Here is the gallery.");
             },
             hideDetails: function () {
-                var targetNode = this.get(CONTENTBOX).one(".schedule-detail");
-                targetNode.setStyles({
+                this.get(CONTENTBOX).one(".schedule-detail").setStyles({
                     position: 'display',
-                    display:"none"
+                    display: "none"
                 });
                 this.currentQuestionId = null;
             },
@@ -267,11 +266,24 @@ YUI.add('wegas-crimesim', function (Y) {
                     + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/"
                 });
             },
-            genMenuItems: function (question, startTime) {
-                var perPeriodBudget = 15, ret = [], i, choice, choiceInstance;
-                for (i = 0; i < question.get("items").length; i += 1) {
+            /**
+            * Return a list of possible actions on a given action at a given time.
+            */
+            genMenuItems: function ( question, startTime ) {
+                var perPeriodBudget = 15, ret = [], i, j, disabled, choice, choiceInstance;
+                for ( i = 0; i < question.get("items").length; i += 1 ) {
                     choice = question.get("items")[i];
                     choiceInstance = choice.getInstance();
+
+                    disabled = !choiceInstance.get("active") ||                 // Check if the choice is active
+                    this._perPeriodLoad[startTime] + choice.get("cost")         // and if we have enough resources
+                    > perPeriodBudget;
+
+                    for ( j = 0; j < choice.get( "duration" ); j = j + 1 ) {
+                        disabled = disabled                                     // finally we check if there is no other task assigned for this timeslot
+                        || question.getRepliesByStartTime( startTime + j ).length > 0;
+                    }
+                    //this._perPeriodLoad[]
                     ret.push({
                         type: "Button",
                         label: choice.get( "label" ) || choice.get( "name" ) || "undefined",
@@ -279,7 +291,7 @@ YUI.add('wegas-crimesim', function (Y) {
                             choice: choice,
                             startTime: startTime
                         },
-                        disabled: (!choiceInstance.get("active") || this._perPeriodLoad[startTime] + choice.get("cost")  > perPeriodBudget)
+                        disabled: disabled
                     });
                 }
                 return ret;

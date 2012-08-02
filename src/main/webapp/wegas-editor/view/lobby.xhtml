@@ -13,6 +13,7 @@
                         layoutSrc: 'wegas-editor/db/wegas-lobby-layout.json',
                         lang : 'en-US',
                         debug : true,
+                        currentUser: #{lobbyController.getCurrentUser().toJson()},
                         dataSources: {
                             "GameModel": {
                                 source: "rest/GameModel",

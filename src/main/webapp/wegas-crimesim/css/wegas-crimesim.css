@@ -66,7 +66,7 @@
     position: absolute;
     right: 0;
     top: 0;
-    width: 880px;
+    width: 890px;
     min-height: 140px;
     border-right: none;
     border-top: none;
@@ -124,13 +124,12 @@
     font-size: 7pt;
     border-bottom: none;
 }
-.schedule-table .schedule-leftcolum {
-    /*width:150px;*/
-    text-align: left;
-}
 .schedule-table td.schedule-leftcolum {
-    /*width:150px;*/
+    text-align: left;
     cursor: pointer;
+}
+.schedule-table td.schedule-leftcolum:hover {
+    background: lightgray;
 }
 .schedule-table .schedule-maincolum {
     width:80px;
@@ -146,12 +145,6 @@
 .schedule-table .schedule-available div:hover .icon {
     background: transparent url(/Wegas/wegas-editor/images/wegas-editor-sprite.png) no-repeat 25px 3px;
     cursor:pointer;
-}
-.yui3-scheduledisplay-menu {
-    position: absolute;
-}
-.yui3-scheduledisplay-menu-hidden {
-    display: none;
 }
 
 .schedule-table .schedule-task > div {
@@ -309,7 +302,6 @@
 }
 .wegas-mcqtabview  input {
     float: right;
-    padding:5px;
 }
 .wegas-mcqtabview .replies {
 }

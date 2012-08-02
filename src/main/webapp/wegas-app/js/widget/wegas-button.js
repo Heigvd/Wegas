@@ -43,31 +43,74 @@ YUI.add('wegas-button', function (Y) {
         // *** Lifecycle Methods *** //
         initializer: function () {
             Button.superclass.initializer.apply( this, arguments);
-            this.publish( "click", {
-                emitFacade: true,
-                bubbles: true
-            });
+
+            //this.constructor.CSS_PREFIX = "yui3-button";                      // Revert changes done by Y.Wegas.Widget so styling will work
+            this._cssPrefix = "yui3-button";
 
             if ( this.get( "tooltips" ) ) {
                 this.plug(Y.Plugin.Tooltip, {
                     content: this.get( "tooltips" )
                 });
             }
+        },
+        renderUI: function () {
+            Button.superclass.renderUI.apply( this, arguments);
+            this.get(BOUNDINGBOX).addClass("wegas-button");
         }
     }, {
         ATTRS: {
             tooltips: {},
             entity: {},                                                         // @fixme Those two attributes are used in the editor to delete and update an item
             dataSource: {}
-        },
-        CSS_PREFIX:"yui3-button wegas-button"
+        }
     });
 
     Y.namespace('Wegas').Button = Button;
 
+    /**
+     *  @class OpenGameAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var OpenUrlAction = function () {
+        OpenUrlAction.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(OpenUrlAction, {
+        NS: "openurlaction",
+        NAME: "OpenUrlAction"
+    });
+
+    Y.extend(OpenUrlAction, Y.Plugin.Base, {
+        executeAction: function () {
+            var targetUrl  = Y.Wegas.app.get( "base" ) + this.get("url");
+
+            if ( this.get( "target" ) === "blank") {
+                window.open( targetUrl );
+            } else {
+                window.location.href = targetUrl;
+            }
+        },
+
+        initializer: function () {
+            this.afterHostEvent( "click", this.executeAction, this );
+        }
+    }, {
+        ATTRS: {
+            url: { },
+            /**
+             * Can be "self" or "blank"
+             */
+            target: {
+                value : "blank"
+            }
+        }
+    });
+
+    Y.namespace( "Plugin" ).OpenUrlAction = OpenUrlAction;
 
     /**
-     *  Plugin which adds an unread message counter to a widget.
+     * Plugin which adds an unread message counter to a widget.
      *
      * @class Y.Wegas.UnreadCount
      */
@@ -136,28 +179,48 @@ YUI.add('wegas-button', function (Y) {
 
     Y.namespace('Plugin').UnreadCount = UnreadCount;
 
-
     /**
      * Login button
      */
-    LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    LoginButton = Y.Base.create("wegas-login", Y.Wegas.Button, [], {
         bindUI: function () {
+            Y.Wegas.LoginButton.superclass.bindUI.apply( this, arguments );
+
             Y.Wegas.GameFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
+            this.plug( Y.Plugin.WidgetMenu, {
+                children: [{
+                    type: "Button",
+                    label: "Preferences",
+                    disabled: true
+                }, {
+                    type: "Button",
+                    label: "Logout",
+                    plugins: [{
+                        fn: "OpenUrlAction",
+                        cfg: {
+                            url: "wegas-app/view/logout.html",
+                            target: "self"
+                        }
+                    }]
+                }]
+            });
         },
         syncUI: function () {
-            var cPlayer = Y.Wegas.app.dataSources.Game.rest.getCurrentPlayer(),
-            cTeam = Y.Wegas.app.dataSources.Game.rest.getCurrentTeam(),
-            name = "undefined";
+            Y.Wegas.LoginButton.superclass.syncUI.apply( this, arguments );
+
+            var cUser = Y.Wegas.app.get( "currentUser" ),
+            cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer(),
+            cTeam = Y.Wegas.GameFacade.rest.getCurrentTeam(),
+            name = cUser.name || "undefined";
 
             if (cPlayer) {
                 name = cPlayer.get( "name" );
             }
             if (cTeam) {
-                name = cTeam.get( "name" ) + ":" + name;
+                name = cTeam.get( "name" ) + " : " + name;
             }
-
-            this.get(CONTENTBOX).setContent('[' + name + '] <a href="' + Y.Wegas.app.get('base') + 'wegas-app/view/logout.html">logout</a>');
+            this.set( "label", name );
         }
     }, {
         ATTRS : {

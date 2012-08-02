@@ -35,8 +35,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             this.afterHostEvent( "click", function () {
                 var menu = this.getMenu();                                      // Get a menu instance
 
-                menu.attachTo( this.get( "host" ).get( "boundingBox" ) );       // Attach it to the target node
-                menu.addTarget(this);
+                menu.attachTo( this.get( "host" ).get( "boundingBox" ), this ); // Attach it to the target node
                 menu.removeAll();                                               // Empty the node current content
                 try {
                     menu.add( this.get("children") );                           // And place the widget found in the config
@@ -93,7 +92,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             bindUI: function () {
                 this.on( "*:click", function ( e ) {                            // @hack in order for event to be bubbled up
                     //Y.log("fix");
-                }, this);
+                    }, this);
             },
 
             // *** Public methods *** //
@@ -104,6 +103,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             *
             * @method attachTo
             */
+            currentTarget: null,
 
             attachTo: function ( node , eventTarget) {
                 this.cancelMenuTimer();
@@ -115,6 +115,14 @@ YUI.add('wegas-widgetmenu', function (Y) {
                     node: node,
                     points: [ "tl", "bl" ]
                 });
+
+                if ( this.currentTarget ) {
+                    this.removeTarget( this.currentTarget );
+                }
+                if ( eventTarget ){
+                    this.addTarget( eventTarget );
+                }
+                this.currentTarget = eventTarget;
             },
 
             // *** Private methods *** //

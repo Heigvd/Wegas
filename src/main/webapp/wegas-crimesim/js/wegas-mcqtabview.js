@@ -130,11 +130,6 @@ YUI.add('wegas-mcqtabview', function (Y) {
                     this.dataSource.rest.put(this.questionInstance);
                 });
             }
-        },
-
-        // *** Model methods *** //
-        getChoiceDescriptor: function(id) {
-            return this.dataSource.rest.getCachedVariableById(id);
         }
     });
 

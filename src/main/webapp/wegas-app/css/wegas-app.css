@@ -15,6 +15,7 @@
 /* Override some browser styles */
 input[type="submit"], input[type="reset"] {
     padding:2px 4px;
+    cursor: pointer;
 }
 /* YUI3 Buttons Styles */
 .yui3-button-hidden {

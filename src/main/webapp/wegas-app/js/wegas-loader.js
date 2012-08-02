@@ -65,7 +65,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: [ 'wegas-widget', 'wegas-tooltip', 'plugin', 'button' ],
+                        requires: [ 'wegas-widget', 'wegas-widgetmenu', 'wegas-tooltip', 'plugin', 'button' ],
                         ix_provides: 'Button'
                     },
                     'wegas-tooltip': {
@@ -125,7 +125,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-inputex-rte': {
                         path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',
-                        requires: ['inputex-field', 'yui2-editor', 'panel'],
+                        requires: ['inputex-field', 'yui2-editor', 'panel', 'wegas-fileexplorer' ],
                         ix_provides: 'html'
                     },
                     'wegas-inputex-hashlist': {
