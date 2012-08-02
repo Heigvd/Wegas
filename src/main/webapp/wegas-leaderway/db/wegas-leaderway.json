@@ -89,28 +89,104 @@
             "name": "resources",
             "items":[{
                     "@class": "ResourceDescriptor",
-                    "name": "Salzmann",
-                    "description":"Test de description.",
+                    "name": "Salmero",
+                    "description":"Fernand est franc et n'hésitera pas à vous dire ce qui ne lui convient pas. Engagé pour ses talents de négociateur, il a de l’intérêt pour le web. Expérimenté par une vie de travail, il semble retissant à l'apprentissage de nouvelles méthodes.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
-                        "moral":80,
-                        "confidence":50,
+                        "moral":72,
+                        "confidence":27,
                         "properties":{
-                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/1/read/portraitFernand.png",
                             "surname":"Fernand",
-                            "salary":1200,
-                            "leadershipLevel":2,
+                            "male":true,
+                            "salary":4000,
+                            "leadershipLevel":1,
                             "lastWorkQuality":70,
                             "wish":"",
                             "hate":"",
-                            "frankness":85,
+                            "frankness":90,
                             "numberOfWorkWithLeader":0,
                             "totalExperienceGained":0,
-                            "learningCoefficient":1
+                            "learningCoefficient":0.7,
+                            "dialogue":""
                         },
                         "skillset":{
-                            "Design graphique":30,
-                            "Négociation":75
+                            "Design graphique":35,
+                            "Développement de base de données":14,
+                            "Développement logiciel":0,
+                            "Langages Web":32,
+                            "Modélisation des traitements":25,
+                            "Negociation": 84
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "ResourceDescriptor",
+                    "name": "Brossard",
+                    "description":"Employé de longue date, elle s'est fait un nom grâce à ses talents de graphiste. Son expérience l’a rend compétentes dans la plupart des tâches et lui permet d’apprend vite. Elle n'hésitera que rarement à vous prévenir si quelque chose la dérange.",
+                    "defaultVariableInstance":{
+                        "@class":"ResourceInstance",
+                        "moral":45,
+                        "confidence":30,
+                        "properties":{
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/1/read/portraitDaniela.png",
+                            "surname":"Daniela",
+                            "male":false,
+                            "salary":3800,
+                            "leadershipLevel":1,
+                            "lastWorkQuality":48,
+                            "wish":"",
+                            "hate":"",
+                            "frankness":65,
+                            "numberOfWorkWithLeader":0,
+                            "totalExperienceGained":0,
+                            "learningCoefficient":1.2,
+                            "dialogue":""
+                        },
+                        "skillset":{
+                            "Design graphique":73,
+                            "Développement de base de données":23,
+                            "Développement logiciel":0,
+                            "Langages Web":44,
+                            "Modélisation des traitements":10,
+                            "Negociation": 54
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                },{
+                    "@class": "ResourceDescriptor",
+                    "name": "Vogt",
+                    "description":"Jessica a fini sa formation récemment et connait bien les dernières bonnes pratiques concernant les langages Web. Elle a quelque peu de la peine à prendre le point de vue des clients, ce qui la relativement mauvaise en design par exemple.",
+                    "defaultVariableInstance":{
+                        "@class":"ResourceInstance",
+                        "moral":50,
+                        "confidence":34,
+                        "properties":{
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/1/read/portraitJessica.png",
+                            "surname":"Jessica",
+                            "male":false,
+                            "salary":3300,
+                            "leadershipLevel":1,
+                            "lastWorkQuality":52,
+                            "wish":"",
+                            "hate":"",
+                            "frankness":50,
+                            "numberOfWorkWithLeader":0,
+                            "totalExperienceGained":0,
+                            "learningCoefficient":1,
+                            "dialogue":""
+                        },
+                        "skillset":{
+                            "Design graphique":12,
+                            "Développement de base de données":49,
+                            "Développement logiciel":24,
+                            "Langages Web":62,
+                            "Modélisation des traitements":38,
+                            "Negociation": 8
                         }
                     },
                     "scope": {
@@ -119,30 +195,33 @@
                 },{
                     "@class": "ResourceDescriptor",
                     "name": "Auguste",
-                    "description":"sans description",
+                    "description":"Hector est un développeur logiciel plutôt compétent, alliant connaissances théoriques fraîches et expérience pratique. Parfois un peu brusque, il vous expliquera assez vite son opinion sur les choses qui le dérangent.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
-                        "moral":95,
-                        "confidence":40,
+                        "moral":85,
+                        "confidence":37,
                         "properties":{
-                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
-                            "surname":"Hercule",
-                            "salary":1500,
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/53/read/portraitHector.png",
+                            "surname":"Hector",
+                            "male":true,
+                            "salary":3400,
                             "leadershipLevel":1,
-                            "lastWorkQuality":75,
-                            "wish":"Développement logiciel",
-                            "hate":"Design graphique",
+                            "lastWorkQuality":89,
+                            "wish":"",
+                            "hate":"",
                             "frankness":85,
                             "numberOfWorkWithLeader":0, 
                             "totalExperienceGained":0,
-                            "learningCoefficient":1
+                            "learningCoefficient":1.2,
+                            "dialogue":""
                         },
                         "skillset":{
-                            "Langages Web":85,
-                            "Développement de base de données":78,
-                            "Modélisation des traitements":86,
-                            "Développement logiciel":80,
-                            "Design graphique":34
+                            "Design graphique":5,
+                            "Développement de base de données":34,
+                            "Développement logiciel":64,
+                            "Langages Web":40,
+                            "Modélisation des traitements":65,
+                            "Negociation": 2
                         }
                     },
                     "scope": {
@@ -150,29 +229,34 @@
                     }
                 },{
                     "@class": "ResourceDescriptor",
-                    "name": "Boniface",
-                    "description":"Description du personnage",
+                    "name": "Torr",
+                    "description":"Lucien est le cadet de l'équipe. Il a consacrés toutes ses études aux bases de données. Assez mystérieux et peu bavard, il ne donne que rarement son avis sur les décisions prises. Même celles qui le concerne directement.",
                     "defaultVariableInstance":{
                         "@class":"ResourceInstance",
-                        "moral":60,
-                        "confidence":70,
+                        "moral":50,
+                        "confidence":9,
                         "properties":{
-                            "picture":"http://www.clker.com/cliparts/5/9/4/c/12198090531909861341man%20silhouette.svg.med.png",
-                            "surname":"Laurentin",
-                            "salary":1300,
+                            "picture":"http://localhost:8080/Wegas/rest/File/GameModelId/1/read/portraitLucien.png",
+                            "surname":"Lucien",
+                            "male":true,
+                            "salary":3500,
                             "leadershipLevel":1,
-                            "lastWorkQuality":60,
+                            "lastWorkQuality":66,
                             "wish":"",
-                            "hate":"Négociation",
-                            "frankness":35,
+                            "hate":"",
+                            "frankness":10,
                             "numberOfWorkWithLeader":0,
                             "totalExperienceGained":0,
-                            "learningCoefficient":1
+                            "learningCoefficient":1,
+                            "dialogue":"dialogueLucien"
                         },
                         "skillset":{
-                            "Langages Web":67,
-                            "Développement de base de données":44,
-                            "Design graphique":57
+                            "Design graphique":12,
+                            "Développement de base de données":72,
+                            "Développement logiciel":25,
+                            "Langages Web":26,
+                            "Modélisation des traitements":34,
+                            "Negociation": 45
                         }
                     },
                     "scope": {
@@ -336,6 +420,17 @@
                     "scope": {
                         "@class": "TeamScope"
                     }
+                },{
+                    "@class": "TaskDescriptor",
+                    "name": "sickness2",
+                    "description":"",
+                    "defaultVariableInstance":{
+                        "@class":"TaskInstance",
+                        "duration":2
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
                 }],
             "defaultVariableInstance":{
                 "@class": "NumberInstance",
@@ -347,7 +442,7 @@
         },
         {
             "@class" : "DialogueDescriptor",
-            "name" : "dialogues",
+            "name" : "dialogueLucien",
             "defaultVariableInstance" : {
                 "@class" : "FSMInstance",
                 "currentStateId" : 1
@@ -358,16 +453,35 @@
             "states" : {
                 "1" : {
                     "@class" : "DialogueState",
-                    "text" : "{\"speakerName\":\"Boniface\",\"text\":\"Bonjours, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343217993-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "text" : "{\"speakerName\":\"Lucien\",\"texts\":[\"Texte aléatoire 1 : Bonjours, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 2 : Salut, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\",\"Texte aléatoire 3 : Ciao, je suis là pour vous présenter un long texte. Les problèmes liés à mon apparence sont dû à deux choses : la compression de mon sprite ainsi que le fait que mon designer ne m'a pas finit, je ne suis qu'une esquisse de moi-même.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [{
                             "@class" : "DialogueTransition",
-                            "actionText" : "Si je fais ça, je vais dans l'état 2",
+                            "actionText" : "Aller à l'état 2",
                             "nextStateId" : 2,
-                            "triggerCondition" : {
+                            "preStateImpact" : {
                                 "@class" : "Script",
-                                "content" : "C'est possible d'avoir un script aussi ...",
+                                "content" : "Un script exécuté au passage de la transition (n'est pour le moment pas évalué)",
                                 "language" : "JavaScript"
+                            }
+                        },{
+                            "@class" : "DialogueTransition",
+                            "actionText" : "Aller à l'état 3",
+                            "nextStateId" : 3,
+                            "triggerCondition" : {
+                                    "@class" : "Script",
+                                    "content" : "budget.value <= 29000;",
+                                    "language" : "JavaScript"
                             },
+                            "preStateImpact" : {
+                                "@class" : "Script",
+                                "content" : "Un script exécuté au passage de la transition (n'est pour le moment pas évalué)",
+                                "language" : "JavaScript"
+                            }
+                        },
+{
+                            "@class" : "DialogueTransition",
+                            "actionText" : "Aller à l'état 4",
+                            "nextStateId" : 4,
                             "preStateImpact" : {
                                 "@class" : "Script",
                                 "content" : "Un script exécuté au passage de la transition (n'est pour le moment pas évalué)",
@@ -378,11 +492,31 @@
                 },
                 "2" : {
                     "@class" : "DialogueState",
-                    "text":"{\"speakerName\":\"Boniface\",\"text\":\"Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\",\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343217993-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "text":"{\"speakerName\":\"Lucien\",\"texts\":[\"Etat 2, Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                     "transitions" : [],
                     "onEnterEvent" : {
                         "@class" : "Script",
-                        "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self).setMoral(30);",
+                        "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self).setMoral(15);",
+                        "language" : "JavaScript"
+                    }
+                },
+                "3" : {
+                    "@class" : "DialogueState",
+                    "text":"{\"speakerName\":\"Lucien\",\"texts\":[\"Etat 3, Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "transitions" : [],
+                    "onEnterEvent" : {
+                        "@class" : "Script",
+                        "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self).setMoral(19);",
+                        "language" : "JavaScript"
+                    }
+                },
+                "4" : {
+                    "@class" : "DialogueState",
+                    "text":"{\"speakerName\":\"Lucien\",\"texts\":[\"Etat 4, Mon dialogue s'arrête ici. Y a plus rien à voir pour l'instant.\"],\"backgroundImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343330995-background.jpg\",\"height\":\"315px\",\"width\":\"980px\",\"css\": {}}],\"questionImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343227926-persofache.gif\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}],\"answerImages\":[{\"link\":\"http://image.noelshack.com/fichiers/2012/30/1343228117-persofache.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                    "transitions" : [],
+                    "onEnterEvent" : {
+                        "@class" : "Script",
+                        "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self).setMoral(50);",
                         "language" : "JavaScript"
                     }
                 }
