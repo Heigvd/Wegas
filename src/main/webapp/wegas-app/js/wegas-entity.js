@@ -175,7 +175,10 @@ YUI.add('wegas-entity', function (Y) {
         },
         ATTRS: {
             id: Y.mix(IDATTRDEF, {
-                writeOnce: "initOnly"
+                writeOnce: "initOnly",
+                setter: function ( val ) {
+                    return val * 1;
+                }
             }),
             '@class': {
                 value: "null",
@@ -777,7 +780,11 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * QuestionDescriptor mapper
      */
-    Y.Wegas.persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", Y.Wegas.persistence.ListDescriptor, [], {}, {
+    Y.Wegas.persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", Y.Wegas.persistence.ListDescriptor, [], {
+        getRepliesByStartTime: function ( startTime ) {
+            return this.getInstance().getRepliesByStartTime( startTime );
+        }
+    }, {
         ATTRS:{
             "@class":{
                 type: "string",
@@ -833,7 +840,17 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * QuestionInstance mapper
      */
-    Y.Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+    Y.Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Y.Wegas.persistence.VariableInstance, [], {
+        getRepliesByStartTime: function ( startTime ) {
+            var i, ret = [], replies = this.get( "replies" );
+            for (i = 0; i < replies.length; i = i + 1 ) {
+                if ( replies[i].get( "startTime" ) === startTime ) {
+                    ret.push( replies[i] );
+                }
+            }
+            return ret;
+        }
+    }, {
         ATTRS: {
             "@class":{
                 value:"QuestionInstance"
@@ -858,7 +875,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * ChoiceDescriptor mapper
      */
-    Y.Wegas.persistence.ChoiceDescriptor = Y.Base.create("ChoiceDescriptor", Y.Wegas.persistence.ListDescriptor, [], {}, {
+    Y.Wegas.persistence.ChoiceDescriptor = Y.Base.create("ChoiceDescriptor", Y.Wegas.persistence.ListDescriptor, [], { }, {
         ATTRS:{
             "@class":{
                 value:"ChoiceDescriptor"
@@ -941,20 +958,22 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * MCQ ChoiceInstance mapper
      */
-    Y.Wegas.persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
-        ATTRS: {
-            "@class":{
-                value:"ChoiceInstance"
-            },
-            active: {
-                value: true,
-                type: "boolean",
-                _inputex: {
-                    label:'Active'
+    Y.Wegas.persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", Y.Wegas.persistence.VariableInstance, [], {
+
+        }, {
+            ATTRS: {
+                "@class":{
+                    value:"ChoiceInstance"
+                },
+                active: {
+                    value: true,
+                    type: "boolean",
+                    _inputex: {
+                        label:'Active'
+                    }
                 }
             }
-        }
-    });
+        });
     /**
      * MCQ Reply mapper
      */
@@ -988,14 +1007,17 @@ YUI.add('wegas-entity', function (Y) {
                 }
             },
             startTime: {
-                type: "string"
+                type: "string",
+                setter: function ( val ) {
+                    return val * 1;
+                }
             }
         }
     });
 
     /**
-     * ResourceDescriptor mapper
-     */
+ * ResourceDescriptor mapper
+ */
     Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS: {
             "@class":{
@@ -1056,8 +1078,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-     * ResourceInstance mapper
-     */
+ * ResourceInstance mapper
+ */
     Y.Wegas.persistence.ResourceInstance = Y.Base.create("ResourceInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS:{
             "@class":{
@@ -1099,8 +1121,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-     * TaskDescriptor mapper
-     */
+ * TaskDescriptor mapper
+ */
     Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS:{
             "@class":{
@@ -1148,8 +1170,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-     * TaskInstance mapper
-     */
+ * TaskInstance mapper
+ */
     Y.Wegas.persistence.TaskInstance = Y.Base.create("TaskInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS:{
             "@class":{
@@ -1177,8 +1199,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-     * Assignement mapper
-     */
+ * Assignement mapper
+ */
     Y.Wegas.persistence.Assignment = Y.Base.create("Assignment", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS:{
             "@class":{
@@ -1198,8 +1220,8 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
     /**
-     * InboxInstance mapper
-     */
+ * InboxInstance mapper
+ */
     Y.Wegas.persistence.InboxInstance = Y.Base.create("InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS: {
             "@class":{
@@ -1212,8 +1234,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-     * Message mapper
-     */
+ * Message mapper
+ */
     Y.Wegas.persistence.Message = Y.Base.create("Message", Y.Wegas.persistence.Entity, [], { }, {
         ATTRS: {
             "@class":{
@@ -1229,8 +1251,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-     * Script mapper
-     */
+ * Script mapper
+ */
     Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
         isValid: function (){
         //TODO : FX a greffer :)
@@ -1276,9 +1298,9 @@ YUI.add('wegas-entity', function (Y) {
 
 
     /*
-     * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORM values here, so
-     * we can use other object's existing declaration.
-     */
+ * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORM values here, so
+ * we can use other object's existing declaration.
+ */
     Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields = [
     Y.mix({
         name: 'NumberDescriptor',
