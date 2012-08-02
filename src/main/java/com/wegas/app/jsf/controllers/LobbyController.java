@@ -97,7 +97,7 @@ public class LobbyController implements Serializable {
             return userFacade.getUserByPrincipal(subject.getPrincipal().toString());
         }
         catch (EJBException e) {                                                   // If the user is logged in but we cannot find a
-            if (e.getCause() instanceof PersistenceException ) {                // corresponding account, that means we need to create one.
+            if (e.getCause() instanceof PersistenceException) {                // corresponding account, that means we need to create one.
                 User newUser = new User();
                 newUser.setName(subject.getPrincipal().toString());
                 userFacade.create(newUser);
@@ -128,13 +128,13 @@ public class LobbyController implements Serializable {
      *
      * @return
      */
-    public String joinGame() throws EJBException {
+    public String joinGame() throws Exception {
         try {
             this.currentGame = gameFacade.findByToken(this.gameToken);
             return "gameJoined";
         }
-        catch (EJBException e) {
-            if (e.getCausedByException() instanceof NoResultException) {
+        catch (Exception e) {
+            if (e.getCause() instanceof PersistenceException) {
                 JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("wegas-app.Bundle").getString("LobbyPage_GameNotFound"));
                 return null;
             } else {
