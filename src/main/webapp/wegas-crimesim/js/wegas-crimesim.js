@@ -78,7 +78,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 questionInstances = [],
                 period = Y.Wegas.VariableDescriptorFacade.rest.find('name', "period"),
                 periodInstance = period.getInstance(),
-                acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
+                acc = [ '<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>' ],
                 cb = this.get(CONTENTBOX).one(".schedule-questions"),
 
                 currentTime = periodInstance.get( "value" ) - period.get( "minValue" );

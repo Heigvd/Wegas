@@ -32,26 +32,13 @@ YUI.add('wegas-tooltip', function (Y) {
     Y.extend(TooltipPlg, Y.Plugin.Base, {
         initializer: function () {
             //            this.afterHostEvent("click", function() {
-            var tt = TooltipPlg.getTooltipWidget();
+            var tt = Tooltip.getTooltipWidget();
             tt.addTriggerNode( this.get( "host" ).get( "boundingBox" ),
                 this.get( "content" ));
         }
     }, {
         ATTRS: {
             content: { }
-        },
-        getTooltipWidget: function () {
-            if (!TooltipPlg.tt) {
-                TooltipPlg.tt = new Tooltip({
-                    triggerNodes: new Y.NodeList(),
-                    delegate: "body",
-                    content: {},
-                    shim: false,
-                    zIndex: 26,
-                    render: true
-                });
-            }
-            return TooltipPlg.tt;
         }
     });
 
@@ -498,6 +485,22 @@ YUI.add('wegas-tooltip', function (Y) {
              */
             xy: {
                 value:[OX, OY]
+            },
+            /**
+             * Retrieves a singleton of the tt instance.
+             */
+            getInstance: function () {
+                if (!Tooltip.tt) {
+                    Tooltip.tt = new Tooltip({
+                        triggerNodes: new Y.NodeList(),
+                        delegate: "body",
+                        content: {},
+                        shim: false,
+                        zIndex: 26,
+                        render: true
+                    });
+                }
+                return Tooltip.tt;
             }
         }
     });
