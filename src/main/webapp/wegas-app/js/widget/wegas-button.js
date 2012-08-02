@@ -118,7 +118,8 @@ YUI.add('wegas-button', function (Y) {
             if (descriptor.get("items")) {                                      // For ListDescriptors, we count the children instance's
                 for (i = 0; i < descriptor.get("items").length; i = i + 1) {
                     instance = descriptor.get("items")[i].getInstance();
-                    count += instance.get("unread") ? 1 : 0;
+                    //count += instance.get("unread") ? 1 : 0;
+                    count += instance.get("replies").length === 0 ? 1 : 0;
                 }
             }
 

@@ -133,15 +133,16 @@ input[type="submit"], input[type="reset"] {
 }
 
 /* Menu styles */
-.yui3-menu-hidden {
-    display:none;
-
-}
 .yui3-menu {
     background: white;
     border: 1px solid lightgray;
     box-shadow: 2px 3px 5px #6D6D6D;
     z-index: 100;
+    position: absolute;
+}
+.yui3-menu-hidden {
+    display:none;
+
 }
 .yui3-menu .wegas-text {
     font-size: 11px;

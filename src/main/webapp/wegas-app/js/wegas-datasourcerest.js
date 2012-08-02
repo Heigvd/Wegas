@@ -357,13 +357,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
                     for (i in instances) {
                         if (instances[i].get("id") == entity.get( "id" )) {
-                            instances[i].setAttrs( found.getAttrs() )
+                            instances[i].setAttrs( entity.getAttrs() );
                         }
                     }
                     return true;
                 });
             } else {
-                VariableDescriptorDataSourceREST.superclass.updateCache.apply( this, arguments );
+                return VariableDescriptorDataSourceREST.superclass.updateCache.apply( this, arguments );
             }
         },
 

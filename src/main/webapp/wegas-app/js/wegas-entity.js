@@ -958,7 +958,25 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * MCQ Reply mapper
      */
-    Y.Wegas.persistence.Reply = Y.Base.create("Reply", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.Reply = Y.Base.create("Reply", Y.Wegas.persistence.Entity, [], {
+        getChoiceDescriptor: function () {
+            return Y.Wegas.VariableDescriptorFacade.rest.findById( this.get( "choiceDescriptorId" ) );
+        },
+        /**
+         *  @return 0 if is finished, 1 if ongoing and 2 if planified
+         */
+        getStatus: function ( time ) {
+            var choiceDescriptor = this.getChoiceDescriptor();
+
+            if ((this.get("startTime") + choiceDescriptor.get("duration")) <= time) {
+                return 0;
+            } else if (this.get("startTime") <= time) {
+                return 1;
+            } else {
+                return 2;
+            }
+        }
+    }, {
         ATTRS: {
             "@class":{
                 value:"Reply"

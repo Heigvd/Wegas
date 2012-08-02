@@ -153,9 +153,10 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
             //    entityManager.flush();
             //}
         }
-        catch (javax.persistence.NoResultException e) {
-            throw new PersistenceException(e);
+        catch (javax.persistence.NoResultException e) {                         // NoResultException are caught and wrapped exception
+            throw new PersistenceException(e);                                  // so they do not cause transaction rollback
         }
+
         return o;
     }
 }
