@@ -26,7 +26,7 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
-                        'wegas-datasourcerest', 'wegas-scripteval',
+                        'wegas-datasourcerest', 'wegas-scripteval', 'wegas-gallery',
                         'wegas-entity', 'statemachine-entities',
                         'stylesheet', 'wegas-widget', 'wegas-list',
                         'wegas-pageloader', 'wegas-button',
@@ -116,6 +116,15 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
                         requires: ['wegas-widget', 'inputex-select', 'inputex-string', 'button'],
                         ix_provides: "JoinGameWidget"
+                    },
+                    'wegas-gallerycss':{
+                        path:'wegas-app/css/wegas-gallery.css',
+                        type:'css'
+                    },
+                    'wegas-gallery': {
+                        path:'wegas-app/js/widget/wegas-gallery-min.js',
+                        requires: ['wegas-widget', 'scrollview-base', 'scrollview-paginator', 'wegas-gallerycss', 'stylesheet'],
+                        ix_provides: "WegasGallery"
                     },
 
                     /** Inputex Fields **/
