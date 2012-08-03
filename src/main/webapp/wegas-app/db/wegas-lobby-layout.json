@@ -6,6 +6,9 @@
             "type": "Text",
             "content": "Lobby",
             "cssClass": "wegas-editor-title"
+        },{
+            "type": "LoginButton",
+            "cssClass": "menu-loginbutton"
         }]
     },
     "left": {

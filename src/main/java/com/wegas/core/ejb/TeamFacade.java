@@ -9,6 +9,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -57,7 +58,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         g.getGameModel().propagateDefaultVariableInstance(false);
     }
 
-    public Team findByToken(String token) {
+    public Team findByToken(String token) throws PersistenceException {
         Query findByToken = em.createNamedQuery("findTeamByToken");
         findByToken.setParameter("token", token);
         return (Team) findByToken.getSingleResult();

@@ -26,8 +26,8 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
-                        'wegas-datasourcerest', 'wegas-scripteval', 'wegas-gallery',
-                        'wegas-entity', 'statemachine-entities',
+                        'wegas-datasourcerest', 'wegas-scripteval',
+                        'wegas-entity', 'wegas-mcq-entities', 'statemachine-entities',
                         'stylesheet', 'wegas-widget', 'wegas-list',
                         'wegas-pageloader', 'wegas-button',
                         //'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
@@ -45,12 +45,18 @@ YUI().use(function (Y) {
                         path:'wegas-app/js/wegas-scripteval-min.js',
                         requires:['plugin']
                     },
+
+                    /** Persistence **/
                     'wegas-entity': {
-                        path: 'wegas-app/js/wegas-entity-min.js',
+                        path: 'wegas-app/js/persistence/wegas-entity-min.js',
                         requires: ['base', 'wegas-inputex', 'inputex-jsonschema']
                     },
                     'statemachine-entities': {
-                        path: 'wegas-app/js/statemachine-entities-min.js',
+                        path: 'wegas-app/js/persistence/statemachine-entities-min.js',
+                        requires: ['wegas-entity']
+                    },
+                    'wegas-mcq-entities': {
+                        path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
                         requires: ['wegas-entity']
                     },
 
@@ -65,7 +71,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: [ 'wegas-widget', 'wegas-tooltip', 'plugin', 'button' ],
+                        requires: [ 'wegas-widget', 'wegas-widgetmenu', 'wegas-tooltip', 'plugin', 'button' ],
                         ix_provides: 'Button'
                     },
                     'wegas-tooltip': {
@@ -104,7 +110,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-inbox': {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
-                        requires: ["tabview"],
+                        requires: [ "tabview" ],
                         ix_provides: 'InboxDisplay'
                     },
                     'wegas-form': {
@@ -134,13 +140,18 @@ YUI().use(function (Y) {
                     },
                     'wegas-inputex-rte': {
                         path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',
-                        requires: ['inputex-field', 'yui2-editor', 'panel'],
+                        requires: ['inputex-field', 'yui2-editor', 'panel', 'wegas-fileexplorer' ],
                         ix_provides: 'html'
                     },
                     'wegas-inputex-hashlist': {
                         path: 'wegas-app/js/widget/wegas-inputex-hashlist-min.js',
                         requires: ['inputex-list'],
                         ix_provides: 'hashlist'
+                    },
+                    'wegas-inputex-script': {
+                        path: 'wegas-app/js/widget/wegas-inputex-script-min.js',
+                        requires: [ 'inputex-textarea' ],
+                        ix_provides: 'script'
                     },
 
                     /** Common Widgets **/
@@ -249,19 +260,18 @@ YUI().use(function (Y) {
 
                     /** Project Management Game **/
                     'wegas-projectmanagementgame': {
-                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js',
-                        ix_provides: "todo"
+                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
                     },
 
                     /** CrimeSim **/
                     'wegas-mcqtabview': {
                         path: 'wegas-crimesim/js/wegas-mcqtabview-min.js',
-                        requires: ['tabview'],
+                        requires: [ 'tabview' ],
                         ix_provides: "MCQTabView"
                     },
                     'wegas-crimesim': {
                         path: 'wegas-crimesim/js/wegas-crimesim-min.js',
-                        requires: ['wegas-widget', 'widget-position', 'widget-position-align', 'widget-stack' ],
+                        requires: ['wegas-widget', 'wegas-widgetmenu' ],
                         ix_provides: "ScheduleDisplay"
                     },
                     /**Leaderway**/

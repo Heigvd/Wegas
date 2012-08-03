@@ -342,12 +342,29 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     return true;
                 }
             }
-            if (entity.get && entity.get("scope")) {
-                if (callback(Y.Object.values(entity.get("scope").get("variableInstances")))) {
-                    return true;
-                }
-            }
+            //            if (entity.get && entity.get("scope")) {
+            //                if (callback(Y.Object.values(entity.get("scope").get("variableInstances")))) {
+            //                    return true;
+            //                }
+            //            }
             return false;
+        },
+
+        updateCache: function ( method, entity ) {
+            if ( entity instanceof Y.Wegas.persistence.VariableInstance ) {
+                return this.find("id", entity.get("descriptorId") *1 , function( found, needle) {
+                    var i, instances = found.get( "scope" ).get( "variableInstances" );
+
+                    for (i in instances) {
+                        if (instances[i].get("id") == entity.get( "id" )) {
+                            instances[i].setAttrs( entity.getAttrs() );
+                        }
+                    }
+                    return true;
+                });
+            } else {
+                return VariableDescriptorDataSourceREST.superclass.updateCache.apply( this, arguments );
+            }
         },
 
         put: function (data, callback) {
@@ -403,11 +420,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(GameModelDataSourceREST, DataSourceREST, {
-        updateCache2: function (e) {
-            // @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
-            if (e.request.indexOf("ScriptLibrary") != -1) e.cfg.method = "POST";
-            this.applyOperation(e.cfg.method, cEl, e.data);
-        },
+        //        updateCache2: function (e) {
+        //            // @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
+        //            if (e.request.indexOf("ScriptLibrary") != -1) e.cfg.method = "POST";
+        //            this.applyOperation(e.cfg.method, cEl, e.data);
+        //        },
         getCurrentGameModel: function () {
             return this.findById(Y.Wegas.app.get('currentGameModel'))
         }
@@ -446,9 +463,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
         addToCache: function (entity) {
             if (entity instanceof Y.Wegas.persistence.Team) {
-                this.findById(entity.get("gameId")).get("teams").push(entity)
+                var game = this.findById(entity.get("gameId"));
+                if (game) {
+                    game.get("teams").push(entity)
+                }
             } else if (entity instanceof Y.Wegas.persistence.Player) {
                 this.findById(entity.get("teamId")).get("players").push(entity)
+
             } else {
                 this.getCache().push(entity);
             }

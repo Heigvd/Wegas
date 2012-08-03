@@ -7,6 +7,9 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.AbstractFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.Collection;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
+import javax.persistence.PersistenceException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -22,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractRestController<T extends AbstractFacade> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractRestController.class);
-
     /**
      *
      */

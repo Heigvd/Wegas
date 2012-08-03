@@ -9,8 +9,11 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
@@ -57,7 +60,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
     @Override
     public void create(T entity) {
         getEntityManager().persist(entity);
-       // getEntityManager().flush();
+        // getEntityManager().flush();
     }
 
 //    /**
@@ -68,7 +71,6 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
 //    public void edit(final T entity) {
 //        getEntityManager().merge(entity);
 //    }
-
     /**
      *
      * @param entityId
@@ -140,5 +142,21 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
         Query q = getEntityManager().createQuery(cq);
         return ( (Long) q.getSingleResult() ).intValue();
+    }
+
+    @AroundInvoke
+    public Object interceptor(InvocationContext ic) throws Exception {
+        Object o = null;
+        try {
+            o = ic.proceed();
+            //if (!sessionContext.getRollbackOnly()) {
+            //    entityManager.flush();
+            //}
+        }
+        catch (javax.persistence.NoResultException e) {                         // NoResultException are caught and wrapped exception
+            throw new PersistenceException(e);                                  // so they do not cause transaction rollback
+        }
+
+        return o;
     }
 }

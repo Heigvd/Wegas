@@ -166,7 +166,11 @@ YUI.add('wegas-app', function (Y) {
                     }
                     return val;
                 }
-            }
+            },
+            /**
+             * Object litteral representing current user.
+             */
+            currentUser: { }
         },
         genId: function () {
             var now = new Date();

@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
-//import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 /**
  *
@@ -31,7 +30,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
-    @NamedQuery(name = "findTeamByToken", query = "SELECT team FROM Team team WHERE team.token =  :token")
+    @NamedQuery(name = "findTeamByToken", query = "SELECT team FROM Team team WHERE team.token = :token")
 })
 @XmlType(name = "Team")
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -76,7 +76,15 @@ YUI.add('wegas-joingamewidget', function (Y) {
                     Y.Wegas.GameFacade.rest.sendRequest({
                         request: "/JoinGame/" + this.tokenField.getValue(),
                         callback: {
-                            success: Y.bind( this.showTeams, this),
+                            success: Y.bind( function ( e ) {
+                                if ( e.response.entity                          // If the returned value is a Team enity
+                                    instanceof Y.Wegas.persistence.Team) {
+                                    this.sendJoinTeamRequest(                   // it means we can join this team directly
+                                        e.response.entity.get( "id" ) );
+                                } else {
+                                    this.showTeams();                           // otherwise the player can choose or create its team
+                                }
+                            }, this ),
                             failure: Y.bind( function ( e ) {
                                 this.msg.log("error", e.response.results.message || "Invalid token");
                             }, this)
@@ -109,12 +117,13 @@ YUI.add('wegas-joingamewidget', function (Y) {
 
         showTeams: function () {
             this.msg.empty();
-            this.tokenField.addClassName( "inputEx-hidden" );
-            this.teamsField.removeClassName( "inputEx-hidden" );
-            this.createTeamField.removeClassName( "inputEx-hidden" );
+            
             this.joinGameButton.hide();
+            this.tokenField.addClassName( "inputEx-hidden" );
             this.joinTeamButton.show();
+            this.teamsField.removeClassName( "inputEx-hidden" );
             this.createButton.show();
+            this.createTeamField.removeClassName( "inputEx-hidden" );
 
             this.currentGame = Y.Wegas.GameFacade.rest.getCache()[0];
 
@@ -138,10 +147,12 @@ YUI.add('wegas-joingamewidget', function (Y) {
                         Y.Wegas.RegisteredGamesFacade.rest.clearCache();
                         Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
 
-                        this.createTeamField.addClassName( "inputEx-hidden" );
-                        this.teamsField.addClassName( "inputEx-hidden" );
                         this.createButton.hide();
+                        this.createTeamField.addClassName( "inputEx-hidden" );
                         this.joinTeamButton.hide();
+                        this.teamsField.addClassName( "inputEx-hidden" );
+                        this.joinGameButton.hide();
+                        this.tokenField.addClassName( "inputEx-hidden" );
                     }, this),
                     failure: Y.bind( function ( e ) {
                         this.msg.log("error", "Error joinging team");
