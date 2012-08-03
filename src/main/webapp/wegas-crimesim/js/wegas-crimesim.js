@@ -262,7 +262,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 var data = e.target.get( "entity" );
 
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/QuestionDescriptor/SelectReply/" + data.choice.get("id")
+                    request: "/QuestionDescriptor/SelectChoice/" + data.choice.get("id")
                     + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/"
                 });
             },

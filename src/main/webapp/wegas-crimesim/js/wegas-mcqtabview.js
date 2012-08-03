@@ -34,7 +34,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
         bindUI: function () {
             this.get(CONTENTBOX).delegate("click", function (e) {
                 this.dataSource.rest.sendRequest({
-                    request: "/QuestionDescriptor/SelectReply/" + e.target.get('id')
+                    request: "/QuestionDescriptor/SelectChoice/" + e.target.get('id')
                     + "/Player/" + Y.Wegas.app.get('currentPlayer')
                 });
             }, "input[type=submit]", this);

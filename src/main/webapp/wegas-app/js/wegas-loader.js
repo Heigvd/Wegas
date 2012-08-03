@@ -27,7 +27,7 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
                         'wegas-datasourcerest', 'wegas-scripteval',
-                        'wegas-entity', 'statemachine-entities',
+                        'wegas-entity', 'wegas-mcq-entities', 'statemachine-entities',
                         'stylesheet', 'wegas-widget', 'wegas-list',
                         'wegas-pageloader', 'wegas-button',
                         //'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
@@ -45,12 +45,18 @@ YUI().use(function (Y) {
                         path:'wegas-app/js/wegas-scripteval-min.js',
                         requires:['plugin']
                     },
+
+                    /** Persistence **/
                     'wegas-entity': {
-                        path: 'wegas-app/js/wegas-entity-min.js',
+                        path: 'wegas-app/js/persistence/wegas-entity-min.js',
                         requires: ['base', 'wegas-inputex', 'inputex-jsonschema']
                     },
                     'statemachine-entities': {
-                        path: 'wegas-app/js/statemachine-entities-min.js',
+                        path: 'wegas-app/js/persistence/statemachine-entities-min.js',
+                        requires: ['wegas-entity']
+                    },
+                    'wegas-mcq-entities': {
+                        path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
                         requires: ['wegas-entity']
                     },
 
@@ -132,6 +138,11 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-inputex-hashlist-min.js',
                         requires: ['inputex-list'],
                         ix_provides: 'hashlist'
+                    },
+                    'wegas-inputex-script': {
+                        path: 'wegas-app/js/widget/wegas-inputex-script-min.js',
+                        requires: [ 'inputex-textarea' ],
+                        ix_provides: 'script'
                     },
 
                     /** Common Widgets **/

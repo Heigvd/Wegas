@@ -60,8 +60,7 @@ YUI.add('wegas-button', function (Y) {
     }, {
         ATTRS: {
             tooltips: {},
-            entity: {},                                                         // @fixme Those two attributes are used in the editor to delete and update an item
-            dataSource: {}
+            data: {}
         }
     });
 
