@@ -41,7 +41,6 @@ public class Response extends AbstractEntity {
      */
     @Column(length = 4096)
     private String answer;
-
     /**
      *
      */
@@ -57,7 +56,7 @@ public class Response extends AbstractEntity {
     /**
      *
      */
-    @Column(name = "choicedescriptor_id")
+    @Column(name = "choicedescriptor_id", updatable = false, insertable = false)
     private Long choiceDescriptorId;
 
     /**
