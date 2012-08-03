@@ -20,6 +20,8 @@ YUI.add('wegas-form', function (Y) {
 
     FormWidget = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
+        CONTENT_TEMPLATE: '<div><div class="wegas-systemmessage"><span class="icon"></span><span class="content"></span></div></div>',
+
         // ** Private Fields ** //
 
         // ** Lifecycle Methods ** //
@@ -31,7 +33,6 @@ YUI.add('wegas-form', function (Y) {
 
         renderUI: function () {
             this.renderToolbar();
-            this.get(CONTENTBOX).setContent('<div class="wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>');
         },
 
         bindUI: function () {
@@ -80,6 +81,7 @@ YUI.add('wegas-form', function (Y) {
             this.set("values", values);
             this.set("formCfg", formCfg)
         },
+
         emptyMessage: function () {						// Form msgs logic
             var msgNode = this.get(CONTENTBOX).one('.wegas-systemmessage');
             msgNode.removeClass("info");
@@ -93,7 +95,11 @@ YUI.add('wegas-form', function (Y) {
             this.emptyMessage();
             msgNode.addClass(level);
             msgNode.one('.content').setContent(txt);
+        },
+        destroyForm: function () {
+             this.get("form").destroy();
         }
+
     }, {
         ATTRS: {
             values: {

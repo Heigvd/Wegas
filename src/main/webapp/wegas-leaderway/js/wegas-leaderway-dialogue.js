@@ -13,6 +13,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         seriesName: new Array(),
         seriesValue:new Array(),
         handlers: new Array(),
+        currentDialogue: null,
         
         chartTooltip: {
             markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex){
@@ -38,7 +39,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.dialogue .response').setHTML();
         },
         createChart: function(resourceDescriptor){
-            var resourceInstance = resourceDescriptor.getInstance(),
+            var i, resourceInstance = resourceDescriptor.getInstance(),
             seriesCollection = [
                 {yDisplayName:'moral'},
                 {yDisplayName:'confiance'}
@@ -98,8 +99,9 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         readStateMachine: function(cb){
-            var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues"),
-            state, rawText, jsonText, text = new Array();
+            if(this.currentDialogue == null) return;
+            var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
+            state, content, rawContent, texts, splittedText = new Array();
             if(dialogue == null){
                 cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 return;
@@ -108,20 +110,41 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.pictures .questionLayer').hide();
             cb.one('.pictures .answerLayer').hide();
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            rawText = state.get('text');
-            jsonText = JSON.parse(rawText);
-            text = jsonText.text.split(new RegExp(" ", "g"));
-            cb.one('.speaker-name').setHTML(jsonText.speakerName);
+            rawContent = state.get('text');
+            content = JSON.parse(rawContent);
+            this.displayWidget(dialogue, content);
+            texts = content.texts[Math.floor(Math.random()*content.texts.length)];
+            splittedText = texts.split(new RegExp(" ", "g"));
+            cb.one('.speaker-name').setHTML(content.speakerName);
             cb.one('.dialogue .talk').insert('<p></p>');
-            this.renderHTMLImages(cb.one('.pictures .backgroundLayer'), jsonText.backgroundImages);
-            this.renderHTMLImages(cb.one('.pictures .questionLayer'), jsonText.questionImages);
-            this.renderHTMLImages(cb.one('.pictures .answerLayer'), jsonText.answerImages);
+            this.renderJSONImages(cb.one('.pictures .backgroundLayer'), content.backgroundImages);
+            this.renderJSONImages(cb.one('.pictures .questionLayer'), content.questionImages);
+            (content.answerImages)? this.renderJSONImages(cb.one('.pictures .answerLayer'), content.answerImages) :  this.renderJSONImages(cb.one('.pictures .answerLayer'), content.questionImages);
             cb.one('.pictures .backgroundLayer').show();
             cb.one('.pictures .questionLayer').show();
-            setTimeout(Y.bind(this.displayText, this, cb, text), 500);
+            setTimeout(Y.bind(this.displayText, this, cb, splittedText), 400);
         },
         
-        renderHTMLImages: function(node, imageObjects){
+        displayWidget: function(dialogue, content){
+            if(content.subpageId && content.targetPageLoaderId){
+                var targetPageLoader = Y.Wegas.PageLoader.find(content.targetPageLoaderId);
+                targetPageLoader.once("widgetChange", function(e) {
+                    if(content.functionAfterTransition){
+                        try{
+                            eval(content.functionAfterTransition);
+                        }
+                        catch(e){
+                            console.log('unable to execute function : '+content.functionAfterTransition)
+                        }
+                    }
+                });
+                if(content.newStateId) dialogue.getInstance().set('currentStateId', content.newStateId);
+                if(this.get('toHide')) Y.all(this.get('toHide')).show();   
+                targetPageLoader.set("pageId", content.subpageId);
+            }
+        },
+        
+        renderJSONImages: function(node, imageObjects){
             var i, key, imageHTML = new Array();
             for(i=0; i<imageObjects.length; i++){
                 imageHTML.push('<img src="');
@@ -150,11 +173,11 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
         },
         
-        displayText: function(cb, text){
-            cb.one('.dialogue .talk p').insert(text[0]+' &thinsp;');
-            text.shift();
-            if(text.length > 0){
-                setTimeout(Y.bind(this.displayText, this, cb, text), 100);
+        displayText: function(cb, textParts){
+            cb.one('.dialogue .talk p').insert(textParts[0]+' &thinsp;');
+            textParts.shift();
+            if(textParts.length > 0){
+                setTimeout(Y.bind(this.displayText, this, cb, textParts), 70);
             }
             else{
                 this.displayResponse(cb);
@@ -162,24 +185,26 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         displayResponse: function(cb){
-            var i, state, context = this,
-            dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "dialogues");
+            if(this.currentDialogue == null) return;
+            var i, state, availableTransitions,
+            dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
             cb.one('.pictures .questionLayer').hide();
             cb.one('.pictures .answerLayer').show();
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            cb.one('.dialogue .response').insert('<ul class="responseElement"></ul>');
-            for(i=0 ; i<state.get('transitions').length; i++){
-                cb.one('.dialogue .response .responseElement').insert('<li nextState="'+state.get('transitions')[i].get('nextStateId')+'">'+state.get('transitions')[i].get('actionText')+'</li>');
+            availableTransitions = state.getAvailableActions();
+            cb.one('.dialogue .response').insert('<ul class="responseElements"></ul>');
+            for(i=0 ; i<availableTransitions.length; i++){
+                cb.one('.dialogue .response .responseElements').insert('<li nextstate="'+i+'">'+availableTransitions[i].get('actionText')+'</li>');
             }
-            /*delegate here ! */cb.all('.dialogue .response .responseElement li').on('click', function (e){
-                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request:dialogue.get('id')+"/Player/"+Y.Wegas.app.get('currentPlayer')+"/Do/"+state.get('nextStateId'),
-                    cfg: {
-                        method: "GET"
-                    }
-                });
-                context.syncUI();
-            });
+            this.handlers.push(cb.one('.dialogue .response .responseElements').delegate('click', function (e){
+                dialogue.doTransition(availableTransitions[e.currentTarget._node.attributes[0].nodeValue]);
+            }, 'li', this));
+        },
+        
+        setCurrentDialogue: function(newDialogueRef){
+            if(!typeof newDialogueRef === "string") return;
+            this.currentDialogue = newDialogueRef;
+            this.syncUI();
         },
         
         /***Lifecycle methode***/
@@ -195,9 +220,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                  <div class="speaker-name"></div>\n\
                  <div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
                 );
-            if(this.get('toHide')){
-                Y.all(this.get('toHide')).hide();   
-            }
+            if(this.get('toHide')) Y.all(this.get('toHide')).hide();
         },
           
         bindUI: function(){
@@ -225,7 +248,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         
     }, {
         ATTRS : {
-            toHide:{}
+            toHide:{
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            }
         }
     });
 

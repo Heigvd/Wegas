@@ -9,22 +9,19 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Game_;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 /**
  *
@@ -68,17 +65,17 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         //this.create(player);
     }
 
-    public Player findByGameIdAndUserId(Long gameId, Long userId) {
-        Query findByRootGameModelId = em.createNamedQuery("findPlayerByGameIdAndUserId");
-        findByRootGameModelId.setParameter("gameId", gameId);
-        findByRootGameModelId.setParameter("userId", userId);
-        return (Player) findByRootGameModelId.getSingleResult();
+    public Player findByGameIdAndUserId(Long gameId, Long userId) throws PersistenceException {
+        Query findByGameIdAndUserId = em.createNamedQuery("findPlayerByGameIdAndUserId");
+        findByGameIdAndUserId.setParameter("gameId", gameId);
+        findByGameIdAndUserId.setParameter("userId", userId);
+        return (Player) findByGameIdAndUserId.getSingleResult();
     }
 
-    public List<Player> findPlayersByGameId(Long gameId) {
-        Query findByRootGameModelId = em.createNamedQuery("findPlayerByGameId");
-        findByRootGameModelId.setParameter("gameId", gameId);
-        return findByRootGameModelId.getResultList();
+    public List<Player> findByGameId(Long gameId) {
+        Query findByGameId = em.createNamedQuery("findPlayerByGameId");
+        findByGameId.setParameter("gameId", gameId);
+        return findByGameId.getResultList();
     }
 
     /**

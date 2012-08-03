@@ -320,57 +320,15 @@ Y.add("statemachine-entities", function(Y){
                 }
             },
             triggerEvent: {
-                properties:{
-                    '@class': {
-                        type: 'string',
-                        _inputex: {
-                            _type: 'hidden',
-                            value: 'Script'
-                        }
-                    },
-                    language: {
-                        type: 'string',
-                        choices:[{
-                            value: 'JavaScript'
-                        }],
-                        _inputex: {
-                            label: 'Language'
-                        }
-                    },
-                    content: {
-                        type: 'string',
-                        _inputex: {
-                            _type: 'text',
-                            label: 'Condition'
-                        }
-                    }
+                _inputex: {
+                    _type: 'script',
+                    label: 'Condition'
                 }
             },
             postTriggerEvent: {
-                properties:{
-                    '@class':{
-                        type:'string',
-                        _inputex: {
-                            _type: 'hidden',
-                            value: 'Script'
-                        }
-                    },
-                    language: {
-                        type:'string',
-                        choices:[{
-                            value: 'JavaScript'
-                        }],
-                        _inputex: {
-                            label: 'Language'
-                        }
-                    },
-                    content: {
-                        type:'string',
-                        _inputex: {
-                            _type: 'text',
-                            label: 'Impact'
-                        }
-                    }
+                _inputex: {
+                    _type: 'script',
+                    label: 'Impact'
                 }
             },
             oneShot: {

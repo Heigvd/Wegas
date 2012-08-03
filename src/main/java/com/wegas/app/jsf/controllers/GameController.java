@@ -93,7 +93,7 @@ public class GameController implements Serializable {
                         userFacade.getCurrentUser().getId());
             }
             catch (Exception e) {                                             // If we still have nothing
-                List<Player> players = playerFacade.findPlayersByGameId(this.gameId);
+                List<Player> players = playerFacade.findByGameId(this.gameId);
                 if (!players.isEmpty()) {
                     currentPlayer = players.get(0);                             // we take the first player we find
                 }

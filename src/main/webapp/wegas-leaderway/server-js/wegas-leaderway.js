@@ -17,9 +17,11 @@ importPackage(javax.naming);
 function finishCurrentWeek(){
     var gm = self.getGameModel(),
     weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),
+    actions = VariableDescriptorFacade.findByName(gm, 'actions'),
     weekInstance = weekDescriptor.getInstance(self);
     if(weekInstance.getValue() < weekDescriptor.getMaxValue()){
         weekInstance.setValue(weekInstance.getValue()+1);
+        actions.getInstance(self).setValue(10);
         this.checkTasksEnd();
         this.checkAbsencesEnd();
         this.removeDeactivatedAssignements();
@@ -127,7 +129,7 @@ function checkTasksEnd(){
 function doTaskEnd(workersDescriptor, taskDescriptor){
     if(workersDescriptor.length <= 0 || taskDescriptor == null) return;
     var i,j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),
-    budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self),
+    budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
     clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskSkillKey,
     taskSkillValue, listTaskSkill = taskInstance.getSkillset(), taskDuration = taskInstance.getDescriptor().defaultVariableInstance.getDuration(), workerInstance,
     workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,
@@ -218,38 +220,82 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
     }
     budgetInstance.setValue(budgetInstance.getValue()+remuneration);
     //e-mail
-    //to do
+    for(i=0; i=workersDescriptor.length; i++){
+        from.push(workersDescriptor[i].getInstance(self).getProperties('surname'));
+    }
+    content = new Array();
+    content.push("Boujour, <br />Le mandat '");
+    content.push(taskDescriptor.getDescription());
+    content.push("' Vient d'être terminé. Le client ");
+    switch(true){
+        case workQuality<20 :
+            content.push("n'est absolument pas statisfait de notre travail. Aucune chance qu'il nous mandate à nouveau. ");           
+            break;
+        case workQuality<40 :
+            content.push("n'est pas statisfait de notre travail. Il est vrai que certaine erreurs ont été commises. ");           
+            break;
+        case workQuality<60 :
+            content.push("est moyennement satisfait. La qualité n'est pas terrible mais le projet satisfaisant dans l'ensemble. ");           
+            break;
+        case workQuality<80 :
+            content.push("est content du travail réalisé. Il n'hésitera pas à nous recontacter pour de nouveaux mandats. ");           
+            break;
+        default :
+            content.push("est ravi par le travail réalisé. La qualité est au-delà de ses espérences et sera fidèle à notre entreprise. ");           
+            break;
+    }
+    content.push("<br />");
+    if(workQuality >= parseInt(taskInstance.getProperty('workQualityMinForBonus'))){
+        content.push("Il a tenu à nous remercier par un bonus de ");
+        content.push(taskInstance.getProperties('bonus'));
+        content.push(".-");
+    }
+    content.push("<br /> Bonne journée.");
+    content.push(from.join(', '));
+    this.sendMessage('Fin de mandat', content.join(""), workersDescriptor[0].getInstance(self).getProperties('surname'));
     //desactivate Task
     taskInstance.setActive(false);
 }
 
 /**
- * Decreases all absences duration (taskInstance from absences list).
- * If duration <= 0, set the moral value of the owner resource to 40 and 
- * recalculate the teamMotivation value.
+ * Decrease absence duration by switch the current absenceTask with a other absenceTask wich have a duration 1 time smaller.
+ * If the duration must reach 0, remove this assignation, set the resource 'moral' to 40 and recalculate the teamMotivation's value.
+ * If duration is smaller than 0, deactivate the task.
  */
 function checkAbsencesEnd(){
-    var i, j, k, gm = self.getGameModel(), assignment,
+    var i, j, k, l, gm = self.getGameModel(), assignment, duration,
     listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absenceInstance,
-    listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance;
-    for(i=0; i< listAbsences.items.size();i++){
-        absenceInstance = listAbsences.items.get(i).getInstance(self);
-        if(absenceInstance.getActive() == true){
-            absenceInstance.setDuration(absenceInstance.getDuration()-1);
-            if(absenceInstance.duration <= 0){
-                absenceInstance.setActive(false);
-                for(j=0; j< listResources.items.size();j++){
-                    resourceInstance = listResources.items.get(j).getInstance(self);
-                    for(k=0; k< resourceInstance.getAssignments().size();k++){
-                        assignment = resourceInstance.getAssignments().get(k);
-                        if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId()){
-                            resourceInstance.setMoral(40);
-                            this.calculateTeamMotivation();
+    listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance,
+    assignmentToRemove = new Array();
+    for(i=0; i<listResources.items.size();i++){
+        resourceInstance = listResources.items.get(i).getInstance(self);
+        for(j=0; j<resourceInstance.getAssignments().size();j++){
+        assignment = resourceInstance.getAssignments().get(j);
+            for(k=0; k<listAbsences.items.size();k++){
+                absenceInstance = listAbsences.items.get(k).getInstance(self);       
+                if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive == true){
+                    duration = absenceInstance.getDuration();
+                    if(duration <= 0){
+                        absenceInstance.setActive(false);   
+                    }
+                    else if(duration == 1){
+                        assignmentToRemove.push(j);
+                    }
+                    else{
+                        for(l=0; l<listAbsences.items.size();l++){
+                            if(listAbsences.items[l].getInstance(self).getDuration() == duration-1){
+                                assignment[j].setTaskDescriptorId(listAbsences.items[l].getInstance(self).getDescriptorId);
+                            }
                         }
                     }
                 }
-            }   
+            }
         }
+        for(j=assignmentToRemove.length; j>=0;j--){
+            resourceInstance.resourceInstance.getAssignments().remove(assignmentToRemove[j]);
+        }
+        resourceInstance.setMoral(40);
+        this.calculateTeamMotivation()
     }
 }
 
@@ -380,23 +426,23 @@ function checkMoral(){
             switch(true){
                 case moral<10 :
                     if(randomNumber<0.33){
-                        /*to do sendIngameMail : resource say 'adios'*/
+                        this.sendMessage('Démission', 'Bonjour,<br /> J\'ai déposé ma lettre de démission dans votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère partir avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />'+resourceInstance.getProperties('surname'), resourceInstance.getProperties('surname'));
                         resourceInstance.active(false);
                     }
                     else{
-                        //*to do sendIngameMail : resource is sick for 2 week
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin m\'a conseillé de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperties('surname'), resourceInstance.getProperties('surname'));
                         sickenResource(resourceDescriptor,2);
                     }
                     break;
                 case moral<20 :
                     if(randomNumber<0.66){
-                        //*to do sendIngameMail : resource is sick for 2 week
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin m\'a conseillé de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperties('surname'), resourceInstance.getProperties('surname'));
                         sickenResource(resourceDescriptor,2);
                     }
                     break;
                 case moral<30 :
                     if(randomNumber<0.33){
-                        //*to do sendIngameMail : resource is sick for 1 week
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien très bien, je crois que je tmbe malade. Je préfère rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />'+resourceInstance.getProperties('surname'), resourceInstance.getProperties('surname'));
                         sickenResource(resourceDescriptor,1);
                     }
                     break;
@@ -460,7 +506,13 @@ function checkLeadershipLevel(){
  * send an in-game message with the current score to the player.
  */
 function sendScore(){
-    
+    var content = new Array();
+    content.push("Bonjour, <br />");
+    content.push("Comme chaque semaine, voici le résultat de notre analyse concernant les entreprises nationales les mieux dirigées.");
+    content.push("<br />");
+    content.push("<p onclick='alert(12)>test</p>");
+    content.push(this.getScore());
+    this.sendMessage("Classement d'entreprises", content.join(""), "Top entreprise")
 }
 
 /**
@@ -474,22 +526,27 @@ function getScore(){
     teamMotivation = parseInt(VariableDescriptorFacade.findByName(gm, 'teamMotivation'));
     budget = parseInt(VariableDescriptorFacade.findByName(gm, 'budget'));
     clientSatisfaction = parseInt(VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction'));
-    return (budget/25*punderationBudget + teamMotivation*20*punderationMotivation + clientSatisfaction*20*punderationMotivation);
+    return (budget/25*punderationBudget + teamMotivation*20*punderationMotivation + clientSatisfaction*20*punderationSatisfaction);
 }
 
 /**
- * create & assign a new task 'sick' to resource
- * add this new variable into the 'absences' list variable
+ * Assign a task 'sick' to resource wich have a duration egal to the given duration
  * @param Integer resourceDescriptorId, the resourceDescriptor to sicken
  * @param Integer duration the duration of the sickness.
  */
 function sickenResource(resourceDescriptorId, duration){
     var i, resInstance, taskDescriptor, gm=self.getGameModel(),
-    listResources = VariableDescriptorFacade.findByName(gm, 'resources');
-    //taskDescriptor =;
+    listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
+    listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');
     for(i=0; i<listResources.items.size(); i++){
         if(resourceDescriptorId == listResources.items.get(i).id){
             resInstance = listResources.items.get(i).getInstance(self);
+        }
+    }
+    for(i=0; i<listAbsences.items.size(); i++){
+        if(listAbsences.items[i].getInstance().getDuration() == duration){
+            taskDescriptor = listAbsences.items[i];
+            break;
         }
     }
     if(resInstance != null){
@@ -546,11 +603,12 @@ function lookupBean(name){
  * Send a message to the current player.
  * @param String subject, the subject of the message.
  * @param String message, the content of the message.
+ * @param String from, the sender of the message.
  */
-function sendMessage(subject, message){
+function sendMessage(subject, content, from){
     var EF = lookupBean('InGameMailFacade');
     if(EF != null){
-         EF.send(self, subject, message);   
+         EF.send(self, subject, content, from);   
     }
     else{
         println('Bean InGameMailFacade does not exist, unable to send in-game message: '+subject);

@@ -10,7 +10,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
 
     //TODO: notes, preview!
 
-    FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.Wegas.Widget], {
+    FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
 
         // ** Private fields ** //
         treeView: null,

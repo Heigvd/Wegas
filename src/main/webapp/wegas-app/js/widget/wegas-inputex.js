@@ -30,6 +30,8 @@ YUI.add('wegas-inputex', function(Y) {
 
     YUI_config.groups.inputex.modulesByType.html = "wegas-inputex-rte";         // @fix so inputex will use our own widgets when using f = Y.inpuex(cfg)
     YUI_config.groups.inputex.modulesByType.hashlist = "wegas-inputex-hashlist";
+    YUI_config.groups.inputex.modulesByType.script = "wegas-inputex-script";
+
     /**
      * Ace code editor field
      */
@@ -131,8 +133,8 @@ YUI.add('wegas-inputex', function(Y) {
                 modules = modules.concat( walk(cfg)  );
             }
             return modules;
-            // TODO: list elementType
-            // TODO: inplaceedit  editorField
+        // TODO: list elementType
+        // TODO: inplaceedit  editorField
         }
         var ret =  walk(inputexDef);
         return ret;
@@ -167,8 +169,8 @@ YUI.add('wegas-inputex', function(Y) {
         }
         this.options.readonly = options.readonly;
         this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
-            inputEx.browserAutocomplete :
-            (options.autocomplete === false || options.autocomplete === "off") ? false : true;
+        inputEx.browserAutocomplete :
+        (options.autocomplete === false || options.autocomplete === "off") ? false : true;
         this.options.trim = (options.trim === true) ? true : false;
     };
 });

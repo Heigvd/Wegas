@@ -45,9 +45,9 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      * @throws ScriptException
      */
     @GET
-    @Path("/SelectReply/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
+    @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response selectReply(
+    public Response selectChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws ScriptException {
 
@@ -82,14 +82,14 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      * @return p
      */
     @GET
-    @Path("/SelectReply/{choiceDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
+    @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public QuestionInstance selectReply(
+    public QuestionInstance selectChoice(
             @PathParam("playerId") Long playerId,
-            @PathParam("choiceDescriptorId") Long choiceDescriptorId,
+            @PathParam("choiceId") Long choiceId,
             @PathParam("startTime") Long startTime) {
 
-        Reply reply = questionDescriptorFacade.selectChoice(choiceDescriptorId, playerId, startTime);
+        Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
         return reply.getQuestionInstance();
     }
 
