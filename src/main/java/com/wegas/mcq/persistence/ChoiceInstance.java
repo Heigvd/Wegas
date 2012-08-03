@@ -11,7 +11,8 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.Entity;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -31,6 +32,28 @@ public class ChoiceInstance extends VariableInstance {
      *
      */
     private Boolean unread = true;
+    /**
+     *
+     */
+//    @ManyToOne
+//    @JoinColumn(name = "response_id")
+    @Transient
+    private Response currentResponse;
+    /**
+     *
+     */
+//    @Column(name = "response_id", nullable = false, insertable = false, updatable = false)
+
+    @Transient
+    private Long currentResponseId;
+
+    /**
+     *
+     * @return
+     */
+    public Long getCurrentResponseId() {
+        return this.currentResponseId;
+    }
 
     /**
      *
@@ -42,6 +65,11 @@ public class ChoiceInstance extends VariableInstance {
         ChoiceInstance other = (ChoiceInstance) a;
         this.setActive(other.getActive());
         this.setUnread(other.getUnread());
+        this.setCurrentResponse(other.getCurrentResponse());
+    }
+
+    public void setCurrentResponseByIndex(int index) {
+        this.setCurrentResponse(( (ChoiceDescriptor) this.getDescriptor() ).getResponses().get(index));
     }
 
     /**
@@ -85,5 +113,20 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void desactivate() {
         this.setActive(false);
+    }
+
+    /**
+     * @return the currentResponse
+     */
+    @XmlTransient
+    public Response getCurrentResponse() {
+        return currentResponse;
+    }
+
+    /**
+     * @param currentResponse the currentResponse to set
+     */
+    public void setCurrentResponse(Response currentResponse) {
+        this.currentResponse = currentResponse;
     }
 }

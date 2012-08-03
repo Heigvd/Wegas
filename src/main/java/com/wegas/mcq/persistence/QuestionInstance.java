@@ -34,7 +34,7 @@ public class QuestionInstance extends VariableInstance {
      */
     @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<Reply> replies = new ArrayList<Reply>();
+    private List<Reply> replies = new ArrayList<>();
     /**
      *
      */
