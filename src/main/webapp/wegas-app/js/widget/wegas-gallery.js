@@ -53,6 +53,7 @@ YUI.add("wegas-gallery", function(Y){
             this.get("gallery");                                                // LAZY init
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-left'><div>PREVIOUS</div></div>");
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-right'><div>NEXT</div></div>");
+            this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-toggle'></div>");
             this.fullScreenNode.appendTo(Y.one("body"));
             this.loadImage(this.scrollView.pages.get("index"));
         },
@@ -68,7 +69,7 @@ YUI.add("wegas-gallery", function(Y){
 
             }
             if(this.get("fullScreen")){
-                selH = document.height - 80;
+                selH = document.height - 100;
                 selW = document.width - 190;
                 smaH = 50;
                 smaW = 50;
@@ -133,6 +134,9 @@ YUI.add("wegas-gallery", function(Y){
             this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-right > div').on("click", function(e){
                 e.halt(true);
                 this.next();
+            }, this));
+            this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-toggle').on("click", function(e){
+                this.set("fullScreen", !this.get("fullScreen"));
             }, this));
             //Prevent scroll on borders
             this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-left').on("mousedown", function(e){
