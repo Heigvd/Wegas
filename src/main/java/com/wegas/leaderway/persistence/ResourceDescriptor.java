@@ -12,6 +12,7 @@ package com.wegas.leaderway.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 
 /**
  *
@@ -24,6 +25,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      */
+    @Lob
     private String description;
 
     /**

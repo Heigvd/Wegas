@@ -14,12 +14,21 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         handlers: new Array(),
         
         //*** Particular Methods ***/
+        /**
+         * set the resource displayed bay this widget.
+         * call the function syncUI of this widget.
+         * @param ResourceDescriptor resourceDescriptor, the new resource.
+         */
         setResourceDescriptor: function(resourceDescriptor){
+            if(!resourceDescriptor.getInstance()) return;
             this.currentResourceDescriptor = resourceDescriptor;
             this.syncUI();
         },
 
-        // .empty create an error, use setHTML() instead
+        /**
+         * Clear each node created in the renderUI function
+         * @param String cb, the widget's contentbox.
+         */
         clearBeforeSync: function(cb){
             cb.one('.folder .name').setHTML();
             cb.one('.folder .surname').setHTML();
@@ -31,99 +40,105 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             cb.one('.folder .occupation-value').setHTML();
             cb.one('.folder .skillsets-value').setHTML();
             cb.one('.folder .description-value').setHTML();
-            cb.one('.archives .weekSelector').setHTML();
-            cb.one('.archives .pastDialogues').setHTML();
+        },
+        
+        selectCurrentRessource: function(listResourcesDescriptor){
+            var i, resourceDescriptor;
+            for(i=0; i<listResourcesDescriptor.get('items').length; i++){
+                resourceDescriptor = listResourcesDescriptor.get('items')[i];
+                if(resourceDescriptor.getInstance().get('active') == true){
+                    this.currentResourceDescriptor = resourceDescriptor
+                    break;
+                }
+            }
         },
      
+       /**
+        * For each active resource creat a div with picture, surname and ocuppation of the resource.
+         * @param String cb, the widget's contentbox.
+         * @param ListDescriptor listResourcesDescriptor, A list of all resources.
+        */
         makeResourcesSelector: function(cb, listResourcesDescriptor){
-            if(cb.one('.listResources .resourceSelector') != null) return;
             var i, resourceSelector = new Array(), resourceInstance,
             resourceDescriptor, textOccupation;
+            if(cb.one('.listResources') != null) cb.one('.listResources').setHTML();
             for(i=0; i<listResourcesDescriptor.get('items').length; i++){
                 resourceSelector.length = 0;
                 resourceDescriptor = listResourcesDescriptor.get('items')[i];
                 resourceInstance = resourceDescriptor.getInstance();
-                switch(this.getOccupationObject(resourceInstance).code){
-                    case 0 : textOccupation = "Libre";
-                        break;
-                        case 1 : textOccupation = "Occupé";
-                        break;
-                        default : textOccupation = "Malade";
-                }
-                resourceSelector.push('<div class="resourceSelector">');
-                resourceSelector.push('<div class="ID" style="display:none;"><p>');
-                resourceSelector.push(resourceDescriptor.get('id'));
-                resourceSelector.push('</p></div>');
-                if(resourceInstance.get('properties').picture != null){
-                    resourceSelector.push('<div class="picture">');
-                    resourceSelector.push('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="35" height="35" />');
+                if(resourceInstance.get('active') == true){
+                    switch(this.getOccupationObject(resourceInstance).code){
+                        case 0 : textOccupation = "Libre";
+                            break;
+                            case 1 : textOccupation = "Occupé";
+                            break;
+                            default : textOccupation = "Malade";
+                    }
+                    resourceSelector.push('<div class="resourceSelector">');
+                    resourceSelector.push('<div class="ID" style="display:none;"><p>');
+                    resourceSelector.push(resourceDescriptor.get('id'));
+                    resourceSelector.push('</p></div>');
+                    if(resourceInstance.get('properties').picture != null){
+                        resourceSelector.push('<div class="picture">');
+                        resourceSelector.push('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="35" height="35" />');
+                        resourceSelector.push('</div>');
+                    }
+                    resourceSelector.push('<div class="name"><p>');
+                    resourceSelector.push(resourceInstance.get('properties').surname);
+                    resourceSelector.push('</p></div>');
+                    resourceSelector.push('<div class="occupation"><p>');
+                    resourceSelector.push(textOccupation);
+                    resourceSelector.push('</p></div>');
                     resourceSelector.push('</div>');
-                }
-                resourceSelector.push('<div class="name"><p>');
-                resourceSelector.push(resourceInstance.get('properties').surname);
-                resourceSelector.push('</p></div>');
-                resourceSelector.push('<div class="occupation"><p>');
-                resourceSelector.push(textOccupation);
-                resourceSelector.push('</p></div>');
-                resourceSelector.push('</div>');
-                cb.one('.listResources').insert(resourceSelector.join(""));
-            }
-            this.handlers.push(cb.one('.listResources').delegate('click', function (e) {
-                var newResource = null, resourceID = parseInt(e.currentTarget._node.childNodes[0].innerText);
-                for(i=0; i<listResourcesDescriptor.get('items').length; i++){
-                    resourceDescriptor = listResourcesDescriptor.get('items')[i];
-                    if(resourceDescriptor.get('id') == resourceID) newResource = resourceDescriptor;
-                }
-                if(newResource == null) newResource = listResourcesDescriptor.get('items')[0];
-                this.setResourceDescriptor(newResource);
-            }, '.resourceSelector', this));
-        },
-        
-        syncResourcesSelector: function(cb, listResourcesDescriptor){
-            var i, resourceDescriptor, resourceInstance, textOccupation;
-            for(i=0; i<listResourcesDescriptor.get('items').length; i++){
-                resourceDescriptor = listResourcesDescriptor.get('items')[i];
-                resourceInstance = resourceDescriptor.getInstance();
-                switch(this.getOccupationObject(resourceInstance).code){
-                    case 0 : textOccupation = "Libre";
-                        break;
-                        case 1 : textOccupation = "Occupé";
-                        break;
-                        default : textOccupation = "Malade";
-                }
-                cb.all('.listResources .resourceSelector .ID').item(i).setHTML(resourceDescriptor.get('id'));
-                if(cb.all('.listResources .resourceSelector .picture')!=null){
-                    cb.all('.listResources .resourceSelector .picture').item(i).setHTML('<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="35" height="35" />');
-                }
-                cb.all('.listResources .resourceSelector .name').item(i).setHTML(resourceInstance.get('properties').surname);
-                cb.all('.listResources .resourceSelector .occupation').item(i).setHTML(textOccupation);
-                if(resourceDescriptor.get('id') == this.currentResourceDescriptor.get('id')){
-                    cb.all('.listResources .resourceSelector').item(i).addClass('selected');
-                }
-                else{
-                    cb.all('.listResources .resourceSelector').item(i).removeClass('selected');   
+                    cb.one('.listResources').insert(resourceSelector.join(""));
                 }
             }
         },
         
+        /**
+         * Syncronise folder part in tabview.
+         * @param String cb, the widget's contentbox.
+         */
         syncFolderInformations: function(cb){
-            var currentResourceInstance = this.currentResourceDescriptor.getInstance();
+            var i, currentResourceInstance = this.currentResourceDescriptor.getInstance(),
+            hiddenSkillset = currentResourceInstance.get('properties').hiddenSkillsets.split(new RegExp("[,;]+", "g")),
+            idHidden;
             cb.one('.folder .name').insert(this.currentResourceDescriptor.get('name'));
             cb.one('.folder .surname').insert(currentResourceInstance.get('properties').surname);   
             cb.one('.folder .salary-value').insert(currentResourceInstance.get('properties').salary);   
             if(currentResourceInstance.get('properties').picture != null){
                 cb.one('.folder .picture').insert('<img src="'+currentResourceInstance.get('properties').picture+'" alt="picture" width=140 height="140" />');
             }
-            this.addLevelOfLeadershipInformations(cb, currentResourceInstance);
+            cb.one('.leadershipLevel').show();
+            if(currentResourceInstance.get('properties').leadershipLevelIsHidden == 'false'){
+                this.addLevelOfLeadershipInformations(cb, currentResourceInstance);
+            }
+            else{
+                cb.one('.leadershipLevel').hide();
+            }
             cb.one('.folder .moral').insert(this.createGauge('Moral', parseInt(currentResourceInstance.get('moral'))));
             cb.one('.folder .confidence').insert(this.createGauge('Confiance envers son leader', parseInt(currentResourceInstance.get('confidence'))));
             cb.one('.folder .occupation-value').insert(this.getTextOccupation(currentResourceInstance));
             for (var key in currentResourceInstance.get('skillset')){
-                cb.one('.folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentResourceInstance.get('skillset')[key]))+'</div>');
-            }           
+                idHidden = false;
+                for(i=0; i<hiddenSkillset.length; i++){
+                    if(hiddenSkillset[i] == key) idHidden = true;
+                }
+                if(!idHidden){
+                    cb.one('.folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentResourceInstance.get('skillset')[key]))+'</div>');
+                }
+        }           
             cb.one('.folder .description-value').insert(this.currentResourceDescriptor.get('description'));            
         },
         
+        /**
+         * Create a descriptive of the differents levels of leadership.
+         * A node corresponding with the current leve of leadership of the given resource will be indicated by a class named "currentLevel"
+         * The descriptive is conjugated according to the sex of the given resource.
+         * This information will be added in the node ".leadershipLevel" of this widget
+         * @param String cb, the widget's contentbox.
+         * @param ResourceInstance resourceInstance, the resource to get the level of leadership.
+         */
         addLevelOfLeadershipInformations: function(cb, resourceInstance){
             var i, leadershipInfo = new Array(), leadershipLevel, surname = resourceInstance.get('properties').surname;
             if(resourceInstance.get('properties').leadershipLevel){
@@ -159,10 +174,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
         },
         /**
-         * 0 = libre
-         * 1 = occupé
-         * 2 = malade
-         */
+        * Get the occupation of the given resource. this resource can be vacant, sick or on work.  
+        * @param ResourceInstance resourceInstance, the resource to get the occupation.
+        * @return Object with two argument : a code (Integer) and a task if the resource is sick or on work. The code must be 0 (vacant), 1 (on work), 2 (sick)         
+        */
         getOccupationObject: function(resourceInstance){
             var i, j, occupationObject = null, sick=false,
             taskListDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),
@@ -196,6 +211,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             return occupationObject;
         },
         
+        /**
+        * Get a descripton of the occupation of the given resource. this resource can be vacant, sick or on work.  
+        * @param ResourceInstance resourceInstance, the resource to get the occupation text.
+        * @return String decription of the occupation of the given resource 
+        */
         getTextOccupation: function(resourceInstance){
             var occupationObject, occupation = new Array(), taskInstance, taskSkills = new Array();
             occupationObject = this.getOccupationObject(resourceInstance);
@@ -209,10 +229,18 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                             taskSkills.push('<li class="task-skill-value">'+key+' ('+taskInstance.get('skillset')[key]+')</li>');
                         }
                         occupation.push('<div class="task">');
-                        occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">'+occupationObject.taskDescriptor.get('name')+'</span></div>');
-                        occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>'+taskSkills.join("")+'</ul></div>');
-                        occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">'+taskInstance.get('properties').salary+'</span></div>');
-                        occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">'+taskInstance.get('duration')+'</span></div>');
+                        occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">');
+                        occupation.push(occupationObject.taskDescriptor.get('name'));
+                        occupation.push('</span></div>');
+                        occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>');
+                        occupation.push(taskSkills.join(""));
+                        occupation.push('</ul></div>');
+                        occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">');
+                        occupation.push(taskInstance.get('properties').salary);
+                        occupation.push('</span></div>');
+                        occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">');
+                        occupation.push(taskInstance.get('duration'));
+                        occupation.push('</span></div>');
                         occupation.push("</div>");
                     break;
                 default :
@@ -223,6 +251,12 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             return occupation.join("");
         },
 
+        /**
+        * Create a DOM element usable as a gauge.  
+        * @param String label, the label of the gauge (must be between 0 and 100)
+        * @param Integer nombreOfUnits, the nombre of div in the gauge container (the value of the gauge).
+        * @return String div container of the gauge
+        */
         createGauge: function(label, nomberOfUnits){
             var gauge = new Array("");
             if(typeof nomberOfUnits === 'number'){
@@ -247,40 +281,33 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             return gauge.join("");
         },
         
-    
-        syncArchivesInformations: function(cb){
-            cb.one('.archives .pastDialogues').insert("<p>Aucune archive de discussion n'est actuellement disponible.</p>");
-        },
-        
-        bindActions: function(cb){
-            this.handlers.push(cb.one('.actions').delegate('click', function (e) {
-                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                targetPageLoader.once("widgetChange", function(e) {
-                    e.newVal.switchToPickingMode(this.resourceDescriptor, this.folderPageId);
-                },{resourceDescriptor:this.currentResourceDescriptor, folderPageId :  this.get('folderPageId')});
-                targetPageLoader.set("pageId", this.get('taskListPageId'));
-            }, '.giveTask', this));
-            
-            this.handlers.push(cb.one('.actions').delegate('click', function (e) {
-                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                targetPageLoader.once("widgetChange", function(e) {
-                    e.newVal.setCurrentDialogue(this.resourceDescriptor.getInstance().get('properties').dialogue);
-                },{resourceDescriptor:this.currentResourceDescriptor});
-                targetPageLoader.set("pageId", this.get('dialoguePageId'));
-            }, '.speak', this));  
-        },
-        
+        /**
+         * Syncronise action part in tabview.
+         * Show and hide action's buttons
+         * @param String cb, the widget's contentbox.
+         */
         syncAction: function(cb){
-            var resourceInstance, occupation;
+            var noAction = true, resourceInstance, occupation, actions;
+            actions = Y.Wegas.VariableDescriptorFacade.rest.find("name", "actions");
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
+                cb.one('.actions .noAction').setHTML();
                 cb.one('.actions .giveTask').setHTML("<p>Donner un Mandat à  "+resourceInstance.get('properties').surname+"</p>");
                 cb.one('.actions .speak').setHTML("<p>S'entretenir avec "+resourceInstance.get('properties').surname+"</p>");
                 occupation = this.getOccupationObject(resourceInstance).code;
-                if(occupation == 0) cb.one('.actions .giveTask').show();
-                else cb.one('.actions .giveTask').hide();
-                if(occupation < 2) cb.one('.actions .speak').show();
-                else  cb.one('.actions .speak').hide();
+                cb.one('.actions .giveTask').hide();
+                cb.one('.actions .speak').hide();
+                if(occupation == 0){
+                    cb.one('.actions .giveTask').show();
+                    noAction = false;
+                }
+                if(occupation < 2 && actions.getInstance().get('value') > 0){// ! no more protections ?
+                    cb.one('.actions .speak').show();
+                    noAction = false;
+                }
+            }
+            if(noAction){
+                cb.one('.actions .noAction').setHTML("Aucune action n'est disponible.");
             }
         },
         
@@ -291,6 +318,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
 
         // *** Lifecycle Methods *** //
+        /**
+         * Render the widget.
+         * create the child widget "tabview"  
+         */
         renderUI: function(){
             var cb = this.get(CONTENTBOX);
             this.tabview = new Y.TabView({
@@ -311,18 +342,12 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     <div class="skillsets section"><div class="title-section">Compétences : </div><div class="skillsets-value"></div></div>\n\
                     <div class="description section"><div class="title-section">Description : </div><div class="description-value"></div></div>\n\
                 </div>'
-                }, {
-                    label: 'Archives',
-                    content: '<div class="archives">\n\
-                        <div class="weekSelector"></div>\n\
-                        <div class="pastDialogues"></div>\n\
-                    </div>'
                 },
                 {
                     label: 'Actions',
                     content: '\n\
                     <div class="actions">\n\
-                        <div class="feedback"></div>\n\
+                        <div class="noAction"></div>\n\
                         <div class="actions-list">\n\
                             <div class="speak action"></div>\n\
                             <div class="giveTask action"></div>\n\
@@ -334,33 +359,99 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             this.tabview.render(cb);
         },
 
+        /**
+         * Bind some function at nodes of this widget
+         */
         bindUI: function(){
             var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-            this.handlers.push(this.tabview.after('rendered', this.bindActions(cb), this));
+            //bind each resource selector
+            this.handlers.push(cb.one('.listResources').delegate('click', function (e) {
+                var i, newResource = null, resourceID = parseInt(e.currentTarget._node.childNodes[0].innerText),
+                listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources"),
+                resourceDescriptor;
+                for(i=0; i<listResourcesDescriptor.get('items').length; i++){
+                    resourceDescriptor = listResourcesDescriptor.get('items')[i];
+                    if(resourceDescriptor.get('id') == resourceID) newResource = resourceDescriptor;
+                }
+                if(newResource == null) newResource = listResourcesDescriptor.get('items')[0];
+                this.setResourceDescriptor(newResource);
+            }, '.resourceSelector', this));
+            //bind each action 'giveTask' change widget depending to the ATTRS 'taskListPageId'
+            this.handlers.push(cb.one('.actions').delegate('click', function (e) {
+                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.switchToPickingMode(this.resourceDescriptor, this.folderPageId);
+                },{resourceDescriptor:this.currentResourceDescriptor, folderPageId :  this.get('folderPageId')});
+                targetPageLoader.set("pageId", this.get('taskListPageId'));
+            }, '.giveTask', this));
+            //bind each action 'speak' change widget depending to the ATTRS 'dialoguePageId'
+            this.handlers.push(cb.one('.actions').delegate('click', function (e) {
+                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.setCurrentDialogue(this.resourceDescriptor.getInstance().get('properties').dialogue);
+                },{resourceDescriptor:this.currentResourceDescriptor});
+                // decrease number of actions by 1
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    headers:{
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Managed-Mode':'true'
+                    },
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify({
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "importPackage(com.wegas.core.script);\nactions.value--;"
+                        })
+                    }
+                });
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));
+            }, '.speak', this)); 
         },
           
+        /**
+         * Synchronise the content of this widget.
+         */
         syncUI: function() {
             var cb = this.get(CONTENTBOX),
             listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
             if(listResourcesDescriptor == null) return;
-            if(this.currentResourceDescriptor == null) this.currentResourceDescriptor = listResourcesDescriptor.get('items')[0];
+            if(!this.currentResourceDescriptor) this.selectCurrentRessource(listResourcesDescriptor);
             this.clearBeforeSync(cb);
+            if(!this.currentResourceDescriptor) return;
             this.makeResourcesSelector(cb, listResourcesDescriptor);
-            this.syncResourcesSelector(cb, listResourcesDescriptor);
             this.syncFolderInformations(cb);
-            this.syncArchivesInformations(cb);
             this.syncAction(cb)
+            this.goToFinalPage();// ! hack function
         },
         
+        /*
+         * Destroy all child widget and all remanent function
+         */
         destroy: function(){
             var i;
             this.tabview.destroy();
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
             }
+        },
+        
+        // *** hack Methods *** //
+        /**
+         * if current week > max value of week value, then
+         * change the current widget to go on the "dialogue" widget.
+         */
+        goToFinalPage: function(){
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
+            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
+            }
         }
+        
     }, {
         ATTRS : {
             folderPageId: {

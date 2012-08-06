@@ -14,7 +14,11 @@ YUI.add('wegas-leaderway', function (Y) {
         data: new Array(),
         handlers: new Array(),
 
-        //*** Particular Methods ***/  
+        //*** Particular Methods ***/
+        /**
+         * Add rows to the datatable. Get informations on the resources  
+         * @param ListDescriptor listResourcesDescriptor, A list of all resources.
+         */
         getResourcesData: function(listResourcesDescriptor){
             var i, picture, resourceDescriptor, resourceInstance, needPicture = false;
             if(listResourcesDescriptor.get('items')[0].getInstance().get('properties').picture != null){
@@ -25,7 +29,7 @@ YUI.add('wegas-leaderway', function (Y) {
                 resourceDescriptor = listResourcesDescriptor.get('items')[i];
                 resourceInstance = resourceDescriptor.getInstance();
                 if(needPicture){
-                     picture = '<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="60" height="70" />';
+                     picture = '<img src="'+resourceInstance.get('properties').picture+'" alt="picture" width="70" height="70" />';
                      this.data.push({
                         picture:picture,
                         name:resourceDescriptor.get('name'),
@@ -47,6 +51,12 @@ YUI.add('wegas-leaderway', function (Y) {
             }
         },
         
+        /**
+         * Return the text of the occupation.
+         * @deprecated check only if a assignement exist in the given resource.
+         * @param ResourceInstance resourceInstance, the resource to get the occupation text.
+         * @return String 'libre' or the name of the occupation 
+         */
         getOccupation: function(resourceInstance){
             var occupation, listDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"), taskDescriptor;
             if(resourceInstance.get('assignments').length == 0){
@@ -65,6 +75,10 @@ YUI.add('wegas-leaderway', function (Y) {
         },
 
         // *** Lifecycle Methods *** //
+        /**
+         * Render the widget.
+         * Create the child widget "table"  
+         */
         renderUI: function (){
             this.table = new Y.DataTable({
                 columns: [
@@ -95,7 +109,10 @@ YUI.add('wegas-leaderway', function (Y) {
             });
             this.table.render(this.get(CONTENTBOX));
         },
-            
+          
+        /**
+         * Bind some function at nodes of this widget
+         */
         bindUI: function() {
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
@@ -104,6 +121,9 @@ YUI.add('wegas-leaderway', function (Y) {
             }, '.yui3-datatable-data .folder', this.table);
         },
         
+        /**
+         * Synchronise the content of this widget.
+         */
         syncUI: function (){
             var listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "resources");
             if(listResourcesDescriptor == null) return;
@@ -113,18 +133,48 @@ YUI.add('wegas-leaderway', function (Y) {
             if(this.data[0] == null){
                 this.table.showMessage("Personne n'est disponible.");
             }
+            this.goToFinalPage();// ! hack function            
         },
         
+        /*
+         * Destroy all child widget and all remanent function
+         */
         destroy: function(){
             var i;
             this.table.destroy();
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
             }
+        },
+        
+        // *** hack Methods *** //
+        /**
+         * if current week > max value of week value, then
+         * change the current widget to go on the "dialogue" widget.
+         */
+        goToFinalPage: function(){
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
+            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
+            }
         }
     },
     {
-        ATTRS : {}
+        ATTRS : {
+            dialoguePageId: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            targetPageLoaderId: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            }
+        }
     });
 
     Y.namespace('Wegas').HRList = HRList;

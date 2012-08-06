@@ -611,8 +611,8 @@ YUI.add('wegas-entity', function (Y) {
      * PlayerScope mapper
      */
     Y.Wegas.persistence.PlayerScope = Y.Base.create("PlayerScope", Y.Wegas.persistence.Scope, [], {
-        getInstance: function () {
-            return this.get("variableInstances")[Y.Wegas.app.get('currentPlayer')];
+        getInstance: function ( playerId ) {
+            return this.get("variableInstances")[playerId];
         }
     },{
         ATTRS:{
@@ -1018,7 +1018,8 @@ YUI.add('wegas-entity', function (Y) {
             unread : {
                 value: false,
                 type: "boolean"
-            }
+            },
+            from: {}
         }
     });
 

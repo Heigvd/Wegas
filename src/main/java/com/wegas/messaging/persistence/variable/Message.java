@@ -24,7 +24,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "MessageInstance")
+@XmlType(name = "Message")
 public class Message extends NamedEntity {
 
     private static final long serialVersionUID = 1L;

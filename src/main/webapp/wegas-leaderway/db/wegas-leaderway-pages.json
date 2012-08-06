@@ -128,7 +128,7 @@
             {
                 "type": "Text",
                 "cssClass": "leaderway-feedback",
-                "content": ""
+                "content": "<p></p>"
             },
             {
                 "type": "PageLoader",
@@ -153,21 +153,27 @@
         "type":"TaskList",
         "cssClass":"leaderway-tasklist",
         "pickingMode":"true",
-        "targetPageLoaderId": "maindisplayarea"
+        "targetPageLoaderId": "maindisplayarea",
+        "dialoguePageId": "7"
     },
     {
         "id":5,
         "label":"Inbox",
         "type":"InboxDisplay",
         "variable":"inbox",
-        "cssClass":"leaderway-inbox"
+        "cssClass":"leaderway-inbox",
+        "dialoguePageId": "7",
+        "targetPageLoaderId": "maindisplayarea"
     },
     {
         "id":6,
         "label":"Score",
         "type":"Score",
         "title":"Top 5 des meilleurs entreprises actuelles",
-        "cssClass":"leaderway-score"
+        "cssClass":"leaderway-score",
+        "maxRows":5,
+        "dialoguePageId": "7",
+        "targetPageLoaderId": "maindisplayarea"
     },
     {
         "id":7,
@@ -175,6 +181,8 @@
         "type":"Dialogue",
         "cssClass":"leaderway-dialogue",
         "toHide":".leaderway-menu",
-        "taskListPageId":6
+        "taskListPageId":"6",
+        "dialoguePageId": "7",
+        "targetPageLoaderId": "maindisplayarea"
     }
 ]
