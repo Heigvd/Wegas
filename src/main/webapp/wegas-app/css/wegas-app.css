@@ -110,6 +110,11 @@ input[type="submit"], input[type="reset"] {
     position: absolute;
     height: 100% !important;
 }
+.yui3-skin-sam .wegas-layout-left > .yui3-widget,
+.yui3-skin-sam .wegas-layout-center > .yui3-widget,
+.yui3-skin-sam .wegas-layout-right > .yui3-widget {
+    position: relative;
+}
 .yui3-skin-sam .wegas-layout-content > .yui-widget-bd {
     position: relative;
 }
@@ -119,15 +124,10 @@ input[type="submit"], input[type="reset"] {
 .yui3-skin-sam .wegas-layout-left {
     width: 300px;
 }
-
-.yui-skin-sam .wegas-layout-left > .yui3-widget {
-    margin-right: 6px;
-}
-
 .yui3-skin-sam .wegas-layout-right {
+    padding-left: 6px;
     width: 300px;
     right: 0;
-    padding-left: 7px;
 }
 .yui3-skin-sam .wegas-layout .yui3-resize-handle {
     background: #F2F2F2;

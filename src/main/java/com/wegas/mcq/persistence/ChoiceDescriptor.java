@@ -26,6 +26,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "ChoiceDescriptor")
+@Table(name = "MCQChoiceDescriptor")
 public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     private static final long serialVersionUID = 1L;
@@ -36,7 +37,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @OrderBy("id")
-    private List<Response> responses = new ArrayList<>();
+    private List<Result> results = new ArrayList<>();
     /**
      *
      */
@@ -58,10 +59,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     @PrePersist
     @PreUpdate
-    public void propagateCurrentResponse() {
+    public void propagateCurrentResult() {
         ChoiceInstance i = (ChoiceInstance) this.getDefaultVariableInstance();
-        if (i.getCurrentResponse() == null && !this.getResponses().isEmpty()) {
-            i.setCurrentResponse(this.getResponses().get(0));
+        if (i.getCurrentResult() == null && !this.getResult().isEmpty()) {
+            i.setCurrentResult(this.getResult().get(0));
         }
         this.propagateDefaultInstance(false);
     }
@@ -78,16 +79,15 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.setImpact(other.getImpact());
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
-
-        ListUtils.mergeLists(this.getResponses(), other.getResponses());
-        //this.getResponses().clear();
-        //this.setResponses(other.getResponses());
+        
+        ListUtils.mergeLists(this.getResult(), other.getResult());
     }
+
     /**
      * Sugar to use from scripts
      */
-    public void setCurrentResponseByIndex(Player player, int index) {
-        this.getInstance(player).setCurrentResponseByIndex(index);
+    public void setCurrentResultByIndex(Player player, int index) {
+        this.getInstance(player).setCurrentResultByIndex(index);
     }
 
     /**
@@ -164,16 +164,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
-     * @return the responses
+     * @return the results
      */
-    public List<Response> getResponses() {
-        return responses;
+    public List<Result> getResult() {
+        return results;
     }
 
     /**
-     * @param responses the responses to set
+     * @param results the results to set
      */
-    public void setResponses(List<Response> responses) {
-        this.responses = responses;
+    public void setResults(List<Result> results) {
+        this.results = results;
     }
 }

@@ -84,7 +84,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         QuestionInstance questionInstance = (QuestionInstance) question.getInstance(player);
         for (Reply reply : questionInstance.getReplies()) {
             //logger.warn(reply.getStartTime()+"*"+reply.getChoiceDescriptor().getDuration()+"*"+time);
-            if (reply.getStartTime() + reply.getResponse().getChoiceDescriptor().getDuration() + 1 == time) {
+            if (reply.getStartTime() + reply.getResult().getChoiceDescriptor().getDuration() + 1 == time) {
                 this.validateReply(player, reply);
             }
         }
@@ -109,7 +109,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         Reply reply = new Reply();
 
         reply.setStartTime(startTime);
-        reply.setResponse(choice.getInstance(player).getCurrentResponse());
+        reply.setResult(choice.getInstance(player).getCurrentResult());
         questionInstance.addReply(reply);
 
         this.em.flush();
@@ -137,15 +137,15 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     public void validateReply(Player player, Reply reply) throws ScriptException {
         HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
-        ChoiceInstance choiceInstance = reply.getResponse().getChoiceDescriptor().getInstance(player);
+        ChoiceInstance choiceInstance = reply.getResult().getChoiceDescriptor().getInstance(player);
 
-        reply.setResponse(choiceInstance.getCurrentResponse());                 // Refresh the current response
+        reply.setResult(choiceInstance.getCurrentResult());                 // Refresh the current result
 
         arguments.put("selectedReply", reply);
         arguments.put("selectedChoice", choiceInstance);
         arguments.put("selectedQuestion", reply.getQuestionInstance());
-        scriptManager.eval(player, reply.getResponse().getImpact(), arguments);
-        scriptManager.eval(player, reply.getResponse().getChoiceDescriptor().getImpact(), arguments);
+        scriptManager.eval(player, reply.getResult().getImpact(), arguments);
+        scriptManager.eval(player, reply.getResult().getChoiceDescriptor().getImpact(), arguments);
     }
 
     /**

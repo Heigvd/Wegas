@@ -20,7 +20,7 @@ YUI.add("wegas-inputex-url",function(Y){
         inputEx.Wegas.UrlField.superclass.constructor.call(this,options);
     };
 
-    Y.extend(inputEx.Wegas.UrlField, inputEx.UrlField, {
+    Y.extend(inputEx.Wegas.UrlField, inputEx.StringField, {
 
         filepanel: null,
 
@@ -45,24 +45,7 @@ YUI.add("wegas-inputex-url",function(Y){
          */
         render: function() {
             inputEx.Wegas.UrlField.superclass.render.call(this);
-            //            this.el.size = this.options.size;
-            //
-            //            if(!this.options.favicon) {
-            //                Y.one(this.el).addClass( 'nofavicon');
-            //            }
-            //
-            //            // Create the favicon image tag
-            //            if(this.options.favicon) {
-            //                this.favicon = inputEx.cn('img', {
-            //                    src: inputEx.spacerUrl
-            //                });
-            //                this.fieldContainer.insertBefore(this.favicon,this.fieldContainer.childNodes[0]);
-            //
-            //                // focus field when clicking on favicon
-            //                Y.on("click",function(){
-            //                    this.focus();
-            //                },this.favicon,this)
-            //            }
+            this.fieldContainer.classList.add("inputEx-wegas-UrlField");
             this.imgButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-fileexplorer\"></span>",
                 on: {

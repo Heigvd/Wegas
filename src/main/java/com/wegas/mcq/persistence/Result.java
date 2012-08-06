@@ -11,20 +11,21 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
-import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "Response")
-public class Response extends AbstractEntity {
+@XmlType(name = "Result")
+@Table(name = "MCQResult")
+public class Result extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 //    private static final Logger logger = LoggerFactory.getLogger(MCQReplyInstanceEntity.class);
@@ -43,6 +44,12 @@ public class Response extends AbstractEntity {
      */
     @Column(length = 4096)
     private String answer;
+
+    /*
+     *
+     */
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<String> files = new ArrayList<>();
     /**
      *
      */
@@ -63,7 +70,7 @@ public class Response extends AbstractEntity {
     /**
      * This link is here so the reference is updated on remove.
      */
-    @OneToMany(mappedBy = "currentResponse")
+    @OneToMany(mappedBy = "currentResult")
     @XmlTransient
     private List<ChoiceInstance> choiceInstances;
 
@@ -73,17 +80,18 @@ public class Response extends AbstractEntity {
      */
     @Override
     public void merge(AbstractEntity a) {
-        Response other = (Response) a;
+        Result other = (Result) a;
         this.setName(other.getName());
         this.setAnswer(other.getAnswer());
         this.setImpact(other.getImpact());
+        this.setFiles(other.getFiles());
     }
 
     @PrePersist
     @PreUpdate
     @PreRemove
     public void propagateCurrentResponse() {
-        this.getChoiceDescriptor().propagateCurrentResponse();
+        this.getChoiceDescriptor().propagateCurrentResult();
     }
 
     //@PreRemove
@@ -91,7 +99,7 @@ public class Response extends AbstractEntity {
     //   for (ChoiceInstance c : this.getLinkedChoiceInstances()) {
     //       c.setCurrentResponse(null);
     //   }
-    //   this.getChoiceDescriptor().propagateCurrentResponse();
+    //   this.getChoiceDescriptor().propagateCurrentResult();
     //}
     @Override
     public Long getId() {
@@ -161,5 +169,19 @@ public class Response extends AbstractEntity {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the files
+     */
+    public List<String> getFiles() {
+        return files;
+    }
+
+    /**
+     * @param files the files to set
+     */
+    public void setFiles(List<String> files) {
+        this.files = files;
     }
 }

@@ -28,21 +28,43 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
 .inputEx-Group div.inputEx-Field textarea {
     width:100%;
 }
-.inputEx-Group .inputEx-fieldWrapper {
-    padding-left:135px;
-    position: relative;
-}
-.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label {
-    padding:.2em 5px 0 0;
-    margin-left:-135px;
-}
 .inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label:first-letter {
     text-transform: uppercase;
 }
-.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-Field {
-    width:99.8%;
+div.inputEx-StringField-wrapper {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
 }
-
+/* Wegas Form Widget Styles */
+.wegas-form {
+    padding: 10px 10px 20px;
+}
+.wegas-form div.inputEx-Field {
+    float:none;
+}
+div.inputEx-fieldWrapper {
+    margin-bottom: 0.4em;
+}
+.wegas-form-content > .inputEx-Group fieldset > .inputEx-fieldWrapper {
+    padding-left:135px;
+}
+.wegas-form-content > .inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label {
+    margin-left:-135px;
+    width: 129px;
+}
+/* Wegas Url Field styles */
+.inputEx-wegas-UrlField {
+    padding-right:40px;
+}
+.inputEx-wegas-UrlField button {
+    float: right;
+    margin-right: -40px;
+    padding: 5px 7px 1px;
+    vertical-align: top;
+    margin-top: -4px;
+}
+/*
 .inputEx-Group  div.inputEx-ListField div.inputEx-fieldWrapper {
     padding-left:55px;
     position: relative;
@@ -55,13 +77,9 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
 .inputEx-Group div.inputEx-fieldWrapper div.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-70px;
     width:65px;
-}
+}*/
 div.inputEx-message {
     margin: 0;
-}
-
-.inputEx-Button {
-    padding: 3px 5px;
 }
 .inputEx-CombineField > .inputEx-Group {
     float:none !important;
@@ -75,22 +93,24 @@ div.inputEx-message {
 }*/
 /* Inputex List styles */
 div.inputEx-ListField {
-    position: relative;
-    padding-bottom: 20px;
+    /*    position: relative;*/
+    /*    padding-bottom: 20px;*/
 }
 div.inputEx-ListField > span {
-    display:none;
+    /*    display:none;*/
 }
 div.inputEx-ListField-subFieldEl {
+    width: 100%;
     margin-left: 0;
     width: 100%;
 }
 .inputEx-ListField-childContainer > div {
-    position:relative;
+    /*    position:relative;*/
     /*   margin-left:16px;
        border-top: 1px solid lightgray;
        padding-top: 5px;*/
 }
+
 a.inputEx-List-link {
     position: absolute;
     right: 10px;
@@ -103,8 +123,10 @@ div.inputEx-ListField >  a.inputEx-List-link {
     top: auto;
 }
 img.inputEx-ListField-delButton {
-    margin-left:-16px;
+    margin-left: -20px;
+    margin-top: 2px;
 }
+
 
 /* TabView styles */
 /* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
@@ -374,6 +396,7 @@ img.inputEx-ListField-delButton {
 /* YUI 2 RTE Styles */
 .yui-skin-sam .yui-editor-container {
     border: 1px solid lightgray;
+    margin: 0 -2px;
 }
 .yui-skin-sam .yui-toolbar-container {
     background-color: transparent;

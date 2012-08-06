@@ -174,21 +174,18 @@ YUI.add('wegas-editor-treeview', function (Y) {
                             case 'ChoiceDescriptor':
                                 text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
 
-                                var l, response, children = [];
-                                for ( l = 0; l < el.get( "responses" ).length ; l += 1) {
-                                    response = el.get( "responses" )[l];
+                                var l, result, children = [];
+                                for ( l = 0; l < el.get( "results" ).length ; l += 1) {
+                                    result = el.get( "results" )[l];
                                     children.push({
-                                        label: "Response: " + response.get( "name" ),
+                                        label: "Result: " + result.get( "name" ),
                                         data: {
-                                            entity: response,
-                                            parentEntity: el,
-                                            attribute: "responses"
+                                            entity: result,
+                                            parentEntity: el
                                         },
                                         rightWidget: Y.Node.create(EDITBUTTONTPL),
                                         iconCSS: "wegas-icon-variabledescriptor"
                                     });
-                                //                                    response.set("name", "true");
-                                //                                    console.log(response.get("name"), el.get( "responses" )[l].get("name"))
                                 }
 
                                 ret.push({

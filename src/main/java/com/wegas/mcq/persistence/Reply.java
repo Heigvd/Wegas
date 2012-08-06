@@ -21,6 +21,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  */
 @Entity
 @XmlType(name = "Reply")
+@Table(name = "MCQReply")
 public class Reply extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -39,7 +40,7 @@ public class Reply extends AbstractEntity {
      *
      */
     @ManyToOne(optional = false)
-    private Response response;
+    private Result result;
     /**
      *
      */
@@ -55,7 +56,7 @@ public class Reply extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Reply other = (Reply) a;
-        this.setResponse(other.getResponse());
+        this.setResult(other.getResult());
         this.setStartTime(other.getStartTime());
     }
 
@@ -103,16 +104,16 @@ public class Reply extends AbstractEntity {
     }
 
     /**
-     * @return the response
+     * @return the result
      */
-    public Response getResponse() {
-        return response;
+    public Result getResult() {
+        return result;
     }
 
     /**
-     * @param response the response to set
+     * @param result the result to set
      */
-    public void setResponse(Response response) {
-        this.response = response;
+    public void setResult(Result result) {
+        this.result = result;
     }
 }

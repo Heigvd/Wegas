@@ -68,12 +68,18 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 optional: true
             },
             pictures: {
+                optional:true,
                 type: "array",
                 items: {
                     type: "string",
+                    optional:true,
                     _inputex: {
-                        _type: "wegasurl"
+                        _type: "wegasurl",
+                        label: ""
                     }
+                },
+                _inputex: {
+                    useButtons: true
                 }
             }
         },
@@ -193,7 +199,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 value: null,
                 optional: true
             },
-            responses: {
+            results: {
                 _inputex: {
                     _type: 'hidden'
                 },
@@ -204,13 +210,13 @@ YUI.add('wegas-mcq-entities', function (Y) {
             type: "EditEntityButton"
         },{
             type: "Button",
-            label: "Add response",
+            label: "Add result",
             plugins: [{
                 fn: "EditEntityArrayFieldAction",
                 cfg: {
-                    targetClass: "Response",
+                    targetClass: "Result",
                     method: "post",
-                    attributeKey: "responses"
+                    attributeKey: "results"
                 }
             }]
         }, {
@@ -218,16 +224,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
         }]
     });
     /**
-     * MCQ Response mapper
+     * MCQ Result mapper
      */
-    Y.Wegas.persistence.Response = Y.Base.create("Response", Y.Wegas.persistence.Entity, [], {
+    Y.Wegas.persistence.Result = Y.Base.create("Result", Y.Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
             return Y.Wegas.VariableDescriptorFacade.rest.findById( this.get( "choiceDescriptorId" ) );
         }
     }, {
         ATTRS: {
             "@class":{
-                value:"Response"
+                value:"Result"
             },
             name: {
                 type: "string"
@@ -246,6 +252,21 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 _inputex: {
                     _type: 'hidden'
                 }
+            },
+            files: {
+                optional: true,
+                type: "array",
+                items: {
+                    type: "string",
+                    optional:true,
+                    _inputex: {
+                        _type: "wegasurl",
+                        label: ""
+                    }
+                },
+                _inputex: {
+                    useButtons: true
+                }
             }
         },
         EDITMENU: [{
@@ -261,7 +282,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 fn: "EditEntityArrayFieldAction",
                 cfg: {
                     method: "delete",
-                    attributeKey: "responses"
+                    attributeKey: "results"
                 }
             }]
         }]
@@ -284,7 +305,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     value: true,
                     type: "boolean"
                 },
-                currentResponseId: {
+                currentResultId: {
                     type: "string"
                 //_inputex: {
                 //    _type: "hidden"
@@ -297,7 +318,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Y.Wegas.persistence.Reply = Y.Base.create("Reply", Y.Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            return this.get( "response" ).getChoiceDescriptor();
+            return this.get( "result" ).getChoiceDescriptor();
         },
         /**
          *  @return 0 if is finished, 1 if ongoing and 2 if planified
@@ -330,7 +351,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     return val * 1;
                 }
             },
-            response: {
+            result: {
                 _inputex: {
                     _type: 'hidden'
                 }
