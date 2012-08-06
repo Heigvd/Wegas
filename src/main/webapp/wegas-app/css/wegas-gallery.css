@@ -94,6 +94,16 @@
     bottom:0;
     background-color:rgba(0,0,0,0.2)
 }
+.gallery-toggle{
+    cursor:pointer;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: white;
+    width: 18px;
+    height: 24px;
+    z-index:3;
+}
 img:hover + .gallery-text{
     max-height: 0px !important;
 }
