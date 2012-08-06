@@ -128,7 +128,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         /**
          * Read a dialogue corresponding with the current dialogue value in this widget.
          * if current state is empty, doTransition with the first available actions.
-         * else if state contain JSON with param "subpageId" and "targetPageLoaderId", call the function "displayWidget()" in this widget.
+         * else if state contain JSON with param "subPageId" and "targetPageLoaderId", call the function "displayWidget()" in this widget.
          * else, the JSON can contain a array of text (one will be randomly choosed), one string correspnding of a param "speakerName",
          * a object "backgroundImages", an onject "questionImages" and a object "answerImages".
          * backgroundImages is always displayed.
@@ -157,7 +157,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             else{
                 content = JSON.parse(rawContent);
-                if(content.subpageId && content.targetPageLoaderId){
+                if(content.subPageId && content.targetPageLoaderId){
                     this.displayWidget(dialogue, content);    
                 }
                 else{
@@ -193,15 +193,15 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         /**
-         * Destroy this widget and open a newer corresponding to the subpageId at place defined by the targetPageLoaderId.
+         * Destroy this widget and open a newer corresponding to the subPageId at place defined by the targetPageLoaderId.
          * A function can be evaluated after the transition if the JSON contain a param "functionAfterTransition";
          * Show the node corresponding to the "toHide" ATTRS of this widget. 
          * @param Dialogue dialogue, the readed dialogue.
-         * @param Object content, a object with obligatory param "targetPageLoaderId" and "subpageId" and a non-obligatory param "functionAfterTransition"
+         * @param Object content, a object with obligatory param "targetPageLoaderId" and "subPageId" and a non-obligatory param "functionAfterTransition"
          */
         displayWidget: function(dialogue, content){
             var state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            if(content.subpageId && content.targetPageLoaderId){
+            if(content.subPageId && content.targetPageLoaderId){
                 var targetPageLoader = Y.Wegas.PageLoader.find(content.targetPageLoaderId);
                 targetPageLoader.once("widgetChange", function(e) {
                     if(content.functionAfterTransition){
@@ -215,7 +215,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 });
                 dialogue.doTransition(state.getAvailableActions()[0]);
                 if(this.get('toHide')) Y.all(this.get('toHide')).show();   
-                targetPageLoader.set("pageId", content.subpageId);
+                targetPageLoader.set("pageId", content.subPageId);
             }
         },
         

@@ -111,7 +111,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         selectRow: function(e){
             var i, cb = this.get(CONTENTBOX),
             listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),taskDescriptorId;
-            taskDescriptorId = e.currentTarget._node.all[0].innerText;
+            taskDescriptorId = e.currentTarget.one("*").getContent();
             for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
                 if(listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId){
                     this.selectedTaskDescriptor = listTasksDescriptor.get('items')[i];
