@@ -1,8 +1,11 @@
+//debbug json : liste of function :
+//function limitValues(){}\nfunction doIntroduction(){}\nfunction resetDialogueValues(){}\nfunction sendMessage(subject, content, from){}\nfunction lookupBean(name){}\nfunction assignTask(resourceDescriptorId, taskDescriptorId){}\nfunction sickenResource(resourceDescriptor, duration){}\nfunction calculateScore(){}\nfunction sendScore(){}\nfunction checkLeadershipLevel(){}\nfunction calculateTeamMotivation(){}\nfunction checkMoral(){}\nfunction getTasksAndAbsences(){}\nfunction removeDeactivatedAssignements(){}\nfunction payResources(){}\nfunction checkTasksState(){}\nfunction checkAbsencesEnd(){}\nfunction doTaskEnd(workersDescriptor, taskDescriptor){}\nfunction checkTasksEnd(){}\nfunction getWorkedTasks(listResources){}\nfunction getValideResources(){}\nfunction finishCurrentWeek(){}\nimportPackage(javax.naming);
+
 importPackage(javax.naming);
 
 /**
  * terminate the current week.
- * if value of week < max value of week :
+ * if value of week <= max value of week :
  * - Increment the value of week
  * - Check the end of all task (checkTasksEnd)
  * - Check the end of all absent (checkAbsencesEnd)
@@ -11,17 +14,15 @@ importPackage(javax.naming);
  * - Pay all active resources (payResources)
  * - Check the moral of all active resources (checkMoral)
  * - Check the 'LeadershipLevel' of all active resources (checkLeadershipLevel) 
- * if value of week = max value of week :
- * - to do
  */
 function finishCurrentWeek(){
     var gm = self.getGameModel(),
     weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),
-    actions = VariableDescriptorFacade.findByName(gm, 'actions'),
+    actionsDescriptor = VariableDescriptorFacade.findByName(gm, 'actions'),
     weekInstance = weekDescriptor.getInstance(self);
-    if(weekInstance.getValue() < weekDescriptor.getMaxValue()){
+    if(weekInstance.getValue() <= weekDescriptor.getMaxValue()){
         weekInstance.setValue(weekInstance.getValue()+1);
-        actions.getInstance(self).setValue(10);
+        actionsDescriptor.getInstance(self).setValue(actionsDescriptor.getMaxValue());
         this.checkTasksEnd();
         this.checkAbsencesEnd();
         this.removeDeactivatedAssignements();
@@ -30,6 +31,7 @@ function finishCurrentWeek(){
         this.checkMoral();
         this.checkLeadershipLevel();
         this.sendScore();
+        this.resetDialogueValues(); //specific to this scenario.
     }
 }
 
@@ -130,14 +132,19 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
     if(workersDescriptor.length <= 0 || taskDescriptor == null) return;
     var i,j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),
     budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
-    clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskSkillKey,
+    clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskSkillKey, wish, hate,
     taskSkillValue, listTaskSkill = taskInstance.getSkillset(), taskDuration = taskInstance.getDescriptor().defaultVariableInstance.getDuration(), workerInstance,
     workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,
-    sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber,
+    sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),
     punderationMoral = 0.1,
     punderationConfidence = 0.2,
     punderationSkillsets = 0.7,
     punderationQualityWeight = 0.5
+    
+    //get existing skills
+    for(i=0; i<workersDescriptor[0].getInstance(self).getSkillset().size(); i++){
+        existingSkills.push(workersDescriptor[0].getInstance(self).getSkillset().keySet().toArray()[i]);
+    }
 
     for(i=0; i<workersDescriptor.length; i++){
         workPartSkillsQuality.length = 0;
@@ -147,6 +154,7 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
         confidence = parseInt(workerInstance.getConfidence());
         learningCoefficient = parseInt(workerInstance.getProperty('learningCoefficient'));
         totalExperience = 0;
+        from.push(workerInstance.getProperty('surname'));//for e-mail
         for (j=0; j<listTaskSkill.size(); j++){
             taskSkillKey = listTaskSkill.keySet().toArray()[j];
             taskSkillValue = parseInt(listTaskSkill.get(taskSkillKey));
@@ -188,18 +196,41 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
             }
             //check wish
             randomNumber = Math.random();
-            if((averageWorkPartSkills <= 50 || randomNumber < 0.33) && taskSkillKey == workerInstance.getProperty('wish')){
-                workerInstance.setProperty('wish', '');
+            wish = workerInstance.getProperty('wish');
+            if((averageWorkPartSkills <= 50 || randomNumber < 0.33) && taskSkillKey == wish){
+                wish = "";
             }
+            while(!wish){
+                wish = existingSkills[Math.floor(Math.random() * existingSkills.length)];
+                if(wish == workerInstance.getProperty('wish')) wish = "";
+            }
+            workerInstance.setProperty('wishIsKnow', false);  
+            workerInstance.setProperty('wish', wish);  
             //check hate
             randomNumber = Math.random();
-            if((averageWorkPartSkills > 50 && randomNumber < 0.33) && taskSkillKey == workerInstance.getProperty('hate')){
-                workerInstance.setProperty('hate', '');
+            hate = workerInstance.getProperty('hate');
+            if((averageWorkPartSkills > 50 && randomNumber < 0.33) && taskSkillKey == hate){
+                hate = "";
             }
+            while(!hate){
+                hate = existingSkills[Math.floor(Math.random() * existingSkills.length)];
+                if(hate == workerInstance.getProperty('hate')) hate = "";
+            }
+            workerInstance.setProperty('hateIsKnow', false);  
+            workerInstance.setProperty('hate', hate);  
         }
         averageWorkPartSkills = Math.round(averageWorkPartSkills);
         workPartsQuality.push(averageWorkPartSkills);
         workerInstance.setProperty('lastWorkQuality', averageWorkPartSkills);
+        //set moral and confidence depending of averageWorkPartSkills.
+        if(averageWorkPartSkills<50){
+            workerInstance.setMoral(workerInstance.getMoral()-25);
+            workerInstance.setConfidence(workerInstance.getConfidence()-15);
+        }
+        else{
+            workerInstance.setMoral(workerInstance.getMoral()+15);
+            workerInstance.setConfidence(workerInstance.getConfidence()+10);
+        }
         //check 'workWithLeader'
         if(taskInstance.getProperty('workWithLeader') == 'true'){
             workerInstance.setProperty('numberOfWorkWithLeader', parseInt(workerInstance.getProperty('numberOfWorkWithLeader'))+1);
@@ -210,7 +241,7 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
         sumWorkParts += (workPartsQuality[i]);
     }
     workQuality = (sumWorkParts/workPartSkillsQuality.length);
-    clientsSatisfaction.setValue(clientsSatisfaction.getValue()+(workQuality-50)*punderationQualityWeight);
+    clientsSatisfaction.setValue(Math.round(clientsSatisfaction.getValue()+(workQuality-50)*punderationQualityWeight));
     if(clientsSatisfaction.getValue()>100) clientsSatisfaction.setValue(100);
     if(clientsSatisfaction.getValue()<0) clientsSatisfaction.getValue(0);
     //calculate remuneration
@@ -220,13 +251,9 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
     }
     budgetInstance.setValue(budgetInstance.getValue()+remuneration);
     //e-mail
-    for(i=0; i=workersDescriptor.length; i++){
-        from.push(workersDescriptor[i].getInstance(self).getProperties('surname'));
-    }
-    content = new Array();
     content.push("Boujour, <br />Le mandat '");
-    content.push(taskDescriptor.getDescription());
-    content.push("' Vient d'être terminé. Le client ");
+    content.push(taskDescriptor.getName());
+    content.push("' vient d'être terminé. Le client ");
     switch(true){
         case workQuality<20 :
             content.push("n'est absolument pas statisfait de notre travail. Aucune chance qu'il nous mandate à nouveau. ");           
@@ -235,7 +262,7 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
             content.push("n'est pas statisfait de notre travail. Il est vrai que certaine erreurs ont été commises. ");           
             break;
         case workQuality<60 :
-            content.push("est moyennement satisfait. La qualité n'est pas terrible mais le projet satisfaisant dans l'ensemble. ");           
+            content.push("est moyennement satisfait. La qualité n'est pas terrible mais le projet est satisfaisant dans l'ensemble. ");           
             break;
         case workQuality<80 :
             content.push("est content du travail réalisé. Il n'hésitera pas à nous recontacter pour de nouveaux mandats. ");           
@@ -245,14 +272,14 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
             break;
     }
     content.push("<br />");
-    if(workQuality >= parseInt(taskInstance.getProperty('workQualityMinForBonus'))){
-        content.push("Il a tenu à nous remercier par un bonus de ");
-        content.push(taskInstance.getProperties('bonus'));
+    if( parseInt(taskInstance.getProperty('workQualityMinForBonus')) > 0 && workQuality >= parseInt(taskInstance.getProperty('workQualityMinForBonus') && parseInt(taskInstance.getProperty('bonus')) > 0)){
+        content.push("Il nous remercier par un bonus de ");
+        content.push(taskInstance.getProperty('bonus'));
         content.push(".-");
     }
-    content.push("<br /> Bonne journée.");
+    content.push("<br /> Bonne journée. <br />");
     content.push(from.join(', '));
-    this.sendMessage('Fin de mandat', content.join(""), workersDescriptor[0].getInstance(self).getProperties('surname'));
+    this.sendMessage('Fin de mandat', content.join(""), workersDescriptor[0].getInstance(self).getProperty('surname'));
     //desactivate Task
     taskInstance.setActive(false);
 }
@@ -273,18 +300,20 @@ function checkAbsencesEnd(){
         assignment = resourceInstance.getAssignments().get(j);
             for(k=0; k<listAbsences.items.size();k++){
                 absenceInstance = listAbsences.items.get(k).getInstance(self);       
-                if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive == true){
+                if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive() == true){
                     duration = absenceInstance.getDuration();
                     if(duration <= 0){
                         absenceInstance.setActive(false);   
                     }
                     else if(duration == 1){
                         assignmentToRemove.push(j);
+                        resourceInstance.setMoral(40);
                     }
                     else{
+                        assignmentToRemove.push(j);
                         for(l=0; l<listAbsences.items.size();l++){
-                            if(listAbsences.items[l].getInstance(self).getDuration() == duration-1){
-                                assignment[j].setTaskDescriptorId(listAbsences.items[l].getInstance(self).getDescriptorId);
+                            if(listAbsences.items.get(l).getInstance(self).getDuration() == duration-1){
+                                resourceInstance.assign(0, listAbsences.items.get(l));
                             }
                         }
                     }
@@ -292,9 +321,8 @@ function checkAbsencesEnd(){
             }
         }
         for(j=assignmentToRemove.length; j>=0;j--){
-            resourceInstance.resourceInstance.getAssignments().remove(assignmentToRemove[j]);
+            resourceInstance.getAssignments().remove(assignmentToRemove[j]);
         }
-        resourceInstance.setMoral(40);
         this.calculateTeamMotivation()
     }
 }
@@ -426,23 +454,23 @@ function checkMoral(){
             switch(true){
                 case moral<10 :
                     if(randomNumber<0.33){
-                        this.sendMessage('Démission', 'Bonjour,<br /> J\'ai déposé ma lettre de démission dans votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère partir avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />'+resourceInstance.getProperties('surname'), resourceInstance.getProperties('surname'));
+                        this.sendMessage('Changement de départeemnt', 'Bonjour,<br /> J\'ai déposé ma lettre de démission dans votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère changer d\'équipe avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
                         resourceInstance.active(false);
                     }
                     else{
-                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin m\'a conseillé de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperties('surname'), resourceInstance.getProperties('surname'));
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin m\'a conseillé de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
                         sickenResource(resourceDescriptor,2);
                     }
                     break;
                 case moral<20 :
                     if(randomNumber<0.66){
-                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin m\'a conseillé de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperties('surname'), resourceInstance.getProperties('surname'));
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin m\'a conseillé de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
                         sickenResource(resourceDescriptor,2);
                     }
                     break;
                 case moral<30 :
                     if(randomNumber<0.33){
-                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien très bien, je crois que je tmbe malade. Je préfère rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />'+resourceInstance.getProperties('surname'), resourceInstance.getProperties('surname'));
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien très bien, je crois que je tombe malade. Je préfère rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
                         sickenResource(resourceDescriptor,1);
                     }
                     break;
@@ -461,7 +489,6 @@ function checkMoral(){
     var i, sumMotivation = 0, gm = self.getGameModel(), activeResources = 0, moral,
     listResources = VariableDescriptorFacade.findByName(gm, 'resources'), worstMoralValue = 100,
     teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self);
-    listResources.items.get(0).getInstance(self).setActive(false);
     for(i=0; i<listResources.items.size(); i++){
         if(listResources.items.get(i).getInstance(self).getActive() == true){
             moral = parseInt(listResources.items.get(i).getInstance(self).getMoral())
@@ -506,27 +533,47 @@ function checkLeadershipLevel(){
  * send an in-game message with the current score to the player.
  */
 function sendScore(){
-    var content = new Array();
+    var content = new Array(), oldScore, newScore;
+    oldScore = VariableDescriptorFacade.findByName(self.getGameModel(), 'score').getInstance(self).getValue(),
+    newScore = this.calculateScore();
     content.push("Bonjour, <br />");
-    content.push("Comme chaque semaine, voici le résultat de notre analyse concernant les entreprises nationales les mieux dirigées.");
+    content.push("Comme chaque semaine, voici votre score d'entreprise.");
     content.push("<br />");
-    content.push("<p onclick='alert(12)>test</p>");
-    content.push(this.getScore());
+    content.push("Votre score la semaine est de  : ");
+    content.push(newScore);
+    content.push("<br />");
+    if(oldScore<=newScore){
+        content.push("Vous avez donc gagné ");
+        content.push(newScore-oldScore);
+    }
+    else{
+        content.push("Vous avez donc perdu ");
+        content.push(oldScore-newScore);  
+    }
+    content.push(" points depuis la dernière semaine.");
+    content.push("<br /><br />");
+    content.push("Nous vous rappelons que votre score est calculé à partir de votre budget actuel, de votre taux de satisfaction clientèle ainsi sur le moral de votre personnel.");
+    content.push("<br /><br />");
+    content.push("A la semaine prochaine.");
+    content.push("<br />");
+    content.push("Team classement d'entreprises");
     this.sendMessage("Classement d'entreprises", content.join(""), "Top entreprise")
 }
 
 /**
- * @ return the current player's score 
+ * @return Integer score, the current player's score 
  */
-function getScore(){
-    var gm = self.getGameModel(), teamMotivation, budget, clientSatisfaction,
+function calculateScore(){
+    var gm = self.getGameModel(), teamMotivation, budget, clientSatisfaction, score,
     punderationBudget = 0.2,
     punderationMotivation = 0.45, 
     punderationSatisfaction = 0.35;
-    teamMotivation = parseInt(VariableDescriptorFacade.findByName(gm, 'teamMotivation'));
-    budget = parseInt(VariableDescriptorFacade.findByName(gm, 'budget'));
-    clientSatisfaction = parseInt(VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction'));
-    return (budget/25*punderationBudget + teamMotivation*20*punderationMotivation + clientSatisfaction*20*punderationSatisfaction);
+    teamMotivation = parseInt(VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self).getValue());
+    budget = parseInt(VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self).getValue());
+    clientSatisfaction = parseInt(VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self).getValue());
+    score =  Math.round(budget/50*punderationBudget + teamMotivation*20*punderationMotivation + clientSatisfaction*20*punderationSatisfaction);
+    VariableDescriptorFacade.findByName(gm, 'score').getInstance(self).setValue(score);
+    return score;
 }
 
 /**
@@ -534,18 +581,13 @@ function getScore(){
  * @param Integer resourceDescriptorId, the resourceDescriptor to sicken
  * @param Integer duration the duration of the sickness.
  */
-function sickenResource(resourceDescriptorId, duration){
+function sickenResource(resourceDescriptor, duration){
     var i, resInstance, taskDescriptor, gm=self.getGameModel(),
-    listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
     listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');
-    for(i=0; i<listResources.items.size(); i++){
-        if(resourceDescriptorId == listResources.items.get(i).id){
-            resInstance = listResources.items.get(i).getInstance(self);
-        }
-    }
+    resInstance = resourceDescriptor.getInstance(self);
     for(i=0; i<listAbsences.items.size(); i++){
-        if(listAbsences.items[i].getInstance().getDuration() == duration){
-            taskDescriptor = listAbsences.items[i];
+        if(listAbsences.items.get(i).getInstance(self).getDuration() == duration){
+            taskDescriptor = listAbsences.items.get(i);
             break;
         }
     }
@@ -568,12 +610,12 @@ function assignTask(resourceDescriptorId, taskDescriptorId){
     listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
     listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');
     for(i=0; i<listResources.items.size(); i++){
-        if(resourceDescriptorId == listResources.items.get(i).id){
+        if(resourceDescriptorId == listResources.items.get(i).getId()){
             resInstance = listResources.items.get(i).getInstance(self);
         }
     }
     for(i=0; i<listTasks.items.size(); i++){
-        if(taskDescriptorId == listTasks.items.get(i).id){
+        if(taskDescriptorId == listTasks.items.get(i).getId()){
             taskDescriptor = listTasks.items.get(i);
         }
         if(resInstance != null){
@@ -612,5 +654,105 @@ function sendMessage(subject, content, from){
     }
     else{
         println('Bean InGameMailFacade does not exist, unable to send in-game message: '+subject);
+    }
+}
+
+/**
+ * Reset the values specific to the current scenario's dialogues.
+ * Must be called weekly.
+ */
+function resetDialogueValues(){
+    var i, gm=self.getGameModel(), resourceInstance,
+    listResources = VariableDescriptorFacade.findByName(gm, 'resources');
+    for(i=0; i<listResources.items.size(); i++){
+        resourceInstance = listResources.items.get(i).getInstance(self);
+        resourceInstance.setProperty('isAdvised', false); 
+        resourceInstance.setProperty('isConsidered', false); 
+        resourceInstance.setProperty('bonusInducement', 0); 
+    }
+}
+
+/**
+ * initiate the game'scenario
+ */
+function doIntroduction(){
+    var gm = self.getGameModel(),
+    budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),
+    budgetvalue = budgetDescriptor.getInstance(self).getValue(), mail = new Array();
+    mail.push("Bonjour");
+    mail.push("<br /><br />");
+    mail.push("Je vous félicite pour votre promotion. Sauf erreur de ma part, vous n’avez jamais eu de contact avec vos équipiers jusqu’à présent. Aussi vous ais-je remis les dossiers de chaque personne dont vous avez la charge. Je sais que vous en ferai bon usage.");
+    mail.push("<br /><br />");
+    mail.push("La concurrence est rude, je vous demanderais donc de ne pas trop tarder avant de prendre en main votre service. Si vos résultats sont bons, les mandats deviendront de plus en plus intéressants. Vous avez également la possibilité d’être promu. Si cela devait arriver, j’espère pouvoir donner la responsabilité de votre équipe à un de ses membres actuels.");
+    mail.push("<br /><br />");
+    mail.push("Je vous souhaite le meilleur départ possible.");
+    mail.push("<br />");
+    mail.push("Daniel.");
+    this.sendMessage("Promotion au niveau de cadre.", mail.join(""), "Daniel Müster.");
+    this.finishCurrentWeek();
+    budgetDescriptor.getInstance(self).setValue(budgetvalue);
+}
+
+
+/**
+ * set limits (max and min) for several values.
+ * General values to limit :
+ * - actions
+ * - teamMotivation
+ * - clientsSatisfaction
+ * 
+ * Ressource's value to limit :
+ * - moral
+ * - confidence
+ * - frankness
+ * - lastWorkQuality
+ * - each skillset's value
+ */
+function limitValues(){
+    var i, j, value, valueInst, valueDescr, gm=self.getGameModel(), skillsets,
+    skillKey, skillValue, listResources = VariableDescriptorFacade.findByName(gm, 'resources');
+    //actions
+    valueDescr = VariableDescriptorFacade.findByName(gm, 'actions')
+    valueInst = valueDescr.getInstance(self);
+    if(valueInst.getValue() > valueDescr.getMaxValue()) valueInst.setValue(valueDescr.getMaxValue());
+    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());
+    //teamMotivation
+    valueDescr = VariableDescriptorFacade.findByName(gm, 'teamMotivation')
+    valueInst = valueDescr.getInstance(self);
+    if(valueInst.getValue() > valueDescr.getMaxValue()) valueInst.setValue(valueDescr.getMaxValue());
+    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());  
+    //clientsSatisfaction
+    valueDescr = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction')
+    valueInst = valueDescr.getInstance(self);
+    if(valueInst.getValue() > valueDescr.getMaxValue()) valueInst.setValue(valueDescr.getMaxValue());
+    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());  
+    //ressources
+    for(i=0; i<listResources.items.size(); i++){
+        valueDescr = listResources.items.get(i);
+        valueInst = valueDescr.getInstance(self);
+        //moral
+        value = parseInt(valueInst.getMoral());
+        if(value > 100) valueInst.setMoral(100);
+        if(value < 0) valueInst.setMoral(0);  
+        //moral
+        value = parseInt(valueInst.getConfidence());
+        if(value > 100) valueInst.setConfidence(100);
+        if(value < 0) valueInst.setConfidence(0); 
+        //frankness
+        value = parseInt(valueInst.getProperty('frankness'));
+        if(value > 100) valueInst.setProperty('frankness', 100);
+        if(value < 0) valueInst.setProperty('frankness', 0);
+        //lastWorkQuality
+        value = parseInt(valueInst.getProperty('lastWorkQuality'));
+        if(value > 100) valueInst.setProperty('lastWorkQuality', 100);
+        if(value < 0) valueInst.setProperty('lastWorkQuality', 0);
+        //skillset
+        skillsets = valueInst.getSkillset();
+         for (j=0; j<skillsets.size(); j++){
+            skillKey = skillsets.keySet().toArray()[j];
+            skillValue = parseInt(skillsets.get(skillKey));
+            if(skillValue > 100) valueInst.setSkillset(skillKey, 100);
+            if(skillValue < 0) valueInst.setSkillset(skillKey, 0);            
+         }
     }
 }

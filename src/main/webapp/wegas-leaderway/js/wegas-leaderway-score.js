@@ -11,22 +11,54 @@ YUI.add('wegas-leaderway-score', function (Y) {
         
         // *** Fields *** /
         table: null,
-        //data: new Array(),
-        
-        data:[
-            {"number":1, "team":"tertgrst", "score":11278},
-            {"number":2, "team":"afsfyf", "score":10740},
-            {"number":3, "team":"tegtrst", "score":9684},
-            {"number":4, "team":"tertgrrtgst", "score":8649},
-            {"number":5, "team":"tertgrrtgst", "score":19}
-        ],
+        data: new Array(),
 
         //*** Particular Methods ***/
-        getTeamScore: function(){
-            //To do
+        /**
+         * Add rows to the datatable. Create the hall of fame from team of all time.
+         * @param Integer rows, number of wanted rows.
+         */
+        getTeamScore: function(maxRows){
+            var i, j, k, allScore, team = new Array(), score = new Array(), sortedScore = new Array(), sortedTeam = new Array(), exist = false;
+            allScore = Y.Wegas.VariableDescriptorFacade.rest.find("name", "score").get("scope").get("variableInstances");
+            for (i in allScore){
+                team.push(Y.Wegas.GameFacade.rest.findById(i).get('name'));
+                score.push(allScore[i].get('value'));
+            }
+            if(score.length > 0){
+                sortedScore = score.slice(0);
+                sortedScore.sort();
+                sortedScore.reverse();
+                for(i=0; i<sortedScore.length;i++){
+                    for(j=0; j<score.length;j++){
+                        if(sortedScore[i] == score[j]){
+                            exist = false;
+                            for(k=0; k<sortedTeam.length;k++){
+                                if(sortedTeam[k] == team[j]){
+                                    exist = true;
+                                    break;
+                                }
+                            }
+                            if(!exist) sortedTeam.push(team[j]);
+                        }
+                    }
+                }
+                if(score.length <= maxRows) maxRows =  score.length;
+                for (i=0;i<maxRows;i++){
+                    this.data.push({
+                                number:i+1,
+                                team:sortedTeam[i],
+                                score:sortedScore[i]
+                            })
+                }
+            }
         },
 
         // *** Lifecycle Methods *** //
+        /**
+         * Render the widget.
+         * Create the child widget "table"  
+         */
         renderUI: function (){
             this.table = new Y.DataTable({
                 columns: [
@@ -47,12 +79,12 @@ YUI.add('wegas-leaderway-score', function (Y) {
             this.get(CONTENTBOX).setContent('<div class="scoreTitle">'+this.get('title')+'</div>');
             this.table.render(this.get(CONTENTBOX));
         },
-            
-        bindUI: function() {
-        },
         
+        /**
+         * Synchronise the content of this widget.
+         */
         syncUI: function () {
-            this.getTeamScore();
+            this.getTeamScore(this.get('maxRows'));
             this.table.addRows(this.data);
             if(this.data[0] == null){
                 this.table.showMessage("Aucun score n'est disponible.");
@@ -60,13 +92,55 @@ YUI.add('wegas-leaderway-score', function (Y) {
             else{
                 this.table.hideMessage();
             }
-        }
+            this.goToFinalPage();// ! hack function
+        },
         
+        /*
+         * Destroy all child widget
+         */
+        destroy: function(){
+            this.table.destroy();
+        },
+        
+        // *** hack Methods *** //
+        /**
+         * if current week > max value of week value, then
+         * change the current widget to go on the "dialogue" widget.
+         */
+        goToFinalPage: function(){
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
+            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
+            }
+        }
     },
     {
         ATTRS : {
             title: {
-                value: 'Top 5 des meilleurs entreprises.'}
+                value: 'Top 5 des meilleurs entreprises.',
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            maxRows:{
+                value: 5,
+                validator: function (i){
+                    return i === null || Y.Lang.isNumber(i);
+                }   
+            },
+            dialoguePageId: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            targetPageLoaderId: {
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            }
         }
     });
 
