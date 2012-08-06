@@ -108,8 +108,8 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         QuestionInstance questionInstance = (QuestionInstance) questionDescriptor.getInstance(player);
         Reply reply = new Reply();
 
-        reply.setResponse(choice.getInstance(player).getCurrentResponse());
         reply.setStartTime(startTime);
+        reply.setResponse(choice.getInstance(player).getCurrentResponse());
         questionInstance.addReply(reply);
 
         this.em.flush();
@@ -137,7 +137,13 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     public void validateReply(Player player, Reply reply) throws ScriptException {
         HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
+        ChoiceInstance choiceInstance = reply.getResponse().getChoiceDescriptor().getInstance(player);
+
+        reply.setResponse(choiceInstance.getCurrentResponse());                 // Refresh the current response
+
         arguments.put("selectedReply", reply);
+        arguments.put("selectedChoice", choiceInstance);
+        arguments.put("selectedQuestion", reply.getQuestionInstance());
         scriptManager.eval(player, reply.getResponse().getImpact(), arguments);
         scriptManager.eval(player, reply.getResponse().getChoiceDescriptor().getImpact(), arguments);
     }

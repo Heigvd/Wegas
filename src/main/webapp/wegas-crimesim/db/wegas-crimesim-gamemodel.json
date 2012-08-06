@@ -98,15 +98,12 @@
         "tags":[],
         "items":[{
             "@class":"QuestionDescriptor",
-            "id":54,
             "name":"Sac poubelle n°5",
             "defaultVariableInstance":{
                 "@class":"QuestionInstance",
-                "id":55,
                 "replies":[],
                 "active":true,
-                "unread":true,
-                "descriptorId":-1
+                "unread":true
             },
             "scope":{
                 "@class":"TeamScope"
@@ -114,14 +111,79 @@
             "tags":[],
             "items":[{
                 "@class":"ChoiceDescriptor",
-                "id":70,
-                "name":"Prélévement ADN",
+                "name":"Traces ED",
                 "defaultVariableInstance":{
                     "@class":"ChoiceInstance",
-                    "id":71,
                     "active":true,
-                    "unread":true,
-                    "descriptorId":-1
+                    "unread":true
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "tags":[],
+                "description":"",
+                "responses":[{
+                    "@class": "Response",
+                    "name": "ED Good",
+                    "answer": "Ca c'est bien passé.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"cost.value += 500;\nselectedChoice.setCurrentResponseByIndex(1);\nselectedQuestion.item(1).setCurrentResponseByIndex(self, 1);"
+                    }
+                }, {
+                    "@class": "Response",
+                    "name": "ED Bad",
+                    "answer": "Ca ne c'est pas bien passé.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"cost.value += 500;"
+                    }
+                }],
+                "duration":1,
+                "cost":2
+            },{
+                "@class":"ChoiceDescriptor",
+                "name":"Fibres",
+                "defaultVariableInstance":{
+                    "@class":"ChoiceInstance",
+                    "active":true,
+                    "unread":true
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "tags":[],
+                "description":"",
+                "responses":[{
+                    "@class": "Response",
+                    "name": "Fibres Good",
+                    "answer": "Ca c'est bien passé.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"cost.value += 500;\nselectedChoice.setCurrentResponseByIndex(1);\nselectedQuestion.item(0).setCurrentResponseByIndex(self, 1);"
+                    }
+                }, {
+                    "@class": "Response",
+                    "name": "Fibres Bad",
+                    "answer": "Ca ne c'est pas bien passé.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"cost.value += 500;"
+                    }
+                }],
+                "duration":1,
+                "cost":2
+            },{
+                "@class":"ChoiceDescriptor",
+                "name":"ADN",
+                "defaultVariableInstance":{
+                    "@class":"ChoiceInstance",
+                    "active":true,
+                    "unread":true
                 },
                 "scope":{
                     "@class":"TeamScope"
@@ -135,7 +197,7 @@
                     "impact":{
                         "@class":"Script",
                         "language":"JavaScript",
-                        "content":""
+                        "content":"cost.value += 500;\nselectedChoice.setCurrentResponseByIndex(1);\nselectedQuestion.item(0).setCurrentResponseByIndex(self, 1);\nselectedQuestion.item(1).setCurrentResponseByIndex(self, 1);"
                     }
                 }, {
                     "@class": "Response",
@@ -144,14 +206,188 @@
                     "impact":{
                         "@class":"Script",
                         "language":"JavaScript",
-                        "content":""
+                        "content":"cost.value += 500;"
                     }
                 }],
                 "duration":2,
+                "cost":4
+            }, {
+                "@class":"ChoiceDescriptor",
+                "name":"Prélévement ADN",
+                "defaultVariableInstance":{
+                    "@class":"ChoiceInstance",
+                    "active":true,
+                    "unread":true
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "tags":[],
+                "description":"",
+                "responses":[{
+                    "@class": "Response",
+                    "name": "Prélévement ADN Good",
+                    "answer": "Ca c'est bien passé.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"cost.value += 200;\nselectedChoice.setCurrentResponseByIndex(1);\nthis[\"Sac poubelle n°5: Prélévement ADN\"].activate();"
+                    }
+                }, {
+                    "@class": "Response",
+                    "name": "Prélévement ADN Bad",
+                    "answer": "Ca ne c'est pas bien passé.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"cost.value += 200;"
+                    }
+                }],
+                "duration":1,
                 "cost":2
             }],
             "label":null,
             "description":null,
+            "allowMultipleReplies":false
+        },{
+            "@class":"QuestionDescriptor",
+            "name":"Sac poubelle n°5: Prélévement ADN",
+            "defaultVariableInstance":{
+                "@class":"QuestionInstance",
+                "replies":[],
+                "active":false,
+                "unread":true
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "tags":[],
+            "items":[{
+                "@class":"ChoiceDescriptor",
+                "name":"ADN",
+                "defaultVariableInstance":{
+                    "@class":"ChoiceInstance",
+                    "active":true,
+                    "unread":true
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "tags":[],
+                "description":"",
+                "responses":[{
+                    "@class": "Response",
+                    "name": "ADN Good",
+                    "answer": "Ca c'est bien passé. Le résultat est: ...",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"cost.value += 500;\nselectedChoice.setCurrentResponseByIndex(1);"
+                    }
+                }, {
+                    "@class": "Response",
+                    "name": "ADN Bad",
+                    "answer": "Ca ne c'est pas bien passé.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"cost.value += 500;"
+                    }
+                }],
+                "duration":1,
+                "cost":2
+            }],
+            "label":null,
+            "description":null,
+            "allowMultipleReplies":false
+        }]
+    }, {
+        "@class":"ListDescriptor",
+        "id":22,
+        "name":"questions",
+        "defaultVariableInstance":{
+            "@class":"NumberInstance",
+            "id":23,
+            "value":0.0,
+            "descriptorId":-1
+        },
+        "scope":{
+            "@class":"GameModelScope"
+        },
+        "tags":[],
+        "items":[{
+            "@class":"QuestionDescriptor",
+            "id":38,
+            "name":"Qui est la victime?",
+            "defaultVariableInstance":{
+                "@class":"QuestionInstance",
+                "id":39,
+                "replies":[],
+                "active":true,
+                "unread":true,
+                "descriptorId":-1
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "tags":[],
+            "items":[{
+                "@class":"ChoiceDescriptor",
+                "id":42,
+                "name":"a) Marc",
+                "defaultVariableInstance":{
+                    "@class":"ChoiceInstance",
+                    "id":43,
+                    "active":true,
+                    "unread":true,
+                    "descriptorId":-1
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "tags":[],
+                "description":"",
+                "responses": [{
+                    "@class": "Response",
+                    "name": "Normal",
+                    "answer": "Non c'est pas lui.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"humanResources.value -= 2"
+                    }
+                }],
+                "duration":0,
+                "cost":0
+            },{
+                "@class":"ChoiceDescriptor",
+                "name":"b) Roger",
+                "defaultVariableInstance":{
+                    "@class":"ChoiceInstance",
+                    "active":true,
+                    "unread":true,
+                    "descriptorId":-1
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "tags":[],
+                "description":"",
+                "responses": [{
+                    "@class": "Response",
+                    "name": "Normal",
+                    "answer": "Oui c'est pas lui.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"humanResources.value -= 2"
+                    }
+                }],
+                "duration":0,
+                "cost":0
+            }],
+            "label":"",
+            "description":"",
             "allowMultipleReplies":false
         }]
     }],

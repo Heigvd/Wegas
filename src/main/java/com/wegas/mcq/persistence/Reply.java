@@ -38,8 +38,7 @@ public class Reply extends AbstractEntity {
     /**
      *
      */
-//    @ManyToOne(optional = false)
-    @Transient
+    @ManyToOne(optional = false)
     private Response response;
     /**
      *

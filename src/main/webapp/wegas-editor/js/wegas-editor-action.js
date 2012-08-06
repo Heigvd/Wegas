@@ -176,17 +176,20 @@ YUI.add('wegas-editor-action', function (Y) {
                     break;
 
                 case "post":
-                    EditEntityAction.showEditForm( data.entity, function ( newVal ) {
+                    var newEntity = Y.Wegas.persistence.Entity.revive({
+                        "@class": this.get("targetClass")
+                    });
+                    EditEntityAction.showEditForm( newEntity , function ( newVal ) {
+                        newEntity.setAttrs( newVal);
+                        data.entity.get( this.get( "attributeKey" )).push( newEntity );
 
-                        data.entity.setAttrs( newVal );
-                        console.log(data.entity.get("name"), data.parentEntity.get("responses")[0].get("name"));
                         data.dataSource.rest.put( data.parentEntity.toJSON(), {
                             success: function () {
                                 EditEntityAction.showFormMsg("success", "Item has been added");
                                 EditEntityAction.hideFormFields();
                             },
                             failure: function (e) {
-                                EditEntityAction.showFormMsg("error", e.response.message || "Error while adding item");
+                                EditEntityAction.showFormMsg("error", e.response.message || "Error while update item");
                             }
                         });
                     });
@@ -194,9 +197,9 @@ YUI.add('wegas-editor-action', function (Y) {
 
                 case "delete":
                     if (confirm("Are your sure your want to delete this item ?")) {
-                        var targetArray = data.parentEntity.get( data.attribute );
+                        var targetArray = data.parentEntity.get( this.get( "attributeKey" ) );
                         Y.Array.find( targetArray, function ( e, i, a ) {
-                            if ( e == data.entity ) {
+                            if ( e.get("id") == data.entity.get("id") ) {
                                 a.splice( i, 1 );
                                 return true;
                             }
@@ -220,7 +223,8 @@ YUI.add('wegas-editor-action', function (Y) {
             method: {
                 value: "put"
             },
-            targetClass: { }
+            targetClass: { },
+            attributeKey: { }
         }
     });
 

@@ -52,10 +52,13 @@
 }
 .body {
     border-top: 1px solid gray;
-    border-bottom:1 px solid gray;
+    /*border-bottom:1px solid gray;*/
     min-height:200px;
 }
 /* Schedule display Widget style */
+.wegas-crimesim-scheduledisplay {
+    min-width: 1000px;
+}
 .wegas-crimesim-scheduledisplay-content {
     position:relative;
 }
@@ -117,6 +120,9 @@
     background:steelBlue;
     color:white;
 }
+.schedule-table tr {
+
+}
 .schedule-table td {
     /*  height: 30px;*/
 }
@@ -127,6 +133,7 @@
 .schedule-table td.schedule-leftcolum {
     text-align: left;
     cursor: pointer;
+    height: 26px;
 }
 .schedule-table td.schedule-leftcolum:hover {
     background: lightgray;
@@ -217,6 +224,11 @@
 .schedule-table .schedule-available > div:hover > * {
     display:block;
 }*/
+
+.wegas-tooltip h3 {
+    font-style: italic;
+    font-weight: normal;
+}
 
 
 /* TabView Styles */
@@ -313,10 +325,10 @@
     border:none;
 }
 .wegas-mcqtabview .reply .name {
-/*    font-weight: bold;*/
+    /*font-weight: bold;*/
 }
 .wegas-mcqtabview .reply content {
-/*    font-weight: bold;*/
+    /*font-weight: bold;*/
     margin-bottom:5px;
 }
 .wegas-mcqtabview .unread {

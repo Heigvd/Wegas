@@ -64,7 +64,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             description: {
                 type: "string",
-                format: "html"
+                format: "html",
+                optional: true
             }
         },
         EDITMENU: [{
@@ -128,11 +129,13 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             duration: {
                 value: 1,
-                type: "string"
+                type: "string",
+                optional: true
             },
             cost: {
                 type: "string",
-                value: 1
+                value: 1,
+                optional: true
             },
             defaultVariableInstance: {
                 properties: {
@@ -157,33 +160,53 @@ YUI.add('wegas-mcq-entities', function (Y) {
             description: {
                 type: 'string',
                 format: "html",
+                optional: true,
                 _inputex: {
                     opts: {
                         height: '50px'
                     }
                 }
             },
-            //            feedback: {
-            //                type: 'string',
-            //                format: "html",
-            //                _inputex: {
-            //                    opts: {
-            //                        height: '50px'
-            //                    }
-            //                }
-            //            },
+            //feedback: {
+            //    type: 'string',
+            //    format: "html",
+            //    _inputex: {
+            //        opts: {
+            //            height: '50px'
+            //        }
+            //    }
+            //},
             impact: {
                 _inputex: {
                     //_type: "script"
                     _type: "hidden"
-                }
+                },
+                value: null,
+                optional: true
             },
             responses: {
                 _inputex: {
                     _type: 'hidden'
-                }
+                },
+                value: []
             }
-        }
+        },
+        EDITMENU: [{
+            type: "EditEntityButton"
+        },{
+            type: "Button",
+            label: "Add response",
+            plugins: [{
+                fn: "EditEntityArrayFieldAction",
+                cfg: {
+                    targetClass: "Response",
+                    method: "post",
+                    attributeKey: "responses"
+                }
+            }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
     /**
      * MCQ Response mapper
@@ -228,7 +251,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
             plugins: [{
                 fn: "EditEntityArrayFieldAction",
                 cfg: {
-                    method: "delete"
+                    method: "delete",
+                    attributeKey: "responses"
                 }
             }]
         }]
@@ -264,7 +288,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Y.Wegas.persistence.Reply = Y.Base.create("Reply", Y.Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            return Y.Wegas.VariableDescriptorFacade.rest.findById( this.get( "choiceDescriptorId" ) );
+            return this.get( "response" ).getChoiceDescriptor();
         },
         /**
          *  @return 0 if is finished, 1 if ongoing and 2 if planified

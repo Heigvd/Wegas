@@ -11,10 +11,12 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
  *
@@ -58,6 +60,12 @@ public class Response extends AbstractEntity {
      */
     @Column(name = "choicedescriptor_id", updatable = false, insertable = false)
     private Long choiceDescriptorId;
+    /**
+     * This link is here so the reference is updated on remove.
+     */
+    @OneToMany(mappedBy = "currentResponse")
+    @XmlTransient
+    private List<ChoiceInstance> choiceInstances;
 
     /**
      *
@@ -71,6 +79,20 @@ public class Response extends AbstractEntity {
         this.setImpact(other.getImpact());
     }
 
+    @PrePersist
+    @PreUpdate
+    @PreRemove
+    public void propagateCurrentResponse() {
+        this.getChoiceDescriptor().propagateCurrentResponse();
+    }
+
+    //@PreRemove
+    //private void preRemove() {
+    //   for (ChoiceInstance c : this.getLinkedChoiceInstances()) {
+    //       c.setCurrentResponse(null);
+    //   }
+    //   this.getChoiceDescriptor().propagateCurrentResponse();
+    //}
     @Override
     public Long getId() {
         return this.id;
