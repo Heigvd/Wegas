@@ -11,9 +11,13 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonBackReference;
 
 /**
  *
@@ -35,24 +39,24 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
-//    @ManyToOne
-//    @JoinColumn(name = "response_id")
-    @Transient
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "response_id")
+    //@JsonBackReference
     private Response currentResponse;
+
+
     /**
      *
      */
-//    @Column(name = "response_id", nullable = false, insertable = false, updatable = false)
-
-    @Transient
-    private Long currentResponseId;
-
+    //@Column(name = "response_id", insertable = false, updatable = false)
+    //private Long currentResponseId;
     /**
      *
      * @return
      */
     public Long getCurrentResponseId() {
-        return this.currentResponseId;
+//        return this.currentResponseId;
+        return this.getCurrentResponse().getId();
     }
 
     /**

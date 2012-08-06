@@ -26,10 +26,7 @@ public class QuestionDescriptor extends ListDescriptor {
 
     private static final long serialVersionUID = 1L;
     // private static final Logger logger = LoggerFactory.getLogger(QuestionDescriptor.class);
-    /**
-     *
-     */
-    private String label;
+
     /**
      *
      */
@@ -49,7 +46,6 @@ public class QuestionDescriptor extends ListDescriptor {
         super.merge(a);
         QuestionDescriptor other = (QuestionDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setLabel(other.getLabel());
         this.setAllowMultipleReplies(other.getAllowMultipleReplies());
     }
 
@@ -65,20 +61,6 @@ public class QuestionDescriptor extends ListDescriptor {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
     }
 
     /**

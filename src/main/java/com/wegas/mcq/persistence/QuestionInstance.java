@@ -10,7 +10,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.ListInstance;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -25,7 +25,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "QuestionInstance")
-public class QuestionInstance extends VariableInstance {
+public class QuestionInstance extends ListInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);

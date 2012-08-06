@@ -10,6 +10,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -32,8 +33,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
-    @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval= true)
+    @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @OrderBy("id")
     private List<Response> responses = new ArrayList<>();
     /**
      *
@@ -56,11 +58,12 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    public void propagateCurrentResponse() {
         ChoiceInstance i = (ChoiceInstance) this.getDefaultVariableInstance();
         if (i.getCurrentResponse() == null && !this.getResponses().isEmpty()) {
             i.setCurrentResponse(this.getResponses().get(0));
         }
+        this.propagateDefaultInstance(false);
     }
 
     /**
@@ -72,11 +75,19 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         super.merge(a);
         ChoiceDescriptor other = (ChoiceDescriptor) a;
         this.setDescription(other.getDescription());
-//        this.setFeedback(other.getFeedback());
         this.setImpact(other.getImpact());
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
-        this.setResponses(other.getResponses());
+
+        ListUtils.mergeLists(this.getResponses(), other.getResponses());
+        //this.getResponses().clear();
+        //this.setResponses(other.getResponses());
+    }
+    /**
+     * Sugar to use from scripts
+     */
+    public void setCurrentResponseByIndex(Player player, int index) {
+        this.getInstance(player).setCurrentResponseByIndex(index);
     }
 
     /**

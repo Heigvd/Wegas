@@ -31,10 +31,9 @@ YUI.add('wegas-tooltip', function (Y) {
 
     Y.extend(TooltipPlg, Y.Plugin.Base, {
         initializer: function () {
-            //            this.afterHostEvent("click", function() {
-            var tt = Tooltip.getTooltipWidget();
+            var tt = Tooltip.getInstance();
             tt.addTriggerNode( this.get( "host" ).get( "boundingBox" ),
-                this.get( "content" ));
+            this.get( "content" ));
         }
     }, {
         ATTRS: {
@@ -313,7 +312,7 @@ YUI.add('wegas-tooltip', function (Y) {
         _setTriggerContent : function(node) {
             var content = this.get("content");
             if (content && !(content instanceof Node || Lang.isString(content))) {
-                content = content[node.get("id")] || node.getAttribute("title");
+                content = content[node.get("id")] || unescape( node.getAttribute("title") ) ;
             }
             this.setTriggerContent(content);
         },
@@ -410,6 +409,22 @@ YUI.add('wegas-tooltip', function (Y) {
 
         CSS_PREFIX: "wegas-tooltip",
 
+        /**
+         * Retrieves a singleton of the tt instance.
+         */
+        getInstance: function () {
+            if (!Tooltip.tt) {
+                Tooltip.tt = new Tooltip({
+                    triggerNodes: new Y.NodeList(),
+                    delegate: "body",
+                    content: {},
+                    shim: false,
+                    zIndex: 26,
+                    render: true
+                });
+            }
+            return Tooltip.tt;
+        },
         ATTRS : {
 
             /*
@@ -485,22 +500,6 @@ YUI.add('wegas-tooltip', function (Y) {
              */
             xy: {
                 value:[OX, OY]
-            },
-            /**
-             * Retrieves a singleton of the tt instance.
-             */
-            getInstance: function () {
-                if (!Tooltip.tt) {
-                    Tooltip.tt = new Tooltip({
-                        triggerNodes: new Y.NodeList(),
-                        delegate: "body",
-                        content: {},
-                        shim: false,
-                        zIndex: 26,
-                        render: true
-                    });
-                }
-                return Tooltip.tt;
             }
         }
     });

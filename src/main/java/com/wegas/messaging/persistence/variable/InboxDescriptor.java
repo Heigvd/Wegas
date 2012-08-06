@@ -26,10 +26,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQDescriptorEntity");
-    /**
-     *
-     */
-    private String label;
+
     /**
      *
      */
@@ -57,19 +54,5 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
     }
 }

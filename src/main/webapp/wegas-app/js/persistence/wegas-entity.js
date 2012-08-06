@@ -749,6 +749,7 @@ YUI.add('wegas-entity', function (Y) {
             items: {
                 type: "array",
                 value: [],
+                "transient": true,
                 _inputex: {
                     _type: "hidden"
                 }

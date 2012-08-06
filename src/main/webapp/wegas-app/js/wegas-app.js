@@ -127,15 +127,15 @@ YUI.add('wegas-app', function (Y) {
                             this.fire("render");                                   // Fire a render event for some eventual post processing
                         }, this, cfg));
 
-                    //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
-                    //this.pageLoader.render();
-                    // cfg.id = -100;
-                    // this.dataSources.Page.data.push(cfg);
-                    //try {
-                    //    this.pageLoader.set("pageId", -100);
-                    //} catch (renderException) {
-                    //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
-                    //}
+                        //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
+                        //this.pageLoader.render();
+                        // cfg.id = -100;
+                        // this.dataSources.Page.data.push(cfg);
+                        //try {
+                        //    this.pageLoader.set("pageId", -100);
+                        //} catch (renderException) {
+                        //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
+                        //}
 
                     }
                 }
@@ -144,8 +144,8 @@ YUI.add('wegas-app', function (Y) {
     }, {
         ATTRS: {
             /**
-            * Base url for app
-            */
+             * Base url for app
+             */
             base: { },
             layoutSrc: {},
             dataSources: {
@@ -161,8 +161,8 @@ YUI.add('wegas-app', function (Y) {
                 setter: function (val) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
                     if (cPlayer) {
-                    // @fixme
-                    // this.set('currentTeam', cPlayer.teamId);              // When current player is updated, we also update current team
+                        // @fixme
+                        // this.set('currentTeam', cPlayer.teamId);              // When current player is updated, we also update current team
                     }
                     return val;
                 }
@@ -175,6 +175,10 @@ YUI.add('wegas-app', function (Y) {
         genId: function () {
             var now = new Date();
             return now.getHours() + now.getMinutes() + now.getSeconds();
+        },
+        htmlEntities: function ( str ) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
         }
     });
 
