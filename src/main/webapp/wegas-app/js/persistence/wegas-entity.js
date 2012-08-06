@@ -68,8 +68,7 @@ YUI.add('wegas-entity', function (Y) {
          */
         JSONclone: function(mask){
             var k, i, e = JSON.parse(JSON.stringify(this));
-            mask = Y.Lang.isArray(mask) ? mask : arguments;
-            mask.push("initialized", "destroyed");
+            mask = Y.Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
             return Y.clone(e, true, function(value, key, output, input){
                 if(mask.indexOf(key) != -1){
                     return false;
