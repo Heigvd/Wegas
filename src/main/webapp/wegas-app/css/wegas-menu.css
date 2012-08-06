@@ -14,7 +14,8 @@
 .wegas-menu-content > ul{
     position:static;
     box-shadow: none;
-    border: 1px solid grey;
+   /* border: 1px solid grey;*/
+   backrgound:none;
 }
 .wegas-menu-content li:hover{
     box-shadow: 0px 0px 6px black inset;
@@ -23,7 +24,7 @@
 }
 .wegas-menu-itemlist-horizontal{
     display:inline-table;
-    padding:0px 8px;
+    padding:0px 3px;
 }
 .wegas-menu-itemlist-vertical{
     display: block;
@@ -63,6 +64,6 @@
 .wegas-menu-content .menu-icon{
     display:inline-block;
     width:18px;
-    height:24px;
-    margin: -10px 0px;
+    height: 21px;
+    margin: 1px 0 -4px 0;
 }

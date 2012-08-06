@@ -66,6 +66,15 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: "string",
                 format: "html",
                 optional: true
+            },
+            pictures: {
+                type: "array",
+                items: {
+                    type: "string",
+                    _inputex: {
+                        _type: "wegasurl"
+                    }
+                }
             }
         },
         EDITMENU: [{

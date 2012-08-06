@@ -8,7 +8,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.statemachine;
+package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceManager;
