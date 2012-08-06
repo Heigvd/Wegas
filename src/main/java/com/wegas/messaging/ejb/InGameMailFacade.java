@@ -80,7 +80,7 @@ public class InGameMailFacade extends AbstractFacadeImpl<Message> {
      */
     public void send(Player p, String subject, String body, String from) {
         Message msg = new Message();
-        msg.setName(subject);
+        msg.setSubject(subject);
         msg.setBody(body);
         msg.setFrom(from);
         this.send(p, msg);
