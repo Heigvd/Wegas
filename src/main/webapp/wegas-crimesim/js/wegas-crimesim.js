@@ -240,7 +240,7 @@ YUI.add('wegas-crimesim', function (Y) {
                 '</h3><div class="content">'];
 
             if (status === 0) {
-                ret.push( reply.get( "response" ).get( "answer" ));
+                ret.push( reply.get( "result" ).get( "answer" ));
             } else if (status === 1) {
                 ret.push("analysis in progress");
             } else {

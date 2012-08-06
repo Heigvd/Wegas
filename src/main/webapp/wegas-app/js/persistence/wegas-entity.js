@@ -25,7 +25,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "enum", "default", "transient");
+    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
     /**

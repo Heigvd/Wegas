@@ -98,7 +98,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
                                 '<div style="clear:both"></div></div>');
 
                             ret.push('<div class="subtitle">Results</div>',
-                                '<div class="replies"><div class="reply first-child">', reply.get( "response" ).get( "answer" ), '</div></div>');
+                                '<div class="replies"><div class="reply first-child">', reply.get( "result" ).get( "answer" ), '</div></div>');
 
                             if (!cReplyLabel) {
                                 cReplyLabel = choiceDescriptor.get( "name" ).substr( 0, 15 ) + "...";

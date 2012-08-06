@@ -16,6 +16,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
@@ -25,6 +26,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "QuestionInstance")
+@Table(name = "MCQQuestionInstance")
 public class QuestionInstance extends ListInstance {
 
     private static final long serialVersionUID = 1L;

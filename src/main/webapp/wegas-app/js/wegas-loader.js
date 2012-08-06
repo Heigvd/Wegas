@@ -155,7 +155,12 @@ YUI().use(function (Y) {
                     },
                     'wegas-inputex-url': {
                         path: 'wegas-app/js/widget/wegas-inputex-url-min.js',
-                        requires: [ 'inputex-url', 'fileexplorer' ],
+                        requires: [ 'inputex-url', 'panel', 'wegas-fileexplorer'],
+                        ix_provides: 'wegasurl'
+                    },
+                    'wegas-inputex-ace': {
+                        path: 'wegas-app/js/widget/wegas-inputex-ace-min.js',
+                        requires: [ 'inputex-field', 'ace' ],
                         ix_provides: 'wegasurl'
                     },
 
@@ -203,12 +208,12 @@ YUI().use(function (Y) {
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
-                        requires: [ 'ace-css' ],
+                        requires: [ 'ace-css', 'inputex-wegas-ace' ],
                         ix_provides: 'CSSEditor'
                     },
                     'wegas-console': {
                         path: 'wegas-editor/js/wegas-console-min.js',
-                        requires: ['ace-javascript'],
+                        requires: ['ace-javascript', 'inputex-wegas-ace'],
                         ix_provides: 'Console'
                     },
                     'wegas-editor-treeview': {
@@ -232,7 +237,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
-                        requires: [ 'ace-javascript', 'button' ],
+                        requires: [ 'ace-javascript', 'button', 'inputex-wegas-ace' ],
                         ix_provides: 'ScriptLibrary'
                     },
                     'wegas-fileexplorercss':{
@@ -309,7 +314,7 @@ YUI().use(function (Y) {
                     /** MMO **/
                     'wegas-mmo': {
                         path: 'wegas-mmo/js/wegas-mmo-min.js',
-                        requires: ['wegas-widget', 'ace-javascript'],
+                        requires: ['wegas-widget', 'ace-javascript', 'inputex-wegas-ace'],
                         ix_provides: 'MMOWidget'
                     }
                 }

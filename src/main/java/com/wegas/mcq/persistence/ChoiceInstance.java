@@ -11,13 +11,9 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonBackReference;
 
 /**
  *
@@ -25,6 +21,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  */
 @Entity
 @XmlType(name = "ChoiceInstance")
+@Table(name = "MCQChoiceInstance")
 public class ChoiceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -40,23 +37,22 @@ public class ChoiceInstance extends VariableInstance {
      *
      */
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "response_id")
+    @JoinColumn(name = "result_id")
     //@JsonBackReference
-    private Response currentResponse;
-
+    private Result currentResult;
 
     /**
      *
      */
-    //@Column(name = "response_id", insertable = false, updatable = false)
-    //private Long currentResponseId;
+    //@Column(name = "result_id", insertable = false, updatable = false)
+    //private Long currentResultId;
     /**
      *
      * @return
      */
-    public Long getCurrentResponseId() {
-//        return this.currentResponseId;
-        return this.getCurrentResponse().getId();
+    public Long getCurrentResultId() {
+//        return this.currentResultId;
+        return this.getCurrentResult().getId();
     }
 
     /**
@@ -69,11 +65,11 @@ public class ChoiceInstance extends VariableInstance {
         ChoiceInstance other = (ChoiceInstance) a;
         this.setActive(other.getActive());
         this.setUnread(other.getUnread());
-        this.setCurrentResponse(other.getCurrentResponse());
+        this.setCurrentResult(other.getCurrentResult());
     }
 
-    public void setCurrentResponseByIndex(int index) {
-        this.setCurrentResponse(( (ChoiceDescriptor) this.getDescriptor() ).getResponses().get(index));
+    public void setCurrentResultByIndex(int index) {
+        this.setCurrentResult(( (ChoiceDescriptor) this.getDescriptor() ).getResult().get(index));
     }
 
     /**
@@ -120,17 +116,17 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     * @return the currentResponse
+     * @return the currentResult
      */
     @XmlTransient
-    public Response getCurrentResponse() {
-        return currentResponse;
+    public Result getCurrentResult() {
+        return currentResult;
     }
 
     /**
-     * @param currentResponse the currentResponse to set
+     * @param currentResult the currentResult to set
      */
-    public void setCurrentResponse(Response currentResponse) {
-        this.currentResponse = currentResponse;
+    public void setCurrentResult(Result currentResult) {
+        this.currentResult = currentResult;
     }
 }

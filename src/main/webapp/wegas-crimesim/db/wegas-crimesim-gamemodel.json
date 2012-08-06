@@ -122,17 +122,17 @@
                 },
                 "tags":[],
                 "description":"",
-                "responses":[{
-                    "@class": "Response",
+                "results":[{
+                    "@class": "Result",
                     "name": "ED Good",
                     "answer": "Ca c'est bien passé.",
                     "impact":{
                         "@class":"Script",
                         "language":"JavaScript",
-                        "content":"cost.value += 500;\nselectedChoice.setCurrentResponseByIndex(1);\nselectedQuestion.item(1).setCurrentResponseByIndex(self, 1);"
+                        "content":"cost.value += 500;\nselectedChoice.setCurrentResultByIndex(1);\nselectedQuestion.item(1).setCurrentResultByIndex(self, 1);"
                     }
                 }, {
-                    "@class": "Response",
+                    "@class": "Result",
                     "name": "ED Bad",
                     "answer": "Ca ne c'est pas bien passé.",
                     "impact":{
@@ -156,17 +156,17 @@
                 },
                 "tags":[],
                 "description":"",
-                "responses":[{
-                    "@class": "Response",
+                "results":[{
+                    "@class": "Result",
                     "name": "Fibres Good",
                     "answer": "Ca c'est bien passé.",
                     "impact":{
                         "@class":"Script",
                         "language":"JavaScript",
-                        "content":"cost.value += 500;\nselectedChoice.setCurrentResponseByIndex(1);\nselectedQuestion.item(0).setCurrentResponseByIndex(self, 1);"
+                        "content":"cost.value += 500;\nselectedChoice.setCurrentResultByIndex(1);\nselectedQuestion.item(0).setCurrentResultByIndex(self, 1);"
                     }
                 }, {
-                    "@class": "Response",
+                    "@class": "Result",
                     "name": "Fibres Bad",
                     "answer": "Ca ne c'est pas bien passé.",
                     "impact":{
@@ -190,17 +190,17 @@
                 },
                 "tags":[],
                 "description":"",
-                "responses":[{
-                    "@class": "Response",
+                "results":[{
+                    "@class": "Result",
                     "name": "ADN Good",
                     "answer": "Ca c'est bien passé.",
                     "impact":{
                         "@class":"Script",
                         "language":"JavaScript",
-                        "content":"cost.value += 500;\nselectedChoice.setCurrentResponseByIndex(1);\nselectedQuestion.item(0).setCurrentResponseByIndex(self, 1);\nselectedQuestion.item(1).setCurrentResponseByIndex(self, 1);"
+                        "content":"cost.value += 500;\nselectedChoice.setCurrentResultByIndex(1);\nselectedQuestion.item(0).setCurrentResultByIndex(self, 1);\nselectedQuestion.item(1).setCurrentResultByIndex(self, 1);"
                     }
                 }, {
-                    "@class": "Response",
+                    "@class": "Result",
                     "name": "ADN Bad",
                     "answer": "Ca ne c'est pas bien passé.",
                     "impact":{
@@ -224,17 +224,17 @@
                 },
                 "tags":[],
                 "description":"",
-                "responses":[{
-                    "@class": "Response",
+                "results":[{
+                    "@class": "Result",
                     "name": "Prélévement ADN Good",
                     "answer": "Ca c'est bien passé.",
                     "impact":{
                         "@class":"Script",
                         "language":"JavaScript",
-                        "content":"cost.value += 200;\nselectedChoice.setCurrentResponseByIndex(1);\nthis[\"Sac poubelle n°5: Prélévement ADN\"].activate();"
+                        "content":"cost.value += 200;\nselectedChoice.setCurrentResultByIndex(1);\nthis[\"Sac poubelle n°5: Prélévement ADN\"].activate();"
                     }
                 }, {
-                    "@class": "Response",
+                    "@class": "Result",
                     "name": "Prélévement ADN Bad",
                     "answer": "Ca ne c'est pas bien passé.",
                     "impact":{
@@ -275,17 +275,17 @@
                 },
                 "tags":[],
                 "description":"",
-                "responses":[{
-                    "@class": "Response",
+                "results":[{
+                    "@class": "Result",
                     "name": "ADN Good",
                     "answer": "Ca c'est bien passé. Le résultat est: ...",
                     "impact":{
                         "@class":"Script",
                         "language":"JavaScript",
-                        "content":"cost.value += 500;\nselectedChoice.setCurrentResponseByIndex(1);"
+                        "content":"cost.value += 500;\nselectedChoice.setCurrentResultByIndex(1);"
                     }
                 }, {
-                    "@class": "Response",
+                    "@class": "Result",
                     "name": "ADN Bad",
                     "answer": "Ca ne c'est pas bien passé.",
                     "impact":{
@@ -347,8 +347,8 @@
                 },
                 "tags":[],
                 "description":"",
-                "responses": [{
-                    "@class": "Response",
+                "results": [{
+                    "@class": "Result",
                     "name": "Normal",
                     "answer": "Non c'est pas lui.",
                     "impact":{
@@ -373,8 +373,8 @@
                 },
                 "tags":[],
                 "description":"",
-                "responses": [{
-                    "@class": "Response",
+                "results": [{
+                    "@class": "Result",
                     "name": "Normal",
                     "answer": "Oui c'est pas lui.",
                     "impact":{
