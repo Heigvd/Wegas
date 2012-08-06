@@ -26,7 +26,7 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
-                        'wegas-datasourcerest', 'wegas-scripteval',
+                        'wegas-datasourcerest', 'wegas-scripteval', 'wegas-gallery',
                         'wegas-entity', 'wegas-mcq-entities', 'wegas-statemachine-entities',
                         'stylesheet', 'wegas-widget', 'wegas-list',
                         'wegas-pageloader', 'wegas-button',
@@ -281,9 +281,9 @@ YUI().use(function (Y) {
                     },
                     /**Leaderway**/
                     'wegas-leaderway': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
-                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']//,
-                    //ix_provides: ""
+                       path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']/*,
+                        ix_provides: "HRList"*/
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
