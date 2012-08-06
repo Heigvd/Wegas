@@ -31,6 +31,7 @@ YUI.add('wegas-inputex', function(Y) {
     YUI_config.groups.inputex.modulesByType.html = "wegas-inputex-rte";         // @fix so inputex will use our own widgets when using f = Y.inpuex(cfg)
     YUI_config.groups.inputex.modulesByType.hashlist = "wegas-inputex-hashlist";
     YUI_config.groups.inputex.modulesByType.script = "wegas-inputex-script";
+    YUI_config.groups.inputex.modulesByType.wegasurl = "wegas-inputex-url";
 
     /**
      * Ace code editor field

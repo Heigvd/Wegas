@@ -27,7 +27,7 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
                         'wegas-datasourcerest', 'wegas-scripteval',
-                        'wegas-entity', 'wegas-mcq-entities', 'statemachine-entities',
+                        'wegas-entity', 'wegas-mcq-entities', 'wegas-statemachine-entities',
                         'stylesheet', 'wegas-widget', 'wegas-list',
                         'wegas-pageloader', 'wegas-button',
                         //'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
@@ -51,8 +51,8 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/persistence/wegas-entity-min.js',
                         requires: ['base', 'wegas-inputex', 'inputex-jsonschema']
                     },
-                    'statemachine-entities': {
-                        path: 'wegas-app/js/persistence/statemachine-entities-min.js',
+                    'wegas-statemachine-entities': {
+                        path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
                         requires: ['wegas-entity']
                     },
                     'wegas-mcq-entities': {
@@ -153,13 +153,18 @@ YUI().use(function (Y) {
                         requires: [ 'inputex-textarea' ],
                         ix_provides: 'script'
                     },
+                    'wegas-inputex-url': {
+                        path: 'wegas-app/js/widget/wegas-inputex-url-min.js',
+                        requires: [ 'inputex-url', 'fileexplorer' ],
+                        ix_provides: 'wegasurl'
+                    },
 
                     /** Common Widgets **/
                     'wegas-widgetmenu': {
                         path: 'wegas-app/js/widget/wegas-widgetmenu-min.js',
                         requires: ['plugin', 'widget', 'widget-parent', 'widget-child',
-                        'widget-position', 'widget-stack', 'widget-position-align',
-                        'widget-position-constrain', 'event-mouseenter', 'yui-later',
+                        'widget-stack', 'widget-position', 'widget-position-align',
+                        'widget-position-constrain', 'yui-later', 'event-mouseenter',
                         'event-outside']
                     },
                     'treeview':{
@@ -172,8 +177,8 @@ YUI().use(function (Y) {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
                         'wegas-app', 'wegas-widgetmenu',
-                        "wegas-editor-buttons", 'wegas-editor-action',  'wegas-form',
-                        //'wegas-statemachineviewer',                             // @fixme Zhose should be included on the fly
+                        "wegas-editor-buttons", 'wegas-editor-action',
+                        'wegas-form',
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -246,7 +251,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer-min.js',
-                        requires: ['dd-constrain','wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'statemachine-entities'],
+                        requires: ['dd-constrain','wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'wegas-statemachine-entities'],
                         ix_provides: 'StateMachineViewer'
                     },
                     'wegas-statemachineviewercss': {

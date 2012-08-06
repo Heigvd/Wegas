@@ -11,9 +11,7 @@ package com.wegas.core.rest.util.exception;
 
 import java.sql.SQLException;
 import java.util.Iterator;
-import javax.ejb.TransactionRolledbackLocalException;
-import javax.transaction.RollbackException;
-import javax.transaction.TransactionRolledbackException;
+import javax.ejb.EJBException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
@@ -36,11 +34,10 @@ public abstract class AbstractExceptionMapper {
      */
     public static Response processException(Throwable exception) {
 
-        if (exception instanceof RollbackException
-                || exception instanceof TransactionRolledbackLocalException
-                || exception instanceof TransactionRolledbackException
-                || exception instanceof TransactionRolledbackLocalException
-                || exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK
+        if (exception instanceof EJBException) {
+            return processException(((EJBException)exception).getCausedByException());
+
+        } else if (exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK
                 || exception instanceof javax.script.ScriptException) {
             return processException(exception.getCause());
 
@@ -63,19 +60,17 @@ public abstract class AbstractExceptionMapper {
                 ConstraintViolation violation = (ConstraintViolation) it.next();
                 msg += "\n" + violation.getLeafBean() + ":" + violation.getRootBean() + violation.getPropertyPath();
             }
-            System.out.println(msg);
+            logger.error(msg);
             // constraintViolationException.getMessage()
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
                     new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
 
         } else {
-            logger.error("Caught an unexpected error: {}",  exception.getLocalizedMessage());
+            logger.error("Caught an unexpected error: {}", exception.getLocalizedMessage());
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
                     new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
         }
     }
-
-
 }
