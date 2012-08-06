@@ -481,8 +481,9 @@ YUI.add('wegas-entity', function (Y) {
      * VariableDescriptor mapper
      */
     Y.Wegas.persistence.VariableDescriptor = Y.Base.create("VariableDescriptor", Y.Wegas.persistence.Entity, [], {
-        getInstance: function () {
-            return this.get("scope").getInstance();
+        getInstance: function ( playerId ) {
+            playerId = playerId || Y.Wegas.app.get('currentPlayer');
+            return this.get("scope").getInstance( playerId );
         },
         clone: function(){
             var e = Y.Wegas.persistence.VariableDescriptor.superclass.clone.call(this);
