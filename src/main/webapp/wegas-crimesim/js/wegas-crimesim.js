@@ -230,7 +230,7 @@ YUI.add('wegas-crimesim', function (Y) {
             });
 
             // @todo @cyril Render gallery widget here
-            //targetNode.one(".schedule-gallery").setContent("Here is the gallery.");
+            console.log( "Plug the console here", question.get("pictures"), targetNode.one(".schedule-gallery").setContent("Here is the gallery."))
         },
         renderDetails: function ( reply ) {
             var choiceDescriptor = reply.getChoiceDescriptor(),
