@@ -158,4 +158,7 @@ yui3-wegas-script-content{
     opacity: 0.9;*/
     cursor:pointer;
 }
+.transition-label:hover{
+    z-index:9;
+}
 
