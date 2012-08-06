@@ -451,8 +451,9 @@ YUI.add('wegas-entity', function (Y) {
      * VariableDescriptor mapper
      */
     Y.Wegas.persistence.VariableDescriptor = Y.Base.create("VariableDescriptor", Y.Wegas.persistence.Entity, [], {
-        getInstance: function () {
-            return this.get("scope").getInstance();
+        getInstance: function ( playerId ) {
+            playerId = playerId || Y.Wegas.app.get('currentPlayer');
+            return this.get("scope").getInstance( playerId );
         }
     }, {
         ATTRS: {
@@ -576,8 +577,8 @@ YUI.add('wegas-entity', function (Y) {
      * PlayerScope mapper
      */
     Y.Wegas.persistence.PlayerScope = Y.Base.create("PlayerScope", Y.Wegas.persistence.Scope, [], {
-        getInstance: function () {
-            return this.get("variableInstances")[Y.Wegas.app.get('currentPlayer')];
+        getInstance: function ( playerId ) {
+            return this.get("variableInstances")[playerId];
         }
     },{
         ATTRS:{
@@ -1153,7 +1154,8 @@ YUI.add('wegas-entity', function (Y) {
             unread : {
                 value: false,
                 type: "boolean"
-            }
+            },
+            from: {}
         }
     });
 
