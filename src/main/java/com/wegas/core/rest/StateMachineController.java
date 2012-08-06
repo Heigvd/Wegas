@@ -87,7 +87,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
         List<Transition> transitions = currentState.getTransitions();
 
         for (Transition transition : transitions) {
-            if (transition instanceof DialogueTransition && transition.getId() == transitionId) {
+            if (transition instanceof DialogueTransition && transition.getId().equals(transitionId)) {
                 //TODO : eval attached script (AND)
                 stateMachineInstanceEntity.setCurrentStateId(transition.getNextStateId());
                 stateMachineInstanceEntity.transitionHistoryAdd(transitionId);
