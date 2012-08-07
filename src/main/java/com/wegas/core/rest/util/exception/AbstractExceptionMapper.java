@@ -12,6 +12,8 @@ package com.wegas.core.rest.util.exception;
 import java.sql.SQLException;
 import java.util.Iterator;
 import javax.ejb.EJBException;
+import javax.transaction.RollbackException;
+import javax.transaction.TransactionRolledbackException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
@@ -34,8 +36,12 @@ public abstract class AbstractExceptionMapper {
      */
     public static Response processException(Throwable exception) {
 
-        if (exception instanceof EJBException) {
-            return processException(((EJBException)exception).getCausedByException());
+        if (exception instanceof RollbackException
+                || exception instanceof TransactionRolledbackException) {
+            return processException(exception.getCause());
+
+        } else if (exception instanceof EJBException) {
+            return processException(( (EJBException) exception ).getCausedByException());
 
         } else if (exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK
                 || exception instanceof javax.script.ScriptException) {

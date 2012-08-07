@@ -5,7 +5,7 @@
 YUI.add('wegas-chat', function (Y) {
     var CONTENTBOX = 'contentBox',
     Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        /* destroyer: function() {
+        /* destructor: function() {
 
             //$.atmosphere.unsubscribe();
         },*/

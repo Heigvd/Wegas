@@ -60,6 +60,7 @@ public class Result extends AbstractEntity {
      */
     @ManyToOne
     @JsonBackReference
+    @XmlTransient
     @JoinColumn(name = "choicedescriptor_id")
     private ChoiceDescriptor choiceDescriptor;
     /**
@@ -73,6 +74,12 @@ public class Result extends AbstractEntity {
     @OneToMany(mappedBy = "currentResult")
     @XmlTransient
     private List<ChoiceInstance> choiceInstances;
+    /**
+     * This field is here so deletion will be propagated to replies.
+     */
+    @OneToMany(mappedBy = "result")
+    @XmlTransient
+    private List<Reply> replies;
 
     /**
      *

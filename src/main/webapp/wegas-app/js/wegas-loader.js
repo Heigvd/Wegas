@@ -279,11 +279,17 @@ YUI().use(function (Y) {
                         requires: [ 'tabview' ],
                         ix_provides: "MCQTabView"
                     },
-                    'wegas-crimesim': {
-                        path: 'wegas-crimesim/js/wegas-crimesim-min.js',
-                        requires: ['wegas-widget', 'wegas-widgetmenu' ],
+                    'wegas-crimesim-scheduledisplay': {
+                        path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',
+                        requires: ['wegas-widget', 'wegas-widgetmenu', 'datatable' ],
                         ix_provides: "ScheduleDisplay"
                     },
+                    'wegas-crimesim-resultsdisplay': {
+                        path: 'wegas-crimesim/js/wegas-crimesim-resultsdisplay-min.js',
+                        requires: ['wegas-widget', 'datatable' ],
+                        ix_provides: "ResultsDisplay"
+                    },
+
                     /**Leaderway**/
                     'wegas-leaderway': {
                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
