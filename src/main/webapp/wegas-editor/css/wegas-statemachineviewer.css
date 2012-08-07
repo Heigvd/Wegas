@@ -15,9 +15,9 @@
     border:4px solid grey;
     border-radius: 20px;
     padding: 10px;
-    box-shadow: 4px 4px 10px black;
+    /*box-shadow: 4px 4px 10px black;
+    opacity:0.9;*/
     z-index: 10;
-    opacity:0.9;
     background-color:white;
     cursor: move;
 }
@@ -151,10 +151,14 @@ yui3-wegas-script-content{
 }
 .transition-label{
     background-color: white;
-    opacity: 0.9;
     padding:3px;
     z-index:8;
-    box-shadow: 4px 4px 9px black;
+    border: 1px solid lightgray;
+    /*box-shadow: 4px 4px 9px black;
+    opacity: 0.9;*/
     cursor:pointer;
+}
+.transition-label:hover{
+    z-index:9;
 }
 
