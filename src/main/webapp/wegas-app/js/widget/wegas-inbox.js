@@ -6,7 +6,7 @@ YUI.add('wegas-inbox', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-        InboxDisplay;
+    InboxDisplay;
 
     InboxDisplay = Y.Base.create("wegas-inbox", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
@@ -25,17 +25,22 @@ YUI.add('wegas-inbox', function (Y) {
         },
 
         bindUI: function () {
-            this.dataSource.after("response", this.syncUI, this);
+            this.handlers = {};
+
             this.tabView.after("selectionChange", this.onTabSelected, this)
-            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+
+            this.handlers.respone =
+                this.dataSource.after("response", this.syncUI, this);
+            this.handlers.playerChange =
+                Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
 
         syncUI: function () {
             var i, msg, tab, from,
-                inboxVariable = this.dataSource.rest.find('name', this.get('variable')).getInstance(),
-                messages = inboxVariable.get("messages"),
-                selectedIndex = 0,
-                tabs = [];
+            inboxVariable = this.dataSource.rest.find('name', this.get('variable')).getInstance(),
+            messages = inboxVariable.get("messages"),
+            selectedIndex = 0,
+            tabs = [];
 
             this.isSyncing = true;
             this.tabView.removeAll();
@@ -44,10 +49,10 @@ YUI.add('wegas-inbox', function (Y) {
                 from  = msg.get("from") || "admin@wegas.com";
                 tab = new Y.Tab({
                     label: '<div class="' + (msg.get("unread") ? "unread" : "read") + '"><div class="left">' + from + '</div>'
-                        + '<div class="right">' + msg.get("subject") + '</div></div>',
+                    + '<div class="right">' + msg.get("subject") + '</div></div>',
                     content: '<div class="subject">Subject: ' + msg.get("subject") + '</div>'
-                        + '<div class="from">From: ' + from + '</div>'
-                        + '<div class="body">' + msg.get("body") + '</div>'
+                    + '<div class="from">From: ' + from + '</div>'
+                    + '<div class="body">' + msg.get("body") + '</div>'
                 });
                 tab.msg = msg;
                 tabs.push(tab);
@@ -67,6 +72,13 @@ YUI.add('wegas-inbox', function (Y) {
 
             this.isSyncing = false;
             this.tabView.selectChild(selectedIndex);
+        },
+
+        destructor: function () {
+            this.tabView.destroy();
+            for (var i in this.handlers) {
+                this.handlers[i].detach();
+            }
         },
 
         // *** Private Methods *** //

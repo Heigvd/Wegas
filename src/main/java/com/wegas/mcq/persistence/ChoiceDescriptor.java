@@ -61,8 +61,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     @PreUpdate
     public void propagateCurrentResult() {
         ChoiceInstance i = (ChoiceInstance) this.getDefaultVariableInstance();
-        if (i.getCurrentResult() == null && !this.getResult().isEmpty()) {
-            i.setCurrentResult(this.getResult().get(0));
+        if (i.getCurrentResult() == null && !this.getResults().isEmpty()) {
+            i.setCurrentResult(this.getResults().get(0));
         }
         this.propagateDefaultInstance(false);
     }
@@ -79,8 +79,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.setImpact(other.getImpact());
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
-        
-        ListUtils.mergeLists(this.getResult(), other.getResult());
+
+        ListUtils.mergeLists(this.getResults(), other.getResults());
     }
 
     /**
@@ -166,7 +166,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      * @return the results
      */
-    public List<Result> getResult() {
+    public List<Result> getResults() {
         return results;
     }
 

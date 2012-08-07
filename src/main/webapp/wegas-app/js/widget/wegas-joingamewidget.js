@@ -117,7 +117,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
 
         showTeams: function () {
             this.msg.empty();
-            
+
             this.joinGameButton.hide();
             this.tokenField.addClassName( "inputEx-hidden" );
             this.joinTeamButton.show();
@@ -160,7 +160,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }
             });
         },
-        destroyer: function () {
+        destructor: function () {
             this.tokenField.destroy();
             this.teamsField.destroy();
         }

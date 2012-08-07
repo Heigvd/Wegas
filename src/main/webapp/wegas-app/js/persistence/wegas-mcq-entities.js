@@ -200,10 +200,11 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 optional: true
             },
             results: {
+                type: "array",
                 _inputex: {
                     _type: 'hidden'
                 },
-                value: []
+               // value: []
             }
         },
         EDITMENU: [{

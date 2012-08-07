@@ -69,7 +69,7 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     public void setCurrentResultByIndex(int index) {
-        this.setCurrentResult(( (ChoiceDescriptor) this.getDescriptor() ).getResult().get(index));
+        this.setCurrentResult(( (ChoiceDescriptor) this.getDescriptor() ).getResults().get(index));
     }
 
     /**

@@ -23,12 +23,14 @@ YUI.add('wegas-mcqtabview', function (Y) {
         // *** Private fields *** //
         tabView: null,
         dataSource: null,
+        handlers: null,
 
         // *** Lifecycle Methods *** //
         renderUI: function () {
             this.dataSource = Y.Wegas.VariableDescriptorFacade;
             this.tabView = new Y.TabView();
             this.tabView.render(this.get(CONTENTBOX));
+            this.handlers = {};
         },
 
         bindUI: function () {
@@ -39,9 +41,10 @@ YUI.add('wegas-mcqtabview', function (Y) {
                 });
             }, "input[type=submit]", this);
 
-            this.dataSource.after("response", this.syncUI, this);
-            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
             this.tabView.after("selectionChange", this.onTabSelected, this)
+
+            this.handlers.response = this.dataSource.after("response", this.syncUI, this);
+            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
 
         syncUI: function () {
@@ -119,6 +122,15 @@ YUI.add('wegas-mcqtabview', function (Y) {
             }
 
             this.tabView.selectChild(lastSelection);
+        },
+        /**
+         *
+         */
+        destructor: function () {
+            this.tabView.destroy();
+            for (var i in this.handlers) {
+                this.handlers[i].detach();
+            }
         },
 
         // *** Private Methods *** //

@@ -71,7 +71,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
             this.treeView.add( this.genTreeViewElements( entities ) );
         },
 
-        destroyer: function () {
+        destructor: function () {
             this.treeView.destroy();
             this.menu.destroy();
         },

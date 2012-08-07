@@ -134,7 +134,7 @@ YUI.add('wegas-tabview', function (Y) {
     /**
      * Custom Tab implementation
      */
-    Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Parent], {
+    Tab = Y.Base.create("tab", Y.Tab, [ Y.Wegas.Widget, Parent], {
 
         // *** Private Fields *** //
 
@@ -142,6 +142,7 @@ YUI.add('wegas-tabview', function (Y) {
         initializer: function(cfg) {
             Tab.superclass.initializer.apply(this, arguments);
             TabView.tabs[cfg.id] = this;
+            this.items = [];
         },
 
         renderUI: function () {
@@ -152,7 +153,12 @@ YUI.add('wegas-tabview', function (Y) {
         bindUI: function () {
             Tab.superclass.bindUI.apply(this, arguments);
         },
+        syncUI: function () {
+            Tab.superclass.syncUI.apply(this, arguments);
+            this.get( "children" );
+        },
         destructor: function (){
+            Tab.superclass.destructor.apply(this, arguments);
             var toolbarChildren = this.get("toolbarChildren");
             for (var i in toolbarChildren){
                 toolbarChildren[i].destroy();
@@ -179,7 +185,7 @@ YUI.add('wegas-tabview', function (Y) {
             //            widget.on("click", function(e){
             //                this.get("children").fire("toolbarEvent", e);
             //            }, this);
-            widget.addTarget(this.item(0));
+            //widget.addTarget(this.item(0));
             return widget;
         },
         /**
@@ -196,10 +202,33 @@ YUI.add('wegas-tabview', function (Y) {
                 }
             }, this, cfg, callback));
         }
+        /**
+         * Adds a child based on its descriptor
+         */
+//        items: null,
+//
+//        add: function ( widget ) {
+//            if (Y.Lang.isObject(widget)){
+//                widget = Y.Wegas.Widget.create( widgetCfg );
+//                widget.render( this.get( "panelNode" ).one( ".yui3-tab-panel-content" ) );
+//            }
+//            this.items[this.items.length] = widget;
+//        },
+//        item: function (index) {
+//            return this.items[index];
+//        }
+
     }, {
         ATTRS : {
+//            children: {
+//                setter: function ( val ) {
+//                    for ( var i = 0; i < val.length; i = i + 1 ) {
+//                        this.add( val[i] );
+//                    }
+//                }
+//            },
             content: {
-                setter: function() { }                                          // Overrides the panelNode management
+                setter: function () { }                                         // Overrides the panelNode management
             },
             toolbarNode: {
                 lazyAdd: false,
