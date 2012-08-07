@@ -49,15 +49,15 @@ YUI().use(function (Y) {
                     /** Persistence **/
                     'wegas-entity': {
                         path: 'wegas-app/js/persistence/wegas-entity-min.js',
-                        requires: ['base', 'wegas-inputex', 'inputex-jsonschema']
+                        requires: [ 'base', 'wegas-inputex', 'inputex-jsonschema' ]
                     },
                     'wegas-statemachine-entities': {
                         path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
-                        requires: ['wegas-entity']
+                        requires: [ 'wegas-entity' ]
                     },
                     'wegas-mcq-entities': {
                         path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
-                        requires: ['wegas-entity']
+                        requires: [ 'wegas-entity' ]
                     },
 
                     /** Widgets **/

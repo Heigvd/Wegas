@@ -35,7 +35,7 @@
         "@class":"NumberDescriptor",
         "name":"humanResources",
         "defaultVariableInstance":{
-            "@class":"NumberInstance"
+            "@class":"NumberInstance",
             "value":15.0
         },
         "scope":{
@@ -48,7 +48,7 @@
         "@class":"NumberDescriptor",
         "name":"period",
         "defaultVariableInstance":{
-            "@class":"NumberInstance"
+            "@class":"NumberInstance",
             "value":1.0
         },
         "scope":{

@@ -40,6 +40,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                         label:"Pièce",
                         sortable:true
                     }, {
+                        key:"analyis",
+                        label:"Analyse",
+                        sortable:true
+                    }, {
                         key:"description",
                         label:"Description",
                         emptyCellValue: "no description",
@@ -98,6 +102,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                         status = reply.getStatus( currentTime);
 
                         replyData.evidence = questions[i].get( "name" );
+                        replyData.analyis = reply.getChoiceDescriptor().get( "name" );
                         replyData.fileLinks = "";
                         replyData.startTime += 1;
                         for ( k = 0; k < replyData.files.length; k = k + 1 ) {

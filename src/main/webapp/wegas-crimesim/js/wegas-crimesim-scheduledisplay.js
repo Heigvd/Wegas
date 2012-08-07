@@ -232,6 +232,10 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                         sortable:true,
                         className: "period"
                     }, {
+                        key:"analyis",
+                        label:"Analyse",
+                        sortable:true
+                    }, {
                         key:"answer",
                         label:"Result"
                     }, {
@@ -265,6 +269,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     } else if (status === 2) {
                         replyData.answer = "analysis planified";
                     }
+                    replyData.analyis = reply.getChoiceDescriptor().get( "name" );
                     replyData.startTime =  replyData.startTime + 1;
                     data.push( replyData );
                 }
