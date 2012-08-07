@@ -20,13 +20,10 @@
     }],
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
-        "id":10,
         "name":"cost",
         "defaultVariableInstance":{
             "@class":"NumberInstance",
-            "id":11,
-            "value":0.0,
-            "descriptorId":-1
+            "value":0.0
         },
         "scope":{
             "@class":"TeamScope"
@@ -36,13 +33,10 @@
         "maxValue":null
     },{
         "@class":"NumberDescriptor",
-        "id":6,
         "name":"humanResources",
         "defaultVariableInstance":{
-            "@class":"NumberInstance",
-            "id":7,
-            "value":15.0,
-            "descriptorId":-1
+            "@class":"NumberInstance"
+            "value":15.0
         },
         "scope":{
             "@class":"TeamScope"
@@ -52,13 +46,10 @@
         "maxValue":15
     },{
         "@class":"NumberDescriptor",
-        "id":14,
         "name":"period",
         "defaultVariableInstance":{
-            "@class":"NumberInstance",
-            "id":15,
-            "value":1.0,
-            "descriptorId":-1
+            "@class":"NumberInstance"
+            "value":1.0
         },
         "scope":{
             "@class":"TeamScope"
@@ -68,13 +59,10 @@
         "maxValue":10
     },{
         "@class":"InboxDescriptor",
-        "id":18,
         "name":"inbox",
         "defaultVariableInstance":{
             "@class":"InboxInstance",
-            "id":19,
-            "messages":[],
-            "descriptorId":-1
+            "messages":[]
         },
         "scope":{
             "@class":"TeamScope"
@@ -84,13 +72,10 @@
         "description":null
     },{
         "@class":"ListDescriptor",
-        "id":50,
         "name":"evidences",
         "defaultVariableInstance":{
             "@class":"NumberInstance",
-            "id":51,
-            "value":0.0,
-            "descriptorId":-1
+            "value":0.0
         },
         "scope":{
             "@class":"GameModelScope"
@@ -303,13 +288,10 @@
         }]
     }, {
         "@class":"ListDescriptor",
-        "id":22,
         "name":"questions",
         "defaultVariableInstance":{
             "@class":"NumberInstance",
-            "id":23,
-            "value":0.0,
-            "descriptorId":-1
+            "value":0.0
         },
         "scope":{
             "@class":"GameModelScope"
@@ -317,15 +299,12 @@
         "tags":[],
         "items":[{
             "@class":"QuestionDescriptor",
-            "id":38,
             "name":"Qui est la victime?",
             "defaultVariableInstance":{
                 "@class":"QuestionInstance",
-                "id":39,
                 "replies":[],
                 "active":true,
-                "unread":true,
-                "descriptorId":-1
+                "unread":true
             },
             "scope":{
                 "@class":"TeamScope"
@@ -333,14 +312,11 @@
             "tags":[],
             "items":[{
                 "@class":"ChoiceDescriptor",
-                "id":42,
                 "name":"a) Marc",
                 "defaultVariableInstance":{
                     "@class":"ChoiceInstance",
-                    "id":43,
                     "active":true,
-                    "unread":true,
-                    "descriptorId":-1
+                    "unread":true
                 },
                 "scope":{
                     "@class":"TeamScope"

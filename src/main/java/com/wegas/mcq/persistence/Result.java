@@ -60,7 +60,6 @@ public class Result extends AbstractEntity {
      */
     @ManyToOne
     @JsonBackReference
-    @XmlTransient
     @JoinColumn(name = "choicedescriptor_id")
     private ChoiceDescriptor choiceDescriptor;
     /**
