@@ -20,7 +20,7 @@ YUI().use(function (Y) {
         groups: {
             'wegas': {
                 combine: false,
-                filter: "raw",
+                //filter: "raw",
                 modules: {
                     /** Base **/
                     'wegas-app': {
@@ -208,12 +208,12 @@ YUI().use(function (Y) {
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
-                        requires: [ 'ace-css', 'inputex-wegas-ace' ],
+                        requires: [ 'ace-css', 'wegas-inputex-ace' ],
                         ix_provides: 'CSSEditor'
                     },
                     'wegas-console': {
                         path: 'wegas-editor/js/wegas-console-min.js',
-                        requires: ['ace-javascript', 'inputex-wegas-ace'],
+                        requires: ['ace-javascript', 'wegas-inputex-ace'],
                         ix_provides: 'Console'
                     },
                     'wegas-editor-treeview': {
@@ -237,7 +237,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
-                        requires: [ 'ace-javascript', 'button', 'inputex-wegas-ace' ],
+                        requires: [ 'ace-javascript', 'button', 'wegas-inputex-ace' ],
                         ix_provides: 'ScriptLibrary'
                     },
                     'wegas-fileexplorercss':{
@@ -320,7 +320,7 @@ YUI().use(function (Y) {
                     /** MMO **/
                     'wegas-mmo': {
                         path: 'wegas-mmo/js/wegas-mmo-min.js',
-                        requires: ['wegas-widget', 'ace-javascript', 'inputex-wegas-ace'],
+                        requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace'],
                         ix_provides: 'MMOWidget'
                     }
                 }

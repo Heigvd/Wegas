@@ -181,6 +181,7 @@ public class GameModel extends NamedEntity implements Serializable {
      * ListDescriptor's items List)
      */
     //@JsonManagedReference
+    @XmlTransient
     public List<VariableDescriptor> getChildVariableDescriptors() {
         return childVariableDescriptors;
     }
