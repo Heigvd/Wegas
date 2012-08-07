@@ -203,7 +203,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: "array",
                 _inputex: {
                     _type: 'hidden'
-                },
+                }
                // value: []
             }
         },
