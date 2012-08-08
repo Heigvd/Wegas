@@ -241,8 +241,8 @@ Y.add("wegas-statemachine-entities", function(Y){
     });
 
     /*
-     * State Entity
-     */
+    * State Entity
+    */
     Y.Wegas.persistence.State = Y.Base.create("State", Y.Wegas.persistence.Entity, [], {
 
         // *** Lifecycle methods *** //
@@ -263,13 +263,21 @@ Y.add("wegas-statemachine-entities", function(Y){
             },
             transitions: {
                 value: []
+            },
+            editorPosition:{
+                valueFn:function(){
+                    return new Y.Wegas.persistence.Coordinate({
+                        x:30,
+                        y:30
+                    });
+                }
             }
         }
     });
 
     /*
-     * TransitionDescriptor Entity
-     */
+    * TransitionDescriptor Entity
+    */
     Y.Wegas.persistence.Transition = Y.Base.create("Transition", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
@@ -293,8 +301,8 @@ Y.add("wegas-statemachine-entities", function(Y){
     /**************************/
 
     /*
-     * TriggerDescriptor Entity
-     */
+    * TriggerDescriptor Entity
+    */
     Y.Wegas.persistence.TriggerDescriptor = Y.Base.create("TriggerDescriptor", Y.Wegas.persistence.FSMDescriptor, [], {}, {
         ATTRS: {
             "@class": {
@@ -344,8 +352,8 @@ Y.add("wegas-statemachine-entities", function(Y){
     });
 
     /*
-     * TriggerInstance Entity
-     */
+    * TriggerInstance Entity
+    */
     Y.Wegas.persistence.TriggerInstance = Y.Base.create("TriggerInstance", Y.Wegas.persistence.FSMInstance, [], {}, {
         ATTRS: {
             "@class": {
@@ -367,16 +375,16 @@ Y.add("wegas-statemachine-entities", function(Y){
     /**********************************/
 
     /**
-     * DialogueDescriptor Entity
-     */
+    * DialogueDescriptor Entity
+    */
 
     Y.Wegas.persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", Y.Wegas.persistence.FSMDescriptor, [], {
 
         /**
-         * Triggers a Dialogue Transition programmatically
-         * @param {DialogueTransition} transition - the transition object to trigger.
-         * @param {Object} callbacks - {success:Function|String, failure:Function|String} - the callback functions to execute.
-         */
+        * Triggers a Dialogue Transition programmatically
+        * @param {DialogueTransition} transition - the transition object to trigger.
+        * @param {Object} callbacks - {success:Function|String, failure:Function|String} - the callback functions to execute.
+        */
         doTransition: function(transition, callbacks){
             var request;
             if(transition instanceof Y.Wegas.persistence.DialogueTransition){
@@ -421,15 +429,15 @@ Y.add("wegas-statemachine-entities", function(Y){
         }
     });
     /**
-     * DialogueTransition Entity
-     */
+    * DialogueTransition Entity
+    */
     Y.Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Y.Wegas.persistence.Transition, [], {
 
         /**
-         * Builds the REST request to trigger this specifique transition
-         * @param {Integer} The dialogue's id
-         * @return {String} an url to GET.
-         */
+        * Builds the REST request to trigger this specifique transition
+        * @param {Integer} The dialogue's id
+        * @return {String} an url to GET.
+        */
         getTriggerURL: function(id){
             return Y.Wegas.app.get("base") + "rest/GameMode/" +
             Y.Wegas.app.get("currentGame")
@@ -452,8 +460,8 @@ Y.add("wegas-statemachine-entities", function(Y){
     });
 
     /**
-     * DialogueState Entity
-     */
+    * DialogueState Entity
+    */
     Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
         getAvailableActions: function(){
             var availableActions = [],
@@ -469,19 +477,19 @@ Y.add("wegas-statemachine-entities", function(Y){
         },
 
         /**
-         * Get an array of texts from the state's text, split by a token
-         * @param {String} The token to split by
-         */
+        * Get an array of texts from the state's text, split by a token
+        * @param {String} The token to split by
+        */
         getTexts: function ( token ) {
             return this.get("text").split(token);
         },
 
         /**
-         * Set the text with an array and a token
-         *
-         * @param {Array} Strings to join
-         * @param {String} Token to join the array
-         */
+        * Set the text with an array and a token
+        *
+        * @param {Array} Strings to join
+        * @param {String} Token to join the array
+        */
         setText: function (a, token){
             this.set("text", a.join(token));
         }
@@ -498,11 +506,26 @@ Y.add("wegas-statemachine-entities", function(Y){
             }
         }
     });
-
+    /**
+     * Coordinate embeddable mapper
+     **/
+    Y.Wegas.persistence.Coordinate = Y.Base.create("Coordinate", Y.Wegas.persistence.Entity, [],{}, {
+        ATTRS:{
+            "@class":{
+                value: "Coordinate"
+            },
+            x:{
+                value:null
+            },
+            y:{
+                value:null
+            }
+        }
+    });
 
     /**
-     * @hack
-     */
+         * @hack
+         */
     Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields.push(
         Y.mix({
             name: 'TriggerDescriptor',
