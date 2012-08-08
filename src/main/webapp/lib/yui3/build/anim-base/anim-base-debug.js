@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('anim-base', function(Y) {
 
 /**
@@ -681,4 +687,4 @@ YUI.add('anim-base', function(Y) {
     Y.extend(Y.Anim, Y.Base, proto);
 
 
-}, '@VERSION@' ,{requires:['base-base', 'node-style']});
+}, '3.6.0' ,{requires:['base-base', 'node-style']});

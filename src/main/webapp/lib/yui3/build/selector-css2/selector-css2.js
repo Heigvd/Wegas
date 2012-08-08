@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('selector-css2', function(Y) {
 
 /**
@@ -441,4 +447,4 @@ if (Y.Selector.useNative && Y.config.doc.querySelector) {
 
 
 
-}, '@VERSION@' ,{requires:['selector-native']});
+}, '3.6.0' ,{requires:['selector-native']});

@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('resize-base', function(Y) {
 
 /**
@@ -1645,4 +1651,4 @@ Y.each(Y.Resize.prototype.ALL_HANDLES, function(handle, i) {
 });
 
 
-}, '@VERSION@' ,{skinnable:true, requires:['base', 'widget', 'substitute', 'event', 'oop', 'dd-drag', 'dd-delegate', 'dd-drop']});
+}, '3.6.0' ,{skinnable:true, requires:['base', 'widget', 'substitute', 'event', 'oop', 'dd-drag', 'dd-delegate', 'dd-drop']});

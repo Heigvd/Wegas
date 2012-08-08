@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -45,7 +55,7 @@ YUI.add('wegas-widget', function (Y) {
         * @param {String} type String type of the field
         */
         getClass: function(type) {
-            // @todo
+        // @todo
         },
 
         /**
@@ -55,7 +65,7 @@ YUI.add('wegas-widget', function (Y) {
         * @return {String} returns the Wegas type string or <code>null</code>
         */
         getType: function(FieldClass) {
-            // @todo
+        // @todo
         },
 
 
@@ -64,7 +74,7 @@ YUI.add('wegas-widget', function (Y) {
         */
         getRawModulesFromDefinition: function(cfg) {
 
-            var type = cfg.type || 'text',
+            var props, type = cfg.type || 'text',
             module = YUI_config.groups.wegas.modulesByType[type],
             modules = [];
 
@@ -72,13 +82,16 @@ YUI.add('wegas-widget', function (Y) {
                 modules.push(module);
             }
 
-            if(cfg.children) {                                                  // Get definitions from children (for Y.WidgetParents)
-                Y.Array.each(cfg.children, function(field) {
-                    modules = modules.concat( this.getModulesFromDefinition(field) );
-                }, this);
+            props = [ "children", "toolbarChildren" ]
+            for (var i = 0; i < props.length; i = i + 1) {
+                if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParents)
+                    Y.Array.each(cfg[props[i]], function(field) {
+                        modules = modules.concat( this.getModulesFromDefinition(field) );
+                    }, this);
+                }
             }
 
-            var props = ["left", "right", "center", "top", "bottom"];           // Get definitions from children (for Y.Wegas.Layouts)
+            props = ["left", "right", "center", "top", "bottom"];           // Get definitions from children (for Y.Wegas.Layouts)
             for (var i = 0; i < props.length; i = i + 1) {
                 if (cfg[props[i]]) {
                     modules = modules.concat(this.getModulesFromDefinition(cfg[props[i]]));

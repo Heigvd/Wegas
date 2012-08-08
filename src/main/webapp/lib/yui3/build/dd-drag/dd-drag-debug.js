@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('dd-drag', function(Y) {
 
 
@@ -720,7 +726,9 @@ YUI.add('dd-drag', function(Y) {
         * @param {Event} e The Event
         */
         _fixDragStart: function(e) {
-            e.preventDefault();
+            if (this.validClick(e)) {
+                e.preventDefault();
+            }
         },
         /** 
         * @private
@@ -1262,4 +1270,4 @@ YUI.add('dd-drag', function(Y) {
 
 
 
-}, '@VERSION@' ,{requires:['dd-ddm-base'], skinnable:false});
+}, '3.6.0' ,{skinnable:false, requires:['dd-ddm-base']});

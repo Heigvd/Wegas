@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('recordset-filter', function(Y) {
 
 /**
@@ -102,4 +108,4 @@ Y.extend(RecordsetFilter, Y.Plugin.Base, {
 Y.namespace("Plugin").RecordsetFilter = RecordsetFilter;
 
 
-}, '@VERSION@' ,{requires:['recordset-base','array-extras','plugin']});
+}, '3.6.0' ,{requires:['recordset-base','array-extras','plugin']});

@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('anim-curve', function(Y) {
 
 /**
@@ -54,4 +60,4 @@ Y.Anim.getBezier = function(points, t) {
 };
 
 
-}, '@VERSION@' ,{requires:['anim-xy']});
+}, '3.6.0' ,{requires:['anim-xy']});

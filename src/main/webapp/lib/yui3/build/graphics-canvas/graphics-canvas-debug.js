@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('graphics-canvas', function(Y) {
 
 var SHAPE = "canvasShape",
@@ -3135,4 +3141,4 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
 Y.CanvasGraphic = CanvasGraphic;
 
 
-}, '@VERSION@' ,{requires:['graphics'], skinnable:false});
+}, '3.6.0' ,{requires:['graphics'], skinnable:false});

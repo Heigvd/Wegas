@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('widget-base-ie', function(Y) {
 
 /**
@@ -46,4 +52,4 @@ Y.Widget.prototype._uiSizeCB = function(expand) {
 };
 
 
-}, '@VERSION@' ,{requires:['widget-base']});
+}, '3.6.0' ,{requires:['widget-base']});

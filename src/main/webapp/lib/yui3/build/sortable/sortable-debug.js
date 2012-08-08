@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('sortable', function(Y) {
 
 
@@ -507,4 +513,4 @@ YUI.add('sortable', function(Y) {
 
 
 
-}, '@VERSION@' ,{requires:['dd-delegate', 'dd-drop-plugin', 'dd-proxy']});
+}, '3.6.0' ,{requires:['dd-delegate', 'dd-drop-plugin', 'dd-proxy']});

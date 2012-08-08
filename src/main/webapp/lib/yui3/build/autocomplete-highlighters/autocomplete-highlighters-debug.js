@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('autocomplete-highlighters', function(Y) {
 
 /**
@@ -196,4 +202,4 @@ Highlighters = Y.mix(Y.namespace('AutoCompleteHighlighters'), {
 });
 
 
-}, '@VERSION@' ,{requires:['array-extras', 'highlight-base']});
+}, '3.6.0' ,{requires:['array-extras', 'highlight-base']});

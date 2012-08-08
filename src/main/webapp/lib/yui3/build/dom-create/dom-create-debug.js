@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('dom-create', function(Y) {
 
 var re_tag = /<([a-z]+)/i,
@@ -276,4 +282,4 @@ if (!testFeature('innerhtml-div', 'tr')) {
 Y_DOM.creators = creators;
 
 
-}, '@VERSION@' ,{requires:['dom-core']});
+}, '3.6.0' ,{requires:['dom-core']});

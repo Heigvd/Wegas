@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('datatable-table', function(Y) {
 
 /**
@@ -751,4 +757,4 @@ Y.namespace('DataTable').TableView = Y.Base.create('table', Y.View, [], {
 
 
 
-}, '@VERSION@' ,{requires:['datatable-core', 'datatable-head', 'datatable-body', 'view', 'classnamemanager']});
+}, '3.6.0' ,{requires:['datatable-core', 'datatable-head', 'datatable-body', 'view', 'classnamemanager']});

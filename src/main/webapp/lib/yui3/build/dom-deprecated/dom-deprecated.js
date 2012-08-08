@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('dom-deprecated', function(Y) {
 
 
@@ -58,4 +64,4 @@ Y.mix(Y.DOM, {
 
 
 
-}, '@VERSION@' ,{requires:['dom-base']});
+}, '3.6.0' ,{requires:['dom-base']});

@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('datatable-base-deprecated', function(Y) {
 
 var YLang = Y.Lang,
@@ -1700,4 +1706,4 @@ Y.extend(DTBase, Y.Widget, {
 Y.namespace("DataTable").Base = DTBase;
 
 
-}, '@VERSION@' ,{requires:['recordset-base','widget','substitute','event-mouseenter']});
+}, '3.6.0' ,{requires:['recordset-base','widget','substitute','event-mouseenter']});

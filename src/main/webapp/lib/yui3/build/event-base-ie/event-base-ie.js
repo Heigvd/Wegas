@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 (function() {
 
 var stateChangeListener,
@@ -300,4 +306,4 @@ if (imp && (!imp.hasFeature('Events', '2.0'))) {
 }
 
 
-}, '@VERSION@' ,{after:['event-base'], requires:['node-base']});
+}, '3.6.0' ,{after:['event-base'], requires:['node-base']});

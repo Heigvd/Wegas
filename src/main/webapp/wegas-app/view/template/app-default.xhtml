@@ -27,23 +27,23 @@
 
         <ui:fragment rendered="#{wegasConfig.assets_local}">
             <!-- Self hosted -->
-            <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssfonts/fonts-min.css" />
-            <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssreset/reset-min.css" />
-            <link rel="stylesheet" type="text/css" href="/Wegas/lib/yui3/build/cssgrids/grids-min.css" />
+            <link rel="stylesheet" type="text/css" href="/Wegas/rest/combo?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
         </ui:fragment>
 
-        <meta id="customstyles" />
 
-        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/treeview.css" />
+        <!-- Those styles are placed here, since they should be above any other in the CSS cascading
+            (even dependencies added on the fly). -->
+        <meta id="customstyles" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
+
     </h:head>
 
     <h:body class="yui3-skin-sam yui-skin-sam">
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
             <!-- YUI Base -->
             <!-- CDN -->
-            <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.6.0/build/yui/yui-min.js&amp;3.6.0/build/loader/loader-min.js"></script>
+            <script type="text/javascript" src="http://yui.yahooapis.com/3.6.0/build/yui/yui-min.js"></script>
         </ui:fragment>
         <ui:fragment rendered="#{wegasConfig.assets_local}">
             <!-- Self hosted -->
@@ -57,20 +57,41 @@
         <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
 
         <script type="text/javascript">
-            YUI_config.groups.inputex.base = '/Wegas/lib/inputex/build/';	// Hack fix inputex loading path so it uses local files
-            YUI_config.groups.wegas.base = '/Wegas/';                           // Hack fix wegas loading path so it uses local files
-            YUI_config.groups.ace.base = '/Wegas/lib/ace-0.2.0/';               // Hack fix codemirror loading path so it uses local files
-            //YUI_config.groups.wireit.base = '/Wegas/lib/wireit/';
-            YUI_config.groups.excanvas.base = '/Wegas/lib/excanvas/';
-            YUI_config.groups.esprima.base = '/Wegas/lib/';
-            YUI_config.groups.jsplumb.base = '/Wegas/' + YUI_config.groups.jsplumb.base;
+            var base = "/Wegas",
+            comboBase = base + '/rest/combo?';
+
+            YUI_config.groups.wegas.base = base + "/";                          // Set up wegas path
+            YUI_config.groups.wegas.comboBase = comboBase;
+            YUI_config.groups.wegas.combine = true;
+            YUI_config.groups.wegas.filter = "raw";
+
+            YUI_config.groups.inputex.base = base + '/lib/inputex/build/';	// Set up inputex path
+            YUI_config.groups.inputex.comboBase = comboBase;
+            YUI_config.groups.inputex.root = "/lib/inputex/build/";
+            YUI_config.groups.inputex.combine = true;
+
+            YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
+            YUI_config.groups.ace.comboBase = comboBase;
+
+            YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
+            YUI_config.groups.excanvas.comboBase = comboBase;
+
+            YUI_config.groups.esprima.base = base + YUI_config.groups.esprima.root; // Set up esprima path
+            YUI_config.groups.esprima.comboBase = comboBase;
+
+            YUI_config.groups.jsplumb.base = base + YUI_config.groups.jsplumb.root; // Set up jsplumb path
+            YUI_config.groups.jsplumb.comboBase = comboBase;
 
             <ui:fragment rendered="#{wegasConfig.assets_local}">
+            YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+            YUI_config.combine = true;
+            YUI_config.root = "/lib/yui3/build/"
+
             YUI_config.groups.yui2 = {                                          // Set up local version of yui2
-                base: '/Wegas/lib/yui2in3/build/',
-                // combine: true,
-                // comboBase: 'http://myserver.com/combo?',
-                // root: '/2in3/build/',
+                base: base + 'lib/yui2in3/build/',
+                combine: false,
+                comboBase: comboBase,
+                root: '/lib/yui2in3/build/',
                 patterns:  {
                     'yui2-': {
                         configFn: function(me) {
@@ -111,209 +132,209 @@
         </script>
 
         <ui:insert name="body">
-        <script type="text/javascript">
-            var Y = YUI({
-                //filter: 'raw',
-                //filters: { event: 'debug' }
-            }).use(
-                <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
-            function (Y) {
-                var cfg = {
-                    base : "/Wegas/",
-                    layoutSrc: '<ui:insert name="layoutUri">wegas-app/db/wegas-app-layout.json</ui:insert>',
-                    lang : 'en-US',
-                    debug : true,
-                    currentGameModel: #{gameController.currentGameModel.id},
-                    currentGame: #{gameController.currentGame.id},
-                    currentTeam: #{gameController.currentPlayer.team.id},
-                    currentPlayer: #{gameController.currentPlayer.id},
-                    currentUser: #{lobbyController.getCurrentUser().toJson()},
-                    cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
+            <script type="text/javascript">
+                var Y = YUI({
+                    //filter: 'raw',
+                    //filters: { event: 'debug' }
+                }).use(
+                    <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
+                function (Y) {
+                    var cfg = {
+                        base : "/Wegas/",
+                        layoutSrc: '<ui:insert name="layoutUri">wegas-app/db/wegas-app-layout.json</ui:insert>',
+                        lang : 'en-US',
+                        debug : true,
+                        currentGameModel: #{gameController.currentGameModel.id},
+                        currentGame: #{gameController.currentGame.id},
+                        currentTeam: #{gameController.currentPlayer.team.id},
+                        currentPlayer: #{gameController.currentPlayer.id},
+                        currentUser: #{lobbyController.getCurrentUser().toJson()},
+                        cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
 
-                    /**
-                    * This field is used to override Entities edition menus.
-                    * Use the target class name as the key.
-                    */
-                    dataSources: {
-                        "GameModel": {
-                            source: "rest/GameModel",
-                            initialRequest: "/#{gameController.currentGameModel.id}",
-                            plugins: [{
-                                    fn: "DataSourceJSONSchema",
-                                    cfg: {
-                                        schema: {
-                                            resultListLocator: "."
-                                            // resultFields: ["name", "id", "@class", "errors"]
+                        /**
+                         * This field is used to override Entities edition menus.
+                         * Use the target class name as the key.
+                         */
+                        dataSources: {
+                            "GameModel": {
+                                source: "rest/GameModel",
+                                initialRequest: "/#{gameController.currentGameModel.id}",
+                                plugins: [{
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                // resultFields: ["name", "id", "@class", "errors"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "GameModelDataSourceREST"
+                                    }]
+                            },
+                            "Game": {
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
+                                initialRequest: "/#{gameController.currentGame.id}",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                // resultFields: ["name", "id", "@class", "errors"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "GameDataSourceREST"
+                                    }
+                                ]
+                            },
+                            "Page": {
+                                source: "#{gameController.currentGameModel.widgetsUri}",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                //resultFields: ["name", "id", "@class"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "DataSourceREST"
+                                    }
+                                ]
+                            },
+                            "User": {
+                                source: "rest/User",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                            }
+                                        }
+                                    }, {
+                                        fn: "DataSourceREST"
+                                    }
+                                ]
+                            },
+                            "VariableDescriptor": {
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                            }
+                                        }
+                                    }, {
+                                        fn: "VariableDescriptorDataSourceREST"
+                                    },{
+                                        fn: "ScriptEval"
+                                    }
+                                ]
+                            },
+                            "File": {
+                                source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                //resultFields: ["name", "id", "@class"]
+                                            }
                                         }
                                     }
-                                }, {
-                                    fn: "GameModelDataSourceREST"
-                                }]
+                                ]
+                            }
                         },
-                        "Game": {
-                            source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
-                            initialRequest: "/#{gameController.currentGame.id}",
-                            plugins: [
-                                {
-                                    fn: "DataSourceJSONSchema",
-                                    cfg: {
-                                        schema: {
-                                            resultListLocator: "."
-                                            // resultFields: ["name", "id", "@class", "errors"]
-                                        }
-                                    }
-                                }, {
-                                    fn: "GameDataSourceREST"
-                                }
-                            ]
-                        },
-                        "Page": {
-                            source: "#{gameController.currentGameModel.widgetsUri}",
-                            initialRequest: "",
-                            plugins: [
-                                {
-                                    fn: "DataSourceJSONSchema",
-                                    cfg: {
-                                        schema: {
-                                            resultListLocator: "."
-                                            //resultFields: ["name", "id", "@class"]
-                                        }
-                                    }
-                                }, {
-                                    fn: "DataSourceREST"
-                                }
-                            ]
-                        },
-                        "User": {
-                            source: "rest/User",
-                            initialRequest: "",
-                            plugins: [
-                                {
-                                    fn: "DataSourceJSONSchema",
-                                    cfg: {
-                                        schema: {
-                                            resultListLocator: "."
-                                        }
-                                    }
-                                }, {
-                                    fn: "DataSourceREST"
-                                }
-                            ]
-                        },
-                        "VariableDescriptor": {
-                            source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                            initialRequest: "",
-                            plugins: [
-                                {
-                                    fn: "DataSourceJSONSchema",
-                                    cfg: {
-                                        schema: {
-                                            resultListLocator: "."
-                                        }
-                                    }
-                                }, {
-                                    fn: "VariableDescriptorDataSourceREST"
-                                },{
-                                    fn: "ScriptEval"
-                                }
-                            ]
-                        },
-                        "File": {
-                            source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
-                            plugins: [
-                                {
-                                    fn: "DataSourceJSONSchema",
-                                    cfg: {
-                                        schema: {
-                                            resultListLocator: "."
-                                            //resultFields: ["name", "id", "@class"]
-                                        }
-                                    }
-                                }
+                        /**
+                         * This field is used to override Entities edition menus.
+                         * Use the target class name as the key.
+                         */
+                        editorMenus: {},
+
+                        /**
+                         * This field is used to override Entities edition forms.
+                         * Use the target class name as the key.
+                         */
+                        editorForms: {
+                            //  *** Widgets *** //
+                            List: [
+                                { name: 'label', label: 'Label'},
+                                { name: 'direction', label: 'Direction', type: 'select', choices: [
+                                        { value: 'vertical', label: 'Vertical' },
+                                        { value: 'horizontal', label: 'Horizontal' }
+                                    ] },
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'List:', type: 'hidden'}
+                            ],
+                            VariableDisplay: [
+                                { name: 'label', label: 'Label'},
+                                { name: 'variable', label: 'Target variable'},
+                                { name: 'view', label: 'Display mode', type: 'select', choices: [
+                                        { value: 'text', label: 'Text' },
+                                        { value: 'button', label: 'Boxes' },
+                                        { value: 'gauge', label: 'Gauge' }
+                                    ] },
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'VariableDisplay:', type: 'hidden'}
+                            ],
+                            Button: [
+                                /*{ name: 'name', label: 'Name'},*/
+                                { name: 'label', label: 'Label'},
+                                /*{ name: 'targetArea', label: 'Targeted dynamic area element', metatype: 'widgetselect', targetType: 'AlbaDisplayAreaWidget' },
+                            { name: 'targetSubpageId', label: 'Page fragment to display', metatype: 'subpageselect'},
+                            { name: 'isStoryEvent', label: 'Sends story event', type: 'boolean'},
+                            { name: 'inputAction', label: 'On click', type:'text', rows: 8, cols: 60 },*/
+                                { name: 'view', label: 'Display mode', type: 'select', choices: [
+                                        { value: 'text', label: 'Text' },
+                                        { value: 'button', label: 'Button' }
+                                    ] },
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'Button', type: 'hidden'}
+                            ],
+                            Text: [
+                                { name: 'content', 'type': 'html', label:'Description', opts: {width:'100%', height: '250px'}},
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'Text', type: 'hidden'}
+                            ],
+                            PageLoader: [
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'PageLoader', type: 'hidden'}
+                            ],
+                            TabView: [
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'TabView', type: 'hidden'}
+                            ],
+                            Tab: [
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'Tab', type: 'hidden'}
+                            ],
+                            PMGChoiceDisplay: [
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'PMGChoiceDisplay', type: 'hidden'}
                             ]
                         }
-                    },
-                    /**
-                    * This field is used to override Entities edition menus.
-                    * Use the target class name as the key.
-                    */
-                    editorMenus: {},
+                    };
 
-                    /**
-                    * This field is used to override Entities edition forms.
-                    * Use the target class name as the key.
-                    */
-                    editorForms: {
-                        //  *** Widgets *** //
-                        List: [
-                            { name: 'label', label: 'Label'},
-                            { name: 'direction', label: 'Direction', type: 'select', choices: [
-                                    { value: 'vertical', label: 'Vertical' },
-                                    { value: 'horizontal', label: 'Horizontal' }
-                                ] },
-                            { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'List:', type: 'hidden'}
-                        ],
-                        VariableDisplay: [
-                            { name: 'label', label: 'Label'},
-                            { name: 'variable', label: 'Target variable'},
-                            { name: 'view', label: 'Display mode', type: 'select', choices: [
-                                    { value: 'text', label: 'Text' },
-                                    { value: 'button', label: 'Boxes' },
-                                    { value: 'gauge', label: 'Gauge' }
-                                ] },
-                            { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'VariableDisplay:', type: 'hidden'}
-                        ],
-                        Button: [
-                            /*{ name: 'name', label: 'Name'},*/
-                            { name: 'label', label: 'Label'},
-                            /*{ name: 'targetArea', label: 'Targeted dynamic area element', metatype: 'widgetselect', targetType: 'AlbaDisplayAreaWidget' },
-                        { name: 'targetSubpageId', label: 'Page fragment to display', metatype: 'subpageselect'},
-                        { name: 'isStoryEvent', label: 'Sends story event', type: 'boolean'},
-                        { name: 'inputAction', label: 'On click', type:'text', rows: 8, cols: 60 },*/
-                            { name: 'view', label: 'Display mode', type: 'select', choices: [
-                                    { value: 'text', label: 'Text' },
-                                    { value: 'button', label: 'Button' }
-                                ] },
-                            { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'Button', type: 'hidden'}
-                        ],
-                        Text: [
-                            { name: 'content', 'type': 'html', label:'Description', opts: {width:'100%', height: '250px'}},
-                            { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'Text', type: 'hidden'}
-                        ],
-                        PageLoader: [
-                            { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'PageLoader', type: 'hidden'}
-                        ],
-                        TabView: [
-                            { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'TabView', type: 'hidden'}
-                        ],
-                        Tab: [
-                            { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'Tab', type: 'hidden'}
-                        ],
-                        PMGChoiceDisplay: [
-                            { name: 'cssClass', label: 'CSS class'},
-                            { name: 'type', value:'PMGChoiceDisplay', type: 'hidden'}
-                        ]
-                    }
-                };
+                    Y.on('domready', function() {                                   // When dom is ready,
 
-                Y.on('domready', function() {                                   // When dom is ready,
+                            <ui:insert name="jsInitMethod">
+                            var app = new Y.Wegas.App(cfg);                             // launch the app
+                        app.render();
+                            </ui:insert>
 
-                    <ui:insert name="jsInitMethod">
-                    var app = new Y.Wegas.App(cfg);                             // launch the app
-                    app.render();
-                    </ui:insert>
+                        });
 
                 });
-
-            });
-        </script>
+            </script>
         </ui:insert>
     </h:body>
 </html>

@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('model-list', function(Y) {
 
 /**
@@ -194,7 +200,7 @@ Y.ModelList = Y.extend(ModelList, Y.Base, {
     },
 
     destructor: function () {
-        YArray.each(this._items, this._detachList, this);
+        this._clear();
     },
 
     // -- Public Methods -------------------------------------------------------
@@ -422,7 +428,7 @@ Y.ModelList = Y.extend(ModelList, Y.Base, {
         }
 
         if (options.asList) {
-            list = new Y.ModelList({model: this.model});
+            list = new this.constructor({model: this.model});
 
             if (filtered.length) {
                 list.add(filtered, {silent: true});
@@ -1210,4 +1216,4 @@ Y.ModelList = Y.extend(ModelList, Y.Base, {
 Y.augment(ModelList, Y.ArrayList);
 
 
-}, '@VERSION@' ,{requires:['array-extras', 'array-invoke', 'arraylist', 'base-build', 'escape', 'json-parse', 'model']});
+}, '3.6.0' ,{requires:['array-extras', 'array-invoke', 'arraylist', 'base-build', 'escape', 'json-parse', 'model']});
