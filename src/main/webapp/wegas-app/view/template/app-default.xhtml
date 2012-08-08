@@ -34,6 +34,7 @@
         <!-- Those styles are placed here, since they should be above any other in the CSS cascading
             (even dependencies added on the fly). -->
         <meta id="customstyles" />
+        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/treeview.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
 
@@ -63,7 +64,7 @@
             YUI_config.groups.wegas.base = base + "/";                          // Set up wegas path
             YUI_config.groups.wegas.comboBase = comboBase;
             YUI_config.groups.wegas.combine = true;
-            YUI_config.groups.wegas.filter = "raw";
+            YUI_config.groups.wegas.filter = "min";
 
             YUI_config.groups.inputex.base = base + '/lib/inputex/build/';	// Set up inputex path
             YUI_config.groups.inputex.comboBase = comboBase;
@@ -84,12 +85,13 @@
 
             <ui:fragment rendered="#{wegasConfig.assets_local}">
             YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+            YUI_config.filter = "min";
             YUI_config.combine = true;
             YUI_config.root = "/lib/yui3/build/"
 
             YUI_config.groups.yui2 = {                                          // Set up local version of yui2
-                base: base + 'lib/yui2in3/build/',
-                combine: false,
+                base: base + '/lib/yui2in3/build/',
+                combine: true,
                 comboBase: comboBase,
                 root: '/lib/yui2in3/build/',
                 patterns:  {
@@ -134,7 +136,7 @@
         <ui:insert name="body">
             <script type="text/javascript">
                 var Y = YUI({
-                    //filter: 'raw',
+                    //filter: 'min',
                     //filters: { event: 'debug' }
                 }).use(
                     <ui:insert name="jsInculde">'wegas-app'</ui:insert>,

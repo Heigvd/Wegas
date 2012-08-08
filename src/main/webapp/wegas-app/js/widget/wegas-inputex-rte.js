@@ -451,7 +451,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                 this.filepanel = new Y.Panel({
                     bodyContent: '',
                     headerContent: 'Choose a file from library',
-                    width  : 330,
+                    width  : 600,
                     zIndex : 5,
                     modal  : true,
                     render : true,
