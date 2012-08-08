@@ -185,7 +185,7 @@ YUI.add('wegas-tabview', function (Y) {
             //            widget.on("click", function(e){
             //                this.get("children").fire("toolbarEvent", e);
             //            }, this);
-            //widget.addTarget(this.item(0));
+            widget.addTarget(this.item(0));
             return widget;
         },
         /**
