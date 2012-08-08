@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('datatable-base', function(Y) {
 
 /**
@@ -178,7 +184,7 @@ Example usage might look like this:
 // Custom subclass with only sorting and mutability added.  If other datatable
 // feature modules are loaded, this class will not be affected.
 var MyTableClass = Y.Base.create('table', Y.DataTable.Base,
-                       [ Y.DataTable.Sort, Y.DataTable.Mutable ]);
+                       [ Y.DataTable.Sortable, Y.DataTable.Mutable ]);
 
 var table = new MyTableClass({
     columns: ['firstName', 'lastName', 'age'],
@@ -680,4 +686,4 @@ Y.DataTable = Y.mix(
     Y.DataTable); // Migrate static and namespaced classes
 
 
-}, '@VERSION@' ,{requires:['datatable-core', 'base-build', 'widget', 'datatable-head', 'datatable-body']});
+}, '3.6.0' ,{requires:['datatable-core', 'base-build', 'widget', 'datatable-head', 'datatable-body']});

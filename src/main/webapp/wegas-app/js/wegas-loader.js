@@ -19,8 +19,9 @@ YUI().use(function (Y) {
     var CONFIG = {
         groups: {
             'wegas': {
-                combine: false,
-                //filter: "raw",
+                combine: true,
+                base: './',
+                root: '/',
                 modules: {
                     /** Base **/
                     'wegas-app': {
@@ -105,7 +106,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-variabledisplay': {
                         path: 'wegas-app/js/widget/wegas-variabledisplay-min.js',
-                        requires: ['excanvas'],
+                        requires: [ /*'excanvas'*/ ],
                         ix_provides: 'VariableDisplay'
                     },
                     'wegas-inbox': {
@@ -174,7 +175,11 @@ YUI().use(function (Y) {
                     },
                     'treeview':{
                         path: 'wegas-editor/js/treeview-min.js',
-                        requires: ['widget', 'widget-parent', 'widget-child']
+                        requires: ['widget', 'widget-parent', 'widget-child', 'treeviewcss']
+                    },
+                    'treeviewcss': {
+                        path: 'wegas-editor/css/treeview.css',
+                        type: 'css'
                     },
 
                     /** Editor **/
@@ -292,7 +297,7 @@ YUI().use(function (Y) {
 
                     /**Leaderway**/
                     'wegas-leaderway': {
-                       path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
                         requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']/*,
                         ix_provides: "HRList"*/
                     },
@@ -328,26 +333,29 @@ YUI().use(function (Y) {
 
             /* Ace */
             ace: {
-                combine: false,
-                base: "lib/CodeMirror/",
+                //combine: true,
+                base: './lib/ace-0.2.0/',
+                root: '/lib/ace-0.2.0/',
                 modules:  {
                     'ace': {
                         path: 'src/ace.js'
                     },
                     'ace-javascript': {
                         path: 'src/mode-javascript.js',
-                        requires: ['ace']
+                        requires: [ 'ace' ]
                     },
                     'ace-css': {
                         path: 'src/mode-css.js',
-                        requires: ['ace']
+                        requires: [ 'ace' ]
                     }
                 }
             },
+
             /* jsPlumb */
             jsplumb: {
-                combine: false,
-                base:"lib/jsPlumb-1.3.10/",
+                combine: true,
+                base: './lib/jsPlumb-1.3.10/',
+                root: '/lib/jsPlumb-1.3.10/',
                 modules: {
                     'jsplumb': {
                         path: 'jsPlumb-1.3.10-RC1.js',
@@ -385,8 +393,9 @@ YUI().use(function (Y) {
 
             /* ExCanvas */
             excanvas: {
-                combine: false,
-                base: "lib/excanvas/",
+                combine: true,
+                base: "./lib/excanvas/",
+                root: "/excanvas/",
                 modules:  {
                     'excanvas': {
                         path: 'excanvas.compiled.js'
@@ -396,7 +405,8 @@ YUI().use(function (Y) {
 
             /* Esprima */
             esprima: {
-                combine: false,
+                //async: false,
+                //combine: false,
                 base: "lib/",
                 modules:  {
                     'esprima': {

@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('querystring-stringify', function(Y) {
 
 /**
@@ -104,4 +110,4 @@ QueryString.stringify = function (obj, c, name) {
 };
 
 
-}, '@VERSION@' ,{requires:['yui-base'], supersedes:['querystring-stringify-simple']});
+}, '3.6.0' ,{requires:['yui-base'], supersedes:['querystring-stringify-simple']});

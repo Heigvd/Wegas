@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('resize-proxy', function(Y) {
 
 var ACTIVE_HANDLE_NODE = 'activeHandleNode',
@@ -163,4 +169,4 @@ Y.namespace('Plugin');
 Y.Plugin.ResizeProxy = ResizeProxy;
 
 
-}, '@VERSION@' ,{requires:['resize-base', 'plugin'], skinnable:false});
+}, '3.6.0' ,{requires:['resize-base', 'plugin'], skinnable:false});

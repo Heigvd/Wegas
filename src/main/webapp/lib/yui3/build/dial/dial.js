@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('dial', function(Y) {
 
 /**
@@ -1288,4 +1294,4 @@ YUI.add('dial', function(Y) {
     Y.Dial = Dial;
 
 
-}, '@VERSION@' ,{lang:['en','es' ], skinnable:true, requires:['widget', 'dd-drag', 'substitute', 'event-mouseenter', 'event-move', 'event-key', 'transition', 'intl']});
+}, '3.6.0' ,{lang:['en','es' ], skinnable:true, requires:['widget', 'dd-drag', 'substitute', 'event-mouseenter', 'event-move', 'event-key', 'transition', 'intl']});

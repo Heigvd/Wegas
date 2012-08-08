@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('transition', function(Y) {
 
 /**
@@ -698,4 +704,4 @@ Transition.DEFAULT_TOGGLE = 'fade';
 
 
 
-}, '@VERSION@' ,{requires:['node-style']});
+}, '3.6.0' ,{requires:['node-style']});

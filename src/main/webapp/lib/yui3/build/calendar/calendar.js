@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('calendar', function(Y) {
 
 /**
@@ -545,4 +551,4 @@ Y.Calendar = Y.extend(Calendar, Y.CalendarBase, {
 });
 
 
-}, '@VERSION@' ,{requires:['calendar-base', 'calendarnavigator'], lang:['de', 'en', 'fr', 'ja', 'nb-NO', 'pt-BR', 'ru', 'zh-HANT-TW']});
+}, '3.6.0' ,{requires:['calendar-base', 'calendarnavigator'], lang:['de', 'en', 'fr', 'ja', 'nb-NO', 'pt-BR', 'ru', 'zh-HANT-TW']});

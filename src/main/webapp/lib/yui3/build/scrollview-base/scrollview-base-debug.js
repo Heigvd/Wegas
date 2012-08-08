@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('scrollview-base', function(Y) {
 
 /**
@@ -1211,4 +1217,4 @@ Y.ScrollView = Y.extend(ScrollView, Y.Widget, {
 });
 
 
-}, '@VERSION@' ,{skinnable:true, requires:['widget', 'event-gestures', 'event-mousewheel', 'transition']});
+}, '3.6.0' ,{skinnable:true, requires:['widget', 'event-gestures', 'event-mousewheel', 'transition']});

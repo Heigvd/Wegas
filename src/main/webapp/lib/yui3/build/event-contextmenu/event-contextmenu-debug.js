@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('event-contextmenu', function(Y) {
 
 /**
@@ -182,4 +188,4 @@ conf.detachDelegate = conf.detach;
 Event.define("contextmenu", conf, true);
 
 
-}, '@VERSION@' ,{requires:['event-synthetic', 'dom-screen']});
+}, '3.6.0' ,{requires:['event-synthetic', 'dom-screen']});

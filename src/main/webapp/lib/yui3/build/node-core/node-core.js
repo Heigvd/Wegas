@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('node-core', function(Y) {
 
 /**
@@ -62,6 +68,7 @@ var DOT = '.',
         /**
          * The underlying DOM node bound to the Y.Node instance
          * @property _node
+         * @type DOMNode
          * @private
          */
         this._node = node;
@@ -110,6 +117,7 @@ Y_Node._fromString = function(node) {
 /**
  * The name of the component
  * @static
+ * @type String
  * @property NAME
  */
 Y_Node.NAME = 'node';
@@ -125,6 +133,7 @@ Y_Node.HIDE_TRANSITION = 'fadeOut';
 /**
  * A list of Node instances that have been created
  * @private
+ * @type Object
  * @property _instances
  * @static
  *
@@ -840,6 +849,7 @@ Y.one = Y_Node.one;
  *
  * @class NodeList
  * @constructor
+ * @param nodes {String|element|Node|Array} A selector, DOM element, Node, list of DOM elements, or list of Nodes with which to populate this NodeList.
  */
 
 var NodeList = function(nodes) {
@@ -1585,4 +1595,4 @@ Y.NodeList.importMethod(Y.Node.prototype, [
 ]);
 
 
-}, '@VERSION@' ,{requires:['dom-core', 'selector']});
+}, '3.6.0' ,{requires:['dom-core', 'selector']});

@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('datatype-date-math', function(Y) {
 
 /**
@@ -201,4 +207,4 @@ Y.mix(Y.namespace("DataType.Date"), {
 });
 
 
-}, '@VERSION@' ,{requires:['yui-base']});
+}, '3.6.0' ,{requires:['yui-base']});

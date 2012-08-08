@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('datasource-function', function(Y) {
 
 /**
@@ -105,4 +111,4 @@ Y.extend(DSFn, Y.DataSource.Local, {
 Y.DataSource.Function = DSFn;
 
 
-}, '@VERSION@' ,{requires:['datasource-local']});
+}, '3.6.0' ,{requires:['datasource-local']});

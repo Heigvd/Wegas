@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('dd-constrain', function(Y) {
 
 
@@ -551,4 +557,4 @@ YUI.add('dd-constrain', function(Y) {
 
 
 
-}, '@VERSION@' ,{requires:['dd-drag'], skinnable:false});
+}, '3.6.0' ,{skinnable:false, requires:['dd-drag']});

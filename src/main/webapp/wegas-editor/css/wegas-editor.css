@@ -11,6 +11,10 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
+/* Default form styles */
+select {
+    margin: 0;
+}
 
 /* InputEx Styles */
 div.inputEx-hidden {
@@ -19,40 +23,56 @@ div.inputEx-hidden {
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }
-.inputEx-Group div.inputEx-Field > div > input[type=text] {
-    width: 100%;
-}
-.inputEx-Group div.inputEx-Field select {
-    margin: 0;
-}
-.inputEx-Group div.inputEx-Field textarea {
-    width:100%;
-}
 .inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label:first-letter {
     text-transform: uppercase;
 }
-div.inputEx-StringField-wrapper {
-    display: inline-block;
-    vertical-align: top;
-    width: 100%;
-}
-/* Wegas Form Widget Styles */
-.wegas-form {
-    padding: 10px 10px 20px;
-}
-.wegas-form div.inputEx-Field {
-    float:none;
+div.inputEx-message {
+    margin: 0;
 }
 div.inputEx-fieldWrapper {
     margin-bottom: 0.4em;
 }
-.wegas-form-content > .inputEx-Group fieldset > .inputEx-fieldWrapper {
+
+/* Wegas Form Widget Styles */
+.wegas-form {
+    padding: 10px 10px 20px;
+}
+.wegas-form div.inputEx-fieldWrapper,
+.wegas-form div.inputEx-Field {
+    float:none;
+}
+.wegas-form .inputEx-Group,
+.wegas-form input[type=text],
+.wegas-form select,
+.wegas-form textarea {
+    width: 100%;
+}
+.wegas-form div.inputEx-StringField-wrapper {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+}
+.wegas-form div.inputEx-CombineField,
+.wegas-form .inputEx-fieldWrapper {
     padding-left:135px;
 }
-.wegas-form-content > .inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label {
+.wegas-form div.inputEx-CombineField > div.inputEx-label,
+.wegas-form div.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-135px;
     width: 129px;
 }
+
+.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper  {
+    padding-left:0;
+}
+.wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper  {
+    padding-left:85px;
+}
+.wegas-form div.inputEx-fieldWrapper >.inputEx-fieldWrapper > div.inputEx-label {
+    margin-left:-85px;
+    width: 79px;
+}
+
 /* Wegas Url Field styles */
 .inputEx-wegas-UrlField {
     padding-right:40px;
@@ -78,16 +98,14 @@ div.inputEx-fieldWrapper {
     margin-left:-70px;
     width:65px;
 }*/
-div.inputEx-message {
-    margin: 0;
-}
+/*
 .inputEx-CombineField > .inputEx-Group {
     float:none !important;
     clear:both !important;
 }
 .inputEx-CombineField > div.inputEx-label {
     width: 127px;
-}
+}*/
 /*.inputEx-CombineField > .inputEx-fieldWrapper {
     padding:0;
 }*/

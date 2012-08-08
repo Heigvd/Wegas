@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('base-base', function(Y) {
 
     /**
@@ -345,4 +351,4 @@ YUI.add('base-base', function(Y) {
     Y.Base = Base;
 
 
-}, '@VERSION@' ,{requires:['base-core', 'attribute-base']});
+}, '3.6.0' ,{requires:['base-core', 'attribute-base']});

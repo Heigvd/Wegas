@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('calendar-base', function(Y) {
 
 /**
@@ -1630,4 +1636,4 @@ Y.CalendarBase = Y.extend( CalendarBase, Y.Widget, {
 });
 
 
-}, '@VERSION@' ,{requires:['widget', 'substitute', 'datatype-date', 'datatype-date-math', 'cssgrids'], lang:['de', 'en', 'fr', 'ja', 'nb-NO', 'pt-BR', 'ru', 'zh-HANT-TW']});
+}, '3.6.0' ,{requires:['widget', 'substitute', 'datatype-date', 'datatype-date-math', 'cssgrids'], lang:['de', 'en', 'fr', 'ja', 'nb-NO', 'pt-BR', 'ru', 'zh-HANT-TW']});

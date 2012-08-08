@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('shim-plugin', function(Y) {
 
     /**
@@ -103,4 +109,4 @@ YUI.add('shim-plugin', function(Y) {
     Y.Plugin.Shim = Shim;
 
 
-}, '@VERSION@' ,{requires:['node-style', 'node-pluginhost']});
+}, '3.6.0' ,{requires:['node-style', 'node-pluginhost']});

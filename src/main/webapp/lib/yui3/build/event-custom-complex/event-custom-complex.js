@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('event-custom-complex', function(Y) {
 
 
@@ -495,4 +501,4 @@ FACADE_KEYS = Y.Object.keys(FACADE);
 
 
 
-}, '@VERSION@' ,{requires:['event-custom-base']});
+}, '3.6.0' ,{requires:['event-custom-base']});

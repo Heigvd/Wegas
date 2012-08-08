@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('app-transitions', function(Y) {
 
 /**
@@ -33,6 +39,7 @@ transition between `activeView` changes using the following effects:
 
 @class App.Transitions
 @uses App.TransitionsNative
+@extensionfor App
 @since 3.5.0
 **/
 function AppTransitions() {}
@@ -237,4 +244,4 @@ Y.mix(Y.App.CLASS_NAMES, {
 });
 
 
-}, '@VERSION@' ,{requires:['app-base']});
+}, '3.6.0' ,{requires:['app-base']});

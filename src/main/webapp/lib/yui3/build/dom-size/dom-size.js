@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('dom-size', function(Y) {
 
 Y.mix(Y.DOM, {
@@ -45,4 +51,4 @@ Y.mix(Y.DOM, {
 });
 
 
-}, '@VERSION@' ,{requires:['dom-core']});
+}, '3.6.0' ,{requires:['dom-core']});

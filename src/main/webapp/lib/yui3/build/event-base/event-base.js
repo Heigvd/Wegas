@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 (function () {
 var GLOBAL_ENV = YUI.Env;
 
@@ -1363,4 +1369,4 @@ Y.Env.evt.plugins.contentready = {
 };
 
 
-}, '@VERSION@' ,{requires:['event-custom-base']});
+}, '3.6.0' ,{requires:['event-custom-base']});

@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('editor-para', function(Y) {
 
 
@@ -296,4 +302,4 @@ YUI.add('editor-para', function(Y) {
 
 
 
-}, '@VERSION@' ,{requires:['editor-base'], skinnable:false});
+}, '3.6.0' ,{skinnable:false, requires:['editor-base']});

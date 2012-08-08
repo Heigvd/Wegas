@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('yui-log-nodejs', function(Y) {
 
 var sys = require(process.binding('natives').util ? 'util' : 'sys'),
@@ -77,4 +83,4 @@ if (!Y.config.logFn) {
 
 
 
-}, '@VERSION@' ,{requires:['yui-log']});
+}, '3.6.0' ,{requires:['yui-log']});

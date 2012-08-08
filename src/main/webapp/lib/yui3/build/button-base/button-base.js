@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('button-base', function(Y) {
 
 /**
@@ -335,4 +341,4 @@ Y.extend(ToggleButton, Y.Button,  {
 Y.ToggleButton = ToggleButton;
 
 
-}, '@VERSION@' ,{requires:['widget', 'classnamemanager', 'node']});
+}, '3.6.0' ,{requires:['widget', 'classnamemanager', 'node']});

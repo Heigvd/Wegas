@@ -1,3 +1,9 @@
+/*
+YUI 3.6.0 (build 5521)
+Copyright 2012 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
 YUI.add('io-queue', function(Y) {
 
 /**
@@ -153,4 +159,4 @@ _queue.size = function () { io.qSize(); };
 Y.io.queue = _queue;
 
 
-}, '@VERSION@' ,{requires:['io-base','queue-promote']});
+}, '3.6.0' ,{requires:['io-base','queue-promote']});

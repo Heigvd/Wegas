@@ -108,6 +108,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
         showUpdateForm: function (entity, dataSource) {
             EditEntityAction.showEditForm(entity, function (cfg) {  // Display the edit form
+                // entity.setAttrs( cfg );
                 dataSource.rest.put(cfg, {
                     success: function () {
                         EditEntityAction.showFormMsg("success", "Item has been updated");
