@@ -175,7 +175,7 @@ YUI().use(function (Y) {
                     },
                     'treeview':{
                         path: 'wegas-editor/js/treeview-min.js',
-                        requires: ['widget', 'widget-parent', 'widget-child', 'treeviewcss']
+                        requires: ['widget', 'widget-parent', 'widget-child'/*, 'treeviewcss'*/]
                     },
                     'treeviewcss': {
                         path: 'wegas-editor/css/treeview.css',

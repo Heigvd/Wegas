@@ -120,9 +120,11 @@ input[type="submit"], input[type="reset"] {
 }
 .yui3-skin-sam .wegas-layout-center {
     margin-right: 6px;
+    margin-left: 6px;
 }
 .yui3-skin-sam .wegas-layout-left {
     width: 300px;
+    padding-right: 6px;
 }
 .yui3-skin-sam .wegas-layout-right {
     padding-left: 6px;

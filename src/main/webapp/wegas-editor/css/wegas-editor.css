@@ -62,11 +62,9 @@ div.inputEx-fieldWrapper {
     width: 129px;
 }
 
-.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper  {
-    padding-left:0;
-}
+.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper ,
 .wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper  {
-    padding-left:85px;
+    padding-left:0;
 }
 .wegas-form div.inputEx-fieldWrapper >.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-85px;
