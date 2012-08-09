@@ -67,48 +67,6 @@ YUI.add('wegas-button', function (Y) {
     Y.namespace('Wegas').Button = Button;
 
     /**
-     *  @class OpenGameAction
-     *  @module Wegas
-     *  @constructor
-     */
-    var OpenUrlAction = function () {
-        OpenUrlAction.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.mix(OpenUrlAction, {
-        NS: "openurlaction",
-        NAME: "OpenUrlAction"
-    });
-
-    Y.extend(OpenUrlAction, Y.Plugin.Base, {
-        executeAction: function () {
-            var targetUrl  = Y.Wegas.app.get( "base" ) + this.get("url");
-
-            if ( this.get( "target" ) === "blank") {
-                window.open( targetUrl );
-            } else {
-                window.location.href = targetUrl;
-            }
-        },
-
-        initializer: function () {
-            this.afterHostEvent( "click", this.executeAction, this );
-        }
-    }, {
-        ATTRS: {
-            url: { },
-            /**
-             * Can be "self" or "blank"
-             */
-            target: {
-                value : "blank"
-            }
-        }
-    });
-
-    Y.namespace( "Plugin" ).OpenUrlAction = OpenUrlAction;
-
-    /**
      * Plugin which adds an unread message counter to a widget.
      *
      * @class Y.Wegas.UnreadCount
@@ -233,75 +191,6 @@ YUI.add('wegas-button', function (Y) {
     });
 
     Y.namespace('Wegas').LoginButton = LoginButton;
-
-    /**
-     *  @class OpenPageAction
-     *  @module Wegas
-     *  @constructor
-     */
-    var OpenPageAction = function () {
-        OpenPageAction.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.mix(OpenPageAction, {
-        NS: "wegas",
-        NAME: "OpenPageAction"
-    });
-
-    Y.extend(OpenPageAction, Y.Plugin.Base, {
-        initializer: function () {
-            this.afterHostEvent("click", function() {
-                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                targetPageLoader.set("pageId", this.get("subpageId"));
-            }, this);
-        }
-    }, {
-        ATTRS: {
-            subpageId: {},
-            targetPageLoaderId: {}
-        }
-    });
-
-    Y.namespace("Plugin").OpenPageAction = OpenPageAction;
-
-    /**
-     *  @class ExecuteScriptAction
-     *  @module Wegas
-     *  @constructor
-     */
-    var ExecuteScriptAction = function () {
-        ExecuteScriptAction.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.mix(ExecuteScriptAction, {
-        NS: "wegas",
-        NAME: "ExecuteScriptAction"
-    });
-
-    Y.extend(ExecuteScriptAction, Y.Plugin.Base, {
-        initializer: function () {
-            this.afterHostEvent("click", function() {
-                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-                    cfg: {
-                        method: "POST",
-                        data: Y.JSON.stringify({
-                            "@class": "Script",
-                            "language": "JavaScript",
-                            "content": this.get("onClick")
-                        })
-                    }
-                });
-            }, this);
-        }
-    }, {
-        ATTRS: {
-            onClick: {}
-        }
-    });
-
-    Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
-
 
     /**
      * Shortcut to create a Button with an OpenPageAction plugin

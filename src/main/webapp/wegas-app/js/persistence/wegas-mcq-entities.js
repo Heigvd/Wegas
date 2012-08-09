@@ -11,7 +11,6 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-mcq-entities', function (Y) {
     "use strict";
 

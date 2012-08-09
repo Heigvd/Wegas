@@ -513,7 +513,12 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>lib/**</exclude>
+                        <exclude>lib/ace/**</exclude>
+                        <exclude>lib/excanvas/**</exclude>
+                        <exclude>lib/inputex/**</exclude>
+                        <exclude>lib/jsPlumb/**</exclude>
+                        <exclude>lib/yui2in3/**</exclude>
+                        <exclude>lib/yui3/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

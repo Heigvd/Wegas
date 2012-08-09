@@ -34,7 +34,6 @@
         <!-- Those styles are placed here, since they should be above any other in the CSS cascading
             (even dependencies added on the fly). -->
         <meta id="customstyles" />
-        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/treeview.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
 
@@ -63,8 +62,8 @@
 
             YUI_config.groups.wegas.base = base + "/";                          // Set up wegas path
             YUI_config.groups.wegas.comboBase = comboBase;
-            YUI_config.groups.wegas.combine = true;
-            YUI_config.groups.wegas.filter = "min";
+            YUI_config.groups.wegas.combine = false;
+            YUI_config.groups.wegas.filter = "raw";
 
             YUI_config.groups.inputex.base = base + '/lib/inputex/build/';	// Set up inputex path
             YUI_config.groups.inputex.comboBase = comboBase;
@@ -136,7 +135,7 @@
         <ui:insert name="body">
             <script type="text/javascript">
                 var Y = YUI({
-                    //filter: 'min',
+                    //filter: 'raw'
                     //filters: { event: 'debug' }
                 }).use(
                     <ui:insert name="jsInculde">'wegas-app'</ui:insert>,

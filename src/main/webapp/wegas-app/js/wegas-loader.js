@@ -27,10 +27,11 @@ YUI().use(function (Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
-                        'wegas-datasourcerest', 'wegas-scripteval', 'wegas-gallery',
+                        'wegas-datasourcerest', 'wegas-scripteval',
                         'wegas-entity', 'wegas-mcq-entities', 'wegas-statemachine-entities',
-                        'stylesheet', 'wegas-widget', 'wegas-list',
+                        'stylesheet', 'wegas-widget',
                         'wegas-pageloader', 'wegas-button',
+                        'wegas-gallery',
                         //'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -72,8 +73,12 @@ YUI().use(function (Y) {
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: [ 'wegas-widget', 'wegas-widgetmenu', 'wegas-tooltip', 'plugin', 'button' ],
+                        requires: [ 'wegas-widget', 'wegas-widgetmenu', 'wegas-action', 'wegas-tooltip', 'plugin', 'button' ],
                         ix_provides: 'Button'
+                    },
+                    'wegas-action': {
+                        path: 'wegas-app/js/widget/wegas-action-min.js',
+                        requires: [ 'plugin' ]
                     },
                     'wegas-tooltip': {
                         path: 'wegas-app/js/widget/wegas-tooltip-min.js',
@@ -168,14 +173,13 @@ YUI().use(function (Y) {
                     /** Common Widgets **/
                     'wegas-widgetmenu': {
                         path: 'wegas-app/js/widget/wegas-widgetmenu-min.js',
-                        requires: ['plugin', 'widget', 'widget-parent', 'widget-child',
-                        'widget-stack', 'widget-position', 'widget-position-align',
-                        'widget-position-constrain', 'yui-later', 'event-mouseenter',
-                        'event-outside']
+                        requires: ['plugin', 'yui-later', 'event-mouseenter', 'event-outside',
+                        'widget', 'widget-parent', 'widget-child', 'widget-stack',
+                        'widget-position', 'widget-position-align', 'widget-position-constrain' ]
                     },
                     'treeview':{
                         path: 'wegas-editor/js/treeview-min.js',
-                        requires: ['widget', 'widget-parent', 'widget-child'/*, 'treeviewcss'*/]
+                        requires: [ 'widget', 'widget-parent', 'widget-child', 'treeviewcss' ]
                     },
                     'treeviewcss': {
                         path: 'wegas-editor/css/treeview.css',
@@ -199,7 +203,8 @@ YUI().use(function (Y) {
 
                     /** Editor's Widgets **/
                     'wegas-editor-action': {
-                        path: 'wegas-editor/js/wegas-editor-action-min.js'
+                        path: 'wegas-editor/js/wegas-editor-action-min.js',
+                        requires: [ 'wegas-action' ]
                     },
                     'wegas-logger': {
                         path: 'wegas-editor/js/wegas-logger-min.js',
@@ -208,7 +213,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
-                        requires: [ 'inputex-select', 'wegas-widgetmenu', 'button' ],
+                        requires: [ 'wegas-button',  'wegas-widgetmenu' ],
                         ix_provides: 'SelectPlayerButton'
                     },
                     'wegas-csseditor': {
@@ -334,8 +339,8 @@ YUI().use(function (Y) {
             /* Ace */
             ace: {
                 //combine: true,
-                base: './lib/ace-0.2.0/',
-                root: '/lib/ace-0.2.0/',
+                base: './lib/ace/',
+                root: '/lib/ace/',
                 modules:  {
                     'ace': {
                         path: 'src/ace.js'
@@ -354,8 +359,8 @@ YUI().use(function (Y) {
             /* jsPlumb */
             jsplumb: {
                 combine: true,
-                base: './lib/jsPlumb-1.3.10/',
-                root: '/lib/jsPlumb-1.3.10/',
+                base: './lib/jsPlumb/',
+                root: '/lib/jsPlumb/',
                 modules: {
                     'jsplumb': {
                         path: 'jsPlumb-1.3.10-RC1.js',
@@ -394,6 +399,8 @@ YUI().use(function (Y) {
             /* ExCanvas */
             excanvas: {
                 combine: true,
+                async: false,
+                //combine: false,
                 base: "./lib/excanvas/",
                 root: "/excanvas/",
                 modules:  {
@@ -405,9 +412,10 @@ YUI().use(function (Y) {
 
             /* Esprima */
             esprima: {
-                //async: false,
+                async: false,
                 //combine: false,
-                base: "lib/",
+                base: "./lib/",
+                root: "/lib/",
                 modules:  {
                     'esprima': {
                         path: 'esprima/esprima-min.js'
