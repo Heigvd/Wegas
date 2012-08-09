@@ -162,7 +162,7 @@ YUI.add('wegas-app', function (Y) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
                     if (cPlayer) {
                         // @fixme
-                        // this.set('currentTeam', cPlayer.teamId);              // When current player is updated, we also update current team
+                         this.set('currentTeam', cPlayer.get("teamId"));              // When current player is updated, we also update current team
                     }
                     return val;
                 }

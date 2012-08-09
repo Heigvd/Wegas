@@ -312,14 +312,18 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 case 'ListInstance':
                     return {
                         label: label + ': ' + el.get("value"),
-                        data: el
+                        data: {
+                            entity: el
+                        }
                     };
 
                 case 'QuestionInstance':
                     l = label + ((el.get("replies").length > 0) ? ': ' + el.get("replies").get("name") : ': unanswered');
                     return {
                         label: l,
-                        data: el
+                        data: {
+                            entity: el
+                        }
                     };
 
                 case 'InboxInstance':
@@ -330,7 +334,6 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     for (k = 0; k < el.get("messages").length; k += 1) {
                         children.push({
                             label: el.get("messages")[k].get("subject")
-                        //data: el.get("messages")[k]
                         });
                     }
                     return {
@@ -345,7 +348,9 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 default:
                     return {
                         label: label,
-                        data: el
+                        data: {
+                            entity: el
+                        }
                     };
             }
         },
@@ -374,25 +379,33 @@ YUI.add('wegas-editor-treeview', function (Y) {
                         text = 'Variable displayer: ' + (el.variable);
                         ret.push({
                             label: text,
-                            data: el
+                            data: {
+                                entity: el
+                            }
                         });
                         break;
                     case 'Text':
                         ret.push({
                             label: 'Text: ' + el.content.substring(0, 15) + "...",
-                            data: el
+                            data: {
+                                entity: el
+                            }
                         });
                         break;
                     case 'Button':
                         ret.push({
                             label: text,
-                            data: el
+                            data: {
+                                entity: el
+                            }
                         });
                         break;
                     default:
                         ret.push({
                             label: text,
-                            data: el
+                            data: {
+                                entity: el
+                            }
                         });
                         break;
 

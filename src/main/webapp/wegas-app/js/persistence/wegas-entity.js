@@ -11,7 +11,6 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-entity', function (Y) {
     "use strict";
 
@@ -22,6 +21,7 @@ YUI.add('wegas-entity', function (Y) {
             _type: "hidden"
         }
     }, Entity;
+
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
@@ -333,23 +333,18 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }]
         },
-        //        {
-        //            type: "Button",
-        //            label: "Open in editor",
-        //            plugins: [{
-        //                fn: "OpenGameAction"
-        //            }]
-        //        },
-        //         {
-        //            type: "AddEntityChildButton",
-        //            label: "Add game",
-        //            childClass: "Game"
-        //        },
         //{
-        //                    "type": "NewEntityButton",
-        //                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
-        //                    "targetClass": "GameModel"
-        //                }
+        //    type: "Button",
+        //    label: "Open in editor",
+        //    plugins: [{
+        //        fn: "OpenGameAction"
+        //    }]
+        //},
+        //    {
+        //    type: "AddEntityChildButton",
+        //    label: "Add game",
+        //    childClass: "Game"
+        //},
         {
             type: "EditEntityButton",
             label: "Properties"
@@ -629,7 +624,10 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             descriptorId: {
-                type: "string"
+                type: "string",
+                _inputex: {
+                    _type: "hidden"
+                }
             }
         },
         EDITMENU: [{
@@ -639,7 +637,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * StringDescriptor mapper
      */
-    Y.Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+    Y.Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {}, {
         ATTRS: {
             "@class":{
                 value:"StringDescriptor"
