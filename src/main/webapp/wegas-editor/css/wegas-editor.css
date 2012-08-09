@@ -55,6 +55,8 @@ div.inputEx-fieldWrapper {
 .wegas-form div.inputEx-CombineField,
 .wegas-form .inputEx-fieldWrapper {
     padding-left:135px;
+    white-space: nowrap;
+    position: relative;
 }
 .wegas-form div.inputEx-CombineField > div.inputEx-label,
 .wegas-form div.inputEx-fieldWrapper > div.inputEx-label {
@@ -117,11 +119,10 @@ div.inputEx-ListField > span {
 }
 div.inputEx-ListField-subFieldEl {
     width: 100%;
-    margin-left: 0;
-    width: 100%;
+    margin-left: -135px;
 }
 .inputEx-ListField-childContainer > div {
-    /*    position:relative;*/
+    position:relative;
     /*   margin-left:16px;
        border-top: 1px solid lightgray;
        padding-top: 5px;*/
@@ -135,8 +136,8 @@ a.inputEx-List-link {
 
 /* The "add"" button */
 div.inputEx-ListField >  a.inputEx-List-link {
-    bottom:3px;
-    top: auto;
+/*    bottom:3px;
+    top: auto;*/
 }
 img.inputEx-ListField-delButton {
     margin-left: -20px;
