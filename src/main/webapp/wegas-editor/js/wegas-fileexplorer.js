@@ -6,7 +6,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
     CONTENTBOX = 'contentBox',
     DEFAULTHEADERS = {
         'Content-Type': 'application/json; charset=utf-8'
-    };
+    },
+    CONTENT_BOX="contentBox",
+    BOUNDING_BOX="boundingBox";
 
     //TODO: notes, preview!
 
