@@ -15,7 +15,8 @@
 YUI.add('wegas-tabview', function (Y) {
     "use strict";
 
-    var TabView, Tab;
+    var Lang = Y.Lang,
+    TabView, Tab;
 
     TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
@@ -66,7 +67,7 @@ YUI.add('wegas-tabview', function (Y) {
         }
 
     });
-
+    Y.namespace('Wegas').TabView = TabView;
 
     /**
      * Extension enabling a Tab to be a parent of another Widget.
@@ -76,60 +77,14 @@ YUI.add('wegas-tabview', function (Y) {
      * @module widget-parent
      */
     function Parent(config) {
-
-        this.publish("addChild", {
-            defaultTargetOnly: true,
-            defaultFn: this._defAddChildFn
-        });
-        this.publish("removeChild", {
-            defaultTargetOnly: true,
-            defaultFn: this._defRemoveChildFn
-        });
-
-        this._items = [];
-
-        var children,
-        handle;
-
-        if (config && config.children) {
-
-            children = config.children;
-
-            handle = this.after("initializedChange", function (e) {
-                this._add(children);
-                handle.detach();
-            });
-
-        }
-
-        //  Widget method overlap
-        Y.after(this._renderChildren, this, "renderUI");
-        Y.after(this._bindUIParent, this, "bindUI");
-        this.after("selectionChange", this._afterSelectionChange);
-        this.after("selectedChange", this._afterParentSelectedChange);
-        this.after("activeDescendantChange", this._afterActiveDescendantChange);
-
-        this._hDestroyChild = this.after("*:destroy", this._afterDestroyChild);
-        this.after("*:focusedChange", this._updateActiveDescendant);
-
+        Y.WidgetParent.call(this, config);
     }
-
+    //Y.extend(Parent, Y.WidgetParent);
     Y.mix(Parent, Y.WidgetParent);
     Y.augment(Parent, Y.WidgetParent);
+    Parent.ATTRS = {};
+    Y.mix(Parent.ATTRS, Y.WidgetParent.ATTRS);
     delete Parent.ATTRS.selected;
-    Parent.prototype._renderChildren = function () {
-        var renderTo = this._childrenContainer || this.get("panelNode").one(".yui3-tab-panel-content");        // @modified
-
-        this._childrenContainer = renderTo;
-        if (!this.CHILDREN) {                                                   // @hack keep a reference to children, since tab does not carry the entire add operation
-            this.CHILDREN = [];
-        }
-        this.each(function (child) {
-            this.CHILDREN.push(child.render(renderTo));
-        }, this);
-    }
-    Parent.prototype._createChild =  Y.WidgetParent.prototype._createChild;
-
 
     /**
      * Custom Tab implementation
@@ -142,7 +97,7 @@ YUI.add('wegas-tabview', function (Y) {
         initializer: function(cfg) {
             Tab.superclass.initializer.apply(this, arguments);
             TabView.tabs[cfg.id] = this;
-            this.items = [];
+            this._witems = [];
         },
 
         renderUI: function () {
@@ -155,10 +110,10 @@ YUI.add('wegas-tabview', function (Y) {
         },
         syncUI: function () {
             Tab.superclass.syncUI.apply(this, arguments);
-            this.get( "children" );
+        //            this.get( "children" );
         },
         destructor: function (){
-            Tab.superclass.destructor.apply(this, arguments);
+            Tab.superclass.destructor.call( this );
             var toolbarChildren = this.get("toolbarChildren");
             for (var i in toolbarChildren){
                 toolbarChildren[i].destroy();
@@ -175,16 +130,11 @@ YUI.add('wegas-tabview', function (Y) {
                 toolbarChildren[i] = this.addToolbarWidget(toolbarChildren[i]);
             }
         },
-        addToolbarWidget: function(widget) {
-
+        addToolbarWidget: function( widget ) {
             if (!(widget instanceof Y.Widget)) {
                 widget = Y.Wegas.Widget.create(widget);
-
             }
             widget.render(this.get("toolbarNode"));
-            //            widget.on("click", function(e){
-            //                this.get("children").fire("toolbarEvent", e);
-            //            }, this);
             widget.addTarget(this.item(0));
             return widget;
         },
@@ -201,32 +151,26 @@ YUI.add('wegas-tabview', function (Y) {
                     callback(widgets.item(0));                                  // Trigger the callback
                 }
             }, this, cfg, callback));
-        }
-        /**
-         * Adds a child based on its descriptor
-         */
-//        items: null,
-//
-//        add: function ( widget ) {
-//            if (Y.Lang.isObject(widget)){
-//                widget = Y.Wegas.Widget.create( widgetCfg );
-//                widget.render( this.get( "panelNode" ).one( ".yui3-tab-panel-content" ) );
-//            }
-//            this.items[this.items.length] = widget;
-//        },
-//        item: function (index) {
-//            return this.items[index];
-//        }
+        },
 
+        /**
+         *  Override Y.WidgetParent to render children in the panel node;
+         */
+        _renderChildren: function () {
+            var renderTo = this._childrenContainer || this.get("panelNode").one(".yui3-tab-panel-content");        // @modified
+
+            this._childrenContainer = renderTo;
+
+            this.each(function (child) {
+                this._witems.push( child );
+                child.render( renderTo )
+            }, this);
+        },
+        witem: function ( index ) {
+            return this._witems[index];
+        }
     }, {
         ATTRS : {
-//            children: {
-//                setter: function ( val ) {
-//                    for ( var i = 0; i < val.length; i = i + 1 ) {
-//                        this.add( val[i] );
-//                    }
-//                }
-//            },
             content: {
                 setter: function () { }                                         // Overrides the panelNode management
             },
@@ -249,7 +193,5 @@ YUI.add('wegas-tabview', function (Y) {
             }
         }
     });
-
-    Y.namespace('Wegas').TabView = TabView;
     Y.namespace('Wegas').Tab = Tab;
 });

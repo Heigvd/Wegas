@@ -455,7 +455,8 @@ YUI.add('wegas-editor-action', function (Y) {
 
             tab.set("selected", 2);
 
-            tab.CHILDREN[0].set("emptyMessage", "This game model has no games.");
+            tab.witem(0).set("emptyMessage", "This game model has no games.");
+            tab.get("toolbarChildren")[0].set( "disabled", false);              // Allow game creation
 
             Y.Wegas.GameFacade.set("source",                                    // Change the source attribute on the datasource
                 Y.Wegas.app.get("base") + "rest/GameModel/" + entity.get( "id" ) + "/Game");
