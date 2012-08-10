@@ -12,7 +12,9 @@
 
 YUI.add("wegas-gallery", function(Y){
 
-    var WegasGallery;
+    var WegasGallery,
+    CONTENT_BOX="contentBox",
+    BOUNDING_BOX="boundingBox";
 
     WegasGallery = Y.Base.create("wegas-gallery", Y.Widget, [Y.Wegas.Widget], {
         CONTENT_TEMPLATE:"<ul></ul>",

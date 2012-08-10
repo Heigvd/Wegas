@@ -39,7 +39,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 this.menu = new Y.Wegas.Menu();
                 this.renderDetailsPanel();
                 this.gallery = new Y.Wegas.WegasGallery({
-                    render:this.get(CONTENT_BOX).one(".schedule-gallery"),
+                    render:this.get(CONTENTBOX).one(".schedule-gallery"),
                     selectedHeight: 150
                 });
             },
