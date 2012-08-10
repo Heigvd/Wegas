@@ -10,7 +10,7 @@
     -o-transition: max-height 0.5s, max-width 0.5s;
     -ms-transition: max-height 0.5s, max-width 0.5s;
     -moz-transition: max-height 0.5s, max-width 0.5s;
-    -webkit-transition: max-height 0.5s, max-width 0.5s, -webkit-transform 0.5s;
+    -webkit-transition: max-height 0.5s, max-width 0.5s, -webkit-transform 0.3s 0.25s;
 }
 .wegas-gallery li{
     vertical-align: top;
@@ -18,7 +18,7 @@
     padding: 10px 15px;
     display:inline-block;
     /*START zone sensible ...*/
-    -webkit-perspective: 800;
+    -webkit-perspective: 2000;
 }
 .wegas-gallery .gallery-selected + li > img{
     -webkit-transform: rotateY(-60deg);
@@ -84,6 +84,7 @@
 }
 .gallery-text{
     color:blanchedalmond;
+    white-space: pre-line !important;
     pointer-events:none;
     -webkit-transition: max-height 0.5s 0.1s;
     display:none;
@@ -99,15 +100,19 @@
     position: absolute;
     top: 2px;
     right: 2px;
-    background-color: white;
+    background: url("../images/greenlight.png") no-repeat 50%;
     width: 18px;
     height: 24px;
     z-index:3;
 }
 img:hover + .gallery-text{
-    max-height: 0px !important;
+    max-height: 15px !important;
 }
 body > .yui3-scrollview{
     z-index:30;
     padding-top: 50px !important;
+    position:fixed;
+}
+body > .yui3-scrollview .gallery-toggle{
+    background: url("../images/redlight.png") no-repeat 50%;
 }
