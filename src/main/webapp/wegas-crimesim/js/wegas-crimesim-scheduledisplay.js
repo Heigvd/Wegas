@@ -32,11 +32,16 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
             // *** Fields *** /
             menu: null,
             handlers: null,
+            gallery: null,
 
             // *** Lifecycle Methods *** //
             renderUI: function () {
                 this.menu = new Y.Wegas.Menu();
                 this.renderDetailsPanel();
+                this.gallery = new Y.Wegas.WegasGallery({
+                    render:this.get(CONTENT_BOX).one(".schedule-gallery"),
+                    selectedHeight: 150
+                });
             },
 
             bindUI: function () {
@@ -89,6 +94,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
             *
             */
             destructor: function () {
+                this.gallery.destroy();
                 this.menu.destroy();
                 this.datatable.destroy();
 
@@ -277,11 +283,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
 
                 cb.one(".schedule-detail").setStyles( {
                     position: 'display',
-                    display:"block"
+                    display:"block",
+                    overflowX:"auto"
                 });
-
-                // @todo @cyril Render gallery widget here
-                console.log( "Plug the console here", question.get("pictures"), cb.one(".schedule-gallery").setContent("Here is the gallery."))
+                /* gallery : [{srcUrl:'url', description:'text'},{}, ...]*/
+                this.gallery.set("gallery",question.get("pictures"));
             },
             renderDetails: function ( reply ) {
                 var choiceDescriptor = reply.getChoiceDescriptor(),
