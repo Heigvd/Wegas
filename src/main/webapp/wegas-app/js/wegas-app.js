@@ -9,13 +9,18 @@
  */
 
 /**
+ * @module wegas
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-app', function (Y) {
     "use strict";
 
-    var	App = Y.Base.create("wegas-app", Y.Base, [ ], {
+    /**
+     * @class Y.Wegas.App
+     * @constructor
+     * @param {Object} cfg
+     */
+    var App = Y.Base.create("wegas-app", Y.Base, [ ], {
 
         // ** Private fields ** //
         /**
@@ -127,15 +132,15 @@ YUI.add('wegas-app', function (Y) {
                             this.fire("render");                                   // Fire a render event for some eventual post processing
                         }, this, cfg));
 
-                        //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
-                        //this.pageLoader.render();
-                        // cfg.id = -100;
-                        // this.dataSources.Page.data.push(cfg);
-                        //try {
-                        //    this.pageLoader.set("pageId", -100);
-                        //} catch (renderException) {
-                        //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
-                        //}
+                    //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
+                    //this.pageLoader.render();
+                    // cfg.id = -100;
+                    // this.dataSources.Page.data.push(cfg);
+                    //try {
+                    //    this.pageLoader.set("pageId", -100);
+                    //} catch (renderException) {
+                    //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
+                    //}
 
                     }
                 }
@@ -162,7 +167,7 @@ YUI.add('wegas-app', function (Y) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
                     if (cPlayer) {
                         // @fixme
-                         this.set('currentTeam', cPlayer.get("teamId"));              // When current player is updated, we also update current team
+                        this.set('currentTeam', cPlayer.get("teamId"));              // When current player is updated, we also update current team
                     }
                     return val;
                 }

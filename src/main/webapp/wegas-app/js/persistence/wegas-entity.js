@@ -331,6 +331,8 @@ YUI.add('wegas-entity', function (Y) {
                 cfg: {
                     tabId: "gamesTreeViewTab"
                 }
+            }, {
+                fn: "EditEntityAction"
             }]
         },
         //{
@@ -345,10 +347,11 @@ YUI.add('wegas-entity', function (Y) {
         //    label: "Add game",
         //    childClass: "Game"
         //},
+        //{
+        //    type: "EditEntityButton",
+        //    label: "Properties"
+        //},
         {
-            type: "EditEntityButton",
-            label: "Properties"
-        }, {
             type: "DeleteEntityButton"
         }]
     });

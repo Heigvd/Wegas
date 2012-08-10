@@ -46,7 +46,8 @@
                 "toolbarChildren": [{
                     "type": "NewEntityButton",
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
-                    "targetClass": "Game"
+                    "targetClass": "Game",
+                    "disabled": true
                 }]
             }]
         }]

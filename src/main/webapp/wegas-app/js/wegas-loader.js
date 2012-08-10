@@ -274,7 +274,9 @@ YUI().use(function (Y) {
                     },
                     'wegas-wysiwygeditor': {
                         path: 'wegas-editor/js/wegas-wysiwygeditor-min.js',
-                        requires: ['inputex', 'inputex-jsonschema', 'esprima', 'escodegen'],
+                        requires: ['inputex',
+                            'inputex-combine', 'inputex-jsonschema', 'inputex-select',
+                            'esprima', 'escodegen'],
                         ix_provides: "WysiwygEditor"
                     },
 
