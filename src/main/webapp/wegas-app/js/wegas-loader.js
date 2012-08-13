@@ -154,9 +154,16 @@ YUI().use(function (Y) {
                         requires: ['inputex-list'],
                         ix_provides: 'hashlist'
                     },
-                    'wegas-inputex-script': {
-                        path: 'wegas-app/js/widget/wegas-inputex-script-min.js',
-                        requires: [ 'inputex-textarea' ],
+                    'wegas-script': {
+                        path: 'wegas-app/js/widget/wegas-script-min.js',
+                        requires: [ 'inputex-textarea' ]
+                        //ix_provides: 'script'
+                    },
+                    'wegas-script-wysiwyg': {
+                        path: 'wegas-app/js/widget/wegas-script-wysiwyg-min.js',
+                        requires: [ 'wegas-script', 'wegas-button', 'wegas-inputex',
+                            'inputex', 'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
+                            'esprima', 'escodegen' ],
                         ix_provides: 'script'
                     },
                     'wegas-inputex-url': {
@@ -274,9 +281,9 @@ YUI().use(function (Y) {
                     },
                     'wegas-wysiwygeditor': {
                         path: 'wegas-editor/js/wegas-wysiwygeditor-min.js',
-                        requires: ['inputex',
-                            'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
-                            'esprima', 'escodegen'],
+                        requires: [ 'wegas-script-wysiwyg', 'wegas-script', 'wegas-button', 'wegas-inputex',
+                            'inputex', 'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
+                            'esprima', 'escodegen' ],
                         ix_provides: "WysiwygEditor"
                     },
 
