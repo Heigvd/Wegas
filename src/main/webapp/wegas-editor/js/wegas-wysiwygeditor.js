@@ -33,7 +33,7 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
             new Y.Button({
                 label: "Generate form",
                 on: {
-                    click: Y.bind(this.genSyntaxTree, this)
+                    click: Y.bind(this.syncUI, this)
                 }
             }).render(cb);
 
@@ -61,10 +61,10 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                 try {
                     fields.push( this.generateExpression( tree.body[i].expression ) );
                 } catch( e ) {
-                    console.log( "Error evaluating line: " +
+                    Y.error( "Error evaluating line: " +
                         window.escodegen.generate(tree.body[i].expression, {
-                            indent: true
-                        }));
+                        indent: true
+                    }));
                 }
             }
 
@@ -79,10 +79,8 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                 parentEl: this.get( "contentBox" )
             });
 
-            console.log( "Form value: ", this.form.getValue() );
         },
         generateExpression: function ( expression ) {
-            console.log("GenExpression", expression);
             switch ( expression.type ) {
                 case "CallExpression":
                     switch ( expression.callee.object.type ) {
@@ -96,10 +94,10 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                             }
                             break;
                         default:
-                            //                            return new MethodSelect({
-                            //                                object: this.generateExpression( expression.callee.object ),
-                            //                                name: expression.callee.property.value,
-                            //                                arguments: expression.callee.arguments
+                            //return new MethodSelect({
+                            //    object: this.generateExpression( expression.callee.object ),
+                            //    name: expression.callee.property.value,
+                            //    arguments: expression.callee.arguments
                             var vdSelect = this.generateExpression( expression.callee.object ), args = [];
 
                             Y.Array.each( expression.arguments, function ( i ) {
@@ -110,23 +108,17 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                                 //object: this.generateExpression( expression.callee.object ),
                                 //fields: [  ],
                                 method: expression.callee.property.name,
-                                arguments: args
+                                arguments: args,
+
                             });
                             return vdSelect;
                     }
             }
-            throw new Exception();
+            throw new Exception("Unable to parse expression.");
         },
         genCode: function() {
-            console.log("Generating code:", this.form.getArray(), "info", "Wegas.WysiwyEditor");
-            //var code = window.escodegen.generate(this.form.getValue(), {
-            //    indent: true
-            //});
             this.get("contentBox").one("textarea").set("value", this.form.getArray().join(";\n"));
-
         }
-    }, {
-        ATTRS: {}
     });
 
     Y.namespace('Wegas').WysiwygEditor = WysiwygEditor;
@@ -134,6 +126,11 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
     var lang = Y.Lang,
     inputEx = Y.inputEx;
 
+    /**
+     *  Adds a method that retrieves the value of each input in the group
+     *  (unlike Y.inputEx.Group.getValue() that returns an object based on
+     *  inputs names):
+     */
     Y.inputEx.Group.prototype.getArray = function () {
         var i, ret = [];
         for ( i = 0; i < this.inputs.length; i =  i + 1 ) {
@@ -142,10 +139,8 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
         return ret;
     }
 
-
-
     /**
-     * @class
+     * @class VariableDescriptorSelect
      * @constructor
      * @extends
      * @param {Object} options InputEx definition object
@@ -156,6 +151,7 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
 
     Y.extend( VariableDescriptorSelect, inputEx.Group, {
 
+        entityId: null,
         /**
 	 * Setup the options.fields from the availableFields option
 	 */
@@ -171,7 +167,6 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
             VariableDescriptorSelect.superclass.render.call( this );
             this.syncUI();
         },
-        entityId: null,
 
         setValue: function ( val ) {
             console.log( "VariableDescriptorSelect.setValue", val );
@@ -179,8 +174,8 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
         getValue: function () {
             var l = this.inputs.length;
             return "VariableDescriptorFacade.find(" + this.inputs[ l - 3].getValue() + ")" +
-            "." + this.inputs[ l - 2 ].getValue() +
-            "(" + this.inputs[ l - 1 ].getValue().join( ", ") + ")";
+                "." + this.inputs[ l - 2 ].getValue() +
+                "(" + this.inputs[ l - 1 ].getValue().join( ", ") + ")";
 
         },
         getEntityId: function () {
@@ -252,7 +247,7 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
             this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
             ret.push( this.generateSelectConfig( null,                          // Pushes the current entity to the fields stack
-                currentEntity, currentEntity.get( "items" ) ) );
+            currentEntity, currentEntity.get( "items" ) ) );
 
             if ( currentEntity.parentDescriptor ) {                             // Add its hierarchy
                 while ( currentEntity.parentDescriptor ) {
@@ -261,7 +256,7 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
                 }
             }
             ret.push( this.generateSelectConfig( currentEntity,                 // And finally the root context (entities that are at the root of the gameModel
-                null, rootEntities ) );
+            null, rootEntities ) );
 
             return ret.reverse();
         },
@@ -326,198 +321,18 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
     inputEx.registerType("variabledescriptorselect", VariableDescriptorSelect, {});
 
     /**
-     * @class inputEx.KeyValueField
+     * @class VariableDescriptorMethodSelect
      * @constructor
-     * @extends inputEx.CombineField
-     * @param {Object} options InputEx definition object with the "availableFields"
+     * @extends VariableDescriptorSelect
+     * @param {Object} options InputEx definition object
      */
     var VariableDescriptorMethodSelect = function(options) {
         VariableDescriptorMethodSelect.superclass.constructor.call(this, options);
     };
 
-    Y.extend( VariableDescriptorMethodSelect, VariableDescriptorSelect, {
-
-        });
+    Y.extend( VariableDescriptorMethodSelect, VariableDescriptorSelect, {});
 
     inputEx.registerType("variabledescriptormethodselect", VariableDescriptorMethodSelect, {});
-
-    /**
-     * @class inputEx.KeyValueField
-     * @constructor
-     * @extends inputEx.CombineField
-     * @param {Object} options InputEx definition object with the "availableFields"
-     */
-    var MethodSelect = function(options) {
-        MethodSelect.superclass.constructor.call(this, options);
-    };
-
-    Y.extend( MethodSelect, inputEx.Group, {
-
-        /**
-         * Subscribe the "updated" event on the key selector
-         */
-        initEvents: function() {
-            MethodSelect.superclass.initEvents.call(this);
-
-            this.inputs[0].on( 'updated', this.onObjectUpdated, this);
-        },
-
-        /**
-         * Setup the options.fields from the availableFields option
-         */
-        //setOptions: function(options) {
-        //    var newOptions = {
-        //    //  fields: [this.generateArgumentsConfig()]
-        //    };
-        //
-        //    Y.mix( newOptions, options);
-        //    Y.mix( newOptions, {
-        //        object: null,
-        //        argument: []
-        //    });
-        //
-        //    MethodSelect.superclass.setOptions.call(this, newOptions);
-        //},
-        //
-        //        //        setValue: function ( val ) {
-        //        //            console.log( "MethodSelect.setValue", val );
-        //        //        },
-        //        //
-        getValue: function () {
-            var objectField = this.inputs[0],
-            selectFields = this.inputs[1].getArray(),
-            methodField = selectFields.splice(0, 1);                             // Remove the called objects from results
-
-            return objectField.getValue() + "." + methodField + "(" + selectFields.join( ", ") + ")";
-        },
-
-
-        render: function () {
-            MethodSelect.superclass.render.call( this );
-            this.syncUI();
-        },
-
-        syncUI: function () {
-            var lastInput = this.inputs[this.inputs.length-1],
-            next = this.divEl.childNodes[inputEx.indexOf(lastInput.getEl(), this.divEl.childNodes)+1];
-
-            while ( this.inputs.length > 1 ) {                                  // Destroy current args
-                lastInput = this.inputs[this.inputs.length-1];
-                lastInput.destroy();
-                this.inputs.pop();
-
-            }
-
-            var fields = this.generateMethodChoices();
-            fields.push({
-                name: "----------"
-            });
-            fields = fields.concat( this.generateFieldChoices());
-
-            this.addField({
-                type: "keyvalue",
-                availableFields: fields
-            });
-            this.inputs[ this.inputs.length - 1 ].on( "updated", this.onPropertyUpdated, this);
-        },
-        onChange: function( fieldValue, fieldInstance ) {
-            //this.syncUI();
-            this.fireUpdatedEvt();
-        },
-        onObjectUpdated: function () {
-            console.log( "onObjectChange()" );
-            this.syncUI();
-        },
-        onPropertyUpdated: function ( e )  {
-            console.log( "onPropertyChange" );
-            if ( e instanceof Y.Wegas.persistence.Entity ) {
-                this.inputs[0].setValue( e.get( "id" ) );
-                this.syncUI();
-            }
-        },
-
-        /**
-         * Generate
-         */
-        generateArgumentsConfig: function() {
-            var fields = [], i,
-            descs = Y.Wegas.VariableDescriptorFacade.rest.getCache();
-
-            for ( i = 0 ; i < this.options.arguments.length ; i++ ) {
-                fields.push({
-                    value: this.options.arguments[i].value
-                });
-            }
-
-            return fields;
-        },
-        /**
-         * Generate
-         */
-        generateFieldChoices: function () {
-            var fields = [], i,
-            children = this.inputs[0].getEntity().get( "items" );
-
-            if ( children ) {
-                for ( i = 0; i < children.length; i = i + 1 ) {
-                    fields.push({
-                        name: children[i].get( "name" ),
-                        value: children[i],
-                        type: "hidden"
-                    });
-                }
-            }
-            return fields;
-        },
-        /**
-         * Generate
-         */
-        generateMethodChoices: function() {
-            var i, methods = [];
-
-            //            for ( i = 0 ; i < descs.length ; i++ ) {
-            //                choices.push({
-            //                    value: descs[i].get( "id" ),
-            //                    label: descs[i].get( "name" )
-            //                });
-            //            }
-
-            methods.push({
-                name: "set"
-            });
-            methods.push({
-                name: "add"
-            });
-            methods.push({
-                name: "activate",
-                type: "hidden"
-            });
-            return methods;
-        },
-
-        /**
-         *  Remove all interactions on this field
-         */
-        runInteractions: function() { },
-
-        /**
-         * Rebuild the value field
-         */
-        onSelectFieldChange: function(value) {
-            var f = this.nameIndex[value];
-            var lastInput = this.inputs[this.inputs.length-1];
-            var next = this.divEl.childNodes[inputEx.indexOf(lastInput.getEl(), this.divEl.childNodes)+1];
-            lastInput.destroy();
-            this.inputs.pop();
-            var field = this.renderField(f);
-            var fieldEl = field.getEl();
-            Y.one(fieldEl).setStyle('float', 'left');
-
-            this.divEl.insertBefore(fieldEl, next);
-        }
-    });
-
-    inputEx.registerType("methodselect", MethodSelect, {});
 
     var lang = Y.Lang,
     inputEx = Y.inputEx, ListField
@@ -526,14 +341,6 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
         ListField.superclass.constructor.call(this, options);
     };
     Y.extend(ListField, inputEx.Group, {
-
-        /**
-	 * Colors for the animation
-	 */
-        arrowAnimColors: {
-            from: '#eeee33',
-            to: '#eeeeee'
-        },
 
         /**
 	 * Set the ListField classname
@@ -583,17 +390,17 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
             d.destroy();
             this.inputs.splice( i, 1 );
         },
+
         onAdd: function ( e ) {
             this.addField({
                 type: "variabledescriptorselect"
             })
         },
+
         /**
          * Override to disable
          */
-        runInteractions: function () {
-
-        }
+        runInteractions: function () { }
 
     });
 
@@ -604,14 +411,6 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
         EntityArrayFieldSelect.superclass.constructor.call(this, options);
     };
     Y.extend(EntityArrayFieldSelect, inputEx.SelectField, {
-
-        /**
-	 * Colors for the animation
-	 */
-        arrowAnimColors: {
-            from: '#eeee33',
-            to: '#eeeeee'
-        },
 
         /**
 	 * Set the ListField classname
@@ -628,7 +427,7 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
 	 */
         renderComponent: function() {
             EntityArrayFieldSelect.superclass.renderComponent.call(this);
-
+            //this.choices =
         },
 
         /**

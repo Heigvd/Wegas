@@ -504,6 +504,12 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
      * @extends inputEx.CombineField
      * @param {Object} options InputEx definition object with the "availableFields"
      */
+    /**
+     * @class
+     * @constructor
+     * @extends
+     * @param {Object} options InputEx definition object with the "availableFields"
+     */
     var MethodSelect = function(options) {
         MethodSelect.superclass.constructor.call(this, options);
     };
@@ -520,31 +526,33 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
         },
 
         /**
-	 * Setup the options.fields from the availableFields option
-	 */
-//setOptions: function(options) {
-//    var newOptions = {
-//    //  fields: [this.generateArgumentsConfig()]
-//    };
-//
-//    Y.mix( newOptions, options);
-//    Y.mix( newOptions, {
-//        object: null,
-//        argument: []
-//    });
+         * Setup the options.fields from the availableFields option
+         */
+        //setOptions: function(options) {
+        //    var newOptions = {
+        //    //  fields: [this.generateArgumentsConfig()]
+        //    };
+        //
+        //    Y.mix( newOptions, options);
+        //    Y.mix( newOptions, {
+        //        object: null,
+        //        argument: []
+        //    });
         //
         //    MethodSelect.superclass.setOptions.call(this, newOptions);
         //},
         //
-        //        setValue: function ( val ) {
-        //            console.log( "MethodSelect.setValue", val );
-        //        },
-        //
-        //        getValue: function () {
-        //            var value = MethodSelect.superclass.getValue.call( this, arguments );
-        //            value.splice( 0, 1 );                                               // Remove the called objects from results
-        //            return "." + this.options.name + "(" + value.join( ", ") + "";
-        //        },
+        //        //        setValue: function ( val ) {
+        //        //            console.log( "MethodSelect.setValue", val );
+        //        //        },
+        //        //
+        getValue: function () {
+            var objectField = this.inputs[0],
+            selectFields = this.inputs[1].getArray(),
+            methodField = selectFields.splice(0, 1);                             // Remove the called objects from results
+
+            return objectField.getValue() + "." + methodField + "(" + selectFields.join( ", ") + ")";
+        },
 
 
         render: function () {
@@ -592,8 +600,8 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
         },
 
         /**
-	 * Generate
-	 */
+         * Generate
+         */
         generateArgumentsConfig: function() {
             var fields = [], i,
             descs = Y.Wegas.VariableDescriptorFacade.rest.getCache();
@@ -607,8 +615,8 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
             return fields;
         },
         /**
-	 * Generate
-	 */
+         * Generate
+         */
         generateFieldChoices: function () {
             var fields = [], i,
             children = this.inputs[0].getEntity().get( "items" );
@@ -625,8 +633,8 @@ YUI.add('wegas-wysiwygeditor', function(Y) {
             return fields;
         },
         /**
-	 * Generate
-	 */
+         * Generate
+         */
         generateMethodChoices: function() {
             var i, methods = [];
 
