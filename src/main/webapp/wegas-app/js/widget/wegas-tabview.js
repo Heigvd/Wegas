@@ -89,7 +89,7 @@ YUI.add('wegas-tabview', function (Y) {
     /**
      * Custom Tab implementation
      */
-    Tab = Y.Base.create("tab", Y.Tab, [ Y.Wegas.Widget, Parent], {
+    Tab = Y.Base.create("tab", Y.Tab, [ Y.Wegas.Widget, Parent, Y.WidgetChild ], {
 
         // *** Private Fields *** //
 

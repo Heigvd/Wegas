@@ -310,6 +310,12 @@ img.inputEx-ListField-delButton {
 .yui3-skin-sam .wegas-icon-fileexplorer {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px -870px;
 }
+.yui3-skin-sam .wegas-icon-add {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -1027px;
+}
+.yui3-skin-sam .wegas-icon-remove {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -1002px;
+}
 
 /* Console Widget Styles */
 .wegas-console div.inputEx-Field {
@@ -569,6 +575,23 @@ img.inputEx-ListField-delButton {
 .wegas-wysiwygeditor {
     padding:10px;
 }
+.wegas-wysiwygeditor .inputEx-fieldWrapper,
+.wegas-wysiwygeditor .inputEx-CombineField,
+.wegas-wysiwygeditor .inputEx-Group .inputEx-Group {
+    float: left;
+}
+.wegas-wysiwygeditor fieldset {
+    display: inline-block;
+}
+.wegas-wysiwygeditor .yui3-button {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    vertical-align: top;
+    margin: -2px 5px 0;
+}
+/*
 .wegas-wysiwygeditor span {
     display: none;
 }
@@ -612,7 +635,7 @@ img.inputEx-ListField-delButton {
 .wegas-field-arguments .wegas-field-identifier > div::after  {
     content: ",";
     vertical-align: top;
-}
+}*/
 
 /* Editor layout styles */
 .wegas-layout-top > div {
