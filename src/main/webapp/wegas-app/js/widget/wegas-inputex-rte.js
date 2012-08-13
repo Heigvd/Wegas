@@ -376,7 +376,9 @@ YUI.add("wegas-inputex-rte", function (Y){
                         this.toolbar.set('disabled', true);
                         this.toolbar.getButtonByValue('editcode').set('disabled', false);
                         this.toolbar.selectButton('editcode');
-                        this.dompath.innerHTML = 'Editing HTML Code';
+                        if ( this.dompath ) {
+                            this.dompath.innerHTML = 'Editing HTML Code';
+                        }
                         this.hide();
                     }
                     return false;

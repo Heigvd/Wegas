@@ -77,8 +77,44 @@ YUI.add('wegas-tabview', function (Y) {
      * @module widget-parent
      */
     function Parent(config) {
-        Y.WidgetParent.call(this, config);
+        //Y.WidgetParent.call(this, config);
+        this.publish("addChild", {
+            defaultTargetOnly: true,
+            defaultFn: this._defAddChildFn
+        });
+        this.publish("removeChild", {
+            defaultTargetOnly: true,
+            defaultFn: this._defRemoveChildFn
+        });
+
+        this._items = [];
+
+        var children,
+        handle;
+
+        if (config && config.children) {
+
+            children = config.children;
+
+            handle = this.after("initializedChange", function (e) {
+                this._add(children);
+                handle.detach();
+            });
+
+        }
+
+        //  Widget method overlap
+        Y.after(this._renderChildren, this, "renderUI");
+        Y.after(this._bindUIParent, this, "bindUI");
+
+        //this.after("selectionChange", this._afterSelectionChange);
+        //this.after("selectedChange", this._afterParentSelectedChange);
+        //this.after("activeDescendantChange", this._afterActiveDescendantChange);
+
+        this._hDestroyChild = this.after("*:destroy", this._afterDestroyChild);
+        this.after("*:focusedChange", this._updateActiveDescendant);
     }
+
     //Y.extend(Parent, Y.WidgetParent);
     Y.mix(Parent, Y.WidgetParent);
     Y.augment(Parent, Y.WidgetParent);

@@ -241,8 +241,23 @@ YUI.add('wegas-mcq-entities', function (Y) {
         }],
         METHODS: {
             setCurrentResponse: {
+                label: "set current response",
                 arguments: [{
-                    type: "entryarrayfieldselect",
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "entryarrayfieldselect"
+                }]
+            },
+            activate: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
+            },
+            desactivate: {
+                arguments: [{
+                    type: "hidden",
                     value: "self"
                 }]
             }

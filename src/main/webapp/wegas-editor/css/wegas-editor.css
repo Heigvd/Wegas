@@ -16,6 +16,20 @@ select {
     margin: 0;
 }
 
+/* YUI3 Button Widget styles redefinition */
+.yui3-skin-sam .yui3-button {
+    vertical-align: top;
+    padding: .1em 0.4em .1em;
+    min-height: 24px;
+    background-color:white;
+}
+.yui3-skin-sam .yui3-button > *{
+    vertical-align: top;
+}
+.yui3-skin-sam .yui3-button .wegas-icon {
+    margin: -2px 2px 0 0;
+}
+
 /* InputEx Styles */
 div.inputEx-hidden {
     display: none;
@@ -64,8 +78,8 @@ div.inputEx-fieldWrapper {
     width: 129px;
 }
 
-.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper ,
-.wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper  {
+.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper /*,
+.wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper*/  {
     padding-left:0;
 }
 .wegas-form div.inputEx-fieldWrapper >.inputEx-fieldWrapper > div.inputEx-label {
@@ -215,18 +229,8 @@ img.inputEx-ListField-delButton {
     overflow-y: auto;
 }
 .wegas-tab-toolbar .yui3-button {
-    vertical-align: top;
     margin: 0;
-    padding: 0.1em 0.4em .1em;
     margin-left: 0.3em;
-    min-height: 24px;
-    background-color:white;
-}
-.wegas-tab-toolbar .yui3-button > *{
-    vertical-align: top;
-}
-.yui3-skin-sam .wegas-tab-toolbar .yui3-button .wegas-icon {
-    margin: -2px 2px 0 0;
 }
 .wegas-tab-toolbar .wegas-selectbutton {
     display:inline-block;
@@ -312,10 +316,13 @@ img.inputEx-ListField-delButton {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px -870px;
 }
 .yui3-skin-sam .wegas-icon-add {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -1027px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1027px;
 }
 .yui3-skin-sam .wegas-icon-remove {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -1002px;
+    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1002px;
+}
+.yui3-skin-sam .wegas-icon-viewsrc {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 2px -804px;
 }
 
 /* Console Widget Styles */
@@ -573,18 +580,25 @@ img.inputEx-ListField-delButton {
 }
 
 /* Wysiwyg code editor */
-.wegas-wysiwygeditor {
-    padding:10px;
-}
-.wegas-wysiwygeditor .inputEx-fieldWrapper,
-.wegas-wysiwygeditor .inputEx-CombineField,
-.wegas-wysiwygeditor .inputEx-Group .inputEx-Group {
+.inputEx-WysiwigScript .inputEx-fieldWrapper,
+.inputEx-WysiwigScript .inputEx-CombineField,
+.inputEx-WysiwigScript .inputEx-Group .inputEx-Group,
+.inputEx-WysiwigScript div.inputEx-fieldWrapper {
     float: left;
+    padding-left:0;
 }
-.wegas-wysiwygeditor fieldset {
+.inputEx-WysiwigScript fieldset {
     display: inline-block;
 }
-.wegas-wysiwygeditor .yui3-button {
+.inputEx-WysiwigScript select {
+    width:auto;
+    max-width: 150px;
+}
+.inputEx-WysiwigScript div.inputEx-CombineField {
+    padding:0;
+}
+
+.inputEx-WysiwigScript .inputEx-ListField .yui3-button {
     background: none;
     border: none;
     box-shadow: none;

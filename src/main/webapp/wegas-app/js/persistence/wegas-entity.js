@@ -575,7 +575,9 @@ YUI.add('wegas-entity', function (Y) {
         }
     }, {
         ATTRS: {
-            variableInstances: {}
+            variableInstances: {
+                "transient": true
+            }
         }
     });
     /**
@@ -743,13 +745,24 @@ YUI.add('wegas-entity', function (Y) {
          * Defines methods available in wysiwyge script editor
          */
         METHODS: {
-            setValue: {
+            add: {
                 arguments: [{
                     type: "hidden",
                     value: "self"
                 },
                 {
-                    type: "string"
+                    type: "string",
+                    value: 1
+                }]
+            },
+            set: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
                 }]
             }
         }
