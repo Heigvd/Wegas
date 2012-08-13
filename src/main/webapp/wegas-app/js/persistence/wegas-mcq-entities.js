@@ -95,7 +95,24 @@ YUI.add('wegas-mcq-entities', function (Y) {
             }]
         }, {
             type: "DeleteEntityButton"
-        }]
+        }],
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            activate: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
+            },
+            desactivate: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
+            }
+        }
     });
 
     /**
@@ -203,7 +220,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 _inputex: {
                     _type: 'hidden'
                 }
-               // value: []
+            // value: []
             }
         },
         EDITMENU: [{
@@ -221,7 +238,15 @@ YUI.add('wegas-mcq-entities', function (Y) {
             }]
         }, {
             type: "DeleteEntityButton"
-        }]
+        }],
+        METHODS: {
+            setCurrentResponse: {
+                arguments: [{
+                    type: "entryarrayfieldselect",
+                    value: "self"
+                }]
+            }
+        }
     });
     /**
      * MCQ Result mapper

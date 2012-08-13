@@ -143,6 +143,14 @@ YUI.add('wegas-entity', function (Y) {
         },
 
         /**
+         * Returns the edition menu associated to this object, to be used a an wysiwyg editor.
+         */
+        getMethodCfgs: function ( data ) {
+            var menu = this.getStatic("METHODS")[0] || {};
+            return menu;
+        },
+
+        /**
          *  Helper function that walks the class hierarchy and returns it's attributes
          *  cfg (ATTRS), used in Y.Wegas.Entity.getFormCfg().
          */
@@ -201,7 +209,15 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
 
+        /**
+         *  Defines edition menu to be used in editor
+         */
         EDITMENU: [],
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: { },
+
 
         /**
          * Holds a reference to all declared entity classes
@@ -721,6 +737,21 @@ YUI.add('wegas-entity', function (Y) {
 
                 }
             }
+        },
+
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            setValue: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string"
+                }]
+            }
         }
     });
     /**
@@ -753,6 +784,12 @@ YUI.add('wegas-entity', function (Y) {
                 "transient": true,
                 _inputex: {
                     _type: "hidden"
+                },
+                setter: function ( val ) {
+                    for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
+                        val[i].parentDescriptor = this;
+                    }
+                    return val;
                 }
             },
             defaultVariableInstance: {
