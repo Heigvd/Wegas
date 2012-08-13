@@ -12,11 +12,11 @@
 
 YUI.add("wegas-gallery", function(Y){
 
-    var WegasGallery;
+    var WegasGallery,
+    CONTENT_BOX="contentBox",
+    BOUNDING_BOX="boundingBox";
 
     WegasGallery = Y.Base.create("wegas-gallery", Y.Widget, [Y.Wegas.Widget], {
-        //TODO : fix on screen resize, scroll
-        // parse page content on domchange.
         CONTENT_TEMPLATE:"<ul></ul>",
 
         scrollView: null,
@@ -55,24 +55,21 @@ YUI.add("wegas-gallery", function(Y){
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-right'><div>NEXT</div></div>");
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-toggle'></div>");
             this.fullScreenNode.appendTo(Y.one("body"));
-            this.loadImage(this.scrollView.pages.get("index"));
+            this.scrollView.render();
         },
         syncUI: function(){
             var scrollViewId = "#" + this.scrollView.get("id") + " ",           // prefix css with id, allow multiple instance with different style
             selW = parseInt(this.get("selectedWidth")),
-            selH = parseInt(this.get("selectedHeight")),
-            smaH = parseInt(this.get("smallHeight")),
-            smaW = parseInt(this.get("smallWidth"));
-            try{
-                this.styleSheet.disable();
-            }catch(e){
+            selH = this.get("selectedHeight"),
+            smaH,
+            smaW;
 
+            if(this.styleSheet){
+                this.styleSheet.disable();
             }
             if(this.get("fullScreen")){
-                selH = document.height - 100;
-                selW = document.width - 190;
-                smaH = 50;
-                smaW = 50;
+                selH = Y.one("body").get("winHeight") - 100;
+                selW = Y.one("body").get("winWidth") * 0.8;
                 if(!this.isFullScreen){
                     this.isFullScreen = true;
                     this.scrollView.get(BOUNDING_BOX).swap(this.fullScreenNode);
@@ -82,6 +79,14 @@ YUI.add("wegas-gallery", function(Y){
                     this.isFullScreen = false;
                     this.scrollView.get(BOUNDING_BOX).swap(this.fullScreenNode);
                 }
+            }
+            smaW = (this.scrollView.get(BOUNDING_BOX).get("parentNode").get("region").width - parseInt(this.scrollView.get(BOUNDING_BOX).get("parentNode").getStyle("padding-right")) - parseInt(this.scrollView.get(BOUNDING_BOX).get("parentNode").getStyle("padding-left")) - selW - 90)/2;
+            smaH = selW;
+            if(this.get("gallery").length > 0){
+                this.scrollView.show();
+            }else{
+                this.scrollView.hide();
+                return;
             }
             this.scrollView.set("width", selW + 30);
             this.styleSheet = new Y.StyleSheet(scrollViewId + ".wegas-gallery li{width:"
@@ -116,11 +121,7 @@ YUI.add("wegas-gallery", function(Y){
             });
 
             if(this.scrollView.get("rendered")){
-                //TODO : HACK fix it
-                window.setTimeout(Y.bind(this.scrollView.syncUI,this.scrollView), 300);
-            //this.scrollView.syncUI();
-            }else{
-                this.scrollView.render();
+                this.scrollView.scrollTo((selW + 60)*this.scrollView.pages.get("index"),0);
             }
             this.setSelected(this.scrollView.pages.get("index"));
         },
@@ -149,7 +150,25 @@ YUI.add("wegas-gallery", function(Y){
                 this.setSelected(e.target.pages.get("index"));
 
             }, this));
-
+            //this.eventInstances.push();
+            this.eventInstances.push(Y.on("windowresize", Y.bind(this.windowResizeEvent, this)));
+            this.after("galleryChange", function(e){
+                this.scrollView.syncUI();
+                if(e.newVal.length > 0){
+                    this.loadImage(0);
+                }
+                this.scrollView.scrollTo(0,0, 500);
+                this.scrollView.pages.set("index", 0);
+                this.setSelected(0);
+                this.syncUI();
+            });
+        },
+        windowResizeEvent:function(){
+            if(this.get("fullScreen")){
+                this.scrollView.hide();
+                this.syncUI();
+                this.scrollView.show();
+            }
         },
         next: function(){
             this.scrollView.pages.next();
@@ -168,7 +187,9 @@ YUI.add("wegas-gallery", function(Y){
             if(index > 0){
                 list.item(index - 1).addClass("gallery-before-selected");
             }
-            list.item(index).addClass("gallery-selected");
+            if(list.size()> index){
+                list.item(index).addClass("gallery-selected");
+            }
             if(this.images[index -1] && !this.images[index-1].loaded){
                 this.loadImage(index - 1);
             }
@@ -214,7 +235,6 @@ YUI.add("wegas-gallery", function(Y){
                         };
                         this.get(CONTENT_BOX).appendChild("<li class='img-loading'></li>");
                     }
-                    this.scrollView.syncUI();
                     return o;
                 }
             },
@@ -229,14 +249,6 @@ YUI.add("wegas-gallery", function(Y){
                 }
             },
             selectedHeight:{
-                value:300,
-                validator: Y.Lang.isNumber
-            },
-            smallWidth:{
-                value:250,
-                validator: Y.Lang.isNumber
-            },
-            smallHeight:{
                 value:250,
                 validator: Y.Lang.isNumber
             },

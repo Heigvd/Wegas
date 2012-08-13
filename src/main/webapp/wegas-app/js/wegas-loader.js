@@ -135,7 +135,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-gallery': {
                         path:'wegas-app/js/widget/wegas-gallery-min.js',
-                        requires: ['wegas-widget', 'scrollview-base', 'scrollview-paginator', 'wegas-gallerycss', 'stylesheet'],
+                        requires: ['wegas-widget', 'scrollview-base', 'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
                         ix_provides: "WegasGallery"
                     },
 

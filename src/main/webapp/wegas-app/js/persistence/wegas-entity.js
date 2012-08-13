@@ -40,7 +40,7 @@ YUI.add('wegas-entity', function (Y) {
         },
 
         /**
-         * Serialize to a json object.
+         * Serialize to a json object. Method used <b>recursively</b> by JSON.stringify
          *
          * @method toJSON
          * @return {object}
@@ -50,9 +50,9 @@ YUI.add('wegas-entity', function (Y) {
             attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
-                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
-                    ret[k] = ret[k].toJSON();
-                }
+//                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
+//                    ret[k] = ret[k].toJSON();
+//                }
 
                 if (attrCfgs[k]["transient"]) {                                 // Remove any transient attribute
                     delete ret[k];
@@ -62,11 +62,11 @@ YUI.add('wegas-entity', function (Y) {
         },
         /**
          * Create a new JSON Object from this entity, filtered out by mask
-         * @method JSONclone
+         * @method toObject
          * @param {Array} mask or {String}* a list of params
          * @return {Object} a filtered out clone
          */
-        JSONclone: function(mask){
+        toObject: function(mask){
             var k, i, e = JSON.parse(JSON.stringify(this));
             mask = Y.Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
             return Y.clone(e, true, function(value, key, output, input){
@@ -85,7 +85,7 @@ YUI.add('wegas-entity', function (Y) {
          * @return {Entity} a usable clone
          */
         clone: function (){
-            return Entity.revive(this.JSONclone(["id","variableInstances"]));
+            return Entity.revive(this.toObject(["id","variableInstances"]));
         },
         /**
          * Returns the form configuration associated to this object, to be used a an inputex object.

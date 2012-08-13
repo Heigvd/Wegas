@@ -348,7 +348,12 @@ Y.add("wegas-statemachine-entities", function(Y){
                     label: 'Only once'
                 }
             }
-        }
+        },EDITMENU: [{
+            type: "EditEntityButton"
+
+        },{
+            type: "DeleteEntityButton"
+        }]
     });
 
     /*
