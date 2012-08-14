@@ -63,17 +63,21 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     items: [{
                         label:"",
                         cssClass:"wegas-icon-refresh",
+                        tooltip:"Refresh",
                         data:"refresh"
                     },{
                         label:"",
                         cssClass:"wegas-icon-new",
+                        tooltip:"Add ...",
                         items:[{
-                            label:"Dir",
+                            label:"",
                             cssClass:"wegas-icon-newdir",
+                            tooltip:"Add a directory",
                             data:"add dir"
                         },{
-                            label:"File",
+                            label:"",
                             cssClass:"wegas-icon-newfile",
+                            tooltip:"Add a file",
                             data:"add file"
                         }]
                     }],
@@ -269,22 +273,27 @@ YUI.add('wegas-fileexplorer', function (Y) {
                         items: [{
                             label:"",
                             cssClass:"wegas-icon-refresh",
+                            tooltip:"Refresh",
                             data:"refresh"
                         },{
                             label:"",
                             cssClass:"wegas-icon-new",
+                            tooltip:"Add ...",
                             items:[{
-                                label:"Dir",
+                                label:"",
                                 cssClass:"wegas-icon-newdir",
+                                tooltip:"Add a directory",
                                 data:"add dir"
                             },{
-                                label:"File",
+                                label:"",
                                 cssClass:"wegas-icon-newfile",
+                                tooltip:"Add a file",
                                 data:"add file"
                             }]
                         },{
                             label:"",
                             cssClass:"wegas-icon-delete",
+                            tooltip:"Delete directory",
                             data:"delete"
                         }],
                         horizontal: true,
@@ -300,6 +309,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                         items: [{
                             label:"",
                             cssClass:"wegas-icon-delete",
+                            tooltip:"Delete file",
                             data:"delete"
                         }],
                         horizontal: true,
