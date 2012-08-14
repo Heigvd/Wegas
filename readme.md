@@ -21,7 +21,7 @@ Glassfish setup
 *   Download Java Content Repository API from http://repo1.maven.org/maven2/javax/jcr/jcr/2.0/jcr-2.0.jar, place it in *GLASSFISHINSTALL*/domains/*YOURDOMAIN*/lib/
 *   Restart Glassfish
 *   Apache Jackrabbit
-    - Download from http://www.apache.org/dyn/closer.cgi/jackrabbit/2.4.1/jackrabbit-jca-2.4.1.rar
+    - Download from http://www.apache.org/dyn/closer.cgi/jackrabbit/2.4.2/jackrabbit-jca-2.4.2.rar
     - Deploy on Glassfish (Go to *http://localhost:4848/* >> *Applications* >> *Deploy...* )
     - Copy *WEGASSRC*/src/main/setup/JRFile to *GLASSFISHINSTALL*/domains/*YOURDOMAIN*/lib/
 *   Enable comet support:
