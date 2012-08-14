@@ -27,7 +27,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
-    private String lastModified;
+    private String dataLastModified;
     private Long bytes;
 
     public FileDescriptor(String absolutePath, ContentConnector contentConnector) {
@@ -36,7 +36,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
     public FileDescriptor(String absolutePath, String mimeType, String lastModified, Long bytes, ContentConnector contentConnector) {
         super(absolutePath, contentConnector, mimeType);
-        this.lastModified = lastModified;
+        this.dataLastModified = lastModified;
         this.bytes = bytes;
     }
 
@@ -69,7 +69,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
             this.sync();
             connector.setData(this.fileSystemAbsolutePath, mimeType, data);
             this.bytes = connector.getSize(fileSystemAbsolutePath);
-            this.lastModified = connector.getLastModified(fileSystemAbsolutePath);
+            this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
             this.mimeType = mimeType;
         } catch (PathNotFoundException ex) {
             logger.error("Parent directory ({}) does not exist, considere checking the way you try to store datas", ex.getMessage());
@@ -79,8 +79,8 @@ public class FileDescriptor extends AbstractContentDescriptor {
         data.close();
     }
 
-    public String getLastModified() {
-        return lastModified;
+    public String getDataLastModified() {
+        return dataLastModified;
     }
 
     public Long getBytes() {
@@ -93,20 +93,9 @@ public class FileDescriptor extends AbstractContentDescriptor {
             //DirectorDescriptor
             throw new ClassCastException("Trying to retrieve a directory as a file");
         }
-        this.lastModified = connector.getLastModified(fileSystemAbsolutePath);
+        this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
         this.bytes = connector.getSize(fileSystemAbsolutePath);
+        super.getContentFromRepository();
     }
 
-    @Override
-    public void setContentToRepository() throws RepositoryException {
-        connector.save();
-    }
-
-    @Override
-    public void saveToRepository() throws RepositoryException {
-        String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
-        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
-        parent.sync();
-        parent.addChild(this);
-    }
 }

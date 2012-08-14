@@ -53,21 +53,4 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
         }
         return files;
     }
-
-    @Override
-    public void getContentFromRepository() throws RepositoryException {
-    }
-
-    @Override
-    public void setContentToRepository() throws RepositoryException {
-        connector.save();
-    }
-
-    @Override
-    public void saveToRepository() throws RepositoryException {
-        String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
-        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
-        parent.sync();
-        parent.addChild(this);
-    }
 }
