@@ -57,10 +57,11 @@ public class FileController {
     public AbstractContentDescriptor upload(@PathParam("gameModelId") String gameModelId,
             @FormDataParam("name") String name,
             @FormDataParam("note") String note,
+            @FormDataParam("note") String description,
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
-    logger.debug("File name: {}", details.getContentDisposition().getFileName());
+        logger.debug("File name: {}", details.getContentDisposition().getFileName());
 
         if (name.equals("") || name.contains("/")) {
             return null;
@@ -79,6 +80,7 @@ public class FileController {
             if (!detachedFile.exist()) {                                        //Node should not exist
                 note = note == null ? "" : note;
                 detachedFile.setNote(note);
+                detachedFile.setDescription(description);
                 if (detachedFile instanceof FileDescriptor) {
                     //TODO : check allowed mime-types
                     try {
@@ -111,15 +113,18 @@ public class FileController {
     public Response read(@PathParam("gameModelId") String gameModelId, @PathParam("absolutePath") String name) {
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
+        ContentConnector connector = null;
         Response.ResponseBuilder response = Response.status(404);
         try {
-            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
+            connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
             fileDescriptor = DescriptorFactory.getDescriptor(name, connector);
         } catch (PathNotFoundException e) {
             logger.debug("Asked path does not exist: {}", e.getMessage());
+            connector.close();
             return response.build();
         } catch (RepositoryException e) {
             logger.error("Need to check those errors", e);
+            connector.close();
             return response.build();
         }
         if (fileDescriptor instanceof FileDescriptor) {
@@ -128,11 +133,12 @@ public class FileController {
                 ((FileDescriptor) fileDescriptor).getBase64Data().close();
             } catch (IOException ex) {
                 Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                connector.close();
             }
         }
         return response.build();
     }
-
 
     /**
      *
@@ -149,9 +155,12 @@ public class FileController {
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
             AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(directory, connector);
             if (!dir.exist() || dir instanceof FileDescriptor) {
+                connector.close();
                 return null;
             } else if (dir instanceof DirectoryDescriptor) {
-                return ((DirectoryDescriptor) dir).list();
+                List<AbstractContentDescriptor> ret = ((DirectoryDescriptor) dir).list();
+                connector.close();
+                return ret;
             }
         } catch (LoginException ex) {
             Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
@@ -190,8 +199,10 @@ public class FileController {
                 } catch (ItemExistsException e) {
                     return Response.notModified(e.getMessage()).build();
                 }
+                connector.close();
                 return descriptor;
             } else {
+                connector.close();
                 return Response.notModified("Path" + absolutePath + " does not exist").build();
             }
         } catch (RepositoryException ex) {
@@ -200,8 +211,33 @@ public class FileController {
         return null;
     }
 
+    @PUT
+    @Path("{absolutePath : .*?}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public AbstractContentDescriptor update(AbstractContentDescriptor tmpDescriptor,
+            @PathParam("gameModelId") String gameModelId,
+            @PathParam("absolutePath") String absolutePath) {
+        ContentConnector connector = null;
+        try {
+            connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
+            descriptor.setNote(tmpDescriptor.getNote());
+            descriptor.setDescription(tmpDescriptor.getDescription());
+            descriptor.setContentToRepository();
+            connector.close();
+            return descriptor;
+        } catch (RepositoryException ex) {
+            logger.debug("File does not exist", ex);
+        } finally {
+            connector.close();
+        }
+        return null;
+    }
+
     /**
      * Well... underlying function not yet implemented do it by hand for now
+     *
      * @param gameModelId
      */
     @DELETE
@@ -210,6 +246,7 @@ public class FileController {
         try {
             ContentConnector fileManager = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
             fileManager.deleteWorkspace();
+            fileManager.close();
         } catch (LoginException ex) {
             Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (RepositoryException ex) {

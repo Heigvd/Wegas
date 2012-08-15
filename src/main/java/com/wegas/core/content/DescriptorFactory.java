@@ -37,6 +37,9 @@ public class DescriptorFactory {
                     DirectoryDescriptor.MIME_TYPE.equals(mimeType)
                     ? new DirectoryDescriptor(nodePath, contentConnector)
                     : new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getString(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
+            if (abstractContentDescriptor.exist()) {
+                abstractContentDescriptor.getContentFromRepository();
+            }
         } catch (RepositoryException ex) {
             logger.error("WFS: node error (path:{}, type:{})", nodePath, mimeType);
         }
@@ -44,23 +47,7 @@ public class DescriptorFactory {
     }
 
     public static AbstractContentDescriptor getDescriptor(String absolutePath, ContentConnector contentConnector) throws RepositoryException {
-        AbstractContentDescriptor abstractContentDescriptor = new AbstractContentDescriptor(absolutePath, contentConnector) {
-
-            @Override
-            public void getContentFromRepository() throws RepositoryException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public void saveToRepository() throws RepositoryException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public void setContentToRepository() throws RepositoryException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
+        AbstractContentDescriptor abstractContentDescriptor = new AbstractContentDescriptor(absolutePath, contentConnector) {};
         Node node;
 
         node = contentConnector.getNode(abstractContentDescriptor.fileSystemAbsolutePath);
