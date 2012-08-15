@@ -153,15 +153,6 @@
             "type": "TabView",
             "children": [{
                 "type": "Tab",
-                "label": "Script editor",
-                "toolbarChildren": [{
-                    "type": "SelectPlayerButton"
-                }],
-                "children": [{
-                    "type": "WysiwygEditor"
-                }]
-            },{
-                "type": "Tab",
                 "label": "Preview",
                 "toolbarChildren": [{
                     "type": "SelectPlayerButton"

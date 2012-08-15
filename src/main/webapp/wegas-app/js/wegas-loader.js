@@ -142,7 +142,7 @@ YUI().use(function (Y) {
                     /** Inputex Fields **/
                     'wegas-inputex': {
                         path: 'wegas-app/js/widget/wegas-inputex-min.js',
-                        requires: [ 'inputex', 'inputex-field', 'inputex-string', 'inputex-keyvalue' ]
+                        requires: [ 'inputex', 'inputex-field', 'inputex-string', 'inputex-keyvalue', 'inputex-select' ]
                     },
                     'wegas-inputex-rte': {
                         path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',
@@ -163,7 +163,7 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-script-wysiwyg-min.js',
                         requires: [ 'wegas-script', 'wegas-button', 'wegas-inputex',
                             'inputex', 'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
-                            'esprima', 'escodegen' ],
+                            'esprima' /*, 'escodegen'*/ ],
                         ix_provides: 'script'
                     },
                     'wegas-inputex-url': {
@@ -278,13 +278,6 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachineviewercss': {
                         path: 'wegas-editor/css/wegas-statemachineviewer.css'
-                    },
-                    'wegas-wysiwygeditor': {
-                        path: 'wegas-editor/js/wegas-wysiwygeditor-min.js',
-                        requires: [ 'wegas-script-wysiwyg', 'wegas-script', 'wegas-button', 'wegas-inputex',
-                            'inputex', 'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
-                            'esprima', 'escodegen' ],
-                        ix_provides: "WysiwygEditor"
                     },
 
                     /** Project Management Game **/

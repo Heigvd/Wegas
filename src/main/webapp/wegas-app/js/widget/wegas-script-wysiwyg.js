@@ -24,7 +24,6 @@ YUI.add("wegas-script-wysiwyg", function(Y){
          *
          */
         onChange: function ( fieldValue, fieldInstance ) {
-            this.syncUI();
             this.fireUpdatedEvt();
         },
 
@@ -82,10 +81,14 @@ YUI.add("wegas-script-wysiwyg", function(Y){
                 try {
                     fields.push( this.generateExpression( tree.body[i].expression ) );
                 } catch( e ) {
-                    Y.error( "Error evaluating line: " +
-                        window.escodegen.generate(tree.body[i].expression, {
-                            indent: true
-                        }));
+                    //Y.error( "Error evaluating line: " +
+                    //    window.escodegen.generate(tree.body[i].expression, {
+                    //        indent: true
+                    //    }));
+                    this.setMode( "text" );
+                    var n = new Y.Node(this.fieldContainer);
+                    n.append("<em>Unable to read this impact, displaying source.</em>");
+                    return;
                 }
             }
 
@@ -446,37 +449,4 @@ YUI.add("wegas-script-wysiwyg", function(Y){
 
     inputEx.registerType("inputlist", ListField);
 
-    /**
-     * @class EntityArrayFieldSelect
-     * @constructor
-     * @extends inputEx.SelectField
-     * @param {Object} options InputEx definition object
-     */
-    var EntityArrayFieldSelect = function(options) {
-        EntityArrayFieldSelect.superclass.constructor.call(this, options);
-    };
-    Y.extend(EntityArrayFieldSelect, inputEx.SelectField, {
-
-        /**
-	 * Set the ListField classname
-	 * @param {Object} options Options object as passed to the constructor
-	 */
-        setOptions: function(options) {
-            var i, results = options.entity.get( "results" );
-            options.choices = [];
-
-            for ( i = 0; i < results.length; i = i + 1 ) {
-                options.choices.push({
-                    value: results[i].get( "id"  ),
-                    label: results[i].get( "name" )
-                })
-
-            }
-
-            EntityArrayFieldSelect.superclass.setOptions.call(this, options);
-            this.options.entity = options.entity;
-        }
-    });
-
-    inputEx.registerType( "entryarrayfieldselect", EntityArrayFieldSelect );    // Register this class as "list" type
 });

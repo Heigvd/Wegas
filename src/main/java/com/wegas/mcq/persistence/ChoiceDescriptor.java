@@ -57,15 +57,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     private Long cost = new Long(1);
 
-    @PrePersist
-    @PreUpdate
-    public void propagateCurrentResult() {
-        ChoiceInstance i = (ChoiceInstance) this.getDefaultVariableInstance();
-        if (i.getCurrentResult() == null && !this.getResults().isEmpty()) {
-            i.setCurrentResult(this.getResults().get(0));
-        }
-        this.propagateDefaultInstance(false);
-    }
 
     /**
      *
@@ -83,11 +74,39 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         ListUtils.mergeLists(this.getResults(), other.getResults());
     }
 
+    // ***  Sugar to use from scripts *** //
     /**
-     * Sugar to use from scripts
+     *
+     * @param player
+     * @param index
      */
     public void setCurrentResultByIndex(Player player, int index) {
         this.getInstance(player).setCurrentResultByIndex(index);
+    }
+
+    /**
+     *
+     * @param player
+     * @param resultId
+     */
+    public void setCurrentResult(Player player, Long resultId) {
+        this.getInstance(player).setCurrentResultId(resultId);
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void activate(Player p) {
+        this.getInstance(p).activate();
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void desactivate(Player p) {
+        this.getInstance(p).desactivate();
     }
 
     /**
@@ -144,23 +163,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public void setCost(Long cost) {
         this.cost = cost;
-    }
-    // *** Sugar *** //
-
-    /**
-     *
-     * @param p
-     */
-    public void activate(Player p) {
-        this.getInstance(p).activate();
-    }
-
-    /**
-     *
-     * @param p
-     */
-    public void desactivate(Player p) {
-        this.getInstance(p).desactivate();
     }
 
     /**

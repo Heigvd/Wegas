@@ -62,12 +62,15 @@ YUI.add('wegas-entity', function (Y) {
         },
         /**
          * Create a new JSON Object from this entity, filtered out by mask
+         *
+         * @fixme This method will parse the field and the clone it
+         *
          * @method toObject
          * @param {Array} mask or {String}* a list of params
          * @return {Object} a filtered out clone
          */
         toObject: function(mask){
-            var k, i, e = JSON.parse(JSON.stringify(this));
+            var e = JSON.parse(JSON.stringify(this));
             mask = Y.Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
             return Y.clone(e, true, function(value, key, output, input){
                 if(mask.indexOf(key) != -1){
@@ -77,6 +80,15 @@ YUI.add('wegas-entity', function (Y) {
                 }
             });
 
+        },
+        toObject2: function () {
+            var k, ret = this.toJSON();
+            for (k in ret) {
+                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
+                    ret[k] = ret[k].toJSON();
+                }
+            }
+            return ret;
         },
         /**
          * Create a new Entity from this entity
@@ -755,7 +767,8 @@ YUI.add('wegas-entity', function (Y) {
                     value: 1
                 }]
             },
-            set: {
+            setValue: {
+                label: "set",
                 arguments: [{
                     type: "hidden",
                     value: "self"
