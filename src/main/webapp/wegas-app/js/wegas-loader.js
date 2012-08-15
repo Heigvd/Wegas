@@ -61,6 +61,10 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
                         requires: [ 'wegas-entity' ]
                     },
+                    'wegas-content-entities':{
+                        path: 'wegas-app/js/persistence/wegas-content-entities.js',
+                        requires: ['wegas-entity']
+                    },
 
                     /** Widgets **/
                     'wegas-widget': {
@@ -263,7 +267,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
-                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar', 'wegas-fileexplorercss'],
+                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar', 'wegas-fileexplorercss', 'wegas-content-entities'],
                         ix_provides: "FileExplorer"
                     },
                     'wegas-progressbar': {
