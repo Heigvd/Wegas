@@ -14,20 +14,28 @@ import java.io.Serializable;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+@XmlRootElement
 abstract public class AbstractContentDescriptor implements Serializable {
 
+    @XmlTransient
+    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
     @XmlTransient
     private boolean synched = false;
     protected String mimeType;
     private String name;
     private String path;
     private String note = "";
+    private String description = "";
     @XmlTransient
     protected String fileSystemAbsolutePath;
     @XmlTransient
@@ -91,6 +99,14 @@ abstract public class AbstractContentDescriptor implements Serializable {
         this.note = note == null ? "" : note;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description == null ? "" : description;
+    }
+
     @XmlTransient
     public boolean isSynched() {
         return synched;
@@ -109,18 +125,16 @@ abstract public class AbstractContentDescriptor implements Serializable {
     public void sync() throws RepositoryException {
         if (this.exist()) {                                                     //check existence then load it else create it
             try {
-                this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
-                this.note = connector.getNote(fileSystemAbsolutePath);
+                this.getContentFromRepository();
             } catch (NullPointerException e) {
                 if (!this.fileSystemAbsolutePath.equals("/")) {                 //Not a rootNode
                     throw e;
                 }
             }
-            this.getContentFromRepository();
             synched = true;
         } else {
             this.saveToRepository();
-            connector.setNote(fileSystemAbsolutePath, note);
+            this.setContentToRepository();
             synched = true;
         }
     }
@@ -129,8 +143,6 @@ abstract public class AbstractContentDescriptor implements Serializable {
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
         Node parent = connector.getNode(fileSystemAbsolutePath);
         parent.addNode(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + file.getName());
-        connector.setMimeType(file.fileSystemAbsolutePath, file.getMimeType());
-        connector.setNote(file.fileSystemAbsolutePath, file.getNote());
         file.setContentToRepository();
         return file;
     }
@@ -147,13 +159,27 @@ abstract public class AbstractContentDescriptor implements Serializable {
     }
 
     @XmlTransient
-    abstract public void getContentFromRepository() throws RepositoryException;
+    public void getContentFromRepository() throws RepositoryException {
+        this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
+        this.note = connector.getNote(fileSystemAbsolutePath);
+        this.description = connector.getDescription(fileSystemAbsolutePath);
+    }
 
     @XmlTransient
-    abstract public void setContentToRepository() throws RepositoryException;
+    public void setContentToRepository() throws RepositoryException {
+        connector.setMimeType(fileSystemAbsolutePath, mimeType);
+        connector.setNote(fileSystemAbsolutePath, note);
+        connector.setDescription(fileSystemAbsolutePath, description);
+        connector.save();
+    }
 
     @XmlTransient
-    abstract public void saveToRepository() throws RepositoryException;
+    public void saveToRepository() throws RepositoryException{
+        String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
+        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
+        parent.sync();
+        parent.addChild(this);
+    }
 
     /**
      * Convert an absolute path (with or without WFS namespace) to path and name
@@ -197,6 +223,15 @@ abstract public class AbstractContentDescriptor implements Serializable {
 
     @Override
     public String toString() {
-        return "AbstractContentDescriptor{" + "mimeType=" + mimeType + ", name=" + name + ", path=" + path + ", fileSystemAbsolutePath=" + fileSystemAbsolutePath + '}';
+        return "AbstractContentDescriptor{" + "mimeType=" + mimeType + ", name=" + name + ", path=" + path + ", fileSystemAbsolutePath=" + fileSystemAbsolutePath + ", note=" + note + ", description=" + description + "}";
+    }
+
+    @JsonCreator
+    public static AbstractContentDescriptor getDescriptor(@JsonProperty("name") String name, @JsonProperty("path") String path, @JsonProperty("mimeType") String mimeType) throws RepositoryException {
+        if (mimeType.equals(DirectoryDescriptor.MIME_TYPE)) {
+            return new DirectoryDescriptor(name, path, null);
+        } else {
+            return new FileDescriptor(name, path, null);
+        }
     }
 }
