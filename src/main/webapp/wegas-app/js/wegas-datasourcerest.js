@@ -288,7 +288,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         deleteObject: function (entity) {
             this.sendRequest({
-                request: this.generateRequest(entity.toJSON()),
+                request: this.generateRequest(entity.toObject2()),
                 cfg: {
                     method: "DELETE"
                 }

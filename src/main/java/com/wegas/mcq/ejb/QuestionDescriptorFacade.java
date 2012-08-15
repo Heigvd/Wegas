@@ -109,13 +109,21 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         Reply reply = new Reply();
 
         reply.setStartTime(startTime);
-        reply.setResult(choice.getInstance(player).getCurrentResult());
+        reply.setResult(this.getCurrentResult(choice.getInstance(player)));
         questionInstance.addReply(reply);
 
         this.em.flush();
         this.em.refresh(reply);
 
         return reply;
+    }
+
+    private Result getCurrentResult(ChoiceInstance choice) {
+        Result r = choice.getCurrentResult();
+        if (r == null) {
+            r = ((ChoiceDescriptor)choice.getDescriptor()).getResults().get(0);
+        }
+        return r;
     }
 
     /**
@@ -139,7 +147,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
         ChoiceInstance choiceInstance = reply.getResult().getChoiceDescriptor().getInstance(player);
 
-        reply.setResult(choiceInstance.getCurrentResult());                 // Refresh the current result
+        reply.setResult(this.getCurrentResult(choiceInstance));                 // Refresh the current result
 
         arguments.put("selectedReply", reply);
         arguments.put("selectedChoice", choiceInstance);

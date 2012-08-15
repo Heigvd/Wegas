@@ -597,60 +597,12 @@ img.inputEx-ListField-delButton {
 .inputEx-WysiwigScript div.inputEx-CombineField {
     padding:0;
 }
-
 .inputEx-WysiwigScript .inputEx-ListField .yui3-button {
     background: none;
     border: none;
     box-shadow: none;
-    padding: 0;
-    vertical-align: top;
     margin: -2px 5px 0;
 }
-/*
-.wegas-wysiwygeditor span {
-    display: none;
-}
-.wegas-wysiwygeditor div.inputEx-fieldWrapper {
-    padding:0;
-    margin:0;
-    vertical-align: top;
-}
-.wegas-wysiwygeditor div.inputEx-message {
-    display:none;
-}
-.wegas-wysiwygeditor div.inputEx-label {
-    display: none;
-}
-.wegas-field-body .inputEx-Group,
-.wegas-field-body .inputEx-fieldWrapper,
-.wegas-field-body .wegas-field {
-    display:inline-block;
-}
-.wegas-field-memberexpression .wegas-field-object > fieldset::after {
-    content: ".";
-    vertical-align: top;
-}
-.wegas-field-arguments {
-    display: inline-block;
-}
-.wegas-field-arguments::before {
-    content: "(";
-    vertical-align: top;
-}
-.wegas-field-arguments::after {
-    content: ")";
-    vertical-align: top;
-}
-.wegas-field-arguments .inputEx-ListField-childContainer {
-    display:inline-block;
-}
-.wegas-field-arguments .inputEx-List-link {
-    display: none;
-}
-.wegas-field-arguments .wegas-field-identifier > div::after  {
-    content: ",";
-    vertical-align: top;
-}*/
 
 /* Editor layout styles */
 .wegas-layout-top > div {

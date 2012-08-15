@@ -184,8 +184,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             label:'Active by default',
                             value: true
                         }
+                    },
+                    currentResultId: {
+                        type: "string",
+                        _inputex: {
+                            _type: "entityarrayfieldselect",
+                            label: "Default result"
+                        }
                     }
-
                 }
             },
             description: {
@@ -240,13 +246,13 @@ YUI.add('wegas-mcq-entities', function (Y) {
             type: "DeleteEntityButton"
         }],
         METHODS: {
-            setCurrentResponse: {
-                label: "set current response",
+            setCurrentResult: {
+                label: "set current result",
                 arguments: [{
                     type: "hidden",
                     value: "self"
                 }, {
-                    type: "entryarrayfieldselect"
+                    type: "entityarrayfieldselect"
                 }]
             },
             activate: {
@@ -346,10 +352,10 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     type: "boolean"
                 },
                 currentResultId: {
-                    type: "string"
-                //_inputex: {
-                //    _type: "hidden"
-                //}
+                    type: "string",
+                    _inputex: {
+                        _type: "hidden"
+                    }
                 }
             }
         });
@@ -358,7 +364,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Y.Wegas.persistence.Reply = Y.Base.create("Reply", Y.Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            return this.get( "result" ).getChoiceDescriptor();
+            if ( this.get( "result" ) ) {
+                return this.get( "result" ).getChoiceDescriptor();
+            }
         },
         /**
          *  @return 0 if is finished, 1 if ongoing and 2 if planified

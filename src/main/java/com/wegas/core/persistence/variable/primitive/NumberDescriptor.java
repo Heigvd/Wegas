@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
@@ -73,5 +74,15 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      */
     public void setMaxValue(Long maxValue) {
         this.maxValue = maxValue;
+    }
+
+    // **** Sugar for editor *** //
+    public void setValue(Player p, double value) {
+        this.getInstance(p).setValue(value);
+    }
+
+    public void add(Player p, double value) {
+        NumberInstance instance = this.getInstance(p);
+        instance.setValue(instance.getValue() + value);
     }
 }

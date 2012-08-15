@@ -36,7 +36,7 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "result_id", insertable = false, updatable = false)
     //@JsonBackReference
     @XmlTransient
@@ -74,6 +74,7 @@ public class ChoiceInstance extends VariableInstance {
         ChoiceInstance other = (ChoiceInstance) a;
         this.setActive(other.getActive());
         this.setUnread(other.getUnread());
+        this.setCurrentResultId(other.getCurrentResultId());
         this.setCurrentResult(other.getCurrentResult());
     }
 
@@ -136,6 +137,6 @@ public class ChoiceInstance extends VariableInstance {
      * @param currentResult the currentResult to set
      */
     public void setCurrentResult(Result currentResult) {
-        this.setCurrentResultId(currentResult.getId());
+        this.currentResult = currentResult;
     }
 }

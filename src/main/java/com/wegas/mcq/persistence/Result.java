@@ -93,13 +93,6 @@ public class Result extends AbstractEntity {
         this.setFiles(other.getFiles());
     }
 
-    @PrePersist
-    @PreUpdate
-    @PreRemove
-    public void propagateCurrentResponse() {
-        this.getChoiceDescriptor().propagateCurrentResult();
-    }
-
     //@PreRemove
     //private void preRemove() {
     //   for (ChoiceInstance c : this.getLinkedChoiceInstances()) {

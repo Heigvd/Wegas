@@ -10,6 +10,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,23 @@ public class QuestionDescriptor extends ListDescriptor {
         this.setDescription(other.getDescription());
         this.setAllowMultipleReplies(other.getAllowMultipleReplies());
         this.setPictures(other.getPictures());
+    }
+// *** Sugar for scripts *** //
+
+    /**
+     *
+     * @param p
+     */
+    public void activate(Player p) {
+        ( (QuestionInstance) this.getInstance(p) ).activate();
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void desactivate(Player p) {
+        ( (QuestionInstance) this.getInstance(p) ).desactivate();
     }
 
     /**

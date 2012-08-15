@@ -114,7 +114,7 @@ YUI.add('wegas-editor-action', function (Y) {
             }
             EditEntityAction.tab.set("selected", 2);
             EditEntityAction.form.emptyMessage();
-            EditEntityAction.form.setForm(entity.toJSON(), entity.getFormCfg());
+            EditEntityAction.form.setForm(entity.toObject2(), entity.getFormCfg());
         },
 
         hideEditForm: function () {
@@ -143,7 +143,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
         showAddForm: function (entity, parentData, dataSource) {
             EditEntityAction.showEditForm(entity, function (newVal) {
-                dataSource.rest.post(newVal, (parentData) ? parentData.toJSON() : parentData , {
+                dataSource.rest.post(newVal, (parentData) ? parentData.toObject2() : parentData , {
                     success: function (e) {
                         EditEntityAction.showUpdateForm(e.response.entity, dataSource);
                         EditEntityAction.showFormMsg("success", "Item has been added");
@@ -187,7 +187,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
                         entity.setAttrs( newVal );
 
-                        dataSource.rest.put( parentEntity.toJSON(), {
+                        dataSource.rest.put( parentEntity.toObject2(), {
                             success: function () {
                                 EditEntityAction.showFormMsg("success", "Item has been updated");
                             },
@@ -206,7 +206,7 @@ YUI.add('wegas-editor-action', function (Y) {
                         newEntity.setAttrs( newVal);
                         entity.get( this.get( "attributeKey" )).push( newEntity );
 
-                        dataSource.rest.put( parentEntity.toJSON(), {
+                        dataSource.rest.put( parentEntity.toObject2(), {
                             success: function () {
                                 EditEntityAction.showFormMsg("success", "Item has been added");
                                 EditEntityAction.hideFormFields();
@@ -228,7 +228,7 @@ YUI.add('wegas-editor-action', function (Y) {
                             }
                             return false;
                         });
-                        dataSource.rest.put( parentEntity.toJSON() );
+                        dataSource.rest.put( parentEntity.toObject2() );
                     } else {
                         return;
                     }
