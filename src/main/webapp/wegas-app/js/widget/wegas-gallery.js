@@ -16,6 +16,15 @@ YUI.add("wegas-gallery", function(Y){
     CONTENT_BOX="contentBox",
     BOUNDING_BOX="boundingBox";
 
+    /*
+     * ATTRS:<br/>
+     * gallery: {Array} an array of picture to display, format : {srcUrl: ...[, description: ...]}
+     * fullScreen : {Boolean} toggles fullScreen<br/>
+     * lightGallery : {Boolean} An instance which will read DOM for "light-picture" or "light-gallery" classes<br/>
+     * <br/>
+     * light-picture class nodes : "href" attribute (url) , "title" attribute (description)<br/>
+     * light-gallery class nodes : child nodes with "href" attribute (url), "title" attribute (description)
+     */
     WegasGallery = Y.Base.create("wegas-gallery", Y.Widget, [Y.Wegas.Widget], {
         CONTENT_TEMPLATE:"<ul></ul>",
 
@@ -28,6 +37,10 @@ YUI.add("wegas-gallery", function(Y){
         images:{},
 
         initializer : function(){
+            var prev;
+            if(prev = Y.Widget.getByNode(".wegas-lightGallery")){               // TODO: currently destroying previous one, do a singleton
+                prev.destroy();
+            }
             this.images = {};
             this.eventInstances = [];
             this.isFullScreen = false;
@@ -46,6 +59,11 @@ YUI.add("wegas-gallery", function(Y){
             this.scrollView.plug(Y.Plugin.ScrollViewPaginator, {
                 selector: 'li'
             });
+            if(this.get("lightGallery")){
+                this.set("render", "body");
+                this.set("gallery", []);
+                this.render();
+            }
 
         },
         renderUI : function(){
@@ -54,7 +72,11 @@ YUI.add("wegas-gallery", function(Y){
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-left'><div>PREVIOUS</div></div>");
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-right'><div>NEXT</div></div>");
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-toggle'></div>");
+            if(this.get("lightGallery")){
+                this.scrollView.get(BOUNDING_BOX).addClass("wegas-lightGallery");
+            }
             this.fullScreenNode.appendTo(Y.one("body"));
+
             this.scrollView.render();
         },
         syncUI: function(){
@@ -67,7 +89,7 @@ YUI.add("wegas-gallery", function(Y){
             if(this.styleSheet){
                 this.styleSheet.disable();
             }
-            if(this.get("fullScreen")){
+            if(this.get("fullScreen") || this.get("lightGallery")){
                 selH = Y.one("body").get("winHeight") - 100;
                 selW = Y.one("body").get("winWidth") * 0.8;
                 if(!this.isFullScreen){
@@ -124,9 +146,23 @@ YUI.add("wegas-gallery", function(Y){
                 this.scrollView.scrollTo((selW + 60)*this.scrollView.pages.get("index"),0);
             }
             this.setSelected(this.scrollView.pages.get("index"));
+            if(this.get("lightGallery") && !this.get("fullScreen")){
+                this.scrollView.hide();
+            }
         },
         bindUI: function(){
-            this.eventInstances.push(this.after("fullScreenChange", this.syncUI));
+            this.eventInstances.push(this.after("fullScreenChange", function(e){
+                if(!this.get("lightGallery")){
+                    this.syncUI();
+                }else{
+                    if(this.get("fullScreen")){
+                        this.scrollView.show();
+                    }else{
+                        this.scrollView.hide();
+                    }
+                }
+            }));
+
             this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-left > div').on("click", function(e){
                 e.halt(true);
                 this.prev();
@@ -162,6 +198,31 @@ YUI.add("wegas-gallery", function(Y){
                 this.setSelected(0);
                 this.syncUI();
             });
+            if(this.get("lightGallery")){
+                this.eventInstances.push(Y.one("body").delegate("click", function(e){
+                    var children, gallery = [];
+                    e.halt(true);
+                    children = e.target.get("children");
+                    children.each(function(){
+                        if(this.getAttribute("href")){
+                            gallery.push({
+                                srcUrl:this.getAttribute("href"),
+                                description:this.getAttribute("title")
+                            });
+                        }
+                    });
+                    this.set("gallery", gallery);
+                    this.set("fullScreen", true);
+                },'.light-gallery', this));
+                this.eventInstances.push(Y.one("body").delegate("click", function(e){
+                    e.halt(true);
+                    this.set("gallery", [{
+                        srcUrl:e.target.getAttribute("href"),
+                        description:e.target.getAttribute("title")
+                    }]);
+                    this.set("fullScreen", true);
+                },'.light-picture', this));
+            }
         },
         windowResizeEvent:function(){
             if(this.get("fullScreen")){
@@ -254,6 +315,11 @@ YUI.add("wegas-gallery", function(Y){
             },
             fullScreen:{
                 value:false,
+                validator:Y.Lang.isBoolean
+            },
+            lightGallery:{
+                value:false,
+                writeOnce: "initOnly",
                 validator:Y.Lang.isBoolean
             }
 
