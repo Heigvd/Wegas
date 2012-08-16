@@ -142,20 +142,12 @@ div.inputEx-ListField-subFieldEl {
        padding-top: 5px;*/
 }
 
-a.inputEx-List-link {
-    position: absolute;
-    right: 10px;
-    top: 0px;
-}
-
 /* The "add"" button */
-div.inputEx-ListField >  a.inputEx-List-link {
-/*    bottom:3px;
-    top: auto;*/
-}
 img.inputEx-ListField-delButton {
     margin-left: -20px;
     margin-top: 2px;
+    position: absolute; /* to allow click events */
+    z-index: 5;
 }
 
 
