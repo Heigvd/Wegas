@@ -146,20 +146,21 @@ YUI.add("wegas-gallery", function(Y){
                 this.scrollView.scrollTo((selW + 60)*this.scrollView.pages.get("index"),0);
             }
             this.setSelected(this.scrollView.pages.get("index"));
+            this.scrollView.syncUI();
             if(this.get("lightGallery") && !this.get("fullScreen")){
                 this.scrollView.hide();
             }
         },
         bindUI: function(){
             this.eventInstances.push(this.after("fullScreenChange", function(e){
-                if(!this.get("lightGallery")){
-                    this.syncUI();
-                }else{
+                if(this.get("lightGallery")){
                     if(this.get("fullScreen")){
                         this.scrollView.show();
                     }else{
                         this.scrollView.hide();
                     }
+                }else{
+                    this.syncUI();
                 }
             }));
 
@@ -189,13 +190,12 @@ YUI.add("wegas-gallery", function(Y){
             //this.eventInstances.push();
             this.eventInstances.push(Y.on("windowresize", Y.bind(this.windowResizeEvent, this)));
             this.after("galleryChange", function(e){
-                this.scrollView.syncUI();
                 if(e.newVal.length > 0){
                     this.loadImage(0);
                 }
                 this.scrollView.scrollTo(0,0, 500);
-                this.scrollView.pages.set("index", 0);
                 this.setSelected(0);
+                this.scrollView.pages.set("index", 0);
                 this.syncUI();
             });
             if(this.get("lightGallery")){
@@ -211,16 +211,18 @@ YUI.add("wegas-gallery", function(Y){
                             });
                         }
                     });
-                    this.set("gallery", gallery);
                     this.set("fullScreen", true);
+                    this.set("gallery", gallery);
+
                 },'.light-gallery', this));
                 this.eventInstances.push(Y.one("body").delegate("click", function(e){
                     e.halt(true);
+
+                    this.set("fullScreen", true);
                     this.set("gallery", [{
                         srcUrl:e.target.getAttribute("href"),
                         description:e.target.getAttribute("title")
                     }]);
-                    this.set("fullScreen", true);
                 },'.light-picture', this));
             }
         },
