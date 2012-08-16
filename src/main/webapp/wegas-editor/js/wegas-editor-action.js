@@ -189,10 +189,10 @@ YUI.add('wegas-editor-action', function (Y) {
 
                         dataSource.rest.put( parentEntity.toObject2(), {
                             success: function () {
-                                EditEntityAction.showFormMsg("success", "Item has been updated");
+                                EditEntityAction.showFormMsg( "success", "Item has been updated" );
                             },
                             failure: function (e) {
-                                EditEntityAction.showFormMsg("error", e.response.message || "Error while update item");
+                                EditEntityAction.showFormMsg( "error", e.response.message || "Error while update item" );
                             }
                         });
                     });
@@ -200,29 +200,29 @@ YUI.add('wegas-editor-action', function (Y) {
 
                 case "post":
                     var newEntity = Y.Wegas.persistence.Entity.revive({
-                        "@class": this.get("targetClass")
+                        "@class": this.get( "targetClass" )
                     });
-                    EditEntityAction.showEditForm( newEntity , function ( newVal ) {
+                    EditEntityAction.showEditForm( newEntity , Y.bind( function ( newVal ) {
                         newEntity.setAttrs( newVal);
-                        entity.get( this.get( "attributeKey" )).push( newEntity );
+                        entity.get( this.get( "attributeKey" ) ).push( newEntity );
 
-                        dataSource.rest.put( parentEntity.toObject2(), {
+                        dataSource.rest.put( entity.toObject2(), {
                             success: function () {
-                                EditEntityAction.showFormMsg("success", "Item has been added");
+                                EditEntityAction.showFormMsg( "success", "Item has been added" );
                                 EditEntityAction.hideFormFields();
                             },
                             failure: function (e) {
-                                EditEntityAction.showFormMsg("error", e.response.message || "Error while update item");
+                                EditEntityAction.showFormMsg( "error", e.response.message || "Error while update item" );
                             }
                         });
-                    });
+                    }, this ) );
                     break;
 
                 case "delete":
-                    if (confirm("Are your sure your want to delete this item ?")) {
+                    if ( confirm( "Are your sure your want to delete this item ?" ) ) {
                         var targetArray = parentEntity.get( this.get( "attributeKey" ) );
                         Y.Array.find( targetArray, function ( e, i, a ) {
-                            if ( e.get("id") == entity.get("id") ) {
+                            if ( e.get( "id" ) == entity.get( "id" ) ) {
                                 a.splice( i, 1 );
                                 return true;
                             }
