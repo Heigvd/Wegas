@@ -324,6 +324,9 @@ img.inputEx-ListField-delButton {
 .yui3-skin-sam .wegas-icon-viewsrc {
     background: url(../images/wegas-editor-sprite.png) no-repeat 2px -804px;
 }
+.yui3-skin-sam .wegas-icon-edit {
+    background: url(../images/wegas-editor-sprite.png) no-repeat 2px -943px;
+}
 
 /* Console Widget Styles */
 .wegas-console div.inputEx-Field {
