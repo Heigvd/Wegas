@@ -340,15 +340,17 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     choice = question.get("items")[i];
                     choiceInstance = choice.getInstance();
 
-                    disabled = !choiceInstance.get("active") ||                 // Check if the choice is active
-                    this.perPeriodLoad[startTime] + choice.get("cost")         // and if we have enough resources
+                    if ( !choiceInstance.get("active") ) {                      // Check if the choice is active
+                        continue;
+                    }
+
+                    disabled = this.perPeriodLoad[startTime] + choice.get("cost") // and if we have enough resources
                     > perPeriodBudget;
 
                     for ( j = 0; j < choice.get( "duration" ); j = j + 1 ) {
                         disabled = disabled                                     // finally we check if there is no other task assigned for this timeslot
                         || question.getRepliesByStartTime( startTime + j ).length > 0;
                     }
-                    //this.perPeriodLoad[]
                     ret.push({
                         type: "Button",
                         label: choice.get( "label" ) || choice.get( "name" ) || "undefined",

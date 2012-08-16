@@ -95,9 +95,44 @@ YUI.add('wegas-form', function (Y) {
             this.emptyMessage();
             msgNode.addClass(level);
             msgNode.one('.content').setContent(txt);
+            this.scrollToNode(msgNode);
         },
+
+        scrollToNode: function ( node ) {
+
+            return ;
+
+            var winH, docH;
+            if(this.anim && this.anim.get('running')) {
+                this.anim.pause();
+            }
+
+            var parent = node.get( "parent" );
+            while (parent ) {
+                console.log(parent);
+                parent = node.get( "parent" );
+            }
+
+            // record current window conditions
+            winH = Y.DOM.winHeight();
+            docH = Y.DOM.docHeight();
+            this.anim = new Y.Anim({
+                node: this.get('scroller'),
+                to: { // can't scoll to target if it's beyond the doc height - window height
+                    scroll : [Y.DOM.docScrollX(), Math.min(docH - winH, targetY)]
+                },
+                duration: this.get('duration'),
+                easing: this.get('easing'),
+                on : {
+                    end : function() {
+                        location.hash = hash;
+                    }
+                }
+            }).run();
+        },
+
         destroyForm: function () {
-             this.get("form").destroy();
+            this.get("form").destroy();
         }
 
     }, {
