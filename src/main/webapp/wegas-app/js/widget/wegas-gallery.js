@@ -262,11 +262,18 @@ YUI.add("wegas-gallery", function(Y){
 
         },
         loadImage: function(i){
+            var img;
             if(this.get(CONTENT_BOX).all("li").item(i).hasChildNodes()){
                 return;
             }
-            var img = Y.Node.create("<img src='"+this.get("gallery")[i].srcUrl+"' ></img>");
+            img = Y.Node.create("<img src='"+this.get("gallery")[i].srcUrl+"' ></img>");
+
             img.index = i;
+            img.once("error", function(e){
+                e.target.get("parentNode").setStyles({
+                    background:"url('../../wegas-editor/images/wegas-icon-error-48.png') no-repeat 50%"
+                });
+            });
             img.once("load", function(e){
                 e.target.get("parentNode").removeClass("img-loading");
                 this.images[e.target.index].loaded = true;
