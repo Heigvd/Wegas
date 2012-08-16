@@ -126,7 +126,7 @@ YUI.add("wegas-gallery", function(Y){
             this.setSelected(this.scrollView.pages.get("index"));
         },
         bindUI: function(){
-            this.eventInstances.push(this.after("fullScreenChange", this.syncUI));
+            this.after("fullScreenChange", this.syncUI);
             this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-left > div').on("click", function(e){
                 e.halt(true);
                 this.prev();
@@ -146,12 +146,12 @@ YUI.add("wegas-gallery", function(Y){
             this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-right').on("mousedown", function(e){
                 e.halt(true);
             }));
-            this.eventInstances.push(this.scrollView.on("flick", function(e){
+            this.scrollView.on("flick", function(e){
                 this.setSelected(e.target.pages.get("index"));
 
-            }, this));
+            }, this);
             //this.eventInstances.push();
-            this.eventInstances.push(Y.on("windowresize", Y.bind(this.windowResizeEvent, this)));
+            this.eventInstances.push( Y.on("windowresize", Y.bind(this.windowResizeEvent, this)));
             this.after("galleryChange", function(e){
                 this.scrollView.syncUI();
                 if(e.newVal.length > 0){
@@ -214,10 +214,12 @@ YUI.add("wegas-gallery", function(Y){
             }
         },
         destructor: function(){
-            this.styleSheet.disable();
+            if(this.styleSheet){
+                this.styleSheet.disable();
+            }
             this.fullScreenNode.destroy();
-            for(var i in this.eventInstances){
-                this.eventInstances[i].detachAll();
+            for ( var i = 0; i < this.eventInstances.length; i = i + 1 ){
+                this.eventInstances[i].detach();
             }
         }
 
@@ -230,6 +232,11 @@ YUI.add("wegas-gallery", function(Y){
                     this.get(CONTENT_BOX).empty();
                     this.images = {};
                     for(var i in o){
+                        if ( Y.Lang.isString( i ) ) {
+                            o[i] = {                                            // If the arguent is a string, treat it as an url
+                                srcUrl: o[i]
+                            }
+                        }
                         this.images[i] = {
                             loaded : false
                         };

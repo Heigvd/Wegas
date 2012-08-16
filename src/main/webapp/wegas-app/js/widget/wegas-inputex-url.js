@@ -41,6 +41,15 @@ YUI.add("wegas-inputex-url",function(Y){
         },
 
         /**
+         *
+         */
+        //getValue: function () {
+        //    return {
+        //        srcUrl: inputEx.Wegas.UrlField.superclass.getValue.call(this)
+        //    }
+        //},
+
+        /**
          * Adds a img tag before the field to display the favicon
          */
         render: function() {

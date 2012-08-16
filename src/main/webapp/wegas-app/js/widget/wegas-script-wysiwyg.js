@@ -60,6 +60,7 @@ YUI.add("wegas-script-wysiwyg", function(Y){
 
             var container = new Y.Node( this.fieldContainer );
             container.prepend( this.viewSrc.get( "boundingBox" ) );
+            container.append("<em class=\"msg\"></em>");
 
             this.on( "updated", function () {
                 this.syncUI();
@@ -75,7 +76,10 @@ YUI.add("wegas-script-wysiwyg", function(Y){
             var i, tree = window.esprima.parse( this.el.value, {                // Generate the form
                 raw: true
             }),
+            container = new Y.Node( this.fieldContainer ),
             fields = [];
+
+            container.one( ".msg" ).setContent( "");
 
             for (i = 0; i < tree.body.length; i = i + 1) {
                 try {
@@ -86,8 +90,7 @@ YUI.add("wegas-script-wysiwyg", function(Y){
                     //        indent: true
                     //    }));
                     this.setMode( "text" );
-                    var n = new Y.Node(this.fieldContainer);
-                    n.append("<em>Unable to read this impact, displaying source.</em>");
+                    container.one( ".msg" ).setContent( "Unable to read this impact, displaying source.");
                     return;
                 }
             }
