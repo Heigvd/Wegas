@@ -217,6 +217,10 @@ YUI.add('wegas-fileexplorer', function (Y) {
                         });
                     }
                     break;
+                case 'edit':
+                    file = params.data;
+                    Y.Plugin.EditEntityAction.showEditForm(file, Y.bind(this.editContent, this, node));
+                    break;
                 case 'delete':
                     if ( this.isProcessing(node) ) {
                         console.log("Current node processing, please wait ...");
@@ -245,7 +249,29 @@ YUI.add('wegas-fileexplorer', function (Y) {
             }
 
         },
+        editContent:function(node, data){
+            var  method="PUT";
+            Y.Wegas.app.dataSources.File.sendRequest({
+                request: node.path.substring(1, node.path.length),              //remove first "/"
+                cfg: {
+                    headers: DEFAULTHEADERS,
+                    method: method,
+                    data:Y.JSON.stringify(data),
+                    node: node
+                },
 
+                on: {
+                    success: this.updateContent,
+                    failure: this.onRequestFailure
+                }
+            });
+        },
+        updateContent:function(e){
+            var node = e.cfg.node,
+            data = JSON.parse(e.data.response);
+            node.get("rightWidget").get("params").data.set("description",  data.description);
+            node.get("rightWidget").get("params").data.set("note", data.note);
+        },
         onListRequestSuccess: function (callback, e) {
             var i;
             if(this.editNode){
@@ -295,10 +321,16 @@ YUI.add('wegas-fileexplorer', function (Y) {
                             cssClass:"wegas-icon-delete",
                             tooltip:"Delete directory",
                             data:"delete"
+                        },
+                        {
+                            cssClass:"wegas-icon-edit",
+                            tooltip:"Edit",
+                            data:"edit"
                         }],
                         horizontal: true,
                         params:{
-                            path: data.path + (data.path.match(".*/$") ? "" : "/") + data.name
+                            path: data.path + (data.path.match(".*/$") ? "" : "/") + data.name,
+                            data : new Y.Wegas.persistence.Directory(data)
                         }
                     })
                 });
@@ -311,10 +343,15 @@ YUI.add('wegas-fileexplorer', function (Y) {
                             cssClass:"wegas-icon-delete",
                             tooltip:"Delete file",
                             data:"delete"
+                        },{
+                            cssClass:"wegas-icon-edit",
+                            tooltip:"Edit",
+                            data:"edit"
                         }],
                         horizontal: true,
                         params:{
-                            path: data.path + (data.path.match(".*/$") ? "" : "/") + data.name
+                            path: data.path + (data.path.match(".*/$") ? "" : "/") + data.name,
+                            data: new Y.Wegas.persistence.File(data)
                         }
                     })
                 };
@@ -368,8 +405,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 node.expand(false);
                 this.uploader.show();
                 this.uploader.enable();
-                //In case rightWidget opacity change.
-                //this.uploader.get(BOUNDING_BOX).get("parentNode").setStyle("opacity", 1); //force opacity to 1 on rightWidget
+            //In case rightWidget opacity change.
+            //this.uploader.get(BOUNDING_BOX).get("parentNode").setStyle("opacity", 1); //force opacity to 1 on rightWidget
             }
             return true;
         },
