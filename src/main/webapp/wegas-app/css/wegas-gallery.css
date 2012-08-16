@@ -100,9 +100,9 @@
     position: absolute;
     top: 2px;
     right: 2px;
-    background: url("../images/greenlight.png") no-repeat 50%;
+    background: url("../images/sprite_icons.png") no-repeat 2px -28px rgba(255,255,255, 0.5);
     width: 18px;
-    height: 24px;
+    height: 18px;
     z-index:3;
 }
 img:hover + .gallery-text{
@@ -114,5 +114,11 @@ body > .yui3-scrollview{
     position:fixed;
 }
 body > .yui3-scrollview .gallery-toggle{
-    background: url("../images/redlight.png") no-repeat 50%;
+    background: url("../images/sprite_icons.png") no-repeat 2px -56px rgba(255,255,255, 0.5);
+}
+body > .wegas-lightGallery .gallery-toggle{
+    background: url("../images/sprite_icons.png") no-repeat 2px 2px rgba(255,255,255, 0.5);
+}
+.light-gallery [href]{
+    display:none;
 }
