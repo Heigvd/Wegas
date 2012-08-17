@@ -161,7 +161,7 @@ public class ContentConnector {
         } catch (RepositoryException ex) {
         } finally {
             if (session.isLive()) {
-                //session.logout();
+                session.logout();
             }
         }
     }
