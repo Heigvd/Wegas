@@ -157,12 +157,11 @@ public class ContentConnector {
 
     public void close() {
         try {
-            this.save();
-        } catch (RepositoryException ex) {
-        } finally {
             if (session.isLive()) {
+                session.save();
                 session.logout();
             }
+        } catch (RepositoryException ex) {
         }
     }
 
