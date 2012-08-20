@@ -50,10 +50,6 @@ YUI.add('wegas-entity', function (Y) {
             attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
-//                if (ret.hasOwnProperty(k) && ret[k] instanceof Y.Wegas.persistence.Entity) {
-//                    ret[k] = ret[k].toJSON();
-//                }
-
                 if (attrCfgs[k]["transient"]) {                                 // Remove any transient attribute
                     delete ret[k];
                 }
@@ -72,13 +68,13 @@ YUI.add('wegas-entity', function (Y) {
         toObject: function(mask){
             var e = JSON.parse(JSON.stringify(this));
             mask = Y.Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
-            return Y.clone(e, true, function(value, key, output, input){
+            return mask.length > 0 ? Y.clone(e, true, function(value, key, output, input){
                 if(mask.indexOf(key) != -1){
                     return false;
                 }else{
                     return true;
                 }
-            });
+            }) : e;
 
         },
         toObject2: function () {
