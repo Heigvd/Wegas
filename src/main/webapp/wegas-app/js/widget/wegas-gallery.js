@@ -68,12 +68,14 @@ YUI.add("wegas-gallery", function(Y){
         },
         renderUI : function(){
 
-            this.get("gallery");                                                // LAZY init
+            //this.get("gallery");                                                // LAZY init
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-left'><div>PREVIOUS</div></div>");
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-right'><div>NEXT</div></div>");
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-toggle'></div>");
             if(this.get("lightGallery")){
                 this.scrollView.get(BOUNDING_BOX).addClass("wegas-lightGallery");
+            }else if(this.get("gallery").length > 0){
+                this.loadImage(0);
             }
             this.fullScreenNode.appendTo(Y.one("body"));
 
