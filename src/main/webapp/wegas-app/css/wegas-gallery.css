@@ -56,7 +56,7 @@
     color:white;
     text-shadow:1px 1px 3px whitesmoke;
     top:0;
-    background-color: rgba(200,200,200,0.6);
+    background-color: transparent;
     z-index:2;
 }
 
@@ -83,7 +83,6 @@
     float: left;
 }
 .gallery-text{
-    color:#2647A0;
     font-weight: bold;
     white-space: pre-line !important;
     pointer-events:none;
@@ -94,14 +93,14 @@
     padding: 3px;
     position:absolute;
     bottom:0;
-    background-color:rgba(200,200,200,0.6);
+    background-color:transparent;
 }
 .gallery-toggle{
     cursor:pointer;
     position: absolute;
     top: 2px;
     right: 2px;
-    background: url("../images/sprite_icons.png") no-repeat 2px -28px;
+    background: url("../../wegas-editor/images/wegas-editor-sprite.png") no-repeat 0px -1060px;
     width: 18px;
     height: 18px;
     z-index:3;
@@ -115,7 +114,7 @@ body > .yui3-scrollview{
     position:fixed;
 }
 body > .yui3-scrollview .gallery-toggle{
-    background: url("../images/sprite_icons.png") no-repeat 2px -56px;
+    background: url("../../wegas-editor/images/wegas-editor-sprite.png") no-repeat 0px -1083px;
 }
 body > .wegas-lightGallery .gallery-toggle{
     background: url("../images/sprite_icons.png") no-repeat 2px 2px;
