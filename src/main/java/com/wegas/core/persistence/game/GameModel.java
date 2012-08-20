@@ -12,7 +12,7 @@ package com.wegas.core.persistence.game;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.layout.Widget;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.io.Serializable;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,9 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -30,7 +32,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Entity
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = "name"))
-public class GameModel extends NamedEntity implements Serializable {
+public class GameModel extends NamedEntity {
 
     private static final Logger logger = Logger.getLogger("GameModelEntity");
     //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
@@ -61,6 +63,7 @@ public class GameModel extends NamedEntity implements Serializable {
      */
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "rootgamemodel_id")
+    @JsonView(Views.Export.class)
     //@JsonManagedReference
     private List<VariableDescriptor> childVariableDescriptors;
     /**
@@ -68,6 +71,7 @@ public class GameModel extends NamedEntity implements Serializable {
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
+    @JsonView(Views.Editor.class)
     private List<Game> games = new ArrayList<Game>();
     /**
      *
@@ -82,10 +86,11 @@ public class GameModel extends NamedEntity implements Serializable {
      * Postgresql
      *
      */
-    //@Lob
     @ElementCollection(fetch = FetchType.LAZY)
     @Column(length = 10485760)
-    // @Column(columnDefinition = "BLOB NOT NULL")
+    @JsonView(Views.Editor.class)
+    //@Lob
+    //@Column(columnDefinition = "BLOB NOT NULL")
     private Map<String, String> scriptLibrary = new HashMap<>();
     /**
      * @fixme temporary solutions to store pages
@@ -180,8 +185,6 @@ public class GameModel extends NamedEntity implements Serializable {
      * hierarchy (other VariableDescriptor can be placed inside of a
      * ListDescriptor's items List)
      */
-    //@JsonManagedReference
-    //@XmlTransient
     public List<VariableDescriptor> getChildVariableDescriptors() {
         return childVariableDescriptors;
     }
@@ -190,7 +193,6 @@ public class GameModel extends NamedEntity implements Serializable {
      *
      * @param variableDescriptors
      */
-    //@JsonManagedReference
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
         this.childVariableDescriptors = variableDescriptors;
         this.variableDescriptors = variableDescriptors;

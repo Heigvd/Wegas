@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class TeamScope extends AbstractScope {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @XmlTransient
+    @JsonIgnore
     private Map<Long, VariableInstance> teamVariableInstances = new HashMap<Long, VariableInstance>();
 
     /**
@@ -86,7 +88,6 @@ public class TeamScope extends AbstractScope {
      *
      * @param force
      */
-    @XmlTransient
     @Override
     public void propagateDefaultInstance(boolean force) {
         logger.debug("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());

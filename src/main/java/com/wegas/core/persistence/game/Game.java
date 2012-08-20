@@ -11,7 +11,6 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -29,7 +28,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Entity
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"game_id", "name"}))
-public class Game extends NamedEntity implements Serializable {
+public class Game extends NamedEntity {
 
     private static final Logger logger = Logger.getLogger("GameEntity");
     /**

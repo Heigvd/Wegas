@@ -24,6 +24,7 @@ import com.wegas.messaging.persistence.variable.InboxInstance;
 import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ abstract public class VariableInstance extends AbstractEntity {
      */
     @ManyToOne
     @XmlTransient
+    @JsonIgnore
     private AbstractScope scope;
 
     /**
@@ -120,6 +122,7 @@ abstract public class VariableInstance extends AbstractEntity {
      * @return the scope
      */
     @XmlTransient
+     @JsonIgnore
     public VariableDescriptor getDescriptor() {
         return this.getScope().getVariableDescriptor();
     }
