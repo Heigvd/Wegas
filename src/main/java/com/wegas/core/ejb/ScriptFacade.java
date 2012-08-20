@@ -62,7 +62,7 @@ public class ScriptFacade {
      *
      */
     @Inject
-    private VariableInstanceManager variableInstanceManager;
+    private RequestManager variableInstanceManager;
     /**
      *
      */

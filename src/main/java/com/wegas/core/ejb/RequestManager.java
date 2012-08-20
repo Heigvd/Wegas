@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -12,6 +12,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +25,19 @@ import javax.inject.Named;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@Named("GameManager")
+@Named("RequestManager")
 @RequestScoped
-public class VariableInstanceManager implements Serializable {
+public class RequestManager implements Serializable {
 
     /**
      *
      */
     @Inject
     Event<PlayerAction> playerActionEvent;
+    /**
+     *
+     */
+    private Class view = Views.Player.class;
     /**
      *
      */
@@ -104,6 +109,20 @@ public class VariableInstanceManager implements Serializable {
      */
     public void clearUpdatedInstances() {
         this.updatedInstances.clear();
+    }
+
+    /**
+     * @return the view
+     */
+    public Class getView() {
+        return view;
+    }
+
+    /**
+     * @param view the view to set
+     */
+    public void setView(Class view) {
+        this.view = view;
     }
 
     /**

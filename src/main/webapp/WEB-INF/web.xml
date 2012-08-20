@@ -61,6 +61,10 @@
             <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter</param-value>
         </init-param>
         <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>com.wegas.core.rest.util.ViewRequestFilter</param-value>
+        </init-param>
+        <init-param>
          <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
          <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
         </init-param>

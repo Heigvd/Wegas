@@ -11,7 +11,7 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceManager;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
@@ -52,24 +52,24 @@ public class StateMachineRunner implements Serializable {
     private HashSet<StateMachineInstance> stateMachines = new HashSet<>();
     private HashSet<Transition> passedTransitions = new HashSet<>();
     @Inject
-    private VariableInstanceManager gameManager;
+    private RequestManager requestManager;
 
     public StateMachineRunner() {
     }
 
-    public void entityUpdateListener(@Observes VariableInstanceManager.PlayerAction playerAction) {
+    public void entityUpdateListener(@Observes RequestManager.PlayerAction playerAction) {
         if (run) {
-            logger.info("Running, received changed {}", gameManager.getUpdatedInstances());
+            logger.info("Running, received changed {}", requestManager.getUpdatedInstances());
             return;
         }
         //gameManager.clearUpdatedInstances();
         //TODO: Should Eval without firing Event, lock SMInstance (concurrency)
         run = true;
         if (stateMachines.isEmpty()) {                                          // load stateMachines only once
-            GameModel gamemodel = gameManager.getCurrentGameModel();
+            GameModel gamemodel = requestManager.getCurrentGameModel();
             List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel, StateMachineDescriptor.class);
             for (VariableDescriptor stateMachineDescriptor : stateMachineDescriptors) {
-                stateMachines.add((StateMachineInstance) stateMachineDescriptor.getScope().getVariableInstance(gameManager.getCurrentPlayer()));
+                stateMachines.add((StateMachineInstance) stateMachineDescriptor.getScope().getVariableInstance(requestManager.getCurrentPlayer()));
             }
             logger.info("StateMachineInstance(s) found: {}", stateMachines);
         }
@@ -81,7 +81,7 @@ public class StateMachineRunner implements Serializable {
                 Boolean validTransition = false;
                 try {
                     if (!(transition instanceof DialogueTransition) && transition.getTriggerCondition() != null) { //Do not eval Dialogue transition
-                        validTransition = (Boolean) scriptManager.eval(gameManager.getCurrentPlayer(), transition.getTriggerCondition());
+                        validTransition = (Boolean) scriptManager.eval(requestManager.getCurrentPlayer(), transition.getTriggerCondition());
                     }
                 } catch (ScriptException ex) {
                     logger.error("Script Failed : {} returned: {}", transition.getTriggerCondition(), ex);
@@ -106,7 +106,7 @@ public class StateMachineRunner implements Serializable {
         steps += 1;
         run = false;
         try {
-            scriptManager.eval(gameManager.getCurrentPlayer(), impacts);
+            scriptManager.eval(requestManager.getCurrentPlayer(), impacts);
         } catch (ScriptException ex) {
             logger.error("Script Failed : {} returned: {}", impacts, ex);
         }
@@ -114,6 +114,6 @@ public class StateMachineRunner implements Serializable {
 
     @PreDestroy
     public void logFinalState() {
-        logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", gameManager.getCurrentPlayer().getId(), passedTransitions);
+        logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", requestManager.getCurrentPlayer().getId(), passedTransitions);
     }
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -76,6 +77,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @JoinColumn
     //@JsonBackReference
     @XmlTransient
+    @JsonIgnore
     private GameModel gameModel;
     /**
      * Here we cannot use type T, otherwise jpa won't handle the db ref

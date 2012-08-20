@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -44,7 +45,6 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      *
      */
     @OneToOne
-    @XmlTransient
     //@JsonBackReference
     private VariableDescriptor variableDescriptor;
 
@@ -81,6 +81,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     // @fixme here we cannot use the back-reference on an abstract reference
     //@JsonBackReference
     @XmlTransient
+    @JsonIgnore
     public VariableDescriptor getVariableDescriptor() {
         return this.variableDescriptor;
     }
@@ -100,6 +101,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      */
     @Override
     @XmlTransient
+    @JsonIgnore
     public Long getId() {
         return this.id;
     }

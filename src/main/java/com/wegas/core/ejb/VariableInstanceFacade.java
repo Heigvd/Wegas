@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -50,7 +50,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
      *
      */
     @Inject
-    private VariableInstanceManager variableInstanceManager;
+    private RequestManager requestManager;
 
     /**
      *
@@ -98,16 +98,17 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
      * @param vi
      */
     public void onVariableInstanceUpdate(VariableInstance vi) {
-        logger.debug("onVariableInstanceUpdate() {}", variableInstanceManager);
+        logger.debug("onVariableInstanceUpdate() {}", requestManager);
         //  logger.info("onVariableInstanceUpdate() {} {}", requestManager.getCurrentPlayer(), requestManager.getUpdatedInstances());
-        variableInstanceManager.addUpdatedInstance(vi);
+        requestManager.addUpdatedInstance(vi);
     }
+
     /**
      *
      * @return
      */
     public List<VariableInstance> getUpdatedInstances() {
-        return variableInstanceManager.getUpdatedInstances();
+        return requestManager.getUpdatedInstances();
     }
 
     /**

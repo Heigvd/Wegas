@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -20,16 +20,20 @@ public class Views {
     /**
      *
      */
-    static public class Export {
+    public static class Editor {
     }
-    /*
-     * static class Public { }
+
+    /**
      *
-     * static class ExtendedPublic extends Public { }
-     *
-     * static class Internal extends ExtendedPublic {
-    }
      */
+    public static class Export extends Editor {
+    }
+
+    /**
+     *
+     */
+    public static class Player {
+    }
 
     /**
      *
