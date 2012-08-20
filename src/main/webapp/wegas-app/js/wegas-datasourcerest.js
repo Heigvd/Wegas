@@ -295,6 +295,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
             });
         },
 
+        clone: function ( id, parentData ){
+            var entity = this.findById(id).clone();
+            this.post(entity, parentData);
+        },
+
         /**
          * @deprecated, here for retrocompatibility
          */
