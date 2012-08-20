@@ -302,7 +302,7 @@ YUI.add("wegas-gallery", function(Y){
                     this.get(CONTENT_BOX).empty();
                     this.images = {};
                     for(var i in o){
-                        if ( Y.Lang.isString( i ) ) {
+                        if ( Y.Lang.isString( o[i] ) ) {
                             o[i] = {                                            // If the arguent is a string, treat it as an url
                                 srcUrl: o[i]
                             }
