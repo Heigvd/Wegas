@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -24,9 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
-import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 /**
  *
@@ -34,6 +33,7 @@ import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
  */
 @XmlRootElement
 @XmlType(name = "")                                                             // This forces to use Class's short name as type
+//@XmlAccessorType(XmlAccessType.FIELD)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModel", value = GameModel.class),
@@ -109,42 +109,21 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
      *
-     * @return
+     * @return @throws IOException
      */
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + " )";
+    public String toJson() throws IOException {
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        mapper.writeValue(baos, this);
+        return baos.toString();
     }
 
     /**
      *
      * @return
      */
-    //@XmlTransient
-    // public String getKey() {
-    //    return this.getClass().getSimpleName() + getId();
-    // }
-    /**
-     *
-     * @param ps
-     * @return
-     * @throws IOException
-     */
-    //  @XmlTransient
-    //  public String toJson(Providers ps) throws IOException {
-//        // Marshall new version
-//        OutputStream os = new ByteArrayOutputStream();
-//        MessageBodyWriter mbw = ps.getMessageBodyWriter(this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.APPLICATION_JSON_TYPE);
-//        mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
-//        return os.toString();
-//    }
-    public String toJson() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-        mapper.getDeserializationConfig().setAnnotationIntrospector(introspector);// make deserializer use JAXB annotations (only)
-        mapper.getSerializationConfig().setAnnotationIntrospector(introspector);// make serializer use JAXB annotations (only)
-        mapper.writeValue(baos, this);
-        return baos.toString();
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + " )";
     }
 }

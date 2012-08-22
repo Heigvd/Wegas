@@ -11,6 +11,7 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
@@ -20,6 +21,7 @@ import com.wegas.mcq.persistence.*;
 import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -52,6 +54,11 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     @EJB
     private ScriptFacade scriptManager;
+    /**
+     *
+     */
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -97,9 +104,8 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param startTime
      * @return
      */
-    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
+    public Reply selectChoice(Long choiceId, Player player, Long startTime) {
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
-        Player player = playerFacade.find(playerId);
 
         Query findListDescriptorByChildId = em.createNamedQuery("findListDescriptorByChildId");
         findListDescriptorByChildId.setParameter("itemId", choice.getId());
@@ -118,10 +124,21 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         return reply;
     }
 
+    /**
+     *
+     * @param choiceId
+     * @param playerId
+     * @param startTime
+     * @return
+     */
+    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
+        return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
+    }
+
     private Result getCurrentResult(ChoiceInstance choice) {
         Result r = choice.getCurrentResult();
         if (r == null) {
-            r = ((ChoiceDescriptor)choice.getDescriptor()).getResults().get(0);
+            r = ( (ChoiceDescriptor) choice.getDescriptor() ).getResults().get(0);
         }
         return r;
     }

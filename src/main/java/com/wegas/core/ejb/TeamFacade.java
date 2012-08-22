@@ -55,7 +55,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         g.addTeam(t);
         em.flush();
         em.refresh(t);
-        g.getGameModel().propagateDefaultVariableInstance(false);
+        g.getGameModel().propagateDefaultInstance(false);
     }
 
     public Team findByToken(String token) throws PersistenceException {
@@ -87,7 +87,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         team.addPlayer(player);
         em.flush();
         em.refresh(player);
-        team.getGame().getGameModel().propagateDefaultVariableInstance(false);
+        team.getGame().getGameModel().propagateDefaultInstance(false);
     }
 
     /**

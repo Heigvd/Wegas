@@ -11,6 +11,7 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.user.User;
+import com.wegas.core.rest.util.Views;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,8 +19,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -51,28 +54,16 @@ public class Player extends AbstractEntity {
     /**
      *
      */
-    /*
-     * @ManyToMany(cascade = CascadeType.ALL) @JoinTable(name = "user_player",
-     * joinColumns = { @JoinColumn(name = "userId") }, inverseJoinColumns = {
-     * @JoinColumn(name = "playerId") }) private Collection<UserEntity> users;
-     */
-    /**
-     *
-     */
     @ManyToOne(cascade = {CascadeType.PERSIST})
-    @XmlTransient
-    // @XmlInverseReference(mappedBy = "players")
-    @JsonBackReference(value = "player-user")
     private User user;
     /**
      * The game model this belongs to
      */
     @ManyToOne
     @NotNull
-    @XmlTransient
-    // @XmlInverseReference(mappedBy = "players")
     @JsonBackReference(value = "player-team")
     @JoinColumn(name = "parentteam_id")
+    //@XmlInverseReference(mappedBy = "players")
     private Team team;
     /**
      *
@@ -168,6 +159,7 @@ public class Player extends AbstractEntity {
      * @return
      */
     @XmlTransient
+    @JsonIgnore
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
     }
@@ -177,6 +169,7 @@ public class Player extends AbstractEntity {
      * @return
      */
     @XmlTransient
+    @JsonIgnore
     public Game getGame() {
         return this.getTeam().getGame();
     }

@@ -563,7 +563,7 @@ YUI.add('wegas-entity', function (Y) {
                     }
                 }
             },
-            defaultVariableInstance: {
+            defaultInstance: {
                 value:null,
                 validator: function(o){
                     return o instanceof Y.Wegas.persistence.VariableInstance;
@@ -595,6 +595,15 @@ YUI.add('wegas-entity', function (Y) {
     }, {
         ATTRS: {
             variableInstances: {
+                "transient": true,
+                getter: function( val ) {
+                    if ( !val ) {
+                        return this.get( "privateInstances" );
+                    }
+                    return val;
+                }
+            },
+            privateInstances: {
                 "transient": true
             }
         }
@@ -682,7 +691,7 @@ YUI.add('wegas-entity', function (Y) {
             "@class":{
                 value:"StringDescriptor"
             },
-            defaultVariableInstance: {
+            defaultInstance: {
                 properties: {
                     "@class": {
                         type: "string",
@@ -738,7 +747,7 @@ YUI.add('wegas-entity', function (Y) {
                     label:'Maximum'
                 }
             },
-            defaultVariableInstance: {
+            defaultInstance: {
                 properties: {
                     "@class": {
                         type: "string",
@@ -825,7 +834,7 @@ YUI.add('wegas-entity', function (Y) {
                     return val;
                 }
             },
-            defaultVariableInstance: {
+            defaultInstance: {
                 properties: {
                     "@class": {
                         type: "string",
@@ -871,7 +880,7 @@ YUI.add('wegas-entity', function (Y) {
                 type: "string",
                 format: 'html'
             },
-            defaultVariableInstance: {
+            defaultInstance: {
                 properties: {
                     '@class': {
                         type: "string",
@@ -972,7 +981,7 @@ YUI.add('wegas-entity', function (Y) {
             "@class":{
                 value:"TaskDescriptor"
             },
-            defaultVariableInstance: {
+            defaultInstance: {
                 properties: {
                     '@class': {
                         type: 'string',

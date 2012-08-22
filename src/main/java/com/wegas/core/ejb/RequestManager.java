@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -12,6 +12,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +25,19 @@ import javax.inject.Named;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@Named("GameManager")
+@Named("RequestManager")
 @RequestScoped
-public class VariableInstanceManager implements Serializable {
+public class RequestManager implements Serializable {
 
     /**
      *
      */
     @Inject
     Event<PlayerAction> playerActionEvent;
+    /**
+     *
+     */
+    private Class view = Views.Public.class;
     /**
      *
      */
@@ -48,7 +53,7 @@ public class VariableInstanceManager implements Serializable {
     public void commit() {
         if (this.getUpdatedInstances().size() > 0) {
             PlayerAction action = new PlayerAction();
-            action.setPlayer(this.getCurrentPlayer());
+            action.setPlayer(this.getPlayer());
             playerActionEvent.fire(action);
         }
     }
@@ -66,14 +71,14 @@ public class VariableInstanceManager implements Serializable {
     /**
      * @return the currentPlayer
      */
-    public Player getCurrentPlayer() {
+    public Player getPlayer() {
         return currentPlayer;
     }
 
     /**
      * @param currentPlayer the currentPlayer to set
      */
-    public void setCurrentPlayer(Player currentPlayer) {
+    public void setPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
@@ -82,7 +87,7 @@ public class VariableInstanceManager implements Serializable {
      * @return
      */
     public GameModel getCurrentGameModel() {
-        return this.getCurrentPlayer().getGameModel();
+        return this.getPlayer().getGameModel();
     }
 
     /**
@@ -104,6 +109,20 @@ public class VariableInstanceManager implements Serializable {
      */
     public void clearUpdatedInstances() {
         this.updatedInstances.clear();
+    }
+
+    /**
+     * @return the view
+     */
+    public Class getView() {
+        return view;
+    }
+
+    /**
+     * @param view the view to set
+     */
+    public void setView(Class view) {
+        this.view = view;
     }
 
     /**

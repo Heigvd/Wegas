@@ -13,7 +13,7 @@ importPackage(javax.naming);
  * - Active or Deactive some tasks (checkTasksState)
  * - Pay all active resources (payResources)
  * - Check the moral of all active resources (checkMoral)
- * - Check the 'LeadershipLevel' of all active resources (checkLeadershipLevel) 
+ * - Check the 'LeadershipLevel' of all active resources (checkLeadershipLevel)
  */
 function finishCurrentWeek(){
     var gm = self.getGameModel(),
@@ -55,7 +55,7 @@ function getValideResources(){
                     if(assignment.getTaskDescriptorId() == absencesInstance.getDescriptorId() && absencesInstance.getActive() == true){
                         isValid = false;
                     }
-                }   
+                }
             }
         }
         if(isValid) valideResources.push(resourceDescriptor);
@@ -82,7 +82,7 @@ function getWorkedTasks(listResources){
                     if(assignment.getTaskDescriptorId() == taskInstance.getDescriptorId()){
                         isWorked = true;
                     }
-                }   
+                }
             }
         }
         if(isWorked) workedTasks.push(taskDescriptor);
@@ -133,14 +133,14 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
     var i,j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),
     budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
     clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskSkillKey, wish, hate,
-    taskSkillValue, listTaskSkill = taskInstance.getSkillset(), taskDuration = taskInstance.getDescriptor().defaultVariableInstance.getDuration(), workerInstance,
+    taskSkillValue, listTaskSkill = taskInstance.getSkillset(), taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), workerInstance,
     workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,
     sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),
     punderationMoral = 0.1,
     punderationConfidence = 0.2,
     punderationSkillsets = 0.7,
     punderationQualityWeight = 0.5
-    
+
     //get existing skills
     for(i=0; i<workersDescriptor[0].getInstance(self).getSkillset().size(); i++){
         existingSkills.push(workersDescriptor[0].getInstance(self).getSkillset().keySet().toArray()[i]);
@@ -204,8 +204,8 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
                 wish = existingSkills[Math.floor(Math.random() * existingSkills.length)];
                 if(wish == workerInstance.getProperty('wish')) wish = "";
             }
-            workerInstance.setProperty('wishIsKnow', false);  
-            workerInstance.setProperty('wish', wish);  
+            workerInstance.setProperty('wishIsKnow', false);
+            workerInstance.setProperty('wish', wish);
             //check hate
             randomNumber = Math.random();
             hate = workerInstance.getProperty('hate');
@@ -216,8 +216,8 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
                 hate = existingSkills[Math.floor(Math.random() * existingSkills.length)];
                 if(hate == workerInstance.getProperty('hate')) hate = "";
             }
-            workerInstance.setProperty('hateIsKnow', false);  
-            workerInstance.setProperty('hate', hate);  
+            workerInstance.setProperty('hateIsKnow', false);
+            workerInstance.setProperty('hate', hate);
         }
         averageWorkPartSkills = Math.round(averageWorkPartSkills);
         workPartsQuality.push(averageWorkPartSkills);
@@ -256,19 +256,19 @@ function doTaskEnd(workersDescriptor, taskDescriptor){
     content.push("' vient d'être terminé. Le client ");
     switch(true){
         case workQuality<20 :
-            content.push("n'est absolument pas statisfait de notre travail. Aucune chance qu'il nous mandate à nouveau. ");           
+            content.push("n'est absolument pas statisfait de notre travail. Aucune chance qu'il nous mandate à nouveau. ");
             break;
         case workQuality<40 :
-            content.push("n'est pas statisfait de notre travail. Il est vrai que certaine erreurs ont été commises. ");           
+            content.push("n'est pas statisfait de notre travail. Il est vrai que certaine erreurs ont été commises. ");
             break;
         case workQuality<60 :
-            content.push("est moyennement satisfait. La qualité n'est pas terrible mais le projet est satisfaisant dans l'ensemble. ");           
+            content.push("est moyennement satisfait. La qualité n'est pas terrible mais le projet est satisfaisant dans l'ensemble. ");
             break;
         case workQuality<80 :
-            content.push("est content du travail réalisé. Il n'hésitera pas à nous recontacter pour de nouveaux mandats. ");           
+            content.push("est content du travail réalisé. Il n'hésitera pas à nous recontacter pour de nouveaux mandats. ");
             break;
         default :
-            content.push("est ravi par le travail réalisé. La qualité est au-delà de ses espérences et sera fidèle à notre entreprise. ");           
+            content.push("est ravi par le travail réalisé. La qualité est au-delà de ses espérences et sera fidèle à notre entreprise. ");
             break;
     }
     content.push("<br />");
@@ -299,11 +299,11 @@ function checkAbsencesEnd(){
         for(j=0; j<resourceInstance.getAssignments().size();j++){
         assignment = resourceInstance.getAssignments().get(j);
             for(k=0; k<listAbsences.items.size();k++){
-                absenceInstance = listAbsences.items.get(k).getInstance(self);       
+                absenceInstance = listAbsences.items.get(k).getInstance(self);
                 if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive() == true){
                     duration = absenceInstance.getDuration();
                     if(duration <= 0){
-                        absenceInstance.setActive(false);   
+                        absenceInstance.setActive(false);
                     }
                     else if(duration == 1){
                         assignmentToRemove.push(j);
@@ -328,7 +328,7 @@ function checkAbsencesEnd(){
 }
 
 /**
- * Check 'active' value in each tasks (from list 'tasks') 
+ * Check 'active' value in each tasks (from list 'tasks')
  * Activate and deactivate tasks according with its variables and if a resource work on.
  */
 function checkTasksState(){
@@ -358,7 +358,7 @@ function checkTasksState(){
              taskInstance.getDuration() > 0
             )
             ){
-              taskInstance.setActive(true);     
+              taskInstance.setActive(true);
         }
         else{
             taskInstance.setActive(false);
@@ -367,7 +367,7 @@ function checkTasksState(){
 }
 
 /**
- * Decreases current budget value by the sum of all salary of actives resources 
+ * Decreases current budget value by the sum of all salary of actives resources
  */
 function payResources(){
     var i, gm = self.getGameModel(),
@@ -379,7 +379,7 @@ function payResources(){
     for(i=0;i<listResources.items.size();i++){
         resourceInstance = listResources.items.get(i).getInstance(self);
         if(resourceInstance.getActive() == true){
-            sumSalary+=parseInt(resourceInstance.getProperty('salary'));   
+            sumSalary+=parseInt(resourceInstance.getProperty('salary'));
         }
     }
     budgetInstance.setValue(budgetInstance.getValue()-sumSalary);
@@ -548,7 +548,7 @@ function sendScore(){
     }
     else{
         content.push("Vous avez donc perdu ");
-        content.push(oldScore-newScore);  
+        content.push(oldScore-newScore);
     }
     content.push(" points depuis la dernière semaine.");
     content.push("<br /><br />");
@@ -561,12 +561,12 @@ function sendScore(){
 }
 
 /**
- * @return Integer score, the current player's score 
+ * @return Integer score, the current player's score
  */
 function calculateScore(){
     var gm = self.getGameModel(), teamMotivation, budget, clientSatisfaction, score,
     punderationBudget = 0.2,
-    punderationMotivation = 0.45, 
+    punderationMotivation = 0.45,
     punderationSatisfaction = 0.35;
     teamMotivation = parseInt(VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self).getValue());
     budget = parseInt(VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self).getValue());
@@ -606,7 +606,7 @@ function sickenResource(resourceDescriptor, duration){
  * @param Integer taskDescriptorId, the id of task to assign
  */
 function assignTask(resourceDescriptorId, taskDescriptorId){
-    var i, j, resInstance, taskDescriptor, gm=self.getGameModel(), isWorking = false, 
+    var i, j, resInstance, taskDescriptor, gm=self.getGameModel(), isWorking = false,
     listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
     listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');
     for(i=0; i<listResources.items.size(); i++){
@@ -627,7 +627,7 @@ function assignTask(resourceDescriptorId, taskDescriptorId){
         }
     }
     if(taskDescriptor != null && resInstance != null && !isWorking){
-        resInstance.assign(0, taskDescriptor);   
+        resInstance.assign(0, taskDescriptor);
     }
 }
 
@@ -650,7 +650,7 @@ function lookupBean(name){
 function sendMessage(subject, content, from){
     var EF = lookupBean('InGameMailFacade');
     if(EF != null){
-         EF.send(self, subject, content, from);   
+         EF.send(self, subject, content, from);
     }
     else{
         println('Bean InGameMailFacade does not exist, unable to send in-game message: '+subject);
@@ -666,9 +666,9 @@ function resetDialogueValues(){
     listResources = VariableDescriptorFacade.findByName(gm, 'resources');
     for(i=0; i<listResources.items.size(); i++){
         resourceInstance = listResources.items.get(i).getInstance(self);
-        resourceInstance.setProperty('isAdvised', false); 
-        resourceInstance.setProperty('isConsidered', false); 
-        resourceInstance.setProperty('bonusInducement', 0); 
+        resourceInstance.setProperty('isAdvised', false);
+        resourceInstance.setProperty('isConsidered', false);
+        resourceInstance.setProperty('bonusInducement', 0);
     }
 }
 
@@ -700,7 +700,7 @@ function doIntroduction(){
  * - actions
  * - teamMotivation
  * - clientsSatisfaction
- * 
+ *
  * Ressource's value to limit :
  * - moral
  * - confidence
@@ -720,12 +720,12 @@ function limitValues(){
     valueDescr = VariableDescriptorFacade.findByName(gm, 'teamMotivation')
     valueInst = valueDescr.getInstance(self);
     if(valueInst.getValue() > valueDescr.getMaxValue()) valueInst.setValue(valueDescr.getMaxValue());
-    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());  
+    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());
     //clientsSatisfaction
     valueDescr = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction')
     valueInst = valueDescr.getInstance(self);
     if(valueInst.getValue() > valueDescr.getMaxValue()) valueInst.setValue(valueDescr.getMaxValue());
-    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());  
+    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());
     //ressources
     for(i=0; i<listResources.items.size(); i++){
         valueDescr = listResources.items.get(i);
@@ -733,11 +733,11 @@ function limitValues(){
         //moral
         value = parseInt(valueInst.getMoral());
         if(value > 100) valueInst.setMoral(100);
-        if(value < 0) valueInst.setMoral(0);  
+        if(value < 0) valueInst.setMoral(0);
         //moral
         value = parseInt(valueInst.getConfidence());
         if(value > 100) valueInst.setConfidence(100);
-        if(value < 0) valueInst.setConfidence(0); 
+        if(value < 0) valueInst.setConfidence(0);
         //frankness
         value = parseInt(valueInst.getProperty('frankness'));
         if(value > 100) valueInst.setProperty('frankness', 100);
@@ -752,7 +752,7 @@ function limitValues(){
             skillKey = skillsets.keySet().toArray()[j];
             skillValue = parseInt(skillsets.get(skillKey));
             if(skillValue > 100) valueInst.setSkillset(skillKey, 100);
-            if(skillValue < 0) valueInst.setSkillset(skillKey, 0);            
+            if(skillValue < 0) valueInst.setSkillset(skillKey, 0);
          }
     }
 }

@@ -9,12 +9,14 @@
  */
 package com.wegas.mcq.rest;
 
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,6 +39,9 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
     /**
      *
      * @param playerId
@@ -48,12 +53,10 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response selectChoice(
-            @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws ScriptException {
-
         Reply reply =
-                questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
-        questionDescriptorFacade.validateReply(playerId, reply.getId());
+                questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), new Long(0));
+        questionDescriptorFacade.validateReply(requestManager.getPlayer(), reply.getId());
         return Response.ok().build();
     }
 
@@ -89,7 +92,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
             @PathParam("choiceId") Long choiceId,
             @PathParam("startTime") Long startTime) {
 
-        Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
+        Reply reply = questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), startTime);
         return reply.getQuestionInstance();
     }
 

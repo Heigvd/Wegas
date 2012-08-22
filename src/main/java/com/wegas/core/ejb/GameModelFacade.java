@@ -35,7 +35,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      */
     public void reset(Long gameModelId) {
         GameModel gm = this.find(gameModelId);
-        gm.propagateDefaultVariableInstance(true);
+        gm.propagateDefaultInstance(true);
         em.flush();
         em.refresh(gm);
     }

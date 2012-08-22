@@ -66,7 +66,7 @@ public class TriggerTest {
         this.triggerDescriptor.buildStateMachine();
         assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L;
         assert this.triggerDescriptor.getStates().get(2L).getTransitions().isEmpty();
-        assert ((TriggerInstance) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId() == 1L;
+        assert ((TriggerInstance) this.triggerDescriptor.getDefaultInstance()).getCurrentStateId() == 1L;
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
@@ -85,7 +85,7 @@ public class TriggerTest {
         this.triggerDescriptor.buildStateMachine();
         assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 1L;
         assert this.triggerDescriptor.getStates().size() == 1;
-        assert ((TriggerInstance) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId() == 1L;
+        assert ((TriggerInstance) this.triggerDescriptor.getDefaultInstance()).getCurrentStateId() == 1L;
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
@@ -135,7 +135,7 @@ public class TriggerTest {
         assert (this.triggerDescriptor.getPostTriggerEvent().getContent() == null ? newTestScript.getContent() == null : this.triggerDescriptor.getPostTriggerEvent().getContent().equals(newTestScript.getContent()));
         assert (this.triggerDescriptor.getPostTriggerEvent().getLanguage() == null ? newTestScript.getLanguage() == null : this.triggerDescriptor.getPostTriggerEvent().getLanguage().equals(newTestScript.getLanguage()));
         assert this.triggerDescriptor.getScope().getClass().equals(TeamScope.class);
-        assert ((TriggerInstance) this.triggerDescriptor.getDefaultVariableInstance()).getCurrentStateId().equals(instanceEntity.getCurrentStateId());
-        assert this.triggerDescriptor.getDefaultVariableInstance().getId() == this.trigger.getId();
+        assert ((TriggerInstance) this.triggerDescriptor.getDefaultInstance()).getCurrentStateId().equals(instanceEntity.getCurrentStateId());
+        assert this.triggerDescriptor.getDefaultInstance().getId() == this.trigger.getId();
     }
 }
