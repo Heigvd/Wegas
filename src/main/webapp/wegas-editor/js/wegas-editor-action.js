@@ -61,11 +61,19 @@ YUI.add('wegas-editor-action', function (Y) {
         execute: function () {
             EditEntityAction.showAddForm(Y.Wegas.persistence.Entity.revive({
                 "@class": this.get("targetClass")
-            }), null, Y.Wegas.app.dataSources[this.get("targetClass")]);
+            }), null, Y.Wegas.app.dataSources[ this.get( "dataSource" ) ] );
         }
     }, {
         ATTRS: {
-            targetClass: { }
+            targetClass: { },
+            dataSource: {
+                getter: function ( value ) {
+                    if ( !value ) {
+                        return this.get( "targetClass" );
+                    }
+                    return value;
+                }
+            }
         }
     });
 

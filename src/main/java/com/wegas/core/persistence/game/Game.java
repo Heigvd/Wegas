@@ -11,6 +11,7 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,6 +21,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -84,7 +87,6 @@ public class Game extends NamedEntity {
     /**
      *
      */
-
     @PrePersist
     @PreUpdate
     public void prePersist() {
@@ -104,6 +106,7 @@ public class Game extends NamedEntity {
      * @return the teams
      */
     @JsonManagedReference("game-team")
+    @JsonView(Views.Public.class)
     public List<Team> getTeams() {
         return this.teams;
     }

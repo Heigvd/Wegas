@@ -69,7 +69,7 @@ public class StateMachineRunner implements Serializable {
             GameModel gamemodel = requestManager.getCurrentGameModel();
             List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel, StateMachineDescriptor.class);
             for (VariableDescriptor stateMachineDescriptor : stateMachineDescriptors) {
-                stateMachines.add((StateMachineInstance) stateMachineDescriptor.getScope().getVariableInstance(requestManager.getCurrentPlayer()));
+                stateMachines.add((StateMachineInstance) stateMachineDescriptor.getInstance());
             }
             logger.info("StateMachineInstance(s) found: {}", stateMachines);
         }
@@ -81,7 +81,7 @@ public class StateMachineRunner implements Serializable {
                 Boolean validTransition = false;
                 try {
                     if (!(transition instanceof DialogueTransition) && transition.getTriggerCondition() != null) { //Do not eval Dialogue transition
-                        validTransition = (Boolean) scriptManager.eval(requestManager.getCurrentPlayer(), transition.getTriggerCondition());
+                        validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
                     }
                 } catch (ScriptException ex) {
                     logger.error("Script Failed : {} returned: {}", transition.getTriggerCondition(), ex);
@@ -106,7 +106,7 @@ public class StateMachineRunner implements Serializable {
         steps += 1;
         run = false;
         try {
-            scriptManager.eval(requestManager.getCurrentPlayer(), impacts);
+            scriptManager.eval(impacts);
         } catch (ScriptException ex) {
             logger.error("Script Failed : {} returned: {}", impacts, ex);
         }
@@ -114,6 +114,6 @@ public class StateMachineRunner implements Serializable {
 
     @PreDestroy
     public void logFinalState() {
-        logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", requestManager.getCurrentPlayer().getId(), passedTransitions);
+        logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", requestManager.getPlayer().getId(), passedTransitions);
     }
 }

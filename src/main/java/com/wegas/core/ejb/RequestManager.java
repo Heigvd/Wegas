@@ -37,7 +37,7 @@ public class RequestManager implements Serializable {
     /**
      *
      */
-    private Class view = Views.Player.class;
+    private Class view = Views.Public.class;
     /**
      *
      */
@@ -53,7 +53,7 @@ public class RequestManager implements Serializable {
     public void commit() {
         if (this.getUpdatedInstances().size() > 0) {
             PlayerAction action = new PlayerAction();
-            action.setPlayer(this.getCurrentPlayer());
+            action.setPlayer(this.getPlayer());
             playerActionEvent.fire(action);
         }
     }
@@ -71,14 +71,14 @@ public class RequestManager implements Serializable {
     /**
      * @return the currentPlayer
      */
-    public Player getCurrentPlayer() {
+    public Player getPlayer() {
         return currentPlayer;
     }
 
     /**
      * @param currentPlayer the currentPlayer to set
      */
-    public void setCurrentPlayer(Player currentPlayer) {
+    public void setPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
@@ -87,7 +87,7 @@ public class RequestManager implements Serializable {
      * @return
      */
     public GameModel getCurrentGameModel() {
-        return this.getCurrentPlayer().getGameModel();
+        return this.getPlayer().getGameModel();
     }
 
     /**

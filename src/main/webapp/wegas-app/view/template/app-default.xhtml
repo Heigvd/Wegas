@@ -108,7 +108,7 @@
             };
             </ui:fragment>
 
-            // Set up some YUI3 default parameters. Will be use for every call to
+                // Set up some YUI3 default parameters. Will be use for every call to
             // the YUI(cfg) function. Can be overridden by the cfg parameter.
             YUI_config.useBrowserConsole = true;
             YUI_config.charset = 'utf-8';
@@ -137,12 +137,10 @@
                 var Y = YUI({
                     //filter: 'raw'
                     //filters: { event: 'debug' }
-                }).use(
-                    <ui:insert name="jsInculde">'wegas-app'</ui:insert>,
-                function (Y) {
+                }).use('wegas-app', function (Y) {
                     var cfg = {
                         base : "/Wegas/",
-                        layoutSrc: '<ui:insert name="layoutUri">wegas-app/db/wegas-app-layout.json</ui:insert>',
+                        layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                         lang : 'en-US',
                         debug : true,
                         currentGameModel: #{gameController.currentGameModel.id},
@@ -206,24 +204,8 @@
                                     }
                                 ]
                             },
-                            "User": {
-                                source: "rest/User",
-                                initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                            }
-                                        }
-                                    }, {
-                                        fn: "DataSourceREST"
-                                    }
-                                ]
-                            },
                             "VariableDescriptor": {
-                                source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [
                                     {
@@ -265,75 +247,13 @@
                          * This field is used to override Entities edition forms.
                          * Use the target class name as the key.
                          */
-                        editorForms: {
-                            //  *** Widgets *** //
-                            List: [
-                                { name: 'label', label: 'Label'},
-                                { name: 'direction', label: 'Direction', type: 'select', choices: [
-                                        { value: 'vertical', label: 'Vertical' },
-                                        { value: 'horizontal', label: 'Horizontal' }
-                                    ] },
-                                { name: 'cssClass', label: 'CSS class'},
-                                { name: 'type', value:'List:', type: 'hidden'}
-                            ],
-                            VariableDisplay: [
-                                { name: 'label', label: 'Label'},
-                                { name: 'variable', label: 'Target variable'},
-                                { name: 'view', label: 'Display mode', type: 'select', choices: [
-                                        { value: 'text', label: 'Text' },
-                                        { value: 'button', label: 'Boxes' },
-                                        { value: 'gauge', label: 'Gauge' }
-                                    ] },
-                                { name: 'cssClass', label: 'CSS class'},
-                                { name: 'type', value:'VariableDisplay:', type: 'hidden'}
-                            ],
-                            Button: [
-                                /*{ name: 'name', label: 'Name'},*/
-                                { name: 'label', label: 'Label'},
-                                /*{ name: 'targetArea', label: 'Targeted dynamic area element', metatype: 'widgetselect', targetType: 'AlbaDisplayAreaWidget' },
-                            { name: 'targetSubpageId', label: 'Page fragment to display', metatype: 'subpageselect'},
-                            { name: 'isStoryEvent', label: 'Sends story event', type: 'boolean'},
-                            { name: 'inputAction', label: 'On click', type:'text', rows: 8, cols: 60 },*/
-                                { name: 'view', label: 'Display mode', type: 'select', choices: [
-                                        { value: 'text', label: 'Text' },
-                                        { value: 'button', label: 'Button' }
-                                    ] },
-                                { name: 'cssClass', label: 'CSS class'},
-                                { name: 'type', value:'Button', type: 'hidden'}
-                            ],
-                            Text: [
-                                { name: 'content', 'type': 'html', label:'Description', opts: {width:'100%', height: '250px'}},
-                                { name: 'cssClass', label: 'CSS class'},
-                                { name: 'type', value:'Text', type: 'hidden'}
-                            ],
-                            PageLoader: [
-                                { name: 'cssClass', label: 'CSS class'},
-                                { name: 'type', value:'PageLoader', type: 'hidden'}
-                            ],
-                            TabView: [
-                                { name: 'cssClass', label: 'CSS class'},
-                                { name: 'type', value:'TabView', type: 'hidden'}
-                            ],
-                            Tab: [
-                                { name: 'cssClass', label: 'CSS class'},
-                                { name: 'type', value:'Tab', type: 'hidden'}
-                            ],
-                            PMGChoiceDisplay: [
-                                { name: 'cssClass', label: 'CSS class'},
-                                { name: 'type', value:'PMGChoiceDisplay', type: 'hidden'}
-                            ]
-                        }
+                        editorForms: {}
                     };
 
                     Y.on('domready', function() {                                   // When dom is ready,
-
-                            <ui:insert name="jsInitMethod">
-                            var app = new Y.Wegas.App(cfg);                             // launch the app
+                        var app = new Y.Wegas.App(cfg);                             // launch the app
                         app.render();
-                            </ui:insert>
-
-                        });
-
+                    });
                 });
             </script>
         </ui:insert>

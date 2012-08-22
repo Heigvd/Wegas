@@ -20,7 +20,7 @@
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
         "name":"money",
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class":"NumberInstance",
             "value":0
         },
@@ -33,7 +33,7 @@
     },{
         "@class":"InboxDescriptor",
         "name":"inbox",
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class":"InboxInstance",
             "messages":[]
         },

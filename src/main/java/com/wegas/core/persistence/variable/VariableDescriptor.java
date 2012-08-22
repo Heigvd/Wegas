@@ -26,7 +26,6 @@ import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -76,8 +75,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @ManyToOne
     @JoinColumn
     //@JsonBackReference
-    @XmlTransient
-    @JsonIgnore
     private GameModel gameModel;
     /**
      * Here we cannot use type T, otherwise jpa won't handle the db ref
@@ -85,7 +82,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @OneToOne(cascade = {CascadeType.ALL})
     @NotNull
-    private VariableInstance defaultVariableInstance;
+    private VariableInstance defaultInstance;
     /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
      * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
@@ -127,7 +124,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public void merge(AbstractEntity a) {
         super.merge(a);
         VariableDescriptor other = (VariableDescriptor) a;
-        this.defaultVariableInstance.merge(other.getDefaultVariableInstance());
+        this.defaultInstance.merge(other.getDefaultInstance());
         this.setLabel(other.getLabel());
         //this.scope.merge(vd.getScope());
     }
@@ -147,6 +144,11 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public T getInstance(Player player) {
         return (T) this.scope.getVariableInstance(player);
+    }
+
+    @XmlTransient
+    public T getInstance() {
+        return (T) this.getScope().getInstance();
     }
 
     /**
@@ -179,20 +181,20 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      *
-     * @param gameModel
-     */
-    public void setGameModel(GameModel gameModel) {
-        this.gameModel = gameModel;
-    }
-
-    /**
-     *
      * @return
      */
     @XmlTransient
     public GameModel getGameModel() {
         return this.gameModel;
     }
+    /**
+     *
+     * @param gameModel
+     */
+    public void setGameModel(GameModel gameModel) {
+        this.gameModel = gameModel;
+    }
+
 
     /**
      * @return the scope
@@ -212,17 +214,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return the defaultVariableInstance
+     * @return the defaultInstance
      */
-    public VariableInstance getDefaultVariableInstance() {
-        return defaultVariableInstance;
+    public VariableInstance getDefaultInstance() {
+        return defaultInstance;
     }
 
     /**
-     * @param defaultVariableInstance the defaultValue to set
+     * @param defaultInstance the defaultValue to set
      */
-    public void setDefaultInstance(T defaultVariableInstance) {
-        this.defaultVariableInstance = defaultVariableInstance;
+    public void setDefaultInstance(T defaultInstance) {
+        this.defaultInstance = defaultInstance;
     }
 
     /**

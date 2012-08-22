@@ -48,7 +48,7 @@
     {
         "@class": "NumberDescriptor",
         "name": "managementApproval",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"100"
         },
@@ -58,7 +58,7 @@
     }, {
         "@class": "NumberDescriptor",
         "name": "userApproval",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"100"
         },
@@ -68,7 +68,7 @@
     }, {
         "@class": "NumberDescriptor",
         "name": "fixedCosts",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"0"
         },
@@ -78,7 +78,7 @@
     }, {
         "@class": "NumberDescriptor",
         "name": "quality",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"100"
         },
@@ -88,7 +88,7 @@
     }, {
         "@class": "NumberDescriptor",
         "name": "delay",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"100"
         },
@@ -99,7 +99,7 @@
     {
         "@class": "NumberDescriptor",
         "name": "timeCards",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"15"
         },
@@ -110,7 +110,7 @@
     {
         "@class": "StringDescriptor",
         "name": "Money",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "StringInstance",
             "value":"1"
         },
@@ -120,7 +120,7 @@
     },{
         "@class": "StringDescriptor",
         "name": "Price",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "StringInstance",
             "value":"1"
         },
@@ -154,7 +154,7 @@
             "answer":"OK",
             "impact":"userApproval.value+=8;\nquality.value-=2;"
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
@@ -180,7 +180,7 @@
             "answer":"OK.<br />The project will therefore be implemented without presenting any prototype to the users. Future users find out and are somewhat disappointed.",
             "impact":"userApproval.value-=6;\nquality.value-=2"
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
@@ -213,7 +213,7 @@
             "answer":"ok.",
             "impact":"managementApproval.value-=10;\nuserApproval.value-=8;"
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
@@ -253,7 +253,7 @@
             "answer":"It's better than answering just anything, but you haven't really convinced as regards your skills in terms of project management.<br />Mr Dupuis' support towards you diminishes..",
             "impact":"managementApproval.value-=3;"
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
@@ -279,7 +279,7 @@
             "answer":"Exchange rate fluctuation during the project may partially change the budget for material purchases made abroad.",
             "impact":""
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
@@ -312,7 +312,7 @@
             "answer":"Let's hope the source data are correct...",
             "impact":""
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
@@ -338,7 +338,7 @@
             "answer":"OK",
             "impact":""
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance",
             "active": false
         },
@@ -365,7 +365,7 @@
             "answer":"So you shall produce the project risking a possible technical incompatibility that shall only be visible during or after having finished developing.",
             "impact":""
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
@@ -398,7 +398,7 @@
             "answer":"On going to the cafeteria, you meet briefly with two repairers.<br />The first one shouts out : <br />\"It's surprising you haven't come to see us and asked us about the things we know. We have field information you do not have access to from your study offices!\"<br />To which the second adds: <br />\"Do you at least know what it is we need? I hope you'll develop a system able to respond to our needs and expectations.\"",
             "impact":"userApproval.value-=3;"
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
@@ -438,7 +438,7 @@
             "answer":"from time to time it's pleasant ;-)",
             "impact":""
         }],
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "MCQInstance"
         },
         "scope": {
