@@ -10,6 +10,7 @@
  */
 package com.wegas.core.content;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.jcr.PathNotFoundException;
@@ -60,8 +61,8 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * Attach this fileDescriptor to the content repository and writes
      * parameters to it.
      *
-     * @param data
-     * @param mimeType
+     * @param data The InputStream to store
+     * @param mimeType The data type
      * @throws IOException
      */
     public void setBase64Data(InputStream data, String mimeType) throws IOException {
@@ -77,6 +78,18 @@ public class FileDescriptor extends AbstractContentDescriptor {
             logger.error("Need to check this error, Roger !", ex);
         }
         data.close();
+    }
+
+    /**
+     * Attach this fileDescriptor to the content repository and writes
+     * parameters to it.
+     *
+     * @param data The String to store as data
+     * @param mimeType The data type
+     * @throws IOException
+     */
+    public void setBase64Data(String data, String mimeType) throws IOException {
+        this.setBase64Data(new ByteArrayInputStream(data.getBytes()), mimeType);
     }
 
     public String getDataLastModified() {
@@ -97,5 +110,4 @@ public class FileDescriptor extends AbstractContentDescriptor {
         this.bytes = connector.getSize(fileSystemAbsolutePath);
         super.getContentFromRepository();
     }
-
 }
