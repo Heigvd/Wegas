@@ -68,6 +68,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
+    private String editorLabel;
+    /**
+     *
+     */
     private String label;
     /**
      *
@@ -156,7 +160,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return id;
     }
 
-
     /**
      *
      * @return
@@ -173,6 +176,22 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     *
+     * @return editorLabel
+     */
+    public String getEditorLabel() {
+        return editorLabel;
+    }
+
+    /**
+     *
+     * @param editorLabel
+     */
+    public void setEditorLabel(String editorLabel) {
+        this.editorLabel = editorLabel;
     }
 
     /**
@@ -200,8 +219,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @param scope the scope to set @fixme here we cannot use managed
-     * references since this.class is abstract.
+     * @param scope the scope to set
+     * @fixme here we cannot use managed references since this.class is
+     * abstract.
      */
     //@JsonManagedReference
     public void setScope(AbstractScope scope) {
@@ -249,5 +269,16 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    @PostLoad
+    public void fillEditorLabel() {
+        try {
+            if (this.editorLabel.isEmpty() || this.editorLabel == null) {
+                this.editorLabel = this.name;
+            }
+        } catch (NullPointerException ex) {
+            this.editorLabel = this.name;
+        }
     }
 }

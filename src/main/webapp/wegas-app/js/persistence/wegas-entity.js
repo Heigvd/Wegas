@@ -506,23 +506,34 @@ YUI.add('wegas-entity', function (Y) {
         getInstance: function ( playerId ) {
             playerId = playerId || Y.Wegas.app.get('currentPlayer');
             return this.get("scope").getInstance( playerId );
-        },
-        clone: function(){
-            var e = Y.Wegas.persistence.VariableDescriptor.superclass.clone.call(this);
-            e.set("name", e.get("name") + "_copy");
-            return e;
         }
     }, {
         ATTRS: {
             name: {
                 value:null,
+                optional:true,
+                _inputex:{
+                    label: "Script name"
+                },
                 validator:function(s){
                     return s === null || Y.Lang.isString(s);
                 },
                 type: "string"
             },
+            editorLabel:{
+                type: "string",
+                _inputex:{
+                    label: "Name"
+                },
+                validator:function(s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
             label: {
                 type: "string",
+                _inputex:{
+                    label: "Player label"
+                },
                 optional: true
             },
             scope: {
