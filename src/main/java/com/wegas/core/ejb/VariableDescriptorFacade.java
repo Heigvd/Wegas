@@ -12,7 +12,11 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.user.User;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -48,6 +52,15 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param variableDescriptor
      */
     public void create(Long gameModelId, VariableDescriptor variableDescriptor) {
+        List<String> usedNames = this.getUsedNames(gameModelId);
+        //Fill name with editor Label if it is empty
+        if (variableDescriptor.getName().isEmpty() || variableDescriptor.getName() == null) {
+            variableDescriptor.setName(Helper.buildName(variableDescriptor.getEditorLabel(), usedNames));
+        }
+        //build a unique name
+        if (usedNames.contains(variableDescriptor.getName())) {
+            variableDescriptor.setName(Helper.buildName(variableDescriptor.getName(), usedNames));
+        }
         this.gameModelFacade.find(gameModelId).addVariableDescriptor(variableDescriptor);
         //super.create(variableDescriptor);
     }
@@ -117,5 +130,20 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      */
     public VariableDescriptorFacade() {
         super(VariableDescriptor.class);
+    }
+
+    /**
+     * Search for all used names for the given gamemodel.
+     *
+     * @param gameModelId the gamemodel id
+     * @return a list of used strings
+     */
+    private List<String> getUsedNames(Long gameModelId) {
+        List<String> unavailable = new ArrayList<>();
+        List<VariableDescriptor> descriptors = this.findByGameModelId(gameModelId);
+        for (VariableDescriptor d : descriptors) {
+            unavailable.add(d.getName());
+        }
+        return unavailable;
     }
 }
