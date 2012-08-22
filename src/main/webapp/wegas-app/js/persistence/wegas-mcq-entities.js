@@ -42,7 +42,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     label: 'Allow multiple replies'
                 }
             },
-            defaultVariableInstance: {
+            defaultInstance: {
                 properties: {
                     "@class": {
                         type: "string",
@@ -168,7 +168,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 value: 1,
                 optional: true
             },
-            defaultVariableInstance: {
+            defaultInstance: {
                 properties: {
                     '@class': {
                         type: "string",

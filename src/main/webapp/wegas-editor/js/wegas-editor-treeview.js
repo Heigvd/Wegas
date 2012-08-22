@@ -206,7 +206,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 ret.push({
                                     type: 'TreeNode',
                                     label: text,
-                                    collapsed: false,
+                                    collapsed:  false,
                                     children: this.genTreeViewElements(el.get("teams")),
                                     data: {
                                         entity: el
@@ -220,6 +220,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 text = 'Team: ' + el.get("name") + ' (token: ' + el.get("token") + ")";
                                 ret.push({
                                     type: 'TreeNode',
+                                    collapsed: collapsed,
                                     label: text,
                                     children: this.genTreeViewElements(el.get("players")),
                                     data: {

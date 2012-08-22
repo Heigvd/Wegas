@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,15 +9,20 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
+import com.wegas.core.ejb.RequestManagerFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -44,7 +49,6 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      *
      */
     @OneToOne
-    @XmlTransient
     //@JsonBackReference
     private VariableDescriptor variableDescriptor;
 
@@ -66,7 +70,36 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      *
      * @return
      */
+    @JsonView(Views.EditorI.class)
     abstract public Map<Long, VariableInstance> getVariableInstances();
+
+    /**
+     *
+     * @return The variable instance associated to the current player, which is
+     * stored in the RequestManager.
+     */
+    @JsonView(Views.Private.class)
+    //@XmlAttribute(name = "variableInstances")
+    public Map<Long, VariableInstance> getPrivateInstances() {
+        Map<Long, VariableInstance> ret = new HashMap<>();
+        RequestManagerFacade rmf = RequestManagerFacade.lookup();
+
+        Long id = new Long(0);
+        if (this instanceof TeamScope) {
+            id = rmf.getPlayer().getTeam().getId();
+        } else if (this instanceof PlayerScope) {
+            id = rmf.getPlayer().getId();
+        }
+
+        ret.put(id, this.getVariableInstance(rmf.getPlayer()));
+
+        return ret;
+    }
+
+    @XmlTransient
+    public VariableInstance getInstance() {
+        return this.getVariableInstance(RequestManagerFacade.lookup().getPlayer());
+    }
 
     /**
      *
@@ -81,6 +114,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     // @fixme here we cannot use the back-reference on an abstract reference
     //@JsonBackReference
     @XmlTransient
+    @JsonIgnore
     public VariableDescriptor getVariableDescriptor() {
         return this.variableDescriptor;
     }
@@ -100,6 +134,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      */
     @Override
     @XmlTransient
+    @JsonIgnore
     public Long getId() {
         return this.id;
     }

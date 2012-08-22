@@ -480,10 +480,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
         },
         generateRequest: function (data) {
-            if (data['@class'] === 'Team') {
+            if (data[ '@class' ] === 'Team' ) {
                 return '/' + data.gameId + '/Team/' + data.id;
-            } else if (data['@class'] === 'Player') {
-                return "/" + this.getGameByTeamId(data.teamId).get("id")
+            } else if (data[ '@class' ] === 'Player') {
+                return "/" + this.getGameByTeamId( data.teamId ).get( "id" )
                 + '/Team/' + data.teamId + '/Player/' + data.id;
             } else {
                 return "/" + data.id;
@@ -491,9 +491,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         post: function (entity, parentData, callback) {
             if (entity['@class'] === 'Player') {
-
                 this.sendRequest({
-                    request: "/" + this.getGameByTeamId(parentData.id).get("id") + "/Team/" + parentData.id + "/Player",
+                    request: "/" + this.getGameByTeamId( parentData.id ).get( "id" )
+                    + "/Team/" + parentData.id + "/Player",
                     cfg: {
                         method: "POST",
                         data: Y.JSON.stringify(entity)

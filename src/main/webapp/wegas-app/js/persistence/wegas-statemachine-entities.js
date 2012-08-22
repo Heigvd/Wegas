@@ -83,10 +83,10 @@ Y.add("wegas-statemachine-entities", function(Y){
             return this.get("states")[this.getInstance().get("currentStateId")];
         },
         getInitialStateId: function(){
-            return this.get("defaultVariableInstance").get("currentStateId");
+            return this.get("defaultInstance").get("currentStateId");
         },
         setInitialStateId: function(initialStateId) {
-            this.get("defaultVariableInstance").set("currentStateId", initialStateId);
+            this.get("defaultInstance").set("currentStateId", initialStateId);
         },
         getState: function (identifier){
             return this.get("states")[identifier];
@@ -96,7 +96,7 @@ Y.add("wegas-statemachine-entities", function(Y){
             "@class": {
                 value: "FSMDescriptor"
             },
-            defaultVariableInstance:{
+            defaultInstance:{
                 valueFn: function(){
                     return new Y.Wegas.persistence.FSMInstance();
                 },
@@ -308,7 +308,7 @@ Y.add("wegas-statemachine-entities", function(Y){
             "@class": {
                 value: "TriggerDescriptor"
             },
-            defaultVariableInstance:{
+            defaultInstance:{
                 valueFn: function(){
                     return new Y.Wegas.persistence.TriggerInstance();
                 },
