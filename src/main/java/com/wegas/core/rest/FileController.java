@@ -219,20 +219,19 @@ public class FileController {
             @PathParam("gameModelId") String gameModelId,
             @PathParam("absolutePath") String absolutePath) {
         ContentConnector connector = null;
+        AbstractContentDescriptor descriptor = null;
         try {
             connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
-            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
+            descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             descriptor.setNote(tmpDescriptor.getNote());
             descriptor.setDescription(tmpDescriptor.getDescription());
             descriptor.setContentToRepository();
-            connector.close();
-            return descriptor;
         } catch (RepositoryException ex) {
             logger.debug("File does not exist", ex);
         } finally {
             connector.close();
         }
-        return null;
+        return descriptor;
     }
 
     /**
