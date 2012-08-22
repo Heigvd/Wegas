@@ -14,11 +14,13 @@ import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -36,6 +38,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @JsonView(Views.EditorI.class)
     @OrderBy("id")
     private List<Result> results = new ArrayList<>();
     /**
@@ -47,6 +50,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     @Embedded
+    @JsonView(Views.EditorI.class)
     private Script impact;
     /**
      *

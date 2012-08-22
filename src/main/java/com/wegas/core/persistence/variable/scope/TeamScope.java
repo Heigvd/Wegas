@@ -98,9 +98,9 @@ public class TeamScope extends AbstractScope {
             for (Team t : g.getTeams()) {
                 VariableInstance vi = this.teamVariableInstances.get(t.getId());
                 if (vi == null) {
-                    this.setVariableInstance(t.getId(), vd.getDefaultVariableInstance().clone());
+                    this.setVariableInstance(t.getId(), vd.getDefaultInstance().clone());
                 } else if (force) {
-                    vi.merge(vd.getDefaultVariableInstance());
+                    vi.merge(vd.getDefaultInstance());
                 }
             }
         }

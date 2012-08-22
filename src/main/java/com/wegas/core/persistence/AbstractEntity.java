@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -111,39 +109,21 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
      *
-     * @return
+     * @return @throws IOException
      */
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + " )";
+    public String toJson() throws IOException {
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        mapper.writeValue(baos, this);
+        return baos.toString();
     }
 
     /**
      *
      * @return
      */
-    //@XmlTransient
-    // public String getKey() {
-    //    return this.getClass().getSimpleName() + getId();
-    // }
-    /**
-     *
-     * @param ps
-     * @return
-     * @throws IOException
-     */
-    //  @XmlTransient
-    //  public String toJson(Providers ps) throws IOException {
-//        // Marshall new version
-//        OutputStream os = new ByteArrayOutputStream();
-//        MessageBodyWriter mbw = ps.getMessageBodyWriter(this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.APPLICATION_JSON_TYPE);
-//        mbw.writeTo(this, this.getClass(), this.getClass(), this.getClass().getDeclaredAnnotations(), MediaType.WILDCARD_TYPE, null, os);
-//        return os.toString();
-//    }
-    public String toJson() throws IOException {
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        mapper.writeValue(baos, this);
-        return baos.toString();
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + " )";
     }
 }

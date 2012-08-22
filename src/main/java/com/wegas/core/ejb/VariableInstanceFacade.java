@@ -99,7 +99,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
      */
     public void onVariableInstanceUpdate(VariableInstance vi) {
         logger.debug("onVariableInstanceUpdate() {}", requestManager);
-        //  logger.info("onVariableInstanceUpdate() {} {}", requestManager.getCurrentPlayer(), requestManager.getUpdatedInstances());
+        //  logger.info("onVariableInstanceUpdate() {} {}", requestManager.getPlayer(), requestManager.getUpdatedInstances());
         requestManager.addUpdatedInstance(vi);
     }
 

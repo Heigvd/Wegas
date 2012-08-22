@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
 
@@ -71,7 +70,7 @@ public class GameModel extends NamedEntity {
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    @JsonView(Views.Editor.class)
+    @JsonView(Views.EditorI.class)
     private List<Game> games = new ArrayList<Game>();
     /**
      *
@@ -88,7 +87,7 @@ public class GameModel extends NamedEntity {
      */
     @ElementCollection(fetch = FetchType.LAZY)
     @Column(length = 10485760)
-    @JsonView(Views.Editor.class)
+    @JsonView(Views.EditorI.class)
     //@Lob
     //@Column(columnDefinition = "BLOB NOT NULL")
     private Map<String, String> scriptLibrary = new HashMap<>();
@@ -120,7 +119,7 @@ public class GameModel extends NamedEntity {
      *
      * @param force
      */
-    public void propagateDefaultVariableInstance(boolean force) {
+    public void propagateDefaultInstance(boolean force) {
         for (VariableDescriptor vd : this.getVariableDescriptors()) {
             vd.propagateDefaultInstance(force);
         }

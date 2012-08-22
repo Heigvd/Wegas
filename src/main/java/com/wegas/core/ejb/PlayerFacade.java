@@ -61,7 +61,7 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         team.addPlayer(player);
         em.flush();
         em.refresh(player);
-        team.getGame().getGameModel().propagateDefaultVariableInstance(false);
+        team.getGame().getGameModel().propagateDefaultInstance(false);
         //this.create(player);
     }
 

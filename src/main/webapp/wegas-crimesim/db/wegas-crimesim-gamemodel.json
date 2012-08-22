@@ -21,7 +21,7 @@
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
         "name":"cost",
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class":"NumberInstance",
             "value":0.0
         },
@@ -34,7 +34,7 @@
     },{
         "@class":"NumberDescriptor",
         "name":"humanResources",
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class":"NumberInstance",
             "value":15.0
         },
@@ -47,7 +47,7 @@
     },{
         "@class":"NumberDescriptor",
         "name":"period",
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class":"NumberInstance",
             "value":1.0
         },
@@ -60,7 +60,7 @@
     },{
         "@class":"InboxDescriptor",
         "name":"inbox",
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class":"InboxInstance",
             "messages":[]
         },
@@ -73,7 +73,7 @@
     },{
         "@class":"ListDescriptor",
         "name":"evidences",
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class":"NumberInstance",
             "value":0.0
         },
@@ -84,7 +84,7 @@
         "items":[{
             "@class":"QuestionDescriptor",
             "name":"Sac poubelle n°5",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"QuestionInstance",
                 "replies":[],
                 "active":true,
@@ -97,7 +97,7 @@
             "items":[{
                 "@class":"ChoiceDescriptor",
                 "name":"Traces ED",
-                "defaultVariableInstance":{
+                "defaultInstance":{
                     "@class":"ChoiceInstance",
                     "active":true,
                     "unread":true
@@ -131,7 +131,7 @@
             },{
                 "@class":"ChoiceDescriptor",
                 "name":"Fibres",
-                "defaultVariableInstance":{
+                "defaultInstance":{
                     "@class":"ChoiceInstance",
                     "active":true,
                     "unread":true
@@ -165,7 +165,7 @@
             },{
                 "@class":"ChoiceDescriptor",
                 "name":"ADN",
-                "defaultVariableInstance":{
+                "defaultInstance":{
                     "@class":"ChoiceInstance",
                     "active":true,
                     "unread":true
@@ -199,7 +199,7 @@
             }, {
                 "@class":"ChoiceDescriptor",
                 "name":"Prélévement ADN",
-                "defaultVariableInstance":{
+                "defaultInstance":{
                     "@class":"ChoiceInstance",
                     "active":true,
                     "unread":true
@@ -237,7 +237,7 @@
         },{
             "@class":"QuestionDescriptor",
             "name":"Sac poubelle n°5: Prélévement ADN",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"QuestionInstance",
                 "replies":[],
                 "active":false,
@@ -250,7 +250,7 @@
             "items":[{
                 "@class":"ChoiceDescriptor",
                 "name":"ADN",
-                "defaultVariableInstance":{
+                "defaultInstance":{
                     "@class":"ChoiceInstance",
                     "active":true,
                     "unread":true
@@ -289,7 +289,7 @@
     }, {
         "@class":"ListDescriptor",
         "name":"questions",
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class":"NumberInstance",
             "value":0.0
         },
@@ -300,7 +300,7 @@
         "items":[{
             "@class":"QuestionDescriptor",
             "name":"Qui est la victime?",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"QuestionInstance",
                 "replies":[],
                 "active":true,
@@ -313,7 +313,7 @@
             "items":[{
                 "@class":"ChoiceDescriptor",
                 "name":"a) Marc",
-                "defaultVariableInstance":{
+                "defaultInstance":{
                     "@class":"ChoiceInstance",
                     "active":true,
                     "unread":true
@@ -338,7 +338,7 @@
             },{
                 "@class":"ChoiceDescriptor",
                 "name":"b) Roger",
-                "defaultVariableInstance":{
+                "defaultInstance":{
                     "@class":"ChoiceInstance",
                     "active":true,
                     "unread":true,

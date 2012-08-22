@@ -94,9 +94,9 @@ public class PlayerScope extends AbstractScope {
                 for (Player p : t.getPlayers()) {
                     VariableInstance vi = this.variableInstances.get(p.getId());
                     if (vi == null) {
-                        this.setVariableInstance(p.getId(), vd.getDefaultVariableInstance().clone());
+                        this.setVariableInstance(p.getId(), vd.getDefaultInstance().clone());
                     } else if (force) {
-                        vi.merge(vd.getDefaultVariableInstance());
+                        vi.merge(vd.getDefaultInstance());
                     }
                 }
             }
