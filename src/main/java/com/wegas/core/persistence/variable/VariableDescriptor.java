@@ -214,14 +214,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public GameModel getGameModel() {
         return this.gameModel;
     }
-    /**
-     *
-     * @param gameModel
-     */
-    public void setGameModel(GameModel gameModel) {
-        this.gameModel = gameModel;
-    }
-
 
     /**
      * @return the scope
