@@ -130,6 +130,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         VariableDescriptor other = (VariableDescriptor) a;
         this.defaultInstance.merge(other.getDefaultInstance());
         this.setLabel(other.getLabel());
+        this.setEditorLabel(other.getEditorLabel());
         //this.scope.merge(vd.getScope());
     }
 
