@@ -485,7 +485,47 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.namespace("Plugin").LoadTreeviewNodeAction = LoadTreeviewNodeAction;
 
+    /**
+     *  @class CloneEntityAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var CloneEntityAction = function () {
+        CloneEntityAction.superclass.constructor.apply(this, arguments);
+    };
 
+    Y.mix(CloneEntityAction, {
+        NS: "wegas",
+        NAME: "CloneEntityAction"
+    });
+
+    Y.extend(CloneEntityAction, EntityAction, {
+        execute: function() {
+            this._clone(this.get("entity")/*, this.get("entity").parentDescriptor*/); //TODO : correct for ListDescriptor
+
+        },
+        _onSuccess: function(childs, entity, e){
+            if(childs){
+                for(var i in entity.get(childs)){
+                    this._clone(entity.get(childs)[i], JSON.parse(e.data.response).entities[0]);
+                }
+            }
+        },
+        _clone: function(entity, parent){
+            if(parent && parent.toObject){
+                parent = parent.toObject();
+            }
+            Y.Wegas.VariableDescriptorFacade.rest.clone(entity.get("id"), parent, {
+                success:Y.bind(this._onSuccess, this, this.get("childs"), entity)
+            });
+        }
+    }, {
+        ATTRS:{
+            childs:{}
+        }
+    });
+
+    Y.namespace("Plugin").CloneEntityAction = CloneEntityAction;
     // *** Buttons *** //
     /**
      * Shortcut to create a Button with an NewEntityAction plugin
@@ -546,6 +586,19 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.Wegas.OpenTabButton = Y.Base.create("button", Y.Wegas.Button, [], {
         initializer: function (cfg) {
             this.plug(OpenTabAction, cfg);
+        }
+    });
+    /**
+     * Shortcut to create a Button with an CloneEntityAction plugin
+     */
+    Y.Wegas.CloneEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        initializer: function (cfg) {
+            this.plug(CloneEntityAction, cfg);
+        },
+        bindUI: function(){
+            if (!this.get("label")) {
+                this.set("label","Copy");
+            }
         }
     });
 });

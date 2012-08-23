@@ -295,9 +295,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
             });
         },
 
-        clone: function ( id, parentData ){
+        clone: function ( id, parentData, callbacks ){
             var entity = this.findById(id).clone();
-            this.post(entity, parentData);
+            this.post(entity, parentData, callbacks);
         },
 
         /**
