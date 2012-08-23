@@ -572,6 +572,8 @@ YUI.add('wegas-entity', function (Y) {
         },
         EDITMENU: [{
             type: "EditEntityButton"
+        },{
+            type: "CloneEntityButton"
         }, {
             type: "DeleteEntityButton"
         }],
@@ -853,7 +855,10 @@ YUI.add('wegas-entity', function (Y) {
             type: "AddEntityChildButton",
             label: "Add child",
             childClass: "VariableDescriptor"
-        }, {
+        },/*{ //TODO : correct
+            type:"CloneEntityButton",
+            childs:"items"
+        },*/ {
             type: "DeleteEntityButton"
         }]
     });
