@@ -1168,7 +1168,7 @@ YUI.add('wegas-entity', function (Y) {
         },
         localEval: function(){
             try{
-                return Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
+                return (Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"))==="true"||Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"))==true)?true:false;
             }catch(e){
                 console.error("SCRIPT plugin failed");
                 return null;

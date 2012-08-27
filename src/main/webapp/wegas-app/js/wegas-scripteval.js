@@ -24,10 +24,34 @@ YUI.add('wegas-scripteval', function (Y) {
             }, this);
         },
         scopedEval: function(script){
+            var result, response, url;
             if(!this.upToDate){                                                 //Only compute if new value
                 this.buildContext();
             }
-            return ((new Function( "with(this) { return "+ script +";}")).call(this.context));
+            try{
+                result = (new Function( "with(this) { return "+ script +";}")).call(this.context);
+            }catch(error){
+                //TODO : passer en mode asynchrone
+                url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
+                response = Y.io(url,{
+                    headers:{
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Managed-Mode': 'false'
+                    },
+                    sync:true,
+                    method: "POST",
+                    data: Y.JSON.stringify({
+                        "@class": "Script",
+                        "language": "JavaScript",
+                        "content": script
+                    })
+                });
+                result = JSON.parse(response.responseText);
+                if(response.status != 200){
+                    throw new Error(result.message);
+                }
+            }
+            return result;
         },
         buildContext: function(){
             var data = this.get("host").data;

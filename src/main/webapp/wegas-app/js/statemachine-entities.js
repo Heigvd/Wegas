@@ -422,7 +422,7 @@ Y.add("statemachine-entities", function(Y){
                     console.warn("Transition and Dialogue not persisted");
                     return false;
                 }
-                if(!transition.get("triggerCondition") || transition.get("triggerCondition").localEval()){
+                if(transition.get("triggerCondition") == null || transition.get("triggerCondition").isEmpty() || transition.get("triggerCondition").localEval()){
                     request = "/StateMachine/" + this.get("id")
                     + "/Player/" + Y.Wegas.app.get("currentPlayer")
                     + "/Do/" + transition.get("id");
