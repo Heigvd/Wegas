@@ -322,6 +322,9 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.setCurrentDialogue();
+                });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }
         }

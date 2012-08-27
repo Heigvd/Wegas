@@ -84,6 +84,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
          * Synchronise the content of this widget.
          */
         syncUI: function () {
+            this.data.length = 0;
             this.getTeamScore(this.get('maxRows'));
             this.table.addRows(this.data);
             if(this.data[0] == null){
@@ -111,6 +112,9 @@ YUI.add('wegas-leaderway-score', function (Y) {
             var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.setCurrentDialogue();
+                });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }
         }
