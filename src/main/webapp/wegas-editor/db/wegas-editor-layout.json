@@ -101,12 +101,7 @@
                         "subpage": {
                             "type": "EditorTreeView",
                             "dataSource": "Game"
-                        },
-                        "toolbarChildren": [{
-                            "type": "NewEntityButton",
-                            "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                            "targetClass": "Game"
-                        }]
+                        }
                     }]
                 }
             }]
@@ -147,12 +142,6 @@
             },  {
                 "type": "Tab",
                 "label": "Players",
-                "toolbarChildren": [{
-                    "type": "NewEntityButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New team",
-                    "targetClass": "Team",
-                    "dataSource" : "Game"
-                }],
                 "children": [{
                     "type": "EditorTreeView",
                     "dataSource": "Game"

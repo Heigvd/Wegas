@@ -54,11 +54,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     @EJB
     private ScriptFacade scriptManager;
-    /**
-     *
-     */
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *
