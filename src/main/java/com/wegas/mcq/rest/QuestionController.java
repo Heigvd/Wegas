@@ -59,8 +59,8 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
                 questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
         //Reply reply =
         //    questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), new Long(0));
-        
-        questionDescriptorFacade.validateReply(requestManager.getPlayer(), reply.getId());
+
+        questionDescriptorFacade.validateReply(playerId, reply.getId());
         return Response.ok().build();
     }
 
@@ -96,7 +96,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
             @PathParam("choiceId") Long choiceId,
             @PathParam("startTime") Long startTime) {
 
-        Reply reply = questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), startTime);
+        Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
         return reply.getQuestionInstance();
     }
 
