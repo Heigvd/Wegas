@@ -128,7 +128,9 @@ public class FileController {
             return response.build();
         }
         if (fileDescriptor instanceof FileDescriptor) {
-            response = Response.ok(((FileDescriptor) fileDescriptor).getBase64Data()).header("Content-Type", fileDescriptor.getMimeType());
+            response = Response.ok(((FileDescriptor) fileDescriptor).getBase64Data());
+            response.header("Content-Type", fileDescriptor.getMimeType());
+            response.header("Description", fileDescriptor.getDescription());
             try {
                 ((FileDescriptor) fileDescriptor).getBase64Data().close();
             } catch (IOException ex) {

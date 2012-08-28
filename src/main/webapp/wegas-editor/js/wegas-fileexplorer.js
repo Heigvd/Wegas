@@ -104,12 +104,12 @@ YUI.add('wegas-fileexplorer', function (Y) {
             }, this);
             this.events.tlClickEvent = this.treeView.on("treeleaf:iconClick", function(e){
                 if(e.target.path){
-                    this.fire("fileSelected", Y.Wegas.app.get("base") + "rest/File/GameModelId/" + this.gameModelId + "/read" +e.target.path);
+                    this.fire("fileSelected", e.target.path);
                 }
             }, this);
             this.events.tlLClickEvent = this.treeView.on("treeleaf:labelClick", function(e){
                 if(e.target.path){
-                    this.fire("fileSelected", Y.Wegas.app.get("base") + "rest/File/GameModelId/" + this.gameModelId + "/read" +e.target.path);
+                    this.fire("fileSelected", e.target.path);
                 }
             }, this);
             this.events.itemClickHandler = this.treeView.on("wegas-menu:itemClick", function(e){
@@ -412,7 +412,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         openFile: function (e, path){
-            window.open(path);
+            window.open(Y.Wegas.app.get("base") + "rest/File/GameModelId/" + this.gameModelId + "/read" + path);
         },
 
         isProcessing: function(node, index){
