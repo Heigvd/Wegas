@@ -10,7 +10,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
     CONTENT_BOX="contentBox",
     BOUNDING_BOX="boundingBox";
 
-    //TODO: notes, preview!
+    //TODO: preview!
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
 
