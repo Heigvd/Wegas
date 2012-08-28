@@ -17,6 +17,8 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -28,7 +30,9 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
+    @JsonIgnore
     private String dataLastModified;
+    @JsonIgnore
     private Long bytes;
 
     public FileDescriptor(String absolutePath, ContentConnector contentConnector) {
@@ -91,11 +95,11 @@ public class FileDescriptor extends AbstractContentDescriptor {
     public void setBase64Data(String data, String mimeType) throws IOException {
         this.setBase64Data(new ByteArrayInputStream(data.getBytes()), mimeType);
     }
-
+    @JsonProperty("dataLastModified")
     public String getDataLastModified() {
         return dataLastModified;
     }
-
+    @JsonProperty("bytes")
     public Long getBytes() {
         return bytes;
     }

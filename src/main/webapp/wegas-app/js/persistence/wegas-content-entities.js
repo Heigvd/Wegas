@@ -68,7 +68,6 @@ Y.add("wegas-content-entities", function(Y){
             },
             bytes:{
                 writeOnce:"initOnly",
-                "transient": true,
                 setter:function(bytes){
                     var precision = 2,
                     sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'],
@@ -82,7 +81,6 @@ Y.add("wegas-content-entities", function(Y){
             },
             dataLastModified:{
                 writeOnce:"initOnly",
-                "transient": true,
                 setter: function(d){
                     var date = new Date(d);
                     return date.toLocaleString();
