@@ -94,8 +94,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 }
             }]
         }, {
-            type: "CloneEntityButton",
-            childs: "items"
+            type: "CloneEntityButton"
         },{
             type: "DeleteEntityButton"
         }],
