@@ -1,3 +1,11 @@
+/**
+ *
+ *  @todo Threat network error (now enlessely loading)
+ *  @todo if there is a scrol and we click on new file, widget needs to scroll to that widget
+ *  @todo
+ */
+
+
 YUI.add('wegas-fileexplorer', function (Y) {
     'use strict';
 
