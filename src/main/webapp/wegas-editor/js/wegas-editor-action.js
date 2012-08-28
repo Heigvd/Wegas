@@ -501,22 +501,18 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(CloneEntityAction, EntityAction, {
         execute: function() {
-            this._clone(this.get("entity")/*, this.get("entity").parentDescriptor*/); //TODO : correct for ListDescriptor
+            this._clone(this.get("entity"), this.get("entity").parentDescriptor);
 
         },
-        _onSuccess: function(childs, entity, e){
-            if(childs){
-                for(var i in entity.get(childs)){
-                    this._clone(entity.get(childs)[i], JSON.parse(e.data.response).entities[0]);
-                }
-            }
+        _onSuccess: function( e){
+            console.log("Clone successfull");
         },
         _clone: function(entity, parent){
             if(parent && parent.toObject){
                 parent = parent.toObject();
             }
             Y.Wegas.VariableDescriptorFacade.rest.clone(entity.get("id"), parent, {
-                success:Y.bind(this._onSuccess, this, this.get("childs"), entity)
+                success:Y.bind(this._onSuccess, this)
             });
         }
     }, {
@@ -597,7 +593,7 @@ YUI.add('wegas-editor-action', function (Y) {
         },
         bindUI: function(){
             if (!this.get("label")) {
-                this.set("label","Copy");
+                this.set("label","Duplicate");
             }
         }
     });

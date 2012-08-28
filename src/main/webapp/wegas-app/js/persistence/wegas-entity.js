@@ -87,13 +87,13 @@ YUI.add('wegas-entity', function (Y) {
             return ret;
         },
         /**
-         * Create a new Entity from this entity
-         *
+         * Create a new Object from this entity
+         * may be used by revive
          * @method clone
-         * @return {Entity} a usable clone
+         * @return {Object} a clone
          */
         clone: function (){
-            return Entity.revive(this.toObject(["id","variableInstances"]));
+            return this.toObject(["id","variableInstances"]);
         },
         /**
          * Returns the form configuration associated to this object, to be used a an inputex object.
@@ -817,7 +817,19 @@ YUI.add('wegas-entity', function (Y) {
     /**
      * ListDescriptor mapper
      */
-    Y.Wegas.persistence.ListDescriptor = Y.Base.create("ListDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
+    Y.Wegas.persistence.ListDescriptor = Y.Base.create("ListDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+        /**
+         * Extend clone to add transient childs
+         */
+        clone:function(){
+            var object = Y.Wegas.persistence.Entity.prototype.clone.call(this);
+            object.items = [];
+            for(var i in this.get("items")){
+                object.items.push(this.get("items")[i].clone());
+            }
+            return object;
+        }
+    }, {
         ATTRS: {
             "@class":{
                 value:"ListDescriptor"
@@ -855,10 +867,9 @@ YUI.add('wegas-entity', function (Y) {
             type: "AddEntityChildButton",
             label: "Add child",
             childClass: "VariableDescriptor"
-        },/*{ //TODO : correct
-            type:"CloneEntityButton",
-            childs:"items"
-        },*/ {
+        },{
+            type:"CloneEntityButton"
+        }, {
             type: "DeleteEntityButton"
         }]
     });
