@@ -62,7 +62,9 @@ public class FileController {
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
-
+        if (name == null) {
+            name = details.getContentDisposition().getFileName();
+        }
         if (name.equals("") || name.contains("/")) {
             return null;
         }
