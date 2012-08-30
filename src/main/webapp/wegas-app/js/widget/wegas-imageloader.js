@@ -106,8 +106,8 @@ YUI.add('wegas-imageloader', function (Y) {
                         var blob, bb = new BlobBuilder (),
                         reader = new FileReader ();
 
-                        bb.append ( loadEvt.target.response );                               // Note: not request.responseText
-                        blob = bb.getBlob ('image/png');
+                        bb.append ( loadEvt.target.response );                  // Note: not request.responseText
+                        blob = bb.getBlob ( loadEvt.target.getResponseHeader("Content-Type") );
 
                         reader.onload = Y.bind( function ( e ) {
                             el.setAttribute(attr, e.target.result );
