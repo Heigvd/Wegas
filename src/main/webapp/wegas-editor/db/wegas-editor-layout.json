@@ -24,11 +24,16 @@
                         "label": "Console",
                         "subpage": {
                             "type": "Console",
-                            "class": "wegas-console"
-                        },
-                        "toolbarChildren": [{
-                            "type": "SelectPlayerButton"
-                        }]
+                            "class": "wegas-console",
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
+                                        "type": "SelectPlayerButton"
+                                    }]
+                                }
+                            }]
+                        }
                     }, {
                         "type": "OpenTabButton",
                         "label": "Log",
@@ -120,24 +125,28 @@
             "children": [{
                 "type": "Tab",
                 "label": "Variables",
-                "toolbarChildren": [{
-                    "type": "NewEntityButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    "targetClass": "VariableDescriptor"
-                }, {
-                    "type": "Button",
-                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
-                    "plugins": [{
-                        "fn": "ResetAction"
-                    }]
-                }],
-                "children": [
-                {
+                "children": [{
                     "type": "EditorTreeView",
                     "dataSource": "VariableDescriptor",
                     "excludeClasses": {
                         "MCQDescriptor": true
-                    }
+                    },
+                    "plugins": [{
+                        "fn": "WidgetToolbar",
+                        "cfg": {
+                            "children": [{
+                                "type": "NewEntityButton",
+                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                "targetClass": "VariableDescriptor"
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
+                                "plugins": [{
+                                    "fn": "ResetAction"
+                                }]
+                            }]
+                        }
+                    }]
                 }]
             },  {
                 "type": "Tab",
@@ -156,12 +165,17 @@
             "children": [{
                 "type": "Tab",
                 "label": "Preview",
-                "toolbarChildren": [{
-                    "type": "SelectPlayerButton"
-                }],
                 "children": [{
                     "type": "PageLoader",
-                    "pageId": 1
+                    "pageId": 1,
+                    "plugins": [{
+                        "fn": "WidgetToolbar",
+                        "cfg": {
+                            "children": [{
+                                "type": "SelectPlayerButton"
+                            }]
+                        }
+                    }]
                 }]
             }]
         }]

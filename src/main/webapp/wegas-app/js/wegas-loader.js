@@ -192,6 +192,10 @@ YUI().use(function (Y) {
                         'widget', 'widget-parent', 'widget-child', 'widget-stack',
                         'widget-position', 'widget-position-align', 'widget-position-constrain' ]
                     },
+                    'wegas-widgettoolbar': {
+                        path: 'wegas-app/js/widget/wegas-widgettoolbar-min.js',
+                        requires: [ ]
+                    },
                     'treeview':{
                         path: 'wegas-editor/js/treeview-min.js',
                         requires: [ 'widget', 'widget-parent', 'widget-child', 'treeviewcss' ]
@@ -205,9 +209,9 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-app', 'wegas-widgetmenu',
+                        'wegas-app', 'wegas-widgetmenu', 'wegas-widgettoolbar',
                         "wegas-editor-buttons", 'wegas-editor-action',
-                        'wegas-form',
+                        'wegas-form'
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },

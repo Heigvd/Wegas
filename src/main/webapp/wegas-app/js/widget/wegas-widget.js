@@ -24,8 +24,8 @@ YUI.add('wegas-widget', function (Y) {
                 this.get(CONTENTBOX).addClass(this.get('cssClass'));
             }
         });
-        this.constructor.CSS_PREFIX = this.constructor.NAME.toLowerCase();
-        this._cssPrefix = this.constructor.NAME.toLowerCase();
+        this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX || this.constructor.NAME.toLowerCase();
+        this._cssPrefix = this.constructor.CSS_PREFIX;
     }
     Y.mix(Widget, {
         ATTRS: {
@@ -82,7 +82,7 @@ YUI.add('wegas-widget', function (Y) {
                 modules.push(module);
             }
 
-            props = [ "children", "toolbarChildren" ]
+            props = [ "children" ]
             for (var i = 0; i < props.length; i = i + 1) {
                 if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParents)
                     Y.Array.each(cfg[props[i]], function(field) {

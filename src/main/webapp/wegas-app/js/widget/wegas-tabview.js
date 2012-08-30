@@ -29,6 +29,7 @@ YUI.add('wegas-tabview', function (Y) {
             });
         }
     }, {
+        CSS_PREFIX: "yui3-tabview",
         tabs: {},
 
         getTab: function (id) {
@@ -65,7 +66,6 @@ YUI.add('wegas-tabview', function (Y) {
             }
             tab.set("selected", 2);
         }
-
     });
     Y.namespace('Wegas').TabView = TabView;
 
@@ -138,42 +138,18 @@ YUI.add('wegas-tabview', function (Y) {
 
         renderUI: function () {
             Tab.superclass.renderUI.apply(this, arguments);
-            this.renderToolbar();
+        // this.renderToolbar();
         },
 
-        bindUI: function () {
-            Tab.superclass.bindUI.apply(this, arguments);
-        },
+        //bindUI: function () {
+        //    Tab.superclass.bindUI.apply(this, arguments);
+        //},
         syncUI: function () {
             Tab.superclass.syncUI.apply(this, arguments);
-        //            this.get( "children" );
-        },
-        destructor: function (){
-            Tab.superclass.destructor.call( this );
-            var toolbarChildren = this.get("toolbarChildren");
-            for (var i in toolbarChildren){
-                toolbarChildren[i].destroy();
-            }
+        // this.get( "children" );
         },
 
         // *** Private Methods *** //
-        renderToolbar: function () {
-            var panelNode = this.get('panelNode'),
-            toolbarChildren = this.get("toolbarChildren");
-
-            panelNode.prepend('<div class="wegas-tab-toolbar"><div class="wegas-tab-toolbar-header"></div><div class="wegas-tab-toolbar-panel"></div></div><div class="yui3-tab-panel-content"></div>');
-            for (var i = 0; i < toolbarChildren.length; i = i + 1) {
-                toolbarChildren[i] = this.addToolbarWidget(toolbarChildren[i]);
-            }
-        },
-        addToolbarWidget: function( widget ) {
-            if (!(widget instanceof Y.Widget)) {
-                widget = Y.Wegas.Widget.create(widget);
-            }
-            widget.render(this.get("toolbarNode"));
-            widget.addTarget(this.item(0));
-            return widget;
-        },
         /**
          * Retrieves the given widget configuration and add it to the tab
          *
@@ -193,12 +169,12 @@ YUI.add('wegas-tabview', function (Y) {
          *  Override Y.WidgetParent to render children in the panel node;
          */
         _renderChildren: function () {
-            var renderTo = this._childrenContainer || this.get("panelNode").one(".yui3-tab-panel-content");        // @modified
+            var renderTo = this._childrenContainer || this.get("panelNode");    // @modified
 
             this._childrenContainer = renderTo;
 
             this.each(function (child) {
-                this._witems.push( child );
+                this._witems.push( child );                                     // @modified
                 child.render( renderTo )
             }, this);
         },
@@ -209,23 +185,6 @@ YUI.add('wegas-tabview', function (Y) {
         ATTRS : {
             content: {
                 setter: function () { }                                         // Overrides the panelNode management
-            },
-            toolbarNode: {
-                lazyAdd: false,
-                value: false,
-                getter : function () {
-                    return this.get('panelNode').one(".wegas-tab-toolbar-header");
-                }
-            },
-            toolbarPanel: {
-                lazyAdd: false,
-                value: false,
-                getter : function () {
-                    return this.get('panelNode').one(".wegas-tab-toolbar-panel");
-                }
-            },
-            toolbarChildren: {
-                value: []
             }
         }
     });

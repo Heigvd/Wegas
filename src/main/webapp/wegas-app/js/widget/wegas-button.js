@@ -60,7 +60,7 @@ YUI.add('wegas-button', function (Y) {
     }, {
         ATTRS: {
             tooltips: {},
-            data: {},
+            data: {}
 //            selected: {
 //                value: false,
 //                setter: function ( value ) {
