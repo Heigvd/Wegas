@@ -264,11 +264,18 @@ YUI.add("wegas-gallery", function(Y){
 
         },
         loadImage: function(i){
-            var img;
+            var img, imgLoader;
             if(this.get(CONTENT_BOX).all("li").item(i).hasChildNodes()){
                 return;
             }
-            img = Y.Node.create("<img src='"+this.get("gallery")[i].srcUrl+"' ></img>");
+           //img = Y.Node.create("<img src='"+this.get("gallery")[i].srcUrl+"' ></img>");
+            img = Y.Node.create("<img />");
+
+            imgLoader = new Y.Wegas.ImgageLoader({
+                target: img,
+                srcUrl: this.get("gallery")[i].srcUrl
+            });
+            imgLoader.fetch();
 
             img.index = i;
             img.once("error", function(e){
@@ -281,7 +288,7 @@ YUI.add("wegas-gallery", function(Y){
                 this.images[e.target.index].loaded = true;
             }, this);
             this.get(CONTENT_BOX).all("li").item(i).appendChild(img);
-            if(this.get("gallery")[i].description){
+            if(this.get("gallery")[i].description) {
                 this.get(CONTENT_BOX).all("li").item(i).appendChild("<div class='gallery-text'>"+this.get("gallery")[i].description+"</div>");
             }
         },
