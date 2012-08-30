@@ -71,7 +71,9 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         // *** Private Methods *** //
 
         renderToolbar: function () {
-            var toolbarNode = this.get("parent").get('toolbarNode');
+            this.plug( Y.Plugin.WidgetToolbar );
+
+            var toolbarNode = this.toolbar.get( 'header' );
 
             this.newButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",

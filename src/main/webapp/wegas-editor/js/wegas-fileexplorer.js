@@ -524,8 +524,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
             },
             renderUI: function (){
                 try{
-                    this.get("fileexplorer").get("parent").addToolbarWidget(this.overallProgress);
-                    this._set(CONTENT_BOX, this.get("fileexplorer").get("parent").get("toolbarPanel").getDOMNode());
+                    this.get("fileexplorer").toolbar.add( this.overallProgress );
+                    this._set(CONTENT_BOX, this.get("fileexplorer").toolbar.get("panel").getDOMNode());
                 }catch(e){                                                      //FALLBACK, no toolbar
                     this.get(BOUNDING_BOX).insertBefore("<span>Uploader</span>", this.get(CONTENT_BOX));
                     this.overallProgress.render();

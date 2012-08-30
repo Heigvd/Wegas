@@ -329,7 +329,10 @@ YUI.add('wegas-editor-action', function (Y) {
         execute: function() {
             Y.Wegas.TabView.findTabAndLoadWidget("State machine editor",        // Load and display the editor in a new tab
                 "#centerTabView", null, {
-                    type: "StateMachineViewer"
+                    type: "StateMachineViewer",
+                    plugins: [{
+                        fn: "WidgetToolbar"
+                    }]
                 }, Y.bind(function (entity, widget) {
                     widget.set( "entity", entity);
                 }, this, this.get( "entity" ) ) );

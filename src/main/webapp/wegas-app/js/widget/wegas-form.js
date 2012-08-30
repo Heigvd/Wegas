@@ -26,6 +26,7 @@ YUI.add('wegas-form', function (Y) {
 
         // ** Lifecycle Methods ** //
         initializer: function () {
+            this.plug( Y.Plugin.WidgetToolbar );
             this.publish("submit", {
                 emitFacade: true
             });
@@ -44,9 +45,9 @@ YUI.add('wegas-form', function (Y) {
         // ** Private Methods ** //
 
         renderToolbar: function () {
-            var toolbarNode = this.get("parent").get('toolbarNode');
-            if (!toolbarNode) return;
+            var toolbarNode = this.toolbar.get( 'header' );
 
+            
             this.saveButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
                 on: {

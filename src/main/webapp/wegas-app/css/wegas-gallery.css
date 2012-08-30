@@ -31,7 +31,7 @@
     visibility:hidden;
 }
 .wegas-gallery li.img-loading{
-    background: url("../../wegas-editor/images/loading.gif") no-repeat 50%;
+    background: url("../images/loading.gif") no-repeat 50%;
 }
 .wegas-gallery li:last-child{
     margin-right: 100%;

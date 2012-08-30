@@ -57,12 +57,12 @@ YUI.add('wegas-widgetmenu', function (Y) {
             bb.append( '<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
             host.get('contentBox').setStyles({
                 position: "absolute",
-                bottom: "0px",
+                bottom: "26px",
                 overflow: "auto",
                 padding:"0",
                 left:"0px",
                 right:"0px",
-                top: "34px"
+                top: "31px"
             });
 
             for (var i = 0; i < children.length; i = i + 1) {
@@ -74,7 +74,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             if ( !( widget instanceof Y.Widget ) ) {
                 widget = Y.Wegas.Widget.create( widget );
             }
-            widget.render( this.get( "toolbar" ) );
+            widget.render( this.get( "header" ) );
             widget.addTarget( this.get( "host" ) );
             return widget;
         }
@@ -84,7 +84,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             children: {
                 value: []
             },
-            toolbar: {
+            header: {
                 lazyAdd: false,
                 value: false,
                 getter : function () {

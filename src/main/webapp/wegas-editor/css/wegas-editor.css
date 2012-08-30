@@ -48,8 +48,8 @@ div.inputEx-fieldWrapper {
 }
 
 /* Wegas Form Widget Styles */
-.wegas-form {
-    padding: 10px 10px 20px;
+.wegas-form-content {
+    padding: 10px 0 20px !important;
 }
 .wegas-form div.inputEx-fieldWrapper,
 .wegas-form div.inputEx-Field {
@@ -62,7 +62,7 @@ div.inputEx-fieldWrapper {
     width: 100%;
 }
 .wegas-form div.inputEx-StringField-wrapper {
-    display: inline-block;
+    /*display: inline-block;*/
     vertical-align: top;
     width: 100%;
 }
@@ -169,13 +169,13 @@ img.inputEx-ListField-delButton {
     position: relative;
 }
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .yui3-widget {
-/*    position: absolute;
-    bottom: 0px;
-    overflow: auto;
-    padding:0;
-    left:0px;
-    right:0px;
-    top: 57px;*/
+    /*    position: absolute;
+        bottom: 0px;
+        overflow: auto;
+        padding:0;
+        left:0px;
+        right:0px;
+        top: 57px;*/
 }
 
 /** Toolbar styles **/
@@ -188,7 +188,8 @@ img.inputEx-ListField-delButton {
     border-bottom: 1px solid lightgray;
     width: 100%;
     box-shadow: 0px 2px 5px grey;
-    /*z-index: 20;*/
+    background:white;
+    z-index: 23;
 }
 .yui-layout-unit-right .wegas-toolbar {
     padding-left:6px;

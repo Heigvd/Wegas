@@ -76,7 +76,10 @@
                         "type": "OpenTabButton",
                         "label": "Files",
                         "subpage": {
-                            "type": "FileExplorer"
+                            "type": "FileExplorer",
+                            "plugins": [{
+                                "fn": "WidgetToolbar"
+                            }]
                         }
                     },{
                         "type": "OpenTabButton",
