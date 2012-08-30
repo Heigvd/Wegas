@@ -133,13 +133,17 @@ YUI().use(function (Y) {
                         requires: ['wegas-widget', 'inputex-select', 'inputex-string', 'button'],
                         ix_provides: "JoinGameWidget"
                     },
+                    'wegas-imageloader': {
+                        path:'wegas-app/js/widget/wegas-imageloader.js',
+                        requires: [ 'io-base', 'imageloader' ],
+                    },
                     'wegas-gallerycss':{
                         path:'wegas-app/css/wegas-gallery.css',
                         type:'css'
                     },
                     'wegas-gallery': {
                         path:'wegas-app/js/widget/wegas-gallery-min.js',
-                        requires: ['wegas-widget', 'scrollview-base', 'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
+                        requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base', 'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
                         ix_provides: "WegasGallery"
                     },
 
