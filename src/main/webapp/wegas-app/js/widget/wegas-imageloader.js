@@ -17,8 +17,8 @@ YUI.add('wegas-imageloader', function (Y) {
 
     /**
      * Image objects to be registered with the groups
-     * @class Y.ImgLoadImgObj
-     * @extends Base
+     * @class Y.Wegas.ImgageLoader
+     * @extends Y.ImgLoadImgObj
      * @constructor
      */
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder,
@@ -101,20 +101,26 @@ YUI.add('wegas-imageloader', function (Y) {
             // Method 1, using BlobBuilder & XMLHttpRequest
             if ( XMLHttpRequest &&  BlobBuilder ) {
                 var request = new XMLHttpRequest();
-                request.onload= function () {
-                    if (request.status === 200) {
+                request.onload= Y.bind( function ( loadEvt ) {
+                    if ( loadEvt.target.status === 200 ) {
                         var blob, bb = new BlobBuilder (),
                         reader = new FileReader ();
 
-                        bb.append (request.response);                               // Note: not request.responseText
+                        bb.append ( loadEvt.target.response );                               // Note: not request.responseText
                         blob = bb.getBlob ('image/png');
 
-                        reader.onload = function ( e ) {
+                        reader.onload = Y.bind( function ( e ) {
                             el.setAttribute(attr, e.target.result );
-                        };
+                            this.fire( "load", {
+                                meta: {
+                                    contentType: loadEvt.target.getResponseHeader("Content-Type"),
+                                    description: loadEvt.target.getResponseHeader("Description")
+                                }
+                            });
+                        }, this);
                         reader.readAsDataURL (blob);
                     }
-                }
+                }, this );
                 request.open ("GET", this.get('srcUrl'), true);
                 request.responseType = "arraybuffer";
                 request.send (null);
@@ -122,7 +128,7 @@ YUI.add('wegas-imageloader', function (Y) {
             }
 
             // Method 2, using overrideMimeType
-            if ( false ) {
+            if ( GM_xmlhttpRequest ) {
                 GM_xmlhttpRequest ( {
                     method:         'GET',
                     url:            this.get('srcUrl'),
@@ -138,7 +144,9 @@ YUI.add('wegas-imageloader', function (Y) {
             // Method 3 (fallback), set img src
             el.setAttribute(attr, this.get('srcUrl') );
             el.once( "load", function ( e ) {
-                this.fire( "load", { } );
+                this.fire( "load", {
+                    meta: {}
+                });
             }, this);
         }
     });
