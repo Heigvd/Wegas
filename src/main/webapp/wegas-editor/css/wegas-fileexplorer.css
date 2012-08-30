@@ -76,9 +76,12 @@
     background-repeat: no-repeat;
     background-size: 21px 18px;
 }
+.fileexplorer-drag-over{
+    box-shadow: 0 0 5px green;
+}
 
 /* treeview + wegas-menu hack */
-.yui3-treenode-content-rightwidget .wegas-menu-itemlist-horizontal > ul{
+.wegas-fileexplorer-content > .yui3-treenode > .yui3-treenode-content-header .wegas-menu-itemlist-horizontal > ul{
     margin:0;
-    margin-left:-50%
+    right:0;
 }

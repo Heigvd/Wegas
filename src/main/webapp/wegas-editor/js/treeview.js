@@ -144,6 +144,9 @@ YUI.add('treeview', function (Y) {
                 });
 
             }, this);
+            this.get(BOUNDING_BOX).on("click", function(e){
+                e.stopPropagation();
+            });
         },
 
         syncUI:function(){

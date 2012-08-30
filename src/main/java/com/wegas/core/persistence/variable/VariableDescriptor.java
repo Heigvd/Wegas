@@ -68,6 +68,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
+    private String editorLabel;
+    /**
+     *
+     */
     private String label;
     /**
      *
@@ -126,6 +130,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         VariableDescriptor other = (VariableDescriptor) a;
         this.defaultInstance.merge(other.getDefaultInstance());
         this.setLabel(other.getLabel());
+        this.setEditorLabel(other.getEditorLabel());
         //this.scope.merge(vd.getScope());
     }
 
@@ -160,7 +165,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return id;
     }
 
-
     /**
      *
      * @return
@@ -181,12 +185,20 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      *
-     * @return
+     * @return editorLabel
      */
-    @XmlTransient
-    public GameModel getGameModel() {
-        return this.gameModel;
+    public String getEditorLabel() {
+        return editorLabel;
     }
+
+    /**
+     *
+     * @param editorLabel
+     */
+    public void setEditorLabel(String editorLabel) {
+        this.editorLabel = editorLabel;
+    }
+
     /**
      *
      * @param gameModel
@@ -195,6 +207,14 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.gameModel = gameModel;
     }
 
+    /**
+     *
+     * @return
+     */
+    @XmlTransient
+    public GameModel getGameModel() {
+        return this.gameModel;
+    }
 
     /**
      * @return the scope
@@ -204,8 +224,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @param scope the scope to set @fixme here we cannot use managed
-     * references since this.class is abstract.
+     * @param scope the scope to set
+     * @fixme here we cannot use managed references since this.class is
+     * abstract.
      */
     //@JsonManagedReference
     public void setScope(AbstractScope scope) {
@@ -253,5 +274,16 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    @PostLoad
+    public void fillEditorLabel() {
+        try {
+            if (this.editorLabel.isEmpty() || this.editorLabel == null) {
+                this.editorLabel = this.name;
+            }
+        } catch (NullPointerException ex) {
+            this.editorLabel = this.name;
+        }
     }
 }

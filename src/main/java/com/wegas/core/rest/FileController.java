@@ -62,7 +62,9 @@ public class FileController {
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
-
+        if (name == null) {
+            name = details.getContentDisposition().getFileName();
+        }
         if (name.equals("") || name.contains("/")) {
             return null;
         }
@@ -128,7 +130,9 @@ public class FileController {
             return response.build();
         }
         if (fileDescriptor instanceof FileDescriptor) {
-            response = Response.ok(((FileDescriptor) fileDescriptor).getBase64Data()).header("Content-Type", fileDescriptor.getMimeType());
+            response = Response.ok(((FileDescriptor) fileDescriptor).getBase64Data());
+            response.header("Content-Type", fileDescriptor.getMimeType());
+            response.header("Description", fileDescriptor.getDescription());
             try {
                 ((FileDescriptor) fileDescriptor).getBase64Data().close();
             } catch (IOException ex) {

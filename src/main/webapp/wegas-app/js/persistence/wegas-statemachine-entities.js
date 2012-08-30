@@ -236,6 +236,8 @@ Y.add("wegas-statemachine-entities", function(Y){
                 fn: "EditFSMAction"
             }]
         },{
+            type: "CloneEntityButton"
+        },{
             type: "DeleteEntityButton"
         }]
     });
@@ -348,7 +350,8 @@ Y.add("wegas-statemachine-entities", function(Y){
                     label: 'Only once'
                 }
             }
-        },EDITMENU: [{
+        },
+        EDITMENU: [{
             type: "EditEntityButton"
 
         },{
