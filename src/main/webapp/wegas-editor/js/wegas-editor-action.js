@@ -378,18 +378,15 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(OpenTabAction, Action, {
         execute: function () {
-            Y.Wegas.TabView.findTabAndLoadWidget( this.get("host").get("label"),
-                this.get("tabSelector"), {
-                    toolbarChildren: this.get("toolbarChildren")
-                }, this.get("subpage"));
+            Y.Wegas.TabView.findTabAndLoadWidget( this.get( "host" ).get( "label" ),
+                this.get( "tabSelector" ), {}, this.get( "subpage" ) );
         }
     }, {
         ATTRS: {
             tabSelector: {
                 value: '#centerTabView'
             },
-            subpage: {},
-            toolbarChildren: {}
+            subpage: {}
         }
     });
 
@@ -464,7 +461,7 @@ YUI.add('wegas-editor-action', function (Y) {
             tab.set("selected", 2);
 
             tab.witem(0).set("emptyMessage", "This game model has no games.");
-            tab.get("toolbarChildren")[0].set( "disabled", false);              // Allow game creation
+            tab.witem(0).toolbar.get( "children" )[0].set( "disabled", false);  // Allow game creation
 
             Y.Wegas.GameFacade.set("source",                                    // Change the source attribute on the datasource
                 Y.Wegas.app.get("base") + "rest/GameModel/" + entity.get( "id" ) + "/Game");
