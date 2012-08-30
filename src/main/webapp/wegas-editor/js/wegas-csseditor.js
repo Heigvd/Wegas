@@ -11,10 +11,12 @@ YUI.add('wegas-csseditor', function (Y) {
         // *** Lifecycle Methods *** //
 
         renderUI: function () {
+            this.plug( Y.Plugin.WidgetToolbar );
+
             var cb = this.get(CONTENTBOX),
             form,
             value = Y.Wegas.app._customCSSText || '',
-            el = this.get("parent").get('toolbarNode');
+            el = this.toolbar.get('header');
 
             form = new Y.inputEx.AceField({
                 parentEl: cb._node,

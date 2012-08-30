@@ -47,17 +47,17 @@
                     "type": "EditorTreeView",
                     "dataSource": "Game",
                     "emptyMessage": "Click in the left column to select a game.",
-                            "plugins": [{
-                                "fn": "WidgetToolbar",
-                                "cfg": {
-                                    "children": [{
-                    "type": "NewEntityButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
-                    "targetClass": "Game",
-                    "disabled": true
-                }]
-                                }
+                    "plugins": [{
+                        "fn": "WidgetToolbar",
+                        "cfg": {
+                            "children": [{
+                                "type": "NewEntityButton",
+                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
+                                "targetClass": "Game",
+                                "disabled": true
                             }]
+                        }
+                    }]
                 }]
             }]
         }]

@@ -27,6 +27,26 @@ YUI.add('wegas-widget', function (Y) {
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX || this.constructor.NAME.toLowerCase();
         this._cssPrefix = this.constructor.CSS_PREFIX;
     }
+
+    Y.mix(Widget.prototype, {
+        /*   _overlay: null,
+
+            hideReloadOverlay: function(){
+                    this._overlay.hide();
+            },
+
+            showReloadOverlay: function(){
+                    var bb = this.get('boundingBox');
+
+                    if (!this._overlay) {
+                            this._overlay = Y.Node.create('<div class="yui3-redcms-loading-overlay"><div></div></div>');
+                            bb.prepend(this._overlay);
+                    }
+                    this._overlay.one('div').setStyle('height', bb.getComputedStyle('height'));
+                    this._overlay.show();
+            }*/
+        });
+
     Y.mix(Widget, {
         ATTRS: {
             cssClass: {}
@@ -54,7 +74,7 @@ YUI.add('wegas-widget', function (Y) {
         * @static
         * @param {String} type String type of the field
         */
-        getClass: function(type) {
+        getClass: function( type ) {
         // @todo
         },
 
@@ -64,7 +84,7 @@ YUI.add('wegas-widget', function (Y) {
         * @param {Wegas.Widget} Widget Class
         * @return {String} returns the Wegas type string or <code>null</code>
         */
-        getType: function(FieldClass) {
+        getType: function( FieldClass ) {
         // @todo
         },
 
@@ -116,26 +136,7 @@ YUI.add('wegas-widget', function (Y) {
             Y.use.apply( Y, modules);
         }
     });
-
-    Y.mix(Widget.prototype, {
-        /*   _overlay: null,
-
-            hideReloadOverlay: function(){
-                    this._overlay.hide();
-            },
-
-            showReloadOverlay: function(){
-                    var bb = this.get('boundingBox');
-
-                    if (!this._overlay) {
-                            this._overlay = Y.Node.create('<div class="yui3-redcms-loading-overlay"><div></div></div>');
-                            bb.prepend(this._overlay);
-                    }
-                    this._overlay.one('div').setStyle('height', bb.getComputedStyle('height'));
-                    this._overlay.show();
-            }*/
-        });
-
+    
     Y.namespace('Wegas').Widget = Widget;
 
     /**

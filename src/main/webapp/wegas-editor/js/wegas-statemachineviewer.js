@@ -105,9 +105,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.rebuild();
         },
         renderUI: function() {
-            this.panel = this.get("parent").get("toolbarPanel");
-            this.header = this.get("parent").get("toolbarNode");
-            this.get("parent").addToolbarWidget(new Y.Button({
+            this.panel = this.toolbar.get("panel");
+            this.header = this.toolbar.get("header");
+
+            this.toolbar.add( new Y.Button({
                 label:"<span class=\"wegas-icon wegas-icon-save\"></span>Save",
                 on:{
                     'click': function (e){
