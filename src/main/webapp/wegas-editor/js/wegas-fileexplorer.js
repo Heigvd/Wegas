@@ -326,6 +326,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
             data = JSON.parse(e.data.response);
             node.get("rightWidget").get("params").data.set("description",  data.description);
             node.get("rightWidget").get("params").data.set("note", data.note);
+
+            EditEntityAction.hideEditFormOverlay();
         },
         onListRequestSuccess: function (callback, e) {
             var i;
@@ -495,6 +497,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         onRequestFailure: function (e) {
             Y.log("onDataSourceError(): Error retrieving data" + (e.stack || e), "error", "Wegas.FileExplorer");
             e.cfg.node.set("loading", false);
+            EditEntityAction.hideEditFormOverlay();
         },
 
         FileUploader : Y.Base.create("wegas-fileuploader", Y.Widget, [Y.WidgetParent], {
