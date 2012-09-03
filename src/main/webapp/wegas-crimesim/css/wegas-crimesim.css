@@ -12,6 +12,23 @@
      border-bottom:none;*/
 
 }
+.wegas-text-content {
+    padding: 5px 10px;
+}
+.wegas-crimesim-title {
+    display: inline-block;
+    vertical-align: top;
+    font-weight: bolder;
+    font-size: 32px;
+    line-height: 42px;
+    color:  white;
+    text-shadow: 1px 2px 2px steelBlue;
+    margin: 0px 15px;
+    padding: 0;
+    margin: 0;
+    padding: 5px 25px 0px 10px;
+    letter-spacing: -2px;
+}
 .wegas-variabledisplay {
     padding:5px;
     max-width:150px;
@@ -52,27 +69,30 @@
 }
 .body {
     border-top: 1px solid gray;
-    border-bottom:1 px solid gray;
     min-height:200px;
 }
 /* Schedule display Widget style */
+.wegas-crimesim-scheduledisplay {
+    min-width: 1000px;
+}
 .wegas-crimesim-scheduledisplay-content {
     position:relative;
 }
 /* Schedule detail style */
 .schedule-detail {
     background: white;
-    border: 1px solid gray;
     position: absolute;
     right: 0;
     top: 0;
-    width: 800px;
+    width: 809px;
     min-height: 140px;
-    border-right: none;
-    border-top: none;
     display: none;
     box-shadow: 5px 4px 5px #888;
-    /*  bottom: 0;*/
+    border: 1px solid gray;
+    padding-bottom: 20px;
+}
+.schedule-detail .schedule-gallery {
+    padding: 10px 5px;
 }
 .schedule-detail .schedule-icon-close {
     float: right;
@@ -100,15 +120,16 @@
     font-weight: normal;
 }
 .schedule-detail .content {
-    padding: 2px 5px 15px;
+    padding: 10px 5px;
 }
 /* CrimeSim Analyisis table styles */
 .schedule-table {
     width: 100%;
     table-layout: fixed;
+    font-size: 9pt;
 }
 .schedule-table th, .schedule-table td {
-    padding: 4px;
+    padding: 4px 10px;
     border: 1px solid gray;
     border-left: none;
     text-align: center;
@@ -116,24 +137,35 @@
 .schedule-table th {
     background:steelBlue;
     color:white;
+    text-shadow: 0 1px 1px lightSteelBlue;
+}
+.schedule-table th.schedule-leftcolum {
+    text-align:left;
+}
+
+.schedule-table tr {
+
 }
 .schedule-table td {
     /*  height: 30px;*/
+
 }
 .schedule-table tfoot td {
     font-size: 7pt;
-    border-bottom: none;
-}
-.schedule-table .schedule-leftcolum {
-    /*width:150px;*/
-    text-align: left;
 }
 .schedule-table td.schedule-leftcolum {
-    /*width:150px;*/
+    text-align: left;
     cursor: pointer;
+    padding: 4px 10px;
+}
+.schedule-table td.schedule-leftcolum:hover {
+    background: lightgray;
 }
 .schedule-table .schedule-maincolum {
-    width:80px;
+    width:60px;
+}
+.schedule-table td.schedule-task {
+    padding:1px;
 }
 .schedule-table td .icon {
     height:26px;
@@ -147,23 +179,20 @@
     background: transparent url(/Wegas/wegas-editor/images/wegas-editor-sprite.png) no-repeat 25px 3px;
     cursor:pointer;
 }
-.yui3-scheduledisplay-menu {
-    position: absolute;
-}
-.yui3-scheduledisplay-menu-hidden {
-    display: none;
-}
 
 .schedule-table .schedule-task > div {
     position:relative;
 }
 .schedule-table .schedule-task .icon {
     position: absolute;
-    top: -13px;
-    height:15px;
+    top: -11px;
+    height: 15px;
+    border: 1px solid lightgray;
+    box-shadow: 1px 1px 3px gray;
+    padding: 2px 11px 2px 2px;
 }
 .schedule-table .schedule-task.schedule-future .icon {
-    background: green;
+    background: lightblue;
 }
 .schedule-table .schedule-task.schedule-past .icon {
     background: darkgrey;
@@ -180,31 +209,13 @@
     width: 20px;
 }
 .schedule-table .schedule-unavailable-1 .icon {
-    width: 71px;
+    width: 61px;
 }
 .schedule-table .schedule-unavailable-2 .icon {
-    width: 151px;
+    width: 141px;
 }
 .schedule-table .schedule-unavailable-3 .icon {
-    width: 231px;
-}
-.schedule-table .schedule-unavailable-4 .icon {
-    width: 231px;
-}
-.schedule-table .schedule-unavailable-5 .icon {
-    width: 311px;
-}
-.schedule-table .schedule-unavailable-6 .icon {
-    width: 391px;
-}
-.schedule-table .schedule-unavailable-7 .icon {
-    width: 471px;
-}
-.schedule-table .schedule-unavailable-8 .icon {
-    width: 551px;
-}
-.schedule-table .schedule-unavailable-9 .icon {
-    width: 631px;
+    width: 201px;
 }
 /* Schedule cancel icon */
 .schedule-table .schedule-present.schedule-task .icon .close-icon,
@@ -213,7 +224,7 @@
     position: absolute;
     top: 0px;
     right: 0px;
-    width:16px;
+    width:14px;
     height:16px;
     cursor: pointer;
 }
@@ -224,6 +235,11 @@
 .schedule-table .schedule-available > div:hover > * {
     display:block;
 }*/
+
+.wegas-tooltip h3 {
+    font-style: italic;
+    font-weight: normal;
+}
 
 
 /* TabView Styles */
@@ -308,25 +324,50 @@
     margin-bottom: 20px;
 }
 .wegas-mcqtabview  input {
-    margin: 5px;
     float: right;
-    padding:5px;
 }
 .wegas-mcqtabview .replies {
 }
 .wegas-mcqtabview .reply {
-    margin-bottom: 5px;
-    margin-bottom: 20px;
-/*    margin: 5px;*/
+    margin: 5px;
+    margin-bottom: 10px;
 }
 .wegas-mcqtabview .reply.first-child {
     border:none;
 }
-.wegas-mcqtabview .reply bold {
-    font-weight: bold;
-    display:block;
-    margin-bottom:10px;
+.wegas-mcqtabview .reply .name {
+    /*font-weight: bold;*/
+}
+.wegas-mcqtabview .reply content {
+    /*font-weight: bold;*/
+    margin-bottom:5px;
 }
 .wegas-mcqtabview .unread {
     font-weight:bold;
+}
+
+/* Result Display widget styles */
+.wegas-crimesim .yui3-datatable-header {
+    background: steelblue;
+    color: white;
+    text-shadow: 0 1px 1px lightSteelBlue;
+}
+.wegas-crimesim .yui3-datatable-columns .yui3-datatable-sorted,
+.wegas-crimesim .yui3-datatable-sortable-column:hover {
+    background-color: lightsteelblue ;
+}
+.wegas-crimesim .yui3-datatable-table {
+    border: none;
+    border-bottom: 1px solid gray;
+    width: 100%;
+}
+.wegas-crimesim .yui3-datatable-data .period {
+    width:50px;
+    text-align:center;
+}
+.wegas-crimesim .yui3-datatable-data .description {
+}
+.wegas-crimesim .yui3-datatable-cell,
+.wegas-crimesim .yui3-datatable-header {
+    border-left: 1px solid gray;
 }

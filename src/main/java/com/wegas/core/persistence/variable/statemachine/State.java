@@ -10,15 +10,12 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.leaderway.persistence.DialogueState;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -49,6 +46,7 @@ public class State extends AbstractEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "transition_id", referencedColumnName = "state_id")
     private List<Transition> transitions = new ArrayList<>();
+    private Coordinate editorPosition;
 
     public State() {
     }
@@ -82,6 +80,14 @@ public class State extends AbstractEntity {
         this.transitions = transitions;
     }
 
+    public Coordinate getEditorPosition() {
+        return editorPosition;
+    }
+
+    public void setEditorPosition(Coordinate editorPosition) {
+        this.editorPosition = editorPosition;
+    }
+
     @Override
     public String toString() {
         return "State{" + "id=" + id + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
@@ -92,6 +98,7 @@ public class State extends AbstractEntity {
         State newState = (State) other;
         this.label = newState.getLabel();
         this.onEnterEvent = newState.getOnEnterEvent();
+        this.editorPosition = newState.editorPosition;
         this.transitions = ListUtils.mergeLists(this.transitions, newState.transitions);
     }
 }

@@ -41,32 +41,39 @@ YUI.add('wegas-button', function (Y) {
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
-        bindUI: function () {
-            if(this.get('tooltips')){
-                this.get(CONTENTBOX).on('mouseenter', function () {
-                    this.get(CONTENTBOX).insert('<span class="wegas-button-tooltips">'
-                        + this.get('tooltips')
-                        +'</span>');
-                },this);
-                this.get(CONTENTBOX).on('mouseleave', function () {
-                    Y.one('.wegas-button-tooltips').remove();
-                },this);
+        initializer: function () {
+            Button.superclass.initializer.apply( this, arguments);
+
+            //this.constructor.CSS_PREFIX = "yui3-button";                      // Revert changes done by Y.Wegas.Widget so styling will work
+            this._cssPrefix = "yui3-button";
+
+            if ( this.get( "tooltips" ) ) {
+                this.plug(Y.Plugin.Tooltip, {
+                    content: this.get( "tooltips" )
+                });
             }
+        },
+        renderUI: function () {
+            Button.superclass.renderUI.apply( this, arguments);
+            this.get(BOUNDINGBOX).addClass("wegas-button");
         }
     }, {
         ATTRS: {
             tooltips: {},
-            entity: {},                                                         // @fixme Those two attributes are used in the editor to delete and update an item
-            dataSource: {}
-        },
-        CSS_PREFIX:"yui3-button wegas-button"
+            data: {}
+//            selected: {
+//                value: false,
+//                setter: function ( value ) {
+//                    this.get( "contentBox" ).toggleClass( "wegas-button-selected", !value );
+//                }
+//            }
+        }
     });
 
     Y.namespace('Wegas').Button = Button;
 
-
     /**
-     *  Plugin which adds an unread message counter to a widget.
+     * Plugin which adds an unread message counter to a widget.
      *
      * @class Y.Wegas.UnreadCount
      */
@@ -87,7 +94,7 @@ YUI.add('wegas-button', function (Y) {
         initializer: function () {
             Y.Wegas.app.dataSources.VariableDescriptor.after("response",        // If data changes, refresh
                 this.syncUI, this);
-            this.syncUI();
+            this.afterHostEvent("render", this.syncUI, this);
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),
@@ -117,7 +124,8 @@ YUI.add('wegas-button', function (Y) {
             if (descriptor.get("items")) {                                      // For ListDescriptors, we count the children instance's
                 for (i = 0; i < descriptor.get("items").length; i = i + 1) {
                     instance = descriptor.get("items")[i].getInstance();
-                    count += instance.get("unread") ? 1 : 0;
+                    //count += instance.get("unread") ? 1 : 0;
+                    count += instance.get("replies").length === 0 ? 1 : 0;
                 }
             }
 
@@ -134,29 +142,48 @@ YUI.add('wegas-button', function (Y) {
 
     Y.namespace('Plugin').UnreadCount = UnreadCount;
 
-
     /**
      * Login button
      */
-    LoginButton = Y.Base.create("wegas-login", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    LoginButton = Y.Base.create("wegas-login", Y.Wegas.Button, [], {
         bindUI: function () {
+            Y.Wegas.LoginButton.superclass.bindUI.apply( this, arguments );
 
             Y.Wegas.GameFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
+            this.plug( Y.Plugin.WidgetMenu, {
+                children: [{
+                    type: "Button",
+                    label: "Preferences",
+                    disabled: true
+                }, {
+                    type: "Button",
+                    label: "Logout",
+                    plugins: [{
+                        fn: "OpenUrlAction",
+                        cfg: {
+                            url: "wegas-app/view/logout.html",
+                            target: "self"
+                        }
+                    }]
+                }]
+            });
         },
         syncUI: function () {
-            var cPlayer = Y.Wegas.app.dataSources.Game.rest.getCurrentPlayer(),
-            cTeam = Y.Wegas.app.dataSources.Game.rest.getCurrentTeam(),
-            name = "undefined";
+            Y.Wegas.LoginButton.superclass.syncUI.apply( this, arguments );
+
+            var cUser = Y.Wegas.app.get( "currentUser" ),
+            cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer(),
+            cTeam = Y.Wegas.GameFacade.rest.getCurrentTeam(),
+            name = cUser.name || "undefined";
 
             if (cPlayer) {
-                name = cPlayer.name;
+                name = cPlayer.get( "name" );
             }
             if (cTeam) {
-                name = cTeam.name + ":" + name;
+                name = cTeam.get( "name" ) + " : " + name;
             }
-
-            this.get(CONTENTBOX).setContent('[' + name + '] <a href="' + Y.Wegas.app.get('base') + 'wegas-app/view/logout.html">logout</a>');
+            this.set( "label", name );
         }
     }, {
         ATTRS : {
@@ -170,75 +197,6 @@ YUI.add('wegas-button', function (Y) {
     });
 
     Y.namespace('Wegas').LoginButton = LoginButton;
-
-    /**
-     *  @class OpenPageAction
-     *  @module Wegas
-     *  @constructor
-     */
-    var OpenPageAction = function () {
-        OpenPageAction.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.mix(OpenPageAction, {
-        NS: "wegas",
-        NAME: "OpenPageAction"
-    });
-
-    Y.extend(OpenPageAction, Y.Plugin.Base, {
-        initializer: function () {
-            this.afterHostEvent("click", function() {
-                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                targetPageLoader.set("pageId", this.get("subpageId"));
-            }, this);
-        }
-    }, {
-        ATTRS: {
-            subpageId: {},
-            targetPageLoaderId: {}
-        }
-    });
-
-    Y.namespace("Plugin").OpenPageAction = OpenPageAction;
-
-    /**
-     *  @class ExecuteScriptAction
-     *  @module Wegas
-     *  @constructor
-     */
-    var ExecuteScriptAction = function () {
-        ExecuteScriptAction.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.mix(ExecuteScriptAction, {
-        NS: "wegas",
-        NAME: "ExecuteScriptAction"
-    });
-
-    Y.extend(ExecuteScriptAction, Y.Plugin.Base, {
-        initializer: function () {
-            this.afterHostEvent("click", function() {
-                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-                    cfg: {
-                        method: "POST",
-                        data: Y.JSON.stringify({
-                            "@class": "Script",
-                            "language": "JavaScript",
-                            "content": this.get("onClick")
-                        })
-                    }
-                });
-            }, this);
-        }
-    }, {
-        ATTRS: {
-            onClick: {}
-        }
-    });
-
-    Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
-
 
     /**
      * Shortcut to create a Button with an OpenPageAction plugin

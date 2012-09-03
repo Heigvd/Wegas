@@ -1,5 +1,5 @@
 /*
-YUI 3.5.0 (build 5089)
+YUI 3.6.0 (build 5521)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -201,7 +201,7 @@ var Selector = {
             selector = replaced.selector;
 
         if (selector) {
-            selector = selector.replace(',', '\uE007', 'g');
+            selector = selector.replace(/,/g, '\uE007');
             replaced.selector = selector;
             selector = Y.Selector._restoreSelector(replaced);
         }
@@ -378,4 +378,4 @@ Y.mix(Y.Selector, Selector, true);
 })(Y);
 
 
-}, '3.5.0' ,{requires:['dom-base']});
+}, '3.6.0' ,{requires:['dom-base']});

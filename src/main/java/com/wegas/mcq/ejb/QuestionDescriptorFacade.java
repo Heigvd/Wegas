@@ -11,18 +11,17 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.mcq.persistence.ChoiceDescriptor;
-import com.wegas.mcq.persistence.QuestionDescriptor;
-import com.wegas.mcq.persistence.QuestionInstance;
-import com.wegas.mcq.persistence.Reply;
+import com.wegas.mcq.persistence.*;
 import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -38,7 +37,6 @@ import org.slf4j.LoggerFactory;
 public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescriptor> {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
-
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
     /**
@@ -87,8 +85,8 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     public void setCurrentTime(QuestionDescriptor question, Player player, Long time) throws ScriptException {
         QuestionInstance questionInstance = (QuestionInstance) question.getInstance(player);
         for (Reply reply : questionInstance.getReplies()) {
-           //logger.warn(reply.getStartTime()+"*"+reply.getChoiceDescriptor().getDuration()+"*"+time);
-            if (reply.getStartTime() + reply.getChoiceDescriptor().getDuration() + 1  == time ) {
+            //logger.warn(reply.getStartTime()+"*"+reply.getChoiceDescriptor().getDuration()+"*"+time);
+            if (reply.getStartTime() + reply.getResult().getChoiceDescriptor().getDuration() + 1 == time) {
                 this.validateReply(player, reply);
             }
         }
@@ -96,30 +94,48 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
 
     /**
      *
-     * @param choiceDescriptorId
+     * @param choiceId
      * @param playerId
      * @param startTime
      * @return
      */
-    public Reply selectChoice(Long choiceDescriptorId, Long playerId, Long startTime) {
-        ChoiceDescriptor choiceDescriptor = this.find(choiceDescriptorId);
-        Player player = playerFacade.find(playerId);
+    public Reply selectChoice(Long choiceId, Player player, Long startTime) {
+        ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
 
         Query findListDescriptorByChildId = em.createNamedQuery("findListDescriptorByChildId");
-        findListDescriptorByChildId.setParameter("itemId", choiceDescriptorId);
+        findListDescriptorByChildId.setParameter("itemId", choice.getId());
         QuestionDescriptor questionDescriptor = (QuestionDescriptor) findListDescriptorByChildId.getSingleResult();
 
         QuestionInstance questionInstance = (QuestionInstance) questionDescriptor.getInstance(player);
         Reply reply = new Reply();
 
-        reply.setChoiceDescriptor(choiceDescriptor);
         reply.setStartTime(startTime);
+        reply.setResult(this.getCurrentResult(choice.getInstance(player)));
         questionInstance.addReply(reply);
 
         this.em.flush();
         this.em.refresh(reply);
 
         return reply;
+    }
+
+    /**
+     *
+     * @param choiceId
+     * @param playerId
+     * @param startTime
+     * @return
+     */
+    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
+        return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
+    }
+
+    private Result getCurrentResult(ChoiceInstance choice) {
+        Result r = choice.getCurrentResult();
+        if (r == null) {
+            r = ( (ChoiceDescriptor) choice.getDescriptor() ).getResults().get(0);
+        }
+        return r;
     }
 
     /**
@@ -141,8 +157,15 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     public void validateReply(Player player, Reply reply) throws ScriptException {
         HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
+        ChoiceInstance choiceInstance = reply.getResult().getChoiceDescriptor().getInstance(player);
+
+        reply.setResult(this.getCurrentResult(choiceInstance));                 // Refresh the current result
+
         arguments.put("selectedReply", reply);
-        scriptManager.eval(player, reply.getChoiceDescriptor().getImpact(), arguments);
+        arguments.put("selectedChoice", choiceInstance);
+        arguments.put("selectedQuestion", reply.getQuestionInstance());
+        scriptManager.eval(player, reply.getResult().getImpact(), arguments);
+        scriptManager.eval(player, reply.getResult().getChoiceDescriptor().getImpact(), arguments);
     }
 
     /**

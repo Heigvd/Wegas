@@ -9,13 +9,18 @@
  */
 
 /**
+ * @module wegas
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-app', function (Y) {
     "use strict";
 
-    var	App = Y.Base.create("wegas-app", Y.Base, [ ], {
+    /**
+     * @class Y.Wegas.App
+     * @constructor
+     * @param {Object} cfg
+     */
+    var App = Y.Base.create("wegas-app", Y.Base, [ ], {
 
         // ** Private fields ** //
         /**
@@ -54,15 +59,9 @@ YUI.add('wegas-app', function (Y) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
                     dataSource = new Y.Wegas.DataSource(dataSources[k]);
                     this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = dataSource;
-
-                    if (dataSource.get("initialRequest") !== undefined) {
-                        sender = dataSource.rest ? dataSource.rest : dataSource;
-                        dataSource.once("response", this.onInitialRequest, this);
-                        sender.sendRequest({
-                            request: dataSource.get("initialRequest")
-                        });
-
-                        this.requestCounter += 1;
+                    dataSource.once("response", this.onInitialRequest, this);
+                    if ( Y.Lang.isNumber( dataSource.sendInitialRequest() ) ) {           // Send an initial request
+                        this.requestCounter += 1;                               // If the request was sent, we update the counter, which is used n the onInitialRequest() callback
                     }
                 }
             }
@@ -130,6 +129,7 @@ YUI.add('wegas-app', function (Y) {
                         Y.Wegas.Widget.use(cfg, Y.bind( function (cfg) {        // Load the subwidget dependencies
                             var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
                             widget.render();
+                            this.fire("render");                                   // Fire a render event for some eventual post processing
                         }, this, cfg));
 
                     //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
@@ -141,6 +141,7 @@ YUI.add('wegas-app', function (Y) {
                     //} catch (renderException) {
                     //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
                     //}
+
                     }
                 }
             });
@@ -148,8 +149,8 @@ YUI.add('wegas-app', function (Y) {
     }, {
         ATTRS: {
             /**
-            * Base url for app
-            */
+             * Base url for app
+             */
             base: { },
             layoutSrc: {},
             dataSources: {
@@ -165,16 +166,24 @@ YUI.add('wegas-app', function (Y) {
                 setter: function (val) {
                     var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
                     if (cPlayer) {
-                    // @fixme
-                    // this.set('currentTeam', cPlayer.teamId);              // When current player is updated, we also update current team
+                        // @fixme
+                        this.set('currentTeam', cPlayer.get("teamId"));              // When current player is updated, we also update current team
                     }
                     return val;
                 }
-            }
+            },
+            /**
+             * Object litteral representing current user.
+             */
+            currentUser: { }
         },
         genId: function () {
             var now = new Date();
             return now.getHours() + now.getMinutes() + now.getSeconds();
+        },
+        htmlEntities: function ( str ) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
         }
     });
 

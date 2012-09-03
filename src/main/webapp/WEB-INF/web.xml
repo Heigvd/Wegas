@@ -41,9 +41,9 @@
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.html</url-pattern>
+        <url-pattern>*.xhtml</url-pattern>
         <!--
         <url-pattern>/faces/*</url-pattern>
-        <url-pattern>*.xhtml</url-pattern>
         <url-pattern>*.jsf</url-pattern>
         <url-pattern>*.faces</url-pattern>-->
     </servlet-mapping>
@@ -59,6 +59,10 @@
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
             <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>com.wegas.core.rest.util.ViewRequestFilter</param-value>
         </init-param>
         <init-param>
          <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>

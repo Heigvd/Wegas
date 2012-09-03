@@ -2,7 +2,8 @@ YUI.add('wegas-menu', function (Y) {
     'use strict';
 
     var WegasMenu,
-    CONTENT_BOX="contentBox";
+    CONTENT_BOX="contentBox",
+    tooltipTrigger = "wegas-tooltip-trigger";
 
 
     WegasMenu = Y.Base.create("wegas-menu", Y.Widget, [],{
@@ -59,9 +60,14 @@ YUI.add('wegas-menu', function (Y) {
         },
         itemCreator: function (item) {
             //TODO: Tooltip
-            var node = Y.Node.create("<li><div>" + (item.cssClass ? "<span class='menu-icon "+ item.cssClass +"'></span>" : "") + "<span>"+(item.label ? item.label : "")+"</span></div></li>");
+            var node = Y.Node.create("<li><div>" + (item.cssClass ? "<span class='menu-icon "+ item.cssClass +"'></span>" : "") + "<span>"+(item.label ? item.label : "")+"</span></div></li>"),
+            divNode = node.one( "div" );
             node.item = item;
             node.addClass(this.getClassName("itemlist", this.get("horizontal") ? "horizontal" : "vertical"));
+            if(item.tooltip){
+                divNode.addClass(tooltipTrigger);
+                divNode.setAttribute("title", item.tooltip);
+            }
             return node;
         }
     },{

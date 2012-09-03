@@ -10,12 +10,15 @@
  */
 package com.wegas.core.content;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -27,7 +30,9 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
-    private String lastModified;
+    @JsonIgnore
+    private String dataLastModified;
+    @JsonIgnore
     private Long bytes;
 
     public FileDescriptor(String absolutePath, ContentConnector contentConnector) {
@@ -36,7 +41,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
     public FileDescriptor(String absolutePath, String mimeType, String lastModified, Long bytes, ContentConnector contentConnector) {
         super(absolutePath, contentConnector, mimeType);
-        this.lastModified = lastModified;
+        this.dataLastModified = lastModified;
         this.bytes = bytes;
     }
 
@@ -60,8 +65,8 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * Attach this fileDescriptor to the content repository and writes
      * parameters to it.
      *
-     * @param data
-     * @param mimeType
+     * @param data The InputStream to store
+     * @param mimeType The data type
      * @throws IOException
      */
     public void setBase64Data(InputStream data, String mimeType) throws IOException {
@@ -69,7 +74,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
             this.sync();
             connector.setData(this.fileSystemAbsolutePath, mimeType, data);
             this.bytes = connector.getSize(fileSystemAbsolutePath);
-            this.lastModified = connector.getLastModified(fileSystemAbsolutePath);
+            this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
             this.mimeType = mimeType;
         } catch (PathNotFoundException ex) {
             logger.error("Parent directory ({}) does not exist, considere checking the way you try to store datas", ex.getMessage());
@@ -79,10 +84,22 @@ public class FileDescriptor extends AbstractContentDescriptor {
         data.close();
     }
 
-    public String getLastModified() {
-        return lastModified;
+    /**
+     * Attach this fileDescriptor to the content repository and writes
+     * parameters to it.
+     *
+     * @param data The String to store as data
+     * @param mimeType The data type
+     * @throws IOException
+     */
+    public void setBase64Data(String data, String mimeType) throws IOException {
+        this.setBase64Data(new ByteArrayInputStream(data.getBytes()), mimeType);
     }
-
+    @JsonProperty("dataLastModified")
+    public String getDataLastModified() {
+        return dataLastModified;
+    }
+    @JsonProperty("bytes")
     public Long getBytes() {
         return bytes;
     }
@@ -93,20 +110,8 @@ public class FileDescriptor extends AbstractContentDescriptor {
             //DirectorDescriptor
             throw new ClassCastException("Trying to retrieve a directory as a file");
         }
-        this.lastModified = connector.getLastModified(fileSystemAbsolutePath);
+        this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
         this.bytes = connector.getSize(fileSystemAbsolutePath);
-    }
-
-    @Override
-    public void setContentToRepository() throws RepositoryException {
-        connector.save();
-    }
-
-    @Override
-    public void saveToRepository() throws RepositoryException {
-        String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
-        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
-        parent.sync();
-        parent.addChild(this);
+        super.getContentFromRepository();
     }
 }

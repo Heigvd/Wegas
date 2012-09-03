@@ -12,7 +12,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
         currentScript: null,
 
-        destroyer: function () {
+        destructor: function () {
         },
 
         renderUI: function () {

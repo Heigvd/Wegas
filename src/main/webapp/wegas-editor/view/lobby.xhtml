@@ -13,9 +13,10 @@
                         layoutSrc: 'wegas-editor/db/wegas-lobby-layout.json',
                         lang : 'en-US',
                         debug : true,
+                        currentUser: #{lobbyController.getCurrentUser().toJson()},
                         dataSources: {
                             "GameModel": {
-                                source: "rest/GameModel",
+                                source: "rest/Index/GameModel",
                                 initialRequest: "",
                                 plugins: [
                                     {
@@ -60,16 +61,13 @@
                                 }]
                         });
 
-                        Y.Wegas.persistence.Player.EDITMENU.splice(1, 0, {
-                            type: "Button",
-                            label: "View game as player",
-                            plugins: [{
-                                    fn: "OpenGameAction",
-                                    cfg: {
-                                        editorUrl: "wegas-app/view/play.html?"
-                                    }
-                                }]
-                        });
+                        //Y.Wegas.persistence.Player.EDITMENU.splice(0, 0, {
+                        //    type: "Button",
+                        //    label: "Open in editor",
+                        //    plugins: [{
+                        //            fn: "OpenGameAction"
+                        //        }]
+                        //});
 
                         var editor = new Y.Wegas.Editor(cfg);                   // Launch the editor as soon as Dom is ready
                         editor.render();

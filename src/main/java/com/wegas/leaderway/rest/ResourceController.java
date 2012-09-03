@@ -37,42 +37,7 @@ public class ResourceController extends AbstractRestController<QuestionDescripto
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
 
-    /**
-     *
-     * @param gameModelId
-     * @param replyId
-     * @return
-     * @throws ScriptException
-     */
-    @GET
-    @Path("/CancelReply/{replyId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public QuestionInstance cancelReply(
-            @PathParam("gameModelId") Long gameModelId,
-            @PathParam("replyId") Long replyId) throws ScriptException {
-        Reply reply = questionDescriptorFacade.cancelReply(replyId);
-        return reply.getQuestionInstance();
-    }
-
-    /**
-     *
-     * @param playerId
-     * @param choiceDescriptorId
-     * @param startTime
-     * @return p
-     */
-    @GET
-    @Path("/SelectReply/{choiceDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public QuestionInstance selectReply(
-            @PathParam("playerId") Long playerId,
-            @PathParam("choiceDescriptorId") Long choiceDescriptorId,
-            @PathParam("startTime") Long startTime) {
-
-        Reply reply = questionDescriptorFacade.selectChoice(choiceDescriptorId, playerId, startTime);
-        return reply.getQuestionInstance();
-    }
-
+   
     /**
      *
      * @return

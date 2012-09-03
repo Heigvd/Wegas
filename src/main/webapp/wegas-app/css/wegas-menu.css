@@ -14,7 +14,8 @@
 .wegas-menu-content > ul{
     position:static;
     box-shadow: none;
-    border: 1px solid grey;
+    /* border: 1px solid grey;*/
+    background: none;
 }
 .wegas-menu-content li:hover{
     box-shadow: 0px 0px 6px black inset;
@@ -23,46 +24,46 @@
 }
 .wegas-menu-itemlist-horizontal{
     display:inline-table;
-    padding:0px 8px;
+    padding:0px 3px;
 }
 .wegas-menu-itemlist-vertical{
     display: block;
 }
 .wegas-menu-itemlist-horizontal > ul{
-        max-height: 0px;
-	top:98%;
-        transition: max-height 0.3s linear 0.2s, border-width 0.1s linear 0.3s;
-	-webkit-transition: max-height 0.3s linear 0.2s, border-width 0.1s linear 0.3s;
-        margin-right:-100%;
-	/*max-width:0px;
-	transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;
-	-webkit-transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;*/
+    max-height: 0px;
+    top:98%;
+    transition: max-height 0.3s linear 0.2s, border-width 0.1s linear 0.3s;
+    -webkit-transition: max-height 0.3s linear 0.2s, border-width 0.1s linear 0.3s;
+    margin-right:-100%;
+    /*max-width:0px;
+    transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;
+    -webkit-transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;*/
 }
 .wegas-menu-itemlist-vertical > ul{
-	overflow:hidden;
-	left:100%;
-        transition: max-height 0.3s linear 0.2s, border-width 0.3s linear 0.3s;
-	-webkit-transition: max-height 0.3s linear 0.2s, border-width 0.3s linear 0.3s;
-	/*opacity:0;
-        max-width:0px;
-	transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;
-	-webkit-transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;*/
+    overflow:hidden;
+    left:100%;
+    transition: max-height 0.3s linear 0.2s, border-width 0.3s linear 0.3s;
+    -webkit-transition: max-height 0.3s linear 0.2s, border-width 0.3s linear 0.3s;
+    /*opacity:0;
+    max-width:0px;
+    transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;
+    -webkit-transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;*/
 }
 .wegas-menu-content li:hover > ul {
-	overflow:visible;
-        max-height: 600px;
-        box-shadow: 4px 4px 8px black;
-        border: 1px solid grey;
-        transition: max-height 0.3s linear;
-	-webkit-transition: max-height 0.3s linear;
-	/*opacity:1;
-	max-width:800px;
-	transition: max-width 0.3s linear 0s, opacity 0.3s linear 0.2s;
-	-webkit-transition: max-width 0.3s linear 0s, opacity 0.3s linear 0.2s;*/
+    overflow:visible;
+    max-height: 600px;
+    box-shadow: 4px 4px 8px black;
+    border: 1px solid grey;
+    transition: max-height 0.3s linear;
+    -webkit-transition: max-height 0.3s linear;
+    /*opacity:1;
+    max-width:800px;
+    transition: max-width 0.3s linear 0s, opacity 0.3s linear 0.2s;
+    -webkit-transition: max-width 0.3s linear 0s, opacity 0.3s linear 0.2s;*/
 }
 .wegas-menu-content .menu-icon{
     display:inline-block;
     width:18px;
-    height:24px;
-    margin: -10px 0px;
+    height: 21px;
+    margin: 2px 2px -4px 0;
 }

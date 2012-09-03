@@ -10,13 +10,17 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.game.Script;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -24,6 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "ChoiceDescriptor")
+@Table(name = "MCQChoiceDescriptor")
 public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     private static final long serialVersionUID = 1L;
@@ -31,7 +36,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
-    private String name;
+    @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @JsonView(Views.EditorI.class)
+    @OrderBy("id")
+    private List<Result> results = new ArrayList<>();
     /**
      *
      */
@@ -41,12 +50,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     @Embedded
+    @JsonView(Views.EditorI.class)
     private Script impact;
-    /**
-     *
-     */
-    @Column(length = 4096)
-    private String feedback;
     /**
      *
      */
@@ -55,6 +60,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     private Long cost = new Long(1);
+
 
     /**
      *
@@ -65,10 +71,46 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         super.merge(a);
         ChoiceDescriptor other = (ChoiceDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setFeedback(other.getFeedback());
         this.setImpact(other.getImpact());
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
+
+        ListUtils.mergeLists(this.getResults(), other.getResults());
+    }
+
+    // ***  Sugar to use from scripts *** //
+    /**
+     *
+     * @param player
+     * @param index
+     */
+    public void setCurrentResultByIndex(Player player, int index) {
+        this.getInstance(player).setCurrentResultByIndex(index);
+    }
+
+    /**
+     *
+     * @param player
+     * @param resultId
+     */
+    public void setCurrentResult(Player player, Long resultId) {
+        this.getInstance(player).setCurrentResultId(resultId);
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void activate(Player p) {
+        this.getInstance(p).activate();
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void desactivate(Player p) {
+        this.getInstance(p).desactivate();
     }
 
     /**
@@ -99,30 +141,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.impact = impact;
     }
 
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the answer
-     */
-    public String getFeedback() {
-        return feedback;
-    }
-
-    /**
-     * @param feedback
-     */
-    public void setFeedback(String feedback) {
-        this.feedback = feedback;
-    }
-
     /**
      * @return the duration
      */
@@ -137,7 +155,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.duration = duration;
     }
 
-
     /**
      * @return the cost
      */
@@ -151,20 +168,18 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     public void setCost(Long cost) {
         this.cost = cost;
     }
-    // *** Sugar *** //
+
     /**
-     *
-     * @param p
+     * @return the results
      */
-    public void activate(Player p) {
-       this.getInstance(p).activate();
-    }
-    /**
-     *
-     * @param p
-     */
-    public void desactivate(Player p) {
-       this.getInstance(p).desactivate();
+    public List<Result> getResults() {
+        return results;
     }
 
+    /**
+     * @param results the results to set
+     */
+    public void setResults(List<Result> results) {
+        this.results = results;
+    }
 }

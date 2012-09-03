@@ -102,12 +102,29 @@ public class ContentConnector {
     }
 
     protected String getNote(String absolutePath) throws RepositoryException {
-        return this.getProperty(absolutePath, WFSConfig.WFS_NOTE).getString();
+        try {
+            return this.getProperty(absolutePath, WFSConfig.WFS_NOTE).getString();
+        } catch (NullPointerException ex) {
+            return "";
+        }
     }
 
     protected void setNote(String absolutePath, String note) throws RepositoryException {
         note = note == null ? "" : note;
         this.getNode(absolutePath).setProperty(WFSConfig.WFS_NOTE, note);
+    }
+
+    protected String getDescription(String absolutePath) throws RepositoryException {
+        try {
+            return this.getProperty(absolutePath, WFSConfig.WFS_DESCRIPTION).getString();
+        } catch (NullPointerException ex) {
+            return "";
+        }
+    }
+
+    protected void setDescription(String absolutePath, String description) throws RepositoryException {
+        description = description == null ? "" : description;
+        this.getNode(absolutePath).setProperty(WFSConfig.WFS_DESCRIPTION, description);
 
     }
 
@@ -138,13 +155,13 @@ public class ContentConnector {
         }
     }
 
-    protected void close() throws RepositoryException {
+    public void close() {
         try {
-            this.save();
-        } finally {
             if (session.isLive()) {
+                session.save();
                 session.logout();
             }
+        } catch (RepositoryException ex) {
         }
     }
 

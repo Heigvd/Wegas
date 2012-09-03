@@ -22,7 +22,7 @@
     "childVariableDescriptors": [{
         "@class": "NumberDescriptor",
         "name": "budget",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":75000
         },
@@ -34,7 +34,7 @@
         "name": "actions",
         "minValue": 0,
         "maxValue": 10,
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"10"
         },
@@ -46,7 +46,7 @@
         "name": "week",
         "minValue": 0,
         "maxValue": 5,
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"0"
         },
@@ -58,7 +58,7 @@
         "name": "teamMotivation",
         "minValue": 0,
         "maxValue": 100,
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"50"
         },
@@ -70,7 +70,7 @@
         "name": "clientsSatisfaction",
         "minValue": 0,
         "maxValue": 100,
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":"50"
         },
@@ -80,8 +80,8 @@
     },{
         "@class": "StringDescriptor",
         "name": "defaultDialogue",
-            
-        "defaultVariableInstance": {
+
+        "defaultInstance": {
             "@class": "StringInstance",
             "value":"dialogueFinal"
         },
@@ -91,7 +91,7 @@
     },{
         "@class": "NumberDescriptor",
         "name": "score",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "NumberInstance",
             "value":0
         },
@@ -101,7 +101,7 @@
     },{
         "@class": "InboxDescriptor",
         "name": "inbox",
-        "defaultVariableInstance": {
+        "defaultInstance": {
             "@class": "InboxInstance"
         },
         "scope": {
@@ -110,7 +110,7 @@
     },{
         "@class" : "TriggerDescriptor",
         "name" : "introduction",
-        "defaultVariableInstance" : {
+        "defaultInstance" : {
             "@class" : "TriggerInstance",
             "currentStateId" : 1
         },
@@ -153,7 +153,7 @@
     },{
         "@class" : "TriggerDescriptor",
         "name" : "checkVarriables",
-        "defaultVariableInstance" : {
+        "defaultInstance" : {
             "@class" : "TriggerInstance",
             "currentStateId" : 1
         },
@@ -200,7 +200,7 @@
             "@class": "ResourceDescriptor",
             "name": "Salmero",
             "description":"Fernand est franc et n'hésitera pas à vous dire ce qui ne lui convient pas. Engagé pour ses talents de négociateur, il a de l’intérêt pour le web. Expérimenté par une vie de travail, il semble réticent à l'apprentissage de nouvelles méthodes.",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"ResourceInstance",
                 "moral":72,
                 "confidence":27,
@@ -242,7 +242,7 @@
             "@class": "ResourceDescriptor",
             "name": "Brossard",
             "description":"Employé de longue date, elle s'est fait un nom grâce à ses talents de graphiste. Son expérience l’a rend compétentes dans la plupart des tâches et lui permet d’apprend vite. Elle n'hésitera que rarement à vous prévenir si quelque chose la dérange.",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"ResourceInstance",
                 "moral":45,
                 "confidence":30,
@@ -284,7 +284,7 @@
             "@class": "ResourceDescriptor",
             "name": "Vogt",
             "description":"Jessica a fini sa formation récemment et connait bien les dernières bonnes pratiques concernant les langages Web. Elle a quelque peu de la peine à prendre le point de vue des clients, ce qui la rend peu douée en design par exemple.",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"ResourceInstance",
                 "moral":50,
                 "confidence":34,
@@ -326,7 +326,7 @@
             "@class": "ResourceDescriptor",
             "name": "Auguste",
             "description":"Hector est un développeur logiciel plutôt compétent, alliant connaissances théoriques fraîches et expérience pratique. Parfois un peu brusque, il vous expliquera assez vite son opinion sur les choses qui le dérangent.",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"ResourceInstance",
                 "moral":85,
                 "confidence":37,
@@ -340,7 +340,7 @@
                     "wish":"Modélisation des traitements",
                     "hate":"",
                     "frankness":85,
-                    "numberOfWorkWithLeader":0, 
+                    "numberOfWorkWithLeader":0,
                     "totalExperienceGained":0,
                     "learningCoefficient":1.2,
                     "dialogue":"dialogueHector",
@@ -368,7 +368,7 @@
             "@class": "ResourceDescriptor",
             "name": "Torr",
             "description":"Lucien est le cadet de l'équipe. Il a consacrés toutes ses études aux bases de données. Assez mystérieux, il ne donne que rarement son avis sur les décisions prises le concernant directement.",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"ResourceInstance",
                 "moral":50,
                 "confidence":9,
@@ -393,7 +393,7 @@
                     "isAdvised":false,
                     "isConsidered":false,
                     "bonusInducement":0
-                    
+
                 },
                 "skillset":{
                     "Design graphique":12,
@@ -408,7 +408,7 @@
                 "@class": "TeamScope"
             }
         }],
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class": "NumberInstance",
             "value": 0
         },
@@ -422,7 +422,7 @@
             "@class": "TaskDescriptor",
             "name": "Création de maquettes pour un logiciel de cuisine.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -447,7 +447,7 @@
             "@class": "TaskDescriptor",
             "name": "Design graphique d’une page web pour un privé.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -472,7 +472,7 @@
             "@class": "TaskDescriptor",
             "name": "Modification d’une base de donnée multimédia.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -497,7 +497,7 @@
             "@class": "TaskDescriptor",
             "name": "Modifications d’un logiciel de comptabilité.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -522,7 +522,7 @@
             "@class": "TaskDescriptor",
             "name": "Analyse des besoins d’un nouveau CMS.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -548,7 +548,7 @@
             "@class": "TaskDescriptor",
             "name": "Création d’un site web  pour les clients d’une assurance.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":3,
                 "properties":{
@@ -574,7 +574,7 @@
             "@class": "TaskDescriptor",
             "name": "Modélisation d’un système de payement online.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -599,7 +599,7 @@
             "@class": "TaskDescriptor",
             "name": "Création d’une base de données pour un privé.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -624,7 +624,7 @@
             "@class": "TaskDescriptor",
             "name": "Modélisation des traitements d’un logiciel.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":3,
                 "properties":{
@@ -649,7 +649,7 @@
             "@class": "TaskDescriptor",
             "name": "Analyse des besoins pour un privé.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -674,7 +674,7 @@
             "@class": "TaskDescriptor",
             "name": "Analyse des besoins pour un privé.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -699,7 +699,7 @@
             "@class": "TaskDescriptor",
             "name": "Analyse des besoins pour un privé.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -724,7 +724,7 @@
             "@class": "TaskDescriptor",
             "name": "Création d’un d’une démo de logiciel de comptabilité.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":3,
                 "properties":{
@@ -752,7 +752,7 @@
             "@class": "TaskDescriptor",
             "name": "Maquette pour un logiciel domotique.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -778,7 +778,7 @@
             "@class": "TaskDescriptor",
             "name": "Migration d’une base de données PostgrSQL.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -804,7 +804,7 @@
             "@class": "TaskDescriptor",
             "name": "Création d’une page web pour un privé.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -830,7 +830,7 @@
             "@class": "TaskDescriptor",
             "name": "Création d’un nouveau logo pour l’entreprise.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -856,7 +856,7 @@
             "@class": "TaskDescriptor",
             "name": "Création d’une base de données pour un logiciel de domotique.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -882,7 +882,7 @@
             "@class": "TaskDescriptor",
             "name": "Maquette pour un site web de paris sportif.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -908,7 +908,7 @@
             "@class": "TaskDescriptor",
             "name": "Maquette pour un site web de paris sportif.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -934,7 +934,7 @@
             "@class": "TaskDescriptor",
             "name": "Maquette pour un site web de paris sportif.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -960,7 +960,7 @@
             "@class": "TaskDescriptor",
             "name": "Résolution de problème sur le logiciel d’un ancien mandat.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -986,7 +986,7 @@
             "@class": "TaskDescriptor",
             "name": "Modification de la base de données d’une banque.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":3,
                 "properties":{
@@ -1012,7 +1012,7 @@
             "@class": "TaskDescriptor",
             "name": "Modélisation des traitements d’un logiciel de logistique de la Poste.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":4,
                 "properties":{
@@ -1037,7 +1037,7 @@
             "@class": "TaskDescriptor",
             "name": "Modélisation d’une base de données.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -1062,7 +1062,7 @@
             "@class": "TaskDescriptor",
             "name": "Développement de la partie HTML/CSS d’un site internet.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -1087,7 +1087,7 @@
             "@class": "TaskDescriptor",
             "name": "Rédaction d’un cahier des charges pour un site d’artiste.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2,
                 "properties":{
@@ -1113,7 +1113,7 @@
             "@class": "TaskDescriptor",
             "name": "Demande d’un prêt pour la rénovation des bureaux.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -1138,7 +1138,7 @@
             "@class": "TaskDescriptor",
             "name": "Modifications d’un logiciel de recette cuisine.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -1163,7 +1163,7 @@
             "@class": "TaskDescriptor",
             "name": "Résolution de problème d’un logiciel de comptabilité.",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1,
                 "properties":{
@@ -1185,7 +1185,7 @@
                 "@class": "TeamScope"
             }
         }],
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class": "NumberInstance",
             "value": 0
         },
@@ -1199,7 +1199,7 @@
             "@class": "TaskDescriptor",
             "name": "sickness",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":1
             },
@@ -1210,7 +1210,7 @@
             "@class": "TaskDescriptor",
             "name": "sickness2",
             "description":"",
-            "defaultVariableInstance":{
+            "defaultInstance":{
                 "@class":"TaskInstance",
                 "duration":2
             },
@@ -1218,7 +1218,7 @@
                 "@class": "TeamScope"
             }
         }],
-        "defaultVariableInstance":{
+        "defaultInstance":{
             "@class": "NumberInstance",
             "value": 0
         },
@@ -1228,7 +1228,7 @@
     },{
         "@class" : "DialogueDescriptor",
         "name" : "dialogueFernand",
-        "defaultVariableInstance" : {
+        "defaultInstance" : {
             "@class" : "FSMInstance",
             "currentStateId" : 1
         },
@@ -1924,7 +1924,7 @@
     },{
         "@class" : "DialogueDescriptor",
         "name" : "dialogueDaniela",
-        "defaultVariableInstance" : {
+        "defaultInstance" : {
             "@class" : "FSMInstance",
             "currentStateId" : 1
         },
@@ -4012,7 +4012,7 @@
     },{
         "@class" : "DialogueDescriptor",
         "name" : "dialogueLucien",
-        "defaultVariableInstance" : {
+        "defaultInstance" : {
             "@class" : "FSMInstance",
             "currentStateId" : 1
         },
@@ -4708,7 +4708,7 @@
     },{
         "@class" : "DialogueDescriptor",
         "name" : "dialogueFinal",
-        "defaultVariableInstance" : {
+        "defaultInstance" : {
             "@class" : "FSMInstance",
             "currentStateId" : 0
         },

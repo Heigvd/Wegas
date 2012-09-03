@@ -1,7 +1,7 @@
 {
     "@class" : "DialogueDescriptor",
     "name" : "dialogueLucien",
-    "defaultVariableInstance" : {
+    "defaultInstance" : {
         "@class" : "FSMInstance",
         "currentStateId" : 1
     },
@@ -38,7 +38,7 @@
                     "css": {
                         "margin":"50px 0 0 375px"
                     }
-                }]            
+                }]
             },
             "transitions" : [{
                 "@class" : "DialogueTransition",
@@ -98,7 +98,7 @@
                     "css": {
                         "margin":"50px 0 0 375px"
                     }
-                }] 
+                }]
             },
             "onEnterEvent" : {
                 "@class" : "Script",

@@ -9,11 +9,7 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.ejb.Helper;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -25,6 +21,7 @@ import org.codehaus.jackson.annotate.JsonBackReference;
  */
 @Entity
 @XmlType(name = "Reply")
+@Table(name = "MCQReply")
 public class Reply extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -42,14 +39,8 @@ public class Reply extends AbstractEntity {
     /**
      *
      */
-    @ManyToOne
-    @JoinColumn(name = "choicedescriptor_id")
-    private ChoiceDescriptor choiceDescriptor;
-    /**
-     *
-     */
-    @Column(name = "choicedescriptor_id", nullable = false, insertable = false, updatable = false)
-    private Long choiceDescriptorId;
+    @ManyToOne(optional = false)
+    private Result result;
     /**
      *
      */
@@ -65,7 +56,7 @@ public class Reply extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Reply other = (Reply) a;
-        this.setChoiceDescriptor(other.getChoiceDescriptor());
+        this.setResult(other.getResult());
         this.setStartTime(other.getStartTime());
     }
 
@@ -74,13 +65,12 @@ public class Reply extends AbstractEntity {
     @PostRemove
     private void onUpdate() {
         this.getQuestionInstance().onInstanceUpdate();
-   }
+    }
 
     @Override
     public Long getId() {
         return this.id;
     }
-
 
     /**
      * @return the MCQDescriptor
@@ -114,25 +104,16 @@ public class Reply extends AbstractEntity {
     }
 
     /**
-     * @return the choiceDescriptor
+     * @return the result
      */
-    @XmlTransient
-    public ChoiceDescriptor getChoiceDescriptor() {
-        return choiceDescriptor;
+    public Result getResult() {
+        return result;
     }
 
     /**
-     * @param choiceDescriptor the choiceDescriptor to set
+     * @param result the result to set
      */
-    public void setChoiceDescriptor(ChoiceDescriptor choiceDescriptor) {
-        this.choiceDescriptor = choiceDescriptor;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Long getChoiceDescriptorId() {
-        return this.choiceDescriptorId;
+    public void setResult(Result result) {
+        this.result = result;
     }
 }

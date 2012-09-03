@@ -1,5 +1,5 @@
 /*
-YUI 3.5.0 (build 5089)
+YUI 3.6.0 (build 5521)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -249,7 +249,7 @@ ATTRS[DISABLED] = {
 
 /**
  * @attribute visible
- * @description Boolean indicating weather or not the Widget is visible.
+ * @description Boolean indicating whether or not the Widget is visible.
  * @default TRUE
  * @type boolean
  */
@@ -771,7 +771,7 @@ Y.extend(Widget, Y.Base, {
      * @return Node
      */
     _setBB: function(node) {
-        return this._setBox(this.get(ID), node, this.BOUNDING_TEMPLATE);
+        return this._setBox(this.get(ID), node, this.BOUNDING_TEMPLATE, true);
     },
 
     /**
@@ -783,7 +783,7 @@ Y.extend(Widget, Y.Base, {
      * @return Node
      */
     _setCB: function(node) {
-        return (this.CONTENT_TEMPLATE === null) ? this.get(BOUNDING_BOX) : this._setBox(null, node, this.CONTENT_TEMPLATE);
+        return (this.CONTENT_TEMPLATE === null) ? this.get(BOUNDING_BOX) : this._setBox(null, node, this.CONTENT_TEMPLATE, false);
     },
 
     /**
@@ -809,13 +809,27 @@ Y.extend(Widget, Y.Base, {
      * @param {String} id The node's id attribute
      * @param {Node|String} node The node reference
      * @param {String} template HTML string template for the node
+     * @param {boolean} true if this is the boundingBox, false if it's the contentBox
      * @return {Node} The node
      */
-    _setBox : function(id, node, template) {
-        node = Node.one(node) || Node.create(template);
+    _setBox : function(id, node, template, isBounding) {
+
+        node = Node.one(node);
+
+        if (!node) {
+            node = Node.create(template);
+
+            if (isBounding) {
+                this._bbFromTemplate = true;
+            } else {
+                this._cbFromTemplate = true;
+            }
+        }
+
         if (!node.get(ID)) {
             node.set(ID, id || Y.guid());
         }
+
         return node;
     },
 
@@ -907,10 +921,13 @@ Y.extend(Widget, Y.Base, {
         // Shared listener across all Widgets.
         if (!focusHandle) {
             focusHandle = Widget._hDocFocus = oDocument.on("focus", this._onDocFocus, this);
-            focusHandle.listeners = 1;
-        } else {
-            focusHandle.listeners++; 
+            focusHandle.listeners = {
+                count: 0
+            };
         }
+
+        focusHandle.listeners[Y.stamp(this, true)] = true;
+        focusHandle.listeners.count++;
 
         //	Fix for Webkit:
         //	Document doesn't receive focus in Webkit when the user mouses 
@@ -929,12 +946,20 @@ Y.extend(Widget, Y.Base, {
     _unbindDOM : function(boundingBox) {
 
         var focusHandle = Widget._hDocFocus,
+            yuid = Y.stamp(this, true),
+            focusListeners,
             mouseHandle = this._hDocMouseDown;
 
         if (focusHandle) {
-            if (focusHandle.listeners > 0) {
-                focusHandle.listeners--;
-            } else {
+
+            focusListeners = focusHandle.listeners;
+
+            if (focusListeners[yuid]) {
+                delete focusListeners[yuid];
+                focusListeners.count--;
+            }
+
+            if (focusListeners.count === 0) {
                 focusHandle.detach();
                 Widget._hDocFocus = null;
             }
@@ -1246,4 +1271,4 @@ Y.extend(Widget, Y.Base, {
 Y.Widget = Widget;
 
 
-}, '3.5.0' ,{requires:['attribute', 'event-focus', 'base-base', 'base-pluginhost', 'node-base', 'node-style', 'classnamemanager'], skinnable:true});
+}, '3.6.0' ,{skinnable:true, requires:['attribute', 'event-focus', 'base-base', 'base-pluginhost', 'node-base', 'node-style', 'classnamemanager']});

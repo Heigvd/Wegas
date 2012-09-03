@@ -9,6 +9,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -74,7 +75,7 @@ public class GameModelFacadeTest {
     }
 
     @Test
-    public void createGame() throws NamingException {
+    public void createGame() throws NamingException, PersistenceException {
         logger.info("createGame()");
         final String GAMENAME = "test-gamemodel";
         final String GAMENAME2 = "test-gamemodel2";
@@ -100,7 +101,7 @@ public class GameModelFacadeTest {
         Game g = new Game(NAME, TOKEN);
         gf.create(gameModel.getId(), g);
 
-        Game g2 = gf.getGameByToken(TOKEN);
+        Game g2 = gf.findByToken(TOKEN);
         Assert.assertEquals(NAME, g2.getName());
 
         Team t = new Team();

@@ -11,7 +11,7 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
-import java.io.Serializable;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -19,9 +19,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Entity
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = {"game_id", "name"}))
-public class Game extends NamedEntity implements Serializable {
+public class Game extends NamedEntity {
 
     private static final Logger logger = Logger.getLogger("GameEntity");
     /**
@@ -87,9 +88,10 @@ public class Game extends NamedEntity implements Serializable {
      *
      */
     @PrePersist
+    @PreUpdate
     public void prePersist() {
-        if (this.token == null) {
-            this.setToken(this.getName().replace(" ", ""));
+        if (this.getToken() == null) {
+            this.setToken(this.getName().replace(" ", "-"));
         }
     }
 
@@ -104,6 +106,7 @@ public class Game extends NamedEntity implements Serializable {
      * @return the teams
      */
     @JsonManagedReference("game-team")
+    @JsonView(Views.Public.class)
     public List<Team> getTeams() {
         return this.teams;
     }
