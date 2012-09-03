@@ -29,7 +29,9 @@ YUI.add('wegas-tabview', function (Y) {
             });
         }
     }, {
+
         CSS_PREFIX: "yui3-tabview",
+
         tabs: {},
 
         getTab: function (id) {
@@ -182,11 +184,14 @@ YUI.add('wegas-tabview', function (Y) {
             return this._witems[index];
         }
     }, {
+
+        CSS_PREFIX: "yui3-tab",
+
         ATTRS : {
             content: {
                 setter: function () { }                                         // Overrides the panelNode management
             }
         }
     });
-    Y.namespace('Wegas').Tab = Tab;
+    Y.namespace( 'Wegas' ).Tab = Tab;
 });
