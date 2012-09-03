@@ -24,7 +24,8 @@ YUI.add('wegas-widget', function (Y) {
                 this.get(CONTENTBOX).addClass(this.get('cssClass'));
             }
         });
-        this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX || this.constructor.NAME.toLowerCase();
+        this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
+        || this.constructor.NAME.toLowerCase();                                 // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
     }
 
@@ -64,13 +65,12 @@ YUI.add('wegas-widget', function (Y) {
             this.emptyMessage();
             msgNode.addClass(level);
             msgNode.one('.content').setContent(txt);
-            timeout = 1000;
 
             if ( timeout ) {
                 Y.later( timeout, this, this.emptyMessage);
             }
 
-            msgNode.getDOMNode().scrollIntoView();
+            //msgNode.getDOMNode().scrollIntoView();
         },
 
         getMessageNode: function () {
@@ -80,7 +80,7 @@ YUI.add('wegas-widget', function (Y) {
                 return this.get( CONTENTBOX ).one( '.wegas-systemmessage' );
             }
             return msgNode;
-        },
+        }
 
 
     //scrollToNode: function ( node ) {
@@ -163,7 +163,7 @@ YUI.add('wegas-widget', function (Y) {
         */
         getRawModulesFromDefinition: function(cfg) {
 
-            var props, type = cfg.type || 'text',
+            var i, props, type = cfg.type || 'text',
             module = YUI_config.groups.wegas.modulesByType[type],
             modules = [];
 
@@ -171,17 +171,17 @@ YUI.add('wegas-widget', function (Y) {
                 modules.push(module);
             }
 
-            props = [ "children" ]
-            for (var i = 0; i < props.length; i = i + 1) {
-                if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParents)
+            props = [ "children" ];
+            for ( i = 0; i < props.length; i = i + 1) {
+                if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParent widgets)
                     Y.Array.each(cfg[props[i]], function(field) {
                         modules = modules.concat( this.getModulesFromDefinition(field) );
                     }, this);
                 }
             }
 
-            props = ["left", "right", "center", "top", "bottom"];           // Get definitions from children (for Y.Wegas.Layouts)
-            for (var i = 0; i < props.length; i = i + 1) {
+            props = ["left", "right", "center", "top", "bottom"];               // Get definitions from children (for Y.Wegas.Layout widgets)
+            for ( i = 0; i < props.length; i = i + 1) {
                 if (cfg[props[i]]) {
                     modules = modules.concat(this.getModulesFromDefinition(cfg[props[i]]));
                 }
@@ -209,7 +209,7 @@ YUI.add('wegas-widget', function (Y) {
     Y.namespace('Wegas').Widget = Widget;
 
     /**
-     * @FIXME We override this function so widget are looked for in Wegas ns.
+     * @hack We override this function so widget are looked for in Wegas ns.
      */
     Y.WidgetParent.prototype._createChild = function (config) {
         var defaultType = this.get("defaultChildType"),
@@ -238,7 +238,8 @@ YUI.add('wegas-widget', function (Y) {
     };
 
     /*
-     * FIXME Hack so plugin host accepts string definition of classes
+     * @hack Override so plugin host accepts string definition of classes and
+     * look it up in the Y.Wegas.* package.
      */
     var newPlug = Y.DataSource.IO.prototype.plug = function(Plugin, config) {
         var i, ln, ns;
