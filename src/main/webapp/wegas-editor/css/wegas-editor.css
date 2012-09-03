@@ -62,13 +62,14 @@ div.inputEx-fieldWrapper {
     width: 100%;
 }
 .wegas-form div.inputEx-StringField-wrapper {
-    /*display: inline-block;*/
+    display: inline-block;
     vertical-align: top;
     width: 100%;
 }
 .wegas-form div.inputEx-CombineField,
 .wegas-form .inputEx-fieldWrapper {
     padding-left:135px;
+    margin-right: 7px;
     white-space: nowrap;
     position: relative;
 }

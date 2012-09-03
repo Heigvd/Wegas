@@ -29,23 +29,92 @@ YUI.add('wegas-widget', function (Y) {
     }
 
     Y.mix(Widget.prototype, {
-        /*   _overlay: null,
 
-            hideReloadOverlay: function(){
-                    this._overlay.hide();
-            },
+        showOverlay: function(){
+            this.get( "contentBox" ).prepend( '<div class="wegas-widget-loading"></div>' );
+        //this.get( "contentBox" ).addClass( "wegas-widget-loading" );
+        //var bb = this.get('boundingBox');
+        //if (!this._overlay) {
+        //    this._overlay = Y.Node.create('<div class="yui3-redcms-loading-overlay"><div></div></div>');
+        //    bb.prepend(this._overlay);
+        //}
+        //this._overlay.one('div').setStyle('height', bb.getComputedStyle('height'));
+        //this._overlay.show();
+        },
 
-            showReloadOverlay: function(){
-                    var bb = this.get('boundingBox');
+        hideOverlay: function(){
+            this.get( "contentBox" ).one( ".wegas-widget-loading" ).remove();
+        //this._overlay.hide();
+        },
 
-                    if (!this._overlay) {
-                            this._overlay = Y.Node.create('<div class="yui3-redcms-loading-overlay"><div></div></div>');
-                            bb.prepend(this._overlay);
-                    }
-                    this._overlay.one('div').setStyle('height', bb.getComputedStyle('height'));
-                    this._overlay.show();
-            }*/
-        });
+        emptyMessage: function () {						// Form msgs logic
+            var msgNode = this.get(CONTENTBOX).one('.wegas-systemmessage');
+            if ( !msgNode ) {
+                return;
+            }
+            msgNode.removeClass("info");
+            msgNode.removeClass("warn");
+            msgNode.removeClass("error");
+            msgNode.removeClass("success");
+            msgNode.one('.content').setContent();
+        },
+
+        showMessage: function ( level, txt, timeout ) {
+            var msgNode = this.getMessageNode();
+            this.emptyMessage();
+            msgNode.addClass(level);
+            msgNode.one('.content').setContent(txt);
+            timeout = 1000;
+
+            if ( timeout ) {
+                Y.later( timeout, this, this.emptyMessage);
+            }
+
+            msgNode.getDOMNode().scrollIntoView();
+        },
+
+        getMessageNode: function () {
+            var msgNode = this.get( CONTENTBOX ).one( '.wegas-systemmessage' );
+            if ( !msgNode ) {
+                this.get( CONTENTBOX ).prepend( '<div class="wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>' );
+                return this.get( CONTENTBOX ).one( '.wegas-systemmessage' );
+            }
+            return msgNode;
+        },
+
+
+    //scrollToNode: function ( node ) {
+    //    return ;
+    //
+    //    var winH, docH;
+    //    if(this.anim && this.anim.get('running')) {
+    //        this.anim.pause();
+    //    }
+    //
+    //    var parent = node.get( "parent" );
+    //    while (parent ) {
+    //        console.log(parent);
+    //        parent = node.get( "parent" );
+    //    }
+    //
+    //    // record current window conditions
+    //    winH = Y.DOM.winHeight();
+    //    docH = Y.DOM.docHeight();
+    //    this.anim = new Y.Anim({
+    //        node: this.get('scroller'),
+    //        to: { // can't scoll to target if it's beyond the doc height - window height
+    //            scroll : [Y.DOM.docScrollX(), Math.min(docH - winH, targetY)]
+    //        },
+    //        duration: this.get('duration'),
+    //        easing: this.get('easing'),
+    //        on : {
+    //            end : function() {
+    //                location.hash = hash;
+    //            }
+    //        }
+    //    }).run();
+    //},
+    });
 
     Y.mix(Widget, {
         ATTRS: {
@@ -136,7 +205,7 @@ YUI.add('wegas-widget', function (Y) {
             Y.use.apply( Y, modules);
         }
     });
-    
+
     Y.namespace('Wegas').Widget = Widget;
 
     /**

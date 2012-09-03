@@ -34,7 +34,7 @@ YUI.add('wegas-csseditor', function (Y) {
                     click: Y.bind(function () {
                         Y.Wegas.app._customCSSStyleSheet.disable();
                         Y.Wegas.app._customCSSStyleSheet = new Y.StyleSheet(form.getValue());
-                        // showFormMsg('success', 'CSS has been updated.');
+                        // showFormMessage('success', 'CSS has been updated.');
                     }, this)
                 }
             }).render(el);

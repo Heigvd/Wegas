@@ -20,8 +20,6 @@ YUI.add('wegas-form', function (Y) {
 
     FormWidget = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
-        CONTENT_TEMPLATE: '<div><div class="wegas-systemmessage"><span class="icon"></span><span class="content"></span></div></div>',
-
         // ** Private Fields ** //
 
         // ** Lifecycle Methods ** //
@@ -47,7 +45,7 @@ YUI.add('wegas-form', function (Y) {
         renderToolbar: function () {
             var toolbarNode = this.toolbar.get( 'header' );
 
-            
+
             this.saveButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
                 on: {
@@ -81,55 +79,6 @@ YUI.add('wegas-form', function (Y) {
         setForm: function (values, formCfg) {
             this.set("values", values);
             this.set("formCfg", formCfg)
-        },
-
-        emptyMessage: function () {						// Form msgs logic
-            var msgNode = this.get(CONTENTBOX).one('.wegas-systemmessage');
-            msgNode.removeClass("info");
-            msgNode.removeClass("warn");
-            msgNode.removeClass("error");
-            msgNode.removeClass("success");
-            msgNode.one('.content').setContent();
-        },
-        showMessage: function(level, txt) {
-            var msgNode = this.get(CONTENTBOX).one('.wegas-systemmessage');
-            this.emptyMessage();
-            msgNode.addClass(level);
-            msgNode.one('.content').setContent(txt);
-            this.scrollToNode(msgNode);
-        },
-
-        scrollToNode: function ( node ) {
-
-            return ;
-
-            var winH, docH;
-            if(this.anim && this.anim.get('running')) {
-                this.anim.pause();
-            }
-
-            var parent = node.get( "parent" );
-            while (parent ) {
-                console.log(parent);
-                parent = node.get( "parent" );
-            }
-
-            // record current window conditions
-            winH = Y.DOM.winHeight();
-            docH = Y.DOM.docHeight();
-            this.anim = new Y.Anim({
-                node: this.get('scroller'),
-                to: { // can't scoll to target if it's beyond the doc height - window height
-                    scroll : [Y.DOM.docScrollX(), Math.min(docH - winH, targetY)]
-                },
-                duration: this.get('duration'),
-                easing: this.get('easing'),
-                on : {
-                    end : function() {
-                        location.hash = hash;
-                    }
-                }
-            }).run();
         },
 
         destroyForm: function () {
