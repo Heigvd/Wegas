@@ -12,8 +12,12 @@ package com.wegas.mcq.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -22,14 +26,11 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "QuestionDescriptor")
+@Table(name = "MCQQuestionDescriptor")
 public class QuestionDescriptor extends ListDescriptor {
 
     private static final long serialVersionUID = 1L;
     // private static final Logger logger = LoggerFactory.getLogger(QuestionDescriptor.class);
-    /**
-     *
-     */
-    private String label;
     /**
      *
      */
@@ -39,6 +40,11 @@ public class QuestionDescriptor extends ListDescriptor {
      *
      */
     private boolean allowMultipleReplies = false;
+    /**
+     *
+     */
+    @ElementCollection
+    private List<String> pictures = new ArrayList<>();
 
     /**
      *
@@ -49,8 +55,25 @@ public class QuestionDescriptor extends ListDescriptor {
         super.merge(a);
         QuestionDescriptor other = (QuestionDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setLabel(other.getLabel());
         this.setAllowMultipleReplies(other.getAllowMultipleReplies());
+        this.setPictures(other.getPictures());
+    }
+// *** Sugar for scripts *** //
+
+    /**
+     *
+     * @param p
+     */
+    public void activate(Player p) {
+        ( (QuestionInstance) this.getInstance(p) ).activate();
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void desactivate(Player p) {
+        ( (QuestionInstance) this.getInstance(p) ).desactivate();
     }
 
     /**
@@ -68,20 +91,6 @@ public class QuestionDescriptor extends ListDescriptor {
     }
 
     /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    /**
      * @return the multipleReplies
      */
     public boolean getAllowMultipleReplies() {
@@ -95,6 +104,17 @@ public class QuestionDescriptor extends ListDescriptor {
         this.allowMultipleReplies = allowMultipleReplies;
     }
 
+    /**
+     * @return the pictures
+     */
+    public List<String> getPictures() {
+        return pictures;
+    }
 
-
+    /**
+     * @param pictures the pictures to set
+     */
+    public void setPictures(List<String> pictures) {
+        this.pictures = pictures;
+    }
 }

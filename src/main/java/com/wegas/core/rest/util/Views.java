@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -18,18 +18,46 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class Views {
 
     /**
+     * Extend view (w/ impacts and stuff
+     */
+    public static interface EditorI {
+    }
+
+    /**
+     * Extend view (w/ impacts and stuff
+     */
+    public static interface IndexI {
+    }
+
+    /**
      *
      */
-    static public class Export {
+    public static class Index implements IndexI {
     }
-    /*
-     * static class Public { }
+
+    /**
      *
-     * static class ExtendedPublic extends Public { }
-     *
-     * static class Internal extends ExtendedPublic {
-    }
      */
+    public static class Public extends Index {
+    }
+
+    /**
+     *
+     */
+    public static class Private extends Public {
+    }
+
+    /**
+     *
+     */
+    public static class Export extends Public {
+    }
+
+    /**
+     *
+     */
+    public static class Editor extends Public implements EditorI {
+    }
 
     /**
      *

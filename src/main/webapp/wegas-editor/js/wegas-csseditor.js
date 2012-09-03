@@ -42,9 +42,9 @@ YUI.add('wegas-csseditor', function (Y) {
                 disabled: true
             }).render(el);
         },
-        destroyer: function () {
-            //this.previewButton.delete()
-            //this.saveButton.delete()
+        destructor: function () {
+            this.previewButton.destroy();
+            this.saveButton.destroy();
         }
     });
 

@@ -29,7 +29,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
 
-        CONTENT_TEMPLATE: null,
+        CONTENT_TEMPLATE: "<div></div>",
         panel: null,
         header: null,
         jpLoaded :false,
@@ -107,22 +107,6 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         renderUI: function() {
             this.panel = this.get("parent").get("toolbarPanel");
             this.header = this.get("parent").get("toolbarNode");
-            this.get("parent").addToolbarWidget(new Y.Button({
-                label:"load",
-                on:{
-                    'click': function (e){
-                        this.fire("load");
-                    }
-                }
-            })).set("type", "load");
-            this.get("parent").addToolbarWidget(new Y.Button({
-                label:"<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                on:{
-                    'click': function (e){
-                        this.fire("new");
-                    }
-                }
-            })).set("type", "new");
             this.get("parent").addToolbarWidget(new Y.Button({
                 label:"<span class=\"wegas-icon wegas-icon-save\"></span>Save",
                 on:{
@@ -226,7 +210,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.renderPanel();
             if(this.get("entity")){
                 for(state in sm.get("states")){
-                    this.addState(30, 30, parseInt(state), sm.get("states")[state]);
+                    this.addState(sm.get("states")[state].get("editorPosition") ? sm.get("states")[state].get("editorPosition").get("x") || 30 : 30, sm.get("states")[state].get("editorPosition")?sm.get("states")[state].get("editorPosition").get("y") || 30 : 30, parseInt(state), sm.get("states")[state]);
                 }
 
                 this.each(function () {
@@ -377,7 +361,24 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.events.deleteState = this.get(CONTENT_BOX).delegate("click", function (e){
                 this.deleteSelf();
             },".state-delete", this);
-            jp.draggable(this.get(BOUNDING_BOX));
+            jp.draggable(this.get(BOUNDING_BOX), {
+                after:{
+                    "end":Y.bind(this.dragEnd, this)
+                }/* TODO : FIX
+                plugins:[{
+                    fn:Y.Plugin.DDConstrained,
+                    cfg:{
+                        constrain:this.get("parent").get(CONTENT_BOX),
+                        gutter: "30 10 10 10"
+                    }
+                },
+                {
+                    fn:Y.Plugin.DDNodeScroll,
+                    cfg:{
+                        node:this.get("parent").get(BOUNDING_BOX).get("parentNode")
+                    }
+                }]*/
+            });
             jp.makeTarget(this.get(BOUNDING_BOX), {
                 dropOptions:{
                     hoverClass:"droppable-state"
@@ -416,13 +417,26 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 if( index > -1){
                     this.transitionsTarget.splice(index, 1);
                 }
-            })
+            });
 
         },
         destructor: function(){
             var i;
             for(i in this.events){
                 this.events[i].detach();
+            }
+        },
+        dragEnd:function(e){
+            if(this.get("entity").get("editorPosition")){
+                this.get("entity").get("editorPosition").setAttrs({
+                    x:parseInt(e.target.el.getStyle("left")),
+                    y:parseInt(e.target.el.getStyle("top"))
+                });
+            }else{
+                this.get("entity").set("editorPosition", new Y.Wegas.persistence.Coordinate({
+                    x:parseInt(e.target.el.getStyle("left")),
+                    y:parseInt(e.target.el.getStyle("top"))
+                }));
             }
         },
         setOnEnterEvent:function (entity){

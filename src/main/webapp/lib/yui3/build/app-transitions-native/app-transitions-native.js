@@ -1,5 +1,5 @@
 /*
-YUI 3.5.0 (build 5089)
+YUI 3.6.0 (build 5521)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -25,6 +25,7 @@ When this module is used, `Y.App.TransitionsNative` will automatically mix
 itself in to `Y.App`.
 
 @class App.TransitionsNative
+@extensionfor App
 @since 3.5.0
 **/
 function AppTransitionsNative() {}
@@ -179,11 +180,18 @@ AppTransitionsNative.prototype = {
         after new `activeView` is ready to use, the function will be passed:
           @param {View} options.callback.view A reference to the new
             `activeView`.
-      @param {Boolean} [options.prepend] Whether the new view should be
+      @param {Boolean} [options.prepend=false] Whether the `view` should be
         prepended instead of appended to the `viewContainer`.
+      @param {Boolean} [options.render] Whether the `view` should be rendered.
+        **Note:** If no value is specified, a view instance will only be
+        rendered if it's newly created by this method.
       @param {Boolean|String} [options.transition] Optional transition override.
         A transition can be specified which will override the default, or
         `false` for no transition.
+      @param {Boolean} [options.update=false] Whether an existing view should
+        have its attributes updated by passing the `config` object to its
+        `setAttrs()` method. **Note:** This option does not have an effect if
+        the `view` instance is created as a result of calling this method.
     @protected
     @since 3.5.0
     **/
@@ -221,7 +229,7 @@ AppTransitionsNative.prototype = {
         this._transitioning = true;
 
         container     = this.get('container');
-        transitioning = AppTransitions.CLASS_NAMES.transitioning;
+        transitioning = Y.App.CLASS_NAMES.transitioning;
 
         container.addClass(transitioning);
 
@@ -348,4 +356,4 @@ Y.App.TransitionsNative = AppTransitionsNative;
 Y.Base.mix(Y.App, [AppTransitionsNative]);
 
 
-}, '3.5.0' ,{requires:['app-transitions', 'app-transitions-css', 'parallel', 'transition']});
+}, '3.6.0' ,{requires:['app-transitions', 'app-transitions-css', 'parallel', 'transition']});

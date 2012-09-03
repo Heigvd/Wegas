@@ -11,6 +11,7 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.user.User;
+import com.wegas.core.rest.util.Views;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,8 +19,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -28,7 +31,10 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @Entity
 //@Table(uniqueConstraints =
 //@UniqueConstraint(columnNames = {"name"}))
-@Inheritance(strategy = InheritanceType.JOINED)
+@NamedQueries({
+    @NamedQuery(name = "findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
+    @NamedQuery(name = "findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId")
+})
 @XmlRootElement
 @XmlType(name = "Player", propOrder = {"@class", "id", "name"})
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -48,28 +54,16 @@ public class Player extends AbstractEntity {
     /**
      *
      */
-    /*
-     * @ManyToMany(cascade = CascadeType.ALL) @JoinTable(name = "user_player",
-     * joinColumns = { @JoinColumn(name = "userId") }, inverseJoinColumns = {
-     * @JoinColumn(name = "playerId") }) private Collection<UserEntity> users;
-     */
-    /**
-     *
-     */
     @ManyToOne(cascade = {CascadeType.PERSIST})
-    @XmlTransient
-   // @XmlInverseReference(mappedBy = "players")
-    @JsonBackReference(value = "player-user")
     private User user;
     /**
      * The game model this belongs to
      */
     @ManyToOne
     @NotNull
-    @XmlTransient
-   // @XmlInverseReference(mappedBy = "players")
     @JsonBackReference(value = "player-team")
     @JoinColumn(name = "parentteam_id")
+    //@XmlInverseReference(mappedBy = "players")
     private Team team;
     /**
      *
@@ -105,7 +99,6 @@ public class Player extends AbstractEntity {
     public Long getId() {
         return id;
     }
-
 
     /**
      * @return the user
@@ -166,14 +159,17 @@ public class Player extends AbstractEntity {
      * @return
      */
     @XmlTransient
+    @JsonIgnore
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
     }
+
     /**
      *
      * @return
      */
     @XmlTransient
+    @JsonIgnore
     public Game getGame() {
         return this.getTeam().getGame();
     }

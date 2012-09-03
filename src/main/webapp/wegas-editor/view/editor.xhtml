@@ -1,22 +1,229 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
     <ui:composition template="/wegas-app/view/template/app-default.xhtml">
 
-        <ui:define name="jsInculde">'wegas-app', 'wegas-editor'</ui:define>
+        <ui:define name="body">
+            <script type="text/javascript">
+                var Y = YUI().use("wegas-app", "wegas-editor", function (Y) {
+                    var cfg = {
+                        layoutSrc: 'wegas-editor/db/wegas-editor-layout.json',
 
-        <ui:define name="layoutUri">wegas-editor/db/wegas-editor-layout.json</ui:define>
+                        base : "/Wegas/",
+                        lang : 'en-US',
+                        debug : true,
+                        currentGameModel: #{gameController.currentGameModel.id},
+                        currentGame: #{gameController.currentGame.id},
+                        currentTeam: #{gameController.currentPlayer.team.id},
+                        currentPlayer: #{gameController.currentPlayer.id},
+                        currentUser: #{lobbyController.getCurrentUser().toJson()},
+                        cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
 
-        <ui:define name="jsInitMethod">
-            var editor = new Y.Wegas.Editor(cfg);                               // Launch the editor as soon as Dom is ready
-            editor.render();
+                        dataSources: {
+                            "GameModel": {
+                                source: "rest/Editor/GameModel",
+                                initialRequest: "/#{gameController.currentGameModel.id}",
+                                plugins: [{
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                // resultFields: ["name", "id", "@class", "errors"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "GameModelDataSourceREST"
+                                    }]
+                            },
+                            "GameIndex": {
+                                source: "rest/Index/GameModel/#{gameController.currentGameModel.id}/Game",
+                                initialRequest: "/",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                // resultFields: ["name", "id", "@class", "errors"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "GameDataSourceREST"
+                                    }
+                                ]
+                            },
+                            "Game": {
+                                source: "rest/Public/GameModel/#{gameController.currentGameModel.id}/Game",
+                                initialRequest: "/#{gameController.currentGame.id}",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                // resultFields: ["name", "id", "@class", "errors"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "GameDataSourceREST"
+                                    }
+                                ]
+                            },
+                            "Page": {
+                                source: "#{gameController.currentGameModel.widgetsUri}",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                //resultFields: ["name", "id", "@class"]
+                                            }
+                                        }
+                                    }, {
+                                        fn: "DataSourceREST"
+                                    }
+                                ]
+                            },
+                            "User": {
+                                source: "rest/User",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                            }
+                                        }
+                                    }, {
+                                        fn: "DataSourceREST"
+                                    }
+                                ]
+                            },
+                            "VariableDescriptor": {
+                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                            }
+                                        }
+                                    }, {
+                                        fn: "VariableDescriptorDataSourceREST"
+                                    },{
+                                        fn: "ScriptEval"
+                                    }
+                                ]
+                            },
+                            "File": {
+                                source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                                //resultFields: ["name", "id", "@class"]
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        /**
+                         * This field is used to override Entities edition menus.
+                         * Use the target class name as the key.
+                         */
+                        editorMenus: {},
 
-            //Y.Wegas.GameFacade.after("response", function(e) {                // Reload the variable descriptors as soon as the game is changed
-            //  Y.Wegas.VariableDescriptor.rest.sendRequest({ request: "" });
-            //}, this);
+                        /**
+                         * This field is used to override Entities edition forms.
+                         * Use the target class name as the key.
+                         */
+                        editorForms: {
+                            //  *** Widgets *** //
+                            List: [
+                                { name: 'label', label: 'Label'},
+                                { name: 'direction', label: 'Direction', type: 'select', choices: [
+                                        { value: 'vertical', label: 'Vertical' },
+                                        { value: 'horizontal', label: 'Horizontal' }
+                                    ] },
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'List:', type: 'hidden'}
+                            ],
+                            VariableDisplay: [
+                                { name: 'label', label: 'Label'},
+                                { name: 'variable', label: 'Target variable'},
+                                { name: 'view', label: 'Display mode', type: 'select', choices: [
+                                        { value: 'text', label: 'Text' },
+                                        { value: 'button', label: 'Boxes' },
+                                        { value: 'gauge', label: 'Gauge' }
+                                    ] },
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'VariableDisplay:', type: 'hidden'}
+                            ],
+                            Button: [
+                                /*{ name: 'name', label: 'Name'},*/
+                                { name: 'label', label: 'Label'},
+                                /*{ name: 'targetArea', label: 'Targeted dynamic area element', metatype: 'widgetselect', targetType: 'AlbaDisplayAreaWidget' },
+                            { name: 'targetSubpageId', label: 'Page fragment to display', metatype: 'subpageselect'},
+                            { name: 'isStoryEvent', label: 'Sends story event', type: 'boolean'},
+                            { name: 'inputAction', label: 'On click', type:'text', rows: 8, cols: 60 },*/
+                                { name: 'view', label: 'Display mode', type: 'select', choices: [
+                                        { value: 'text', label: 'Text' },
+                                        { value: 'button', label: 'Button' }
+                                    ] },
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'Button', type: 'hidden'}
+                            ],
+                            Text: [
+                                { name: 'content', 'type': 'html', label:'Description', opts: {width:'100%', height: '250px'}},
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'Text', type: 'hidden'}
+                            ],
+                            PageLoader: [
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'PageLoader', type: 'hidden'}
+                            ],
+                            TabView: [
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'TabView', type: 'hidden'}
+                            ],
+                            Tab: [
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'Tab', type: 'hidden'}
+                            ],
+                            PMGChoiceDisplay: [
+                                { name: 'cssClass', label: 'CSS class'},
+                                { name: 'type', value:'PMGChoiceDisplay', type: 'hidden'}
+                            ]
+                        }
+                    };
+
+                    Y.on('domready', function() {                               // When dom is ready,
+
+                        var editor = new Y.Wegas.Editor(cfg);                   // Launch the editor as soon as Dom is ready
+
+                        Y.Wegas.editor.after("render", function () {
+                            var gm = Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
+                            Y.one(".wegas-editor-title").setContent(gm.get("name"));
+                        })
+
+                        editor.render();
+
+                        Y.Wegas.GameFacade.after("response", function(e) {      // Reload the variable descriptors as soon as the game is changed
+                            Y.Wegas.VariableDescriptorFacade.sendInitialRequest();
+                        }, this);
+                    });
+                });
+            </script>
         </ui:define>
-
     </ui:composition>
 </html>

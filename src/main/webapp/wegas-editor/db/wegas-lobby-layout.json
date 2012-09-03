@@ -6,6 +6,9 @@
             "type": "Text",
             "content": "Lobby",
             "cssClass": "wegas-editor-title"
+        },{
+            "type": "LoginButton",
+            "cssClass": "menu-loginbutton"
         }]
     },
     "left": {
@@ -15,14 +18,19 @@
             "children": [{
                 "type": "Tab",
                 "label": "Game models",
-                "toolbarChildren": [{
-                    "type": "NewEntityButton",
-                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
-                    "targetClass": "GameModel"
-                }],
                 "children": [{
                     "type": "EditorTreeView",
-                    "dataSource": "GameModel"
+                    "dataSource": "GameModel",
+                    "plugins": [{
+                        "fn": "WidgetToolbar",
+                        "cfg": {
+                            "children": [{
+                                "type": "NewEntityButton",
+                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
+                                "targetClass": "GameModel"
+                            }]
+                        }
+                    }]
                 }]
             }]
         }]
@@ -38,12 +46,18 @@
                 "children": [{
                     "type": "EditorTreeView",
                     "dataSource": "Game",
-                    "emptyMessage": "Click in the left column to select a game."
-                }],
-                "toolbarChildren": [{
+                    "emptyMessage": "Click in the left column to select a game.",
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
                     "type": "NewEntityButton",
                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
-                    "targetClass": "Game"
+                    "targetClass": "Game",
+                    "disabled": true
+                }]
+                                }
+                            }]
                 }]
             }]
         }]

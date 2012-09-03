@@ -10,7 +10,7 @@ YUI.add('wegas-console', function (Y) {
 
         form: null,
 
-        destroyer: function () {
+        destructor: function () {
         },
 
         renderUI: function () {

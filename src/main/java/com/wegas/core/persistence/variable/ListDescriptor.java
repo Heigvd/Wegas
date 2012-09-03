@@ -89,4 +89,8 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> {
         this.items.add(item);
         item.setGameModel(this.getGameModel());
     }
+
+    public VariableDescriptor item(int index) {
+        return this.items.get(index);
+    }
 }

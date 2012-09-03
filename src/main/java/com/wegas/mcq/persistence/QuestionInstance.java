@@ -10,12 +10,13 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.ListInstance;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
@@ -25,7 +26,8 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @XmlType(name = "QuestionInstance")
-public class QuestionInstance extends VariableInstance {
+@Table(name = "MCQQuestionInstance")
+public class QuestionInstance extends ListInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
@@ -34,7 +36,7 @@ public class QuestionInstance extends VariableInstance {
      */
     @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<Reply> replies = new ArrayList<Reply>();
+    private List<Reply> replies = new ArrayList<>();
     /**
      *
      */

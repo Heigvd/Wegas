@@ -62,7 +62,7 @@ public class ScriptFacade {
      *
      */
     @Inject
-    private VariableInstanceManager variableInstanceManager;
+    private RequestManager requestManager;
     /**
      *
      */
@@ -88,7 +88,7 @@ public class ScriptFacade {
      * @return
      * @throws ScriptException
      */
-    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
         while (scripts.remove(null)) {
         }                                           //remove null scripts
         if (scripts.isEmpty()) {
@@ -99,16 +99,17 @@ public class ScriptFacade {
         ScriptEngine engine;
         try {
             engine = mgr.getEngineByName(scripts.get(0).getLanguage());
-        } catch (NullPointerException ex) {
+        }
+        catch (NullPointerException ex) {
             logger.error("Wrong language ?", ex.getMessage(), ex.getStackTrace());
             return null;
         }
         // Invocable invocableEngine = (Invocable) engine;
 
-        variableInstanceManager.setCurrentPlayer(player);                       // Set up request's execution context
-        engine.put("self", player);                                             // Inject current player
+        engine.put("self", requestManager.getPlayer());                         // Inject current player
 
-        engineInvocationEvent.fire(new EngineInvocationEvent(player, engine));  // Fires the engine invocation event, to allow extensions
+        engineInvocationEvent.fire(
+                new EngineInvocationEvent(requestManager.getPlayer(), engine)); // Fires the engine invocation event, to allow extensions
 
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
@@ -120,7 +121,8 @@ public class ScriptFacade {
         for (Script s : scripts) {                                              // Evaluate each script
             try {
                 script += s.getContent() + ";";
-            } catch (NullPointerException ex) {
+            }
+            catch (NullPointerException ex) {
                 //script does not exist
             }
             //result = engine.eval(s.getContent());
@@ -128,7 +130,7 @@ public class ScriptFacade {
         result = engine.eval(script);
 
         em.flush();                                                             // Commit the transaction
-        variableInstanceManager.commit();
+        requestManager.commit();
 
         return result;
     }
@@ -154,30 +156,40 @@ public class ScriptFacade {
     }
 
     // *** Sugar *** //
-    /**
-     *
-     * @param player
-     * @param s
-     * @param arguments
-     * @return
-     * @throws ScriptException
-     */
-    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(List<Script> scripts) throws ScriptException {
+        return this.eval(scripts, new HashMap<String, AbstractEntity>());
+    }
+
+    public Object eval(Script s, Map<String, AbstractEntity> arguments) throws ScriptException {
         List<Script> scripts = new ArrayList<>();
         scripts.add(s);
-        return this.eval(player, scripts, arguments);
+        return this.eval(scripts, arguments);
     }
 
-    /**
-     *
-     * @param playerId
-     * @param s
-     * @return
-     * @throws ScriptException
-     */
+    public Object eval(Player p, Script s) throws ScriptException {
+        requestManager.setPlayer(p);
+        return this.eval(s);
+    }
+
+    public Object eval(Player p, List<Script> s) throws ScriptException {
+        requestManager.setPlayer(p);
+        return this.eval(s);
+    }
+
+    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws ScriptException {
+        requestManager.setPlayer(player);
+        return this.eval(s, arguments);
+    }
+
+    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
+        requestManager.setPlayer(player);                                       // Set up request's execution context
+        return this.eval(scripts, arguments);
+    }
+
     public Object eval(Long playerId, Script s)
             throws ScriptException {
-        return this.eval(playerEntityFacade.find(playerId), s);
+        requestManager.setPlayer(playerEntityFacade.find(playerId));
+        return this.eval(s);
     }
 
     /**
@@ -187,19 +199,8 @@ public class ScriptFacade {
      * @return
      * @throws ScriptException
      */
-    public Object eval(Player p, List<Script> s) throws ScriptException {
-        return this.eval(p, s, new HashMap<String, AbstractEntity>());
-    }
-
-    /**
-     *
-     * @param p
-     * @param s
-     * @return
-     * @throws ScriptException
-     */
-    public Object eval(Player p, Script s) throws ScriptException {
-        return this.eval(p, s, new HashMap<String, AbstractEntity>());
+    public Object eval(Script s) throws ScriptException {
+        return this.eval(s, new HashMap<String, AbstractEntity>());
     }
 
     public class EngineInvocationEvent {

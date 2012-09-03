@@ -1,0 +1,124 @@
+.wegas-gallery-content{
+    white-space: nowrap;
+}
+.yui3-scrollview{
+    background-color: rgba(255,255,255,0.7);
+}
+.wegas-gallery img{
+    display: inline-block;
+    transition: max-height 0.5s, max-width 0.5s;
+    -o-transition: max-height 0.5s, max-width 0.5s;
+    -ms-transition: max-height 0.5s, max-width 0.5s;
+    -moz-transition: max-height 0.5s, max-width 0.5s;
+    -webkit-transition: max-height 0.5s, max-width 0.5s, -webkit-transform 0.3s 0.25s;
+}
+.wegas-gallery li{
+    vertical-align: top;
+    text-align: center;
+    padding: 10px 15px;
+    display:inline-block;
+    /*START zone sensible ...*/
+    -webkit-perspective: 2000;
+}
+.wegas-gallery .gallery-selected + li > img{
+    -webkit-transform: rotateY(-60deg);
+}
+.wegas-gallery .gallery-before-selected > img{
+    -webkit-transform: rotateY(60deg);
+}
+/*END zone sensible*/
+.wegas-gallery li.img-loading img{
+    visibility:hidden;
+}
+.wegas-gallery li.img-loading{
+    background: url("../../wegas-editor/images/loading.gif") no-repeat 50%;
+}
+.wegas-gallery li:last-child{
+    margin-right: 100%;
+}
+.wegas-gallery .gallery-selected img{
+    box-shadow: 0 0 25px black;
+}
+.wegas-gallery .gallery-selected .gallery-text{
+    display: block;
+}
+.wegas-gallery .gallery-selected + li{
+    text-align: left;
+}
+.wegas-gallery .gallery-before-selected{
+    text-align: right;
+
+}
+.yui3-scrollview .gallery-mask{
+    height: 100%;
+    position:absolute;
+    min-width: 30px;
+    color:white;
+    text-shadow:1px 1px 3px whitesmoke;
+    top:0;
+    background-color: transparent;
+    z-index:2;
+}
+
+.yui3-scrollview .gallery-mask > div{
+    display:none;
+    margin: 30px 10px;
+    cursor: pointer;
+    padding: 5px;
+    background-color: rgba(110, 110, 110, 0.4);
+}
+.gallery-mask:hover>div{
+    display:inline-block;
+}
+.gallery-mask-left{
+    left:0;
+}
+.gallery-mask-right{
+    right:0;
+}
+.gallery-mask-left > div{
+    float: right;
+}
+.gallery-mask-right > div{
+    float: left;
+}
+.gallery-text{
+    font-weight: bold;
+    white-space: pre-line !important;
+    pointer-events:none;
+    -webkit-transition: max-height 0.5s 0.1s;
+    display:none;
+    white-space: normal;
+    margin-top: 30px;
+    padding: 3px;
+    position:absolute;
+    bottom:0;
+    background-color:transparent;
+}
+.gallery-toggle{
+    cursor:pointer;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: url("../../wegas-editor/images/wegas-editor-sprite.png") no-repeat 0px -1060px;
+    width: 18px;
+    height: 18px;
+    z-index:3;
+}
+img:hover + .gallery-text{
+    max-height: 15px !important;
+}
+body > .yui3-scrollview{
+    z-index:30;
+    padding-top: 50px !important;
+    position:fixed;
+}
+body > .yui3-scrollview .gallery-toggle{
+    background: url("../../wegas-editor/images/wegas-editor-sprite.png") no-repeat 0px -1083px;
+}
+body > .wegas-lightGallery .gallery-toggle{
+    background: url("../images/sprite_icons.png") no-repeat 2px 2px;
+}
+.light-gallery [href]{
+    display:none;
+}

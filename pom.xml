@@ -41,7 +41,7 @@
         <war.plugin.version>2.1.1</war.plugin.version>
         <compiler-plugin-version>2.3.2</compiler-plugin-version>
 
-        <skipTests>true</skipTests>
+        <skipTests>false</skipTests>
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
     </properties>
@@ -491,7 +491,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12</version>
+                <version>2.12.2</version>
                 <configuration>
                     <!-- There is an issue with cobertura and jdk7,
                     that forces us to run  in compatiblity mode.-->
@@ -513,7 +513,12 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>lib/**</exclude>
+                        <exclude>lib/ace/**</exclude>
+                        <exclude>lib/excanvas/**</exclude>
+                        <exclude>lib/inputex/**</exclude>
+                        <exclude>lib/jsPlumb/**</exclude>
+                        <exclude>lib/yui2in3/**</exclude>
+                        <exclude>lib/yui3/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

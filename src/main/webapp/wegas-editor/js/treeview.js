@@ -102,9 +102,9 @@ YUI.add('treeview', function (Y) {
         },
 
         renderUI : function() {
-            var cb = this.get(CONTENT_BOX), header;
+            var bb = this.get(BOUNDING_BOX), cb=this.get(CONTENT_BOX), header;
             header = Y.Node.create("<div class='" + this.getClassName("content", "header") + "'></div>");
-            cb.append(header);
+            bb.insertBefore(header, this.get(CONTENT_BOX));
             this.toggleNode = Y.Node.create("<span class='" + this.getClassName("content", "toggle") + "'></span>");
             this.iconNode = Y.Node.create("<span class='" + this.getClassName("content", "icon") + "'></span>");
             this.labelNode = Y.Node.create("<span class='" + this.getClassName("content", "label") + "'></span>");
@@ -112,22 +112,22 @@ YUI.add('treeview', function (Y) {
             header.append(this.iconNode);
             header.append(this.labelNode);
             header.append("<div id=\"" + this.get("id") + "_right\" class=\"" + this.getClassName("content", "rightwidget") + "\">");
-            if(this.get('collapsed') && !cb.hasClass(classNames.collapsed)){
-                cb.addClass(classNames.collapsed);
+            if(this.get('collapsed') && !bb.hasClass(classNames.collapsed)){
+                bb.addClass(classNames.collapsed);
             }
         },
 
         bindUI: function() {
             this.eventInstances.click = this.toggleNode.on("click", function(e){
-                e.stopImmediatePropagation();
+                e.stopPropagation();
                 this.fire("toggleClick", {
                     node: this
                 });
             },
             this);
-            this.eventInstances.fullClick = this.get(CONTENT_BOX).one("."+this.getClassName("content", "header")).on("click", function(e){
+            this.eventInstances.fullClick = this.get(BOUNDING_BOX).one("."+this.getClassName("content", "header")).on("click", function(e){
                 var node = e.target;
-                e.stopImmediatePropagation();
+                e.stopPropagation();
                 if(node.hasClass(this.getClassName("content", "icon"))){
                     this.fire("iconClick", {
                         node: this
@@ -144,6 +144,9 @@ YUI.add('treeview', function (Y) {
                 });
 
             }, this);
+            this.get(BOUNDING_BOX).on("click", function(e){
+                e.stopPropagation();
+            });
         },
 
         syncUI:function(){
@@ -168,8 +171,8 @@ YUI.add('treeview', function (Y) {
         },
 
         toggleTree : function() {
-            this.get(CONTENT_BOX).toggleClass(classNames.collapsed);
-            if(this.get(CONTENT_BOX).hasClass(classNames.collapsed)){
+            this.get(BOUNDING_BOX).toggleClass(classNames.collapsed);
+            if(this.get(BOUNDING_BOX).hasClass(classNames.collapsed)){
                 this.fire('nodeCollapsed', {
                     node:this
                 });
@@ -225,12 +228,15 @@ YUI.add('treeview', function (Y) {
                 validator : Y.Lang.isBoolean,
                 setter: function (v){
                     if(v){
-                        this.get(CONTENT_BOX).addClass(classNames.collapsed);
+                        this.get(BOUNDING_BOX).addClass(classNames.collapsed);
                     }else{
-                        this.get(CONTENT_BOX).removeClass(classNames.collapsed);
+                        this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
                     }
                     return v;
                 }
+            },
+            tabIndex:{
+                value:1
             },
             rightWidget : {
                 value: null,
@@ -244,9 +250,9 @@ YUI.add('treeview', function (Y) {
                 validator: Y.Lang.isBoolean,
                 setter: function (v){
                     if(v){
-                        this.get(CONTENT_BOX).addClass(classNames.loading);
+                        this.get(BOUNDING_BOX).addClass(classNames.loading);
                     }else{
-                        this.get(CONTENT_BOX).removeClass(classNames.loading);
+                        this.get(BOUNDING_BOX).removeClass(classNames.loading);
                     }
                     return v;
                 }

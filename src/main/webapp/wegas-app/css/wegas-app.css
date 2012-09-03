@@ -15,8 +15,12 @@
 /* Override some browser styles */
 input[type="submit"], input[type="reset"] {
     padding:2px 4px;
+    cursor: pointer;
 }
-
+/* YUI3 Buttons Styles */
+.yui3-button-hidden {
+    display:none;
+}
 /*  TabView Styles */
 .yui3-skin-sam .yui3-tabview-panel {
     border: none;
@@ -98,6 +102,7 @@ input[type="submit"], input[type="reset"] {
 .yui3-skin-sam .wegas-layout-content {
     height:100%;
     background:white;
+    overflow: hidden;
 }
 .yui3-skin-sam .wegas-layout-left,
 .yui3-skin-sam .wegas-layout-center,
@@ -105,30 +110,48 @@ input[type="submit"], input[type="reset"] {
     position: absolute;
     height: 100% !important;
 }
+.yui3-skin-sam .wegas-layout-left > .yui3-widget,
+.yui3-skin-sam .wegas-layout-center > .yui3-widget,
+.yui3-skin-sam .wegas-layout-right > .yui3-widget {
+    position: relative;
+}
+.yui3-skin-sam .wegas-layout-content > .yui-widget-bd {
+    position: relative;
+}
 .yui3-skin-sam .wegas-layout-center {
     margin-right: 6px;
+    margin-left: 6px;
 }
 .yui3-skin-sam .wegas-layout-left {
     width: 300px;
+    padding-right: 6px;
 }
 .yui3-skin-sam .wegas-layout-right {
+    padding-left: 6px;
     width: 300px;
     right: 0;
-    padding-left: 7px;
 }
 .yui3-skin-sam .wegas-layout .yui3-resize-handle {
     background: #F2F2F2;
 }
 
 /* Menu styles */
+.yui3-menu {
+    background: white;
+    border: 1px solid lightgray;
+    box-shadow: 2px 3px 5px #6D6D6D;
+    z-index: 100;
+    position: absolute;
+}
 .yui3-menu-hidden {
     display:none;
 
 }
-.yui3-menu {
-    background:white;
-    border: 1px solid lightgray;
-    box-shadow: 0px 2px 5px grey;
+.yui3-menu .wegas-text {
+    font-size: 11px;
+    color: #6D6D6D;
+    padding: 3px 10px 3px 6px;
+    width: 100%;
 }
 .yui3-menu .yui3-button {
     border: none;
@@ -150,4 +173,17 @@ input[type="submit"], input[type="reset"] {
 /* PROGRESSBAR */
 .yui3-wegas-progressbar-hidden{
     display:none !important;
+}
+
+/* Tooltip */
+.wegas-tooltip {
+    position:absolute;
+}
+.wegas-tooltip-content {
+    background: white;
+    border: 1px solid gray;
+    padding: 5px
+}
+.wegas-tooltip-hidden {
+    visibility:hidden;
 }

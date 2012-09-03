@@ -376,7 +376,9 @@ YUI.add("wegas-inputex-rte", function (Y){
                         this.toolbar.set('disabled', true);
                         this.toolbar.getButtonByValue('editcode').set('disabled', false);
                         this.toolbar.selectButton('editcode');
-                        this.dompath.innerHTML = 'Editing HTML Code';
+                        if ( this.dompath ) {
+                            this.dompath.innerHTML = 'Editing HTML Code';
+                        }
                         this.hide();
                     }
                     return false;
@@ -451,7 +453,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                 this.filepanel = new Y.Panel({
                     bodyContent: '',
                     headerContent: 'Choose a file from library',
-                    width  : 330,
+                    width  : 600,
                     zIndex : 5,
                     modal  : true,
                     render : true,

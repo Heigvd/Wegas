@@ -1,11 +1,17 @@
 /*
-YUI 3.5.0 (build 5089)
+YUI 3.6.0 (build 5521)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
 YUI.add('anim-shape-transform', function(Y) {
 
+/**
+ * Adds support for the <code>transform</code> attribute of <code>Graphic</code>
+ * <code>Shape</code> instances.
+ * @module anim
+ * @submodule anim-shape-transform
+ */
     var NUM = Number,
         TO,
         TOSTRING;
@@ -78,10 +84,7 @@ YUI.add('anim-shape-transform', function(Y) {
                 }
                 else if(Y.MatrixUtil.compareTransformSequence(toArray, fromArray))
                 {
-                    //toAttr.transform = toArray;
-                    //anim.set("to", toAttr);
                     TO = toArray;
-                    //toAttr.transform = toArray;
                     from = fromArray;
                 }
                 else
@@ -106,4 +109,4 @@ YUI.add('anim-shape-transform', function(Y) {
 
 
 
-}, '3.5.0' ,{requires:['anim-base','matrix']});
+}, '3.6.0' ,{requires:['anim-base','matrix']});

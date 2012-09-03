@@ -1,5 +1,5 @@
 /*
-YUI 3.5.0 (build 5089)
+YUI 3.6.0 (build 5521)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -146,42 +146,36 @@ var WIDGET       = 'widget',
      */
     WidgetModal._GET_MASK = function() {
 
-        var mask = Y.one(".yui3-widget-mask") || null,
-        win = Y.one('window');
+        var mask = Y.one('.' + MODAL_CLASSES.mask),
+            win  = Y.one('win');
 
         if (mask) {
             return mask;
         }
-        else {
 
-            mask = Y.Node.create('<div></div>');
-            mask.addClass(MODAL_CLASSES.mask);
-            if (supportsPosFixed) {
-                mask.setStyles({
-                    position    : 'fixed',
-                    width       : '100%',
-                    height      : '100%',
-                    top         : '0',
-                    left        : '0',
-                    display     : 'block'
-                });
-            }
-            else {
-                mask.setStyles({
-                    position    : 'absolute',
-                    width       : win.get('winWidth') +'px',
-                    height      : win.get('winHeight') + 'px',
-                    top         : '0',
-                    left        : '0',
-                    display     : 'block'
-                });
-            }
+        mask = Y.Node.create('<div></div>').addClass(MODAL_CLASSES.mask);
 
-
-
-            return mask;
+        if (supportsPosFixed) {
+            mask.setStyles({
+                position: 'fixed',
+                width   : '100%',
+                height  : '100%',
+                top     : '0',
+                left    : '0',
+                display : 'block'
+            });
+        } else {
+            mask.setStyles({
+                position: 'absolute',
+                width   : win.get('winWidth') +'px',
+                height  : win.get('winHeight') + 'px',
+                top     : '0',
+                left    : '0',
+                display : 'block'
+            });
         }
 
+        return mask;
     };
 
     /**
@@ -254,7 +248,10 @@ var WIDGET       = 'widget',
             // though they both pass the feature test; the UA sniff is here to
             // account for that. Ideally this should be replaced with a better
             // feature test.
-            if (!supportsPosFixed || Y.UA.ios < 5 || Y.UA.android < 3) {
+            if (!supportsPosFixed ||
+                    (Y.UA.ios && Y.UA.ios < 5) ||
+                    (Y.UA.android && Y.UA.android < 3)) {
+
                 Y.one('win').on('scroll', this._resyncMask, this);
             }
         },
@@ -392,7 +389,9 @@ var WIDGET       = 'widget',
         },
 
         /**
-         * Attaches UI Listeners for "clickoutside" and "focusoutside" on the widget. When these events occur, and the widget is modal, focus is shifted back onto the widget.
+         * Attaches UI Listeners for "clickoutside" and "focusoutside" on the
+         * widget. When these events occur, and the widget is modal, focus is
+         * shifted back onto the widget.
          *
          * @method _attachUIHandlesModal
          */
@@ -570,4 +569,4 @@ var WIDGET       = 'widget',
 
 
 
-}, '3.5.0' ,{requires:['base-build', 'event-outside', 'widget'], skinnable:true});
+}, '3.6.0' ,{requires:['base-build', 'event-outside', 'widget'], skinnable:true});

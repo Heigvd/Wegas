@@ -28,4 +28,8 @@ public class ListInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         // @fixme make this abstract if there really is nothing to do
     }
+
+    public VariableDescriptor item(int index) {
+        return ((ListDescriptor)this.getDescriptor()).item(index);
+    }
 }

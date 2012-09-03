@@ -11,7 +11,8 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.Entity;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -20,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @Entity
 @XmlType(name = "ChoiceInstance")
+@Table(name = "MCQChoiceInstance")
 public class ChoiceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -31,6 +33,36 @@ public class ChoiceInstance extends VariableInstance {
      *
      */
     private Boolean unread = true;
+    /**
+     *
+     */
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "result_id", insertable = false, updatable = false)
+    //@JsonBackReference
+    @XmlTransient
+    private Result currentResult;
+    /**
+     *
+     */
+    @Column(name = "result_id")
+    private Long currentResultId;
+
+    /**
+     *
+     * @return
+     */
+    public Long getCurrentResultId() {
+        return this.currentResultId;
+//        return this.getCurrentResult().getId();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public void setCurrentResultId(Long currentResultId) {
+        this.currentResultId = currentResultId;
+    }
 
     /**
      *
@@ -42,6 +74,12 @@ public class ChoiceInstance extends VariableInstance {
         ChoiceInstance other = (ChoiceInstance) a;
         this.setActive(other.getActive());
         this.setUnread(other.getUnread());
+        this.setCurrentResultId(other.getCurrentResultId());
+        this.setCurrentResult(other.getCurrentResult());
+    }
+
+    public void setCurrentResultByIndex(int index) {
+        this.setCurrentResult(( (ChoiceDescriptor) this.getDescriptor() ).getResults().get(index));
     }
 
     /**
@@ -85,5 +123,20 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void desactivate() {
         this.setActive(false);
+    }
+
+    /**
+     * @return the currentResult
+     */
+    @XmlTransient
+    public Result getCurrentResult() {
+        return currentResult;
+    }
+
+    /**
+     * @param currentResult the currentResult to set
+     */
+    public void setCurrentResult(Result currentResult) {
+        this.currentResult = currentResult;
     }
 }
