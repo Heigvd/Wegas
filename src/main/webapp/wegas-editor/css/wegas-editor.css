@@ -547,7 +547,20 @@ img.inputEx-ListField-delButton {
 .wegas-systemmessage {
     padding: 10px;
     margin: 10px;
-    display: none;
+    position:absolute;
+    top: 15px;
+    left: 0;
+    right: 0;
+    z-index:3;
+}
+.wegas-systemmessage > div{
+    margin: 5px;
+}
+.wegas-systemmessage > div > .close{
+    cursor:pointer;
+    float:right;
+    width:18px;
+    height:18px;
 }
 .wegas-systemmessage  .icon {
     width: 55px;
@@ -559,20 +572,20 @@ img.inputEx-ListField-delButton {
     margin-top: 15px;
     display: inline-block;
 }
-.wegas-systemmessage.success {
+.wegas-systemmessage > .success {
     border: 1px solid green;
     background: lightGreen;
     display:block;
 }
-.wegas-systemmessage.success .icon {
+.wegas-systemmessage > .success .icon {
     background: url(../images/wegas-icon-success-48.png) no-repeat;
 }
-.wegas-systemmessage.error {
+.wegas-systemmessage > .error {
     border: 1px solid red;
     background: lightCoral;
     display:block;
 }
-.wegas-systemmessage.error .icon {
+.wegas-systemmessage > .error .icon {
     background: url(../images/wegas-icon-error-48.png) no-repeat;
 }
 .wegas-smallmessage {
