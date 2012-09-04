@@ -231,6 +231,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * show the tooltip from being displayed.
          */
         _enterTrigger : function(node, x, y) {
+            this._clearCurrentTrigger();
             this._setCurrentTrigger(node, x, y);
             this.fire("triggerEnter", {
                 node:node,

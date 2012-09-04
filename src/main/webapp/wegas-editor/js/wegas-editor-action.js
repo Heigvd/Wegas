@@ -114,6 +114,7 @@ YUI.add('wegas-editor-action', function (Y) {
                 EditEntityAction.form = new Y.Wegas.FormWidget();
 
                 EditEntityAction.form.on("submit", function (e) {
+                    this.form.showOverlay();
                     this.callback(e.value, this.currentEntity);
                 }, EditEntityAction);
 
@@ -124,26 +125,39 @@ YUI.add('wegas-editor-action', function (Y) {
             EditEntityAction.form.emptyMessage();
             EditEntityAction.form.setForm(entity.toObject2(), entity.getFormCfg());
         },
-
         hideEditForm: function () {
-            EditEntityAction.get("parent").selectChild(0);
+            EditEntityAction.tab.get( "parent" ).selectChild( 0 );
             EditEntityAction.tab.destroy();
             EditEntityAction.tab = null;
         },
-
         hideFormFields: function () {
             EditEntityAction.form.destroyForm();
         },
+        showEditFormOverlay: function () {
+            EditEntityAction.form.showOverlay();
+        },
+        hideEditFormOverlay: function () {
+            EditEntityAction.form.hideOverlay();
+        },
+        showFormMessage: function ( level, msg, timeout ) {
+            EditEntityAction.form.showMessage(level, msg);
+        },
+
+        /**
+         *
+         */
 
         showUpdateForm: function (entity, dataSource) {
             EditEntityAction.showEditForm(entity, function (cfg) {  // Display the edit form
                 // entity.setAttrs( cfg );
                 dataSource.rest.put(cfg, {
                     success: function () {
-                        EditEntityAction.showFormMsg("success", "Item has been updated");
+                        EditEntityAction.showFormMessage("success", "Item has been updated");
+                        EditEntityAction.hideEditFormOverlay();
                     },
                     failure: function (e) {
-                        EditEntityAction.showFormMsg("error", e.response.message || "Error while update item");
+                        EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                        EditEntityAction.hideEditFormOverlay();
                     }
                 });
             });
@@ -153,17 +167,16 @@ YUI.add('wegas-editor-action', function (Y) {
             EditEntityAction.showEditForm(entity, function (newVal) {
                 dataSource.rest.post(newVal, (parentData) ? parentData.toObject2() : parentData , {
                     success: function (e) {
+                        EditEntityAction.hideEditFormOverlay();
                         EditEntityAction.showUpdateForm(e.response.entity, dataSource);
-                        EditEntityAction.showFormMsg("success", "Item has been added");
+                        EditEntityAction.showFormMessage("success", "Item has been added");
                     },
                     failure: function (e) {
-                        EditEntityAction.showFormMsg("error", e.response.results.message || "Error while adding item");
+                        EditEntityAction.hideEditFormOverlay();
+                        EditEntityAction.showFormMessage("error", e.response.results.message || "Error while adding item");
                     }
                 });
             });
-        },
-        showFormMsg: function (level, msg) {
-            EditEntityAction.form.showMessage(level, msg);
         }
     });
 
@@ -197,10 +210,12 @@ YUI.add('wegas-editor-action', function (Y) {
 
                         dataSource.rest.put( parentEntity.toObject2(), {
                             success: function () {
-                                EditEntityAction.showFormMsg( "success", "Item has been updated" );
+                                EditEntityAction.hideEditFormOverlay();
+                                EditEntityAction.showFormMessage( "success", "Item has been updated" );
                             },
                             failure: function (e) {
-                                EditEntityAction.showFormMsg( "error", e.response.message || "Error while update item" );
+                                EditEntityAction.hideEditFormOverlay();
+                                EditEntityAction.showFormMessage( "error", e.response.message || "Error while update item" );
                             }
                         });
                     });
@@ -216,11 +231,13 @@ YUI.add('wegas-editor-action', function (Y) {
 
                         dataSource.rest.put( entity.toObject2(), {
                             success: function () {
-                                EditEntityAction.showFormMsg( "success", "Item has been added" );
+                                EditEntityAction.hideEditFormOverlay();
+                                EditEntityAction.showFormMessage( "success", "Item has been added" );
                                 EditEntityAction.hideFormFields();
                             },
                             failure: function (e) {
-                                EditEntityAction.showFormMsg( "error", e.response.message || "Error while update item" );
+                                EditEntityAction.hideEditFormOverlay();
+                                EditEntityAction.showFormMessage( "error", e.response.message || "Error while update item" );
                             }
                         });
                     }, this ) );
@@ -329,7 +346,10 @@ YUI.add('wegas-editor-action', function (Y) {
         execute: function() {
             Y.Wegas.TabView.findTabAndLoadWidget("State machine editor",        // Load and display the editor in a new tab
                 "#centerTabView", null, {
-                    type: "StateMachineViewer"
+                    type: "StateMachineViewer",
+                    plugins: [{
+                        fn: "WidgetToolbar"
+                    }]
                 }, Y.bind(function (entity, widget) {
                     widget.set( "entity", entity);
                 }, this, this.get( "entity" ) ) );
@@ -378,18 +398,15 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(OpenTabAction, Action, {
         execute: function () {
-            Y.Wegas.TabView.findTabAndLoadWidget( this.get("host").get("label"),
-                this.get("tabSelector"), {
-                    toolbarChildren: this.get("toolbarChildren")
-                }, this.get("subpage"));
+            Y.Wegas.TabView.findTabAndLoadWidget( this.get( "host" ).get( "label" ),
+                this.get( "tabSelector" ), {}, this.get( "subpage" ) );
         }
     }, {
         ATTRS: {
             tabSelector: {
                 value: '#centerTabView'
             },
-            subpage: {},
-            toolbarChildren: {}
+            subpage: {}
         }
     });
 
@@ -464,7 +481,7 @@ YUI.add('wegas-editor-action', function (Y) {
             tab.set("selected", 2);
 
             tab.witem(0).set("emptyMessage", "This game model has no games.");
-            tab.get("toolbarChildren")[0].set( "disabled", false);              // Allow game creation
+            tab.witem(0).toolbar.get( "children" )[0].set( "disabled", false);  // Allow game creation
 
             Y.Wegas.GameFacade.set("source",                                    // Change the source attribute on the datasource
                 Y.Wegas.app.get("base") + "rest/GameModel/" + entity.get( "id" ) + "/Game");

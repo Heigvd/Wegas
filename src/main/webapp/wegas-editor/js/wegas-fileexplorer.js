@@ -1,3 +1,11 @@
+/**
+ *
+ *  @todo Threat network error (now enlessely loading)
+ *  @todo if there is a scrol and we click on new file, widget needs to scroll to that widget
+ *  @todo
+ */
+
+
 YUI.add('wegas-fileexplorer', function (Y) {
     'use strict';
 
@@ -318,6 +326,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
             data = JSON.parse(e.data.response);
             node.get("rightWidget").get("params").data.set("description",  data.description);
             node.get("rightWidget").get("params").data.set("note", data.note);
+
+            EditEntityAction.hideEditFormOverlay();
         },
         onListRequestSuccess: function (callback, e) {
             var i;
@@ -487,6 +497,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         onRequestFailure: function (e) {
             Y.log("onDataSourceError(): Error retrieving data" + (e.stack || e), "error", "Wegas.FileExplorer");
             e.cfg.node.set("loading", false);
+            EditEntityAction.hideEditFormOverlay();
         },
 
         FileUploader : Y.Base.create("wegas-fileuploader", Y.Widget, [Y.WidgetParent], {
@@ -516,8 +527,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
             },
             renderUI: function (){
                 try{
-                    this.get("fileexplorer").get("parent").addToolbarWidget(this.overallProgress);
-                    this._set(CONTENT_BOX, this.get("fileexplorer").get("parent").get("toolbarPanel").getDOMNode());
+                    this.get("fileexplorer").toolbar.add( this.overallProgress );
+                    this._set(CONTENT_BOX, this.get("fileexplorer").toolbar.get("panel").getDOMNode());
                 }catch(e){                                                      //FALLBACK, no toolbar
                     this.get(BOUNDING_BOX).insertBefore("<span>Uploader</span>", this.get(CONTENT_BOX));
                     this.overallProgress.render();

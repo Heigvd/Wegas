@@ -53,7 +53,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
             this.session.setMode(new Mode());
 
             Y.Wegas.app.on("layout:resize", function() {
-                Y.on('domready', this.editor.resize, this.editor);
+                Y.on( 'domready', this.editor.resize, this.editor);
             }, this);
 
             this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {

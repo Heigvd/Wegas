@@ -454,7 +454,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                     bodyContent: '',
                     headerContent: 'Choose a file from library',
                     width  : 600,
-                    zIndex : 5,
+                    zIndex : 30,
                     modal  : true,
                     render : true,
                     centered   : true

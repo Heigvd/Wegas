@@ -21,7 +21,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     GameModelDataSourceREST,
     GameDataSourceREST,
     DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=' + ( Y.config.charset || "utf-8" ) ,
         'Managed-Mode': 'true'
     };
 
@@ -76,7 +76,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 failure: this._failureHandler
             };
             requestCfg.cfg = requestCfg.cfg || {};
-            requestCfg.cfg.headers =  requestCfg.cfg.headers || DEFAULTHEADERS;
+            requestCfg.cfg.headers =  requestCfg.cfg.headers || {};
+            Y.mix( requestCfg.cfg.headers, DEFAULTHEADERS );
 
             return this.get('host').sendRequest(requestCfg);
         },
@@ -105,7 +106,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             } else {
                 for (i = 0; i < response.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
                     e.response.entity = response.get("entities")[i];
-                    if (Y.Lang.isObject(e.response.entity)) {
+                    if (Lang.isObject(e.response.entity)) {
                         this.updateCache(e.cfg.method, e.response.entity);
                     }
                 }
@@ -560,8 +561,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
 
     /**
-         * FIXME We redefine this so we can use a "." selector and a "@..." field name
-         */
+     * FIXME We redefine this so we can use a "." selector and a "@..." field name
+     */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],
@@ -615,7 +616,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         });
 
         // Support for POST transactions
-        if(Y.Lang.isString(request)) {
+        if(Lang.isString(request)) {
             //if(cfg.method && (cfg.method.toUpperCase() === "POST")) {
             //    cfg.data = cfg.data ? cfg.data+request : request;
             //}
