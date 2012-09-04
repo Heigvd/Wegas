@@ -12,7 +12,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         tabview: null,
         currentResourceDescriptor: null,
         handlers: new Array(),
-        
+
         //*** Particular Methods ***/
         /**
          * set the resource displayed bay this widget.
@@ -41,7 +41,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             cb.one('.folder .skillsets-value').setHTML();
             cb.one('.folder .description-value').setHTML();
         },
-        
+
         selectCurrentRessource: function(listResourcesDescriptor){
             var i, resourceDescriptor;
             for(i=0; i<listResourcesDescriptor.get('items').length; i++){
@@ -52,7 +52,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 }
             }
         },
-     
+
        /**
         * For each active resource creat a div with picture, surname and ocuppation of the resource.
          * @param String cb, the widget's contentbox.
@@ -94,7 +94,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 }
             }
         },
-        
+
         /**
          * Syncronise folder part in tabview.
          * @param String cb, the widget's contentbox.
@@ -104,8 +104,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             hiddenSkillset = currentResourceInstance.get('properties').hiddenSkillsets.split(new RegExp("[,;]+", "g")),
             idHidden;
             cb.one('.folder .name').insert(this.currentResourceDescriptor.get('name'));
-            cb.one('.folder .surname').insert(currentResourceInstance.get('properties').surname);   
-            cb.one('.folder .salary-value').insert(currentResourceInstance.get('properties').salary);   
+            cb.one('.folder .surname').insert(currentResourceInstance.get('properties').surname);
+            cb.one('.folder .salary-value').insert(currentResourceInstance.get('properties').salary);
             if(currentResourceInstance.get('properties').picture != null){
                 cb.one('.folder .picture').insert('<img src="'+currentResourceInstance.get('properties').picture+'" alt="picture" width=140 height="140" />');
             }
@@ -127,10 +127,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 if(!idHidden){
                     cb.one('.folder .skillsets-value').insert('<div class="skillset gauge">'+this.createGauge(key, parseInt(currentResourceInstance.get('skillset')[key]))+'</div>');
                 }
-        }           
-            cb.one('.folder .description-value').insert(this.currentResourceDescriptor.get('description'));            
+        }
+            cb.one('.folder .description-value').insert(this.currentResourceDescriptor.get('description'));
         },
-        
+
         /**
          * Create a descriptive of the differents levels of leadership.
          * A node corresponding with the current leve of leadership of the given resource will be indicated by a class named "currentLevel"
@@ -151,7 +151,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour lui et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la survie de l'entreprise. </li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car il vous considère et pense que vos choix sont justifiés.</li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");   
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");
                     }
                     else{
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
@@ -162,7 +162,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     }
                     leadershipInfo.push('</ul>');
                     cb.one('.leadershipLevel-value').insert(leadershipInfo.join(""));
-                    
+
                     cb.all('.leadershipLevel-info').item(5-leadershipLevel).addClass('currentLevel');
                     for(i=0 ; i<=leadershipLevel-1 ; i++){
                         cb.all('.leadershipLevel-info').item(4-i).addClass('levelActive');
@@ -174,9 +174,9 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
         },
         /**
-        * Get the occupation of the given resource. this resource can be vacant, sick or on work.  
+        * Get the occupation of the given resource. this resource can be vacant, sick or on work.
         * @param ResourceInstance resourceInstance, the resource to get the occupation.
-        * @return Object with two argument : a code (Integer) and a task if the resource is sick or on work. The code must be 0 (vacant), 1 (on work), 2 (sick)         
+        * @return Object with two argument : a code (Integer) and a task if the resource is sick or on work. The code must be 0 (vacant), 1 (on work), 2 (sick)
         */
         getOccupationObject: function(resourceInstance){
             var i, j, occupationObject = null, sick=false,
@@ -210,11 +210,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             return occupationObject;
         },
-        
+
         /**
-        * Get a descripton of the occupation of the given resource. this resource can be vacant, sick or on work.  
+        * Get a descripton of the occupation of the given resource. this resource can be vacant, sick or on work.
         * @param ResourceInstance resourceInstance, the resource to get the occupation text.
-        * @return String decription of the occupation of the given resource 
+        * @return String decription of the occupation of the given resource
         */
         getTextOccupation: function(resourceInstance){
             var occupationObject, occupation = new Array(), taskInstance, taskSkills = new Array();
@@ -252,7 +252,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
 
         /**
-        * Create a DOM element usable as a gauge.  
+        * Create a DOM element usable as a gauge.
         * @param String label, the label of the gauge (must be between 0 and 100)
         * @param Integer nombreOfUnits, the nombre of div in the gauge container (the value of the gauge).
         * @return String div container of the gauge
@@ -280,7 +280,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             return gauge.join("");
         },
-        
+
         /**
          * Syncronise action part in tabview.
          * Show and hide action's buttons
@@ -310,7 +310,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 cb.one('.actions .noAction').setHTML("Aucune action n'est disponible.");
             }
         },
-        
+
         setTextSelectedTask: function(eventContainTask){
             var selectedRowInformation = this.tasksChooser.get(CONTENTBOX).one('.yui3-widget-ft .selectedTask');
             selectedRowInformation.setHTML();
@@ -320,7 +320,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         // *** Lifecycle Methods *** //
         /**
          * Render the widget.
-         * create the child widget "tabview"  
+         * create the child widget "tabview"
          */
         renderUI: function(){
             var cb = this.get(CONTENTBOX);
@@ -396,7 +396,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
-                        'Content-Type': 'application/json; charset=utf-8',
+                        'Content-Type': 'application/json; charset=ISO-8859-1',
                         'Managed-Mode':'true'
                     },
                     cfg: {
@@ -409,9 +409,9 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     }
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
-            }, '.speak', this)); 
+            }, '.speak', this));
         },
-          
+
         /**
          * Synchronise the content of this widget.
          */
@@ -427,7 +427,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             this.syncAction(cb)
             this.goToFinalPage();// ! hack function
         },
-        
+
         /*
          * Destroy all child widget and all remanent function
          */
@@ -438,7 +438,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 this.handlers[i].detach();
             }
         },
-        
+
         // *** hack Methods *** //
         /**
          * if current week > max value of week value, then
@@ -448,10 +448,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
-                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));
             }
         }
-        
+
     }, {
         ATTRS : {
             folderPageId: {

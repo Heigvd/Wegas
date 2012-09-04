@@ -13,7 +13,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
     getClassName = Y.ClassNameManager.getClassName,
     CONTENTBOX = 'contentBox',
     DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=ISO-8859-1'
     },
     CONTENT_BOX="contentBox",
     BOUNDING_BOX="boundingBox";
