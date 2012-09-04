@@ -379,15 +379,19 @@ img.inputEx-ListField-delButton {
     padding:2px 10px;
     font-size:11px;
 }
+
 /* CSSEditor Styles */
-.wegas-csseditor div.inputEx-Field {
+.wegas-csseditor .inputEx-Field {
     float:none;
+    height:100%;
 }
-.wegas-csseditor,
-.wegas-csseditor .wegas-csseditor-content,
-.wegas-csseditor .inputEx-Field,
 .wegas-csseditor .inputEx-fieldWrapper {
-    height: 100%;
+    position:  absolute;
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    margin-bottom:0;
 }
 
 /* Chat styles */
@@ -417,16 +421,18 @@ img.inputEx-ListField-delButton {
 }
 
 /* Scriptlibrary Styles */
-.wegas-scriptlibrary div.inputEx-Field {
+.wegas-scriptlibrary .inputEx-Field {
+    height:100%;
     float:none;
 }
-.wegas-scriptlibrary,
-.wegas-scriptlibrary .wegas-scriptlibrary-content,
-.wegas-scriptlibrary .inputEx-Field,
 .wegas-scriptlibrary .inputEx-fieldWrapper {
-    height: 100%;
+    position:  absolute;
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    margin-bottom:0;
 }
-
 /* YUI 2 RTE Styles */
 .yui-skin-sam .yui-editor-container {
     border: 1px solid lightgray;
