@@ -28,7 +28,15 @@ YUI.add('wegas-widget', function (Y) {
         if(this.timeout){
             this.timeout.cancel();
         }
-        this.remove(true);
+        var anim = new Y.Anim({
+            node: this,
+            to: {
+                opacity: 0
+            },
+            duration: 0.2
+        });
+        anim.on( "end", this.remove, this, true );
+        anim.run();
     };
 
     function Widget() {
@@ -49,7 +57,10 @@ YUI.add('wegas-widget', function (Y) {
         },
 
         hideOverlay: function(){
-            this.get( BOUNDING_BOX ).one( ".wegas-widget-loading" ).remove();
+            var overlayNode = this.get( BOUNDING_BOX ).all( ".wegas-widget-loading" );
+            if ( overlayNode ) {
+                overlayNode.remove( true );
+            }
         },
 
         emptyMessage: function () {						// Form msgs logic
@@ -62,10 +73,14 @@ YUI.add('wegas-widget', function (Y) {
 
         showMessage: function ( level, txt, timeout ) {
             var msgNode = this.getMessageNode(),
-            message = Y.Node.create("<div class='" + (LEVEL[level] ? LEVEL[level] : "") + "'><span class='icon'></span><span class='content'>"+txt+"</span><span class='close wegas-icon-delete'></span></div>");
+            message = Y.Node.create("<div class='" + (LEVEL[level] ? LEVEL[level] : "") + "'><span class='icon'></span><span class='content'>"+txt+"</span><span class='close'></span></div>");
             msgNode.append(message);
 
-            message.one(".close").once("click", destroySelf, message);
+            message.one(".close").once( "click", destroySelf, message );
+
+            if ( level === "success" && !timeout ) {                            // @hack successful messages disapear automatically
+                timeout = 3000;
+            }
 
             if ( timeout ) {
                 message.timeout = Y.later( timeout, message, destroySelf);

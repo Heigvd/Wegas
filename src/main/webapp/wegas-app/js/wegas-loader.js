@@ -63,13 +63,13 @@ YUI().use(function (Y) {
                     },
                     'wegas-content-entities':{
                         path: 'wegas-app/js/persistence/wegas-content-entities.js',
-                        requires: ['wegas-entity']
+                        requires: [ 'wegas-entity' ]
                     },
 
                     /** Widgets **/
                     'wegas-widget': {
                         path: 'wegas-app/js/widget/wegas-widget-min.js',
-                        requires: ['widget', 'widget-parent', 'widget-child']
+                        requires: [ 'widget', 'widget-parent', 'widget-child', 'anim-base' ]
                     },
                     'wegas-pageloader': {
                         path: 'wegas-app/js/widget/wegas-pageloader-min.js',

@@ -86,7 +86,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
          * @method beforeResponse
          * @private
          */
-        beforeResponse: function (e) {
+        beforeResponse: function ( e ) {
             var evt, i,
             response = Y.Wegas.persistence.Entity.revive(e.response.results);   // Transform javascript object litterals to Y.Wegas.persistence.Entity's
 
@@ -425,12 +425,16 @@ YUI.add('wegas-datasourcerest', function (Y) {
         NAME: "GameModelDataSourceREST"
     });
 
-    Y.extend(GameModelDataSourceREST, DataSourceREST, {
-        //        updateCache2: function (e) {
-        //            // @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
-        //            if (e.request.indexOf("ScriptLibrary") != -1) e.cfg.method = "POST";
-        //            this.applyOperation(e.cfg.method, cEl, e.data);
-        //        },
+    Y.extend( GameModelDataSourceREST, DataSourceREST, {
+        /*
+         *  @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
+         */
+        beforeResponse: function ( e) {
+            if (e.request.indexOf("ScriptLibrary") != -1) {
+                e.cfg.method = "POST";
+            }
+            GameModelDataSourceREST.superclass.beforeResponse.call( this, e );
+        },
         getCurrentGameModel: function () {
             return this.findById(Y.Wegas.app.get('currentGameModel'))
         }
