@@ -16,9 +16,8 @@ import com.sun.jersey.spi.container.ResourceFilter;
 import com.wegas.core.ejb.RequestManagerFacade;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
-import javax.ws.rs.core.PathSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +32,7 @@ import org.slf4j.LoggerFactory;
 public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
+    
 
     /**
      *
@@ -44,6 +44,14 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
     public ContainerRequest filter(ContainerRequest cr) {
         String firstPathSeg = cr.getPathSegments().get(0).getPath();
         RequestManagerFacade rmf = RequestManagerFacade.lookup();
+        if(Boolean.parseBoolean(cr.getHeaderValue("lang"))){
+            rmf.setResourceBundle(new Locale(cr.getHeaderValue("lang")));
+        }
+        else{
+            rmf.setResourceBundle(new Locale(cr.getHeaderValue("Accept-Language")));
+        }
+        
+        
         String newUri = cr.getRequestUri().toString();
 
         switch (firstPathSeg) {

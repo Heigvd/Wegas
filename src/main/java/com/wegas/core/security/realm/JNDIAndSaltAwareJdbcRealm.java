@@ -1,9 +1,11 @@
 package com.wegas.core.security.realm;
 
+import com.wegas.core.ejb.RequestManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.inject.Inject;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * can add salt to passwords.
  */
 public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
-
+    
     /**
      * 
      */
@@ -43,7 +45,8 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
      * 
      */
     protected String jndiDataSourceName;
-
+    @Inject
+    private RequestManager requestManager;
     /**
      * 
      */
@@ -114,20 +117,21 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
     }
 
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {        
         //identify account to log to
         UsernamePasswordToken userPassToken = (UsernamePasswordToken) token;
         String username = userPassToken.getUsername();
 
         if (username == null) {
             log.debug("Username is null.");
+            log.debug("test : "+requestManager.getResourceBundle().getString("folder"));
             return null;
         }
 
         // read password hash and salt from db 
         PasswdSalt passwdSalt = getPasswordForUser(username);
 
-        if (passwdSalt == null) {
+        if (passwdSalt == null) {        
             log.debug("No account found for user [" + username + "]");
             return null;
         }
