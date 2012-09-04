@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -16,9 +16,9 @@ import com.sun.jersey.spi.container.ResourceFilter;
 import com.wegas.core.ejb.RequestManagerFacade;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.logging.Level;
-import javax.ws.rs.core.PathSegment;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

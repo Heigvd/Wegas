@@ -21,8 +21,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
     GameModelDataSourceREST,
     GameDataSourceREST,
     DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Managed-Mode': 'true'
+        'Content-Type': 'application/json; charset=' + ( Y.config.charset || "utf-8" ) ,
+        'Managed-Mode': 'true',
+        "Accept-Language": Y.config.lang
     };
 
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
@@ -76,7 +77,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 failure: this._failureHandler
             };
             requestCfg.cfg = requestCfg.cfg || {};
-            requestCfg.cfg.headers =  requestCfg.cfg.headers || DEFAULTHEADERS;
+            requestCfg.cfg.headers =  requestCfg.cfg.headers || {};
+            Y.mix( requestCfg.cfg.headers, DEFAULTHEADERS );
 
             return this.get('host').sendRequest(requestCfg);
         },

@@ -6,10 +6,10 @@
       xmlns:f="http://java.sun.com/jsf/core">
 
     <f:loadBundle basename="wegas-app.wegasapp" var="wegasConfig"/>
-
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title><ui:insert name="title">Wegas - 0.2</ui:insert></title>
+        <meta http-equiv="Content-Language" content="#{requestController.locale}" />
+        <title><ui:insert name="title">#{wegasAppBundle.LobbyPage_Title}</ui:insert></title>
         <meta name="description" content="" />
         <meta name="keywords" content="" />
         <meta name="robots" content="index, follow" />
@@ -60,6 +60,25 @@
             var base = "/Wegas",
             comboBase = base + '/rest/combo?';
 
+            // Set up some YUI3 default parameters. Will be use for every call to
+            // the YUI(cfg) function. Can be overridden by the cfg parameter.
+            YUI_config.useBrowserConsole = true;
+            //YUI_config.charset = 'utf-8';
+            YUI_config.lang = "#{requestController.locale}";
+            YUI_config.insertBefore = 'customstyles';
+            YUI_config.throwFail = true;
+            YUI_config.debug = true;
+            YUI_config.errorFn = function(e) {
+                Y.log( 'Uncaught error: ' + ( ( e.stack ) ? e.stack : e ), 'error', 'Wegas.App' );
+            };
+            //YUI_config.gallery = 'gallery-2011.02.18-23-10';
+            //YUI_config.filter = 'raw';                                        // Allows to select normal or minified version of dependencies
+            //YUI_config.filters = { event: 'debug' };                          // Like filter, but can be set for each module
+            //YUI_config.loadOptional = true;
+            //YUI_config.timeout = 10000;
+            //YUI_config.logExclude = { event : true };
+            //YUI_config.logInclude = { event : true };
+
             YUI_config.groups.wegas.base = base + "/";                          // Set up wegas path
             YUI_config.groups.wegas.comboBase = comboBase;
             YUI_config.groups.wegas.combine = false;
@@ -108,24 +127,6 @@
             };
             </ui:fragment>
 
-                // Set up some YUI3 default parameters. Will be use for every call to
-            // the YUI(cfg) function. Can be overridden by the cfg parameter.
-            YUI_config.useBrowserConsole = true;
-            YUI_config.charset = 'utf-8';
-            YUI_config.lang = 'en';
-            YUI_config.insertBefore = 'customstyles';
-            YUI_config.gallery = 'gallery-2011.02.18-23-10';
-            YUI_config.throwFail = true;
-            YUI_config.debug = true;
-            YUI_config.errorFn = function(e) {
-                Y.log('Uncaught error: '+((e.stack)?e.stack:e), 'error', 'Wegas.App');
-            };
-            //YUI_config.filter = 'raw';                                        // Allows to select normal or minified version of dependencies
-            //YUI_config.filters = { event: 'debug' };                          // Like filter, but can be set for each module
-            //YUI_config.loadOptional = true;
-            //YUI_config.timeout = 10000;
-            //YUI_config.logExclude = { event : true };
-            //YUI_config.logInclude = { event : true },
             /**<!--
                 base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
                     { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
@@ -137,11 +138,10 @@
                 var Y = YUI({
                     //filter: 'raw'
                     //filters: { event: 'debug' }
-                }).use('wegas-app', function (Y) {
+                }).use('wegas-app', function ( Y ) {
                     var cfg = {
                         base : "/Wegas/",
                         layoutSrc: 'wegas-app/db/wegas-app-layout.json',
-                        lang : 'en-US',
                         debug : true,
                         currentGameModel: #{gameController.currentGameModel.id},
                         currentGame: #{gameController.currentGame.id},
@@ -250,8 +250,8 @@
                         editorForms: {}
                     };
 
-                    Y.on('domready', function() {                                   // When dom is ready,
-                        var app = new Y.Wegas.App(cfg);                             // launch the app
+                    Y.once('domready', function() {                             // When dom is ready,
+                        var app = new Y.Wegas.App(cfg);                         // launch the app
                         app.render();
                     });
                 });
