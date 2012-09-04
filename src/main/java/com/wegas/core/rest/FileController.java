@@ -90,6 +90,7 @@ public class FileController {
                         logger.info(details.getFormDataContentDisposition().getFileName() + "(" + details.getMediaType() + ") uploaded as \"" + name + "\"");
                     } catch (IOException ex) {
                         logger.error("Error reading uploaded file :", ex);
+                        connector.close();
                     }
                 } else {
                     detachedFile.sync();
@@ -101,6 +102,7 @@ public class FileController {
         } else {
             logger.debug("Parent Directory does not exist");
         }
+        connector.close();
         return detachedFile;
     }
 
