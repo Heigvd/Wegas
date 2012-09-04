@@ -11,7 +11,7 @@
                     margin: 0;
                     margin-bottom: 25px;
                 }
-                .wegas-tab-toolbar {
+                .wegas-toolbar {
                     box-shadow: none;
                     border: none;
                 }
@@ -28,9 +28,7 @@
             <script type="text/javascript">
                 var Y = YUI().use("wegas-app", "wegas-editor", function (Y) {
                     var cfg = {
-                        base : "/Wegas/",
                         layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
-                        lang : 'en-US',
                         debug : true,
                         currentUser: #{lobbyController.getCurrentUser().toJson()},
                         dataSources: {

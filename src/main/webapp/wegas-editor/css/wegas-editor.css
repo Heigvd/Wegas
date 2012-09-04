@@ -48,8 +48,8 @@ div.inputEx-fieldWrapper {
 }
 
 /* Wegas Form Widget Styles */
-.wegas-form {
-    padding: 10px 10px 20px;
+.wegas-form-content {
+    padding: 10px 0 20px !important;
 }
 .wegas-form div.inputEx-fieldWrapper,
 .wegas-form div.inputEx-Field {
@@ -69,6 +69,7 @@ div.inputEx-fieldWrapper {
 .wegas-form div.inputEx-CombineField,
 .wegas-form .inputEx-fieldWrapper {
     padding-left:135px;
+    margin-right: 7px;
     white-space: nowrap;
     position: relative;
 }
@@ -152,46 +153,54 @@ img.inputEx-ListField-delButton {
 
 
 /* TabView styles */
-/* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
-.yui3-skin-sam .wegas-layout .yui3-tabview,
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content ,
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel{
-    height: inherit;
-}
 .yui3-skin-sam .yui3-tabview-panel {
     padding:0px;
 }
-.yui3-skin-sam .yui3-tabview-panel  > .yui3-tab-panel > .yui3-tab-panel-content {
-    position: absolute;
-    bottom: 0px;
-    overflow: auto;
-    padding:0;
-    left:0px;
-    right:0px;
-    top: 57px;
+
+/* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
+.yui3-skin-sam .wegas-layout .yui3-tabview,
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content ,
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel,
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel,
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .yui3-widget{
+    height: inherit;
+}
+
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .yui3-widget {
+    position: relative;
+}
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .yui3-widget {
+    /*    position: absolute;
+        bottom: 0px;
+        overflow: auto;
+        padding:0;
+        left:0px;
+        right:0px;
+        top: 57px;*/
 }
 
 /** Toolbar styles **/
-.wegas-tab-toolbar {
+.wegas-toolbar {
+    position: absolute;
+    top: 0;
     vertical-align: top;
-    border: none;
     min-height: 26px;
     padding: 2px 0;
     border-bottom: 1px solid lightgray;
-    position: absolute;
     width: 100%;
-    z-index: 20;
     box-shadow: 0px 2px 5px grey;
+    background:white;
+    z-index: 23;
 }
-.yui-layout-unit-right .wegas-tab-toolbar {
+.yui-layout-unit-right .wegas-toolbar {
     padding-left:6px;
 }
-.wegas-tab-toolbar-header{
+.wegas-toolbar-header{
     vertical-align: top;
     border: none;
     min-height: 26px;
 }
-.wegas-tab-toolbar-panel {
+.wegas-toolbar-panel {
     overflow: hidden;
     max-height: 0px;
     background-color: white;
@@ -216,30 +225,30 @@ img.inputEx-ListField-delButton {
     transition-timing-function: linear;
     transition-delay: 0.3s;
 }
-.wegas-tab-toolbar:hover > .wegas-tab-toolbar-panel{
+.wegas-toolbar:hover > .wegas-toolbar-panel {
     max-height: 200px;
     overflow-y: auto;
 }
-.wegas-tab-toolbar .yui3-button {
+.wegas-toolbar .yui3-button {
     margin: 0;
     margin-left: 0.3em;
 }
-.wegas-tab-toolbar .wegas-selectbutton {
+.wegas-toolbar .wegas-selectbutton {
     display:inline-block;
 }
-.wegas-tab-toolbar .inputEx-fieldWrapper {
+.wegas-toolbar .inputEx-fieldWrapper {
     margin:0;
     padding-left: 4px;
     display:inline-block;
 }
-.wegas-tab-toolbar select {
+.wegas-toolbar select {
     margin: 1px 0;
     height: 22px;
 }
 /*.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectplayer .first-child a:before {
     content: 'Current user: ';
 }*/
-.wegas-tab-toolbar div.inputEx-label {
+.wegas-toolbar div.inputEx-label {
     padding: 4px 1px 0 0;
 }
 /* Wegas small icons */
@@ -370,15 +379,19 @@ img.inputEx-ListField-delButton {
     padding:2px 10px;
     font-size:11px;
 }
+
 /* CSSEditor Styles */
-.wegas-csseditor div.inputEx-Field {
+.wegas-csseditor .inputEx-Field {
     float:none;
+    height:100%;
 }
-.wegas-csseditor,
-.wegas-csseditor .wegas-csseditor-content,
-.wegas-csseditor .inputEx-Field,
 .wegas-csseditor .inputEx-fieldWrapper {
-    height: 100%;
+    position:  absolute;
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    margin-bottom:0;
 }
 
 /* Chat styles */
@@ -408,16 +421,18 @@ img.inputEx-ListField-delButton {
 }
 
 /* Scriptlibrary Styles */
-.wegas-scriptlibrary div.inputEx-Field {
+.wegas-scriptlibrary .inputEx-Field {
+    height:100%;
     float:none;
 }
-.wegas-scriptlibrary,
-.wegas-scriptlibrary .wegas-scriptlibrary-content,
-.wegas-scriptlibrary .inputEx-Field,
 .wegas-scriptlibrary .inputEx-fieldWrapper {
-    height: 100%;
+    position:  absolute;
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    margin-bottom:0;
 }
-
 /* YUI 2 RTE Styles */
 .yui-skin-sam .yui-editor-container {
     border: 1px solid lightgray;

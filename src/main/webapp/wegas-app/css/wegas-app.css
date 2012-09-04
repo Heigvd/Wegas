@@ -17,10 +17,24 @@ input[type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
 }
+/* Style for the body element, before loading */
+
+/* Y.Wegas.Widget extension styles */
+.wegas-widget-loading {
+    background: rgba(255, 255, 255, 0.8) url(../images/loading.gif) center center no-repeat;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+
 /* YUI3 Buttons Styles */
 .yui3-button-hidden {
     display:none;
 }
+
 /*  TabView Styles */
 .yui3-skin-sam .yui3-tabview-panel {
     border: none;
@@ -28,12 +42,12 @@ input[type="submit"], input[type="reset"] {
 }
 
 /* List styles */
-.wegas-list-horizontal  > div {
+.wegas-list-horizontal > div {
     display:block;
     float:left;
     vertical-align:top;
 }
-.wegas-list-vertical  > div {
+.wegas-list-vertical > div {
 }
 
 /* Inbox styles */
@@ -128,7 +142,7 @@ input[type="submit"], input[type="reset"] {
 }
 .yui3-skin-sam .wegas-layout-right {
     padding-left: 6px;
-    width: 300px;
+    width: 320px;
     right: 0;
 }
 .yui3-skin-sam .wegas-layout .yui3-resize-handle {

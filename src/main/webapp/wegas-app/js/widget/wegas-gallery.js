@@ -264,7 +264,7 @@ YUI.add("wegas-gallery", function(Y){
 
         },
         loadImage: function(i){
-            var img;
+            var img, imgLoader;
             if(this.get(CONTENT_BOX).all("li").item(i).hasChildNodes()){
                 return;
             }
@@ -281,7 +281,7 @@ YUI.add("wegas-gallery", function(Y){
                 this.images[e.target.index].loaded = true;
             }, this);
             this.get(CONTENT_BOX).all("li").item(i).appendChild(img);
-            if(this.get("gallery")[i].description){
+            if(this.get("gallery")[i].description) {
                 this.get(CONTENT_BOX).all("li").item(i).appendChild("<div class='gallery-text'>"+this.get("gallery")[i].description+"</div>");
             }
         },
@@ -345,4 +345,41 @@ YUI.add("wegas-gallery", function(Y){
     });
 
     Y.namespace("Wegas").WegasGallery = WegasGallery;
+
+    var FileExplorerGallery = Y.Base.create("wegas-gallery", WegasGallery, [], {
+
+        loadImage: function(i) {
+            var img, imgLoader;
+            if(this.get(CONTENT_BOX).all("li").item(i).hasChildNodes()){
+                return;
+            }
+
+            img = Y.Node.create("<img />");
+            imgLoader = new Y.Wegas.ImgageLoader({
+                target: img,
+                srcUrl: Y.Wegas.app.get( "base" ) + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") +
+                "/read" + this.get("gallery")[i].srcUrl
+            });
+            imgLoader.fetch();
+            imgLoader.once( "load", function ( e ) {
+                if ( e.meta.description ) {
+                    this.get(CONTENT_BOX).all("li").item(i).appendChild("<div class='gallery-text'>" + e.meta.description + "</div>");
+                }
+            }, this );
+            img.index = i;
+            img.once("error", function(e){
+                e.target.get("parentNode").setStyles({
+                    background:"url('../../wegas-editor/images/wegas-icon-error-48.png') no-repeat 50%"
+                });
+            });
+            img.once("load", function(e){
+                e.target.get("parentNode").removeClass("img-loading");
+                this.images[e.target.index].loaded = true;
+            }, this);
+            this.get(CONTENT_BOX).all("li").item(i).appendChild(img);
+
+        }
+    });
+
+    Y.namespace("Wegas").FileExplorerGallery = FileExplorerGallery;
 });

@@ -42,7 +42,7 @@ public class ListDescriptorController extends AbstractRestController<VariableDes
     @Path("{variableDescriptorId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public AbstractEntity create(@PathParam(value = "variableDescriptorId") Long variableDescriptorId, VariableDescriptor entity) {
+    public ListDescriptor create(@PathParam(value = "variableDescriptorId") Long variableDescriptorId, VariableDescriptor entity) {
         ListDescriptor listDescriptor = (ListDescriptor) descriptorFacade.find(variableDescriptorId);
         listDescriptor.addItem(entity);
         return listDescriptor;

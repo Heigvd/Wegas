@@ -9,7 +9,7 @@
  */
 
 /**
- * @module wegas
+ * @module Y.Wegas
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-app', function (Y) {
@@ -37,7 +37,14 @@ YUI.add('wegas-app', function (Y) {
                 this.dataSources[i].destroy();
             }
         },
+
         render: function () {
+
+            Y.io.header( "Accept-Language", Y.config.lang);                      // Set the language for all requests
+            this.on( "render", function () {
+                Y.one( "body" ).removeClass( "wegas-widget-loading" );
+            });
+
             this.initDataSources();
             this.initCSS();
         },
@@ -47,7 +54,7 @@ YUI.add('wegas-app', function (Y) {
          * @method initDataSources
          */
         initDataSources: function () {
-            var k, dataSource, sender, dataSources = this.get('dataSources');
+            var k, dataSource, dataSources = this.get('dataSources');
 
             // @todo Shall we use browser native parser ?
             // Y.JSON.useNativeParse = true;
@@ -86,29 +93,28 @@ YUI.add('wegas-app', function (Y) {
          * @method initCSS
          */
         initCSS: function () {
-            var css = this.get('cssStylesheets'),
-            i,
-            callback = {
+            var i, css = this.get('cssStylesheets'),
+            cfg = {
                 timeout : 3000,
                 context: this,
                 on : {
-                    success : function (x, o) {
+                    success : function ( id, o ) {
                         this._customCSSText = o.responseText;
-                        this._customCSSStyleSheet = new Y.StyleSheet(o.responseText);
+                        this._customCSSStyleSheet = new Y.StyleSheet( o.responseText );
                         //Y.log("RAW JSON DATA: " + o.responseText);
                         //this.updateCustomCSS(o.responseText);
                         if (this._customCSSForm) {
-                            this._customCSSForm.setValue(o.responseText);
+                            this._customCSSForm.setValue( o.responseText );
                         }
                     },
-                    failure : function (x, o) {
-                        Y.log("initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
+                    failure : function ( id, o ) {
+                        Y.log( "initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
                     }
                 }
             };
 
-            for (i = 0; i < css.length; i += 1) {
-                Y.io(this.get('base') + css[i] + '?id=' + App.genId(), callback);   // Load the page css
+            for ( i = 0; i < css.length; i += 1 ) {
+                Y.io( this.get('base') + css[ i ] + '?id=' + App.genId(), cfg );// Load the page css
             }
         },
 
@@ -151,7 +157,11 @@ YUI.add('wegas-app', function (Y) {
             /**
              * Base url for app
              */
-            base: { },
+            base: {
+                getter: function () {
+                    return Y.config.groups.wegas.base;
+                }
+            },
             layoutSrc: {},
             dataSources: {
                 value: {}

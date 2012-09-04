@@ -133,13 +133,17 @@ YUI().use(function (Y) {
                         requires: ['wegas-widget', 'inputex-select', 'inputex-string', 'button'],
                         ix_provides: "JoinGameWidget"
                     },
+                    'wegas-imageloader': {
+                        path:'wegas-app/js/widget/wegas-imageloader.js',
+                        requires: [ 'io-base', 'imageloader' ],
+                    },
                     'wegas-gallerycss':{
                         path:'wegas-app/css/wegas-gallery.css',
                         type:'css'
                     },
                     'wegas-gallery': {
                         path:'wegas-app/js/widget/wegas-gallery-min.js',
-                        requires: ['wegas-widget', 'scrollview-base', 'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
+                        requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base', 'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
                         ix_provides: "WegasGallery"
                     },
 
@@ -188,6 +192,10 @@ YUI().use(function (Y) {
                         'widget', 'widget-parent', 'widget-child', 'widget-stack',
                         'widget-position', 'widget-position-align', 'widget-position-constrain' ]
                     },
+                    'wegas-widgettoolbar': {
+                        path: 'wegas-app/js/widget/wegas-widgettoolbar-min.js',
+                        requires: [ ]
+                    },
                     'treeview':{
                         path: 'wegas-editor/js/treeview-min.js',
                         requires: [ 'widget', 'widget-parent', 'widget-child', 'treeviewcss' ]
@@ -201,9 +209,9 @@ YUI().use(function (Y) {
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
                         requires: [
-                        'wegas-app', 'wegas-widgetmenu',
+                        'wegas-app', 'wegas-widgetmenu', 'wegas-widgettoolbar',
                         "wegas-editor-buttons", 'wegas-editor-action',
-                        'wegas-form',
+                        'wegas-form'
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
