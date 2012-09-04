@@ -149,14 +149,14 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     if(resourceInstance.get('properties').male == 'true'){
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour lui et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la survie de l'entreprise. </li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car il vous considère et pense que vos choix sont justifiés.</li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");
                     }
                     else{
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper. </li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'elle en a le devoir.</li>");
                     }
@@ -448,7 +448,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
-                targetPageLoader.set("pageId", this.get('dialoguePageId'));
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.setCurrentDialogue();
+                });
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }
         }
 

@@ -50,7 +50,7 @@
                 "nextStateId" : 5,
                 "triggerCondition" : {
                     "@class" : "Script",
-                    "content" : "var i, j, gm = self.getGameModel(), free = true, tasks, taskDesc, absences, absenceDesc, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);/nabsences = VariableDescriptorFacade.findByName(gm, 'absences');/ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');/nfor(i=0;i<resInst.getAssignments().size();i++){/nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();/nfor(j=0;j<tasks.items.size();j++){/ntasksDesc = tasks.items.get(j);/nif(tasksDesc.getInstance(self).getActive()==true  && tasksDesc.getId() == assignmentTaskId){/nfree = false/nbreak;/n}/n}/nfor(j=0;j<absences.items.size();j++){/nabsenceDesc = absences.items.get(j);/nif(absenceDesc.getInstance(self).getActive()==true && absenceDesc.getId() == assignmentTaskId){/nfree = false/nbreak;/n}/n}/n}/nfree;",
+                    "content" : "var i, j, gm = self.getGameModel(), free = true, tasks, taskDesc, absences, absenceDesc, assignmentTaskId, resInst;\n resInst = VariableDescriptorFacade.findByName(gm, 'resources').items.get(4).getInstance(self);\nabsences = VariableDescriptorFacade.findByName(gm, 'absences');\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntasksDesc = tasks.items.get(j);\nif(tasksDesc.getInstance(self).getActive()==true  && tasksDesc.getId() == assignmentTaskId){\nfree = false;\nbreak;\n}\n}\nfor(j=0;j<absences.items.size();j++){\nabsenceDesc = absences.items.get(j);\nif(absenceDesc.getInstance(self).getActive()==true && absenceDesc.getId() == assignmentTaskId){\nfree = false;\nbreak;\n}\n}\n}\nfree;",
                     "language" : "JavaScript"
                 }
             },{
@@ -59,7 +59,7 @@
                 "nextStateId" : 20,
                 "triggerCondition" : {
                     "@class" : "Script",
-                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('isConsidered')=='true';",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('isConsidered')=='false';",
                     "language" : "JavaScript"
                 }
             },{
@@ -68,7 +68,7 @@
                 "nextStateId" : 23,
                 "triggerCondition" : {
                     "@class" : "Script",
-                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('isConsidered')=='true';",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('isConsidered')=='false';",
                     "language" : "JavaScript"
                 }
             },
@@ -87,7 +87,7 @@
                     "Bonjour. Continue, je ne fait que passer."
                 ],
                 "backgroundImages":[{
-                    "link":"/Wegas/rest/File/GameModelId/1/read/background.png",
+                    "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
                     "height":"315px",
                     "width":"980px"
                 }],
@@ -172,7 +172,7 @@
             "text" : {
                 "subPageId":"4",
                 "targetPageLoaderId":"maindisplayarea",
-                "functionAfterTransition":"e.newVal.switchToPickingMode(VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4], 7)"
+                "functionAfterTransition":"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4], 7)"
             },
             "transitions" : [{
                 "@class" : "DialogueTransition",
@@ -254,7 +254,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value-=5;\nconfidence.value-=10;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=5;\nresInst.setConfidence(resInst.getConfidence())-=10;",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -290,7 +290,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value+=5;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -369,7 +369,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value-=10;\nconfidence.value+=5;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=10;\nresInst.setConfidence(resInst.getConfidence()+5);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -402,7 +402,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value-=25;\nconfidence.value-=10;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()-25);\nresInst.setConfidence(resInst.getConfidence()-10);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -435,7 +435,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value+=25;\nconfidence.value+=20;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+25);\nresInst.setConfidence(resInst.getConfidence()+20);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -450,7 +450,7 @@
                 "speakerName":"Lucien",
                 "texts":[
                     "D’accord, je vais m’en charger.",
-                    "Je n’ai rien, je vais m’y mettre."
+                    "Je n’ai rien contre, je vais m’y mettre."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -496,7 +496,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value-=30;\nconfidence.value-=20;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()-30);\nresInst.setConfidence(resInst.getConfidence()-20);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -528,7 +528,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "confidence.value-=10",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setConfidence(resInst.getConfidence()-10)",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -573,7 +573,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4].getInstance(self).setProperty('isConsidered', 'true'))",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -582,7 +582,7 @@
                 "nextStateId" : 21,
                 "triggerCondition" : {
                     "@class" : "Script",
-                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('lastWorkQuality')=>50;",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('lastWorkQuality')>=50;",
                     "language" : "JavaScript"
                 }
             },{
@@ -619,7 +619,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value+=20;\nconfidence.value+=10",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+20);\nresInst.setConfidence(resInst.getConfidence()+10)",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -651,7 +651,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "confidence.value-=15;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setConfidence(resInst.getConfidence()-15);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -683,7 +683,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4].getInstance(self).setProperty('isConsidered', 'true'))",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -729,7 +729,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "confidence.value-=10;\nmoral.value-=20;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setConfidence(resInst.getConfidence()-10);\nresInst.setMoral(resInst.getMoral()-20);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -761,7 +761,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value-=10;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -909,7 +909,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value+=10;\nconfidence.value+=10;\nVariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4].getInstance(self).setProperty('wishIsKnow', 'true');",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('wishIsKnow', 'true');",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -990,7 +990,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value+=10;\nconfidence.value+=10;VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4].getInstance(self).setProperty('hateIsKnow', 'true')",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hateIsKnow', 'true')",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -1071,7 +1071,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value+=10;\nconfidence.value+=10;\nvar resourceInstance = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresourceInstance.setProperty('hiddenSkillsets', resourceInstance.getProperty('hiddenSkillsets').split(new RegExp('[,;]+', 'g')).shift().join(';'));",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hiddenSkillsets', resInst.getProperty('hiddenSkillsets').split(new RegExp('[,;]+', 'g')).shift().join(';'));",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -1139,7 +1139,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "confidence.actions-=1;",
+                "content" : "actions.value-=1;",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -1204,7 +1204,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4].getInstance(self).setProperty('isAdvised', 'true');\n var resourceInstance = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4].getInstance(self);\nresourceInstance.setProperty('bonusInducement', resourceInstance.getProperty('bonusInducement')+20);",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInt.setProperty('isAdvised', 'true');\nresInst.setProperty('bonusInducement', parseInt(resInst.getProperty('bonusInducement'))-20);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -1241,7 +1241,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value+=20;\nconfidence.value+=10;\nVariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4].getInstance(self).setProperty('isAdvised', 'true');",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+20);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('isAdvised', 'true');",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -1308,7 +1308,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "moral.value+=20;\nconfidence.value+=10;\nVariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[4].getInstance(self).setProperty('isAdvised', 'true');",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setProperty('bonusInducement', parseInt(resInst.getProperty('bonusInducement'))+20);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
