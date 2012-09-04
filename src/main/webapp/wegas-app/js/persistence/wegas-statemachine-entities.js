@@ -410,7 +410,7 @@ Y.add("wegas-statemachine-entities", function(Y){
                             cfg: {
                                 method: "GET",
                                 headers:{
-                                    'Content-Type': 'application/json; charset=utf-8',
+                                    'Content-Type': 'application/json; charset=iso-8859-1',
                                     'Managed-Mode':'true'
                                 }
                             },
