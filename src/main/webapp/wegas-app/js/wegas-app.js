@@ -153,7 +153,11 @@ YUI.add('wegas-app', function (Y) {
             /**
              * Base url for app
              */
-            base: { },
+            base: {
+                getter: function () {
+                    return Y.config.groups.wegas.base;
+                }
+            },
             layoutSrc: {},
             dataSources: {
                 value: {}
