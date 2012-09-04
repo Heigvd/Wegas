@@ -545,22 +545,29 @@ img.inputEx-ListField-delButton {
 
 /* System messages */
 .wegas-systemmessage {
-    padding: 10px;
-    margin: 10px;
+    padding: 20px;
     position:absolute;
-    top: 15px;
+    bottom: 25px;
     left: 0;
     right: 0;
-    z-index:3;
+    z-index:4;
 }
 .wegas-systemmessage > div{
     margin: 5px;
+    padding: 10px 10px 0 10px;
+    background: rgba(110, 110, 110, 0.8);
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px grey;
+    border: 1px solid #6E6E6E;
+    color: white;
+    text-shadow: 1px 1px 2px lightgray;
 }
 .wegas-systemmessage > div > .close{
     cursor:pointer;
     float:right;
     width:18px;
     height:18px;
+    background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;
 }
 .wegas-systemmessage  .icon {
     width: 55px;
@@ -572,22 +579,24 @@ img.inputEx-ListField-delButton {
     margin-top: 15px;
     display: inline-block;
 }
-.wegas-systemmessage > .success {
+/*.wegas-systemmessage > .success {
     border: 1px solid green;
     background: lightGreen;
     display:block;
-}
+}*/
 .wegas-systemmessage > .success .icon {
     background: url(../images/wegas-icon-success-48.png) no-repeat;
 }
-.wegas-systemmessage > .error {
+/*.wegas-systemmessage > .error {
     border: 1px solid red;
     background: lightCoral;
     display:block;
-}
+}*/
 .wegas-systemmessage > .error .icon {
     background: url(../images/wegas-icon-error-48.png) no-repeat;
 }
+
+/* */
 .wegas-smallmessage {
     padding: 20px;
     margin: 20px;
