@@ -10,6 +10,8 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.Player;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -71,5 +73,9 @@ public class RequestManagerFacade {
             logger.error("Error retrieving requestmanager", ex);
             return null;
         }
+    }
+    
+    public void setResourceBundle(Locale lang){
+        this.requestManager.setResourceBundle(lang);
     }
 }
