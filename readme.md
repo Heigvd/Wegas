@@ -47,8 +47,8 @@ Netbeans setup
 ------------------------
 In the NetBeans installation directory (e.g. C:\Program Files\NetBeans 7.x), edit the etc\netbeans.conf startup configuration. (On both Windows 7 and Linux, you will need to edit the permissions on this file to grant your user the rights to modify it.)
 
-*  *optional* Force utf-8 or/and LF line endings
-   Add *-J-Dfile.encoding=UTF-8* or/and *-J-Dline.separator=LF* (may corrupt XML files) to netbeans_default_options line in netbeans.conf.
+*  *optional* Force ISO-8859-1 or/and LF line endings
+   Add *-J-Dfile.encoding=ISO-8859-1* or/and *-J-Dline.separator=LF* (may corrupt XML files) to netbeans_default_options line in netbeans.conf.
 *  *optional* To increase the heap memory available to the IDE, replace the -J-Xms32m JVM parameter with the following:
    -J-Xms384m
 *  *optional* To increase the IDE's permanent generation space (memory used for classes and static instances), replace the -J-XX:PermSize=32m JVM parameter with the following:

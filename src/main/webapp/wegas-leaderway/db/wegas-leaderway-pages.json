@@ -110,7 +110,7 @@
                         "type": "Button",
                         "label": "Score",
                         "cssClass": "menu-score",
-                        "tooltips":"Score des entreprises (temporaire)",
+                        "tooltips":"Score des entreprises",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {

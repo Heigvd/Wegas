@@ -298,7 +298,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             var dialogue;
             if(!this.currentDialogue || this.currentDialogue.length === 0){
                 dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", 'defaultDialogue').getInstance().get('value');
-                if(!dialogue|| dialogue.length === 0) this.currentDialogue = dialogue;
+                if(dialogue && !dialogue.length == 0)this.currentDialogue = dialogue;
             }
         },
         
@@ -318,7 +318,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 this.getDefaultDialogue();
             }
             this.resourceDescriptor = null;
-            for(i= 0 ; listResource.get('items').length ; i++){
+            for(i=0 ; i<listResource.get('items').length ; i++){
                 resourceDescriptor = listResource.get('items')[i];
                 if(resourceDescriptor.getInstance().get('properties').dialogue == this.currentDialogue){
                     this.resourceDescriptor = resourceDescriptor;
@@ -398,6 +398,22 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             this.chart.destroy();
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
+            }
+        },
+        
+        // *** hack Methods *** //
+        /**
+         * if current week > max value of week value, then
+         * change the current widget to go on the "dialogue" widget.
+         */
+        goToFinalPage: function(){
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
+            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.setCurrentDialogue();
+                });
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }
         }
         
