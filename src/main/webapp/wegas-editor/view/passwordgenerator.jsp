@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8" import="org.apache.shiro.crypto.hash.Sha256Hash, org.apache.shiro.util.SimpleByteSource"%>
+<%@page contentType="text/html" pageEncoding="ISO-8859-1" import="org.apache.shiro.crypto.hash.Sha256Hash, org.apache.shiro.util.SimpleByteSource"%>
 <!DOCTYPE html>
 <%
 String salt = "sdfewtfsd324324dsfcvx";
