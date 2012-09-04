@@ -174,7 +174,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
     }
 
     @XmlTransient
-    public void saveToRepository() throws RepositoryException{
+    public void saveToRepository() throws RepositoryException {
         String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
         AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
         parent.sync();
