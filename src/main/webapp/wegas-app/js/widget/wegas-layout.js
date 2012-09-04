@@ -38,7 +38,6 @@ YUI.add('wegas-layout', function (Y) {
         },
 
         syncUI: function () {
-            console.log("SYNCUI");
             this.syncCenterNode();
             this._syncUIStdMod();
         },
