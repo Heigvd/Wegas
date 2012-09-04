@@ -546,7 +546,7 @@ img.inputEx-ListField-delButton {
 /* System messages */
 .wegas-systemmessage {
     position:absolute;
-    bottom: 25px;
+    top: 25px;
     left: 0;
     right: 0;
     z-index:4;
