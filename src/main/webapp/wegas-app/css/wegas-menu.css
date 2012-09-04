@@ -30,7 +30,7 @@
     display: block;
 }
 .wegas-menu-itemlist-horizontal > ul{
-    padding: 2px 4px 0px 1px;
+
     max-height: 0px;
     top:98%;
     transition: max-height 0.3s linear 0.2s, border-width 0.1s linear 0.3s;
@@ -50,9 +50,16 @@
     transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;
     -webkit-transition: max-width 0s linear 0.8s, opacity 0.3s linear 0.2s;*/
 }
+.wegas-menu-itemlist-horizontal > ul > li {
+    margin: 3px 3px 0px 3px;
+}
 .wegas-menu-content li:hover > ul {
     overflow:visible;
     max-height: 600px;
+    box-shadow: 4px 4px 8px black;
+
+
+
     border: 1px solid grey;
     transition: max-height 0.3s linear;
     -webkit-transition: max-height 0.3s linear;
