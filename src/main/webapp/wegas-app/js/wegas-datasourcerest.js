@@ -22,8 +22,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     GameDataSourceREST,
     DEFAULTHEADERS = {
         'Content-Type': 'application/json; charset=' + ( Y.config.charset || "utf-8" ) ,
-        'Managed-Mode': 'true',
-        "Accept-Language": Y.config.lang
+        'Managed-Mode': 'true'
     };
 
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
@@ -107,7 +106,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             } else {
                 for (i = 0; i < response.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
                     e.response.entity = response.get("entities")[i];
-                    if (Y.Lang.isObject(e.response.entity)) {
+                    if (Lang.isObject(e.response.entity)) {
                         this.updateCache(e.cfg.method, e.response.entity);
                     }
                 }
@@ -562,8 +561,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
 
     /**
-         * FIXME We redefine this so we can use a "." selector and a "@..." field name
-         */
+     * FIXME We redefine this so we can use a "." selector and a "@..." field name
+     */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],
@@ -617,7 +616,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         });
 
         // Support for POST transactions
-        if(Y.Lang.isString(request)) {
+        if(Lang.isString(request)) {
             //if(cfg.method && (cfg.method.toUpperCase() === "POST")) {
             //    cfg.data = cfg.data ? cfg.data+request : request;
             //}
