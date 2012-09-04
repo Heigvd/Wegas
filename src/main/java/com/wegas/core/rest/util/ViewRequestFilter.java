@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -17,6 +17,7 @@ import com.wegas.core.ejb.RequestManagerFacade;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +45,13 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
     public ContainerRequest filter(ContainerRequest cr) {
         String firstPathSeg = cr.getPathSegments().get(0).getPath();
         RequestManagerFacade rmf = RequestManagerFacade.lookup();
-        if(Boolean.parseBoolean(cr.getHeaderValue("lang"))){
+        if(cr.getHeaderValue("lang")!=null && !cr.getHeaderValue("lang").isEmpty()){
             rmf.setResourceBundle(new Locale(cr.getHeaderValue("lang")));
         }
-        else{
+        else if(cr.getHeaderValue("Accept-Language")!=null && !cr.getHeaderValue("Accept-Language").isEmpty()){
             rmf.setResourceBundle(new Locale(cr.getHeaderValue("Accept-Language")));
         }
+        else rmf.setResourceBundle(Locale.getDefault());
         
         
         String newUri = cr.getRequestUri().toString();

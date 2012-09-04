@@ -1,11 +1,9 @@
 package com.wegas.core.security.realm;
 
-import com.wegas.core.ejb.RequestManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.inject.Inject;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -45,8 +43,6 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
      * 
      */
     protected String jndiDataSourceName;
-    @Inject
-    private RequestManager requestManager;
     /**
      * 
      */
@@ -124,7 +120,6 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
 
         if (username == null) {
             log.debug("Username is null.");
-            log.debug("test : "+requestManager.getResourceBundle().getString("folder"));
             return null;
         }
 

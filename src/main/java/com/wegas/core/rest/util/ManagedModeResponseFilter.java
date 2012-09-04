@@ -29,14 +29,13 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class ManagedModeResponseFilter implements ContainerResponseFilter, ResourceFilter {
-
+    
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
 
     /**
      * This method encapsulates a Jersey response's entities in a ServerResponse
      * and add server side events.
-     *
-     *
+     * 
      * @param request
      * @param response
      * @return

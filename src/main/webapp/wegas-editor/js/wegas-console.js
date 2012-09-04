@@ -4,7 +4,7 @@
 
 YUI.add('wegas-console', function (Y) {
     var CONTENTBOX = 'contentBox',
-        Console;
+    Console;
 
     Console = Y.Base.create("wegas-console", Y.Widget, [Y.WidgetChild,  Y.Wegas.Widget], {
 
@@ -14,8 +14,10 @@ YUI.add('wegas-console', function (Y) {
         },
 
         renderUI: function () {
+            this.plug( Y.Plugin.WidgetToolbar );
+
             var cb = this.get(CONTENTBOX),
-                el = this.get("parent").get('toolbarNode');
+            el = this.toolbar.get( 'header' );
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb,
