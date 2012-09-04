@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,6 +9,7 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.sun.faces.util.Util;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -19,6 +20,7 @@ import com.wegas.core.persistence.game.Player;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -82,6 +84,7 @@ public class GameController implements Serializable {
     @PostConstruct
     public void init() throws IOException {
         final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
             currentPlayer = playerFacade.find(this.getPlayerId());
         } else if (this.gameModelId != null) {                                  // If we only have a gameModel id, we select the 1st player of the 1st team of the 1st game
@@ -102,6 +105,42 @@ public class GameController implements Serializable {
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             externalContext.dispatch("/wegas-app/view/error/gameerror.xhtml");
         }
+    }
+
+    public Locale calculateLocale(FacesContext context) {
+        Util.notNull("context", context);
+        Locale locale;
+
+//        if (context.getViewRoot() != null) {
+        locale = context.getViewRoot().getLocale();
+//        }
+
+//        if (locale != null) {
+        return locale;
+//        }
+//        /**
+//         * *******************
+//         */
+//        // determine the locales that are acceptable to the client based on the
+//        // Accept-Language header and the find the best match among the
+//        // supported locales specified by the client.
+//        Iterator<Locale> locales = context.getExternalContext().getRequestLocales();
+//        while (locales.hasNext()) {
+//            Locale perf = locales.next();
+//            locale = findMatch(context, perf);
+////            if (locale != null) {
+////                break;
+////            }
+//        }
+//        // no match is found.
+//        if (locale == null) {
+//            if (context.getApplication().getDefaultLocale() == null) {
+//                locale = Locale.getDefault();
+//            } else {
+//                locale = context.getApplication().getDefaultLocale();
+//            }
+//        }
+//        return locale;
     }
 
     /**
