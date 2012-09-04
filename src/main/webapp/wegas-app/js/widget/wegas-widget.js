@@ -28,12 +28,13 @@ YUI.add('wegas-widget', function (Y) {
         if(this.timeout){
             this.timeout.cancel();
         }
+        this.closeHandler.detach();
         var anim = new Y.Anim({
             node: this,
             to: {
                 opacity: 0
             },
-            duration: 0.2
+            duration: 10
         });
         anim.on( "end", this.remove, this, true );
         anim.run();
@@ -76,7 +77,7 @@ YUI.add('wegas-widget', function (Y) {
             message = Y.Node.create("<div class='" + (LEVEL[level] ? LEVEL[level] : "") + "'><span class='icon'></span><span class='content'>"+txt+"</span><span class='close'></span></div>");
             msgNode.append(message);
 
-            message.one(".close").once( "click", destroySelf, message );
+            message.closeHandler = message.one(".close").once( "click", destroySelf, message );
 
             if ( level === "success" && !timeout ) {                            // @hack successful messages disapear automatically
                 timeout = 3000;
