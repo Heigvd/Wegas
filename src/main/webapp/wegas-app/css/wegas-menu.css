@@ -56,7 +56,7 @@
 .wegas-menu-content li:hover > ul {
     overflow:visible;
     max-height: 600px;
-    box-shadow: 4px 4px 8px black;
+    box-shadow: 1px 2px 4px #6D6D6D;
 
 
 

@@ -188,7 +188,7 @@ img.inputEx-ListField-delButton {
     padding: 2px 0;
     border-bottom: 1px solid lightgray;
     width: 100%;
-    box-shadow: 0px 2px 5px grey;
+    box-shadow: 1px 2px 4px #6D6D6D;
     background:white;
     z-index: 23;
 }
@@ -269,7 +269,7 @@ img.inputEx-ListField-delButton {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
 }
 .yui3-skin-sam .wegas-icon-newfile {
-    url(../images/wegas-editor-sprite.png) no-repeat 1px -1210px,
+    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1210px,
     url("../images/wegas-icon-files.png") no-repeat 1px -228px
 }
 .yui3-skin-sam .wegas-icon-newdir {
@@ -556,7 +556,7 @@ img.inputEx-ListField-delButton {
     padding: 10px 10px 0 10px;
     background: rgba(110, 110, 110, 0.8);
     border-radius: 10px;
-    box-shadow: 0px 2px 5px grey;
+    box-shadow: 1px 2px 4px #6D6D6D;
     border: 1px solid #6E6E6E;
     color: white;
     text-shadow: 1px 1px 2px lightgray;
