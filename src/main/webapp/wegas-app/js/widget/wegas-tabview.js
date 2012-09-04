@@ -12,20 +12,19 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-tabview', function (Y) {
+YUI.add( 'wegas-tabview', function ( Y ) {
     "use strict";
 
-    var Lang = Y.Lang,
-    TabView, Tab;
+    var TabView, Tab;
 
-    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
+    TabView = Y.Base.create( "tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
             TabView.superclass.bindUI.apply(this, arguments);
 
             // @fixme we notify the editor for any change, so widget can be updated
             // this should be done through wiget-parent, widget-child event bubbling
-            this.after("selectionChange", function() {
-                Y.Wegas.app.fire("layout:resize");
+            this.after( "selectionChange", function () {
+                Y.Wegas.app.fire( "layout:resize" );
             });
         }
     }, {
@@ -35,22 +34,22 @@ YUI.add('wegas-tabview', function (Y) {
         tabs: {},
 
         getTab: function (id) {
-            return TabView.tabs[id];
+            return TabView.tabs[ id ];
         },
-        createTab: function (id, tabViewSelector, tabCfg) {
-            if (!TabView.tabs[id]) {                                            // If the tab does not exist,
-                var tabView = Y.Widget.getByNode(tabViewSelector);              // Look for the parent
+        createTab: function ( id, tabViewSelector, tabCfg ) {
+            if ( !TabView.tabs[ id ] ) {                                        // If the tab does not exist,
+                var tabView = Y.Widget.getByNode( tabViewSelector );            // Look for the parent
                 tabCfg = tabCfg || {};
                 Y.mix(tabCfg, {
                     type: "Tab",
                     label: id,
                     id: id
                 });
-                tabView.add(tabCfg);                                            // Instantiate a new tab
+                tabView.add( tabCfg );                                          // Instantiate a new tab
             } else {                                                            // Otherwise,
-                TabView.tabs[id].setAttrs(tabCfg)                               // update the tab config
+                TabView.tabs[id].setAttrs( tabCfg )                             // update the tab config
             }
-            return TabView.tabs[id];
+            return TabView.tabs[ id ];
         },
         /**
          *  Helper function
