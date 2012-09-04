@@ -376,16 +376,15 @@ YUI.add('wegas-fileexplorer', function (Y) {
                                 tooltip:"Add a file",
                                 data:"add file"
                             }]
+                        }, {
+                            cssClass:"wegas-icon-edit",
+                            tooltip:"Edit",
+                            data:"edit"
                         },{
                             label:"",
                             cssClass:"wegas-icon-delete",
                             tooltip:"Delete directory",
                             data:"delete"
-                        },
-                        {
-                            cssClass:"wegas-icon-edit",
-                            tooltip:"Edit",
-                            data:"edit"
                         }],
                         horizontal: true,
                         params:{
@@ -399,14 +398,14 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     label: data.name + " [" + data.mimeType + "]",
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
+                            cssClass:"wegas-icon-edit",
+                            tooltip:"Edit",
+                            data:"edit"
+                        },{
                             label:"",
                             cssClass:"wegas-icon-delete",
                             tooltip:"Delete file",
                             data:"delete"
-                        },{
-                            cssClass:"wegas-icon-edit",
-                            tooltip:"Edit",
-                            data:"edit"
                         }],
                         horizontal: true,
                         params:{

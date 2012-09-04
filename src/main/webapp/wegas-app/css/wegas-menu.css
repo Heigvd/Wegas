@@ -30,6 +30,7 @@
     display: block;
 }
 .wegas-menu-itemlist-horizontal > ul{
+    padding: 2px 4px 0px 1px;
     max-height: 0px;
     top:98%;
     transition: max-height 0.3s linear 0.2s, border-width 0.1s linear 0.3s;
@@ -52,7 +53,6 @@
 .wegas-menu-content li:hover > ul {
     overflow:visible;
     max-height: 600px;
-    box-shadow: 4px 4px 8px black;
     border: 1px solid grey;
     transition: max-height 0.3s linear;
     -webkit-transition: max-height 0.3s linear;
@@ -65,5 +65,5 @@
     display:inline-block;
     width:18px;
     height: 21px;
-    margin: 2px 2px -4px 0;
+    margin: 2px 2px -3px 0;
 }

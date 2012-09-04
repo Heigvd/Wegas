@@ -42,7 +42,7 @@
 
 .yui3-treenode-loading > div > .yui3-treenode-content-icon,
 .yui3-treenode-loading > div > .yui3-treeleaf-content-icon{
-    background-image: url("../images/loading.gif") !important;
+    background-image: url("../../wegas-app/images/loading-small.gif") !important;
     background-repeat: no-repeat !important;
     background-position: bottom left !important;
 }
