@@ -37,9 +37,13 @@ YUI.add('wegas-app', function (Y) {
                 this.dataSources[i].destroy();
             }
         },
+
         render: function () {
 
-            Y.io.header("Accept-Language", Y.config.lang);                      // Set the language for all requests
+            Y.io.header( "Accept-Language", Y.config.lang);                      // Set the language for all requests
+            this.on( "render", function () {
+                Y.one( "body" ).removeClass( "wegas-widget-loading" );
+            });
 
             this.initDataSources();
             this.initCSS();
