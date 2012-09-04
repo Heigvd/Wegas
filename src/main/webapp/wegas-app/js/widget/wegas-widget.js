@@ -16,7 +16,20 @@ YUI.add('wegas-widget', function (Y) {
     "use strict";
 
     var Lang = Y.Lang,
-    CONTENTBOX = 'contentBox';
+    CONTENTBOX = 'contentBox',
+    BOUNDING_BOX = 'boundingBox',
+    LEVEL = {
+        "warn": "warn",
+        "error": "error",
+        "info": "info",
+        "success": "success"
+    },
+    destroySelf = function(){
+        if(this.timeout){
+            this.timeout.cancel();
+        }
+        this.remove(true);
+    };
 
     function Widget() {
         this.after('render', function () {
@@ -32,88 +45,42 @@ YUI.add('wegas-widget', function (Y) {
     Y.mix(Widget.prototype, {
 
         showOverlay: function(){
-            this.get( "contentBox" ).prepend( '<div class="wegas-widget-loading"></div>' );
-        //this.get( "contentBox" ).addClass( "wegas-widget-loading" );
-        //var bb = this.get('boundingBox');
-        //if (!this._overlay) {
-        //    this._overlay = Y.Node.create('<div class="yui3-redcms-loading-overlay"><div></div></div>');
-        //    bb.prepend(this._overlay);
-        //}
-        //this._overlay.one('div').setStyle('height', bb.getComputedStyle('height'));
-        //this._overlay.show();
+            this.get( BOUNDING_BOX ).prepend( '<div class="wegas-widget-loading"></div>' );
         },
 
         hideOverlay: function(){
-            this.get( "contentBox" ).one( ".wegas-widget-loading" ).remove();
-        //this._overlay.hide();
+            this.get( BOUNDING_BOX ).one( ".wegas-widget-loading" ).remove();
         },
 
         emptyMessage: function () {						// Form msgs logic
-            var msgNode = this.get(CONTENTBOX).one('.wegas-systemmessage');
+            var msgNode = this.get(BOUNDING_BOX).one('.wegas-systemmessage');
             if ( !msgNode ) {
                 return;
             }
-            msgNode.removeClass("info");
-            msgNode.removeClass("warn");
-            msgNode.removeClass("error");
-            msgNode.removeClass("success");
-            msgNode.one('.content').setContent();
+            msgNode.empty();
         },
 
         showMessage: function ( level, txt, timeout ) {
-            var msgNode = this.getMessageNode();
-            this.emptyMessage();
-            msgNode.addClass(level);
-            msgNode.one('.content').setContent(txt);
+            var msgNode = this.getMessageNode(),
+            message = Y.Node.create("<div class='" + (LEVEL[level] ? LEVEL[level] : "") + "'><span class='icon'></span><span class='content'>"+txt+"</span><span class='close wegas-icon-delete'></span></div>");
+            msgNode.append(message);
+
+            message.one(".close").once("click", destroySelf, message);
 
             if ( timeout ) {
-                Y.later( timeout, this, this.emptyMessage);
+                message.timeout = Y.later( timeout, message, destroySelf);
             }
-
-            //msgNode.getDOMNode().scrollIntoView();
         },
 
         getMessageNode: function () {
-            var msgNode = this.get( CONTENTBOX ).one( '.wegas-systemmessage' );
+            var msgNode = this.get( BOUNDING_BOX ).one( '.wegas-systemmessage' );
             if ( !msgNode ) {
-                this.get( CONTENTBOX ).prepend( '<div class="wegas-systemmessage"><span class="icon"></span><span class="content"></span></div>' );
-                return this.get( CONTENTBOX ).one( '.wegas-systemmessage' );
+                this.get( BOUNDING_BOX ).append( '<div class="wegas-systemmessage"></div>' );
+                return this.get( BOUNDING_BOX ).one( '.wegas-systemmessage' );
             }
             return msgNode;
         }
 
-
-    //scrollToNode: function ( node ) {
-    //    return ;
-    //
-    //    var winH, docH;
-    //    if(this.anim && this.anim.get('running')) {
-    //        this.anim.pause();
-    //    }
-    //
-    //    var parent = node.get( "parent" );
-    //    while (parent ) {
-    //        console.log(parent);
-    //        parent = node.get( "parent" );
-    //    }
-    //
-    //    // record current window conditions
-    //    winH = Y.DOM.winHeight();
-    //    docH = Y.DOM.docHeight();
-    //    this.anim = new Y.Anim({
-    //        node: this.get('scroller'),
-    //        to: { // can't scoll to target if it's beyond the doc height - window height
-    //            scroll : [Y.DOM.docScrollX(), Math.min(docH - winH, targetY)]
-    //        },
-    //        duration: this.get('duration'),
-    //        easing: this.get('easing'),
-    //        on : {
-    //            end : function() {
-    //                location.hash = hash;
-    //            }
-    //        }
-    //    }).run();
-    //},
     });
 
     Y.mix(Widget, {
