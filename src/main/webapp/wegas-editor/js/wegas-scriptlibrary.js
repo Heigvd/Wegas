@@ -66,6 +66,8 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
             this.saveButton.set("disabled", isEmpty);
             this.deleteButton.set("disabled", isEmpty);
+
+            this.hideOverlay();
         },
 
         // *** Private Methods *** //
@@ -103,6 +105,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                 label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
                 on: {
                     click: Y.bind(function () {
+                        this.showOverlay();
                         Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
                             request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.selectField.getValue(),
                             cfg: {
@@ -118,6 +121,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                 label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
                 on: {
                     click: Y.bind(function () {
+                        this.showOverlay();
                         Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
                             request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
                             cfg: {
