@@ -166,11 +166,11 @@ public class ContentConnector {
     }
 
     private void repositoryLookup() throws RepositoryException {
-        try {
-            this.repo = (Repository) new InitialContext().lookup(WFSConfig.jndiRepo);
-        } catch (NamingException ex) {
-            logger.error("Repository initialization failed for [{}], not found", WFSConfig.jndiRepo);
-            throw new RepositoryException("JNDI lookup failed");
+
+        this.repo = (Repository) new JackrabbitConnector().getRepo();
+        if (this.repo == null) {
+            logger.error("Repository initialization failed ");
+            throw new RepositoryException("JCR initialization failed");
         }
         try {
             session = repo.login(admin, this.workspace);
