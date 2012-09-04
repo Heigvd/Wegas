@@ -545,7 +545,6 @@ img.inputEx-ListField-delButton {
 
 /* System messages */
 .wegas-systemmessage {
-    padding: 20px;
     position:absolute;
     bottom: 25px;
     left: 0;
@@ -553,7 +552,7 @@ img.inputEx-ListField-delButton {
     z-index:4;
 }
 .wegas-systemmessage > div{
-    margin: 5px;
+    margin: 25px;
     padding: 10px 10px 0 10px;
     background: rgba(110, 110, 110, 0.8);
     border-radius: 10px;
