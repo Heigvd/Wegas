@@ -39,7 +39,7 @@ public class RequestController implements Serializable {
      */
     @PostConstruct
     public void init() throws IOException {
-        if (this.lang != null) {                                                // If a language parameter is provided, it overrides the Accept-Language header
+        if (this.lang != null) { // If a language parameter is provided, it overrides the Accept-Language header
             FacesContext.getCurrentInstance().getViewRoot().setLocale(new Locale(this.lang));
         }
     }
