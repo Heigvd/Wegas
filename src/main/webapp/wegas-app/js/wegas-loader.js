@@ -41,7 +41,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-datasourcerest': {
                         path: 'wegas-app/js/wegas-datasourcerest-min.js',
-                        requires: ['plugin', 'json', 'array-extras', 'io-base', "datasource-io", "datasource-jsonschema", "datasource-cache"]
+                        requires: ['plugin', 'json', 'array-extras', 'io-base',
+                        "datasource-io", "datasource-jsonschema", "datasource-cache"]
                     },
                     'wegas-scripteval':{
                         path:'wegas-app/js/wegas-scripteval-min.js',
@@ -77,7 +78,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: [ 'wegas-widget', 'wegas-widgetmenu', 'wegas-action', 'wegas-tooltip', 'plugin', 'button' ],
+                        requires: [ 'wegas-widget', 'wegas-widgetmenu',
+                        'wegas-action', 'wegas-tooltip', 'plugin', 'button' ],
                         ix_provides: 'Button'
                     },
                     'wegas-action': {
@@ -86,7 +88,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-tooltip': {
                         path: 'wegas-app/js/widget/wegas-tooltip-min.js',
-                        requires: [ "event-mouseenter", "widget", "widget-position", "widget-stack" ],
+                        requires: [ "event-mouseenter", "widget", "widget-stack",
+                        "widget-position", 'widget-position-constrain' ],
                         ix_provides: 'Button'
                     },
 
@@ -96,7 +99,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
-                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize', 'resize'],
+                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize', 'resize' ],
                         ix_provides: 'Layout'
                     },
                     'wegas-list': {
@@ -143,18 +146,21 @@ YUI().use(function (Y) {
                     },
                     'wegas-gallery': {
                         path:'wegas-app/js/widget/wegas-gallery-min.js',
-                        requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base', 'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
+                        requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
+                        'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
                         ix_provides: "WegasGallery"
                     },
 
                     /** Inputex Fields **/
                     'wegas-inputex': {
                         path: 'wegas-app/js/widget/wegas-inputex-min.js',
-                        requires: [ 'inputex', 'inputex-field', 'inputex-string', 'inputex-keyvalue', 'inputex-select' ]
+                        requires: [ 'inputex', 'inputex-field', 'inputex-string',
+                        'inputex-keyvalue', 'inputex-select' ]
                     },
                     'wegas-inputex-rte': {
                         path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',
-                        requires: ['inputex-field', 'yui2-editor', 'panel', 'wegas-fileexplorer' ],
+                        requires: ['inputex-field', 'yui2-editor', 'panel',
+                        'wegas-fileexplorer' ],
                         ix_provides: 'html'
                     },
                     'wegas-inputex-hashlist': {
@@ -165,13 +171,13 @@ YUI().use(function (Y) {
                     'wegas-script': {
                         path: 'wegas-app/js/widget/wegas-script-min.js',
                         requires: [ 'inputex-textarea' ]
-                        //ix_provides: 'script'
+                    //ix_provides: 'script'
                     },
                     'wegas-script-wysiwyg': {
                         path: 'wegas-app/js/widget/wegas-script-wysiwyg-min.js',
                         requires: [ 'wegas-script', 'wegas-button', 'wegas-inputex',
-                            'inputex', 'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
-                            'esprima' /*, 'escodegen'*/ ],
+                        'inputex', 'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
+                        'esprima' /*, 'escodegen'*/ ],
                         ix_provides: 'script'
                     },
                     'wegas-inputex-url': {
@@ -232,7 +238,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
-                        requires: [ 'wegas-button',  'wegas-widgetmenu' ],
+                        requires: [ 'wegas-button',  'wegas-widgetmenu', 'wegas-widgettoolbar' ],
                         ix_provides: 'SelectPlayerButton'
                     },
                     'wegas-csseditor': {
@@ -271,11 +277,13 @@ YUI().use(function (Y) {
                     },
                     'wegas-fileexplorercss':{
                         path: 'wegas-editor/css/wegas-fileexplorer.css',
-                        type:'css'
+                        type:'css',
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
-                        requires: ['treeview', 'uploader-html5', 'wegas-menu', 'wegas-progressbar', 'wegas-fileexplorercss', 'wegas-content-entities'],
+                        requires: ['treeview', 'uploader-html5', 'wegas-menu',
+                        'wegas-progressbar', 'wegas-fileexplorercss',
+                        'wegas-content-entities', 'wegas-tooltip' ],
                         ix_provides: "FileExplorer"
                     },
                     'wegas-progressbar': {
@@ -285,7 +293,9 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer-min.js',
-                        requires: ['dd-constrain','wegas-datasourcerest','wegas-statemachineviewercss', 'jsplumb-yui-all', 'button', 'wegas-statemachine-entities'],
+                        requires: [ 'dd-constrain','wegas-datasourcerest',
+                        'wegas-statemachineviewercss', 'jsplumb-yui-all', 'button',
+                        'wegas-statemachine-entities'],
                         ix_provides: 'StateMachineViewer'
                     },
                     'wegas-statemachineviewercss': {
@@ -317,7 +327,8 @@ YUI().use(function (Y) {
                     /**Leaderway**/
                     'wegas-leaderway': {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
-                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist', 'wegas-leaderway-score', 'wegas-leaderway-dialogue']/*,
+                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist',
+                        'wegas-leaderway-score', 'wegas-leaderway-dialogue']/*,
                         ix_provides: "HRList"*/
                     },
                     'wegas-leaderway-folder':{

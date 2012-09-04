@@ -129,7 +129,6 @@ YUI.add('wegas-mcqtabview', function (Y) {
          *
          */
         destructor: function () {
-            this.tabView.destroy();
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }

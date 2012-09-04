@@ -63,7 +63,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             Y.log('renderUI()', 'log', "Wegas.FileExplorer");
             this.treeView = new Y.TreeView({
                 srcNode: cb,
-                visibleRightWidget:true
+                visibleRightWidget: true
             });
             this.rootNode = new Y.TreeNode({
                 collapsed: false,
@@ -104,9 +104,27 @@ YUI.add('wegas-fileexplorer', function (Y) {
             this.treeView.render();
             this.fileUploader.render(this.get(CONTENT_BOX));
             this.fileUploader.hide();
+
+            this.tooltip = new Y.Wegas.Tooltip({                                //
+                delegate: this.get("contentBox"),
+                delegateSelect: ".yui3-treeleaf-content-label",
+                render: true,
+                autoHideDelay : 20000
+            });
         },
 
         bindUI: function () {
+            this.tooltip.on( "triggerEnter" , function ( e ) {                  // The tooltip content is set on the fly based on the node
+                var leaf = Y.Widget.getByNode( e.node ), ret = "";
+
+                if ( leaf.data.mimeType.indexOf("image") > -1 ) {
+                    ret += '<img src="' + this.getFullPath( leaf.path ) + '" /><br />';
+                }
+                ret += leaf.data.mimeType + "<br />";
+                ret += FileExplorer.formatFileSize( leaf.data.bytes ) + "<br /";
+                this.tooltip.setTriggerContent( ret )
+            }, this );
+
             this.treeView.get(CONTENT_BOX).delegate("drop", function(e){
 
                 var node = Y.Widget.getByNode(e.currentTarget),
@@ -395,7 +413,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 });
             } else {
                 conf = {
-                    label: data.name + " [" + data.mimeType + "]",
+                    label: data.name /*+ " [" + data.mimeType + "]"*/,
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
                             cssClass:"wegas-icon-edit",
@@ -414,11 +432,15 @@ YUI.add('wegas-fileexplorer', function (Y) {
                         }
                     })
                 };
-                if(data.mimeType.indexOf("image") > -1){
-                    conf.iconCSS = "image-icon";
-                    conf.label = data.name;
-                }
+
+                conf.iconCSS = "wegas-icon-" + data.mimeType.replace("/", '-') + " wegas-icon-file";
+
+                //if(data.mimeType.indexOf("image") > -1){
+                // conf.iconCSS += " image-icon";
+                //conf.label = data.name;
+                //}
                 childNode = new Y.TreeLeaf(conf);
+                childNode.data = data;
             }
 
             childNode.path = data.path + (data.path.match(".*/$") ? "" : "/") + data.name;
@@ -471,7 +493,11 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         openFile: function (e, path){
-            window.open(Y.Wegas.app.get("base") + "rest/File/GameModelId/" + this.gameModelId + "/read" + path);
+            window.open( this.getFullPath( path ) );
+        },
+
+        getFullPath: function ( relativePath ) {
+            return Y.Wegas.app.get("base") + "rest/File/GameModelId/" + this.gameModelId + "/read" + relativePath;
         },
 
         isProcessing: function(node, index){
@@ -627,14 +653,20 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 }
 
             }
+        },
+
+        formatFileSize: function ( bytes ) {
+            var mo = 1024 * 1024;
+            if ( bytes > mo ) {
+                return Math.round( bytes / mo ) + " MB";
+
+            } else if ( bytes > 1024 ) {
+                return Math.round( bytes / 1024 ) + " KB";
+            } else {
+                return bytes + " B";
+            }
         }
     });
 
-
-
-
-
-
     Y.namespace('Wegas').FileExplorer = FileExplorer;
-
 });
