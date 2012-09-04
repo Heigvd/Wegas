@@ -75,6 +75,10 @@ public class RequestManagerFacade {
         }
     }
     
+    public ResourceBundle getResourceBundle(){
+        return this.requestManager.getResourceBundle();
+    }
+    
     public void setResourceBundle(Locale lang){
         this.requestManager.setResourceBundle(lang);
     }

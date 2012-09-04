@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -7,33 +17,33 @@ YUI.add('wegas-layout', function (Y) {
 
     var Layout;
 
-    Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.WidgetStdMod], {
+    Layout = Y.Base.create("wegas-layout", Y.Widget, [ Y.Wegas.Widget, Y.WidgetChild, Y.WidgetStdMod ], {
 
         // ** Lifecycle Methods ** //
 
         renderUI: function () {
-            this.after("render", this.onRender);
-        },
-
-        bindUI: function () {
-            //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
-            Y.on("windowresize", Y.bind(this._syncUIStdMod, this));
-        },
-
-        syncUI: function () {
-            this.syncCenterNode();
-        },
-
-
-        // ** Private Methods ** //
-
-        onRender: function () {
             this.renderPosition('top');
             this.renderPosition('left');
             this.renderPosition('center');
             this.renderPosition('right');
-      //      this.renderPosition('bottom');
+            //this.renderPosition('bottom');
+
+            this._syncUIStdMod();
         },
+
+        bindUI: function () {
+            Y.on( "windowresize", Y.bind( this.syncUI, this ) );                // Sync the layout whenever the windows is resized
+            //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
+            Y.on( 'domready', this.syncUI, this);
+        },
+
+        syncUI: function () {
+            console.log("SYNCUI");
+            this.syncCenterNode();
+            this._syncUIStdMod();
+        },
+
+        // ** Private Methods ** //
 
         renderPosition: function (position) {
 
@@ -65,16 +75,16 @@ YUI.add('wegas-layout', function (Y) {
                     handles: 'l'
                 });
                 this.rightResize.on("resize", this.syncCenterNode, this);
-                //this.rightResize.plug(Y.Plugin.ResizeConstrained, {
-                //minWidth: 200
-                // maxWidth: 300,
-                //});
+            //this.rightResize.plug(Y.Plugin.ResizeConstrained, {
+            //minWidth: 200
+            // maxWidth: 300,
+            //});
             }
-            for (i = 0; i < positionCfg.children.length; i += 1) {
+            for (i = 0; i < positionCfg.children.length; i = i + 1) {
                 cWidget = Y.Wegas.Widget.create(positionCfg.children[i]);
+                // cWidget.after( "render", this.syncUI, this );
                 cWidget.render(target);
             }
-            this._syncUIStdMod();
         },
 
         /**
@@ -82,10 +92,21 @@ YUI.add('wegas-layout', function (Y) {
          */
         syncCenterNode: function () {
             var bodyNode = this.getStdModNode("body"),
-                centerNode = bodyNode.one(".wegas-layout-center");
+            leftNode = bodyNode.one( ".wegas-layout-left" ),
+            rightNode = bodyNode.one( ".wegas-layout-right" );
 
-            centerNode.setStyle("left", bodyNode.one(".wegas-layout-left").getStyle("width"));
-            centerNode.setStyle("right", bodyNode.one(".wegas-layout-right").getStyle("width"));
+            leftNode.setStyles( {
+                right: "auto",
+                left: "0px"
+            });
+            bodyNode.one(".wegas-layout-center").setStyles({
+                "left": leftNode.getStyle("width"),
+                "right": rightNode.getStyle("width")
+            });
+            rightNode.setStyles( {
+                right: "0px",
+                left: "auto"
+            });
         },
 
         /**
@@ -101,6 +122,7 @@ YUI.add('wegas-layout', function (Y) {
         _getStdModTemplate : function(section) {
             return Y.Node.create(Layout.TEMPLATES[section], this._stdModNode.get("ownerDocument"));
         }
+
     }, {
         ATTRS: {
             left: {},
