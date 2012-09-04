@@ -18,7 +18,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
     CONTENT_BOX = 'contentBox',
     BOUNDING_BOX = 'boundingBox',
     DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=ISO-8859-1'
     };
 
     StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {

@@ -35,7 +35,7 @@ YUI.add('wegas-scripteval', function (Y) {
                 url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
                 response = Y.io(url,{
                     headers:{
-                        'Content-Type': 'application/json; charset=utf-8',
+                        'Content-Type': 'application/json; charset=iso-8859-1',
                         'Managed-Mode': 'false'
                     },
                     sync:true,
