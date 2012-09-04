@@ -17,16 +17,17 @@ input[type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
 }
+/* Style for the body element, before loading */
 
 /* Y.Wegas.Widget extension styles */
 .wegas-widget-loading {
-   background: rgba(110, 110, 110, 0.8) url(../images/loading.gif) center center no-repeat;
-   position: absolute;
-   top: 0;
-   bottom: 0;
-   left: 0;
-   right: 0;
-   z-index: 2;
+    background: rgba(255, 255, 255, 0.8) url(../images/loading.gif) center center no-repeat;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
 }
 
 /* YUI3 Buttons Styles */
