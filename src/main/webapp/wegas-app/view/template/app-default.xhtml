@@ -8,7 +8,7 @@
     <f:loadBundle basename="wegas-app.wegasapp" var="wegasConfig"/>
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta http-equiv="Content-Language" content="#{requestController.locale}" />
+        <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
         <title><ui:insert name="title">#{wegasAppBundle.LobbyPage_Title}</ui:insert></title>
         <meta name="description" content="" />
         <meta name="keywords" content="" />
@@ -64,7 +64,7 @@
             // the YUI(cfg) function. Can be overridden by the cfg parameter.
             YUI_config.useBrowserConsole = true;
             //YUI_config.charset = 'utf-8';
-            YUI_config.lang = "#{requestController.locale}";
+            YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
             YUI_config.insertBefore = 'customstyles';
             YUI_config.throwFail = true;
             YUI_config.debug = true;
@@ -87,7 +87,8 @@
             YUI_config.groups.inputex.base = base + '/lib/inputex/build/';	// Set up inputex path
             YUI_config.groups.inputex.comboBase = comboBase;
             YUI_config.groups.inputex.root = "/lib/inputex/build/";
-            YUI_config.groups.inputex.combine = true;
+            YUI_config.groups.inputex.combine = false;
+            YUI_config.groups.inputex.filter = "raw";
 
             YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
             YUI_config.groups.ace.comboBase = comboBase;
