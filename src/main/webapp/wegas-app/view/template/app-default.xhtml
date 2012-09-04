@@ -7,8 +7,8 @@
 
     <f:loadBundle basename="wegas-app.wegasapp" var="wegasConfig"/>
     <h:head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta http-equiv="Content-Language" content="#{requestController.locale}" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
         <title><ui:insert name="title">#{wegasAppBundle.LobbyPage_Title}</ui:insert></title>
         <meta name="description" content="" />
         <meta name="keywords" content="" />
@@ -19,12 +19,11 @@
         <meta name="revisit-after" content="30 days" />
         <link rel="icon" type="image/ico" href="/favicon.ico" />
 
+        <!-- YUI -->
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
-            <!-- YUI -->
             <!-- CDN  -->
             <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.6.0/build/cssfonts/fonts-min.css&amp;3.6.0/build/cssreset/reset-min.css&amp;3.6.0/build/cssgrids/grids-min.css&amp;3.6.0/build/widget-base/assets/skins/sam/widget-base.css" />
         </ui:fragment>
-
         <ui:fragment rendered="#{wegasConfig.assets_local}">
             <!-- Self hosted -->
             <link rel="stylesheet" type="text/css" href="/Wegas/rest/combo?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
@@ -39,7 +38,7 @@
 
     </h:head>
 
-    <h:body class="yui3-skin-sam yui-skin-sam">
+    <h:body class="yui3-skin-sam yui-skin-sam wegas-widget-loading">
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
             <!-- YUI Base -->
             <!-- CDN -->
@@ -57,14 +56,14 @@
         <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
 
         <script type="text/javascript">
-            var base = "/Wegas",
+            var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
             comboBase = base + '/rest/combo?';
 
             // Set up some YUI3 default parameters. Will be use for every call to
             // the YUI(cfg) function. Can be overridden by the cfg parameter.
             YUI_config.useBrowserConsole = true;
             //YUI_config.charset = 'utf-8';
-            YUI_config.lang = "#{requestController.locale}";
+            YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
             YUI_config.insertBefore = 'customstyles';
             YUI_config.throwFail = true;
             YUI_config.debug = true;
@@ -101,8 +100,8 @@
             YUI_config.groups.jsplumb.base = base + YUI_config.groups.jsplumb.root; // Set up jsplumb path
             YUI_config.groups.jsplumb.comboBase = comboBase;
 
-            <ui:fragment rendered="#{wegasConfig.assets_local}">
-            YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+                <ui:fragment rendered="#{wegasConfig.assets_local}">
+                YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
             YUI_config.filter = "min";
             YUI_config.combine = true;
             YUI_config.root = "/lib/yui3/build/"
@@ -125,12 +124,7 @@
                 }
 
             };
-            </ui:fragment>
-
-            /**<!--
-                base : "request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()/>",
-                    { name: 'email', label:'E-mail', required: true, regexp: /^[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+(?:\.[a-z0-9!\#\$%&'\*\-\/=\?\+\-\^_`\{\|\}~]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,6}$/i },
-            -->**/
+                </ui:fragment>
         </script>
 
         <ui:insert name="body">
@@ -140,7 +134,6 @@
                     //filters: { event: 'debug' }
                 }).use('wegas-app', function ( Y ) {
                     var cfg = {
-                        base : "/Wegas/",
                         layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                         debug : true,
                         currentGameModel: #{gameController.currentGameModel.id},

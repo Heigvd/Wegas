@@ -329,6 +329,12 @@ img.inputEx-ListField-delButton {
     background: url(../images/wegas-editor-sprite.png) no-repeat 2px -943px;
 }
 
+/* wegas-inputex-ace styles */
+.ace_editor {
+    width: 100%;
+    height: 150px;
+}
+
 /* Console Widget Styles */
 .wegas-console div.inputEx-Field {
     float:none;
@@ -379,15 +385,22 @@ img.inputEx-ListField-delButton {
     padding:2px 10px;
     font-size:11px;
 }
+
 /* CSSEditor Styles */
-.wegas-csseditor div.inputEx-Field {
+.wegas-csseditor .inputEx-Field {
     float:none;
+    height:100%;
 }
-.wegas-csseditor,
-.wegas-csseditor .wegas-csseditor-content,
-.wegas-csseditor .inputEx-Field,
 .wegas-csseditor .inputEx-fieldWrapper {
-    height: 100%;
+    height:100%;
+    margin-bottom:0;
+}
+.wegas-csseditor .ace_editor {
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    height: auto;
 }
 
 /* Chat styles */
@@ -417,16 +430,21 @@ img.inputEx-ListField-delButton {
 }
 
 /* Scriptlibrary Styles */
-.wegas-scriptlibrary div.inputEx-Field {
+.wegas-scriptlibrary .inputEx-Field {
     float:none;
+    height:100%;
 }
-.wegas-scriptlibrary,
-.wegas-scriptlibrary .wegas-scriptlibrary-content,
-.wegas-scriptlibrary .inputEx-Field,
 .wegas-scriptlibrary .inputEx-fieldWrapper {
-    height: 100%;
+    height:100%;
+    margin-bottom:0;
 }
-
+.wegas-scriptlibrary .ace_editor {
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    height: auto;
+}
 /* YUI 2 RTE Styles */
 .yui-skin-sam .yui-editor-container {
     border: 1px solid lightgray;

@@ -39,12 +39,12 @@ YUI.add('wegas-inputex-ace', function(Y) {
 	 * Render the field using the YUI Editor widget
 	 */
         renderComponent: function () {
-            this.el = Y.Node.create('<div style="height: ' + this.options.height +';width: 100%;position: initial;">'
-                + (this.options.value ? this.options.value : "") + '</div>');
+            this.el = Y.Node.create( '<div style="">'
+                + ( this.options.value ? this.options.value : "" ) + '</div>' );
             this.fieldContainer.appendChild(this.el.getDOMNode());
-            this.fieldContainer.style["position"] = "relative";
+            //this.fieldContainer.style[ "position" ] = "relative";
 
-            this.editor = ace.edit(this.el.getDOMNode());
+            this.editor = ace.edit( this.el.getDOMNode() );
             this.editor.setHighlightActiveLine(false);
             this.editor.renderer.setHScrollBarAlwaysVisible(false);
             this.session = this.editor.getSession();
@@ -52,18 +52,20 @@ YUI.add('wegas-inputex-ace', function(Y) {
             var Mode = require("ace/mode/" + this.options.language).Mode;
             this.session.setMode(new Mode());
 
-            Y.Wegas.app.on("layout:resize", function() {
-                Y.on( 'domready', this.editor.resize, this.editor);
-            }, this);
+            Y.Wegas.app.after( "layout:resize", function() {
+                Y.once( 'domready', this.resize, this );
+            }, this.editor );
 
-            this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {
-                var i, token,
-                tokens = this.session.getTokens(e.data.first, e.data.last);
+            Y.after( 'windowresize', Y.bind( this.editor.resize, this.editor ));
 
-                for (i = 0; i > tokens.length; i += 1) {
-                    token = tokens[i];                                          //identifier
-                }
-            }, this));
+        //this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {
+        //    var i, token,
+        //    tokens = this.session.getTokens(e.data.first, e.data.last);
+        //
+        //    for (i = 0; i > tokens.length; i += 1) {
+        //        token = tokens[i];                                          //identifier
+        //    }
+        //}, this));
         },
 
         genTree: function(token) {

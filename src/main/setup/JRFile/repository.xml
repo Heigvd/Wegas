@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
    Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
@@ -35,10 +34,21 @@
         <param name="path" value="${rep.home}/repository"/>
     </FileSystem>
 
+
     <!--
         data store configuration
     -->
     <DataStore class="org.apache.jackrabbit.core.data.FileDataStore"/>
+	<!-- <DataStore class="org.apache.jackrabbit.core.data.db.DbDataStore">
+        <param name="minRecordLength" value="1024"/>
+        <param name="maxConnections" value="5"/>
+        <param name="copyWhenReading" value="true"/>
+		<param name="driver" value="org.postgresql.Driver" />
+		<param name="url" value="jdbc:postgresql://localhost:5432/jcr" />
+		<param name="user" value="jcr" />
+		<param name="password" value="jcrpass" />
+		<param name="schemaObjectPrefix" value="data_" />
+    </DataStore> -->
 
     <!--
         security configuration
@@ -97,10 +107,19 @@
             persistence manager of the workspace:
             class: FQN of class implementing the PersistenceManager interface
         -->
-        <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.DerbyPersistenceManager">
+        <!-- <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.DerbyPersistenceManager">
           <param name="url" value="jdbc:derby:${wsp.home}/db;create=true"/>
           <param name="schemaObjectPrefix" value="${wsp.name}_"/>
-        </PersistenceManager>
+        </PersistenceManager> -->
+		<PersistenceManager
+            class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
+            <param name="driver" value="org.postgresql.Driver" />
+            <param name="url" value="jdbc:postgresql://localhost:5432/jcr" />
+            <param name="user" value="jcr" />
+            <param name="password" value="jcrpass" />
+            <param name="schema" value="postgresql" />
+            <param name="schemaObjectPrefix" value="${wsp.name}_" />
+          </PersistenceManager>
         <!--
             Search index and the file system it uses.
             class: FQN of class implementing the QueryHandler interface
@@ -129,10 +148,19 @@
             a 'normal' persistence manager, but this could change in future
             implementations.
         -->
-        <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.DerbyPersistenceManager">
+        <!-- <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.DerbyPersistenceManager">
           <param name="url" value="jdbc:derby:${rep.home}/version/db;create=true"/>
           <param name="schemaObjectPrefix" value="version_"/>
-        </PersistenceManager>
+        </PersistenceManager> -->
+		<PersistenceManager
+            class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
+            <param name="driver" value="org.postgresql.Driver" />
+            <param name="url" value="jdbc:postgresql://localhost:5432/jcr" />
+            <param name="user" value="jcr" />
+            <param name="password" value="jcrpass" />
+            <param name="schema" value="postgresql" />
+            <param name="schemaObjectPrefix" value="version_" />
+          </PersistenceManager>
     </Versioning>
 
     <!--
