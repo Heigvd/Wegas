@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * can add salt to passwords.
  */
 public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
-
+    
     /**
      * 
      */
@@ -43,7 +43,6 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
      * 
      */
     protected String jndiDataSourceName;
-
     /**
      * 
      */
@@ -114,7 +113,7 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
     }
 
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {        
         //identify account to log to
         UsernamePasswordToken userPassToken = (UsernamePasswordToken) token;
         String username = userPassToken.getUsername();
@@ -127,7 +126,7 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
         // read password hash and salt from db 
         PasswdSalt passwdSalt = getPasswordForUser(username);
 
-        if (passwdSalt == null) {
+        if (passwdSalt == null) {        
             log.debug("No account found for user [" + username + "]");
             return null;
         }

@@ -16,6 +16,8 @@ import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -47,6 +49,11 @@ public class RequestManager implements Serializable {
      */
     private List<VariableInstance> updatedInstances = new ArrayList<>();
 
+    /**
+     *
+     */
+    private ResourceBundle resourceBundle;
+    
     /**
      *
      */
@@ -123,6 +130,22 @@ public class RequestManager implements Serializable {
      */
     public void setView(Class view) {
         this.view = view;
+    }
+    
+    /**
+     * 
+     * @return the ResourceBundle
+     */
+    public ResourceBundle getResourceBundle(){
+        return resourceBundle;   
+    }
+    
+    /**
+     * 
+     * @param lang 
+     */
+    public void setResourceBundle(Locale lang){
+       this.resourceBundle = ResourceBundle.getBundle("localisation.errors", lang); 
     }
 
     /**
