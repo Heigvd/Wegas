@@ -158,15 +158,17 @@ YUI.add('treeview', function (Y) {
         },
 
         destructor: function() {
+            this.blur();                                                        //remove a focused node generates some errors
             for(var event in this.eventInstances){
                 this.eventInstances[event].detach();
             }
             if(this.get("rightWidget")){
                 this.get("rightWidget").destroy();
             }
-            this.toggleNode.destroy();
-            this.labelNode.destroy();
-            this.iconNode.destroy();
+
+            this.iconNode.remove(true);
+            this.labelNode.remove(true);
+            this.toggleNode.remove(true);
 
         },
 
@@ -347,11 +349,12 @@ YUI.add('treeview', function (Y) {
         },
 
         destructor: function () {
-            if(this.get("rightWidget")){
+            this.blur();                                                        //remove a focused node generates some errors
+            if(this.get("rightWidget") && this.get("rightWidget").destroy){
                 this.get("rightWidget").destroy();
             }
-            this.iconNode.destroy();
-            this.labelNode.destroy();
+            this.iconNode.remove(true);
+            this.labelNode.remove(true);
         }
     }, {
         NAME : "TreeLeaf",
