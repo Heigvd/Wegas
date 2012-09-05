@@ -31,10 +31,6 @@ YUI.add('wegas-joingamewidget', function (Y) {
         renderUI: function () {
             var cb = this.get(CONTENTBOX);
 
-            this.msg = new Y.Wegas.SystemMessage();
-            this.msg.render(cb);
-
-
             this.tokenField = new Y.inputEx.StringField({                       // Render
                 required: "true",
                 parentEl: cb,
@@ -86,7 +82,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                                 }
                             }, this ),
                             failure: Y.bind( function ( e ) {
-                                this.msg.log("error", e.response.results.message || "Invalid token");
+                                this.showMessage( "error", e.response.results.message || "Invalid token", 4000 );
                             }, this)
                         }
                     });
@@ -108,7 +104,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                             this.sendJoinTeamRequest( e.response.entity.get( "id" ) );
                         }, this),
                         failure: Y.bind( function ( e ) {
-                            this.msg.log("error", e.response.results.message || "Error creating team");
+                            this.showMessage( "error", e.response.results.message || "Error creating team", 4000);
                         }, this)
                     });
                 }
@@ -116,7 +112,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
         },
 
         showTeams: function () {
-            this.msg.empty();
+            //this.msg.empty();
 
             this.joinGameButton.hide();
             this.tokenField.addClassName( "inputEx-hidden" );
@@ -142,7 +138,8 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 request: "/JoinTeam/" + teamId,
                 callback: {
                     success: Y.bind( function ( e ) {
-                        this.msg.log("success", "Game joined, it has been added to your games");
+
+                        this.showMessage( "success", "Game joined, it has been added to your games", 10000);
 
                         Y.Wegas.RegisteredGamesFacade.rest.clearCache();
                         Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
@@ -155,7 +152,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                         this.tokenField.addClassName( "inputEx-hidden" );
                     }, this),
                     failure: Y.bind( function ( e ) {
-                        this.msg.log("error", "Error joinging team");
+                        this.showMessage("error", "Error joinging team");
                     }, this)
                 }
             });
@@ -167,28 +164,4 @@ YUI.add('wegas-joingamewidget', function (Y) {
     });
 
     Y.namespace('Wegas').JoinGameWidget = JoinGameWidget;
-
-    SystemMessage = Y.Base.create("wegas-systemmessage", Y.Widget, [], {
-
-        //CONTENT_TEMPLATE: null,
-
-        log: function ( level, msg ) {
-            var bb = this.get("boundingBox");
-            this.empty();
-
-            bb.setContent('<span class="icon"></span><span class="content">' + msg + '</span>' );
-            bb.addClass(level);
-        },
-
-        empty: function () {
-            var bb = this.get("boundingBox");
-            bb.removeClass("success");
-            bb.removeClass("error");
-            bb.removeClass("info");
-            bb.removeClass("info");
-        }
-    }, {
-        CSS_PREFIX:"wegas-systemmessage"
-    });
-    Y.namespace('Wegas').SystemMessage = SystemMessage;
 });

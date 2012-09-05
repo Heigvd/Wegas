@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-widgettoolbar', function (Y) {
+YUI.add('wegas-widgetmenu', function (Y) {
     "use strict";
 
     /**
@@ -26,7 +26,6 @@ YUI.add('wegas-widgettoolbar', function (Y) {
 
     WidgetMenu.NS = "menus";
     WidgetMenu.NAME = "widgetmenu";
-
 
     Y.extend(WidgetMenu, Y.Plugin.Base, {
 

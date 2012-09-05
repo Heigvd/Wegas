@@ -269,8 +269,8 @@ img.inputEx-ListField-delButton {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
 }
 .yui3-skin-sam .wegas-icon-newfile {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1210px,
-        url(../images/wegas-editor-sprite.png) no-repeat 2px -1242px;
+    url(../images/wegas-editor-sprite.png) no-repeat 1px -1210px,
+    url("../images/wegas-icon-files.png") no-repeat 1px -228px
 }
 .yui3-skin-sam .wegas-icon-newdir {
     background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1167px,
@@ -546,7 +546,7 @@ img.inputEx-ListField-delButton {
 /* System messages */
 .wegas-systemmessage {
     position:absolute;
-    bottom: 25px;
+    top: 25px;
     left: 0;
     right: 0;
     z-index:4;
