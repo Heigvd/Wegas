@@ -38,7 +38,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         initializer: function() {
             this.gameModelId = Y.Wegas.app.get("currentGameModel");
             this.rootPath = "/";
-            this.events = {};
+            this.events = [];
             this.uploader = new Y.UploaderHTML5({
                 width: "100px",
                 fileFieldName: "file",
@@ -63,7 +63,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             Y.log('renderUI()', 'log', "Wegas.FileExplorer");
             this.treeView = new Y.TreeView({
                 srcNode: cb,
-                visibleRightWidget:true
+                visibleRightWidget:false
             });
             this.rootNode = new Y.TreeNode({
                 collapsed: false,
@@ -107,7 +107,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         bindUI: function () {
-            this.treeView.get(CONTENT_BOX).delegate("drop", function(e){
+            this.events.push(this.treeView.get(CONTENT_BOX).delegate("drop", function(e){
 
                 var node = Y.Widget.getByNode(e.currentTarget),
                 files = e._event.dataTransfer.files, file;
@@ -130,15 +130,15 @@ YUI.add('wegas-fileexplorer', function (Y) {
                         this.fileUploader.addFile(file);
                     }
                 }
-            }, '.yui3-treenode', this);
-            this.treeView.get(CONTENT_BOX).delegate("dragover", function(e){
+            }, '.yui3-treenode', this));
+            this.events.push(this.treeView.get(CONTENT_BOX).delegate("dragover", function(e){
                 var node = Y.Widget.getByNode(e.currentTarget);
                 e.halt(true);
                 e.currentTarget.addClass("fileexplorer-drag-over");
                 node.expandTimeout = node.expandTimeout? node.expandTimeout : Y.later(300, node, node.expand);
 
-            },'.yui3-treenode');
-            this.treeView.get(CONTENT_BOX).delegate("dragleave", function(e){
+            },'.yui3-treenode'));
+            this.events.push(this.treeView.get(CONTENT_BOX).delegate("dragleave", function(e){
                 var node = Y.Widget.getByNode(e.currentTarget);
                 e.halt(true);
                 if(node.expandTimeout){
@@ -147,12 +147,12 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 }
                 e.currentTarget.removeClass("fileexplorer-drag-over");
 
-            },'.yui3-treenode');
+            },'.yui3-treenode'));
             this.listNodeData(this.rootNode);                                   // Load root node content
-            this.events.neEvent = this.treeView.on("*:nodeExpanded", function(e){
+            this.treeView.on("*:nodeExpanded", function(e){
                 this.listNodeData(e.node);
             }, this);
-            this.events.tlClickEvent = this.treeView.on("treeleaf:iconClick", function(e){
+            this.treeView.on("treeleaf:iconClick", function(e){
                 if(e.target.path){
                     this.fire("fileSelected", e.target.path);
                 }
@@ -162,10 +162,10 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     this.fire("fileSelected", e.target.path);
                 }
             }, this);
-            this.events.itemClickHandler = this.treeView.on("wegas-menu:itemClick", function(e){
+            this.treeView.on("wegas-menu:itemClick", function(e){
                 this.processMenuClick(e.data, e.target.get("parent"), e.params);
             },this);
-            this.events.dirCreateEvent = this.fakeFile.after("uploadcomplete", function(e){
+            this.fakeFile.after("uploadcomplete", function(e){
                 this.pathToNode(this.rootNode, JSON.parse(e.data).path).expand();
                 console.log("Directory uploaded :", JSON.parse(e.data));
             }, this);
@@ -203,12 +203,13 @@ YUI.add('wegas-fileexplorer', function (Y) {
             }, this);
         },
         destructor: function () {
-            for(var i in events){
-                events[i].detach();
+            for(var i in this.events){
+                this.events[i].detach();
             }
             this.treeView.destroy();
             this.fakeFile.destroy();
             this.uploader.destroy();
+            this.fileUploader.destroy();
         },
 
         // *** Private methods *** //
@@ -465,7 +466,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 this.uploader.show();
                 this.uploader.enable();
             //In case rightWidget opacity change.
-            //this.uploader.get(BOUNDING_BOX).get("parentNode").setStyle("opacity", 1); //force opacity to 1 on rightWidget
+            this.uploader.get(BOUNDING_BOX).get("parentNode").setStyle("opacity", 1); //force opacity to 1 on rightWidget
             }
             return true;
         },
