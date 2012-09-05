@@ -39,6 +39,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             this.gameModelId = Y.Wegas.app.get("currentGameModel");
             this.rootPath = "/";
             this.events = [];
+            this.tooltip = null;
             this.uploader = new Y.UploaderHTML5({
                 width: "100px",
                 fileFieldName: "file",
@@ -125,7 +126,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 this.tooltip.setTriggerContent( ret )
             }, this );
 
-            this.treeView.get(CONTENT_BOX).delegate("drop", function(e){
+            this.events.push(this.treeView.get(CONTENT_BOX).delegate("drop", function(e){
 
                 var node = Y.Widget.getByNode(e.currentTarget),
                 files = e._event.dataTransfer.files, file;
@@ -224,6 +225,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             for(var i in this.events){
                 this.events[i].detach();
             }
+            this.tooltip.destroy();
             this.treeView.destroy();
             this.fakeFile.destroy();
             this.uploader.destroy();
@@ -487,8 +489,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 node.expand(false);
                 this.uploader.show();
                 this.uploader.enable();
-            //In case rightWidget opacity change.
-            this.uploader.get(BOUNDING_BOX).get("parentNode").setStyle("opacity", 1); //force opacity to 1 on rightWidget
+                //In case rightWidget opacity change.
+                this.uploader.get(BOUNDING_BOX).get("parentNode").setStyle("opacity", 1); //force opacity to 1 on rightWidget
             }
             return true;
         },
@@ -657,15 +659,19 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         formatFileSize: function ( bytes ) {
-            var mo = 1024 * 1024;
-            if ( bytes > mo ) {
-                return Math.round( bytes / mo ) + " MB";
-
-            } else if ( bytes > 1024 ) {
-                return Math.round( bytes / 1024 ) + " KB";
-            } else {
-                return bytes + " B";
-            }
+//            var mo = 1024 * 1024;
+//            if ( bytes > mo ) {
+//                return Math.round( bytes / mo ) + " MB";
+//
+//            } else if ( bytes > 1024 ) {
+//                return Math.round( bytes / 1024 ) + " KB";
+//            } else {
+//                return bytes + " B";
+//            }
+            var precision = 2,
+            sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
+            i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return (bytes / Math.pow(1024, i)).toFixed(precision) + ' ' + sizes[i];
         }
     });
 
