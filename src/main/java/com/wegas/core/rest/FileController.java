@@ -15,6 +15,8 @@ import com.sun.jersey.multipart.FormDataParam;
 import com.wegas.core.content.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -25,6 +27,7 @@ import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.LoggerFactory;
@@ -135,6 +138,12 @@ public class FileController {
             response = Response.ok(((FileDescriptor) fileDescriptor).getBase64Data());
             response.header("Content-Type", fileDescriptor.getMimeType());
             response.header("Description", fileDescriptor.getDescription());
+            CacheControl cc = new CacheControl();
+            cc.setMaxAge(3600);
+            cc.setPrivate(true);
+            response.cacheControl(cc);
+            response.lastModified(((FileDescriptor) fileDescriptor).getDataLastModified().getTime());
+
             try {
                 ((FileDescriptor) fileDescriptor).getBase64Data().close();
             } catch (IOException ex) {

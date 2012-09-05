@@ -36,7 +36,7 @@ public class DescriptorFactory {
             abstractContentDescriptor =
                     DirectoryDescriptor.MIME_TYPE.equals(mimeType)
                     ? new DirectoryDescriptor(nodePath, contentConnector)
-                    : new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getString(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
+                    : new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getDate(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
             if (abstractContentDescriptor.exist()) {
                 abstractContentDescriptor.getContentFromRepository();
             }
