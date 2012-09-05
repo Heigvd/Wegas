@@ -70,12 +70,6 @@
 .fupload-descriptor:hover > .fupload-detail{
     max-height: 50px;
 }
-
-.image-icon{
-    background-image: url("../../wegas-editor/images/image_icon.png");
-    background-repeat: no-repeat;
-    background-size: 21px 18px;
-}
 .fileexplorer-drag-over{
     box-shadow: 0 0 5px green;
 }
@@ -84,4 +78,39 @@
 .wegas-fileexplorer-content > .yui3-treenode > .yui3-treenode-content-header .wegas-menu-itemlist-horizontal > ul{
     margin:0;
     right:0;
+}
+.wegas-fileexplorer yui3-treeleaf-content-icon,
+.wegas-fileexplorer .yui3-treeleaf-content-label {
+    cursor:pointer;
+}
+
+/* Icon styles */
+.wegas-icon-file {
+    background-image: url("../images/wegas-icon-files.png") no-repeat 1px -225px;
+    background-repeat: no-repeat;
+    background-position: 1px -225px;
+    margin: -4px 0 -6px;
+    height: 24px;
+}
+.wegas-icon-application-pdf {
+    background-position: 1px 2px;
+}
+.wegas-icon-application-mspowerpoint {
+    background-position: 1px -87px;
+}
+.wegas-icon-application-msexcel {
+    background-position: 1px -31px
+}
+.wegas-icon-application-msaccess {
+    background-position: 1px -59px;
+}
+.wegas-icon-application-msword {
+    background-position: 1px -141px
+}
+.wegas-icon-image-png,
+.wegas-icon-image-jpg,
+.wegas-icon-image-jpeg,
+.wegas-icon-image-gif {
+    /*background-position: 1px -197px;*/
+    background-position: 1px -253px;
 }

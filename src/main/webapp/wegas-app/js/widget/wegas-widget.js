@@ -34,7 +34,7 @@ YUI.add('wegas-widget', function (Y) {
             to: {
                 opacity: 0
             },
-            duration: 10
+            duration: 0.2
         });
         anim.on( "end", this.remove, this, true );
         anim.run();

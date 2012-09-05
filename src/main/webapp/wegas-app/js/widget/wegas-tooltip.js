@@ -33,7 +33,7 @@ YUI.add('wegas-tooltip', function (Y) {
         initializer: function () {
             var tt = Tooltip.getInstance();
             tt.addTriggerNode( this.get( "host" ).get( "boundingBox" ),
-            this.get( "content" ));
+                this.get( "content" ));
         }
     }, {
         ATTRS: {
@@ -48,7 +48,7 @@ YUI.add('wegas-tooltip', function (Y) {
     OX = -10000,
     OY = -10000;
 
-    var Tooltip = Y.Base.create("tooltip", Y.Widget, [Y.WidgetPosition, Y.WidgetStack], {
+    var Tooltip = Y.Base.create("tooltip", Y.Widget, [Y.WidgetPosition, Y.WidgetStack, Y.WidgetPositionConstrain ], {
 
         // PROTOTYPE METHODS/PROPERTIES
 
@@ -57,8 +57,6 @@ YUI.add('wegas-tooltip', function (Y) {
          * properties, and publishes the events Tooltip introduces
          */
         initializer : function(config) {
-
-            this._triggerClassName = this.getClassName("trigger");
 
             // Currently bound trigger node information
             this._currTrigger = {
@@ -138,7 +136,10 @@ YUI.add('wegas-tooltip', function (Y) {
                         contentBox.appendChild(content.item(i));
                     }
                 } else if (Lang.isString(content)) {
-                    contentBox.set("innerHTML", content);
+                    contentBox.set( "innerHTML", content );
+                    contentBox.all( "img" ).once ( "load", function() {
+                        this.constrain();
+                    }, this );
                 }
             }
         },
@@ -171,12 +172,12 @@ YUI.add('wegas-tooltip', function (Y) {
          */
         _uiSetNodes : function(nodes) {
             if (this._triggerNodes) {
-                this._triggerNodes.removeClass(this._triggerClassName);
+                this._triggerNodes.removeClass( this.getClassName( "trigger" ) );
             }
 
             if (nodes) {
                 this._triggerNodes = nodes;
-                this._triggerNodes.addClass(this._triggerClassName);
+                this._triggerNodes.addClass( this.getClassName( "trigger" ) );
             }
         },
 
@@ -191,7 +192,7 @@ YUI.add('wegas-tooltip', function (Y) {
                 eventHandles.delegate.detach();
                 eventHandles.delegate = null;
             }
-            eventHandles.delegate = Y.delegate("mouseenter", Y.bind(this._onNodeMouseEnter, this), this.get("delegate"), "." + this._triggerClassName);
+            eventHandles.delegate = Y.delegate("mouseenter", Y.bind(this._onNodeMouseEnter, this), this.get("delegate"), this.get( "delegateSelect" ));
         },
 
         /*
@@ -286,7 +287,7 @@ YUI.add('wegas-tooltip', function (Y) {
             var x = this._currTrigger.mouseX;
             var y = this._currTrigger.mouseY;
 
-            this.move(x + Tooltip.OFFSET_X, y + Tooltip.OFFSET_Y);
+            this.move( x + Tooltip.OFFSET_X, y + Tooltip.OFFSET_Y );
 
             this.show();
             this._clearTimers();
@@ -419,8 +420,6 @@ YUI.add('wegas-tooltip', function (Y) {
                     triggerNodes: new Y.NodeList(),
                     delegate: "body",
                     content: {},
-                    shim: false,
-                    zIndex: 26,
                     render: true
                 });
             }
@@ -428,6 +427,17 @@ YUI.add('wegas-tooltip', function (Y) {
         },
         ATTRS : {
 
+            constrain: {
+                value: true
+            },
+
+            shim: {
+                value: false
+            },
+
+            zIndex:{
+                value: 26
+            },
             /*
              * The tooltip content. This can either be a fixed content value,
              * or a map of id-to-values, designed to be used when a single
@@ -442,7 +452,7 @@ YUI.add('wegas-tooltip', function (Y) {
              * or a node instance.
              */
             triggerNodes : {
-                value: [],
+                value: null,
                 setter: function(val) {
                     if (val && Lang.isString(val)) {
                         val = Node.all(val);
@@ -501,7 +511,16 @@ YUI.add('wegas-tooltip', function (Y) {
              */
             xy: {
                 value:[OX, OY]
+            },
+            delegateSelect: {
+                value: null,
+                getter: function ( val ) {
+
+                    return val || ( "." + this.getClassName( "trigger" ) );
+                }
             }
         }
     });
+
+    Y.namespace("Wegas").Tooltip = Tooltip;
 });

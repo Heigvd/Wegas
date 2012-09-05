@@ -35,6 +35,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
 
         bindUI: function () {
             this.get(CONTENTBOX).delegate("click", function (e) {
+                this.showOverlay();
                 this.dataSource.rest.sendRequest({
                     request: "/QuestionDescriptor/SelectChoice/" + e.target.get('id')
                     + "/Player/" + Y.Wegas.app.get('currentPlayer')
@@ -122,12 +123,12 @@ YUI.add('wegas-mcqtabview', function (Y) {
             }
 
             this.tabView.selectChild(lastSelection);
+            this.hideOverlay();
         },
         /**
          *
          */
         destructor: function () {
-            this.tabView.destroy();
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }

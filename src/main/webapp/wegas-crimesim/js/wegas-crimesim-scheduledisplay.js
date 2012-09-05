@@ -88,6 +88,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 if ( this.currentQuestionId ) {
                     this.syncDetailsPanel();
                 }
+                this.hideOverlay();
             },
 
             /**
@@ -319,6 +320,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
             onCancelReplyClick: function(e, args) {
                 var replyId =  e.target.ancestor(".icon").getAttribute("data-replyid");
 
+                this.showOverlay();
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/QuestionDescriptor/CancelReply/" + replyId
                 });
@@ -326,6 +328,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
             onMenuClick: function (e) {
                 var data = e.target.get( "data" );
 
+                this.showOverlay();
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/QuestionDescriptor/SelectChoice/" + data.choice.get("id")
                     + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/"
