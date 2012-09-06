@@ -3,19 +3,18 @@
  */
 YUI.add("wegas-inputex-url",function(Y){
 
-    var lang = Y.Lang,
-    inputEx = Y.inputEx;
+    var inputEx = Y.inputEx;
 
     /**
- * Adds an url regexp, and display the favicon at this url
- * @class inputEx.UrlField
- * @extends inputEx.StringField
- * @constructor
- * @param {Object} options inputEx.Field options object
- * <ul>
- *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for https)</li>
- * </ul>
- */
+     * Adds an url regexp, and display the favicon at this url
+     * @class inputEx.UrlField
+     * @extends inputEx.StringField
+     * @constructor
+     * @param {Object} options inputEx.Field options object
+     * <ul>
+     *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for https)</li>
+     * </ul>
+     */
     Y.namespace("inputEx.Wegas").UrlField = function(options) {
         inputEx.Wegas.UrlField.superclass.constructor.call(this,options);
     };
@@ -54,30 +53,33 @@ YUI.add("wegas-inputex-url",function(Y){
          */
         render: function() {
             inputEx.Wegas.UrlField.superclass.render.call(this);
-            this.fieldContainer.classList.add("inputEx-wegas-UrlField");
+
+            this.fieldContainer.classList.add( "inputEx-wegas-UrlField" );
+
             this.imgButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-fileexplorer\"></span>",
                 on: {
                     click: Y.bind(this.showFileExplorer, this)
                 }
-            }).render(this.fieldContainer);
+            }).render( this.fieldContainer );
         },
 
         showFileExplorer: function () {
-            if (!this.filepanel) {
+            if ( !this.filepanel ) {
                 this.filepanel = new Y.Panel({
-                    bodyContent: '',
                     headerContent: 'Choose a file from library',
-                    width  : 600,
-                    zIndex : 5,
-                    modal  : true,
-                    render : true,
-                    centered   : true
+                    bodyContent: '',
+                    width: 600,
+                    height: Y.DOM.winHeight() - 150,
+                    zIndex: 25,
+                    modal: true,
+                    render: true,
+                    centered: true
                 });
 
-                this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode(Y.WidgetStdMod.BODY));
+                this.fileExplorer = new Y.Wegas.FileExplorer().render( this.filepanel.getStdModNode( Y.WidgetStdMod.BODY ) );
 
-                this.fileExplorer.on("*:fileSelected", function (e, path) {
+                this.fileExplorer.on( "*:fileSelected", function (e, path) {
                     e.stopImmediatePropagation();
                     e.preventDefault();
                     this.filepanel.hide();
@@ -88,7 +90,5 @@ YUI.add("wegas-inputex-url",function(Y){
         }
     });
 
-    // Register this class as "url" type
-    inputEx.registerType("wegasurl", inputEx.Wegas.UrlField);
-
+    inputEx.registerType( "wegasurl", inputEx.Wegas.UrlField );                 // Register this class as "wegasurl" type
 });
