@@ -308,6 +308,7 @@
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>-->
                     <showDeprecation>true</showDeprecation>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
 
