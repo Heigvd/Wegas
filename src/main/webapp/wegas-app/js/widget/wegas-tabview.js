@@ -51,6 +51,12 @@ YUI.add( 'wegas-tabview', function ( Y ) {
             }
             return TabView.tabs[ id ];
         },
+        destroyTab: function( id ){
+            if ( TabView.tabs[ id ] ) {
+                TabView.tabs[id].destroy();
+                delete TabView.tabs[id];
+            }
+        },
         /**
          *  Helper function
          */
