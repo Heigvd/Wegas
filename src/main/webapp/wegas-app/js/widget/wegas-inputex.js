@@ -17,6 +17,25 @@ YUI.add('wegas-inputex', function(Y) {
 
     var inputEx = Y.inputEx,
     lang = Y.Lang;
+    /**
+     *  Override to apply detach events
+     */
+    Y.inputEx.Field.prototype.destroy = function() {
+        var el = this.getEl();
+
+        // Unsubscribe all listeners on the "updated" event
+        //this.updatedEvt.unsubscribeAll();
+        // no equivalent in YUI3 Event mechanism
+        this.detachAll();                                                       // ! added
+
+        // Purge element (remove listeners on el and childNodes recursively)
+        Y.Event.purgeElement(el, true);
+
+        // Remove from DOM
+        if(Y.one(el).inDoc()) {
+            el.parentNode.removeChild(el);
+        }
+    };
 
     /**
      *  @hack So we can easily change classs on inputex fields
@@ -131,7 +150,7 @@ YUI.add('wegas-inputex', function(Y) {
             this.options.entity = options.entity;
         },
         setValue : function (value){
-              EntityArrayFieldSelect.superclass.setValue.call(this, value);
+            EntityArrayFieldSelect.superclass.setValue.call(this, value);
         }
     });
 

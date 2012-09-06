@@ -25,6 +25,9 @@ YUI.add('wegas-widget', function (Y) {
         "success": "success"
     },
     destroySelf = function(){
+
+
+
         if(this.timeout){
             this.timeout.cancel();
         }

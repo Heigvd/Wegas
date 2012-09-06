@@ -9,9 +9,7 @@ Disclaimer: It doesn't use existing html yet. (it is not an unobtrusive library 
 
 For detailed informations, have a look at our complete documentation.
 
-It is built on top of the [YUI library](http://developer.yahoo.com/yui/) (2.8.x branch) and supports all major browsers. Please report your specific browser issues in the forum.
-
-New: Now works with [YUI3 Loading](http://neyric.github.com/inputex/examples/yui3-loader.html)
+It is built on top of the [YUI library](http://developer.yahoo.com/yui/3/) (3.x branch) and supports all major browsers. Please report your specific browser issues in the forum.
 
 Resources
 =========
@@ -23,4 +21,4 @@ Resources
  * Blog: [http://javascript.neyric.com/blog/category/inputex/](http://javascript.neyric.com/blog/category/inputex/)
  * Forum: [http://groups.google.com/group/inputex/](http://groups.google.com/group/inputex/)
 
-Copyright (c) 2007-2010 eric.abouaf at gmail.com, released under the MIT license
+Copyright (c) 2007-2011 eric.abouaf at gmail.com, released under the MIT license
