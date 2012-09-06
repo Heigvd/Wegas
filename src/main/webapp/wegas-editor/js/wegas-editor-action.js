@@ -127,8 +127,9 @@ YUI.add('wegas-editor-action', function (Y) {
         },
         hideEditForm: function () {
             EditEntityAction.tab.get( "parent" ).selectChild( 0 );
-            EditEntityAction.tab.destroy();
-            EditEntityAction.tab = null;
+            Y.Wegas.TabView.destroyTab(EditEntityAction.tab.get("id"));
+            delete EditEntityAction.tab;
+            delete EditEntityAction.form;
         },
         hideFormFields: function () {
             EditEntityAction.form.destroyForm();
