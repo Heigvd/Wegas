@@ -14,6 +14,15 @@ YUI.add("wegas-script-wysiwyg", function(Y){
         /**
          *
          */
+        destroy: function () {
+            inputEx.WysiwygScript.superclass.destroy.call( this );
+
+            this.form.destroy();
+            this.viewSrc.destroy();
+        },
+        /**
+         *
+         */
         setOptions: function( options ) {
             inputEx.WysiwygScript.superclass.setOptions.call(this, options);
             this.options.className = options.className ? options.className : 'inputEx-Field inputEx-WysiwigScript';
@@ -23,9 +32,9 @@ YUI.add("wegas-script-wysiwyg", function(Y){
         /**
          *
          */
-        onChange: function ( fieldValue, fieldInstance ) {
-            this.fireUpdatedEvt();
-        },
+        //        onChange: function ( fieldValue, fieldInstance ) {
+        //            this.fireUpdatedEvt();
+        //        },
 
         setMode: function ( mode ) {
             var wysiwygmode = ( mode === "wysiwyg");
@@ -39,8 +48,7 @@ YUI.add("wegas-script-wysiwyg", function(Y){
             }
             this.options.mode = mode;
 
-            this.form.addButton.get( "boundingBox" ).setStyle( "display", "inline-block" );
-            this.form.addButton.set("disabled", !wysiwygmode);
+            this.form.addButton.set( "disabled", !wysiwygmode);
         },
 
         // *** Private Methods *** //
@@ -106,8 +114,13 @@ YUI.add("wegas-script-wysiwyg", function(Y){
                 parentEl: this.fieldContainer
             });
 
+            this.form.addButton.get( "boundingBox" ).setStyle( "display", "inline-block" );
+
             this.form.on( "updated", function () {
-                this.el.value =  this.form.getArray().join(";\n") + ";";
+                if ( this.options.mode === "wysiwyg" ) {
+                    this.el.value =  this.form.getArray().join(";\n") + ";";
+                }
+                console.log("form updated");
             }, this );
 
             this.setMode( this.options.mode );
@@ -257,6 +270,7 @@ YUI.add("wegas-script-wysiwyg", function(Y){
             this.syncUI();
             this.fireUpdatedEvt();
         },
+
         empty: function () {
             while ( this.inputs.length > 0 ) {
                 this.inputs.pop().destroy();

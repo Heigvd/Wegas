@@ -3,8 +3,7 @@
  */
 YUI.add("wegas-inputex-hashlist", function(Y){
 
-    var inputEx = Y.inputEx,
-    lang = Y.Lang;
+    var inputEx = Y.inputEx;
 
     inputEx.HashList = function(options) {
         inputEx.HashList.superclass.constructor.call(this, options);

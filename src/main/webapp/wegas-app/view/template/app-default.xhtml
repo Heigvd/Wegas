@@ -50,7 +50,7 @@
         </ui:fragment>
 
         <!-- InputEx Loader -->
-        <script src="/Wegas/lib/inputex/build/loader.js"  type='text/javascript'></script>
+        <script src="/Wegas/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
 
         <!-- Wegas Loader -->
         <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
@@ -83,9 +83,9 @@
             YUI_config.groups.wegas.combine = false;
             YUI_config.groups.wegas.filter = "raw";
 
-            YUI_config.groups.inputex.base = base + '/lib/inputex/build/';	// Set up inputex path
+            YUI_config.groups.inputex.base = base + '/lib/inputex/src/';	// Set up inputex path
             YUI_config.groups.inputex.comboBase = comboBase;
-            YUI_config.groups.inputex.root = "/lib/inputex/build/";
+            YUI_config.groups.inputex.root = "/lib/inputex/src/";
             YUI_config.groups.inputex.combine = true;
 
             YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
