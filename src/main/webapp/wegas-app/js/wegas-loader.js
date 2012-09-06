@@ -155,7 +155,7 @@ YUI().use(function (Y) {
                     'wegas-inputex': {
                         path: 'wegas-app/js/widget/wegas-inputex-min.js',
                         requires: [ 'inputex', 'inputex-field', 'inputex-string',
-                        'inputex-keyvalue', 'inputex-select' ]
+                        'inputex-keyvalue' ]
                     },
                     'wegas-inputex-rte': {
                         path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',

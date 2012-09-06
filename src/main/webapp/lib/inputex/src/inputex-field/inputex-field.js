@@ -3,11 +3,11 @@
  * @module inputex-field
  */
 YUI.add("inputex-field",function(Y) {
- 
+
      var lang = Y.Lang,
           inputEx = Y.inputEx;
 
-  /** 
+  /**
    * An abstract class (never instantiated) that contains the shared features for all fields.
    * @class inputEx.Field
    * @constructor
@@ -21,13 +21,13 @@ YUI.add("inputex-field",function(Y) {
    * </ul>
    */
   inputEx.Field = function(options) {
-	
+
 	  // Set the default values of the options
 	  this.setOptions(options || {});
-	
+
 	  // Call the render of the dom
 	  this.render();
-	
+
 	  /**
 	   * Event fired after the user changed the value of the field.
 	   * Fired when the field is "updated"<br /> subscribe with: myfield.on('updated', function(value) { console.log("updated",value); }, this, true);
@@ -35,21 +35,21 @@ YUI.add("inputex-field",function(Y) {
 	   * @param {Any} value The new value of the field
 	   */
 	  this.publish("updated");
-          
+
 	  // initialize behaviour events
 	  this.initEvents();
-	
+
 	  // Set the initial value
 	  //   -> no initial value = no style (setClassFromState called by setValue)
 	  if(!lang.isUndefined(this.options.value)) {
 		  this.setValue(this.options.value, false);
 	  }
-	
+
 	  // append it immediatly to the parent DOM element
 	  if(options.parentEl) {
 	     if( lang.isString(options.parentEl) ) {
 	       // searching for the id
-	       Y.one("#"+options.parentEl).appendChild(this.getEl());  
+	       Y.one("#"+options.parentEl).appendChild(this.getEl());
 	     }
 	     else {
 	        options.parentEl.appendChild(this.getEl());
@@ -58,17 +58,17 @@ YUI.add("inputex-field",function(Y) {
   };
 
   inputEx.Field.prototype = {
-    
+
      /**
       * Set the default values of the options
       * @method setOptions
       * @param {Object} options Options object as passed to the constructor
       */
      setOptions: function(options) {
-        
+
         // Configuration object to set the options for this class and the parent classes. See constructor details for options added by this class.
         this.options = {};
-        
+
         // Basic options
         this.options.name = options.name;
         this.options.value = options.value;
@@ -76,20 +76,20 @@ YUI.add("inputex-field",function(Y) {
         this.options.label = options.label;
         this.options.description = options.description;
         this.options.wrapperClassName = options.wrapperClassName;
-        
+
         // Define default messages
         this.options.messages = {};
         this.options.messages.required = (options.messages && options.messages.required) ? options.messages.required : inputEx.messages.required;
         this.options.messages.invalid = (options.messages && options.messages.invalid) ? options.messages.invalid : inputEx.messages.invalid;
         //this.options.messages.valid = (options.messages && options.messages.valid) ? options.messages.valid : inputEx.messages.valid;
-        
+
         // Other options
         this.options.className = options.className ? options.className : 'inputEx-Field';
         this.options.required = lang.isUndefined(options.required) ? false : options.required;
         this.options.showMsg = lang.isUndefined(options.showMsg) ? false : options.showMsg;
 	  },
-	
-	
+
+
 	  /**
 	   * Set the name of the field (or hidden field)
 	   * @method setFieldName
@@ -102,7 +102,7 @@ YUI.add("inputex-field",function(Y) {
       * @method render
       */
 	  render: function() {
-	
+
 	     // Create a DIV element to wrap the editing el and the image
 	     this.divEl = inputEx.cn('div', {className: this.options.wrapperClassName || 'inputEx-fieldWrapper'});
 	     if(this.options.id) {
@@ -111,7 +111,7 @@ YUI.add("inputex-field",function(Y) {
 	     if(this.options.required) {
 	        Y.one(this.divEl).addClass("inputEx-required");
 	     }
-	     
+
 	     // Label element
 	     if (lang.isString(this.options.label)) {
           this.labelDiv = inputEx.cn('div', {id: this.divEl.id+'-label', className: 'inputEx-label'});
@@ -119,24 +119,24 @@ YUI.add("inputex-field",function(Y) {
 	        this.labelDiv.appendChild(this.labelEl);
 	        this.divEl.appendChild(this.labelDiv);
         }
-        
+
         this.fieldContainer = inputEx.cn('div', {className: this.options.className}); // for wrapping the field and description
-	
+
         // Render the component directly
         this.renderComponent();
-        
+
         // Description
         if(this.options.description) {
            this.fieldContainer.appendChild(inputEx.cn('div', {id: this.divEl.id+'-desc', className: 'inputEx-description'}, null, this.options.description));
         }
-        
+
         this.divEl.appendChild(this.fieldContainer);
-        
+
 	     // Insert a float breaker
 	     this.divEl.appendChild( inputEx.cn('div',null, {clear: 'both'}," ") );
-	
+
 	  },
-	
+
 	  /**
 	   * Fire the "updated" event (only if the field validated)
 	   * Escape the stack using a setTimeout
@@ -180,7 +180,7 @@ YUI.add("inputex-field",function(Y) {
       * @method getValue
       * @return {Any} value of the field
       */
-	  getValue: function() { 
+	  getValue: function() {
 	     // override me
 	  },
 
@@ -192,10 +192,10 @@ YUI.add("inputex-field",function(Y) {
       */
 	  setValue: function(value, sendUpdatedEvt) {
 	     // to be inherited
-	     
+
 	     // set corresponding style
 	     this.setClassFromState();
-	     
+
 	     if(sendUpdatedEvt !== false) {
 	        // fire update event
            this.fireUpdatedEvt();
@@ -215,7 +215,7 @@ YUI.add("inputex-field",function(Y) {
 	        className = 'inputEx-'+((this.previousState == inputEx.stateRequired) ? inputEx.stateInvalid : this.previousState);
 		     Y.one(this.divEl).removeClass(className);
 	     }
-	     
+
 	     // add new class
 	     state = state || this.getState();
 	     if( !(state == inputEx.stateEmpty && Y.one(this.divEl).hasClass( 'inputEx-focused') ) ) {
@@ -223,11 +223,11 @@ YUI.add("inputex-field",function(Y) {
 	        className = 'inputEx-'+((state == inputEx.stateRequired) ? inputEx.stateInvalid : state);
 	        Y.one(this.divEl).addClass(className );
         }
-	
+
 	     if(this.options.showMsg) {
 	        this.displayMessage( this.getStateString(state) );
         }
-	     
+
 	     this.previousState = state;
 	  },
 
@@ -252,7 +252,7 @@ YUI.add("inputex-field",function(Y) {
       * @method getState
       * @return {String} One of the following states: 'empty', 'required', 'valid' or 'invalid'
       */
-	  getState: function() { 
+	  getState: function() {
 	     // if the field is empty :
 	     if( this.isEmpty() ) {
 	        return this.options.required ? inputEx.stateRequired : inputEx.stateEmpty;
@@ -287,7 +287,7 @@ YUI.add("inputex-field",function(Y) {
       */
 	  onBlur: function(e) {
 	     Y.one(this.getEl()).removeClass('inputEx-focused');
-	     
+
 	     // Call setClassFromState on Blur
 	     this.setClassFromState();
 	  },
@@ -336,30 +336,30 @@ YUI.add("inputex-field",function(Y) {
       */
      focus: function() {
      },
-     
+
      /**
       * Purge all event listeners and remove the component from the dom
       * @method destroy
       */
      destroy: function() {
         var el = this.getEl();
-        
+
         // Unsubscribe all listeners on the "updated" event
         // this.detachAll( "updated" );
-		this.detachAll();
-        
+	this.detachAll();
+
         // Purge element (remove listeners on el and childNodes recursively)
         Y.Event.purgeElement(el, true);
-        
+
         // Remove from DOM
         if(Y.one(el).inDoc()) {
            el.parentNode.removeChild(el);
         }
-        
+
      },
-     
+
      /**
-      * Update the message 
+      * Update the message
       * @method displayMessage
       * @param {String} msg Message to display
       */
@@ -382,7 +382,7 @@ YUI.add("inputex-field",function(Y) {
      show: function() {
         this.divEl.style.display = '';
      },
-     
+
      /**
       * Hide the field
       * @method hide
@@ -390,7 +390,7 @@ YUI.add("inputex-field",function(Y) {
      hide: function() {
         this.divEl.style.display = 'none';
      },
-     
+
      /**
       * Clear the field by setting the field value to this.options.value
       * @method clear
@@ -399,7 +399,7 @@ YUI.add("inputex-field",function(Y) {
      clear: function(sendUpdatedEvt) {
         this.setValue(lang.isUndefined(this.options.value) ? '' : this.options.value, sendUpdatedEvt);
      },
-     
+
      /**
       * Should return true if empty
       * @method isEmpty
@@ -417,7 +417,7 @@ YUI.add("inputex-field",function(Y) {
 	  setParentField: function(parentField) {
 		  this.parentField = parentField;
 	  },
-	
+
 	  /**
 	   * Return the parent field instance
 	   * @method getParentField
@@ -426,7 +426,7 @@ YUI.add("inputex-field",function(Y) {
 	  getParentField: function() {
 		  return this.parentField;
 	  }
-     
+
   };
 
   Y.augment(inputEx.Field, Y.EventTarget, null, null, {});

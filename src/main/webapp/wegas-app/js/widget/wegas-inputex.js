@@ -17,25 +17,17 @@ YUI.add('wegas-inputex', function(Y) {
 
     var inputEx = Y.inputEx,
     lang = Y.Lang;
+
     /**
-     *  Override to apply detach events
+     *  @hack Set up inputex providers for Wegas,
+     *  so inputex will use our own widgets when using f = Y.inpuex(cfg)
      */
-    Y.inputEx.Field.prototype.destroy = function() {
-        var el = this.getEl();
-
-        // Unsubscribe all listeners on the "updated" event
-        //this.updatedEvt.unsubscribeAll();
-        // no equivalent in YUI3 Event mechanism
-        this.detachAll();                                                       // ! added
-
-        // Purge element (remove listeners on el and childNodes recursively)
-        Y.Event.purgeElement(el, true);
-
-        // Remove from DOM
-        if(Y.one(el).inDoc()) {
-            el.parentNode.removeChild(el);
-        }
-    };
+    YUI_config.groups.inputex.modulesByType.html = "wegas-inputex-rte";         //
+    YUI_config.groups.inputex.modulesByType.hashlist = "wegas-inputex-hashlist";
+    YUI_config.groups.inputex.modulesByType.ace = "wegas-inputex-ace";
+    YUI_config.groups.inputex.modulesByType.wegasurl = "wegas-inputex-url";
+    YUI_config.groups.inputex.modulesByType.script = "wegas-script-wysiwyg";
+    YUI_config.groups.inputex.modulesByType.entityarrayfieldselect = "wegas-script-wysiwyg"
 
     /**
      *  @hack So we can easily change classs on inputex fields
@@ -46,13 +38,6 @@ YUI.add('wegas-inputex', function(Y) {
     Y.inputEx.Field.prototype.removeClassName = function ( className ) {
         Y.one( this.divEl ).removeClass( className );
     };
-
-    YUI_config.groups.inputex.modulesByType.html = "wegas-inputex-rte";         // @fix so inputex will use our own widgets when using f = Y.inpuex(cfg)
-    YUI_config.groups.inputex.modulesByType.hashlist = "wegas-inputex-hashlist";
-    YUI_config.groups.inputex.modulesByType.script = "wegas-script-wysiwyg";
-    YUI_config.groups.inputex.modulesByType.ace = "wegas-inputex-ace";
-    YUI_config.groups.inputex.modulesByType.wegasurl = "wegas-inputex-url";
-    YUI_config.groups.inputex.modulesByType.entityarrayfieldselect = "wegas-inputex"
 
     /**
      * @hack Let inputex also get requirement from selectfields, lists
@@ -117,43 +102,4 @@ YUI.add('wegas-inputex', function(Y) {
         (options.autocomplete === false || options.autocomplete === "off") ? false : true;
         this.options.trim = (options.trim === true) ? true : false;
     };
-
-    /**
-     * @class EntityArrayFieldSelect
-     * @constructor
-     * @extends inputEx.SelectField
-     * @param {Object} options InputEx definition object
-     */
-    var EntityArrayFieldSelect = function(options) {
-        EntityArrayFieldSelect.superclass.constructor.call(this, options);
-    };
-    Y.extend(EntityArrayFieldSelect, inputEx.SelectField, {
-
-        /**
-	 * Set the ListField classname
-	 * @param {Object} options Options object as passed to the constructor
-	 */
-        setOptions: function(options) {
-            var i, results = options.entity ? options.entity.get( "results" ) :
-            Y.Plugin.EditEntityAction.currentEntity.get( "results" );
-            options.choices = [];
-
-            for ( i = 0; i < results.length; i = i + 1 ) {
-                options.choices.push({
-                    value: results[i].get( "id"  ),
-                    label: results[i].get( "name" )
-                })
-
-            }
-
-            EntityArrayFieldSelect.superclass.setOptions.call(this, options);
-            this.options.entity = options.entity;
-        },
-        setValue : function (value){
-            EntityArrayFieldSelect.superclass.setValue.call(this, value);
-        }
-    });
-
-    inputEx.registerType( "entityarrayfieldselect", EntityArrayFieldSelect );    // Register this class as "list" type
-
 });
