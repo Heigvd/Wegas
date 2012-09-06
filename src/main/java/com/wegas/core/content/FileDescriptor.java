@@ -13,6 +13,7 @@ package com.wegas.core.content;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,7 +32,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
     @JsonIgnore
-    private String dataLastModified;
+    private Calendar dataLastModified;
     @JsonIgnore
     private Long bytes;
 
@@ -39,7 +40,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
         super(absolutePath, contentConnector);
     }
 
-    public FileDescriptor(String absolutePath, String mimeType, String lastModified, Long bytes, ContentConnector contentConnector) {
+    public FileDescriptor(String absolutePath, String mimeType, Calendar lastModified, Long bytes, ContentConnector contentConnector) {
         super(absolutePath, contentConnector, mimeType);
         this.dataLastModified = lastModified;
         this.bytes = bytes;
@@ -96,7 +97,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
         this.setBase64Data(new ByteArrayInputStream(data.getBytes()), mimeType);
     }
     @JsonProperty("dataLastModified")
-    public String getDataLastModified() {
+    public Calendar getDataLastModified() {
         return dataLastModified;
     }
     @JsonProperty("bytes")
