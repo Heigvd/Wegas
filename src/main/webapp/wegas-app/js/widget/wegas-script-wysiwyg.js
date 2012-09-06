@@ -1,5 +1,16 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
- * @module inputex-Script
+ * @module wegas-script-wysiwyg
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add("wegas-script-wysiwyg", function(Y){
 
@@ -32,23 +43,21 @@ YUI.add("wegas-script-wysiwyg", function(Y){
         /**
          *
          */
-        //        onChange: function ( fieldValue, fieldInstance ) {
-        //            this.fireUpdatedEvt();
-        //        },
-
         setMode: function ( mode ) {
             var wysiwygmode = ( mode === "wysiwyg");
 
             this.wrapEl.style[ "display" ] = ( wysiwygmode) ? "none" : "block";
+
             this.viewSrc.set( "selected", !wysiwygmode );
+            this.form.addButton.set( "disabled", !wysiwygmode);
+
             if ( wysiwygmode ) {
                 this.form.show();
             } else {
                 this.form.hide();
             }
-            this.options.mode = mode;
 
-            this.form.addButton.set( "disabled", !wysiwygmode);
+            this.options.mode = mode;
         },
 
         // *** Private Methods *** //
@@ -62,17 +71,18 @@ YUI.add("wegas-script-wysiwyg", function(Y){
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>"
             });
             this.viewSrc.on( "click", function () {
+                if ( this.viewSrc.get( "disabled" ) ) {
+                    return;
+                }
                 this.setMode( ( this.options.mode === "wysiwyg" ) ? "text" : "wysiwyg" );
             }, this );
-            this.viewSrc.render(this.fieldContainer);
+            this.viewSrc.render( this.fieldContainer );
 
             var container = new Y.Node( this.fieldContainer );
             container.prepend( this.viewSrc.get( "boundingBox" ) );
             container.append("<em class=\"msg\"></em>");
 
-            this.on( "updated", function () {
-                this.syncUI();
-            }, this );
+            this.on( "updated", this.syncUI, this );                            // Whenever the value is updated, we synchronize the UI
 
             this.syncUI();
         },
@@ -98,7 +108,8 @@ YUI.add("wegas-script-wysiwyg", function(Y){
                     //        indent: true
                     //    }));
                     this.setMode( "text" );
-                    container.one( ".msg" ).setContent( "Unable to read this impact, displaying source.");
+                    this.viewSrc.set( "disabled", true );
+                    container.one( ".msg" ).setContent( "Unable to read this impact, displaying source only.");
                     return;
                 }
             }
@@ -124,6 +135,7 @@ YUI.add("wegas-script-wysiwyg", function(Y){
             }, this );
 
             this.setMode( this.options.mode );
+            this.viewSrc.set( "disabled", false );
         },
         /**
          *
@@ -465,5 +477,41 @@ YUI.add("wegas-script-wysiwyg", function(Y){
     });
 
     inputEx.registerType("inputlist", ListField);
+
+
+    /**
+     * @class EntityArrayFieldSelect
+     * @constructor
+     * @extends inputEx.SelectField
+     * @param {Object} options InputEx definition object
+     */
+    var EntityArrayFieldSelect = function(options) {
+        EntityArrayFieldSelect.superclass.constructor.call(this, options);
+    };
+    Y.extend(EntityArrayFieldSelect, inputEx.SelectField, {
+
+        /**
+	 * Set the ListField classname
+	 * @param {Object} options Options object as passed to the constructor
+	 */
+        setOptions: function(options) {
+            var i, results = options.entity ? options.entity.get( "results" ) :
+            Y.Plugin.EditEntityAction.currentEntity.get( "results" );
+            options.choices = [];
+
+            for ( i = 0; i < results.length; i = i + 1 ) {
+                options.choices.push({
+                    value: results[i].get( "id"  ),
+                    label: results[i].get( "name" )
+                })
+
+            }
+
+            EntityArrayFieldSelect.superclass.setOptions.call(this, options);
+            this.options.entity = options.entity;
+        }
+    });
+
+    inputEx.registerType( "entityarrayfieldselect", EntityArrayFieldSelect );    // Register this class as "list" type
 
 });

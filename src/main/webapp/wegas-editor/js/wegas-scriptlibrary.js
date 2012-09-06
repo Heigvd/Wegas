@@ -1,24 +1,32 @@
-/**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
  */
 
-YUI.add('wegas-scriptlibrary', function (Y) {
+/**
+ * @module wegas-scriptlibrary
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+YUI.add( 'wegas-scriptlibrary', function ( Y ) {
     var CONTENTBOX = 'contentBox',
     ScriptLibrary;
 
-
-
-    ScriptLibrary = Y.Base.create("wegas-scriptlibrary", Y.Widget, [Y.WidgetChild,  Y.Wegas.Widget], {
+    ScriptLibrary = Y.Base.create( "wegas-scriptlibrary", Y.Widget, [ Y.WidgetChild,  Y.Wegas.Widget ], {
 
         currentScript: null,
 
         destructor: function () {
+            this.responseHandler.detach();
         },
 
         renderUI: function () {
             this.aceField = new Y.inputEx.AceField({
-                parentEl: this.get(CONTENTBOX),
-                name: 'text',
+                parentEl: this.get( CONTENTBOX ),
                 type: 'ace',
                 height: "100%",
                 language: "javascript",
@@ -29,9 +37,9 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         },
 
         bindUI: function () {
-            Y.Wegas.app.dataSources.GameModel.after("response", this.syncUI, this);
+            this.responseHandler = Y.Wegas.app.dataSources.GameModel.after( "response", this.syncUI, this );
 
-            this.selectField.on("updated", function (val) {
+            this.selectField.on( "updated", function (val) {
                 this.currentScript = val;
                 this.syncEditor();
             }, this);
@@ -52,7 +60,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                     position:0
                 });
             }
-            for (var i in cGameModel.get("scriptLibrary")) {
+            for (var i in cGameModel.get( "scriptLibrary" )) {
                 if (!this.currentScript) this.currentScript = i;
                 this.selectField.addChoice({
                     value: i
@@ -62,14 +70,14 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             if (isEmpty) {
                 this.selectField.addChoice({
                     value: null,
-                    label:"No scripts"
+                    label: "No scripts"
                 });
             } else {
                 this.selectField.setValue(this.currentScript, false);
             }
 
-            this.saveButton.set("disabled", isEmpty);
-            this.deleteButton.set("disabled", isEmpty);
+            this.saveButton.set( "disabled", isEmpty );
+            this.deleteButton.set( "disabled", isEmpty );
 
             this.hideOverlay();
         },
@@ -169,7 +177,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
         syncEditor: function () {
             var cGameModel = Y.Wegas.GameModelFacade.rest.getCurrentGameModel(),
-            val = cGameModel.get("scriptLibrary")[this.selectField.getValue()] || "";
+            val = cGameModel.get( "scriptLibrary" )[ this.selectField.getValue() ] || "";
 
             this.aceField.setValue( val, false );
         }
