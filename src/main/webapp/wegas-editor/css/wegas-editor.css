@@ -270,7 +270,7 @@ img.inputEx-ListField-delButton {
 }
 .yui3-skin-sam .wegas-icon-newfile {
     background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1210px,
-    url("../images/wegas-icon-files.png") no-repeat 1px -228px
+        url("../images/wegas-icon-files.png") no-repeat 1px -228px
 }
 .yui3-skin-sam .wegas-icon-newdir {
     background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1167px,
@@ -623,6 +623,11 @@ img.inputEx-ListField-delButton {
     content: "";
     width: 30px;
 }
+.yui3-skin-sam .yui3-panel .yui3-widget-bd {
+    overflow: auto;
+    position: relative;                                                         /* So the abolute element like treeview icons are well positionned */
+    padding: 0;                                                                 /* Override yui default */
+}
 
 /* Wysiwyg code editor */
 .inputEx-WysiwigScript .inputEx-fieldWrapper,
@@ -691,5 +696,3 @@ img.inputEx-ListField-delButton {
     background: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
         url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
 }
-
-/* Lobby layout styles */
