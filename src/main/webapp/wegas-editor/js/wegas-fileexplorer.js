@@ -344,11 +344,11 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
         updateContent:function(e){
             var node = e.cfg.node,
-            data = JSON.parse(e.data.response);
+            data = e.response.results;
             node.get("rightWidget").get("params").data.set("description",  data.description);
             node.get("rightWidget").get("params").data.set("note", data.note);
-
-            EditEntityAction.hideEditFormOverlay();
+            Y.Plugin.EditEntityAction.showFormMessage("success", data.name + " successfully updated.");
+            Y.Plugin.EditEntityAction.hideEditFormOverlay();
         },
         onListRequestSuccess: function (callback, e) {
             var i;
@@ -523,9 +523,15 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         onRequestFailure: function (e) {
-            Y.log("onDataSourceError(): Error retrieving data" + (e.stack || e), "error", "Wegas.FileExplorer");
-            e.cfg.node.set("loading", false);
-            EditEntityAction.hideEditFormOverlay();
+            Y.log("onDataSourceError(): Error retrieving data " + (e.response.results.exception || e), "error", "Wegas.FileExplorer");
+            try{
+                e.cfg.node.set("loading", false);
+                Y.Plugin.EditEntityAction.showFormMessage("error", e.response.results.message);
+            }catch(e){
+                Y.Plugin.EditEntityAction.showFormMessage("error", "File Not Found");
+            }finally{
+                Y.Plugin.EditEntityAction.hideEditFormOverlay();
+            }
         },
 
         FileUploader : Y.Base.create("wegas-fileuploader", Y.Widget, [Y.WidgetParent], {
@@ -659,15 +665,15 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         formatFileSize: function ( bytes ) {
-//            var mo = 1024 * 1024;
-//            if ( bytes > mo ) {
-//                return Math.round( bytes / mo ) + " MB";
-//
-//            } else if ( bytes > 1024 ) {
-//                return Math.round( bytes / 1024 ) + " KB";
-//            } else {
-//                return bytes + " B";
-//            }
+            //            var mo = 1024 * 1024;
+            //            if ( bytes > mo ) {
+            //                return Math.round( bytes / mo ) + " MB";
+            //
+            //            } else if ( bytes > 1024 ) {
+            //                return Math.round( bytes / 1024 ) + " KB";
+            //            } else {
+            //                return bytes + " B";
+            //            }
             var precision = 2,
             sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
             i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
