@@ -12,6 +12,7 @@ package com.wegas.core.content;
 
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.ResourceBundle;
 import javax.jcr.*;
 import javax.naming.InitialContext;
@@ -128,8 +129,8 @@ public class ContentConnector {
 
     }
 
-    protected String getLastModified(String absolutePath) throws RepositoryException {
-        return this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED).getString();
+    protected Calendar getLastModified(String absolutePath) throws RepositoryException {
+        return this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED).getDate();
     }
 
     protected Long getSize(String absolutePath) throws RepositoryException {
