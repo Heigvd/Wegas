@@ -138,7 +138,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-imageloader': {
                         path:'wegas-app/js/widget/wegas-imageloader.js',
-                        requires: [ 'io-base', 'imageloader' ],
+                        requires: [ 'io-base', 'imageloader' ]
                     },
                     'wegas-gallerycss':{
                         path:'wegas-app/css/wegas-gallery.css',
@@ -348,7 +348,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-leaderway-dialogue': {
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
-                        /*!!!*/requires:['charts', 'charts-legend']/*!!!*/,
+                        requires:['charts', 'charts-legend'],
                         ix_provides: "Dialogue"
                     },
 
