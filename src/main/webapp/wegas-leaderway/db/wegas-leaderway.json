@@ -2620,7 +2620,7 @@
     },{
         "@class" : "DialogueDescriptor",
         "name" : "dialogueJessica",
-        "defaultVariableInstance" : {
+        "defaultInstance" : {
             "@class" : "FSMInstance",
             "currentStateId" : 1
         },
@@ -3316,7 +3316,7 @@
     },{
         "@class" : "DialogueDescriptor",
         "name" : "dialogueHector",
-        "defaultVariableInstance" : {
+        "defaultInstance" : {
             "@class" : "FSMInstance",
             "currentStateId" : 1
         },

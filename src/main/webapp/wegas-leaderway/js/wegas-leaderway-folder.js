@@ -12,6 +12,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         tabview: null,
         currentResourceDescriptor: null,
         handlers: new Array(),
+        lang: null,
 
         //*** Particular Methods ***/
         /**
@@ -318,6 +319,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         },
 
         // *** Lifecycle Methods *** //
+        
+        initializer: function(){
+            this.lang = new Y.Translator();
+        },
+        
         /**
          * Render the widget.
          * create the child widget "tabview"
@@ -326,7 +332,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.tabview = new Y.TabView({
                 children: [{
-                    label: 'Dossier',
+                    label: this.lang.getRB().folder,
                     content: '<div class="folder">\n\
                     <div class="basic_informations section">\n\
                     <div class="picture"></div>\n\
