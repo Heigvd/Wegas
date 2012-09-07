@@ -71,6 +71,7 @@ YUI.add( 'wegas-tabview', function ( Y ) {
                     fn(tab.item(0));                                            // and trigger the callback
                 }
             }
+            //tab.plug(Y.Plugin.Closable);                                      //TODO: currently bugged if the tab is active
             tab.set("selected", 2);
         }
     });

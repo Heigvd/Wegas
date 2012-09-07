@@ -15,22 +15,23 @@
 select {
     margin: 0;
 }
+.yui3-tab{
+    position: relative;
+}
 .yui3-tab .closable-closeicon{
     /*background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;*/
     background: url(../../wegas-app/images/sprite_icons.png) no-repeat 1px 2px,url(/Wegas/lib/yui3/build/tabview/assets/skins/sam/../../../../assets/skins/sam/sprite.png) repeat-x left -1300px;
-    position: relative;
-    left: -15px;
+    position: absolute;
+    right: 1px;
     width: 13px;
     height: 13px;
     display: none;
-    top: -17px;
+    top: -12px;
     border: 1px solid #A3A3A3;
     border-bottom: none;
 }
 .yui3-tab-selected > .closable-closeicon{
     background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 1px 2px,url(/Wegas/lib/yui3/build/tabview/assets/skins/sam/../../../../assets/skins/sam/sprite.png) repeat-x left -1400px;
-    left: -15px;
-    top: -19px;
     border-color: black;
 }
 .yui3-tab:hover .closable-closeicon{
