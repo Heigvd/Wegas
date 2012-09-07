@@ -34,7 +34,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             if(this.resourceDescriptor != null){
                 this.nextPageId = nextPageId;
                 cb.addClass('modePicking');
-                cb.one('.resourceName p').setHTML('Assigner un mandat Ã  '+this.resourceDescriptor.getInstance().get('properties').surname);
+                cb.one('.resourceName p').setHTML('Assigner un mandat à '+this.resourceDescriptor.getInstance().get('properties').surname);
                 cb.one('.resourceName').show();
                 cb.one('.footer').show();
             }
@@ -66,7 +66,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     termData = (workers.length <= 0)?(taskInstance.get('properties').disappearAtWeek - currentWeekInstance.get('value')) : "-";
                     comment = new Array();
                     if(taskInstance.get('properties').comment) comment.push(taskInstance.get('properties').comment);
-                    if(taskInstance.get('properties').workWithLeader == 'true') comment.push("S'effectue en coopÃ©ration avec le leader.");
+                    if(taskInstance.get('properties').workWithLeader == 'true') comment.push("S'effectue en coopération avec le leader.");
                     if(comment.length <= 0) comment.push("-");
                     if(workers.length <= 0) workers.push("-");
                     this.data.push({
@@ -170,11 +170,11 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             feedbackNode.setStyle('display', 'block');
             if(success){
                 feedbackNode.one('p').addClass('green');
-                feedbackNode.one('p').insert("Le mandat Ã  Ã©tÃ© dÃ©lÃ©guÃ© !");
+                feedbackNode.one('p').insert("Le mandat à été délégué !");
             }
             else{
                 feedbackNode.one('p').addClass('red');
-                feedbackNode.one('p').insert("Le mandat n'a pas pu Ãªtre dÃ©lÃ©guÃ©.");
+                feedbackNode.one('p').insert("Le mandat n'a pas pu être délégué.");
             }
             setTimeout(function(){
                 feedbackNode.setHTML('<p></p>');
@@ -212,22 +212,22 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 },
                 {
                     key:"skill",
-                    label:"CompÃ©tence",
+                    label:"Compétence",
                     sortable:true
                 },
                 {
                     key:"duration",
-                    label:"DurÃ©e",
+                    label:"Durée",
                     sortable:true
                 },
                 {
                     key:"term",
-                    label:"EchÃ©ance",
+                    label:"Echéance",
                     sortable:true
                 },
                 {
                     key:"salary",
-                    label:"RemunÃ©ration",
+                    label:"Remunération",
                     sortable:true
                 },
                 {
@@ -237,7 +237,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 },
                 {
                     key:"worker",
-                    label:"EmployÃ©",
+                    label:"Employé",
                     sortable: true
                 }
                 ]
