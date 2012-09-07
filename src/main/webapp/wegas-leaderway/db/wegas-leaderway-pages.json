@@ -33,6 +33,10 @@
                         "variable": "budget",
                         "dataSource": "VariableDescriptor"
                     },{
+                        "type": "LangSelector",
+                        "cssClass":"langselector",
+                        "items":["fr","en"]
+                    },{
                         "type": "VariableDisplay",
                         "cssClass":"indicators-gauge",
                         "label": "Motivation générale",
