@@ -17,10 +17,20 @@ YUI.add('wegas-langselector', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.push(cb.one('.wegas-langselector-select').delegate('click', function (e) {
                var lang = e.currentTarget.getContent(),
-               location = window.location;
-               console.log(lang);
-               console.log(location+"&lang="+lang);
-//               history.pushState({ foo: "bar" }, "test", location+"&lang="+lang);
+               url = window.location.href,
+               urlStart, urlEnd;
+               if(url.indexOf("&lang=") > -1){
+                  urlStart = url.substring(0, url.indexOf("&lang="));
+                  urlEnd = url.substring(url.indexOf("&lang=")+1);
+                    if(urlEnd.indexOf("&")>-1){
+                        urlEnd = urlEnd.substring(urlEnd.indexOf("&"));   
+                    }
+                    else{
+                        urlEnd = "";
+                    }
+               }
+               location.replace(urlStart+urlEnd+"&lang="+lang);
+               
             },'option', this))
         },
         
