@@ -137,7 +137,7 @@ public class RequestManager implements Serializable {
      * @return the ResourceBundle
      */
     public ResourceBundle getBundle(String bundle){
-        return ResourceBundle.getBundle("localisation.errors", lang); 
+        return ResourceBundle.getBundle(bundle, this.local); 
     }
 
     /**
