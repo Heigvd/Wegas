@@ -68,18 +68,27 @@ public class RequestManagerFacade {
     public static RequestManagerFacade lookup() {
         try {
             return Helper.lookupBy(RequestManagerFacade.class);
-        }
-        catch (NamingException ex) {
+        } catch (NamingException ex) {
             logger.error("Error retrieving requestmanager", ex);
             return null;
         }
     }
-    
-    public ResourceBundle getResourceBundle(){
-        return this.requestManager.getResourceBundle();
+
+    /**
+     * @return the local
+     */
+    public Locale getLocal() {
+        return this.requestManager.getLocal();
     }
-    
-    public void setResourceBundle(Locale lang){
-        this.requestManager.setResourceBundle(lang);
+
+    /**
+     * @param local the local to set
+     */
+    public void setLocal(Locale local) {
+        this.requestManager.setLocal(local);
+    }
+
+    public ResourceBundle getBundle(String name) {
+        return this.requestManager.getBundle(name);
     }
 }
