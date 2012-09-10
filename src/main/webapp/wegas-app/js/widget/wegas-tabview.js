@@ -15,7 +15,7 @@
 YUI.add( 'wegas-tabview', function ( Y ) {
     "use strict";
 
-    var TabView, Tab;
+    var TabView, Tab, Closable;
 
     TabView = Y.Base.create( "tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
         bindUI: function () {
@@ -51,6 +51,12 @@ YUI.add( 'wegas-tabview', function ( Y ) {
             }
             return TabView.tabs[ id ];
         },
+        destroyTab: function( id ){                                             //FIX destroy config
+            if ( TabView.tabs[ id ] ) {
+                TabView.tabs[id].destroy();
+                delete TabView.tabs[id];
+            }
+        },
         /**
          *  Helper function
          */
@@ -65,6 +71,7 @@ YUI.add( 'wegas-tabview', function ( Y ) {
                     fn(tab.item(0));                                            // and trigger the callback
                 }
             }
+            //tab.plug(Y.Plugin.Closable);                                      //TODO: currently bugged if the tab is active
             tab.set("selected", 2);
         }
     });
@@ -193,4 +200,39 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         }
     });
     Y.namespace( 'Wegas' ).Tab = Tab;
+
+    Closable = Y.Base.create("closable", Y.Plugin.Base, [], {
+        initializer: function (){
+            this._closableNode = Y.Node.create("<span class='closable-closeicon'></span>");
+            if(!this.get("host").get("rendered")){
+                this._renderEvent = this.get("host").onceAfter("widget:render", function(e){
+                    this.get("host").get("boundingBox").append(this._closableNode);
+                }, this);
+            }else{
+                this.get("host").get("boundingBox").append(this._closableNode);
+            }
+
+            this._closableNode.once("click", function(e){
+                var id = this.get("host").get("label");
+                this.get("host").blur();
+                if(this.get("host") instanceof Tab && TabView.tabs[id]){        //FIX : check tab instances.
+                    TabView.destroyTab(id);
+                }else{
+                    this.get("host").destroy();
+                }
+            }, this)
+        },
+        destructor: function(){
+            if(this._renderEvent){
+                this._renderEvent.detach();
+            }
+            if(this._closableNode){
+                this._closableNode.remove(true);
+            }
+        }
+    }, {
+        NS:"close",
+        NAME:"Closable"
+    });
+    Y.namespace( "Plugin" ).Closable = Closable
 });

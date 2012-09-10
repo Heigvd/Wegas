@@ -1,7 +1,6 @@
 /**
  *
  *  @todo Threat network error (now enlessely loading)
- *  @todo if there is a scrol and we click on new file, widget needs to scroll to that widget
  *  @todo
  */
 
@@ -117,7 +116,9 @@ YUI.add('wegas-fileexplorer', function (Y) {
         bindUI: function () {
             this.tooltip.on( "triggerEnter" , function ( e ) {                  // The tooltip content is set on the fly based on the node
                 var leaf = Y.Widget.getByNode( e.node ), ret = "";
-
+                if(!leaf.data){
+                    return;
+                }
                 if ( leaf.data.mimeType.indexOf("image") > -1 ) {
                     ret += '<img src="' + this.getFullPath( leaf.path ) + '" /><br />';
                 }
@@ -212,14 +213,19 @@ YUI.add('wegas-fileexplorer', function (Y) {
             this.fileUploader.on("fileuploadcomplete", function(e){
                 var node;
                 e.file.treeLeaf.set("loading", false);
-                node = this.createNode(e.data)
+                node = this.createNode(e.data);
                 if(node){
                     e.file.treeLeaf.get("parent").add(node);
+                    this.showMessage("success", JSON.parse(e.data).name + ": upload successfull");
                 }else{
                     e.file.progressBar.set("color", "red");
+                    this.showMessage("error", JSON.parse(e.data).name + ": upload failed");
                 }
                 e.file.treeLeaf.destroy();
             }, this);
+            this.fileUploader.on("fileuploaderror", function(e){
+                console.log(e);
+            }, this)
         },
         destructor: function () {
             for(var i in this.events){
@@ -489,6 +495,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 node.expand(false);
                 this.uploader.show();
                 this.uploader.enable();
+                this.uploader.get(BOUNDING_BOX).scrollIntoView();
                 //In case rightWidget opacity change.
                 this.uploader.get(BOUNDING_BOX).get("parentNode").setStyle("opacity", 1); //force opacity to 1 on rightWidget
             }
@@ -639,7 +646,6 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     {
                         name:file.treeLeaf.get("label")
                     });
-
             }
         }, {
             NAME:"FileUploader",
