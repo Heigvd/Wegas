@@ -142,7 +142,7 @@
                         currentGame: #{gameController.currentGame.id},
                         currentTeam: #{gameController.currentPlayer.team.id},
                         currentPlayer: #{gameController.currentPlayer.id},
-                        currentUser: #{lobbyController.getCurrentUser().toJson()},
+                        currentUser: #{requestController.getCurrentUser().toJson()},
                         cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
 
                         /**
