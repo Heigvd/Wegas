@@ -113,13 +113,13 @@ YUI.add('wegas-editor-action', function (Y) {
                 //EditEntityAction.tab = Y.Wegas.TabView.createTab("Edit", '#centerTabView');
                 EditEntityAction.form = new Y.Wegas.FormWidget();
 
-                EditEntityAction.form.on("submit", function (e) {
+                EditEntityAction.form.on( "submit", function (e) {
                     this.form.showOverlay();
                     this.callback(e.value, this.currentEntity);
-                }, EditEntityAction);
+                }, EditEntityAction );
 
-                EditEntityAction.form.on("cancel", EditEntityAction.hideEditForm, EditEntityAction);
-                EditEntityAction.tab.add(EditEntityAction.form);
+                EditEntityAction.form.on( "cancel", EditEntityAction.hideEditForm, EditEntityAction );
+                EditEntityAction.tab.add( EditEntityAction.form );
             }
             EditEntityAction.tab.set("selected", 2);
             EditEntityAction.form.emptyMessage();
@@ -128,6 +128,7 @@ YUI.add('wegas-editor-action', function (Y) {
         hideEditForm: function () {
             EditEntityAction.tab.get( "parent" ).selectChild( 0 );
             Y.Wegas.TabView.destroyTab(EditEntityAction.tab.get("id"));
+            // EditEntityAction.tab.destroy();
             delete EditEntityAction.tab;
             delete EditEntityAction.form;
         },

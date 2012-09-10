@@ -20,21 +20,7 @@
         </resource-bundle>
 
     </application>
-
-    <navigation-rule>
-        <from-view-id>/wegas-app/view/lobby-jsf.xhtml</from-view-id>
-        <navigation-case>
-            <from-outcome>gameJoined</from-outcome>
-            <to-view-id>/wegas-app/view/lobby-selectteam.xhtml</to-view-id>
-        </navigation-case>
-
-        <navigation-case>
-            <from-outcome>playGame</from-outcome>
-            <to-view-id>/wegas-app/view/play.xhtml</to-view-id>
-            <redirect />
-        </navigation-case>
-    </navigation-rule>
-
+<!--
     <navigation-rule>
         <from-view-id>/wegas-app/view/lobby-selectteam.xhtml</from-view-id>
         <navigation-case>
@@ -47,20 +33,6 @@
                 </view-param>
             </redirect>
         </navigation-case>
-    </navigation-rule>
+    </navigation-rule>-->
 
-    <navigation-rule>
-        <from-view-id>/wegas-editor/view/lobby-jsf.xhtml</from-view-id>
-        <navigation-case>
-            <from-outcome>playGame</from-outcome>
-            <to-view-id>/wegas-app/view/play.xhtml</to-view-id>
-            <redirect />
-        </navigation-case>
-
-        <navigation-case>
-            <from-outcome>editGame</from-outcome>
-            <to-view-id>/wegas-editor/view/editor.xhtml</to-view-id>
-            <redirect />
-        </navigation-case>
-    </navigation-rule>
 </faces-config>
