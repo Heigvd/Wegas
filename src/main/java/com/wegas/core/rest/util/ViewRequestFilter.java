@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
-    
 
     /**
      *
@@ -45,15 +44,14 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
     public ContainerRequest filter(ContainerRequest cr) {
         String firstPathSeg = cr.getPathSegments().get(0).getPath();
         RequestManagerFacade rmf = RequestManagerFacade.lookup();
-        if(cr.getHeaderValue("lang")!=null && !cr.getHeaderValue("lang").isEmpty()){
-            rmf.setResourceBundle(new Locale(cr.getHeaderValue("lang")));
+        if (cr.getHeaderValue("lang") != null && !cr.getHeaderValue("lang").isEmpty()) {
+            rmf.setLocal(new Locale(cr.getHeaderValue("lang")));
+        } else if (cr.getHeaderValue("Accept-Language") != null && !cr.getHeaderValue("Accept-Language").isEmpty()) {
+            rmf.setLocal(new Locale(cr.getHeaderValue("Accept-Language")));
+        } else {
+            rmf.setLocal(Locale.getDefault());
         }
-        else if(cr.getHeaderValue("Accept-Language")!=null && !cr.getHeaderValue("Accept-Language").isEmpty()){
-            rmf.setResourceBundle(new Locale(cr.getHeaderValue("Accept-Language")));
-        }
-        else rmf.setResourceBundle(Locale.getDefault());
-        
-        
+
         String newUri = cr.getRequestUri().toString();
 
         switch (firstPathSeg) {
@@ -87,8 +85,7 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
         }
         try {
             cr.setUris(cr.getBaseUri(), new URI(newUri));
-        }
-        catch (URISyntaxException ex) {
+        } catch (URISyntaxException ex) {
             java.util.logging.Logger.getLogger(ViewRequestFilter.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cr;

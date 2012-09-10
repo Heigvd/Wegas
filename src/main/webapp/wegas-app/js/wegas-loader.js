@@ -97,6 +97,11 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-chat-min.js',
                         ix_provides: 'Chat'
                     },
+                    'wegas-langselector': {
+                        path: 'wegas-app/js/widget/wegas-langselector-min.js',
+
+                        ix_provides: 'LangSelector'
+                    },
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
                         requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize', 'resize' ],
@@ -277,7 +282,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-fileexplorercss':{
                         path: 'wegas-editor/css/wegas-fileexplorer.css',
-                        type:'css',
+                        type:'css'
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
@@ -355,7 +360,6 @@ YUI().use(function (Y) {
                         path: 'wegas-leaderway/js/wegas-leaderway-translator/wegas-leaderway-translator.js',
                         pkg: 'wegas-leaderway/js/wegas-leaderway-translator',
                         lang: ["en"]
-
                     },
 
                     /** MMO **/
