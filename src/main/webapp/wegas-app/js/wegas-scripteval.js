@@ -22,6 +22,8 @@ YUI.add('wegas-scripteval', function (Y) {
             this.afterHostEvent("response", function(e){
                 this.upToDate = false;
             }, this);
+            this.publish("evaluated");
+            this.publish("failure");
         },
         scopedEval: function(script){
             var result, response, url;
@@ -30,28 +32,35 @@ YUI.add('wegas-scripteval', function (Y) {
             }
             try{
                 result = (new Function( "with(this) { return "+ script +";}")).call(this.context);
+                this.fire("evaluated",result);
             }catch(error){
-                //TODO : passer en mode asynchrone
                 url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
-                response = Y.io(url,{
+                Y.io(url,{
                     headers:{
                         'Content-Type': 'application/json; charset=iso-8859-1',
                         'Managed-Mode': 'false'
                     },
-                    sync:true,
+                    sync:false,
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
                         "language": "JavaScript",
                         "content": script
-                    })
+                    }),
+                    on:{
+                        success:Y.bind( function(id, response){
+                            this.fire("evaluated", Y.JSON.parse(response.responseText));
+                        }, this),
+                        failure:Y.bind(function(id, response){
+                            try{
+                                this.fire("failure", Y.JSON.parse(response.responseText));
+                            }catch(e){
+                                this.fire("failure", null);
+                            }
+                        }, this)
+                    }
                 });
-                result = JSON.parse(response.responseText);
-                if(response.status != 200){
-                    throw new Error(result.message);
-                }
             }
-            return result;
         },
         buildContext: function(){
             var data = this.get("host").data;
