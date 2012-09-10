@@ -77,15 +77,15 @@ public class RequestManagerFacade {
     /**
      * @return the local
      */
-    public Locale getLocal() {
-        return this.requestManager.getLocal();
+    public Locale getLocale() {
+        return this.requestManager.getLocale();
     }
 
     /**
      * @param local the local to set
      */
-    public void setLocal(Locale local) {
-        this.requestManager.setLocal(local);
+    public void setLocale(Locale locale) {
+        this.requestManager.setLocale(locale);
     }
 
     public ResourceBundle getBundle(String name) {

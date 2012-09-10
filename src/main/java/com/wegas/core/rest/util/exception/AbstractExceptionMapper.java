@@ -9,12 +9,10 @@
  */
 package com.wegas.core.rest.util.exception;
 
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.RequestManagerFacade;
 import java.sql.SQLException;
 import java.util.Iterator;
 import javax.ejb.EJBException;
-import javax.inject.Inject;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
 import javax.validation.ConstraintViolation;
