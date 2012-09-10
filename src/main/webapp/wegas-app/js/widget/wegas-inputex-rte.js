@@ -2,7 +2,8 @@
  * @module wegas-inputex-rte
  */
 YUI.add("wegas-inputex-rte", function (Y){
-    var inputEx = Y.inputEx;
+    var inputEx = Y.inputEx,
+    Dom = Y.YUI2.util.Dom;
 
     /**
      * Wrapper for the Rich Text Editor from YUI
@@ -19,6 +20,13 @@ YUI.add("wegas-inputex-rte", function (Y){
         inputEx.RTEField.superclass.constructor.call(this,options);
     };
     Y.extend(inputEx.RTEField, inputEx.Field, {
+
+        destroy: function () {
+            inputEx.RTEField.superclass.destroy.call( this );
+
+            this.editor.destroy();
+        },
+
         /**
          * Set the default values of the options
          * @param {Object} options Options object as passed to the constructor
@@ -53,13 +61,13 @@ YUI.add("wegas-inputex-rte", function (Y){
 
             //This is the default config
             var _def = {
-                height: '300px',
-                width: '100%',                                                      // @modified
+                width: '100%',
+                //  height: '300px',
+                autoHeight: true,
                 dompath: false,
                 animate: true,
-                autoHeight: true,
-                filterWord:true,                                                    // get rid of the MS word junk
-                extracss: 'p {margin:0} ',
+                filterWord: true,                                               // get rid of the MS word junk (but is unfortunately too restrictive
+                extracss: 'p {margin:0} .wegas-media {font-size:100px; height: 120px; width: 200px; display:inline-block; border: 1px solid gray; background-color: #f2f2f2; background-image: url( ' + Y.Wegas.app.get( "base" ) + 'wegas-editor/images/wegas-icon-video.png ); background-position: 45% 45%; background-repeat: no-repeat; } .wegas-media * {display: none; }',
                 toolbar: {
                     collapse: false,
                     titlebar: '',
@@ -105,58 +113,62 @@ YUI.add("wegas-inputex-rte", function (Y){
                             label: 'Background Color',
                             value: 'backcolor',
                             disabled: true
-                        }, {
-                            type: 'separator'
-                        }, {
-                            type: 'push',
-                            label: 'Remove Formatting',
-                            value: 'removeformat',
-                            disabled: true
-                        }, {
-                            type: 'push',
-                            label: 'Show/Hide Hidden Elements',
-                            value: 'hiddenelements'
-                        }]
-                    }, {
-                        type: 'separator'
-                    },{
-                        group: 'fontstyle',
-                        buttons: [
-                        //{
-                        //type: 'select',
-                        //label: 'Arial',
-                        //value: 'fontname',
-                        //disabled: true,
-                        //menu: [{
-                        //    text: 'Arial',
-                        //    checked: true
-                        //}, {
-                        //    text: 'Arial Black'
-                        //}, {
-                        //    text: 'Comic Sans MS'
-                        //}, {
-                        //    text: 'Courier New'
-                        //}, {
-                        //    text: 'Lucida Console'
-                        //}, {
-                        //    text: 'Tahoma'
-                        //}, {
-                        //    text: 'Times New Roman'
-                        //},{
-                        //    text: 'Trebuchet MS'
-                        //},{
-                        //    text: 'Verdana'
-                        //}]
-                        //},
-                        {
-                            type: 'spin',
-                            label: '13',
-                            value: 'fontsize',
-                            range: [ 9, 75 ],
-                            disabled: true
                         }
+                        //{
+                        //    type: 'separator'
+                        //}, {
+                        //    type: 'push',
+                        //    label: 'Remove Formatting',
+                        //    value: 'removeformat',
+                        //    disabled: true
+                        //}, {
+                        //    type: 'push',
+                        //    label: 'Show/Hide Hidden Elements',
+                        //    value: 'hiddenelements'
+                        //}
                         ]
-                    }, {
+                    },
+                    //{
+                    //    type: 'separator'
+                    //},{
+                    //    group: 'fontstyle',
+                    //    buttons: [
+                    //{
+                    //type: 'select',
+                    //label: 'Arial',
+                    //value: 'fontname',
+                    //disabled: true,
+                    //menu: [{
+                    //    text: 'Arial',
+                    //    checked: true
+                    //}, {
+                    //    text: 'Arial Black'
+                    //}, {
+                    //    text: 'Comic Sans MS'
+                    //}, {
+                    //    text: 'Courier New'
+                    //}, {
+                    //    text: 'Lucida Console'
+                    //}, {
+                    //    text: 'Tahoma'
+                    //}, {
+                    //    text: 'Times New Roman'
+                    //},{
+                    //    text: 'Trebuchet MS'
+                    //},{
+                    //    text: 'Verdana'
+                    //}]
+                    //},
+                    //{
+                    //    type: 'spin',
+                    //    label: '13',
+                    //    value: 'fontsize',
+                    //    range: [ 9, 75 ],
+                    //    disabled: true
+                    //}
+                    //]
+                    //},
+                    {
                         type: 'separator'
                     },{
                         group: 'alignment',
@@ -242,10 +254,14 @@ YUI.add("wegas-inputex-rte", function (Y){
                             label: 'HTML Link CTRL + SHIFT + L',
                             value: 'createlink',
                             disabled: true
-                        },{
+                        }, {
                             type: 'push',
                             label: 'Insert Image',
                             value: 'insertimage'
+                        }, {
+                            type: 'push',
+                            label: 'Insert video',
+                            value: 'insertmedia'
                         }]
                     }]
                 }
@@ -264,18 +280,16 @@ YUI.add("wegas-inputex-rte", function (Y){
             //If this fails then the code is not loaded on the page
             if (editorType) {
                 this.editor = new editorType(id, _def);
-                this.editor.render();
             } else {
                 alert('Editor is not on the page');
             }
 
-
             /**
-                 * Filters out msword html comments, classes, and other junk
-                 * (complementary with YAHOO.widget.SimpleEditor.prototype.filter_msword, when filterWord option is true)
-                 * @param {String} html The html string
-                 * @return {String} The html string
-                 */
+             * Filters out msword html comments, classes, and other junk
+             * (complementary with YAHOO.widget.SimpleEditor.prototype.filter_msword, when filterWord option is true)
+             * @param {String} html The html string
+             * @return {String} The html string
+             */
             this.editor.filter_msword = function (html) {
 
                 html = editorType.prototype.filter_msword.call(this,html);
@@ -295,40 +309,66 @@ YUI.add("wegas-inputex-rte", function (Y){
             };
 
             /**
-                 * Plugin to add support for image and links from Wegas file library.
-                 */
+             * Plugin to add support for image and links from Wegas file library.
+             */
             this.editor.addListener('toolbarLoaded', function(e,o) {
-                this.editor.subscribe( 'afterOpenWindow', function(e) {  //afterOpenWindow or windowRender
-                    var targetNode = new Y.Node(e.win.body.firstChild);
-                    this.inputNode = targetNode.one('input');
-
-                    switch (e.win.name){
+                this.editor.subscribe( 'afterOpenWindow', function( e ) {       // afterOpenWindow or windowRender
+                    var value = null;
+                    switch ( e.win.name ){
                         case 'insertimage':
-                            if ( !this._insertimageRendered ){                      // if the newly inserted window is the image manager, we catch and modify
-                                this.inputNode.setStyle('width', '276px');
-                                this.imgButton = new Y.Button({
-                                    label: "<span class=\"wegas-icon wegas-icon-fileexplorer\"></span>",
-                                    on: {
-                                        click: Y.bind(this.showFileExplorer, this)
-                                    }
-                                }).render(targetNode);
+                            if ( this.editor.currentElement[0] && this.editor.currentElement[0].src.indexOf("blankimage.png") == -1 ) {
+                                value = this.editor.currentElement[0].src;
+                            }
+                            if ( !this._insertimageRendered ){                  // if the newly inserted window is the image manager, we catch and modify
+                                var targetNode = new Y.Node( e.win.body );
+                                this.fileInputNode = targetNode.one('input');
 
+                                targetNode.one( "label" ).setStyle( 'display', 'none' );
+                                targetNode.prepend( "<div></div>" );
+
+                                this.imageUrlField = new inputEx.Wegas.UrlField({
+                                    parentEl: targetNode.one( "div" ),
+                                    label: "Url",
+                                    typeInvite: "Enter a link or choose a file from the library"
+                                });
+
+                                this.imageUrlField.on( "updated", function ( val ) {
+                                    val = Y.Wegas.app.get("base") + "rest/File/GameModelId/" + Y.Wegas.app.get( "currentGameModel" ) + "/read" + val
+                                    this.fileInputNode.set('value', val);
+                                    this.fileInputNode.focus();											//HACK we simulate the blur event to trigger the editor's image update
+                                    this.fileInputNode.blur();
+                                }, this );
                                 this._insertimageRendered= true;
                             }
+
+                            this.imageUrlField.setValue( value, false );
                             break;
                         case 'createlink':
+                            if ( this.editor.currentElement[0] ) {
+                                value = this.editor.currentElement[0].href;
+                            }
                             if ( !this._createlinkRendered ){
-                                this.inputNode.setStyle('width', '226px');
+                                var targetNode = new Y.Node( e.win.body );
+                                this.inputNode = targetNode.one('input');
+                                targetNode.one( "label" ).setStyle( 'display', 'none' );
+                                targetNode.prepend( "<div></div>" );
 
-                                this.linkButton = new Y.Button({
-                                    label: "<span class=\"wegas-icon wegas-icon-fileexplorer\"></span>",
-                                    on: {
-                                        click: Y.bind(this.showFileExplorer, this)
-                                    }
-                                }).render(targetNode);
+                                this.linkUrlField = new inputEx.Wegas.UrlField({
+                                    parentEl: targetNode.one( "div" ),
+                                    label: "Url",
+                                    typeInvite: "Enter a link or choose a file from the library"
+                                });
+
+                                this.linkUrlField.on( "updated", function ( val ) {
+                                    val = Y.Wegas.app.get("base") + "rest/File/GameModelId/" + Y.Wegas.app.get( "currentGameModel" ) + "/read" + val
+                                    this.inputNode.set('value', val);
+                                    this.inputNode.focus();											//HACK we simulate the blur event to trigger the editor's image update
+                                    this.inputNode.blur();
+                                }, this );
 
                                 this._createlinkRendered= true;
                             }
+                            this.linkUrlField.setValue( value, false );
                             break;
                     }
                 }, null, this);
@@ -336,8 +376,8 @@ YUI.add("wegas-inputex-rte", function (Y){
 
 
             /**
-                 * Add the view source plugin
-                 */
+             * Add the view source plugin
+             */
             this.editor.state = 'off';
             this.editor.on('toolbarLoaded', function() {
                 var codeConfig = {
@@ -403,6 +443,103 @@ YUI.add("wegas-inputex-rte", function (Y){
                 }, this, true);
 
             }, this.editor, true);
+
+            /**
+             * Add the insert video plugin
+             */
+            var that = this, _handleWindowClose = function() {
+                var val = this.videoUrlField.getValue(),
+                el = this.editor.currentElement[0];
+
+
+                el.setAttribute('data-url',  val );
+                el.innerHTML = inputEx.RTEField.urlToEmbed( val );
+                //el.setHTML( "mm" );
+                // el.setAttribute( "data-videourl", val );
+                this.editor.nodeChange();
+            }, _handleMediaWindow = function() {
+                var el = this._getSelectedElement(),
+                node = new Y.Node( el ),
+                win = new Y.YUI2.widget.EditorWindow('insertmedia', {
+                    width: '415px'
+                });
+                win.setHeader('Edit video');
+                this.openWindow( win );
+
+                that.videoUrlField.setValue( node.getAttribute( "data-url" ) );
+                this.on('afterOpenWindow', function() {
+                    this.get('panel').syncIframe();
+                }, this, true);
+
+            };
+            this.editor.on('windowinsertmediaClose', function() {
+                _handleWindowClose.call(this);
+            }, this, true);
+
+            this.editor.cmd_insertmedia = function() {
+                this.execCommand('insertimage', 'none');
+                var el = this._swapEl(this.currentElement[0], 'p', function(el) {
+                    el.className = 'wegas-media';
+                });
+                this.currentElement = [el];
+                _handleMediaWindow.call(this);
+
+                return [false];
+            };
+
+            this.editor.on('editorDoubleClick', function() {
+                var el = this._getSelectedElement();
+                if (Dom.hasClass(el, 'wegas-media')) {
+                    this.currentElement = [el];
+                    _handleMediaWindow.call(this);
+                    return false;
+                }
+            }, this.editor, true);
+            this.editor.on('afterNodeChange', function() {
+                if (this._hasSelection()) {
+                    this.toolbar.disableButton('insertmedia');
+                } else {
+                    this.toolbar.enableButton('insertmedia');
+                    var el = this._getSelectedElement();
+                    if (Dom.hasClass(el, 'wegas-media')) {
+                        this.toolbar.selectButton('insertmedia');
+                    } else {
+                        this.toolbar.deselectButton('insertmedia');
+                    }
+                }
+            }, this.editor, true);
+            this.editor.on('toolbarLoaded', function() {
+                this.toolbar.on('insertmediaClick', function() {
+                    var el = this._getSelectedElement();
+                    if (Dom.hasClass(el, 'wegas-media')) {
+                        this.currentElement = [el];
+                        _handleMediaWindow.call(this);
+                        return false;
+                    }
+                }, this, true);
+            }, this.editor, true);
+            this.editor.on('windowRender', function () {
+                var body = Y.Node.create('<div class="wegas-rte-videoplugin-body"></div>');
+
+                this.videoUrlField = new inputEx.Wegas.UrlField({
+                    parentEl: body,
+                    label: "Url",
+                    typeInvite: "Enter a youtube link or choose a file in the library"
+                });
+                this.videoUrlField.on( "updated", function ( val ) {
+                    body.one( ".preview" ).setContent( inputEx.RTEField.urlToEmbed( val, 388 ) );
+                //this.moveWindow();
+                //this.get('panel').syncIframe();
+                }, this );
+
+                body.append( 'Preview <br /><div class="preview"></div>' );
+                this.editor._windows.insertmedia = {
+                    body: body.getDOMNode()
+                };
+
+            }, this, true );
+
+            this.editor.render();
         },
 
         /**
@@ -410,17 +547,22 @@ YUI.add("wegas-inputex-rte", function (Y){
          * @param {String} value The html string
          * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
          */
-        setValue: function (value, sendUpdatedEvt) {
+        setValue: function ( value, sendUpdatedEvt ) {
             if (this.editor) {
                 var iframeId = this.el.id + "_editor";
 
                 if (!Y.YUI2.util.Dom.get(iframeId)) {                           // if editor iframe not rendered
                     //this.el.value = value;                                    // put value in textarea : will be processed by this.editor._setInitialContent (clean html, etc...)
-                    this.editor.on('editorContentLoaded', function () {         /* @modified */
-                        this.editor.setEditorHTML(value);
+                    this.loaded = false;
+                    this.editor.on( 'editorContentLoaded', function () {  /* @modified */
+                        if ( !this.loaded ) {
+                            this.editor.setEditorHTML( value );
+                            this.loaded = true;
+                        }
                     }, value, this);
                 } else {
                     this.editor.setEditorHTML(value);
+                    this.loaded = true;
                 }
             }
         // if(sendUpdatedEvt !== false) {
@@ -436,42 +578,53 @@ YUI.add("wegas-inputex-rte", function (Y){
         getValue: function () {
             try {
                 if (this.editor.state == "on") {                                // If source code is displayed, we return this value
-                    this.editor.setEditorHTML(this.editor.get('element').value);
+                    this.editor.setEditorHTML( this.editor.get('element').value );
                 }
 
                 if (this.editor.currentWindow) {                                // trigger HTML cleaning (strip MS word or internal junk)
                     this.editor.closeWindow();                                  // + save to hidden textarea (required for classic HTML 'submit')
                 }
                 return this.editor.saveHTML();
-            } catch (ex) {
+            } catch ( ex ) {
                 return null;
             }
-        },
+        }
+    }, {
+        urlToEmbed: function ( url, width, height) {
 
-        showFileExplorer: function () {
-            if (!this.filepanel) {
-                this.filepanel = new Y.Panel({
-                    bodyContent: '',
-                    headerContent: 'Choose a file from library',
-                    width  : 600,
-                    zIndex : 30,
-                    modal  : true,
-                    render : true,
-                    centered   : true
-                });
+            width = width || 388;
+            height = height || 250;
 
-                this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode(Y.WidgetStdMod.BODY));
+            if ( /\.youtube\..*v=/i.test( url ) ) {                             // Youtube video
+                var id = /v=[^&]*&/.exec( url )[0].substr( 2 );
+                return '<object type="application/x-shockwave-flash" style="width:' + width +'px; height:' + height + 'px;" data="http://www.youtube.com/v/' + id + '?version=3">' +
+                '<param name="movie" value="http://www.youtube.com/v/' + id + '?version=3" />' +
+                '<param name="allowFullScreen" value="true" />' +
+                '<param name="allowscriptaccess" value="always" />' +
+                '</object>';
 
-                this.fileExplorer.on("*:fileSelected", function (e, path) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    this.inputNode.set('value', path);
-                    this.inputNode.focus();											//HACK we simulate the blur event to trigger the editor's image update
-                    this.inputNode.blur();
-                    this.filepanel.hide();
-                }, this);
+            } else if ( /^\/.*\.mp4/i.test( url ) ) {                           // Self-hosted mp4 videos
+                var vidUrl = Y.Wegas.app.get("base") + "rest/File/GameModelId/" + Y.Wegas.app.get( "currentGameModel" ) + "/read" + url ;
+                return '<video height="' + height + '" width="' + width + '" controls>' +
+                '<source src="' + vidUrl + '" type="video/mp4" />' +
+                //'<source src="" type="video/webm">' +
+                '</video>';
+
+            //<script type="text/javascript" src="/jwplayer/jwplayer.js"></script>
+            //<video height="270" width="480" id="myVideo">
+            //  <source src="/static/bunny.mp4" type="video/mp4">
+            //</video>
+            //<script type="text/javascript">
+            //  jwplayer("myVideo").setup({
+            //    modes: [
+            //        { type: 'html5' },
+            //        { type: 'flash', src: '/jwplayer/player.swf' }
+            //    ]
+            //  });
+            //</script>
             }
-            this.filepanel.show();
+
+            return "<em>Unable to embed link</em>";
         }
     });
 

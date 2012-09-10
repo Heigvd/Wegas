@@ -21,7 +21,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     GameModelDataSourceREST,
     GameDataSourceREST,
     DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=' + ( Y.config.charset || "iso-8859-1" ) ,
+        'Content-Type': 'application/json',
         'Managed-Mode': 'true'
     };
 

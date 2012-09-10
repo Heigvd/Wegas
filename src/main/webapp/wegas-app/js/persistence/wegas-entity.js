@@ -523,7 +523,7 @@ YUI.add('wegas-entity', function (Y) {
             editorLabel:{
                 type: "string",
                 _inputex:{
-                    label: "Name"
+                    label: "Private label"
                 },
                 validator:function(s){
                     return s === null || Y.Lang.isString(s);
@@ -532,7 +532,7 @@ YUI.add('wegas-entity', function (Y) {
             label: {
                 type: "string",
                 _inputex:{
-                    label: "Player label"
+                    label: "Public label"
                 },
                 optional: true
             },
