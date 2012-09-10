@@ -52,7 +52,7 @@ public class RequestManager implements Serializable {
     /**
      *
      */
-    private Locale local;
+    private Locale locale;
     
     /**
      *
@@ -137,21 +137,21 @@ public class RequestManager implements Serializable {
      * @return the ResourceBundle
      */
     public ResourceBundle getBundle(String bundle){
-        return ResourceBundle.getBundle(bundle, this.local); 
+        return ResourceBundle.getBundle(bundle, this.locale); 
     }
 
     /**
      * @return the local
      */
-    public Locale getLocal() {
-        return local;
+    public Locale getLocale() {
+        return locale;
     }
 
     /**
      * @param local the local to set
      */
-    public void setLocal(Locale local) {
-        this.local = local;
+    public void setLocale(Locale local) {
+        this.locale = local;
     }
 
     /**
