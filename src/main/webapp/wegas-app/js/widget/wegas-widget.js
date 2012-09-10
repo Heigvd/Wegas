@@ -26,7 +26,9 @@ YUI.add('wegas-widget', function (Y) {
     },
     destroySelf = function(){
 
-
+        if ( !this._node ) {
+            return;                                                             // The node has already been destroyed
+        }
 
         if(this.timeout){
             this.timeout.cancel();
@@ -77,7 +79,7 @@ YUI.add('wegas-widget', function (Y) {
 
         showMessage: function ( level, txt, timeout ) {
             var msgNode = this.getMessageNode(),
-            message = Y.Node.create("<div class='" + (LEVEL[level] ? LEVEL[level] : "") + "'><span class='icon'></span><span class='content'>"+txt+"</span><span class='close'></span></div>");
+            message = Y.Node.create( "<div class='" + ( LEVEL[level] ? LEVEL[level] : "" ) + "'><span class='icon'></span><span class='content'>"+txt+"</span><span class='close'></span></div>");
             msgNode.append(message);
 
             message.closeHandler = message.one(".close").once( "click", destroySelf, message );
