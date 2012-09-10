@@ -37,7 +37,7 @@
             "text" : {
                 "speakerName":"Daniel",
                 "texts":[
-                    "Je suis malheureusement obliger de reprendre la situation en main. Vos compÃ©tences actuelles nâ€™ont apparemment pas suffi Ã  motiver votre Ã©quipe pour quâ€™elle donne le meilleur dâ€™elle-mÃªme. Dans ces conditions, je me vois dans lâ€™obligation de vous rÃ©trograder Ã  votre ancien poste."
+                    "Je suis malheureusement obligé de reprendre la situation en main. Vos compétences actuelles n’ont apparemment pas suffi à motiver votre équipe pour qu’elle donne le meilleur d’elle-même. Dans ces conditions, je me vois dans l’obligation de vous rétrograder à votre ancien poste."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -64,7 +64,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je suis dÃ©solÃ© mais donnez-moi une seconde chance, je peux encore redresser la situation."
+                    "Je suis désolé mais donnez-moi une seconde chance, je peux encore redresser la situation."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -91,7 +91,7 @@
             "text" : {
                 "speakerName":"Daniel",
                 "texts":[
-                    "Malheureusement, je pense que votre Ã©quipe a perdu confiance en vous. Ne soyez pas si dÃ©Ã§u, vous Ãªtes jeune, vous avez acquis de lâ€™expÃ©rience et je suis sÃ»r que la prochaine fois, Ã§a se passera comme vous voulez. Ce qui est embÃªtant, câ€™est que nous manquons de leader pour reprendre votre Ã©quipe. Quel membre de votre Ã©quipe a encore lâ€™envie de se battre pour lâ€™entreprise et serait tentÃ© de reprendre le flambeau ?"
+                    "Malheureusement, je pense que votre équipe a perdu confiance en vous. Ne soyez pas si déçu, vous êtes jeune, vous avez acquis de l’expérience et je suis sûr que la prochaine fois, ça se passera comme vous voulez. Ce qui est embêtant, c’est que nous manquons de leader pour reprendre votre équipe. Quel membre de votre équipe a encore l’envie de se battre pour l’entreprise et serait tenté de reprendre le flambeau ?"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -134,7 +134,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "FÃ©licitation, vous avez fait du trÃ¨s bon travail ! En rÃ©alitÃ©, je souhaiterais que vous soyez Ã  mes cÃ´tÃ© pour diriger ce dÃ©partement. Le travail du cÃ´tÃ© leadership ne changera pas Ã©normÃ©ment câ€™est pourquoi je pense que vous serez Ã  la hauteur de la situation."
+                    "Félicitation, vous avez fait du très bon travail ! En réalité, je souhaiterais que vous soyez à mes côté pour diriger ce département. Le travail du côté leadership ne changera pas énormément c’est pourquoi je pense que vous serez à la hauteur de la situation."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -188,7 +188,7 @@
             "text" : {
                 "speakerName":"Daniel",
                 "texts":[
-                    "Câ€™est vous-mÃªme quâ€™il faut remercier. Vous mâ€™avez prouvÃ© votre talent en tant que leader. En revanche, cette Ã©quipe a besoin dâ€™un nouveau chef. Avez-vous quelquâ€™un Ã  me proposer ?"
+                    "C’est vous-même qu’il faut remercier. Vous m’avez prouvé votre talent en tant que leader. En revanche, cette équipe a besoin d’un nouveau chef. Avez-vous quelqu’un à me proposer ?"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -231,7 +231,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je pense que Fernand Salmero est le plus compÃ©tent."
+                    "Je pense que Fernand Salmero est le plus compétent."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -272,7 +272,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je pense que Daniela Brossard est la plus compÃ©tente."
+                    "Je pense que Daniela Brossard est la plus compétente."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -313,7 +313,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je pense que Jessica Vogt est la plus compÃ©tente."
+                    "Je pense que Jessica Vogt est la plus compétente."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -354,7 +354,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je pense quâ€™Hector Auguste est le plus compÃ©tent."
+                    "Je pense qu’Hector Auguste est le plus compétent."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -395,7 +395,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je pense que Lucien Torr est le plus compÃ©tent."
+                    "Je pense que Lucien Torr est le plus compétent."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -436,7 +436,7 @@
             "text" : {
                 "speakerName":"Daniel",
                 "texts":[
-                    "TrÃ¨s bien, je vous fais confiance. Nous verrons ces rÃ©sultats dans quelques mois, aprÃ¨s sa formation. Il peut-Ãªtre tentant de revenir le conseiller mais vous risquer de le discrÃ©diter aussi, je vous demanderais de ne pas surveiller son travail."
+                    "Très bien, je vous fais confiance. Nous verrons ces résultats dans quelques mois, après sa formation. Il peut-être tentant de revenir le conseiller mais vous risquer de le discréditer aussi, je vous demanderais de ne pas surveiller son travail."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -463,7 +463,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je me suis attachÃ© Ã  ce dÃ©partement, jâ€™espÃ¨re quâ€™il se dÃ©veloppera. Cela dit je comprends votre dÃ©cision."
+                    "Je me suis attaché à ce département, j’espère qu’il se développera. Cela dit je comprends votre décision."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -490,7 +490,7 @@
             "text" : {
                 "speakerName":"-",
                 "texts":[
-                    "[Quelques mois plus tard] <br/> Vous avez travaillÃ© avec le nouveau leader et lui avez ainsi servi de modÃ¨le. Vous avez dÃ©veloppÃ© sa confiance et son expÃ©rience pour quâ€™il ait envie de se battre pour lâ€™entreprise. Maintenant, grÃ¢ce Ã  vos efforts, le travail du nouveau leader fait que lâ€™entreprise continue dâ€™Ã©voluer !  Bravo Ã  vous car un mauvais leader aurait pu gÃ¢cher tous vos effort et rÃ©duire Ã  nÃ©ant votre travail ainsi que celui de vos prÃ©dÃ©cesseurs."
+                    "[Quelques mois plus tard] <br/> Vous avez travaillé avec le nouveau leader et lui avez ainsi servi de modèle. Vous avez développé sa confiance et son expérience pour qu’il ait envie de se battre pour l’entreprise. Maintenant, grâce à vos efforts, le travail du nouveau leader fait que l’entreprise continue d’évoluer !  Bravo à vous car un mauvais leader aurait pu gâcher tous vos effort et réduire à néant votre travail ainsi que celui de vos prédécesseurs."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -511,7 +511,7 @@
             "text" : {
                 "speakerName":"Daniel",
                 "texts":[
-                    "TrÃ¨s bien, je vous fais confiance. Nous verrons ces rÃ©sultats dans quelques mois, aprÃ¨s sa formation. Il peut-Ãªtre tentant de revenir le conseiller mais vous risquer de le discrÃ©diter aussi, je vous demanderais de ne pas surveiller son travail."
+                    "Très bien, je vous fais confiance. Nous verrons ces résultats dans quelques mois, après sa formation. Il peut-être tentant de revenir le conseiller mais vous risquer de le discréditer aussi, je vous demanderais de ne pas surveiller son travail."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -538,7 +538,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je me suis attachÃ© Ã  ce dÃ©partement, jâ€™espÃ¨re quâ€™il se dÃ©veloppera. Cela dit je comprends votre dÃ©cision."
+                    "Je me suis attaché à ce département, j’espère qu’il se développera. Cela dit je comprends votre décision."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",
@@ -565,7 +565,7 @@
             "text" : {
                 "speakerName":"-",
                 "texts":[
-                    "[Quelques mois plus tard] <br/> Malheureusement, le travail du leader a Ã©tÃ© rÃ©duit Ã  nÃ©ant car le nouveau leader nâ€™Ã©tait pas assez compÃ©tent. Peut-Ãªtre que vous ne lâ€™aviez pas assez prÃ©parÃ© Ã  ce poste. Il aurait peut-Ãªtre dÃ» avoir un niveau de leadership plus Ã©levÃ© et donc plus de confiance et dâ€™expÃ©rience afin de se battre pour lâ€™entreprise. Ou alors, peut-Ãªtre nâ€™a-t-il pas assez travaillÃ© avec le leader. Manquant de modÃ¨le, il nâ€™a donc pas pu voir comment agir pour devenir un bon leader."
+                    "[Quelques mois plus tard] <br/> Malheureusement, le travail du leader a été réduit à néant car le nouveau leader n’était pas assez compétent. Peut-être que vous ne l’aviez pas assez préparé à ce poste. Il aurait peut-être dû avoir un niveau de leadership plus élevé et donc plus de confiance et d’expérience afin de se battre pour l’entreprise. Ou alors, peut-être n’a-t-il pas assez travaillé avec le leader. Manquant de modèle, il n’a donc pas pu voir comment agir pour devenir un bon leader."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background2.jpg",

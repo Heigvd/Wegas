@@ -138,7 +138,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-imageloader': {
                         path:'wegas-app/js/widget/wegas-imageloader.js',
-                        requires: [ 'io-base', 'imageloader' ],
+                        requires: [ 'io-base', 'imageloader' ]
                     },
                     'wegas-gallerycss':{
                         path:'wegas-app/css/wegas-gallery.css',
@@ -333,7 +333,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
-                        requires: ['tabview', 'panel', 'wegas-leaderway-tasklist'],
+                        requires: ['tabview', 'panel', 'wegas-leaderway-tasklist', 'wegas-leaderway-translator'],
                         ix_provides: "Folder"
                     },
                     'wegas-leaderway-tasklist': {
@@ -348,8 +348,14 @@ YUI().use(function (Y) {
                     },
                     'wegas-leaderway-dialogue': {
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
-                        /*!!!*/requires:['charts', 'charts-legend']/*!!!*/,
+                        requires:['charts', 'charts-legend'],
                         ix_provides: "Dialogue"
+                    },
+                    "wegas-leaderway-translator": {
+                        path: 'wegas-leaderway/js/wegas-leaderway-translator/wegas-leaderway-translator.js',
+                        pkg: 'wegas-leaderway/js/wegas-leaderway-translator',
+                        lang: ["en"]
+
                     },
 
                     /** MMO **/

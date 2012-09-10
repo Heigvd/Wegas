@@ -12,6 +12,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         tabview: null,
         currentResourceDescriptor: null,
         handlers: new Array(),
+        lang: null,
 
         //*** Particular Methods ***/
         /**
@@ -70,7 +71,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     switch(this.getOccupationObject(resourceInstance).code){
                         case 0 : textOccupation = "Libre";
                             break;
-                            case 1 : textOccupation = "OccupÃ©";
+                            case 1 : textOccupation = "Occupé";
                             break;
                             default : textOccupation = "Malade";
                     }
@@ -147,17 +148,17 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     leadershipInfo.push('<ul class="leadershipLevel-ul">');
                     leadershipInfo.push('<li class="leadershipLevel-label">Votre niveau de leadership avec '+surname+' est : </li>');
                     if(resourceInstance.get('properties').male == 'true'){
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modÃ¨le Ã  atteindre.</li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'Ã©nergie que vous avez dÃ©pensÃ© pour lui et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera Ã  son tour pour la dÃ©velloper.</li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car il vous considÃ¨re et pense que vos choix sont justifiÃ©s.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour lui et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car il vous considère et pense que vos choix sont justifiés.</li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'il en a le devoir.</li>");
                     }
                     else{
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modÃ¨le Ã  atteindre.</li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'Ã©nergie que vous avez dÃ©pensÃ© pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera Ã  son tour pour la dÃ©velloper.</li>");
-                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car elle vous considÃ¨re et pense que vos choix sont justifiÃ©s.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 5 : '+surname+" voit en vous un modèle à atteindre.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 4 : '+surname+" se rend compte de toute l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 3 : '+surname+" sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li>");
+                        leadershipInfo.push('<li class="leadershipLevel-info">Niveau 2 : '+surname+" suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li>");
                         leadershipInfo.push('<li class="leadershipLevel-info">Niveau 1 : '+surname+" suis vos directives uniquement parce qu'elle en a le devoir.</li>");
                     }
                     leadershipInfo.push('</ul>');
@@ -232,19 +233,19 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                         occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">');
                         occupation.push(occupationObject.taskDescriptor.get('name'));
                         occupation.push('</span></div>');
-                        occupation.push('<ul class="task-skill"><span class="task-skill-label">CompÃ©tence demandÃ©e : </span>');
+                        occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>');
                         occupation.push(taskSkills.join(""));
                         occupation.push('</ul></div>');
-                        occupation.push('<div class="task-salary"><span class="task-salary-label">RÃ©munÃ©ration : </span><span class="task-salary-value">');
+                        occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">');
                         occupation.push(taskInstance.get('properties').salary);
                         occupation.push('</span></div>');
-                        occupation.push('<div class="task-duration"><span class="task-duration-label">DurÃ©e de travail restant : </span><span class="task-duration-value">');
+                        occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">');
                         occupation.push(taskInstance.get('duration'));
                         occupation.push('</span></div>');
                         occupation.push("</div>");
                     break;
                 default :
-                    occupation.push('ArrÃªt maladie (revient dans ');
+                    occupation.push('Arrêt maladie (revient dans ');
                     occupation.push(taskInstance.get('duration'));
                     (taskInstance.get('duration') > 1)?occupation.push(' semaines).') : occupation.push(' semaine).');
             }
@@ -292,7 +293,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
                 cb.one('.actions .noAction').setHTML();
-                cb.one('.actions .giveTask').setHTML("<p>Donner un Mandat Ã   "+resourceInstance.get('properties').surname+"</p>");
+                cb.one('.actions .giveTask').setHTML("<p>Donner un Mandat à  "+resourceInstance.get('properties').surname+"</p>");
                 cb.one('.actions .speak').setHTML("<p>S'entretenir avec "+resourceInstance.get('properties').surname+"</p>");
                 occupation = this.getOccupationObject(resourceInstance).code;
                 cb.one('.actions .giveTask').hide();
@@ -314,10 +315,15 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         setTextSelectedTask: function(eventContainTask){
             var selectedRowInformation = this.tasksChooser.get(CONTENTBOX).one('.yui3-widget-ft .selectedTask');
             selectedRowInformation.setHTML();
-            selectedRowInformation.insert("Mandat sÃ©lectionnÃ© : "+eventContainTask.taskDescriptor.get('name'));
+            selectedRowInformation.insert("Mandat sélectionné : "+eventContainTask.taskDescriptor.get('name'));
         },
 
         // *** Lifecycle Methods *** //
+        
+        initializer: function(){
+            this.lang = new Y.Translator();
+        },
+        
         /**
          * Render the widget.
          * create the child widget "tabview"
@@ -326,7 +332,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.tabview = new Y.TabView({
                 children: [{
-                    label: 'Dossier',
+                    label: this.lang.getRB().folder,
                     content: '<div class="folder">\n\
                     <div class="basic_informations section">\n\
                     <div class="picture"></div>\n\
@@ -339,7 +345,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                         <div class="moral gauge"></div>\n\
                         <div class="confidence gauge"></div>\n\
                     </div>\n\
-                    <div class="skillsets section"><div class="title-section">CompÃ©tences : </div><div class="skillsets-value"></div></div>\n\
+                    <div class="skillsets section"><div class="title-section">Compétences : </div><div class="skillsets-value"></div></div>\n\
                     <div class="description section"><div class="title-section">Description : </div><div class="description-value"></div></div>\n\
                 </div>'
                 },

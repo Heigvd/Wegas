@@ -40,7 +40,9 @@ YUI.add('wegas-progressbar', function (Y) {
             percent:{
                 value:100,
                 setter:function (v){
-                    this.get(CONTENT_BOX).getDOMNode().style.width = v + "%";
+                    if(this.get(CONTENT_BOX).getDOMNode()){
+                        this.get(CONTENT_BOX).getDOMNode().style.width = v + "%";
+                    }
                     return v;
                 }
             },

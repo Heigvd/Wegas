@@ -55,7 +55,7 @@
                 }
             },{
                 "@class" : "DialogueTransition",
-                "actionText" : "FÃ©liciter",
+                "actionText" : "Féliciter",
                 "nextStateId" : 20,
                 "triggerCondition" : {
                     "@class" : "Script",
@@ -64,7 +64,7 @@
                 }
             },{
                 "@class" : "DialogueTransition",
-                "actionText" : "RÃ©primander",
+                "actionText" : "Réprimander",
                 "nextStateId" : 23,
                 "triggerCondition" : {
                     "@class" : "Script",
@@ -83,7 +83,7 @@
             "text":{
                 "speakerName":"Leader",
                 "texts":[
-                    "Salut. DÃ©solÃ©, je suis pressÃ©. Bonne journÃ©e.",
+                    "Salut. Désolé, je suis pressé. Bonne journée.",
                     "Bonjour. Continue, je ne fait que passer."
                 ],
                 "backgroundImages":[{
@@ -116,8 +116,8 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Oh, trÃ¨s bien. Bonne journÃ©e.",
-                    "Dâ€™accord, Ã  plus tard."
+                    "Oh, très bien. Bonne journée.",
+                    "D’accord, à plus tard."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -144,8 +144,8 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Salut, Je souhaiterais que tu me rÃ©alises ce mandat.",
-                    "Salut ! Jâ€™ai du travail pour toi."
+                    "Salut, Je souhaiterais que tu me réalises ce mandat.",
+                    "Salut ! J’ai du travail pour toi."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -235,8 +235,8 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Excuse-moi mais je ne me sens vraiment pas Ã  lâ€™aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?",
-                    "Je ne suis pas Ã  lâ€™aise avec ce genre de travaux, nâ€™y a-t-il pas dâ€™autre tÃ¢che ?"
+                    "Excuse-moi mais je ne me sens vraiment pas à l’aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?",
+                    "Je ne suis pas à l’aise avec ce genre de travaux, n’y a-t-il pas d’autre tâche ?"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -272,7 +272,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Oh pardon, je ne pensais que Ã§a te rebuterait autant. Laisser-moi rÃ©flÃ©chir Ã  ce que je peux te donner dâ€™autre."
+                    "Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d’autre."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -295,7 +295,7 @@
             },
             "transitions" : [{
                 "@class" : "DialogueTransition",
-                "actionText" : "Choisir Ã  nouveau",
+                "actionText" : "Choisir à nouveau",
                 "nextStateId" : 6
             },{
                 "@class" : "DialogueTransition",
@@ -308,8 +308,8 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Tu sais, on ne peut pas toujours travailler sur ce qui nous plaÃ®t. Jâ€™essaierai de vous te un travail qui vous plait mieux la prochaine fois.",
-                    "Je pense que câ€™est bien pour toi de travailler dans ce domaine, je te donnerai une tÃ¢che qui tâ€™intÃ©resse plus la prochaine fois."
+                    "Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J’essaierai de vous te un travail qui vous plait mieux la prochaine fois.",
+                    "Je pense que c’est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t’intéresse plus la prochaine fois."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -350,7 +350,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "TrÃ¨s bien, je te fais confiance.",
+                    "Très bien, je te fais confiance.",
                     "Bon je ferai de mon mieux."
                 ],
                 "backgroundImages":[{
@@ -384,7 +384,7 @@
                 "speakerName":"Lucien",
                 "texts":[
                     "Bon je vais le faire.",
-                    "Pffâ€¦ bon ok."
+                    "Pff… bon ok."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -416,7 +416,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "TrÃ¨s bien, je ferai de mon mieux. Merci !",
+                    "Très bien, je ferai de mon mieux. Merci !",
                     "Je le ferai avec grand plaisir, merci beaucoup !"
                 ],
                 "backgroundImages":[{
@@ -449,8 +449,8 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Dâ€™accord, je vais mâ€™en charger.",
-                    "Je nâ€™ai rien contre, je vais mâ€™y mettre."
+                    "D’accord, je vais m’en charger.",
+                    "Je n’ai rien contre, je vais m’y mettre."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -477,8 +477,8 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Ben tiens. Câ€™est bon je vais vous le faire votre mandat.",
-                    "Ouais je sens dÃ©jÃ  la motivation venirâ€¦"
+                    "Ben tiens. C’est bon je vais vous le faire votre mandat.",
+                    "Ouais je sens déjà la motivation venir…"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -510,7 +510,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Ah heuâ€¦ finalement non, rien ne convient."
+                    "Ah heu… finalement non, rien ne convient."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -555,7 +555,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Bonjour, je souhaitais te fÃ©liciter personnellement pour la qualitÃ© de tes travaux. Cela fait plaisir dâ€™avoir des employÃ©s de ton calibre."
+                    "Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d’avoir des employés de ton calibre."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -601,7 +601,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Eh bien, merci beaucoup. Jâ€™essaye toujours de faire de mon mieux."
+                    "Eh bien, merci beaucoup. J’essaye toujours de faire de mon mieux."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -633,7 +633,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Heuâ€¦ merci beaucoup ?"
+                    "Heu… merci beaucoup ?"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -665,7 +665,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Ton attitude au travail me dÃ©plaÃ®t beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui sâ€™imposent."
+                    "Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s’imposent."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -711,7 +711,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Euhâ€¦ pardon, mon travail me semblait suffisant. Je vais essayer de faire mieux la prochaine fois."
+                    "Euh… pardon, mon travail me semblait suffisant. Je vais essayer de faire mieux la prochaine fois."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -743,7 +743,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Je suis dÃ©solÃ© Ã§a nâ€™arrivera plus."
+                    "Je suis désolé ça n’arrivera plus."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -775,8 +775,8 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Salut, Si tu as un peu de temps, jâ€™aimerais savoir si tout va comme tu le souhaite.",
-                    "Salut, je voulais prendre un peu de temps pour mâ€™assurer que tout va comme tu le souhaites."
+                    "Salut, Si tu as un peu de temps, j’aimerais savoir si tout va comme tu le souhaite.",
+                    "Salut, je voulais prendre un peu de temps pour m’assurer que tout va comme tu le souhaites."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -864,7 +864,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "En rÃ©alitÃ©, jâ€™aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?"
+                    "En réalité, j’aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -891,7 +891,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Bien sÃ»r, je te promets de te transmettre un mandat de ce type dÃ¨s quâ€™il  en aura au moins un qui te convient."
+                    "Bien sûr, je te promets de te transmettre un mandat de ce type dès qu’il  en aura au moins un qui te convient."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -945,7 +945,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Je ne lâ€™ai encore jamais prÃ©cisÃ©, mais je nâ€™aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir Ã©viter de me donner des travaux de ce type ?"
+                    "Je ne l’ai encore jamais précisé, mais je n’aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -972,7 +972,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Oui bien sÃ»r si jâ€™ai des mandats dâ€™un autre genre et adaptÃ© Ã  ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de tâ€™Ã©viter cette frustration."
+                    "Oui bien sûr si j’ai des mandats d’un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t’éviter cette frustration."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -1026,7 +1026,7 @@
             "text" : {
                 "speakerName":"Lucien",
                 "texts":[
-                    "Lorsque jâ€™ai Ã©tÃ© engagÃ© ici, je ne pensais pas avoir la possibilitÃ© de travailler dans une diversitÃ© de travaux autant grande. Il se trouve que jâ€™ai donnÃ© un CV sans les informations qui me semblaient inutiles. Comme je vois quâ€™il y a des mandats dans le domaine â€˜&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&codeâ€™, jâ€™ai ajoutÃ© mon niveau dans votre dossier Ã  ce sujet."
+                    "Lorsque j’ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j’ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu’il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code’, j’ai ajouté mon niveau dans votre dossier à ce sujet."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -1053,7 +1053,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Oh vous avez bien Ã§a me donnera la possibilitÃ© de tâ€™attribuer un mandat en fonction de tes compÃ©tence dans le domaine."
+                    "Oh vous avez bien ça me donnera la possibilité de t’attribuer un mandat en fonction de tes compétence dans le domaine."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -1108,7 +1108,7 @@
             },
             "transitions" : [{
                 "@class" : "DialogueTransition",
-                "actionText" : "Continuer (CoÃ»te une action)",
+                "actionText" : "Continuer (Coûte une action)",
                 "nextStateId" : 38
             },{
                 "@class" : "DialogueTransition",
@@ -1162,7 +1162,7 @@
                 }
             },{
                 "@class" : "DialogueTransition",
-                "actionText" : "Demander de dÃ©velopper",
+                "actionText" : "Demander de développer",
                 "nextStateId" : 41,
                 "triggerCondition" : {
                     "@class" : "Script",
@@ -1171,7 +1171,7 @@
                 }
             },{
                 "@class" : "DialogueTransition",
-                "actionText" : "Demander de dÃ©velopper",
+                "actionText" : "Demander de développer",
                 "nextStateId" : 42,
                 "triggerCondition" : {
                     "@class" : "Script",
@@ -1185,8 +1185,8 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Vous pourriez amÃ©liorer votre travail en essayant de vous dÃ©passer, en travaillant plus dur que jamais. Ã‡a serait bÃ©nÃ©fique pour les clients et pour vous. Ce challenge vous donnerait de la motivation.",
-                    "Vous devriez peut-Ãªtre changer de mÃ©thode de travail. Ã‡a vous motiverait, et vous ouvrirait de nouveaux horizons. Le rÃ©sultat pourrait surprendre le client."
+                    "Vous pourriez améliorer votre travail en essayant de vous dépasser, en travaillant plus dur que jamais. Ça serait bénéfique pour les clients et pour vous. Ce challenge vous donnerait de la motivation.",
+                    "Vous devriez peut-être changer de méthode de travail. Ça vous motiverait, et vous ouvrirait de nouveaux horizons. Le résultat pourrait surprendre le client."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -1222,8 +1222,8 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Vous pourriez amÃ©liorer votre travail en essayant de vous dÃ©passer, en travaillant plus dur que jamais. Ã‡a serait bÃ©nÃ©fique pour les clients et pour vous. Ce challenge vous donnerait de la motivation.",
-                    "Vous devriez peut-Ãªtre changer de mÃ©thode de travail. Ã‡a vous motiverait, et vous ouvrirait de nouveaux horizons. Le rÃ©sultat pourrait surprendre le client."
+                    "Vous pourriez améliorer votre travail en essayant de vous dépasser, en travaillant plus dur que jamais. Ça serait bénéfique pour les clients et pour vous. Ce challenge vous donnerait de la motivation.",
+                    "Vous devriez peut-être changer de méthode de travail. Ça vous motiverait, et vous ouvrirait de nouveaux horizons. Le résultat pourrait surprendre le client."
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -1259,7 +1259,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je ne comprends pas bien ce que vous voulez vraiment me dire, vous 2 pourriez dÃ©velopper sâ€™il vous plait ?"
+                    "Je ne comprends pas bien ce que vous voulez vraiment me dire, vous 2 pourriez développer s’il vous plait ?"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",
@@ -1290,7 +1290,7 @@
             "text" : {
                 "speakerName":"Leader",
                 "texts":[
-                    "Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez dÃ©velopper sâ€™il vous plait ?"
+                    "Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s’il vous plait ?"
                 ],
                 "backgroundImages":[{
                     "link":"/Wegas/rest/File/GameModelId/1/read/background.jpg",

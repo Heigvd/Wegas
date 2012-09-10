@@ -10,7 +10,7 @@
                 "direction": "horizontal",
                 "children": [{
                         "type": "VariableDisplay",
-                        "label": "Semaine NÂ° : ",
+                        "label": "Semaine N° : ",
                         "cssClass":"indicators-fraction",
                         "view": "fraction",
                         "variable": "week",
@@ -35,7 +35,7 @@
                     },{
                         "type": "VariableDisplay",
                         "cssClass":"indicators-gauge",
-                        "label": "Motivation gÃ©nÃ©rale",
+                        "label": "Motivation générale",
                         "variable": "teamMotivation",
                         "view": "box",
                         "dataSource": "VariableDescriptor"
@@ -92,7 +92,7 @@
                         "type": "Button",
                         "label": "E-mail",
                         "cssClass": "menu-email",
-                        "tooltips":"RÃ©ception e-mail",
+                        "tooltips":"Réception e-mail",
                         "plugins": [{
                                 "fn": "UnreadCount",
                                 "cfg": {
