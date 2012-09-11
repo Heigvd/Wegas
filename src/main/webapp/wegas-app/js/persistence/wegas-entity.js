@@ -523,7 +523,7 @@ YUI.add('wegas-entity', function (Y) {
             editorLabel:{
                 type: "string",
                 _inputex:{
-                    label: "Name"
+                    label: "Private label"
                 },
                 validator:function(s){
                     return s === null || Y.Lang.isString(s);
@@ -532,7 +532,7 @@ YUI.add('wegas-entity', function (Y) {
             label: {
                 type: "string",
                 _inputex:{
-                    label: "Player label"
+                    label: "Public label"
                 },
                 optional: true
             },
@@ -1124,16 +1124,35 @@ YUI.add('wegas-entity', function (Y) {
      * Script mapper
      */
     Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
+        initializer: function(){
+            this.publish("evaluated");
+        },
         isValid: function (){
         //TODO : FX a greffer :)
         },
+        /*
+         * evaluated event contains response. true or false. False if script error.
+         */
         localEval: function(){
-            try{
-                return (Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"))==="true"||Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"))==true)?true:false;
-            }catch(e){
-                console.error("SCRIPT plugin failed");
-                return null;
-            }
+            this._eHandler = Y.Wegas.VariableDescriptorFacade.script.once("ScriptEval:evaluated", function(e, o){
+                if(o === true){
+                    this.fire("evaluated",true);
+                }else{
+                    this.fire("evaluated",false);
+                }
+                if(this._fHandler){
+                    this._fHandler.detach();
+                    this._fHandler = null;
+                }
+            }, this);
+            this._fHandler = Y.Wegas.VariableDescriptorFacade.script.once("ScriptEval:failure", function(e, o){
+                this.fire("evaluated", false);
+                if(this._eHandler){
+                    this._eHandler.detach();
+                    this._eHandler = null;
+                }
+            }, this);
+            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
         },
         isEmpty: function () {
             return (this.content == null || this.content == "");

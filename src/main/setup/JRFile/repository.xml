@@ -115,8 +115,8 @@
             class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
             <param name="driver" value="org.postgresql.Driver" />
             <param name="url" value="jdbc:postgresql://localhost:5432/jcr" />
-            <param name="user" value="jcr" />
-            <param name="password" value="jcrpass" />
+            <param name="user" value="user" />
+            <param name="password" value="123" />
             <param name="schema" value="postgresql" />
             <param name="schemaObjectPrefix" value="${wsp.name}_" />
           </PersistenceManager>
@@ -156,8 +156,8 @@
             class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
             <param name="driver" value="org.postgresql.Driver" />
             <param name="url" value="jdbc:postgresql://localhost:5432/jcr" />
-            <param name="user" value="jcr" />
-            <param name="password" value="jcrpass" />
+            <param name="user" value="user" />
+            <param name="password" value="123" />
             <param name="schema" value="postgresql" />
             <param name="schemaObjectPrefix" value="version_" />
           </PersistenceManager>
