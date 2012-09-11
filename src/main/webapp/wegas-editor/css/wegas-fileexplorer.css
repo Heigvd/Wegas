@@ -86,7 +86,7 @@
 
 /* Icon styles */
 .wegas-icon-file {
-    background-image: url("../images/wegas-icon-files.png");
+    background-image: url(../images/wegas-icon-files.png);
     background-repeat: no-repeat;
     background-position: 1px -225px;
     margin: -4px 0 -6px;
