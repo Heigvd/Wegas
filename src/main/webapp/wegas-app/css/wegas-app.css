@@ -198,6 +198,13 @@ input[type="submit"], input[type="reset"] {
     border: 1px solid gray;
     padding: 5px;
     box-shadow: 1px 2px 4px #6D6D6D;
+    font-size: 0.8em;
+    text-align: center;
+    /*font-style: italic;*/
+}
+.wegas-tooltip-content img {
+    max-height: 300px;
+    max-width: 300px;
 }
 .wegas-tooltip-hidden {
     visibility:hidden;

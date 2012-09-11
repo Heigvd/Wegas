@@ -54,7 +54,8 @@ public class JackrabbitConnector {
         } catch (RepositoryException ex) {
             logger.error("Check your repository setup {}", DIR);
         }
-        this.runGC();
+        //Enable GC on startup
+        //this.runGC();
     }
 
     @Schedule(minute = "0", hour = "3")

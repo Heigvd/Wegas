@@ -92,10 +92,10 @@ public class GameController implements Serializable {
             currentPlayer = gameModel.getGames().get(0).getTeams().get(0).getPlayers().get(0);
         } else if (this.gameId != null) {                                       // If we only have a gameModel id,
             try {
-                currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,// we try to check if current shiro user is registered to the target game
+                currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId, // we try to check if current shiro user is registered to the target game
                         userFacade.getCurrentUser().getId());
             }
-            catch (Exception e) {                                             // If we still have nothing
+            catch (Exception e) {                                               // If we still have nothing
                 List<Player> players = playerFacade.findByGameId(this.gameId);
                 if (!players.isEmpty()) {
                     currentPlayer = players.get(0);                             // we take the first player we find
