@@ -29,7 +29,7 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
             SelectPlayerButton.superclass.bindUI.apply( this, arguments );
             this.plug(Y.Plugin.WidgetMenu);
 
-            this.menus.on( "button:click", function ( e ) {
+            this.menu.on( "button:click", function ( e ) {
                 Y.Wegas.app.set( 'currentPlayer', e.target.get("data").entity.get( "id" ) );
             });
 
@@ -45,8 +45,8 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
 
             this.set( "label", "Current player: " + cPlayer.get( "name" ) );      // Update the label
 
-            for (j = 0; j < cGame.get("teams").length; j = j + 1) {
-                cTeam = cGame.get("teams")[j];
+            for ( j = 0; j < cGame.get( "teams" ).length; j = j + 1 ) {
+                cTeam = cGame.get( "teams" )[j];
 
                 // if ( cTeam.get("players").length == 0 ) {
                 //    continue;
@@ -54,14 +54,14 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
 
                 menuItems.push({
                     "type": "Text",
-                    "content": "<b>" + cTeam.get("name") + "</b>"
+                    "content": "<b>" + cTeam.get( "name" ) + "</b>"
                 });
 
-                for (k = 0; k < cTeam.get("players").length; k = k + 1) {
-                    cPlayer = cTeam.get("players")[k];
+                for ( k = 0; k < cTeam.get( "players" ).length; k = k + 1 ) {
+                    cPlayer = cTeam.get( "players" )[k];
                     menuItems.push({
                         type: "Button",
-                        label: cPlayer.get("name"),
+                        label: cPlayer.get( "name" ),
                         data: {
                             entity: cPlayer
                         }
@@ -69,11 +69,11 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
                 }
             }
 
-            this.menus.set("children", menuItems);
+            this.menu.set( "children", menuItems );
         }
     });
 
-    Y.namespace("Wegas").SelectPlayerButton = SelectPlayerButton;
+    Y.namespace( "Wegas" ).SelectPlayerButton = SelectPlayerButton;
 
     /**
      * @class SelectGameButton
@@ -102,7 +102,7 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
             for (j = 0; j < games.length; j = j + 1) {
                 menuItems.push({
                     "type": "Button",
-                    "label": games[j].get("name"),
+                    "label": games[ j ].get( "name" ),
                     plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
@@ -110,13 +110,13 @@ YUI.add( 'wegas-editor-buttons', function ( Y ) {
                         }
                     }],
                     data: {
-                        entity: games[j]
+                        entity: games[ j ]
                     }
                 });
             }
-            this.menus.set("children", menuItems);
+            this.menu.set( "children", menuItems );
         }
     });
 
-    Y.namespace("Wegas").SelectGameButton = SelectGameButton;
+    Y.namespace( "Wegas" ).SelectGameButton = SelectGameButton;
 });
