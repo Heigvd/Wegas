@@ -273,7 +273,7 @@ img.inputEx-ListField-delButton {
 }
 .yui3-skin-sam .wegas-icon-newfile {
     background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1210px,
-        url("../images/wegas-icon-files.png") no-repeat 1px -228px
+        url(../images/wegas-icon-files.png) no-repeat 1px -228px
 }
 .yui3-skin-sam .wegas-icon-newdir {
     background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1167px,

@@ -400,7 +400,7 @@ Y.add("wegas-statemachine-entities", function(Y){
                     console.warn("Transition and Dialogue not persisted");
                     return false;
                 }
-                if(transition.get("triggerCondition") == null || transition.get("triggerCondition").isEmpty() || transition.get("triggerCondition").localEval()){
+                if(transition.get("triggerCondition") == null || transition.get("triggerCondition").isEmpty()){
                     request = "/StateMachine/" + this.get("id")
                     + "/Player/" + Y.Wegas.app.get("currentPlayer")
                     + "/Do/" + transition.get("id");
@@ -471,17 +471,46 @@ Y.add("wegas-statemachine-entities", function(Y){
     * DialogueState Entity
     */
     Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
+        initializer: function(){
+            this.publish("actionsAvailable");
+        },
+        /*
+         * Listen to "DialogueState:actionsAvailable" to get the result
+         * event.actionsAvailable contains available transitions
+         */
         getAvailableActions: function(){
-            var availableActions = [],
-            i, transitions = this.get("transitions");
+            var i, transitions = this.get("transitions"),
+            ctrlObj = {};
+            ctrlObj.availableActions = [];
+            ctrlObj.toEval = 0;
+            ctrlObj.evaluatedCount = 0;
             for (i in transitions){
                 if(transitions[i] instanceof Y.Wegas.persistence.DialogueTransition){
-                    if(!transitions[i].get("triggerCondition") || transitions[i].get("triggerCondition").localEval()){
-                        availableActions.push(transitions[i]);
+                    if(!transitions[i].get("triggerCondition")){
+                        ctrlObj.availableActions.push(transitions[i]);
+                    }else{
+                        transitions[i].get("triggerCondition").once("Script:evaluated", function(e, o, ctrlObj){
+                            ctrlObj.evaluatedCount +=1;
+                            if(o === true){
+                                ctrlObj.availableActions.push(transitions[i]);
+                            }
+                            if(ctrlObj.toEval === ctrlObj.evaluatedCount){
+                                this.fire("actionsAvailable", {
+                                    actionsAvailable:ctrlObj.availableActions
+                                });
+                            }
+                        }, this, ctrlObj);
+                        ctrlObj.toEval +=1;
+                        transitions[i].get("triggerCondition").localEval();
+
                     }
                 }
             }
-            return availableActions;
+            if(ctrlObj.toEval === ctrlObj.evaluatedCount){
+                this.fire("actionsAvailable", {
+                    actionsAvailable:ctrlObj.availableActions
+                });
+            }
         },
 
         /**
