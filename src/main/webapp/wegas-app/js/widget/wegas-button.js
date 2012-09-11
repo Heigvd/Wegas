@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-button', function (Y) {
+YUI.add( "wegas-button", function ( Y ) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -25,7 +25,7 @@ YUI.add('wegas-button', function (Y) {
         var node = this._host,
         attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
 
-        //        node.set(attr, value);
+        // node.set(attr, value);
         node.setContent(value);
         return value;
     };
@@ -37,7 +37,7 @@ YUI.add('wegas-button', function (Y) {
      *  @class Y.Wegas.Button
      *
      */
-    Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget], {
+    Button = Y.Base.create( "button", Y.Button, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
@@ -47,29 +47,36 @@ YUI.add('wegas-button', function (Y) {
             //this.constructor.CSS_PREFIX = "yui3-button";                      // Revert changes done by Y.Wegas.Widget so styling will work
             this._cssPrefix = "yui3-button";
 
-            if ( this.get( "tooltips" ) ) {
-                this.plug(Y.Plugin.Tooltip, {
-                    content: this.get( "tooltips" )
-                });
+            if ( this.get( "tooltip" ) ) {
+                this.plug( Y.Plugin.Tooltip, {
+                    content: this.get( "tooltip" )
+                } );
             }
         },
         renderUI: function () {
-            Button.superclass.renderUI.apply( this, arguments);
-            this.get(BOUNDINGBOX).addClass("wegas-button");
+            Button.superclass.renderUI.apply( this, arguments );
+            this.get( BOUNDINGBOX ).addClass( "wegas-button" );
         }
     }, {
         ATTRS: {
-            tooltips: {},
-            data: {}
-//            selected: {
-//                value: false,
-//                setter: function ( value ) {
-//                    this.get( "contentBox" ).toggleClass( "wegas-button-selected", !value );
-//                }
-//            }
+            label: {
+                type: "string"
+            },
+            tooltip: {
+                type: "string",
+                optional: true
+            },
+            data: {
+                "transient": true
+            }
+        //selected: {
+        //    value: false,
+        //    setter: function ( value ) {
+        //        this.get( "contentBox" ).toggleClass( "wegas-button-selected", !value );
+        //    }
+        //}
         }
     });
-
     Y.namespace('Wegas').Button = Button;
 
     /**
@@ -139,7 +146,6 @@ YUI.add('wegas-button', function (Y) {
             return count;
         }
     });
-
     Y.namespace('Plugin').UnreadCount = UnreadCount;
 
     /**
@@ -195,7 +201,6 @@ YUI.add('wegas-button', function (Y) {
             }
         }
     });
-
     Y.namespace('Wegas').LoginButton = LoginButton;
 
     /**

@@ -28,7 +28,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
         renderUI: function () {
             this.treeView = new Y.TreeView();
-            this.treeView.render(this.get(CONTENTBOX));
+            this.treeView.render( this.get( CONTENTBOX ) );
             this.menu = new Y.Wegas.Menu();
         },
 
@@ -38,12 +38,12 @@ YUI.add('wegas-editor-treeview', function (Y) {
             }
             this.treeView.on( "*:click", this.onTreeViewClick, this );
 
-            this.treeView.before("*:nodeExpanded", function ( e ) {
-                this.expandedIds[e.node.get("data").entity.get("id")] = true;
+            this.treeView.before( "*:nodeExpanded", function ( e ) {
+                this.expandedIds[ e.node.get( "data" ).entity.get( "id" ) ] = true;
             }, this);
 
-            this.treeView.before("*:nodeCollapsed", function ( e ) {
-                delete this.expandedIds[e.node.get("data").entity.get("id")];
+            this.treeView.before( "*:nodeCollapsed", function ( e ) {
+                delete this.expandedIds[ e.node.get( "data" ).entity.get( "id" ) ];
             }, this);
         },
 
@@ -69,11 +69,6 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 return;
             }
             this.treeView.add( this.genTreeViewElements( entities ) );
-        },
-
-        destructor: function () {
-            this.treeView.destroy();
-            this.menu.destroy();
         },
 
         // *** Private Methods *** //
@@ -127,7 +122,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                             case 'TaskDescriptor':
                             case 'ResourceDescriptor':
                             case 'DialogueDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
+                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
                                 ret.push({
                                     type: 'TreeNode',
                                     label: text,
@@ -143,7 +138,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'ListDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
+                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
                                 ret.push({
                                     type: 'TreeNode',
                                     label: text,
@@ -157,7 +152,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'QuestionDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
+                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
                                 ret.push({
                                     type: 'TreeNode',
                                     label: text,
@@ -172,7 +167,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'ChoiceDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.get("name");
+                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
 
                                 var l, result, children = [];
                                 for ( l = 0; l < el.get( "results" ).length ; l += 1) {

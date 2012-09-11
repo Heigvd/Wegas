@@ -37,7 +37,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                         className: "period"
                     }, {
                         key:"evidence",
-                        label:"Pièce",
+                        label:"Evidence",
                         sortable:true
                     }, {
                         key:"analyis",
