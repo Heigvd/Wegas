@@ -737,8 +737,8 @@ img.inputEx-ListField-delButton {
 }
 
 /* Pageeditor Plugin styles */
-.wegas-pageeditor-overlay {
-    position: relative;
+.wegas-pageeditor-designmode .wegas-widget {
+        box-shadow: 0px 0px 3px black inset;
 }
 .wegas-pageeditor-overlay-hidden {
     display: none;
@@ -747,8 +747,8 @@ img.inputEx-ListField-delButton {
     position: absolute;
     width:100%;
     height:20px;
-    background: rgba(110, 110, 110, 0.1);
-    box-shadow: 0px 0px 6px #6D6D6D;
+    background: rgba(38, 71, 160, 0.4);
+    box-shadow: 0px 0px 6px black inset;
     pointer-events: none;
     /* opacity: 0.5; */
 }

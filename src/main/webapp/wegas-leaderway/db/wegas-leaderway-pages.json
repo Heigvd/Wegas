@@ -18,7 +18,7 @@
                     },{
                         "type": "Button",
                         "label": ">",
-                        "tooltips":"Semaine suivante",
+                        "tooltip":"Semaine suivante",
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
@@ -67,7 +67,7 @@
                         "type": "Button",
                         "label": "Dossiers",
                         "cssClass": "menu-folder",
-                        "tooltips":"Dossiers des membres",
+                        "tooltip":"Dossiers des membres",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
@@ -79,7 +79,7 @@
                         "type": "Button",
                         "label": "Mandats",
                         "cssClass": "menu-tasklist",
-                        "tooltips":"Liste des mandats",
+                        "tooltip":"Liste des mandats",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
@@ -92,7 +92,7 @@
                         "type": "Button",
                         "label": "E-mail",
                         "cssClass": "menu-email",
-                        "tooltips":"Réception e-mail",
+                        "tooltip":"Réception e-mail",
                         "plugins": [{
                                 "fn": "UnreadCount",
                                 "cfg": {
@@ -110,7 +110,7 @@
                         "type": "Button",
                         "label": "Score",
                         "cssClass": "menu-score",
-                        "tooltips":"Score des entreprises",
+                        "tooltip":"Score des entreprises",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {

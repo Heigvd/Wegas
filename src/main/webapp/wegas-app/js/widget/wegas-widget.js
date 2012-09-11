@@ -45,10 +45,12 @@ YUI.add("wegas-widget", function (Y) {
         anim.run();
     };
 
-    function Widget() {
-        this.after("render", function () {
-            if (this.get("cssClass")) {
-                this.get(CONTENTBOX).addClass(this.get("cssClass"));
+    function Widget () {
+        this.after( "render", function () {
+            var bb = this.get( BOUNDING_BOX );
+            bb.addClass( "wegas-widget" );
+            if ( this.get( "cssClass" ) ) {
+                bb.addClass( this.get( "cssClass" ) );
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
