@@ -88,9 +88,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
          */
         beforeResponse: function ( e ) {
             var evt, i,
-            response = Y.Wegas.persistence.Entity.revive(e.response.results);   // Transform javascript object litterals to Y.Wegas.persistence.Entity's
+            response = Y.Wegas.persistence.Editable.revive( e.response.results );// Transform javascript object litterals to Y.Wegas.persistence.Entity's
 
-            Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
+            Y.log( "Response received from " + this.get( 'host' ).get( 'source' )/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
 
             e.response.serverResponse = response
             e.response.data = this.getCache();                                  // Provides with a pointer to the datasource current content

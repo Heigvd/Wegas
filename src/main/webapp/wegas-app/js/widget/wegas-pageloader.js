@@ -29,7 +29,7 @@ YUI.add('wegas-pageloader', function (Y) {
         },
 
         syncUI: function () {
-            this.set("pageId", this.get("pageId"));
+            this.set( "pageId", this.get( "pageId" ) );
         }
     }, {
         ATTRS : {
@@ -39,7 +39,7 @@ YUI.add('wegas-pageloader', function (Y) {
                         return val;
                     }
 
-                    var widgetCfg = Y.Wegas.PageFacade.rest.findById(val),
+                    var widgetCfg = Y.Wegas.PageFacade.rest.findById(val).toObject2(),
                     oldWidget = this.get("widget");
 
                     if (widgetCfg && widgetCfg.id && this.widgetCfg             // If the widget is currently being loaded, escape
@@ -64,7 +64,7 @@ YUI.add('wegas-pageloader', function (Y) {
 
                     try {
                         Y.Wegas.Widget.use(widgetCfg, Y.bind( function (cfg) {  // Load the subwidget dependencies
-                            var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
+                            var widget = Y.Wegas.Widget.create( cfg );// Render the subwidget
                             widget.render(this.get(CONTENTBOX));
                             this.set("widget", widget);
                         }, this, widgetCfg));

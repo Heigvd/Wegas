@@ -12,12 +12,12 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-widget', function (Y) {
+YUI.add("wegas-widget", function (Y) {
     "use strict";
 
     var Lang = Y.Lang,
-    CONTENTBOX = 'contentBox',
-    BOUNDING_BOX = 'boundingBox',
+    CONTENTBOX = "contentBox",
+    BOUNDING_BOX = "boundingBox",
     LEVEL = {
         "warn": "warn",
         "error": "error",
@@ -45,10 +45,12 @@ YUI.add('wegas-widget', function (Y) {
         anim.run();
     };
 
-    function Widget() {
-        this.after('render', function () {
-            if (this.get('cssClass')) {
-                this.get(CONTENTBOX).addClass(this.get('cssClass'));
+    function Widget () {
+        this.after( "render", function () {
+            var bb = this.get( BOUNDING_BOX );
+            bb.addClass( "wegas-widget" );
+            if ( this.get( "cssClass" ) ) {
+                bb.addClass( this.get( "cssClass" ) );
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
@@ -56,10 +58,10 @@ YUI.add('wegas-widget', function (Y) {
         this._cssPrefix = this.constructor.CSS_PREFIX;
     }
 
-    Y.mix(Widget.prototype, {
+    Y.mix( Widget.prototype, {
 
         showOverlay: function(){
-            this.get( BOUNDING_BOX ).prepend( '<div class="wegas-widget-loading"></div>' );
+            this.get( BOUNDING_BOX ).prepend( "<div class='wegas-widget-loading'></div>" );
         },
 
         hideOverlay: function(){
@@ -70,7 +72,7 @@ YUI.add('wegas-widget', function (Y) {
         },
 
         emptyMessage: function () {						// Form msgs logic
-            var msgNode = this.get(BOUNDING_BOX).one('.wegas-systemmessage');
+            var msgNode = this.get(BOUNDING_BOX).one(".wegas-systemmessage");
             if ( !msgNode ) {
                 return;
             }
@@ -79,7 +81,7 @@ YUI.add('wegas-widget', function (Y) {
 
         showMessage: function ( level, txt, timeout ) {
             var msgNode = this.getMessageNode(),
-            message = Y.Node.create( "<div class='" + ( LEVEL[level] ? LEVEL[level] : "" ) + "'><span class='icon'></span><span class='content'>"+txt+"</span><span class='close'></span></div>");
+            message = Y.Node.create( "<div class='" + ( LEVEL[level] ? LEVEL[level] : "" ) + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
             msgNode.append(message);
 
             message.closeHandler = message.one(".close").once( "click", destroySelf, message );
@@ -94,19 +96,91 @@ YUI.add('wegas-widget', function (Y) {
         },
 
         getMessageNode: function () {
-            var msgNode = this.get( BOUNDING_BOX ).one( '.wegas-systemmessage' );
+            var msgNode = this.get( BOUNDING_BOX ).one( ".wegas-systemmessage" );
             if ( !msgNode ) {
-                this.get( BOUNDING_BOX ).append( '<div class="wegas-systemmessage"></div>' );
-                return this.get( BOUNDING_BOX ).one( '.wegas-systemmessage' );
+                this.get( BOUNDING_BOX ).append( "<div class='wegas-systemmessage'></div>" );
+                return this.get( BOUNDING_BOX ).one( ".wegas-systemmessage" );
             }
             return msgNode;
         }
 
-    });
+    } );
 
-    Y.mix(Widget, {
+    Y.mix( Widget, {
+
+        /**
+         *  Defines edition menu to be used in editor
+         */
+        //EDITMENU: [{
+        //    type: "EditEntityButton"
+        //}, {
+        //    type: "DeleteEntityButton"
+        //}],
+
         ATTRS: {
-            cssClass: {}
+            cssClass: {
+                "transient": true
+            },
+            initialized: {
+                "transient": true
+            },
+            destroyed: {
+                "transient": true
+            },
+            id: {
+                "transient": true
+            },
+            rendered: {
+                "transient": true
+            },
+            boundingBox: {
+                "transient": true
+            },
+            contentBox: {
+                "transient": true
+            },
+            tabIndex: {
+                "transient": true
+            },
+            focused: {
+                "transient": true
+            },
+            disabled: {
+                "transient": true
+            },
+            visible: {
+                "transient": true
+            },
+            height: {
+                "transient": true
+            },
+            width: {
+                "transient": true
+            },
+            strings: {
+                "transient": true
+            },
+            render: {
+                "transient": true
+            },
+            srcNode: {
+                "transient": true
+            },
+            selected: {
+                "transient": true
+            },
+            index: {
+                "transient": true
+            },
+            parent: {
+                "transient": true
+            },
+            depth: {
+                "transient": true
+            },
+            root: {
+                "transient": true
+            }
         },
         create: function (config) {
             var type = config.childType || config.type,
@@ -119,7 +193,7 @@ YUI.add('wegas-widget', function (Y) {
             if (Lang.isFunction(Fn)) {
                 child = new Fn(config);
             } else {
-                Y.log("Could not create a child widget because its constructor is either undefined or invalid(" + type + ").", 'error', 'Wegas.Widget');
+                Y.log("Could not create a child widget because its constructor is either undefined or invalid(" + type + ").", "error", "Wegas.Widget");
             }
 
             return child;
@@ -151,7 +225,7 @@ YUI.add('wegas-widget', function (Y) {
         */
         getRawModulesFromDefinition: function(cfg) {
 
-            var i, props, type = cfg.type || 'text',
+            var i, props, type = cfg.type || "text",
             module = YUI_config.groups.wegas.modulesByType[type],
             modules = [];
 
@@ -194,7 +268,7 @@ YUI.add('wegas-widget', function (Y) {
         }
     });
 
-    Y.namespace('Wegas').Widget = Widget;
+    Y.namespace("Wegas").Widget = Widget;
 
     /**
      * @hack We override this function so widget are looked for in Wegas ns.

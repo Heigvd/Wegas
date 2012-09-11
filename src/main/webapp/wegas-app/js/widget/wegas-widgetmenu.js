@@ -24,24 +24,29 @@ YUI.add('wegas-widgetmenu', function (Y) {
         WidgetMenu.superclass.constructor.apply(this, arguments);
     };
 
-    WidgetMenu.NS = "menus";
+    WidgetMenu.NS = "menu";
     WidgetMenu.NAME = "widgetmenu";
 
     Y.extend(WidgetMenu, Y.Plugin.Base, {
 
         // *** Lifecycle methods *** //
         initializer: function () {
-            this.afterHostEvent( "click", function () {
-                var menu = this.getMenu();                                      // Get a menu instance
+            this.afterHostEvent( "render", function () {
+                this.get( "host" ).get( "contentBox" ).delegate( "click", function ( e ) {
+                    var menu = this.getMenu();                                  // Get a menu instance
 
-                menu.attachTo( this.get( "host" ).get( "boundingBox" ), this ); // Attach it to the target node
-                menu.removeAll();                                               // Empty the node current content
-                try {
-                    menu.add( this.get("children") );                           // And place the widget found in the config
-                } catch( err ) {
-                    Y.error("Error while adding subpage to tab (probably du to absence of Y.WidgetChild in config).", err, WidgetMenu);
-                };
-            }, this);
+                    menu.attachTo( e.target, this );                            // Attach it to the target node
+                    menu.removeAll();                                           // Empty the node current content
+                    try {
+                        menu.add( this.get( "children" ) );                     // And place the widget found in the config
+                    } catch( err ) {
+                        Y.error( "Error while adding subpage to tab (probably du to absence of Y.WidgetChild in config).", err, WidgetMenu);
+                    };
+                    
+                    e.halt();
+                    this.fire( "menuOpen" );
+                }, this.get( "selector" ), this );
+            });
         },
 
         // *** Private methods *** //
@@ -57,6 +62,9 @@ YUI.add('wegas-widgetmenu', function (Y) {
         ATTRS: {
             children: {
                 value: []
+            },
+            selector: {
+                value: "*"
             }
         },
         menu: null
@@ -110,7 +118,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
 
                 // node.on("mouseenter", this.cancelMenuTimer, this);
                 // node.on("mouseleave", this.startMenuHideTimer, this);
-                this.set( "align",{
+                this.set( "align", {
                     node: node,
                     points: [ "tl", "bl" ]
                 });
@@ -127,7 +135,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             // *** Private methods *** //
             startMenuHideTimer: function () {
                 this.cancelMenuTimer();
-                this.timer = Y.later(500, this, this.hide);
+                this.timer = Y.later( 500, this, this.hide );
             },
             cancelMenuTimer: function () {
                 if (this.timer) {
