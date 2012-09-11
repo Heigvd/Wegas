@@ -51,8 +51,8 @@ YUI.add('wegas-pageeditor', function (Y) {
                     label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Edit page",
                     on: {
                         click: Y.bind(function ( e ) {
-                            console.log( "designmode" );
-                            //this.get( CONTENTBOX ).toggleClass;
+                            this.get( "host" ).get( BOUNDINGBOX )
+                            .toggleClass( "wegas-pageeditor-designmode", e.target.get( "pressed" ) );
                             if ( e.target.get( "pressed" ) ) {
                                 this.bind();
                             } else {
@@ -102,7 +102,7 @@ YUI.add('wegas-pageeditor', function (Y) {
         bind: function() {
             var cb = this.get( 'host' ).get( CONTENTBOX );
 
-            this.handlers.push( cb.delegate( 'mouseenter', function ( e ) {
+            this.handlers.push( cb.delegate( "mouseenter", function ( e ) {
                 var widget = Y.Widget.getByNode( e.currentTarget );
                 if ( widget ) {
                     this.showOverlay( widget );
@@ -110,7 +110,7 @@ YUI.add('wegas-pageeditor', function (Y) {
                 e.halt();
             }, '.yui3-widget', this ) );
 
-            this.handlers.push( cb.delegate('mouseleave', function(e){
+            this.handlers.push( cb.delegate( "mouseleave", function(e){
                 //console.log("out", e.currentTarget.get('id'));
                 this.hideOverlay();
                 e.halt();
@@ -138,22 +138,33 @@ YUI.add('wegas-pageeditor', function (Y) {
             this.overlayWidget = widget;
 
             targetNode.prepend( this.highlightOverlay.get( BOUNDINGBOX ) );
-            this.highlightOverlay.get( CONTENTBOX ).setStyle( "height", targetNode.getComputedStyle( 'height' ));
+            this.highlightOverlay.get( CONTENTBOX ).setStyle( "height", targetNode.getHeight() );
+            this.highlightOverlay.get( CONTENTBOX ).setStyle( "width", targetNode.getWidth() );
+            this.highlightOverlay.align(targetNode, ["tl", "tl"]);
             this.highlightOverlay.show();
-        //this.highlightOverlay.align(targetNode, ["tl", "tl"]);
-        //this.highlightOverlay.set('width', targetNode.getComputedStyle('width'));
         },
 
         hideOverlay: function() {
             this.highlightOverlay.hide();
         }
+
     }, {
         NS: "pageeditor",
         NAME: "pageeditor",
         ATTRS: {}
     });
-
     Y.namespace( 'Plugin' ).PageEditor = PageEditor;
+
+    Y.Node.prototype.getWidth = function () {
+        return parseInt( this.getComputedStyle( 'width' ) )
+        + parseInt( this.getComputedStyle( 'margin-left' ) ) + parseInt( this.getComputedStyle( 'margin-right' ) )
+        + parseInt( this.getComputedStyle( 'padding-left' ) ) + parseInt( this.getComputedStyle( 'padding-right' ) );
+    }
+    Y.Node.prototype.getHeight = function () {
+        return parseInt( this.getComputedStyle( 'height' ) )
+        + parseInt( this.getComputedStyle( 'margin-top' ) ) + parseInt( this.getComputedStyle( 'margin-bottom' ) )
+        + parseInt( this.getComputedStyle( 'padding-top' ) ) + parseInt( this.getComputedStyle( 'padding-bottom' ) );
+    }
 });
 
 
