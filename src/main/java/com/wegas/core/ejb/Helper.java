@@ -85,7 +85,7 @@ public class Helper {
      * @param unavailableNames The name should not be in this List
      * @return a new name, unique.
      */
-    public static String buildName(String name, List<String> unavailableNames) {
+    public static String buildUniqueName(String name, List<String> unavailableNames) {
         String newName;
         Pattern pattern = Pattern.compile("[^\\w]|(^\\d)");                     //Search for special chars or initial digit
 
