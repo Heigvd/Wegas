@@ -174,10 +174,10 @@
                     "plugins": [{
                         "fn": "WidgetToolbar",
                         "cfg": {
-                            "children": [{
-                                "type": "SelectPlayerButton"
-                            }]
+                            "children": []
                         }
+                    }, {
+                        "fn": "PageEditor"
                     }]
                 }]
             }]

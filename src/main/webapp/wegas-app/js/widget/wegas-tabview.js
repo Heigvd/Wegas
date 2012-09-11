@@ -146,15 +146,10 @@ YUI.add( 'wegas-tabview', function ( Y ) {
 
         renderUI: function () {
             Tab.superclass.renderUI.apply(this, arguments);
-        // this.renderToolbar();
         },
 
-        //bindUI: function () {
-        //    Tab.superclass.bindUI.apply(this, arguments);
-        //},
         syncUI: function () {
             Tab.superclass.syncUI.apply(this, arguments);
-        // this.get( "children" );
         },
 
         // *** Private Methods *** //

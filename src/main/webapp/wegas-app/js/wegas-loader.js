@@ -222,7 +222,7 @@ YUI().use(function (Y) {
                         requires: [
                         'wegas-app', 'wegas-widgetmenu', 'wegas-widgettoolbar',
                         "wegas-editor-buttons", 'wegas-editor-action',
-                        'wegas-form'
+                        'wegas-form', 'wegas-pageeditor'
                         //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -245,6 +245,10 @@ YUI().use(function (Y) {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
                         requires: [ 'wegas-button',  'wegas-widgetmenu', 'wegas-widgettoolbar' ],
                         ix_provides: 'SelectPlayerButton'
+                    },
+                    'wegas-pageeditor': {
+                        path: 'wegas-editor/js/wegas-pageeditor-min.js',
+                        requires: []
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -277,7 +281,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
-                        requires: [ 'ace-javascript', 'button', 'wegas-inputex-ace' ],
+                        requires: [ 'ace-javascript', 'button', 'wegas-inputex-ace', 'inputex-select' ],
                         ix_provides: 'ScriptLibrary'
                     },
                     'wegas-fileexplorercss':{
