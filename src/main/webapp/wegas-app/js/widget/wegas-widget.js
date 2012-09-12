@@ -91,7 +91,7 @@ YUI.add("wegas-widget", function (Y) {
             }
 
             if ( timeout ) {
-                message.timeout = Y.later( timeout, message, destroySelf);
+               message.timeout = Y.later( timeout, message, destroySelf);
             }
         },
 
