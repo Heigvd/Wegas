@@ -596,22 +596,24 @@ img.inputEx-ListField-delButton {
     border: 1px solid #6E6E6E;
     color: white;
     text-shadow: 1px 1px 2px lightgray;
+    min-height:57px
 }
 .wegas-systemmessage > div > .close{
     cursor:pointer;
-    float:right;
     width:18px;
     height:18px;
     background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;
+    right: 37px;
+    position: absolute;
 }
 .wegas-systemmessage  .icon {
     width: 55px;
     height: 50px;
-    display: inline-block;
+    position: absolute;
 }
 .wegas-systemmessage  .content {
     vertical-align: top;
-    margin-top: 15px;
+    margin: 25px 28px 15px 58px;
     display: inline-block;
 }
 /*.wegas-systemmessage > .success {
@@ -738,7 +740,7 @@ img.inputEx-ListField-delButton {
 
 /* Pageeditor Plugin styles */
 .wegas-pageeditor-designmode .wegas-widget {
-        box-shadow: 0px 0px 3px black inset;
+    box-shadow: 0px 0px 3px black inset;
 }
 .wegas-pageeditor-overlay-hidden {
     display: none;

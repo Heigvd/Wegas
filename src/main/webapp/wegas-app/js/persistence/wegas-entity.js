@@ -75,6 +75,7 @@ YUI.add('wegas-entity', function (Y) {
 
         },
         toObject2: function () {
+            return this.toObject();
             var i, k, ret = this.toJSON();
             for ( k in ret ) {
                 if ( ret.hasOwnProperty( k ) ) {
@@ -871,7 +872,7 @@ YUI.add('wegas-entity', function (Y) {
          * Extend clone to add transient childs
          */
         clone:function(){
-            var object = Y.Wegas.persistence.Entity.prototype.clone.call(this);
+            var object = Y.Wegas.persistence.Editable.prototype.clone.call(this);
             object.items = [];
             for(var i in this.get("items")){
                 object.items.push(this.get("items")[i].clone());
