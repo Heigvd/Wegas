@@ -222,8 +222,8 @@ YUI().use(function (Y) {
                         requires: [
                         'wegas-app', 'wegas-widgetmenu', 'wegas-widgettoolbar',
                         "wegas-editor-buttons", 'wegas-editor-action',
-                        'wegas-form', 'wegas-pageeditor'
-                        //'wegas-editorcss',                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                        'wegas-form', 'wegas-pageeditor'/*,
+                        'wegas-editorcss'*/                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
                     'wegas-editorcss': {
