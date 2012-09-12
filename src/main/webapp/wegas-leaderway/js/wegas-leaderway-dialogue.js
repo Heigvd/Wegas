@@ -141,6 +141,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         readStateMachine: function(cb){
             if(!this.currentDialogue) return;
+            //Read state
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
             state, content, rawContent, texts, splittedText = new Array();
             if(!dialogue){
@@ -152,44 +153,46 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.pictures .answerLayer').hide();
             state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
             rawContent = state.get('text');
+            //Do semi-auto transition
             if(!rawContent || rawContent.length === 0){
                 dialogue.doTransition(state.getAvailableActions()[0]);
+                return;
             }
-            else{
-                content = JSON.parse(rawContent);
-                if(content.subPageId && content.targetPageLoaderId){
-                    this.displayWidget(dialogue, content);    
-                }
-                else{
-                    this.isDisplayingAResponse = true;
-                    texts = content.texts[Math.floor(Math.random()*content.texts.length)];
-                    //while(texts.indexOf('&code') != -1){ don't do this !!! out of memory exception.
-                    if(texts.indexOf('&code') != -1){
-                        splittedText.push(texts.substring(0, texts.indexOf('&code')));
-                        texts = texts.substring(texts.indexOf('&code')+5)
-                        try{
-                            splittedText.push(eval(texts.substring(0, texts.indexOf('&code'))));
-                        }
-                        catch(e){
-                            console.log("unable to eval script");
-                        }
-                        texts = texts.substring(texts.indexOf('&code')+5);
-                        splittedText.push(texts);
-                        texts = splittedText.join("");
-                    }
-                    splittedText = texts.split(new RegExp(" ", "g"));
-                    cb.one('.speaker-name').setHTML(content.speakerName);
-                    cb.one('.dialogue .talk').insert('<p></p>');
-                    if(content.backgroundImages) this.renderImages(cb.one('.pictures .backgroundLayer'), content.backgroundImages);
-                    if(content.questionImages){
-                        this.renderImages(cb.one('.pictures .questionLayer'), content.questionImages);
-                        (content.answerImages)? this.renderImages(cb.one('.pictures .answerLayer'), content.answerImages) :  this.renderImages(cb.one('.pictures .answerLayer'), content.questionImages);
-                    }
-                    cb.one('.pictures .backgroundLayer').show();
-                    cb.one('.pictures .questionLayer').show();
-                    setTimeout(Y.bind(this.displayText, this, cb, splittedText), 400);
-                }
+            //Change widget (exit dialogue)
+            content = JSON.parse(rawContent);
+            if(content.subPageId && content.targetPageLoaderId){
+                this.displayWidget(dialogue, content); 
+                return;
             }
+            //Preparing texte
+            this.isDisplayingAResponse = true;
+            texts = content.texts[Math.floor(Math.random()*content.texts.length)];
+            //while(texts.indexOf('&code') != -1){ don't do this !!! out of memory exception.
+            if(texts.indexOf('&code') != -1){
+                splittedText.push(texts.substring(0, texts.indexOf('&code')));
+                texts = texts.substring(texts.indexOf('&code')+5)
+                try{
+                    splittedText.push(eval(texts.substring(0, texts.indexOf('&code'))));
+                } catch(e){
+                    console.log("unable to eval script");
+                }
+                texts = texts.substring(texts.indexOf('&code')+5);
+                splittedText.push(texts);
+                texts = splittedText.join("");
+            }
+            splittedText = texts.split(new RegExp(" ", "g"));
+            cb.one('.speaker-name').setHTML(content.speakerName);
+            cb.one('.dialogue .talk').insert('<p></p>');
+            //Display image
+            if(content.backgroundImages) this.renderImages(cb.one('.pictures .backgroundLayer'), content.backgroundImages);
+            if(content.questionImages){
+                this.renderImages(cb.one('.pictures .questionLayer'), content.questionImages);
+                (content.answerImages)? this.renderImages(cb.one('.pictures .answerLayer'), content.answerImages) :  this.renderImages(cb.one('.pictures .answerLayer'), content.questionImages);
+            }
+            cb.one('.pictures .backgroundLayer').show();
+            cb.one('.pictures .questionLayer').show();
+            //Display text
+            setTimeout(Y.bind(this.displayText, this, cb, splittedText), 400);
         },
         
         /**
@@ -266,24 +269,23 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 setTimeout(Y.bind(this.displayText, this, cb, textParts), 70);
             }
             else{
-                this.displayResponse(cb);
+                var state, dialogue;
+                cb.one('.pictures .questionLayer').hide();
+                cb.one('.pictures .answerLayer').show();
+                dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
+                state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
+                state.getAvailableActions();
             }
         },
         
         /**
          * Show all available transitions for the current state.
          * hide the .questionLayer and sho the .answerLayer to display images.
-         * @param String cb, the widget's contentbox.
+         * @param Object availableTransitions
          */
-        displayResponse: function(cb){
+        displayResponse: function(availableTransitions){
+            var i, cb = this.get(CONTENTBOX);
             this.isDisplayingAResponse = false;
-            if(!this.currentDialogue) return;
-            var i, state, availableTransitions,
-            dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
-            cb.one('.pictures .questionLayer').hide();
-            cb.one('.pictures .answerLayer').show();
-            state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            availableTransitions = state.getAvailableActions();
             cb.one('.dialogue .response').insert('<ul class="responseElements"></ul>');
             for(i=0 ; i<availableTransitions.length; i++){
                 cb.one('.dialogue .response .responseElements').insert('<li nextstate="'+i+'">'+availableTransitions[i].get('actionText')+'</li>');
@@ -369,6 +371,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
+//            this.handlers.push(Y.Wegas..after('actionsAvailable', this.displayResponse, this));
             this.handlers.push(cb.one('.dialogue .response').delegate('click', function (e){
                 var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
                 state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];

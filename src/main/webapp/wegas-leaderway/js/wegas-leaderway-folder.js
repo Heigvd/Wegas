@@ -326,14 +326,12 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         
         /**
          * Render the widget.
-         * create the child widget "tabview"
          */
         renderUI: function(){
             var cb = this.get(CONTENTBOX);
-            this.tabview = new Y.TabView({
-                children: [{
-                    label: this.lang.getRB().folder,
-                    content: '<div class="folder">\n\
+            cb.insert(
+                    '<div class="menuFolder"><div class="listResources"></div></div>\n\
+                    <div class="folder">\n\
                     <div class="basic_informations section">\n\
                     <div class="picture"></div>\n\
                         <div class="name_surname"><span class="name"></span><span class="surname"></span></div>\n\
@@ -347,22 +345,15 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     </div>\n\
                     <div class="skillsets section"><div class="title-section">Compétences : </div><div class="skillsets-value"></div></div>\n\
                     <div class="description section"><div class="title-section">Description : </div><div class="description-value"></div></div>\n\
-                </div>'
-                },
-                {
-                    label: 'Actions',
-                    content: '\n\
                     <div class="actions">\n\
                         <div class="noAction"></div>\n\
                         <div class="actions-list">\n\
                             <div class="speak action"></div>\n\
                             <div class="giveTask action"></div>\n\
                         </div>\n\
-                    </div>'
-                }]
-            });
-            cb.insert('<div class="menuFolder"><div class="listResources"></div></div>');
-            this.tabview.render(cb);
+                    </div>\n\
+                </div>'
+            );
         },
 
         /**
@@ -439,7 +430,6 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          */
         destroy: function(){
             var i;
-            this.tabview.destroy();
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
             }

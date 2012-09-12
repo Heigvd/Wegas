@@ -22,16 +22,6 @@ body{
     min-height: 300px;
 }
 
-.button .wegas-button-tooltips{
-    font-size: 1em;
-    display:block;
-    position:absolute;
-    padding:2px;
-    background-color:#F3E4D2;
-    border:solid 1px;
-    border-radius: 5px;
-}
-
 /*--------------------------------Indicators----------------------------------*/
 .leaderway-indicators{
     background-color:#eed4aa;
@@ -64,11 +54,6 @@ body{
     margin: 36px 30px 0 5px;
     float:left;
 }
-
-.leaderway-indicators  button .wegas-button-tooltips{
-    margin: 0 0 0 25px;
-}
-
 
 .leaderway-indicators .indicators-gauge{
     margin:24px 20px 0 0;
@@ -164,10 +149,6 @@ body{
     cursor:pointer; 
 }
 
-.leaderway-menu .button .wegas-button-tooltips{
-    margin: 10px 0 0 40px;
-}
-
 .leaderway-menu .menu-HRList{
     background-image:url(/Wegas/wegas-leaderway/images/hrlist.png);
 }
@@ -190,7 +171,7 @@ body{
 
 .leaderway-menu .wegas-login{
     float:right;
-    margin:15px 0 0 0;
+    background-image:url(/Wegas/wegas-leaderway/images/login.png);
 }
 
 /*---------------------------------Feedback-----------------------------------*/
@@ -253,17 +234,15 @@ body{
 }*/
 
 /*-----------------------------------Folder-----------------------------------*/
-/*-----folder-general-----*/
 .wegas-folder .leaderway-folder .menuFolder{
  width:100%;
 }
-
+/*-----resourceSelector-----*/
 .wegas-folder .leaderway-folder .listResources{
     padding:10px;
     overflow-x:auto;
     overflow-y:hidden;
     width:98%;
-    float:left;
     text-align: center;
 }
 
@@ -287,39 +266,14 @@ body{
     background-color:#BFDAFF;
 }
 
-.wegas-folder .leaderway-folder .yui3-tabview{
-    display: block;
-    clear:both;
-    padding:0px 10px 10px 10px;
-}
-
-.wegas-folder .leaderway-folder .yui3-tab-selected .yui3-tab-label{
-    background-image:url(/Wegas/wegas-leaderway/images/tabselected_background.png);
-    background-repeat: repeat-x;
+/*-----folder-----*/
+.wegas-folder .leaderway-folder .folder{
+    margin:10px;
+    padding:5px;
+    border:outset 2px #6F89A2;
     background-color: #dce5ef;
-    background-position:center; 
 }
 
-.wegas-folder .leaderway-folder .yui3-tab-label{
-    display:block;
-    width:100px;
-    height:20px;
-    font-size:1em;
-    margin: 0;
-    padding:10px 0 0 5px;
-}
-
-.wegas-folder .leaderway-folder .yui3-tabview-list{
-    border-bottom: 0px solid #6F89A2;
-}
-
-.wegas-folder .leaderway-folder .yui3-tabview-panel{
-    background-color: #DCE5EF;
-    border:2px outset #6F89A2;
-    padding:30px 0 0 30px;
-}
-
-/*-----folder-folder-----*/
 .wegas-folder .leaderway-folder .folder .section{
     background-image:url(/Wegas/wegas-leaderway/images/border_folder-section.png);
     background-repeat: no-repeat;
@@ -346,7 +300,7 @@ body{
 
 .wegas-folder .leaderway-folder .folder .picture{
     position:absolute;
-    left:800px;
+    margin-left:800px;
     height:140px;
     width:140px;
 }
@@ -455,15 +409,13 @@ body{
     padding:15px 25px 0 0;
 }
 
-/*-----folder-actions-----*/
-
-.wegas-folder .leaderway-folder .actions .actions-list{
+.wegas-folder .leaderway-folder .folder .actions .actions-list{
     min-height: 150px;
     width:98%;
     text-align: center;
 }
 
-.wegas-folder .leaderway-folder .actions .action{
+.wegas-folder .leaderway-folder .folder .actions .action{
     display:inline-block;
     margin:0 20px 0 0;
     padding: 10px;
@@ -476,7 +428,7 @@ body{
     overflow: hidden;
 }
 
-.wegas-folder .leaderway-folder .actions .action:hover{
+.wegas-folder .leaderway-folder .folder .actions .action:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }

@@ -55,7 +55,7 @@
                     {
                         "type": "VariableDisplay",
                         "cssClass":"indicators-block",
-                        "label": "Temps restant",
+                        "label": "Action restante",
                         "variable": "actions",
                         "view": "box",
                         "dataSource": "VariableDescriptor"
@@ -125,8 +125,9 @@
                     },
                     {
                         "type": "LoginButton",
-                        "label":"Login button",
-                        "cssClass": "menu-loginbutton"
+                        "label": "Login button",
+                        "cssClass": "menu-loginbutton",
+                        "tooltips": "Logout"
                     }]
             },
             {

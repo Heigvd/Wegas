@@ -601,12 +601,12 @@ function sickenResource(resourceDescriptor, duration){
 
 /**
  * assign the given task at the given resource
- * if the given resource have already a assigned task, this new assigneemnt won't be added.
+ * if the given resource have already a assigned task, this new assignement will replace the old one.
  * @param Integer resourceDescriptorId, the id of resourceDescriptors to assign
  * @param Integer taskDescriptorId, the id of task to assign
  */
 function assignTask(resourceDescriptorId, taskDescriptorId){
-    var i, j, resInstance, taskDescriptor, gm=self.getGameModel(), isWorking = false,
+    var i, j, resInstance, taskDescriptor, gm=self.getGameModel(),
     listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
     listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');
     for(i=0; i<listResources.items.size(); i++){
@@ -621,12 +621,12 @@ function assignTask(resourceDescriptorId, taskDescriptorId){
         if(resInstance != null){
             for(j=0; j<resInstance.getAssignments().size(); j++){
                 if(resInstance.getAssignments().get(j).getTaskDescriptorId() == taskDescriptor.getId() && taskDescriptor.getActive() == true){
-                    isWorking = true;
+                    resInstance.getAssignments().remove(j);
                 }
             }
         }
     }
-    if(taskDescriptor != null && resInstance != null && !isWorking){
+    if(taskDescriptor != null && resInstance != null){
         resInstance.assign(0, taskDescriptor);
     }
 }
