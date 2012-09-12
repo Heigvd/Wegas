@@ -22,7 +22,7 @@
                         "type": "Button",
                         "label": "Next period",
                         "view": "button",
-                        "tooltips": "Advance to next period",
+                        "tooltip": "Advance to next period",
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {

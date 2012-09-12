@@ -35,8 +35,8 @@
         <!-- Those styles are placed here, since they should be above any other in the CSS cascading
             (even dependencies added on the fly). -->
         <meta id="customstyles" />
-        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
         <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
+        <ui:insert name="head"/>
 
     </h:head>
 
@@ -142,7 +142,7 @@
                         currentGame: #{gameController.currentGame.id},
                         currentTeam: #{gameController.currentPlayer.team.id},
                         currentPlayer: #{gameController.currentPlayer.id},
-                        currentUser: #{lobbyController.getCurrentUser().toJson()},
+                        currentUser: #{requestController.getCurrentUser().toJson()},
                         cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
 
                         /**

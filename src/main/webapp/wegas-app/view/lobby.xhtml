@@ -26,7 +26,7 @@
                     var cfg = {
                         layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
                         debug : true,
-                        currentUser: #{lobbyController.getCurrentUser().toJson()},
+                        currentUser: #{requestController.getCurrentUser().toJson()},
                         dataSources: {
                             "GameModel": {
                                 source: "rest/GameModel",
@@ -63,7 +63,7 @@
                             },
                             "RegisteredGames": {
                                 source: "rest/RegisteredGames",
-                                initialRequest: "/#{lobbyController.currentUser.id}",
+                                initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [
                                     {
                                         fn: "DataSourceJSONSchema",

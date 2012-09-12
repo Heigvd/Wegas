@@ -17,13 +17,9 @@ YUI.add('wegas-variabledisplay', function (Y) {
 
     var CONTENTBOX = 'contentBox', VariableDisplay;
 
-    VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    VariableDisplay = Y.Base.create( "wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
 
         // ** Lifecycle Methods ** //
-
-        initializer: function ( cfg ) {
-            this.set('dataSource', Y.Wegas.app.dataSources[this.get('dataSource')]);
-        },
 
         bindUI: function () {
             Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
@@ -31,20 +27,21 @@ YUI.add('wegas-variabledisplay', function (Y) {
         },
 
         syncUI: function () {
-            var acc, angle_pourcent, maxVal, minVal, ctx, i, value_x, value_y, angle_value, value,
-            variableDescriptor = this.get("dataSource").rest.find('name', this.get("variable"));
+            var acc, angle_pourcent, maxVal, minVal, ctx, i, value_x, value_y, angle_value, value, label,
+            variableDescriptor = this.get("dataSource").rest.find( "name", this.get( "variable" ) );
 
             if (!variableDescriptor) {
                 return;
             }
 
-            maxVal = variableDescriptor.get("maxValue");
-            minVal = variableDescriptor.get("minValue");
-            value = variableDescriptor.getInstance().get("value");
+            maxVal = variableDescriptor.get( "maxValue" );
+            minVal = variableDescriptor.get( "minValue" );
+            value = variableDescriptor.getInstance().get( "value" );
+            label = this.get( "label" ) || variableDescriptor.getPublicLabel();
 
-            switch (this.get('view')) {
+            switch ( this.get( 'view' ) ) {
                 case 'text':
-                    this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-text-label">'+this.get('label')+'</span>'
+                    this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-text-label">' + label + '</span>'
                         +' <span class="wegas-variabledisplay-text-value">'+ value+'</span>');
                     break;
                 case 'box':
@@ -52,21 +49,23 @@ YUI.add('wegas-variabledisplay', function (Y) {
                     for (i = 0; i < value; i += 1) {
                         acc.push('<div class="wegas-variabledisplay-box-unit"></div>');
                     }
-                    this.get(CONTENTBOX).setContent('<div class="wegas-variabledisplay-box-label">'+this.get('label')+'</div>'
+                    this.get(CONTENTBOX).setContent('<div class="wegas-variabledisplay-box-label">' + label + '</div>'
                         +'<span class="wegas-variabledisplay-box-units">'+acc.join('')+'</span>'
                         +'<span class="wegas-variabledisplay-box-value">(' + value + '<span class="wegas-variabledisplay-box-valueMax">/' + maxVal + '</span>)</span>');
 
                     break;
+
                 case 'fraction':
                     if(variableDescriptor){
                     }
-                    this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-fraction-label">'+this.get('label')+'</span>'
+                    this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-fraction-label">' + label + '</span>'
                         +'<span class="wegas-variabledisplay-fraction-minValue">'+ minVal +'</span>'
                         +'<span class="wegas-variabledisplay-fraction-minSeparator"> / </span>'
                         +'<span class="wegas-variabledisplay-fraction-value">'+ value +'</span>'
                         +'<span class="wegas-variabledisplay-fraction-maxSeparator"> / </span>'
                         +'<span class="wegas-variabledisplay-fraction-maxValue">'+ maxVal +'</span>');
                     break;
+
                 case 'valuebox':
                     acc = [];
                     if (variableDescriptor) {
@@ -76,7 +75,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
                                 + '">' + i + '</div>');
                         }
                     }
-                    this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-valuebox-label">'+this.get('label')+'</span>'
+                    this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-valuebox-label">' + label + '</span>'
                         + '<div class="wegas-variabledisplay-valuebox-units">' + acc.join('')+"</div");
                     break;
 
@@ -85,8 +84,8 @@ YUI.add('wegas-variabledisplay', function (Y) {
                     minVal = 55;
 
                     this.get(CONTENTBOX).setContent('<canvas width="90" height="51"></canvas><br />'
-                        + '<div class="wegas-variabledisplay-gauge-text">' + value + '%</div>'
-                        + '<center>' + this.get('label') + "</center>");
+                        + '<div class="wegas-variabledisplay-gauge-text">' + label + '%</div>'
+                        + '<center>' + label + "</center>");
 
                     ctx = this.get(CONTENTBOX).one('canvas')._node.getContext('2d');
 
@@ -189,13 +188,34 @@ YUI.add('wegas-variabledisplay', function (Y) {
         }
     }, {
         ATTRS : {
-            variable: {},
-            dataSource: {},
+            variable: {
+                type: "string"
+            },
+            dataSource: {
+                "transient": true,
+                getter: function () {
+                    return Y.Wegas.VariableDescriptorFacade;
+                }
+            },
             label : {
+                type: "string",
+                optional: true,
                 validator: Y.Lang.isString
             },
             view: {
-                value: "text"
+                type: "string",
+                value: "text",
+                choices: [{
+                    value: "text"
+                }, {
+                    value: "box"
+                }, {
+                    value: "gauge"
+                }, {
+                    value: "valuebox"
+                }, {
+                    value: "fraction"
+                }]
             }
         }
     });

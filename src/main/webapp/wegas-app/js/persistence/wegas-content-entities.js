@@ -40,6 +40,7 @@ Y.add("wegas-content-entities", function(Y){
                 type:"string",
                 optional:true,
                 _inputex:{
+                    label: "Private notes",
                     _type:"text"
                 }
             },
@@ -47,6 +48,7 @@ Y.add("wegas-content-entities", function(Y){
                 type:"string",
                 optional:true,
                 _inputex:{
+                    label: "Public description",
                     _type:"text"
                 }
             }

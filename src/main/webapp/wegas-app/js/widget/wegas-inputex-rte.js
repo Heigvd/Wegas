@@ -22,9 +22,9 @@ YUI.add("wegas-inputex-rte", function (Y){
     Y.extend(inputEx.RTEField, inputEx.Field, {
 
         destroy: function () {
-            inputEx.RTEField.superclass.destroy.call( this );
-
             this.editor.destroy();
+
+            inputEx.RTEField.superclass.destroy.call( this );
         },
 
         /**
@@ -464,12 +464,13 @@ YUI.add("wegas-inputex-rte", function (Y){
                     width: '415px'
                 });
                 win.setHeader('Edit video');
+                that.videoUrlField.setValue( node.getAttribute( "data-url" ) );
+                
                 this.openWindow( win );
 
-                that.videoUrlField.setValue( node.getAttribute( "data-url" ) );
-                this.on('afterOpenWindow', function() {
+                this.on( 'afterOpenWindow', function() {
                     this.get('panel').syncIframe();
-                }, this, true);
+                }, this, true );
 
             };
             this.editor.on('windowinsertmediaClose', function() {
