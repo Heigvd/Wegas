@@ -39,7 +39,7 @@ body{
     margin-top: 41px;
 }
 
- .leaderway-indicators .indicators-text{
+.leaderway-indicators .indicators-text{
     margin: 41px 20px 0 0;
     width:140px;
     text-align: left;
@@ -235,46 +235,46 @@ body{
 
 /*-----------------------------------Folder-----------------------------------*/
 .wegas-folder .leaderway-folder .menuFolder{
- width:100%;
 }
 /*-----resourceSelector-----*/
-.wegas-folder .leaderway-folder .listResources{
+.leaderway-folder .listResources{
     padding:10px;
+    text-align: center;
     overflow-x:auto;
     overflow-y:hidden;
     width:98%;
-    text-align: center;
+    height:85px;
 }
 
-.wegas-folder .leaderway-folder .listResources .resourceSelector{
+.leaderway-folder .listResources .resourceSelector{
     display:inline-block;
     margin:0 20px 0 0;
     padding:5px;
     border:outset 1px #6F89A2;
     border-radius: 5px;
     background-color: #dce5ef;
-    min-width: 100px;
+    width: 100px;
     text-align: center;
 }
 
-.wegas-folder .leaderway-folder .listResources .resourceSelector:hover{
+.leaderway-folder .listResources .resourceSelector:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }
 
-.wegas-folder .leaderway-folder .listResources .selected{
+.leaderway-folder .listResources .selected{
     background-color:#BFDAFF;
 }
 
 /*-----folder-----*/
-.wegas-folder .leaderway-folder .folder{
+.leaderway-folder .folder{
     margin:10px;
     padding:5px;
     border:outset 2px #6F89A2;
     background-color: #dce5ef;
 }
 
-.wegas-folder .leaderway-folder .folder .section{
+.leaderway-folder .folder .section{
     background-image:url(/Wegas/wegas-leaderway/images/border_folder-section.png);
     background-repeat: no-repeat;
     background-position-x:0;
@@ -284,105 +284,105 @@ body{
     clear:both;
 }
 
-.wegas-folder .leaderway-folder .folder .section:first-child{
+.leaderway-folder .folder .section:first-child{
     background-image:none;
     margin-top: 0;
 } 
 
-.wegas-folder .leaderway-folder .folder .title-section{
+.leaderway-folder .folder .title-section{
     margin-bottom: 10px;
     font-weight: bold;
 }
 
-.wegas-folder .leaderway-folder .folder .basic_informations div{
+.leaderway-folder .folder .basic_informations div{
     margin-bottom: 10px;
 }
 
-.wegas-folder .leaderway-folder .folder .picture{
+.leaderway-folder .folder .picture{
     position:absolute;
     margin-left:800px;
     height:140px;
     width:140px;
 }
 
-.wegas-folder .leaderway-folder .folder .picture img{
+.leaderway-folder .folder .picture img{
     background-color:#FFFFFF;
     border:solid 1px #6F89A2;
 }
 
-.wegas-folder .leaderway-folder .folder .name{
+.leaderway-folder .folder .name{
     margin-right: 5px;
 }
 
-.wegas-folder .leaderway-folder .folder .name_surname{
+.leaderway-folder .folder .name_surname{
     font-weight: bold;
     text-decoration: underline;
 }
 
-.wegas-folder .leaderway-folder .folder .occupation{
+.leaderway-folder .folder .occupation{
     width:700px;
     float:left;
     margin-bottom: 20px;
 }
 
-.wegas-folder .leaderway-folder .folder .occupation-value div{
+.leaderway-folder .folder .occupation-value div{
     margin-bottom:10px;
 }
 
-.wegas-folder .leaderway-folder .folder .occupation .task{
+.leaderway-folder .folder .occupation .task{
     margin-top: 10px;
     border-top: dotted 1px #6F89A2;
     padding-top:10px;
 }
 
-.wegas-folder .leaderway-folder .folder .occupation .task:first-child{
+.leaderway-folder .folder .occupation .task:first-child{
     margin-top:0;
     border-top:0;
     padding-top:0;
 }
 
-.wegas-folder .leaderway-folder .folder .occupation .task-skill{
+.leaderway-folder .folder .occupation .task-skill{
     margin-bottom:0;
 }
 
-.wegas-folder .leaderway-folder .folder .occupation .task-skill-value{
+.leaderway-folder .folder .occupation .task-skill-value{
     display:inline;
     margin-right:20px;
 }
 
-.wegas-folder .leaderway-folder .folder .leadershipLevel{
+.leaderway-folder .folder .leadershipLevel{
     display:block;
     clear:both;
     margin-bottom:15px;
 }
-.wegas-folder .leaderway-folder .folder .leadershipLevel-label{
+.leaderway-folder .folder .leadershipLevel-label{
     margin-bottom: 5px
 }
 
-.wegas-folder .leaderway-folder .folder .leadershipLevel-info{
+.leaderway-folder .folder .leadershipLevel-info{
     color:#6F89A2;
     margin-left:15px;
 }
 
-.wegas-folder .leaderway-folder .folder .leadershipLevel .currentLevel{
+.leaderway-folder .folder .leadershipLevel .currentLevel{
     list-style-type:circle;
 }
 
-.wegas-folder .leaderway-folder .folder .leadershipLevel .levelActive{
+.leaderway-folder .folder .leadershipLevel .levelActive{
     color:#000000;
 }
 
-.wegas-folder .leaderway-folder .folder .gauge{
+.leaderway-folder .folder .gauge{
     margin-bottom:20px;
     width:350px;
     float:left;
 }
 
-.wegas-folder .leaderway-folder .folder .gauge-value{
+.leaderway-folder .folder .gauge-value{
     font-size: 0.8em;
 }
 
-.wegas-folder .leaderway-folder .folder .gauge-units{
+.leaderway-folder .folder .gauge-units{
     display:block;
     background-image:url(/Wegas/wegas-leaderway/images/gauge_background_large.png);
     background-repeat: repeat-y;
@@ -394,7 +394,7 @@ body{
     overflow: hidden;
 }
 
-.wegas-folder .wegas-folder-content .folder .gauge-unit{
+.leaderway-folder .folder .gauge-unit{
     display:block;
     background-color:#6F89A2;    
     background-image:url(/Wegas/wegas-leaderway/images/gaugeFiller-background.png);
@@ -404,18 +404,19 @@ body{
     height:20px;
 }
 
-.wegas-folder .wegas-folder-content .folder .description{
+.leaderway-folder .folder .description{
     margin-bottom: 30px;
     padding:15px 25px 0 0;
 }
 
-.wegas-folder .leaderway-folder .folder .actions .actions-list{
-    min-height: 150px;
+.leaderway-folder .folder .actions .actions-list{
     width:98%;
     text-align: center;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
-.wegas-folder .leaderway-folder .folder .actions .action{
+.leaderway-folder .folder .actions .action{
     display:inline-block;
     margin:0 20px 0 0;
     padding: 10px;
@@ -424,89 +425,88 @@ body{
     background-color: white;
     width: 80px;
     height:80px;
-    text-align: center;
     overflow: hidden;
 }
 
-.wegas-folder .leaderway-folder .folder .actions .action:hover{
+.leaderway-folder .folder .actions .action:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }
 /*---------------------------------tasklist-----------------------------------*/
-.wegas-tasklist .yui3-datatable-content  table{
+.leaderway-tasklist .yui3-datatable-content  table{
     width:100%;
 }
 
-.wegas-tasklist .yui3-datatable-content  th, #hrlist td{
+.leaderway-tasklist .yui3-datatable-content  th, #hrlist td{
     border-width: 1px 0 1px 0;
 }
 
-.wegas-tasklist .yui3-datatable-content  th{
+.leaderway-tasklist .yui3-datatable-content  th{
     background-color: #dce5ef;
     background-repeat: repeat-x;
     background-image:url(/Wegas/wegas-leaderway/images/table-header_background.png);
     height:30px;
 }
 
-.wegas-tasklist .yui3-datatable-content  th{
+.leaderway-tasklist .yui3-datatable-content  th{
     vertical-align:middle;
     padding:0 5px 0 5px;
 }
 
-.wegas-tasklist .yui3-datatable-content  th div{
+.leaderway-tasklist .yui3-datatable-content  th div{
     height:17px;
     vertical-align:bottom;
 }
 
-.wegas-tasklist .yui3-datatable-content  th div .yui3-datatable-sort-indicator{
+.leaderway-tasklist .yui3-datatable-content  th div .yui3-datatable-sort-indicator{
     vertical-align:top;
 }
 
-.wegas-tasklist .yui3-datatable-content .yui3-datatable-odd td{
+.leaderway-tasklist .yui3-datatable-content .yui3-datatable-odd td{
     background-color:#DCE5EF;
 }
 
-.wegas-tasklist .yui3-datatable-content td{
+.leaderway-tasklist .yui3-datatable-content td{
     height:30px;
     padding:0 5px 0 5px;
     border:none;
 }
 
-.wegas-tasklist .yui3-datatable-content tr .hidden{
+.leaderway-tasklist .yui3-datatable-content tr .hidden{
     display:none;
 }
 
-.wegas-tasklist .modePicking .yui3-datatable-content tr:hover td{
+.leaderway-tasklist .modePicking .yui3-datatable-content tr:hover td{
     background-color: #BFDAFF;
     cursor: pointer;
 }
 
-.wegas-tasklist .modePicking .resourceName{
+.leaderway-tasklist .modePicking .resourceName{
     padding:10px;
     text-align:center;
     font-size: 1.2em;
 }
 
-.wegas-tasklist .modePicking .footer{
+.leaderway-tasklist .modePicking .footer{
     padding:10px;
     overflow: hidden;
     clear:both;
 }
 
-.wegas-tasklist .modePicking .assignInfo{
+.leaderway-tasklist .modePicking .assignInfo{
     padding:10px;
     margin-top:5px;
     width:650px;
     float:left;
 }
 
-.wegas-tasklist .modePicking .footer .buttons{
+.leaderway-tasklist .modePicking .footer .buttons{
     margin:5px;
     float:right;
     width:230px;
 }
 
-.wegas-tasklist .modePicking .footer .buttons div{
+.leaderway-tasklist .modePicking .footer .buttons div{
     display: inline-block;
     padding: 10px;
     margin-left:20px;
@@ -518,49 +518,49 @@ body{
     text-align:center;
 }
 
-.wegas-tasklist .modePicking .footer .buttons div:hover{
+.leaderway-tasklist .modePicking .footer .buttons div:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }
 /*------------------------------------Score-----------------------------------*/
-.wegas-score .leaderway-score .scoreTitle{
+.leaderway-score .scoreTitle{
     font-size: 1.2em;
     text-align: center;
     padding:20px 0 10px 0;
 }
 
-.wegas-score .leaderway-score table{
+.leaderway-score .datatable table{
     width:60%;
     margin:0 auto 0 auto;
 }
 
-.wegas-score .leaderway-score th, #hrlist td{
+.leaderway-score .datatable th, #hrlist td{
     border-width: 1px 0 1px 0;
 }
 
-.wegas-score .leaderway-score th{
+.leaderway-score .datatable th{
     background-color: #dce5ef;
     background-repeat: repeat-x;
     background-image:url(/Wegas/wegas-leaderway/images/table-header_background.png);
     height:30px;
 }
 
-.wegas-score .leaderway-score th{
+.leaderway-score .datatable th{
     vertical-align:middle;
     padding:0 5px 0 5px;
 }
 
-.wegas-score .leaderway-score .yui3-datatable-odd td{
+.leaderway-score .datatable .yui3-datatable-odd td{
     background-color: #DCE5EF;
 }
 
-.wegas-score .leaderway-score td{
+.leaderway-score .datatable td{
     height:30px;
     padding:0 5px 0 5px;
     border:none;
 }
 
-.wegas-score .leaderway-score tr:first-child td{
+.leaderway-score .datatable tr:first-child td{
     background-color:#FDE092;
 }
 

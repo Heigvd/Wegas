@@ -46,10 +46,10 @@ YUI.add('wegas-leaderway-score', function (Y) {
                 if(score.length <= maxRows) maxRows =  score.length;
                 for (i=0;i<maxRows;i++){
                     this.data.push({
-                                number:i+1,
-                                team:sortedTeam[i],
-                                score:sortedScore[i]
-                            })
+                        number:i+1,
+                        team:sortedTeam[i],
+                        score:sortedScore[i]
+                    })
                 }
             }
         },
@@ -60,6 +60,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
          * Create the child widget "table"  
          */
         renderUI: function (){
+            var cb = this.get(CONTENTBOX);
             this.table = new Y.DataTable({
                 columns: [
                 {
@@ -76,8 +77,10 @@ YUI.add('wegas-leaderway-score', function (Y) {
                 }               
                 ]
             });
-            this.get(CONTENTBOX).setContent('<div class="scoreTitle">'+this.get('title')+'</div>');
-            this.table.render(this.get(CONTENTBOX));
+            cb.setContent(
+                '<div class="scoreTitle">'+this.get('title')+'</div>\n\
+                <div class="datatable"></div>');
+            this.table.render(cb.one(".datatable"));
         },
         
         /**
