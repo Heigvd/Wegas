@@ -293,8 +293,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
                 cb.one('.actions .noAction').setHTML();
-                cb.one('.actions .giveTask').setHTML("<p>Donner un Mandat à  "+resourceInstance.get('properties').surname+"</p>");
-                cb.one('.actions .speak').setHTML("<p>S'entretenir avec "+resourceInstance.get('properties').surname+"</p>");
+                cb.one('.actions .giveTask').setHTML("<p>Imposer un mandat (moral et confiance -5)</p>");
+                cb.one('.actions .speak').setHTML("<p>S'entretenir (coûte 1 action)</p>");
                 occupation = this.getOccupationObject(resourceInstance).code;
                 cb.one('.actions .giveTask').hide();
                 cb.one('.actions .speak').hide();
@@ -330,8 +330,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         renderUI: function(){
             var cb = this.get(CONTENTBOX);
             cb.insert(
-                    '<div class="menuFolder"><div class="listResources"></div></div>\n\
-                    <div class="folder">\n\
+                '<div class="menuFolder"><div class="listResources"></div></div>\n\
+                 <div class="folder">\n\
                     <div class="basic_informations section">\n\
                     <div class="picture"></div>\n\
                         <div class="name_surname"><span class="name"></span><span class="surname"></span></div>\n\
@@ -345,7 +345,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     </div>\n\
                     <div class="skillsets section"><div class="title-section">Compétences : </div><div class="skillsets-value"></div></div>\n\
                     <div class="description section"><div class="title-section">Description : </div><div class="description-value"></div></div>\n\
-                    <div class="actions">\n\
+                    <div class="actions section">\n\
+                    <div class="title-section">Actions : </div>\n\
                         <div class="noAction"></div>\n\
                         <div class="actions-list">\n\
                             <div class="speak action"></div>\n\
