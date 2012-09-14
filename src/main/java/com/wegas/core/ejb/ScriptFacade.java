@@ -28,6 +28,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -99,8 +100,7 @@ public class ScriptFacade {
         ScriptEngine engine;
         try {
             engine = mgr.getEngineByName(scripts.get(0).getLanguage());
-        }
-        catch (NullPointerException ex) {
+        } catch (NullPointerException ex) {
             logger.error("Wrong language ?", ex.getMessage(), ex.getStackTrace());
             return null;
         }
@@ -121,13 +121,17 @@ public class ScriptFacade {
         for (Script s : scripts) {                                              // Evaluate each script
             try {
                 script += s.getContent() + ";";
-            }
-            catch (NullPointerException ex) {
+            } catch (NullPointerException ex) {
                 //script does not exist
             }
             //result = engine.eval(s.getContent());
         }
-        result = engine.eval(script);
+        try {
+            result = engine.eval(script);
+        } catch (ScriptException ex) {
+            logger.warn("{}\n{}", ex.getMessage(), script);
+            throw ex;
+        }
 
         em.flush();                                                             // Commit the transaction
         requestManager.commit();
@@ -146,7 +150,12 @@ public class ScriptFacade {
         evt.getEngine().eval("importPackage(com.wegas.core.script)");           // Inject factory object
 
         for (Entry<String, String> arg : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) {        // Inject the arguments
-            evt.getEngine().eval(arg.getValue());
+            try {
+                evt.getEngine().eval(arg.getValue());
+            } catch (ScriptException ex) {
+                logger.warn("{}\n{}", ex.getMessage(), arg.getValue());
+                throw ex;
+            }
         }
 
         for (VariableDescriptor vd : evt.getPlayer().getGameModel().getVariableDescriptors()) { // We inject the variable instances in the script
