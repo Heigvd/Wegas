@@ -297,7 +297,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             this.isDisplayingAResponse = false;
             cb.one('.dialogue .response').insert('<ul class="responseElements"></ul>');
             for(i=0 ; i<this.availableActions.length; i++){
-                cb.one('.dialogue .response .responseElements').insert('<li>'+this.availableActions[i].get('actionText')+'</li>');
+                cb.one('.dialogue .response .responseElements').insert('<li response_no="'+i+'">'+this.availableActions[i].get('actionText')+'</li>');
             }
             cb.one('.response').show();
         },
@@ -371,7 +371,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                  <div class="speaker-name"></div>\n\
                  <div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
                 );
-            if(this.get('toHide')) Y.all(this.get('toHide')).hide();
         },
         
         /**
