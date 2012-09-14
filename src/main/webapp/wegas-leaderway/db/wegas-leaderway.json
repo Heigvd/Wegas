@@ -306,8 +306,8 @@
                     "hiddenSkillsets":"Négociation;Design graphique",
                     "wishIsKnow":false,
                     "hateIsKnow":false,
-                    "wishIsKnow":false,
-                    "hateIsKnow":false,
+                    "isAdvised":false,
+                    "isConsidered":false,
                     "bonusInducement":0
                 },
                 "skillset":{
@@ -1238,7 +1238,7 @@
         "states" : {
             "1" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Oh, Salut.\",\n\"Bonjour.\",\n\"Salut, comment vas-tu ?\"\n],\n\"backgroundImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.gif\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]            ,\"answerImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Oh, Salut.\",\n\"Bonjour.\",\n\"Salut, comment vas-tu ?\"\n],\n\"backgroundImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.gif\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}] ,\"answerImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Partir (+1 action)",
@@ -1249,7 +1249,7 @@
                     "nextStateId" : 5,
                     "triggerCondition" : {
                         "@class" : "Script",
-                        "content" : "var i, j, gm = self.getGameModel(), free = true, tasks, taskDesc, absences, absenceDesc, assignmentTaskId, resInst;\n resInst = VariableDescriptorFacade.findByName(gm, 'resources').items.get(0).getInstance(self);\nabsences = VariableDescriptorFacade.findByName(gm, 'absences');\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntasksDesc = tasks.items.get(j);\nif(tasksDesc.getInstance(self).getActive()==true  && tasksDesc.getId() == assignmentTaskId){\nfree = false;\nbreak;\n}\n}\nfor(j=0;j<absences.items.size();j++){\nabsenceDesc = absences.items.get(j);\nif(absenceDesc.getInstance(self).getActive()==true && absenceDesc.getId() == assignmentTaskId){\nfree = false;\nbreak;\n}\n}\n}\nfree;",
+                        "content" : "var i, j, gm = self.getGameModel(), free = true, tasks, taskDesc, absences, absenceDesc, assignmentTaskId, resInst;\n resInst = VariableDescriptorFacade.findByName(gm, 'resources').items.get(0).getInstance(self);\nabsences = VariableDescriptorFacade.findByName(gm, 'absences');\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntasksDesc = tasks.items.get(j);\nif(tasksDesc.getInstance(self).getActive()==true && tasksDesc.getId() == assignmentTaskId){\nfree = false;\nbreak;\n}\n}\nfor(j=0;j<absences.items.size();j++){\nabsenceDesc = absences.items.get(j);\nif(absenceDesc.getInstance(self).getActive()==true && absenceDesc.getId() == assignmentTaskId){\nfree = false;\nbreak;\n}\n}\n}\nfree;",
                         "language" : "JavaScript"
                     }
                 },{
