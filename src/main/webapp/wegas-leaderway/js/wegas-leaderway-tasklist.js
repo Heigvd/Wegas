@@ -138,7 +138,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
                         'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode':'true'
+                        'Managed-Mode': 'false'
                     },
                     cfg: {
                         method: "POST",
@@ -147,11 +147,9 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                             "language": "JavaScript",
                             "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.get('id')+","+taskDescriptor.get('id')+");"
                         }),
-                        on: { //not work, call any function
-//                            success: Y.bind(this.assignTaskResult, this, true, Y.one('.leaderway-feedback')),
-//                            failure: Y.bind(this.assignTaskResult, this, false, Y.one('.leaderway-feedback'))
-                            success: Y.bind(this.assignTaskResult, this, true, Y.one('.leaderway-feedback')),
-                            failure: Y.bind(this.assignTaskResult, this, false, Y.one('.leaderway-feedback'))
+                        on: { //not work, call both function
+                            //success: this.assignTaskResult(true), // useless, players expect a success
+                            failure: this.assignTaskResult(false)
                         }
                     }
                 });
@@ -162,25 +160,24 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         /**
          * Display a feedback on the operation "add task to a resource"
          * This feedback will disappear after 5 seconde.
+         * the feedback message appear in node ".leaderway-feedback"
          * @param Boolean success, true if the opreation was a success, false otherwise.
-         * @param Node feedbackNode, the node to insert the feedback.
          */
-        assignTaskResult: function(success, feedbackNode){
-            console.log('test'+success);
-            feedbackNode.setStyle('display', 'block');
+        assignTaskResult: function(success){
+            Y.one('.leaderway-feedback').setStyle('display', 'block');
             if(success){
-                feedbackNode.one('p').addClass('green');
-                feedbackNode.one('p').insert("Le mandat à été délégué !");
+                Y.one('.leaderway-feedback').one('p').addClass('green');
+                Y.one('.leaderway-feedback').one('p').insert("Le mandat à été délégué !");
             }
             else{
-                feedbackNode.one('p').addClass('red');
-                feedbackNode.one('p').insert("Le mandat n'a pas pu être délégué.");
+                Y.one('.leaderway-feedback').one('p').addClass('red');
+                Y.one('.leaderway-feedback').one('p').insert("Le mandat n'a pas pu être délégué.");
             }
             setTimeout(function(){
-                feedbackNode.setHTML('<p></p>');
-                feedbackNode.setStyle('display', 'none');
-                feedbackNode.one('p').removeClass('green');
-                feedbackNode.one('p').removeClass('red');
+                Y.one('.leaderway-feedback').setHTML('<p></p>');
+                Y.one('.leaderway-feedback').setStyle('display', 'none');
+                Y.one('.leaderway-feedback').one('p').removeClass('green');
+                Y.one('.leaderway-feedback').one('p').removeClass('red');
             }, 5000);
         },
 

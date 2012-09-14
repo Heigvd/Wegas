@@ -293,7 +293,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
                 cb.one('.actions .noAction').setHTML();
-                cb.one('.actions .giveTask').setHTML("<p>Imposer un mandat (moral et confiance -5)</p>");
+                cb.one('.actions .giveTask').setHTML("<p>Imposer un mandat</p>");
                 cb.one('.actions .speak').setHTML("<p>S'entretenir (coûte 1 action)</p>");
                 occupation = this.getOccupationObject(resourceInstance).code;
                 cb.one('.actions .giveTask').hide();
@@ -446,10 +446,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
                 targetPageLoader.once("widgetChange", function(e) {
-                    e.newVal.setCurrentDialogue();
+                    e.newVal.setCurrentDialogue();                    
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }
+
         }
 
     }, {

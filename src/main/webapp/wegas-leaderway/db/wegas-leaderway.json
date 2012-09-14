@@ -1432,7 +1432,7 @@
                 "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Très bien, je te fais confiance.\",\n\"Bon je ferai de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=10;\nresInst.setConfidence(resInst.getConfidence()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);\nresInst.setConfidence(resInst.getConfidence()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -2128,7 +2128,7 @@
                 "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Très bien, je te fais confiance.\",\n\"Bon je ferai de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=10;\nresInst.setConfidence(resInst.getConfidence()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);\nresInst.setConfidence(resInst.getConfidence()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -2824,7 +2824,7 @@
                 "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Très bien, je te fais confiance.\",\n\"Bon je ferai de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=10;\nresInst.setConfidence(resInst.getConfidence()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);\nresInst.setConfidence(resInst.getConfidence()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -3520,7 +3520,7 @@
                 "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Très bien, je te fais confiance.\",\n\"Bon je ferai de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=10;\nresInst.setConfidence(resInst.getConfidence()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);\nresInst.setConfidence(resInst.getConfidence()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -4022,7 +4022,7 @@
         "states" : {
             "1" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Oh, Salut.\",\n\"Bonjour.\",\n\"Salut, comment vas-tu ?\"\n],\n\"backgroundImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Oh, Salut.\",\n\"Bonjour.\",\n\"Salut, comment vas-tu ?\"\n],\n\"backgroundImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}],\n\"answerImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Partir (+1 action)",
@@ -4216,7 +4216,7 @@
                 "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Très bien, je te fais confiance.\",\n\"Bon je ferai de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=10;\nresInst.setConfidence(resInst.getConfidence()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);\nresInst.setConfidence(resInst.getConfidence()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{

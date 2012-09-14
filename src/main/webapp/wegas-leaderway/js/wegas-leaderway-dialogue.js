@@ -128,17 +128,10 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
         
         /**
-         * Read a dialogue corresponding with the current dialogue value in this widget.
-         * if current state is empty, doTransition with the first available actions.
-         * else if state contain JSON with param "subPageId" and "targetPageLoaderId", call the function "displayWidget()" in this widget.
-         * else, the JSON can contain a array of text (one will be randomly choosed), one string correspnding of a param "speakerName",
-         * a object "backgroundImages", an onject "questionImages" and a object "answerImages".
-         * backgroundImages is always displayed.
-         * questionImages is displayed during the display of the text then hidden if answerImages exist
-         * answerImages is displayed when the text is completely displayed.
-         * For more information about object image, read comments on the function "renderJSONImages()" in this widget.
-         * Display text after 400 milisecondes.
-         * hide the layer "answerImage".
+         * Get the dialogue corresponding the currentDialogue's name.
+         * Get the current state.
+         * Get availableAction for this state.
+         * Hide div for images and div for responses.
          *@param String cb, the widget's contentbox.
          */
         readStateMachine: function(cb){
@@ -150,6 +143,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 return;
             }
+            this.isDisplayingAResponse = true;
             cb.one('.pictures .backgroundLayer').hide();
             cb.one('.pictures .questionLayer').hide();
             cb.one('.pictures .answerLayer').hide();
@@ -159,6 +153,19 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             this.state.getAvailableActions();
         },
         
+        /**
+         * Read a dialogue corresponding with the current dialogue value in this widget.
+         * if current state is empty, doTransition with the first available actions.
+         * else if state contain JSON with param "subPageId" and "targetPageLoaderId", call the function "displayWidget()" in this widget.
+         * else, the JSON can contain a array of text (one will be randomly choosed), one string correspnding of a param "speakerName",
+         * a object "backgroundImages", an onject "questionImages" and a object "answerImages".
+         * backgroundImages is always displayed.
+         * questionImages is displayed during the display of the text then hidden if answerImages exist
+         * answerImages is displayed when the text is completely displayed.
+         * For more information about object image, read comments on the function "renderJSONImages()" in this widget.
+         * Display text after 400 milisecondes.
+         * hide the layer "answerImage".
+         */
         readStateContent: function(e){
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
             content, rawContent, texts, splittedText = new Array(), cb = this.get(CONTENTBOX);
@@ -177,7 +184,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 return;
             }
             //Preparing texte
-            this.isDisplayingAResponse = true;
             texts = content.texts[Math.floor(Math.random()*content.texts.length)];
             //while(texts.indexOf('&code') != -1){ don't do this !!! out of memory exception.
             if(texts.indexOf('&code') != -1){
