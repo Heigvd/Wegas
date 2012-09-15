@@ -16,6 +16,8 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         currentDialogue: null,
         resourceDescriptor : null,
         isDisplayingAResponse:false,
+        availableActions:null,
+        state:null,
         
         /**
          *Create tooltips for the chart's values
@@ -140,10 +142,10 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          *@param String cb, the widget's contentbox.
          */
         readStateMachine: function(cb){
-            if(!this.currentDialogue) return;
             //Read state
-            var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
-            state, content, rawContent, texts, splittedText = new Array();
+            var dialogue;
+            if(!this.currentDialogue) return;
+            dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
             if(!dialogue){
                 cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 return;
@@ -151,11 +153,21 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.pictures .backgroundLayer').hide();
             cb.one('.pictures .questionLayer').hide();
             cb.one('.pictures .answerLayer').hide();
-            state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            rawContent = state.get('text');
+            cb.one('.response').hide();
+            this.state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
+            this.state.once('actionsAvailable', this.readStateContent, this)
+            this.state.getAvailableActions();
+        },
+        
+        readStateContent: function(e){
+            var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
+            content, rawContent, texts, splittedText = new Array(), cb = this.get(CONTENTBOX);
+            //get availableActions
+            this.availableActions = e.actionsAvailable;
+            rawContent = this.state.get('text');
             //Do semi-auto transition
             if(!rawContent || rawContent.length === 0){
-                dialogue.doTransition(state.getAvailableActions()[0]);
+                dialogue.doTransition(this.availableActions[0]);
                 return;
             }
             //Change widget (exit dialogue)
@@ -203,7 +215,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * @param Object content, a object with obligatory param "targetPageLoaderId" and "subPageId" and a non-obligatory param "functionAfterTransition"
          */
         displayWidget: function(dialogue, content){
-            var state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
             if(content.subPageId && content.targetPageLoaderId){
                 var targetPageLoader = Y.Wegas.PageLoader.find(content.targetPageLoaderId);
                 targetPageLoader.once("widgetChange", function(e) {
@@ -216,7 +227,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                         }
                     }
                 });
-                dialogue.doTransition(state.getAvailableActions()[0]);
+                dialogue.doTransition(this.availableActions[0]);
                 if(this.get('toHide')) Y.all(this.get('toHide')).show();   
                 targetPageLoader.set("pageId", content.subPageId);
             }
@@ -269,27 +280,26 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 setTimeout(Y.bind(this.displayText, this, cb, textParts), 70);
             }
             else{
-                var state, dialogue;
                 cb.one('.pictures .questionLayer').hide();
                 cb.one('.pictures .answerLayer').show();
-                dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
-                state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-                state.getAvailableActions();
+                this.displayResponse();
             }
         },
         
         /**
          * Show all available transitions for the current state.
          * hide the .questionLayer and sho the .answerLayer to display images.
-         * @param Object availableTransitions
+         * @param Event object containing actionsAvailable (available transitions)
          */
-        displayResponse: function(availableTransitions){
+        displayResponse: function(e){
             var i, cb = this.get(CONTENTBOX);
+            if(this.availableActions == null) return
             this.isDisplayingAResponse = false;
             cb.one('.dialogue .response').insert('<ul class="responseElements"></ul>');
-            for(i=0 ; i<availableTransitions.length; i++){
-                cb.one('.dialogue .response .responseElements').insert('<li nextstate="'+i+'">'+availableTransitions[i].get('actionText')+'</li>');
+            for(i=0 ; i<this.availableActions.length; i++){
+                cb.one('.dialogue .response .responseElements').insert('<li>'+this.availableActions[i].get('actionText')+'</li>');
             }
+            cb.one('.response').show();
         },
         
        /**
@@ -371,11 +381,9 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-//            this.handlers.push(Y.Wegas..after('actionsAvailable', this.displayResponse, this));
             this.handlers.push(cb.one('.dialogue .response').delegate('click', function (e){
-                var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
-                state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-                dialogue.doTransition(state.getAvailableActions()[parseInt(e.currentTarget._node.attributes[0].nodeValue)]);
+                var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
+                dialogue.doTransition(this.availableActions[parseInt(e.currentTarget._node.attributes[0].nodeValue)]);
             }, '.responseElements li', this));
         },
           
