@@ -25,14 +25,14 @@ YUI.add('wegas-scripteval', function (Y) {
             this.publish("evaluated");
             this.publish("failure");
         },
-        scopedEval: function(script){
+        scopedEval: function(script, id){
             var result, response, url;
             if(!this.upToDate){                                                 //Only compute if new value
                 this.buildContext();
             }
             try{
                 result = (new Function( "with(this) { return "+ script +";}")).call(this.context);
-                this.fire("evaluated",result);
+                this.fire("evaluated",result, id);
             }catch(error){
                 url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
                 return Y.io(url,{
@@ -48,16 +48,17 @@ YUI.add('wegas-scripteval', function (Y) {
                         "content": script
                     }),
                     on:{
-                        success:Y.bind( function(id, response){
+                        success:Y.bind( function(id, req_id, response){
                             this.fire("evaluated", Y.JSON.parse(response.responseText), id);
-                        }, this),
-                        failure:Y.bind(function(id, response){
+                        }, this, id),
+                        failure:Y.bind(function(id, req_id, response){
+                            console.warn("ScriptEval ", response);
                             try{
                                 this.fire("failure", Y.JSON.parse(response.responseText), id);
                             }catch(e){
-                                this.fire("failure", null);
+                                this.fire("failure", null, id);
                             }
-                        }, this)
+                        }, this, id)
                     }
                 });
             }
