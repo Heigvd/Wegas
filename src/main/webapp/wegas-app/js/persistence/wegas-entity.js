@@ -1183,25 +1183,33 @@ YUI.add('wegas-entity', function (Y) {
          * evaluated event contains response. true or false. False if script error.
          */
         localEval: function(){
-            this._eHandler = Y.Wegas.VariableDescriptorFacade.script.once("ScriptEval:evaluated", function(e, o){
-                if(o === true){
-                    this.fire("evaluated",true);
-                }else{
-                    this.fire("evaluated",false);
-                }
-                if(this._fHandler){
-                    this._fHandler.detach();
-                    this._fHandler = null;
-                }
-            }, this);
-            this._fHandler = Y.Wegas.VariableDescriptorFacade.script.once("ScriptEval:failure", function(e, o){
-                this.fire("evaluated", false);
-                if(this._eHandler){
-                    this._eHandler.detach();
-                    this._eHandler = null;
-                }
-            }, this);
-            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
+            if(!this._eHandler){
+                this._eHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id){
+                    if(!this._evaluation || this._evaluation.id != id){
+                        return;
+                    }
+                    if(o === true){
+                        this.fire("evaluated",true);
+                    }else{
+                        this.fire("evaluated",false);
+                    }
+                    this._evaluation = null;
+                }, this);
+            }
+            if(!this._fHandler){
+                this._fHandler = Y.Wegas.VariableDescriptorFacade.script.once("ScriptEval:failure", function(e, o, id){
+                    if(!this._evaluation || this._evaluation.id != id){
+                        return;
+                    }
+                    this.fire("evaluated", false);
+                    this._evaluation = null;
+                }, this);
+            }
+            if(!this._evaluation || !this._evaluation.isInProgress()){
+                this._evaluation = Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
+            }else{
+                console.log("evaluation in progress");
+            }
         },
         isEmpty: function () {
             return (this.content == null || this.content == "");

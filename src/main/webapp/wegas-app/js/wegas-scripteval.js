@@ -35,7 +35,7 @@ YUI.add('wegas-scripteval', function (Y) {
                 this.fire("evaluated",result);
             }catch(error){
                 url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
-                Y.io(url,{
+                return Y.io(url,{
                     headers:{
                         'Content-Type': 'application/json; charset=iso-8859-1',
                         'Managed-Mode': 'false'
@@ -49,11 +49,11 @@ YUI.add('wegas-scripteval', function (Y) {
                     }),
                     on:{
                         success:Y.bind( function(id, response){
-                            this.fire("evaluated", Y.JSON.parse(response.responseText));
+                            this.fire("evaluated", Y.JSON.parse(response.responseText), id);
                         }, this),
                         failure:Y.bind(function(id, response){
                             try{
-                                this.fire("failure", Y.JSON.parse(response.responseText));
+                                this.fire("failure", Y.JSON.parse(response.responseText), id);
                             }catch(e){
                                 this.fire("failure", null);
                             }
