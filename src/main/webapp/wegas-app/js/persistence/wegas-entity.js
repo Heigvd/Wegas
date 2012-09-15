@@ -1175,6 +1175,8 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
         initializer: function(){
             this.publish("evaluated");
+            this._inProgress = false;
+            this._result = null;
         },
         isValid: function (){
         //TODO : FX a greffer :)
@@ -1183,36 +1185,54 @@ YUI.add('wegas-entity', function (Y) {
          * evaluated event contains response. true or false. False if script error.
          */
         localEval: function(){
-            if(!this._eHandler){
-                this._eHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id){
-                    if(!this._evaluation || this._evaluation.id != id){
-                        return;
-                    }
-                    if(o === true){
-                        this.fire("evaluated",true);
-                    }else{
-                        this.fire("evaluated",false);
-                    }
-                    this._evaluation = null;
-                }, this);
-            }
-            if(!this._fHandler){
-                this._fHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:failure", function(e, o, id){
-                    if(!this._evaluation || this._evaluation.id != id){
-                        return;
-                    }
-                    this.fire("evaluated", false);
-                    this._evaluation = null;
-                }, this);
-            }
-            if(!this._evaluation || !this._evaluation.isInProgress()){
-                this._evaluation = Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
-            }else{
-                console.log("evaluation in progress");
+            if(Y.Wegas.VariableDescriptorFacade.script.scopedEval){
+                if(this._result){
+                    this.fire("evaluated", this._result);
+                    return;
+                }
+                if(!this._eHandler){
+                    this._eHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id){
+
+                        if(this._yuid != id){
+                            return;
+                        }
+                        e.halt(true);
+                        if(o === true){
+                            this._result = true;
+                        }else{
+                            this._result = false
+                        }
+                        this._inProgress = false;
+                        this.fire("evaluated",this._result);
+                    }, this);
+                }
+                if(!this._fHandler){
+                    this._fHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:failure", function(e, o, id){
+
+                        if(this._yuid != id){
+                            return;
+                        }
+                        e.halt(true);
+                        this._inProgress = false;
+                        this.fire("evaluated", false);
+
+                    }, this);
+                }
+
+                if(!this._inProgress){
+                    this._inProgress = true;
+                    Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"), this._yuid);
+                }else{
+                    console.log("evaluation in progress");
+                }
             }
         },
         isEmpty: function () {
             return (this.content == null || this.content == "");
+        },
+        destructor: function(){
+            this._fHandler.detach();
+            this._eHandler.detach();
         }
     }, {
         ATTRS: {
@@ -1238,7 +1258,11 @@ YUI.add('wegas-entity', function (Y) {
             },
             content: {
                 type: "string",
-                format: "text"
+                format: "text",
+                setter: function(v){
+                    this._result = null;
+                    return v;
+                }
             }
         }
     });
