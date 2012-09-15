@@ -17,8 +17,10 @@
 <!--Shiro-->
     <logger name="org.apache.shiro" level="ERROR"/>
     <logger name="org.apache.shiro.util.ThreadContext" level="ERROR"/>
-<!--Jackrabbit-->
+<!--Jackrabbit / Content-->
     <logger name="org.apache.jackrabbit" level="WARN"/>
+    <logger name="com.wegas.core.content" level="WARN"/>
+    <logger name="com.wegas.core.rest.FileController" level="WARN"/>
 
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />
