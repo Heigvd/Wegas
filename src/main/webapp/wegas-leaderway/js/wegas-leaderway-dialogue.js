@@ -8,7 +8,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
     var CONTENTBOX = 'contentBox', Dialogue;
 
     Dialogue = Y.Base.create("wegas-dialogue", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        
+
         chart: null,
         seriesName: new Array(),
         seriesValue:new Array(),
@@ -18,7 +18,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         isDisplayingAResponse:false,
         availableActions:null,
         state:null,
-        
+
         /**
          *Create tooltips for the chart's values
          */
@@ -26,9 +26,9 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex){
                 var msg = document.createElement("div"),
                 boldTextBlock = document.createElement("div");
-                boldTextBlock.appendChild(document.createTextNode(valueItem.displayName+': '+valueItem.axis.get("labelFunction").apply(this, [valueItem.value])));   
-                msg.appendChild(boldTextBlock); 
-                return msg; 
+                boldTextBlock.appendChild(document.createTextNode(valueItem.displayName+': '+valueItem.axis.get("labelFunction").apply(this, [valueItem.value])));
+                msg.appendChild(boldTextBlock);
+                return msg;
             }
         },
 
@@ -50,7 +50,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.dialogue .talk').setHTML();
             cb.one('.dialogue .response').setHTML();
         },
-        
+
         /**
          * Creat a YUI3 Charts combospline' with values of a resource's moral and confidence historic values.
          * If any resource is given, the chart will be not created.
@@ -61,15 +61,20 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             if(!resourceDescriptor) return;
             var i, resourceInstance = resourceDescriptor.getInstance(),
             seriesCollection = [
-                {yDisplayName:'moral'},
-                {yDisplayName:'confiance'}
+            {
+                yDisplayName:'moral'
+            },
+
+            {
+                yDisplayName:'confiance'
+            }
             ],
             rawSeries = [
-                resourceInstance.get('moralHistory'),
-                resourceInstance.get('confidenceHistory'),
+            resourceInstance.get('moralHistory'),
+            resourceInstance.get('confidenceHistory'),
             ];
-            
-            
+
+
             this.chart = new Y.Chart({
                 type:'combospline',
                 seriesCollection:seriesCollection,
@@ -88,15 +93,15 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                     width: 250,
                     height: 50
                 },
-                
+
                 tooltip: this.chartTooltip,
-                dataProvider:this.getChartValues(5, rawSeries), 
+                dataProvider:this.getChartValues(5, rawSeries),
                 horizontalGridlines: true,
                 verticalGridlines: true
             });
             this.chart.render(".chart");
         },
-          
+
         /**
          * Create series for the chart.
          * i = numberOfValues
@@ -126,7 +131,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             return fitSeries;
         },
-        
+
         /**
          * Read a dialogue corresponding with the current dialogue value in this widget.
          * if current state is empty, doTransition with the first available actions.
@@ -154,11 +159,11 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.pictures .questionLayer').hide();
             cb.one('.pictures .answerLayer').hide();
             cb.one('.response').hide();
-            this.state = dialogue.get('states')[dialogue.getInstance().get('currentStateId')];
-            this.state.once('actionsAvailable', this.readStateContent, this)
+            this.state = dialogue.getCurrentState();
+            this.state.once('actionsAvailable', this.readStateContent, this);
             this.state.getAvailableActions();
         },
-        
+
         readStateContent: function(e){
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
             content, rawContent, texts, splittedText = new Array(), cb = this.get(CONTENTBOX);
@@ -173,7 +178,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             //Change widget (exit dialogue)
             content = JSON.parse(rawContent);
             if(content.subPageId && content.targetPageLoaderId){
-                this.displayWidget(dialogue, content); 
+                this.displayWidget(dialogue, content);
                 return;
             }
             //Preparing texte
@@ -206,11 +211,11 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             //Display text
             setTimeout(Y.bind(this.displayText, this, cb, splittedText), 400);
         },
-        
+
         /**
          * Destroy this widget and open a newer corresponding to the subPageId at place defined by the targetPageLoaderId.
          * A function can be evaluated after the transition if the JSON contain a param "functionAfterTransition";
-         * Show the node corresponding to the "toHide" ATTRS of this widget. 
+         * Show the node corresponding to the "toHide" ATTRS of this widget.
          * @param Dialogue dialogue, the readed dialogue.
          * @param Object content, a object with obligatory param "targetPageLoaderId" and "subPageId" and a non-obligatory param "functionAfterTransition"
          */
@@ -228,11 +233,11 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                     }
                 });
                 dialogue.doTransition(this.availableActions[0]);
-                if(this.get('toHide')) Y.all(this.get('toHide')).show();   
+                if(this.get('toHide')) Y.all(this.get('toHide')).show();
                 targetPageLoader.set("pageId", content.subPageId);
             }
         },
-        
+
         /**
          * Insert a image to the DOM with given parametre
          * @param Node node, node where the image must be render.
@@ -247,12 +252,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 if(imageObjects[i].height){
                     imageHTML.push('height="');
                     imageHTML.push(imageObjects[i].height);
-                    imageHTML.push('" ');     
-                } 
+                    imageHTML.push('" ');
+                }
                 if(imageObjects[i].width){
                     imageHTML.push('width="');
                     imageHTML.push(imageObjects[i].width);
-                    imageHTML.push('" ');   
+                    imageHTML.push('" ');
                 }
                 imageHTML.push('style="');
                 imageHTML.push('position:absolute;');
@@ -260,18 +265,18 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                     imageHTML.push(key);
                     imageHTML.push(':');
                     imageHTML.push(imageObjects[i].css[key]);
-                    imageHTML.push('; ');                       
+                    imageHTML.push('; ');
                 }
-                imageHTML.push('" />'); 
+                imageHTML.push('" />');
                 node.insert(imageHTML.join(""));
             }
         },
-        
+
         /**
          * Recursive function that display text each 70 milisseconde in the ".dialogue .talk p" node of this widget.
          * call the function "displayResponse" when all the text is displayed.
          * @param String cb, the widget's contentbox.
-         * @param Array[String] textParts, an array with a splitted string.  
+         * @param Array[String] textParts, an array with a splitted string.
          */
         displayText: function(cb, textParts){
             cb.one('.dialogue .talk p').insert(textParts[0]+' &thinsp;');
@@ -285,7 +290,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 this.displayResponse();
             }
         },
-        
+
         /**
          * Show all available transitions for the current state.
          * hide the .questionLayer and sho the .answerLayer to display images.
@@ -295,14 +300,19 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             var i, cb = this.get(CONTENTBOX);
             if(this.availableActions == null) return
             this.isDisplayingAResponse = false;
-            cb.one('.dialogue .response').insert('<ul class="responseElements"></ul>');
+            if(cb.one('.dialogue .response .responseElements')){
+                cb.one('.dialogue .response .responseElements').empty(true);
+            }else{
+                cb.one('.dialogue .response').insert('<ul class="responseElements"></ul>');
+            }
+
             for(i=0 ; i<this.availableActions.length; i++){
                 cb.one('.dialogue .response .responseElements').insert('<li>'+this.availableActions[i].get('actionText')+'</li>');
             }
             cb.one('.response').show();
         },
-        
-       /**
+
+        /**
          * If current dialogue is null or empty, get the defaultDialogue value.
          * id defaultDialogue value doesn't exist, current dialogue will be null.
          */
@@ -313,12 +323,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 if(dialogue && !dialogue.length == 0)this.currentDialogue = dialogue;
             }
         },
-        
+
         /**
          * Set the current dialogue and search the resource owner of this new dialogue.
          * If a resource is finded, set the resourceDescriptor of this widget.
          * call the function syncUI of this widget.
-         * @param String newDialogueRef, the new DialogueDescriptor's name 
+         * @param String newDialogueRef, the new DialogueDescriptor's name
          */
         setCurrentDialogue: function(newDialogueRef){
             var i, listResource = Y.Wegas.VariableDescriptorFacade.rest.find("name", 'resources'),
@@ -339,9 +349,9 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             this.syncUI();
         },
-        
+
         /**
-         * Set the resourceDescriptor used by this widget. 
+         * Set the resourceDescriptor used by this widget.
          * if the new resource have a dialogue set the current dialogue used by this widget.
          * @param ResourceDescriptor resourceDescriptor, the new resourceDescriptor
          */
@@ -353,11 +363,11 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             this.syncUI();
         },
-        
+
         /***Lifecycle methode***/
         /**
          * Render the widget.
-         * Hide node corresponding to the ATTRS "toHide"  
+         * Hide node corresponding to the ATTRS "toHide"
          */
         renderUI: function (){
             var cb = this.get(CONTENTBOX);
@@ -373,7 +383,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 );
             if(this.get('toHide')) Y.all(this.get('toHide')).hide();
         },
-        
+
         /**
          * Bind some function at nodes of this widget
          */
@@ -386,7 +396,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 dialogue.doTransition(this.availableActions[parseInt(e.currentTarget._node.attributes[0].nodeValue)]);
             }, '.responseElements li', this));
         },
-          
+
         /**
          * Synchronise the content of this widget.
          * Recreat the chart widget
@@ -397,9 +407,9 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 this.clear(cb);
                 this.createChart(this.resourceDescriptor);
                 this.readStateMachine(cb);
-            } 
+            }
         },
-        
+
         /*
          * Destroy all child widget and all function
          */
@@ -411,7 +421,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 this.handlers[i].detach();
             }
         },
-        
+
         // *** hack Methods *** //
         /**
          * if current week > max value of week value, then
@@ -424,10 +434,10 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue();
                 });
-                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));
             }
         }
-        
+
     }, {
         ATTRS : {
             toHide:{
