@@ -254,7 +254,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=5;\nresInst.setConfidence(resInst.getConfidence())-=10;",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()-5);\nresInst.setConfidence(resInst.getConfidence()-10);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -369,7 +369,7 @@
             },
             "onEnterEvent" : {
                 "@class" : "Script",
-                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=10;\nresInst.setConfidence(resInst.getConfidence()+5);",
+                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);\nresInst.setConfidence(resInst.getConfidence()+5);",
                 "language" : "JavaScript"
             },
             "transitions" : [{
@@ -850,7 +850,7 @@
                 "nextStateId" : 29,
                 "triggerCondition" : {
                     "@class" : "Script",
-                    "content" : "var alea, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nalea=1;\nif(resInst.getProperty('wishIsKnow') == 'false') alea+=1;\nif(resInst.getProperty('hateIsKnow') == 'false') alea+=1;\nif(resInst.getProperty('hiddenSkillsets')!=='') alea+=1;\nchance = Math.floor(Math.random()*alea)+1;\nresInst.getProperty('wishIsKnow') == 'false' && chance <=1;",
+                    "content" : "var alea = 1, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nif(resInst.getProperty('wishIsKnow') == 'false') alea+=1;\nif(resInst.getProperty('hateIsKnow') == 'false') alea+=1;\nif(resInst.getProperty('hiddenSkillsets')!=='') alea+=1;\nchance = Math.floor(Math.random()*alea)+1;\nresInst.getProperty('wishIsKnow') == 'false' && chance <=1;",
                     "language" : "JavaScript"
                 }
             },{
@@ -931,7 +931,7 @@
                 "nextStateId" : 32,
                 "triggerCondition" : {
                     "@class" : "Script",
-                    "content" : "var alea, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nif(resInst.getProperty('hateIsKnow') == 'false') alea+=1;\nif(resInst.getProperty('hiddenSkillsets')!=='') alea+=1;\nchance = Math.floor(Math.random()*alea)+1;\nresInst.getProperty('wishIsKnow') == 'false' && chance <=1;",
+                    "content" : "var alea = 1, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nif(resInst.getProperty('hateIsKnow') == 'false') alea+=1;\nif(resInst.getProperty('hiddenSkillsets')!=='') alea+=1;\nchance = Math.floor(Math.random()*alea)+1;\nresInst.getProperty('hateIsKnow') == 'false' && chance <=1;",
                     "language" : "JavaScript"
                 }
             },{
@@ -1012,7 +1012,7 @@
                 "nextStateId" : 35,
                 "triggerCondition" : {
                     "@class" : "Script",
-                    "content" : "var alea, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nif(resInst.getProperty('hiddenSkillsets')!=='') alea+=1;\nchance = Math.floor(Math.random()*alea)+1;\nresInst.getProperty('wishIsKnow') == 'false' && chance <=1;",
+                    "content" : "var alea = 1, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nif(resInst.getProperty('hiddenSkillsets')!=='') alea+=1;\nchance = Math.floor(Math.random()*alea)+1;\nresInst.getProperty('hiddenSkillsets')!=='' && chance <=1;",
                     "language" : "JavaScript"
                 }
             },{

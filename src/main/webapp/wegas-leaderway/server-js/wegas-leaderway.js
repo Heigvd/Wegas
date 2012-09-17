@@ -609,26 +609,28 @@ function assignTask(resourceDescriptorId, taskDescriptorId){
     var i, j, resInstance, taskDescriptor, gm=self.getGameModel(),
     listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
     listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');
+    //Search resource
     for(i=0; i<listResources.items.size(); i++){
         if(resourceDescriptorId == listResources.items.get(i).getId()){
             resInstance = listResources.items.get(i).getInstance(self);
         }
     }
+    if(resInstance == null) return;
+    //Search task
     for(i=0; i<listTasks.items.size(); i++){
         if(taskDescriptorId == listTasks.items.get(i).getId()){
             taskDescriptor = listTasks.items.get(i);
         }
-        if(resInstance != null){
-            for(j=0; j<resInstance.getAssignments().size(); j++){
-                if(resInstance.getAssignments().get(j).getTaskDescriptorId() == taskDescriptor.getId() && taskDescriptor.getActive() == true){
-                    resInstance.getAssignments().remove(j);
-                }
+        //remove old previous assigned task
+        for(j=0; j<resInstance.getAssignments().size(); j++){
+            if(resInstance.getAssignments().get(j).getTaskDescriptorId() == listTasks.items.get(i).getId() && listTasks.items.get(i).getInstance(self).getActive() == true){
+                resInstance.getAssignments().remove(j);
             }
         }
     }
-    if(taskDescriptor != null && resInstance != null){
-        resInstance.assign(0, taskDescriptor);
-    }
+    if(taskDescriptor == null) return;
+   // assign task to resource
+   resInstance.assign(0, taskDescriptor);
 }
 
 /**

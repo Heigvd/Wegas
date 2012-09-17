@@ -179,6 +179,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             rawContent = this.state.get('text');
             //Do semi-auto transition
             if(!rawContent || rawContent.length === 0){
+                this.isDisplayingAResponse = false;
                 dialogue.doTransition(this.availableActions[0]);
                 return;
             }
