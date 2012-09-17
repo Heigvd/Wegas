@@ -681,9 +681,9 @@ function doIntroduction(){
     budgetvalue = budgetDescriptor.getInstance(self).getValue(), mail = new Array();
     mail.push("Bonjour");
     mail.push("<br /><br />");
-    mail.push("Je vous félicite pour votre promotion. Sauf erreur de ma part, vous n’avez jamais eu de contact avec vos équipiers jusqu’à présent. Aussi vous ais-je remis les dossiers de chaque personne dont vous avez la charge. Je sais que vous en ferai bon usage.");
+    mail.push("Je vous félicite pour votre promotion. Sauf erreur de ma part, vous n'avez jamais eu de contact avec vos équipiers jusqu'à présent. Aussi vous ais-je remis les dossiers de chaque personne dont vous avez la charge. Je sais que vous en ferai bon usage.");
     mail.push("<br /><br />");
-    mail.push("La concurrence est rude, je vous demanderais donc de ne pas trop tarder avant de prendre en main votre service. Si vos résultats sont bons, les mandats deviendront de plus en plus intéressants. Vous avez également la possibilité d’être promu. Si cela devait arriver, j’espère pouvoir donner la responsabilité de votre équipe à un de ses membres actuels.");
+    mail.push("La concurrence est rude, je vous demanderais donc de ne pas trop tarder avant de prendre en main votre service. Si vos résultats sont bons, les mandats deviendront de plus en plus intéressants. Vous avez également la possibilité d'être promu. Si cela devait arriver, j'espère pouvoir donner la responsabilité de votre équipe à un de ses membres actuels.");
     mail.push("<br /><br />");
     mail.push("Je vous souhaite le meilleur départ possible.");
     mail.push("<br />");

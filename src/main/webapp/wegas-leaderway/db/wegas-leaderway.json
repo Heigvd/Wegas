@@ -199,7 +199,7 @@
         "items":[{
             "@class": "ResourceDescriptor",
             "name": "Salmero",
-            "description":"Fernand est franc et n'hésitera pas à vous dire ce qui ne lui convient pas. Engagé pour ses talents de négociateur, il a de l’intérêt pour le web. Expérimenté par une vie de travail, il semble réticent à l'apprentissage de nouvelles méthodes.",
+            "description":"Fernand est franc et n'hésitera pas à vous dire ce qui ne lui convient pas. Engagé pour ses talents de négociateur, il a de l'intérêt pour le web. Expérimenté par une vie de travail, il semble réticent à l'apprentissage de nouvelles méthodes.",
             "defaultInstance":{
                 "@class":"ResourceInstance",
                 "moral":72,
@@ -241,7 +241,7 @@
         },{
             "@class": "ResourceDescriptor",
             "name": "Brossard",
-            "description":"Employé de longue date, elle s'est fait un nom grâce à ses talents de graphiste. Son expérience l’a rend compétentes dans la plupart des tâches et lui permet d’apprend vite. Elle n'hésitera que rarement à vous prévenir si quelque chose la dérange.",
+            "description":"Employé de longue date, elle s'est fait un nom grâce à ses talents de graphiste. Son expérience l'a rend compétentes dans la plupart des tâches et lui permet d'apprend vite. Elle n'hésitera que rarement à vous prévenir si quelque chose la dérange.",
             "defaultInstance":{
                 "@class":"ResourceInstance",
                 "moral":45,
@@ -445,7 +445,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Design graphique d’une page web pour un privé.",
+            "name": "Design graphique d'une page web pour un privé.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -470,7 +470,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Modification d’une base de donnée multimédia.",
+            "name": "Modification d'une base de donnée multimédia.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -495,7 +495,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Modifications d’un logiciel de comptabilité.",
+            "name": "Modifications d'un logiciel de comptabilité.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -520,7 +520,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Analyse des besoins d’un nouveau CMS.",
+            "name": "Analyse des besoins d'un nouveau CMS.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -546,7 +546,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Création d’un site web  pour les clients d’une assurance.",
+            "name": "Création d'un site web  pour les clients d'une assurance.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -572,7 +572,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Modélisation d’un système de payement online.",
+            "name": "Modélisation d'un système de payement online.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -597,7 +597,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Création d’une base de données pour un privé.",
+            "name": "Création d'une base de données pour un privé.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -622,7 +622,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Modélisation des traitements d’un logiciel.",
+            "name": "Modélisation des traitements d'un logiciel.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -722,7 +722,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Création d’un d’une démo de logiciel de comptabilité.",
+            "name": "Création d'un d'une démo de logiciel de comptabilité.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -776,7 +776,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Migration d’une base de données PostgrSQL.",
+            "name": "Migration d'une base de données PostgrSQL.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -802,7 +802,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Création d’une page web pour un privé.",
+            "name": "Création d'une page web pour un privé.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -828,7 +828,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Création d’un nouveau logo pour l’entreprise.",
+            "name": "Création d'un nouveau logo pour l'entreprise.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -854,7 +854,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Création d’une base de données pour un logiciel de domotique.",
+            "name": "Création d'une base de données pour un logiciel de domotique.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -958,7 +958,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Résolution de problème sur le logiciel d’un ancien mandat.",
+            "name": "Résolution de problème sur le logiciel d'un ancien mandat.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -984,7 +984,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Modification de la base de données d’une banque.",
+            "name": "Modification de la base de données d'une banque.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -1010,7 +1010,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Modélisation des traitements d’un logiciel de logistique de la Poste.",
+            "name": "Modélisation des traitements d'un logiciel de logistique de la Poste.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -1035,7 +1035,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Modélisation d’une base de données.",
+            "name": "Modélisation d'une base de données.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -1060,7 +1060,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Développement de la partie HTML/CSS d’un site internet.",
+            "name": "Développement de la partie HTML/CSS d'un site internet.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -1085,7 +1085,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Rédaction d’un cahier des charges pour un site d’artiste.",
+            "name": "Rédaction d'un cahier des charges pour un site d'artiste.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -1111,7 +1111,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Demande d’un prêt pour la rénovation des bureaux.",
+            "name": "Demande d'un prêt pour la rénovation des bureaux.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -1136,7 +1136,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Modifications d’un logiciel de recette cuisine.",
+            "name": "Modifications d'un logiciel de recette cuisine.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -1161,7 +1161,7 @@
             }
         },{
             "@class": "TaskDescriptor",
-            "name": "Résolution de problème d’un logiciel de comptabilité.",
+            "name": "Résolution de problème d'un logiciel de comptabilité.",
             "description":"",
             "defaultInstance":{
                 "@class":"TaskInstance",
@@ -1293,7 +1293,7 @@
             },
             "3" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D’accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D'accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -1302,7 +1302,7 @@
             },
             "5" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J’ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J'ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
@@ -1370,7 +1370,7 @@
             },
             "8" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l’aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l’aise avec ce genre de travaux, n’y a-t-il pas d’autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l'aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l'aise avec ce genre de travaux, n'y a-t-il pas d'autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=5;\nresInst.setConfidence(resInst.getConfidence())-=10;",
@@ -1388,7 +1388,7 @@
             },
             "9" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d’autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
@@ -1406,7 +1406,7 @@
             },
             "10" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J’essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c’est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t’intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J'essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c'est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t'intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -1471,7 +1471,7 @@
             },
             "16" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"D’accord, je vais m’en charger.\",\n\"Je n’ai rien contre, je vais m’y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"D'accord, je vais m'en charger.\",\n\"Je n'ai rien contre, je vais m'y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -1480,7 +1480,7 @@
             },
             "17" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Ben tiens. C’est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Ben tiens. C'est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()-30);\nresInst.setConfidence(resInst.getConfidence()-20);",
@@ -1517,7 +1517,7 @@
             },
             "20" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d’avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d'avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -1545,7 +1545,7 @@
             },
             "21" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J’essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J'essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()+20);\nresInst.setConfidence(resInst.getConfidence()+10)",
@@ -1573,7 +1573,7 @@
             },
             "23" : {
                 "@class" : "DialogueState",
-                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s’imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s'imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -1615,7 +1615,7 @@
             },
             "25" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Je suis désolé ça n’arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Je suis désolé ça n'arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);",
@@ -1629,7 +1629,7 @@
             },
             "26" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j’aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m’assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j'aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m'assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -1679,7 +1679,7 @@
             },
             "29" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"En réalité, j’aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -1688,7 +1688,7 @@
             },
             "30" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu’il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu'il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('wishIsKnow', 'true');",
@@ -1724,7 +1724,7 @@
             },
             "32" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Je ne l’ai encore jamais précisé, mais je n’aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -1733,7 +1733,7 @@
             },
             "33" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j’ai des mandats d’un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t’éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j'ai des mandats d'un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t'éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hateIsKnow', 'true')",
@@ -1769,7 +1769,7 @@
             },
             "35" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Lorsque j’ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j’ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu’il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code’, j’ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                "text" : "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -1778,7 +1778,7 @@
             },
             "36" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t’attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t'attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hiddenSkillsets', resInst.getProperty('hiddenSkillsets').split(new RegExp('[,;]+', 'g')).shift().join(';'));",
@@ -1891,7 +1891,7 @@
             },
             "41" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Continuer",
@@ -1904,7 +1904,7 @@
             },
             "42" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setProperty('bonusInducement', parseInt(resInst.getProperty('bonusInducement'))+20);",
@@ -1989,7 +1989,7 @@
             },
             "3" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D’accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D'accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -1998,7 +1998,7 @@
             },
             "5" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J’ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J'ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
@@ -2066,7 +2066,7 @@
             },
             "8" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l’aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l’aise avec ce genre de travaux, n’y a-t-il pas d’autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l'aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l'aise avec ce genre de travaux, n'y a-t-il pas d'autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=5;\nresInst.setConfidence(resInst.getConfidence())-=10;",
@@ -2084,7 +2084,7 @@
             },
             "9" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d’autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
@@ -2102,7 +2102,7 @@
             },
             "10" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J’essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c’est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t’intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J'essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c'est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t'intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -2167,7 +2167,7 @@
             },
             "16" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"D’accord, je vais m’en charger.\",\n\"Je n’ai rien contre, je vais m’y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"D'accord, je vais m'en charger.\",\n\"Je n'ai rien contre, je vais m'y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -2176,7 +2176,7 @@
             },
             "17" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Ben tiens. C’est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Ben tiens. C'est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()-30);\nresInst.setConfidence(resInst.getConfidence()-20);",
@@ -2213,7 +2213,7 @@
             },
             "20" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d’avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d'avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -2241,7 +2241,7 @@
             },
             "21" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J’essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J'essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()+20);\nresInst.setConfidence(resInst.getConfidence()+10)",
@@ -2269,7 +2269,7 @@
             },
             "23" : {
                 "@class" : "DialogueState",
-                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s’imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s'imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -2311,7 +2311,7 @@
             },
             "25" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Je suis désolé ça n’arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Je suis désolé ça n'arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);",
@@ -2325,7 +2325,7 @@
             },
             "26" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j’aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m’assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j'aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m'assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -2375,7 +2375,7 @@
             },
             "29" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"En réalité, j’aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -2384,7 +2384,7 @@
             },
             "30" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu’il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu'il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('wishIsKnow', 'true');",
@@ -2420,7 +2420,7 @@
             },
             "32" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Je ne l’ai encore jamais précisé, mais je n’aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -2429,7 +2429,7 @@
             },
             "33" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j’ai des mandats d’un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t’éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j'ai des mandats d'un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t'éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hateIsKnow', 'true')",
@@ -2465,7 +2465,7 @@
             },
             "35" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Lorsque j’ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j’ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu’il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code’, j’ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                "text" : "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -2474,7 +2474,7 @@
             },
             "36" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t’attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t'attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hiddenSkillsets', resInst.getProperty('hiddenSkillsets').split(new RegExp('[,;]+', 'g')).shift().join(';'));",
@@ -2587,7 +2587,7 @@
             },
             "41" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Continuer",
@@ -2600,7 +2600,7 @@
             },
             "42" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setProperty('bonusInducement', parseInt(resInst.getProperty('bonusInducement'))+20);",
@@ -2685,7 +2685,7 @@
             },
             "3" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D’accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D'accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -2694,7 +2694,7 @@
             },
             "5" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J’ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J'ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
@@ -2762,7 +2762,7 @@
             },
             "8" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l’aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l’aise avec ce genre de travaux, n’y a-t-il pas d’autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l'aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l'aise avec ce genre de travaux, n'y a-t-il pas d'autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=5;\nresInst.setConfidence(resInst.getConfidence())-=10;",
@@ -2780,7 +2780,7 @@
             },
             "9" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d’autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
@@ -2798,7 +2798,7 @@
             },
             "10" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J’essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c’est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t’intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J'essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c'est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t'intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -2863,7 +2863,7 @@
             },
             "16" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"D’accord, je vais m’en charger.\",\n\"Je n’ai rien contre, je vais m’y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"D'accord, je vais m'en charger.\",\n\"Je n'ai rien contre, je vais m'y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -2872,7 +2872,7 @@
             },
             "17" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Ben tiens. C’est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Ben tiens. C'est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()-30);\nresInst.setConfidence(resInst.getConfidence()-20);",
@@ -2909,7 +2909,7 @@
             },
             "20" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d’avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d'avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -2937,7 +2937,7 @@
             },
             "21" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J’essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J'essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()+20);\nresInst.setConfidence(resInst.getConfidence()+10)",
@@ -2965,7 +2965,7 @@
             },
             "23" : {
                 "@class" : "DialogueState",
-                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s’imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s'imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -3007,7 +3007,7 @@
             },
             "25" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Je suis désolé ça n’arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Je suis désolé ça n'arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);",
@@ -3021,7 +3021,7 @@
             },
             "26" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j’aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m’assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j'aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m'assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3071,7 +3071,7 @@
             },
             "29" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"En réalité, j’aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3080,7 +3080,7 @@
             },
             "30" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu’il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu'il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('wishIsKnow', 'true');",
@@ -3116,7 +3116,7 @@
             },
             "32" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Je ne l’ai encore jamais précisé, mais je n’aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3125,7 +3125,7 @@
             },
             "33" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j’ai des mandats d’un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t’éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j'ai des mandats d'un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t'éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hateIsKnow', 'true')",
@@ -3161,7 +3161,7 @@
             },
             "35" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Lorsque j’ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j’ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu’il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code’, j’ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3170,7 +3170,7 @@
             },
             "36" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t’attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t'attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hiddenSkillsets', resInst.getProperty('hiddenSkillsets').split(new RegExp('[,;]+', 'g')).shift().join(';'));",
@@ -3283,7 +3283,7 @@
             },
             "41" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Continuer",
@@ -3296,7 +3296,7 @@
             },
             "42" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setProperty('bonusInducement', parseInt(resInst.getProperty('bonusInducement'))+20);",
@@ -3381,7 +3381,7 @@
             },
             "3" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D’accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D'accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -3390,7 +3390,7 @@
             },
             "5" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J’ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J'ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
@@ -3458,7 +3458,7 @@
             },
             "8" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l’aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l’aise avec ce genre de travaux, n’y a-t-il pas d’autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l'aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l'aise avec ce genre de travaux, n'y a-t-il pas d'autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=5;\nresInst.setConfidence(resInst.getConfidence())-=10;",
@@ -3476,7 +3476,7 @@
             },
             "9" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d’autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
@@ -3494,7 +3494,7 @@
             },
             "10" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J’essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c’est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t’intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J'essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c'est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t'intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3559,7 +3559,7 @@
             },
             "16" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"D’accord, je vais m’en charger.\",\n\"Je n’ai rien contre, je vais m’y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"D'accord, je vais m'en charger.\",\n\"Je n'ai rien contre, je vais m'y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -3568,7 +3568,7 @@
             },
             "17" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Ben tiens. C’est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Ben tiens. C'est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()-30);\nresInst.setConfidence(resInst.getConfidence()-20);",
@@ -3605,7 +3605,7 @@
             },
             "20" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d’avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d'avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -3633,7 +3633,7 @@
             },
             "21" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J’essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J'essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()+20);\nresInst.setConfidence(resInst.getConfidence()+10)",
@@ -3661,7 +3661,7 @@
             },
             "23" : {
                 "@class" : "DialogueState",
-                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s’imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s'imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -3703,7 +3703,7 @@
             },
             "25" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Je suis désolé ça n’arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Je suis désolé ça n'arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);",
@@ -3717,7 +3717,7 @@
             },
             "26" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j’aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m’assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j'aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m'assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3767,7 +3767,7 @@
             },
             "29" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"En réalité, j’aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3776,7 +3776,7 @@
             },
             "30" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu’il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu'il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('wishIsKnow', 'true');",
@@ -3812,7 +3812,7 @@
             },
             "32" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Je ne l’ai encore jamais précisé, mais je n’aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3821,7 +3821,7 @@
             },
             "33" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j’ai des mandats d’un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t’éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j'ai des mandats d'un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t'éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hateIsKnow', 'true')",
@@ -3857,7 +3857,7 @@
             },
             "35" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Lorsque j’ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j’ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu’il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code’, j’ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -3866,7 +3866,7 @@
             },
             "36" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t’attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t'attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hiddenSkillsets', resInst.getProperty('hiddenSkillsets').split(new RegExp('[,;]+', 'g')).shift().join(';'));",
@@ -3979,7 +3979,7 @@
             },
             "41" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Continuer",
@@ -3992,7 +3992,7 @@
             },
             "42" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setProperty('bonusInducement', parseInt(resInst.getProperty('bonusInducement'))+20);",
@@ -4077,7 +4077,7 @@
             },
             "3" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D’accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Oh, très bien. Bonne journée.\",\n\"D'accord, à plus tard.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -4086,7 +4086,7 @@
             },
             "5" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J’ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Je souhaiterais que tu me réalises ce mandat.\",\n\"Salut ! J'ai du travail pour toi.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
@@ -4154,7 +4154,7 @@
             },
             "8" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l’aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l’aise avec ce genre de travaux, n’y a-t-il pas d’autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Excuse-moi mais je ne me sens vraiment pas à l'aise avec les travaux dans ce domaine. Puis-je travailler sur autre chose ?\",\n\"Je ne suis pas à l'aise avec ce genre de travaux, n'y a-t-il pas d'autre tâche ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPensif.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral())-=5;\nresInst.setConfidence(resInst.getConfidence())-=10;",
@@ -4172,7 +4172,7 @@
             },
             "9" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d’autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
@@ -4190,7 +4190,7 @@
             },
             "10" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J’essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c’est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t’intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Tu sais, on ne peut pas toujours travailler sur ce qui nous plaît. J'essaierai de vous te un travail qui vous plait mieux la prochaine fois.\",\n\"Je pense que c'est bien pour toi de travailler dans ce domaine, je te donnerai une tâche qui t'intéresse plus la prochaine fois.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -4255,7 +4255,7 @@
             },
             "16" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"D’accord, je vais m’en charger.\",\n\"Je n’ai rien contre, je vais m’y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"D'accord, je vais m'en charger.\",\n\"Je n'ai rien contre, je vais m'y mettre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
@@ -4264,7 +4264,7 @@
             },
             "17" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Ben tiens. C’est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Ben tiens. C'est bon je vais vous le faire votre mandat.\",\n\"Ouais je sens déjà la motivation venir…\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()-30);\nresInst.setConfidence(resInst.getConfidence()-20);",
@@ -4301,7 +4301,7 @@
             },
             "20" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d’avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bonjour, je souhaitais te féliciter personnellement pour la qualité de tes travaux. Cela fait plaisir d'avoir des employés de ton calibre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -4329,7 +4329,7 @@
             },
             "21" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J’essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Eh bien, merci beaucoup. J'essaye toujours de faire de mon mieux.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+20);\nresInst.setConfidence(resInst.getConfidence()+10)",
@@ -4357,7 +4357,7 @@
             },
             "23" : {
                 "@class" : "DialogueState",
-                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s’imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\"speakerName\":\"Leader\",\n\"texts\":[\n\"Ton attitude au travail me déplaît beaucoup. Je te conseille de faire un effort sinon je serai malheureusement contraint de prendre les mesures qui s'imposent.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setProperty('isConsidered', 'true')",
@@ -4399,7 +4399,7 @@
             },
             "25" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Je suis désolé ça n’arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Je suis désolé ça n'arrivera plus.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienTriste.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()-10);",
@@ -4413,7 +4413,7 @@
             },
             "26" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j’aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m’assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Salut, Si tu as un peu de temps, j'aimerais savoir si tout va comme tu le souhaite.\",\n\"Salut, je voulais prendre un peu de temps pour m'assurer que tout va comme tu le souhaites.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -4463,7 +4463,7 @@
             },
             "29" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"En réalité, j’aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -4472,7 +4472,7 @@
             },
             "30" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu’il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Bien sûr, je te promets de te transmettre un mandat de ce type dès qu'il  en aura au moins un qui te convient.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('wishIsKnow', 'true');",
@@ -4508,7 +4508,7 @@
             },
             "32" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Je ne l’ai encore jamais précisé, mais je n’aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -4517,7 +4517,7 @@
             },
             "33" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j’ai des mandats d’un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t’éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oui bien sûr si j'ai des mandats d'un autre genre et adapté à ton niveau. En revanche, je dois parfois faire avec les limitations des offres. Mais je vais tenter de t'éviter cette frustration.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hateIsKnow', 'true')",
@@ -4553,7 +4553,7 @@
             },
             "35" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Lorsque j’ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j’ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu’il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code’, j’ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -4562,7 +4562,7 @@
             },
             "36" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t’attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh vous avez bien ça me donnera la possibilité de t'attribuer un mandat en fonction de tes compétence dans le domaine.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienJoie.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+10);\nresInst.setConfidence(resInst.getConfidence()+10);\nresInst.setProperty('hiddenSkillsets', resInst.getProperty('hiddenSkillsets').split(new RegExp('[,;]+', 'g')).shift().join(';'));",
@@ -4675,7 +4675,7 @@
             },
             "41" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Continuer",
@@ -4688,7 +4688,7 @@
             },
             "42" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s’il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne comprends pas bien ce que vous voulez vraiment me dire, vous  pourriez développer s'il vous plait ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setProperty('bonusInducement', parseInt(resInst.getProperty('bonusInducement'))+20);",
@@ -4741,7 +4741,7 @@
             },
             "1" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniel\",\n\"texts\":[\n\"Je suis malheureusement obliger de reprendre la situation en main. Vos compétences actuelles n’ont apparemment pas suffi à motiver votre équipe pour qu’elle donne le meilleur d’elle-même. Dans ces conditions, je me vois dans l’obligation de vous rétrograder à votre ancien poste.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniel\",\n\"texts\":[\n\"Je suis malheureusement obliger de reprendre la situation en main. Vos compétences actuelles n'ont apparemment pas suffi à motiver votre équipe pour qu'elle donne le meilleur d'elle-même. Dans ces conditions, je me vois dans l'obligation de vous rétrograder à votre ancien poste.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Donnez-moi une seconde chance !",
@@ -4759,7 +4759,7 @@
             },
             "3" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniel\",\n\"texts\":[\n\"Malheureusement, je pense que votre équipe a perdu confiance en vous. Ne soyez pas si déçu, vous êtes jeune, vous avez acquis de l’expérience et je suis sûr que la prochaine fois, ça se passera comme vous voulez. Ce qui est embêtant, c’est que nous manquons de leader pour reprendre votre équipe. Quel membre de votre équipe a encore l’envie de se battre pour l’entreprise et serait tenté de reprendre le flambeau ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Daniel\",\n\"texts\":[\n\"Malheureusement, je pense que votre équipe a perdu confiance en vous. Ne soyez pas si déçu, vous êtes jeune, vous avez acquis de l'expérience et je suis sûr que la prochaine fois, ça se passera comme vous voulez. Ce qui est embêtant, c'est que nous manquons de leader pour reprendre votre équipe. Quel membre de votre équipe a encore l'envie de se battre pour l'entreprise et serait tenté de reprendre le flambeau ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Fernand",
@@ -4784,7 +4784,7 @@
             },
             "4" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Félicitation, vous avez fait du très bon travail ! En réalité, je souhaiterais que vous soyez à mes côté pour diriger ce département. Le travail du côté leadership ne changera pas énormément c’est pourquoi je pense que vous serez à la hauteur de la situation.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Félicitation, vous avez fait du très bon travail ! En réalité, je souhaiterais que vous soyez à mes côté pour diriger ce département. Le travail du côté leadership ne changera pas énormément c'est pourquoi je pense que vous serez à la hauteur de la situation.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Merci !",
@@ -4802,7 +4802,7 @@
             },
             "6" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Daniel\",\n\"texts\":[\n\"C’est vous-même qu’il faut remercier. Vous m’avez prouvé votre talent en tant que leader. En revanche, cette équipe a besoin d’un nouveau chef. Avez-vous quelqu’un à me proposer ?\"\n],\n\"backgroundImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\"height\":\"315px\",\"width\":\"980px\"}],\"questionImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
+                "text" : "{\n\"speakerName\":\"Daniel\",\n\"texts\":[\n\"C'est vous-même qu'il faut remercier. Vous m'avez prouvé votre talent en tant que leader. En revanche, cette équipe a besoin d'un nouveau chef. Avez-vous quelqu'un à me proposer ?\"\n],\n\"backgroundImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\"height\":\"315px\",\"width\":\"980px\"}],\"questionImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\"height\":\"250px\",\"width\":\"230px\",\"css\": {\"margin\":\"50px 0 0 375px\"}}]}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Fernand",
@@ -4951,7 +4951,7 @@
             },
             "13" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je me suis attaché à ce département, j’espère qu’il se développera. Cela dit je comprends votre décision.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je me suis attaché à ce département, j'espère qu'il se développera. Cela dit je comprends votre décision.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -4960,7 +4960,7 @@
             },
             "14" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"-\",\n\"texts\":[\n\"[Quelques mois plus tard] <br/>Vous avez travaillé avec le nouveau leader et lui avez ainsi servi de modèle. Vous avez développé sa confiance et son expérience pour qu’il ait envie de se battre pour l’entreprise. Maintenant, grâce à vos efforts, le travail du nouveau leader fait que l’entreprise continue d’évoluer !  Bravo à vous car un mauvais leader aurait pu gâcher tous vos effort et réduire à néant votre travail ainsi que celui de vos prédécesseurs.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n},{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/chartGood.jpg\",\n\"height\":\"200px\",\n\"width\":\"200px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}"
+                "text" : "{\n\"speakerName\":\"-\",\n\"texts\":[\n\"[Quelques mois plus tard] <br/>Vous avez travaillé avec le nouveau leader et lui avez ainsi servi de modèle. Vous avez développé sa confiance et son expérience pour qu'il ait envie de se battre pour l'entreprise. Maintenant, grâce à vos efforts, le travail du nouveau leader fait que l'entreprise continue d'évoluer !  Bravo à vous car un mauvais leader aurait pu gâcher tous vos effort et réduire à néant votre travail ainsi que celui de vos prédécesseurs.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n},{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/chartGood.jpg\",\n\"height\":\"200px\",\n\"width\":\"200px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}"
             },
             "15" : {
                 "@class" : "DialogueState",
@@ -4973,7 +4973,7 @@
             },
             "16" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je me suis attaché à ce département, j’espère qu’il se développera. Cela dit je comprends votre décision.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je me suis attaché à ce département, j'espère qu'il se développera. Cela dit je comprends votre décision.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
@@ -4982,7 +4982,7 @@
             },
             "17" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"-\",\n\"texts\":[\n\"[Quelques mois plus tard] <br/> Malheureusement, le travail du leader a été réduit à néant car le nouveau leader n’était pas assez compétent. Peut-être que vous ne l’aviez pas assez préparé à ce poste. Il aurait peut-être dû avoir un niveau de leadership plus élevé et donc plus de confiance et d’expérience afin de se battre pour l’entreprise. Ou alors, peut-être n’a-t-il pas assez travaillé avec le leader. Manquant de modèle, il n’a donc pas pu voir comment agir pour devenir un bon leader.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n},{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/chartBad.jpg\",\n\"height\":\"200px\",\n\"width\":\"200px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}"
+                "text" : "{\n\"speakerName\":\"-\",\n\"texts\":[\n\"[Quelques mois plus tard] <br/> Malheureusement, le travail du leader a été réduit à néant car le nouveau leader n'était pas assez compétent. Peut-être que vous ne l'aviez pas assez préparé à ce poste. Il aurait peut-être dû avoir un niveau de leadership plus élevé et donc plus de confiance et d'expérience afin de se battre pour l'entreprise. Ou alors, peut-être n'a-t-il pas assez travaillé avec le leader. Manquant de modèle, il n'a donc pas pu voir comment agir pour devenir un bon leader.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n},{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/chartBad.jpg\",\n\"height\":\"200px\",\n\"width\":\"200px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}"
             }
         }
     }
