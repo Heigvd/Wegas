@@ -1175,6 +1175,8 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
         initializer: function(){
             this.publish("evaluated");
+            this._inProgress = false;
+            this._result = null;
         },
         isValid: function (){
         //TODO : FX a greffer :)
@@ -1183,28 +1185,54 @@ YUI.add('wegas-entity', function (Y) {
          * evaluated event contains response. true or false. False if script error.
          */
         localEval: function(){
-            this._eHandler = Y.Wegas.VariableDescriptorFacade.script.once("ScriptEval:evaluated", function(e, o){
-                if(o === true){
-                    this.fire("evaluated",true);
+            if(Y.Wegas.VariableDescriptorFacade.script.scopedEval){
+                if(this._result){
+                    this.fire("evaluated", this._result);
+                    return;
+                }
+                if(!this._eHandler){
+                    this._eHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id){
+
+                        if(this._yuid != id){
+                            return;
+                        }
+                        e.halt(true);
+                        if(o === true){
+                            this._result = true;
+                        }else{
+                            this._result = false
+                        }
+                        this._inProgress = false;
+                        this.fire("evaluated",this._result);
+                    }, this);
+                }
+                if(!this._fHandler){
+                    this._fHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:failure", function(e, o, id){
+
+                        if(this._yuid != id){
+                            return;
+                        }
+                        e.halt(true);
+                        this._inProgress = false;
+                        this.fire("evaluated", false);
+
+                    }, this);
+                }
+
+                if(!this._inProgress){
+                    this._inProgress = true;
+                    Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"), this._yuid);
                 }else{
-                    this.fire("evaluated",false);
+                    console.log("evaluation in progress");
                 }
-                if(this._fHandler){
-                    this._fHandler.detach();
-                    this._fHandler = null;
-                }
-            }, this);
-            this._fHandler = Y.Wegas.VariableDescriptorFacade.script.once("ScriptEval:failure", function(e, o){
-                this.fire("evaluated", false);
-                if(this._eHandler){
-                    this._eHandler.detach();
-                    this._eHandler = null;
-                }
-            }, this);
-            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"));
+            }
         },
         isEmpty: function () {
             return (this.content == null || this.content == "");
+        },
+        destructor: function(){
+            this._fHandler.detach();
+            this._eHandler.detach();
         }
     }, {
         ATTRS: {
@@ -1230,7 +1258,11 @@ YUI.add('wegas-entity', function (Y) {
             },
             content: {
                 type: "string",
-                format: "text"
+                format: "text",
+                setter: function(v){
+                    this._result = null;
+                    return v;
+                }
             }
         }
     });
