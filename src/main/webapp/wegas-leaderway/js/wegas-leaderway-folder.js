@@ -293,7 +293,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if(this.currentResourceDescriptor != null){
                 resourceInstance = this.currentResourceDescriptor.getInstance();
                 cb.one('.actions .noAction').setHTML();
-                cb.one('.actions .giveTask').setHTML("<p>Imposer un mandat</p>");
+                cb.one('.actions .giveTask').setHTML("<p>Imposer un mandat (-15 de moral et -10 de confiance)</p>");
                 cb.one('.actions .speak').setHTML("<p>S'entretenir (coûte 1 action)</p>");
                 occupation = this.getOccupationObject(resourceInstance).code;
                 cb.one('.actions .giveTask').hide();
@@ -382,6 +382,22 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.switchToPickingMode(this.resourceDescriptor, this.folderPageId);
                 },{resourceDescriptor:this.currentResourceDescriptor, folderPageId :  this.get('folderPageId')});
+                //Decrease moral by 15 and confidence by 10
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    headers:{
+                        'Content-Type': 'application/json; charset=ISO-8859-1',
+                        'Managed-Mode':'true'
+                    },
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify({
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "importPackage(com.wegas.core.script);var i, listRes, resInst;\nlistRes = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '"+this.currentResourceDescriptor.get('name')+"'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
+                        })
+                    }
+                });
                 targetPageLoader.set("pageId", this.get('taskListPageId'));
             }, '.giveTask', this));
             //bind each action 'speak' change widget depending to the ATTRS 'dialoguePageId'

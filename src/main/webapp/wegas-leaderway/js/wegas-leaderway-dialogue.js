@@ -364,11 +364,9 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         setResourceDescriptor: function(resourceDescriptor){
             if(!resourceDescriptor) return;
+            this.resourceDescriptor = resourceDescriptor;
             var dialogue = resourceDescriptor.getInstance().get('properties').dialogue;
-            if(!dialogue){
-                this.currentDialogue = dialogue;
-            }
-            this.syncUI();
+            this.setCurrentDialogue(dialogue);
         },
 
         /***Lifecycle methode***/

@@ -4022,7 +4022,7 @@
         "states" : {
             "1" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Oh, Salut.\",\n\"Bonjour.\",\n\"Salut, comment vas-tu ?\"\n],\n\"backgroundImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}],\n\"answerImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "text" : "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Oh, Salut.\",\n\"Bonjour.\",\n\"Salut, comment vas-tu ?\"\n],\n\"backgroundImages\":[{\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Partir (+1 action)",
