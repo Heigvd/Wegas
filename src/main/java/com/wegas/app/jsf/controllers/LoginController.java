@@ -10,6 +10,7 @@
 package com.wegas.app.jsf.controllers;
 
 import java.io.Serializable;
+import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
@@ -24,6 +25,34 @@ public class LoginController implements Serializable {
     /**
      *
      */
+    private Boolean guestAllowed = this.setGuestAllowed();
+
+    /**
+     *
+     */
     public LoginController() {
+    }
+
+    public void loginAsGuest() {
+        if (this.guestAllowed) {
+            //TODO : login as guest
+        }
+    }
+
+    private Boolean setGuestAllowed() {
+        if (ResourceBundle.getBundle("wegas-app.wegasapp").getString("guest_allowed").equals("none")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public Boolean isGuestAllowed() {
+        return guestAllowed;
+    }
+
+    //JSTL compliant
+    public Boolean getGuestAllowed() {
+        return this.isGuestAllowed();
     }
 }
