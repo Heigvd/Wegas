@@ -16,6 +16,7 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import com.wegas.core.rest.util.Views;
 import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskInstance;
 import com.wegas.mcq.persistence.ChoiceInstance;
@@ -26,6 +27,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +60,7 @@ abstract public class VariableInstance extends AbstractEntity {
     @Id
     @Column(name = "variableinstance_id")
     @GeneratedValue
+    @JsonView({Views.EditorI.class, Views.Private.class})
     private Long id;
     /**
      *
