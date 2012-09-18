@@ -111,8 +111,8 @@ function checkTasksEnd(){
                 }
             }
         }
-         taskInstance.setDuration(taskInstance.getDuration()-taskWorkers.length);
-         if(taskInstance.getDuration() <= 0){
+        taskInstance.setDuration(taskInstance.getDuration()-taskWorkers.length);
+        if(taskInstance.getDuration() <= 0){
             this.doTaskEnd(taskWorkers, listWorkedTasks[i]);
         }
     }
@@ -293,35 +293,38 @@ function checkAbsencesEnd(){
     var i, j, k, l, gm = self.getGameModel(), assignment, duration,
     listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absenceInstance,
     listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance,
-    assignmentToRemove = new Array();
+    assignmentToRemove = new Array(), assignmentToAdd = new Array();
     for(i=0; i<listResources.items.size();i++){
+        assignmentToRemove.length=0;
+        assignmentToAdd.length=0;
         resourceInstance = listResources.items.get(i).getInstance(self);
         for(j=0; j<resourceInstance.getAssignments().size();j++){
-        assignment = resourceInstance.getAssignments().get(j);
+            assignment = resourceInstance.getAssignments().get(j);
             for(k=0; k<listAbsences.items.size();k++){
                 absenceInstance = listAbsences.items.get(k).getInstance(self);
                 if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive() == true){
                     duration = absenceInstance.getDuration();
                     if(duration <= 0){
                         absenceInstance.setActive(false);
-                    }
-                    else if(duration == 1){
-                        assignmentToRemove.push(j);
+                    } else{
+                        assignmentToRemove.push(assignment);
                         resourceInstance.setMoral(40);
-                    }
-                    else{
-                        assignmentToRemove.push(j);
-                        for(l=0; l<listAbsences.items.size();l++){
-                            if(listAbsences.items.get(l).getInstance(self).getDuration() == duration-1){
-                                resourceInstance.assign(0, listAbsences.items.get(l));
+                        if (duration > 1){
+                            for(l=0; l<listAbsences.items.size();l++){
+                                if(listAbsences.items.get(l).getInstance(self).getDuration() == duration-1){
+                                    assignmentToAdd.push(listAbsences.items.get(l));
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        for(j=assignmentToRemove.length; j>=0;j--){
+        for(j=assignmentToRemove.length-1;j>=0;j--){
             resourceInstance.getAssignments().remove(assignmentToRemove[j]);
+        }
+        for(j=0;j<assignmentToAdd.length;j++){
+            resourceInstance.assign(0, assignmentToAdd[j]);
         }
         this.calculateTeamMotivation()
     }
@@ -352,13 +355,13 @@ function checkTasksState(){
         }
         if(inProgress ||
             (newWeek.getValue() >= taskInstance.getProperty('appearAtWeek') &&
-             newWeek.getValue() < taskInstance.getProperty('disappearAtWeek') &&
-             newclientsSatisfaction.getValue() >= taskInstance.getProperty('clientSatisfactionMinToAppear') &&
-             newclientsSatisfaction.getValue() <= taskInstance.getProperty('clientSatisfactionMaxToAppear') &&
-             taskInstance.getDuration() > 0
-            )
-            ){
-              taskInstance.setActive(true);
+            newWeek.getValue() < taskInstance.getProperty('disappearAtWeek') &&
+            newclientsSatisfaction.getValue() >= taskInstance.getProperty('clientSatisfactionMinToAppear') &&
+            newclientsSatisfaction.getValue() <= taskInstance.getProperty('clientSatisfactionMaxToAppear') &&
+            taskInstance.getDuration() > 0
+    )
+    ){
+            taskInstance.setActive(true);
         }
         else{
             taskInstance.setActive(false);
@@ -442,7 +445,7 @@ function checkMoral(){
             absenceInstance = listAbsences.items.get(j).getInstance(self);
             if(absenceInstance.getActive() == true){
                 for(k=0; k<resourceInstance.getAssignments().size(); k++){
-                    if(resourceInstance.getAssignments().get(k).getTaskDescriptorId() == absenceInstance.getDescriptorId()){
+                    if(resourceInstance.getAssignments().get(k).getTaskDescriptorId() == absenceInstance.getDescriptorId() || !resourceInstance.getActive()){
                         absent = true;
                     }
                 }
@@ -455,7 +458,7 @@ function checkMoral(){
                 case moral<10 :
                     if(randomNumber<0.33){
                         this.sendMessage('Changement de départeemnt', 'Bonjour,<br /> J\'ai déposé ma lettre de démission dans votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère changer d\'équipe avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
-                        resourceInstance.active(false);
+                        resourceInstance.setActive(false);
                     }
                     else{
                         this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin m\'a conseillé de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
@@ -485,7 +488,7 @@ function checkMoral(){
  * then make an average between this value and the worst moral value.
  * set the 'teamMotivation' value with this new value.
  */
- function calculateTeamMotivation(){
+function calculateTeamMotivation(){
     var i, sumMotivation = 0, gm = self.getGameModel(), activeResources = 0, moral,
     listResources = VariableDescriptorFacade.findByName(gm, 'resources'), worstMoralValue = 100,
     teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self);
@@ -629,8 +632,8 @@ function assignTask(resourceDescriptorId, taskDescriptorId){
         }
     }
     if(taskDescriptor == null) return;
-   // assign task to resource
-   resInstance.assign(0, taskDescriptor);
+    // assign task to resource
+    resInstance.assign(0, taskDescriptor);
 }
 
 /**
@@ -652,7 +655,7 @@ function lookupBean(name){
 function sendMessage(subject, content, from){
     var EF = lookupBean('InGameMailFacade');
     if(EF != null){
-         EF.send(self, subject, content, from);
+        EF.send(self, subject, content, from);
     }
     else{
         println('Bean InGameMailFacade does not exist, unable to send in-game message: '+subject);
@@ -750,11 +753,11 @@ function limitValues(){
         if(value < 0) valueInst.setProperty('lastWorkQuality', 0);
         //skillset
         skillsets = valueInst.getSkillset();
-         for (j=0; j<skillsets.size(); j++){
+        for (j=0; j<skillsets.size(); j++){
             skillKey = skillsets.keySet().toArray()[j];
             skillValue = parseInt(skillsets.get(skillKey));
             if(skillValue > 100) valueInst.setSkillset(skillKey, 100);
             if(skillValue < 0) valueInst.setSkillset(skillKey, 0);
-         }
+        }
     }
 }
