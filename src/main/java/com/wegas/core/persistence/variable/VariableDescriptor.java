@@ -17,6 +17,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.rest.util.Views;
 import com.wegas.leaderway.persistence.ResourceDescriptor;
 import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -27,6 +28,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -59,6 +61,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @Id
     @Column(name = "variabledescriptor_id")
     @GeneratedValue
+    @JsonView({Views.EditorI.class, Views.Private.class})
     private Long id;
     /**
      *

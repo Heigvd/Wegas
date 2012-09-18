@@ -87,7 +87,7 @@ public class GameModel extends NamedEntity {
      */
     @ElementCollection(fetch = FetchType.LAZY)
     @Column(length = 10485760)
-    @JsonView(Views.EditorI.class)
+    @JsonView({Views.EditorI.class, Views.Export.class})
     //@Lob
     //@Column(columnDefinition = "BLOB NOT NULL")
     private Map<String, String> scriptLibrary = new HashMap<>();
