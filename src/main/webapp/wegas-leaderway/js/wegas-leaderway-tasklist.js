@@ -146,11 +146,11 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                             "@class": "Script",
                             "language": "JavaScript",
                             "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.get('id')+","+taskDescriptor.get('id')+");"
-                        }),
-                        on: { //not work, call both function
-                            //success: this.assignTaskResult(true), // useless, players expect a success
-                            failure: this.assignTaskResult(false)
-                        }
+                        })
+                    },
+                    callback: {
+                        //success: Y.bind(this.assignTaskResult, this, true), // useless, players expect a success
+                        failure: Y.bind(this.assignTaskResult, this, false)
                     }
                 });
             }

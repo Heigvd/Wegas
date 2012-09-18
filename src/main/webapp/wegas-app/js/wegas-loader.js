@@ -342,7 +342,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-leaderway-folder':{
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
-                        requires: ['tabview', 'panel', 'wegas-leaderway-tasklist', 'wegas-leaderway-translator'],
+                        requires: ['wegas-leaderway-translator'],
                         ix_provides: "Folder"
                     },
                     'wegas-leaderway-tasklist': {
