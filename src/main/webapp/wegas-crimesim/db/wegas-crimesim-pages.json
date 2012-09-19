@@ -77,7 +77,7 @@
                             }]
                     }, {
                         "type": "Button",
-                        "label": "PiÃ¨ces",
+                        "label": "Pièces",
                         "cssClass": "menu-button",
                         "plugins": [{
                                 "fn": "OpenPageAction",
