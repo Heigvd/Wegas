@@ -420,7 +420,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         destroy: function(){
             var i, cb = this.get(CONTENTBOX);
             cb.all('.menu div').show();
-            this.chart.destroy();
+            if(this.chart != null){this.chart.destroy();}
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
             }
@@ -432,8 +432,8 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * change the current widget to go on the "dialogue" widget.
          */
         goToFinalPage: function(){
-            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
-            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week"),
+            targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue();
