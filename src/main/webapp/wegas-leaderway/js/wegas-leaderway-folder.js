@@ -458,15 +458,14 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          * change the current widget to go on the "dialogue" widget.
          */
         goToFinalPage: function(){
-            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
-            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week"),
+            targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
-                targetPageLoader.once("widgetChange", function(e) {
-                    e.newVal.setCurrentDialogue();                    
+                targetPageLoader.once("widgetChange", function(e){
+                    this.set("pageId", 7)                 
                 });
-                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
+               // setTimeout(function(){targetPageLoader.set("pageId", 7)}, 5000);    
             }
-
         }
 
     }, {

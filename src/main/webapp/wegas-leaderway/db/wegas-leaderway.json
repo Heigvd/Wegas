@@ -128,7 +128,7 @@
                         "language" : "JavaScript"
                     },
                     "nextStateId" : 2
-                } ]
+                }]
             },
             "2" : {
                 "@class" : "State",
@@ -171,7 +171,7 @@
                         "language" : "JavaScript"
                     },
                     "nextStateId" : 2
-                } ]
+                }]
             },
             "2" : {
                 "@class" : "State",
@@ -1275,7 +1275,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Demander si tout va bien",
                     "nextStateId" : 26
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 30,
+                    "y" : 390
+                }
             },
             "2" : {
                 "@class" : "DialogueState",
@@ -1289,7 +1294,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 3
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 30
+                }
             },
             "3" : {
                 "@class" : "DialogueState",
@@ -1298,7 +1308,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 30
+                }
             },
             "5" : {
                 "@class" : "DialogueState",
@@ -1307,7 +1322,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
                     "nextStateId" : 6
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 390
+                }
             },
             "6" : {
                 "@class" : "DialogueState",
@@ -1316,7 +1336,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 7
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 390
+                }
             },
             "7" : {
                 "@class" : "DialogueState",
@@ -1366,7 +1391,12 @@
                         "content" : "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskInst.getSkillset().size(); i++){\nskills=taskInst.getSkillset().keySet().toArray()[i];\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 210
+                }
             },
             "8" : {
                 "@class" : "DialogueState",
@@ -1384,14 +1414,19 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Obliger l'acceptation",
                     "nextStateId" : 10
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 210
+                }
             },
             "9" : {
                 "@class" : "DialogueState",
                 "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                   "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -1402,7 +1437,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 210
+                }
             },
             "10" : {
                 "@class" : "DialogueState",
@@ -1425,7 +1465,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1||(resInst.getProperty('leadershipLevel')<3&&resInst.getConfidence()<50);",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 390
+                }
             },
             "11" : {
                 "@class" : "DialogueState",
@@ -1439,7 +1484,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 390
+                }
             },
             "13" : {
                 "@class" : "DialogueState",
@@ -1453,7 +1503,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 570
+                }
             },
             "15" : {
                 "@class" : "DialogueState",
@@ -1467,7 +1522,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 570
+                }
             },
             "16" : {
                 "@class" : "DialogueState",
@@ -1476,7 +1536,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 750
+                }
             },
             "17" : {
                 "@class" : "DialogueState",
@@ -1490,7 +1555,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],            
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 930
+                }
             },
             "18" : {
                 "@class" : "DialogueState",
@@ -1504,7 +1574,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 1110
+                }
             },
             "19" : {
                 "@class" : "DialogueState",
@@ -1513,7 +1588,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 1
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1430,
+                    "y" : 1110
+                }
             },
             "20" : {
                 "@class" : "DialogueState",
@@ -1541,7 +1621,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1290
+                }
             },
             "21" : {
                 "@class" : "DialogueState",
@@ -1555,7 +1640,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1290
+                }
             },
             "22" : {
                 "@class" : "DialogueState",
@@ -1569,7 +1659,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1470
+                }
             },
             "23" : {
                 "@class" : "DialogueState",
@@ -1597,7 +1692,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1650
+                }
             },
             "24" : {
                 "@class" : "DialogueState",
@@ -1611,7 +1711,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1650
+                }
             },
             "25" : {
                 "@class" : "DialogueState",
@@ -1625,7 +1730,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1830
+                }
             },
             "26" : {
                 "@class" : "DialogueState",
@@ -1634,7 +1744,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 27
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 2110
+                }
             },
             "27" : {
                 "@class" : "DialogueState",
@@ -1657,7 +1772,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.getConfidence()+resInst.getProperty('bonusInducement')<75&&resInst.getProperty('leadershipLevel')<=1;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 2110
+                }
             },
             "28" : {
                 "@class" : "DialogueState",
@@ -1675,7 +1795,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 31
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2110
+                }
             },
             "29" : {
                 "@class" : "DialogueState",
@@ -1684,7 +1809,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 30
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2110
+                }
             },
             "30" : {
                 "@class" : "DialogueState",
@@ -1702,7 +1832,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2110
+                }
             },
             "31" : {
                 "@class" : "DialogueState",
@@ -1720,7 +1855,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 34
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2290
+                }
             },
             "32" : {
                 "@class" : "DialogueState",
@@ -1729,7 +1869,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 33
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2290
+                }
             },
             "33" : {
                 "@class" : "DialogueState",
@@ -1747,7 +1892,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2290
+                }
             },
             "34" : {
                 "@class" : "DialogueState",
@@ -1765,7 +1915,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 37
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2480
+                }
             },
             "35" : {
                 "@class" : "DialogueState",
@@ -1774,7 +1929,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 36
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2480
+                }
             },
             "36" : {
                 "@class" : "DialogueState",
@@ -1792,7 +1952,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2480
+                }
             },
             "37" : {
                 "@class" : "DialogueState",
@@ -1805,7 +1970,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2660
+                }
             },
             "38" : {
                 "@class" : "DialogueState",
@@ -1851,7 +2021,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.getProperty('wishIsKnow')=='false'||resInst.getProperty('hateIsKnow')=='false'||resInst.getProperty('hiddenSkillsets')!=='';",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2660
+                }
             },
             "39" : {
                 "@class" : "DialogueState",
@@ -1869,7 +2044,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2660
+                }
             },
             "40" : {
                 "@class" : "DialogueState",
@@ -1887,7 +2067,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2840
+                }
             },
             "41" : {
                 "@class" : "DialogueState",
@@ -1900,7 +2085,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3020
+                }
             },
             "42" : {
                 "@class" : "DialogueState",
@@ -1918,7 +2108,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3200
+                }
             }
         }
     },{
@@ -1971,7 +2166,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Demander si tout va bien",
                     "nextStateId" : 26
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 30,
+                    "y" : 390
+                }
             },
             "2" : {
                 "@class" : "DialogueState",
@@ -1985,7 +2185,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 3
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 30
+                }
             },
             "3" : {
                 "@class" : "DialogueState",
@@ -1994,7 +2199,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 30
+                }
             },
             "5" : {
                 "@class" : "DialogueState",
@@ -2003,7 +2213,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
                     "nextStateId" : 6
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 390
+                }
             },
             "6" : {
                 "@class" : "DialogueState",
@@ -2012,7 +2227,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 7
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 390
+                }
             },
             "7" : {
                 "@class" : "DialogueState",
@@ -2062,7 +2282,12 @@
                         "content" : "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskInst.getSkillset().size(); i++){\nskills=taskInst.getSkillset().keySet().toArray()[i];\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 210
+                }
             },
             "8" : {
                 "@class" : "DialogueState",
@@ -2080,14 +2305,19 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Obliger l'acceptation",
                     "nextStateId" : 10
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 210
+                }
             },
             "9" : {
                 "@class" : "DialogueState",
                 "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                   "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -2098,7 +2328,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 210
+                }
             },
             "10" : {
                 "@class" : "DialogueState",
@@ -2121,7 +2356,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1||(resInst.getProperty('leadershipLevel')<3&&resInst.getConfidence()<50);",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 390
+                }
             },
             "11" : {
                 "@class" : "DialogueState",
@@ -2135,7 +2375,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 390
+                }
             },
             "13" : {
                 "@class" : "DialogueState",
@@ -2149,7 +2394,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 570
+                }
             },
             "15" : {
                 "@class" : "DialogueState",
@@ -2163,7 +2413,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 570
+                }
             },
             "16" : {
                 "@class" : "DialogueState",
@@ -2172,7 +2427,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 750
+                }
             },
             "17" : {
                 "@class" : "DialogueState",
@@ -2186,7 +2446,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],            
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 930
+                }
             },
             "18" : {
                 "@class" : "DialogueState",
@@ -2200,7 +2465,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 1110
+                }
             },
             "19" : {
                 "@class" : "DialogueState",
@@ -2209,7 +2479,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 1
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1430,
+                    "y" : 1110
+                }
             },
             "20" : {
                 "@class" : "DialogueState",
@@ -2237,7 +2512,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1290
+                }
             },
             "21" : {
                 "@class" : "DialogueState",
@@ -2251,7 +2531,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1290
+                }
             },
             "22" : {
                 "@class" : "DialogueState",
@@ -2265,7 +2550,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1470
+                }
             },
             "23" : {
                 "@class" : "DialogueState",
@@ -2293,7 +2583,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1650
+                }
             },
             "24" : {
                 "@class" : "DialogueState",
@@ -2307,7 +2602,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1650
+                }
             },
             "25" : {
                 "@class" : "DialogueState",
@@ -2321,7 +2621,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1830
+                }
             },
             "26" : {
                 "@class" : "DialogueState",
@@ -2330,7 +2635,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 27
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 2110
+                }
             },
             "27" : {
                 "@class" : "DialogueState",
@@ -2353,7 +2663,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.getConfidence()+resInst.getProperty('bonusInducement')<75&&resInst.getProperty('leadershipLevel')<=1;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 2110
+                }
             },
             "28" : {
                 "@class" : "DialogueState",
@@ -2371,7 +2686,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 31
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2110
+                }
             },
             "29" : {
                 "@class" : "DialogueState",
@@ -2380,7 +2700,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 30
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2110
+                }
             },
             "30" : {
                 "@class" : "DialogueState",
@@ -2398,7 +2723,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2110
+                }
             },
             "31" : {
                 "@class" : "DialogueState",
@@ -2416,7 +2746,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 34
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2290
+                }
             },
             "32" : {
                 "@class" : "DialogueState",
@@ -2425,7 +2760,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 33
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2290
+                }
             },
             "33" : {
                 "@class" : "DialogueState",
@@ -2443,7 +2783,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2290
+                }
             },
             "34" : {
                 "@class" : "DialogueState",
@@ -2461,7 +2806,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 37
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2480
+                }
             },
             "35" : {
                 "@class" : "DialogueState",
@@ -2470,7 +2820,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 36
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2480
+                }
             },
             "36" : {
                 "@class" : "DialogueState",
@@ -2488,7 +2843,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2480
+                }
             },
             "37" : {
                 "@class" : "DialogueState",
@@ -2501,7 +2861,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2660
+                }
             },
             "38" : {
                 "@class" : "DialogueState",
@@ -2547,7 +2912,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.getProperty('wishIsKnow')=='false'||resInst.getProperty('hateIsKnow')=='false'||resInst.getProperty('hiddenSkillsets')!=='';",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2660
+                }
             },
             "39" : {
                 "@class" : "DialogueState",
@@ -2565,7 +2935,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2660
+                }
             },
             "40" : {
                 "@class" : "DialogueState",
@@ -2583,7 +2958,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2840
+                }
             },
             "41" : {
                 "@class" : "DialogueState",
@@ -2596,7 +2976,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3020
+                }
             },
             "42" : {
                 "@class" : "DialogueState",
@@ -2614,7 +2999,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3200
+                }
             }
         }
     },{
@@ -2667,7 +3057,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Demander si tout va bien",
                     "nextStateId" : 26
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 30,
+                    "y" : 390
+                }
             },
             "2" : {
                 "@class" : "DialogueState",
@@ -2681,7 +3076,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 3
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 30
+                }
             },
             "3" : {
                 "@class" : "DialogueState",
@@ -2690,7 +3090,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 30
+                }
             },
             "5" : {
                 "@class" : "DialogueState",
@@ -2699,7 +3104,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
                     "nextStateId" : 6
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 390
+                }
             },
             "6" : {
                 "@class" : "DialogueState",
@@ -2708,7 +3118,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 7
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 390
+                }
             },
             "7" : {
                 "@class" : "DialogueState",
@@ -2758,7 +3173,12 @@
                         "content" : "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskInst.getSkillset().size(); i++){\nskills=taskInst.getSkillset().keySet().toArray()[i];\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 210
+                }
             },
             "8" : {
                 "@class" : "DialogueState",
@@ -2776,14 +3196,19 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Obliger l'acceptation",
                     "nextStateId" : 10
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 210
+                }
             },
             "9" : {
                 "@class" : "DialogueState",
                 "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                   "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -2794,7 +3219,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 210
+                }
             },
             "10" : {
                 "@class" : "DialogueState",
@@ -2817,7 +3247,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1||(resInst.getProperty('leadershipLevel')<3&&resInst.getConfidence()<50);",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 390
+                }
             },
             "11" : {
                 "@class" : "DialogueState",
@@ -2831,21 +3266,31 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 390
+                }
             },
             "13" : {
                 "@class" : "DialogueState",
                 "text" : "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Bon je vais le faire.\",\n\"Pff… bon ok.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                     "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()-25);\nresInst.setConfidence(resInst.getConfidence()-10);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.setMoral(resInst.getMoral()-25);\nresInst.setConfidence(resInst.getConfidence()-10);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 570
+                }
             },
             "15" : {
                 "@class" : "DialogueState",
@@ -2859,7 +3304,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 570
+                }
             },
             "16" : {
                 "@class" : "DialogueState",
@@ -2868,7 +3318,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 750
+                }
             },
             "17" : {
                 "@class" : "DialogueState",
@@ -2882,7 +3337,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],            
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 930
+                }
             },
             "18" : {
                 "@class" : "DialogueState",
@@ -2896,7 +3356,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 1110
+                }
             },
             "19" : {
                 "@class" : "DialogueState",
@@ -2905,7 +3370,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 1
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1430,
+                    "y" : 1110
+                }
             },
             "20" : {
                 "@class" : "DialogueState",
@@ -2933,7 +3403,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1290
+                }
             },
             "21" : {
                 "@class" : "DialogueState",
@@ -2947,7 +3422,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1290
+                }
             },
             "22" : {
                 "@class" : "DialogueState",
@@ -2961,7 +3441,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1470
+                }
             },
             "23" : {
                 "@class" : "DialogueState",
@@ -2989,7 +3474,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1650
+                }
             },
             "24" : {
                 "@class" : "DialogueState",
@@ -3003,7 +3493,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1650
+                }
             },
             "25" : {
                 "@class" : "DialogueState",
@@ -3017,7 +3512,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1830
+                }
             },
             "26" : {
                 "@class" : "DialogueState",
@@ -3026,7 +3526,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 27
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 2110
+                }
             },
             "27" : {
                 "@class" : "DialogueState",
@@ -3049,7 +3554,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.getConfidence()+resInst.getProperty('bonusInducement')<75&&resInst.getProperty('leadershipLevel')<=1;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 2110
+                }
             },
             "28" : {
                 "@class" : "DialogueState",
@@ -3067,7 +3577,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 31
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2110
+                }
             },
             "29" : {
                 "@class" : "DialogueState",
@@ -3076,7 +3591,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 30
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2110
+                }
             },
             "30" : {
                 "@class" : "DialogueState",
@@ -3094,7 +3614,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2110
+                }
             },
             "31" : {
                 "@class" : "DialogueState",
@@ -3112,7 +3637,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 34
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2290
+                }
             },
             "32" : {
                 "@class" : "DialogueState",
@@ -3121,7 +3651,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 33
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2290
+                }
             },
             "33" : {
                 "@class" : "DialogueState",
@@ -3139,7 +3674,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2290
+                }
             },
             "34" : {
                 "@class" : "DialogueState",
@@ -3157,7 +3697,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 37
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2480
+                }
             },
             "35" : {
                 "@class" : "DialogueState",
@@ -3166,7 +3711,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 36
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2480
+                }
             },
             "36" : {
                 "@class" : "DialogueState",
@@ -3184,7 +3734,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2480
+                }
             },
             "37" : {
                 "@class" : "DialogueState",
@@ -3197,7 +3752,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2660
+                }
             },
             "38" : {
                 "@class" : "DialogueState",
@@ -3243,7 +3803,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.getProperty('wishIsKnow')=='false'||resInst.getProperty('hateIsKnow')=='false'||resInst.getProperty('hiddenSkillsets')!=='';",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2660
+                }
             },
             "39" : {
                 "@class" : "DialogueState",
@@ -3261,7 +3826,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2660
+                }
             },
             "40" : {
                 "@class" : "DialogueState",
@@ -3279,7 +3849,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2840
+                }
             },
             "41" : {
                 "@class" : "DialogueState",
@@ -3292,7 +3867,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3020
+                }
             },
             "42" : {
                 "@class" : "DialogueState",
@@ -3310,7 +3890,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3200
+                }
             }
         }
     },{
@@ -3363,7 +3948,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Demander si tout va bien",
                     "nextStateId" : 26
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 30,
+                    "y" : 390
+                }
             },
             "2" : {
                 "@class" : "DialogueState",
@@ -3377,7 +3967,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 3
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 30
+                }
             },
             "3" : {
                 "@class" : "DialogueState",
@@ -3386,7 +3981,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 30
+                }
             },
             "5" : {
                 "@class" : "DialogueState",
@@ -3395,7 +3995,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
                     "nextStateId" : 6
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 390
+                }
             },
             "6" : {
                 "@class" : "DialogueState",
@@ -3404,7 +4009,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 7
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 390
+                }
             },
             "7" : {
                 "@class" : "DialogueState",
@@ -3454,7 +4064,12 @@
                         "content" : "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskInst.getSkillset().size(); i++){\nskills=taskInst.getSkillset().keySet().toArray()[i];\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 210
+                }
             },
             "8" : {
                 "@class" : "DialogueState",
@@ -3472,14 +4087,19 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Obliger l'acceptation",
                     "nextStateId" : 10
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 210
+                }
             },
             "9" : {
                 "@class" : "DialogueState",
                 "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                   "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -3490,7 +4110,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 210
+                }
             },
             "10" : {
                 "@class" : "DialogueState",
@@ -3513,7 +4138,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1||(resInst.getProperty('leadershipLevel')<3&&resInst.getConfidence()<50);",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 390
+                }
             },
             "11" : {
                 "@class" : "DialogueState",
@@ -3527,21 +4157,31 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 390
+                }
             },
             "13" : {
                 "@class" : "DialogueState",
                 "text" : "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Bon je vais le faire.\",\n\"Pff… bon ok.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorFache.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()-25);\nresInst.setConfidence(resInst.getConfidence()-10);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.setMoral(resInst.getMoral()-25);\nresInst.setConfidence(resInst.getConfidence()-10);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 570
+                }
             },
             "15" : {
                 "@class" : "DialogueState",
@@ -3555,7 +4195,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 570
+                }
             },
             "16" : {
                 "@class" : "DialogueState",
@@ -3564,7 +4209,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 750
+                }
             },
             "17" : {
                 "@class" : "DialogueState",
@@ -3578,7 +4228,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],            
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 930
+                }
             },
             "18" : {
                 "@class" : "DialogueState",
@@ -3592,7 +4247,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 1110
+                }
             },
             "19" : {
                 "@class" : "DialogueState",
@@ -3601,7 +4261,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 1
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1430,
+                    "y" : 1110
+                }
             },
             "20" : {
                 "@class" : "DialogueState",
@@ -3629,7 +4294,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1290
+                }
             },
             "21" : {
                 "@class" : "DialogueState",
@@ -3643,7 +4313,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1290
+                }
             },
             "22" : {
                 "@class" : "DialogueState",
@@ -3657,7 +4332,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1470
+                }
             },
             "23" : {
                 "@class" : "DialogueState",
@@ -3685,7 +4365,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1650
+                }
             },
             "24" : {
                 "@class" : "DialogueState",
@@ -3699,7 +4384,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1650
+                }
             },
             "25" : {
                 "@class" : "DialogueState",
@@ -3713,7 +4403,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1830
+                }
             },
             "26" : {
                 "@class" : "DialogueState",
@@ -3722,7 +4417,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 27
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 2110
+                }
             },
             "27" : {
                 "@class" : "DialogueState",
@@ -3745,7 +4445,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.getConfidence()+resInst.getProperty('bonusInducement')<75&&resInst.getProperty('leadershipLevel')<=1;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 2110
+                }
             },
             "28" : {
                 "@class" : "DialogueState",
@@ -3763,7 +4468,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 31
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2110
+                }
             },
             "29" : {
                 "@class" : "DialogueState",
@@ -3772,7 +4482,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 30
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2110
+                }
             },
             "30" : {
                 "@class" : "DialogueState",
@@ -3790,7 +4505,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2110
+                }
             },
             "31" : {
                 "@class" : "DialogueState",
@@ -3808,7 +4528,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 34
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2290
+                }
             },
             "32" : {
                 "@class" : "DialogueState",
@@ -3817,7 +4542,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 33
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2290
+                }
             },
             "33" : {
                 "@class" : "DialogueState",
@@ -3835,7 +4565,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2290
+                }
             },
             "34" : {
                 "@class" : "DialogueState",
@@ -3853,7 +4588,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 37
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2480
+                }
             },
             "35" : {
                 "@class" : "DialogueState",
@@ -3862,7 +4602,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 36
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2480
+                }
             },
             "36" : {
                 "@class" : "DialogueState",
@@ -3880,7 +4625,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2480
+                }
             },
             "37" : {
                 "@class" : "DialogueState",
@@ -3893,7 +4643,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2660
+                }
             },
             "38" : {
                 "@class" : "DialogueState",
@@ -3939,7 +4694,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.getProperty('wishIsKnow')=='false'||resInst.getProperty('hateIsKnow')=='false'||resInst.getProperty('hiddenSkillsets')!=='';",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2660
+                }
             },
             "39" : {
                 "@class" : "DialogueState",
@@ -3957,7 +4717,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2660
+                }
             },
             "40" : {
                 "@class" : "DialogueState",
@@ -3975,7 +4740,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2840
+                }
             },
             "41" : {
                 "@class" : "DialogueState",
@@ -3988,7 +4758,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3020
+                }
             },
             "42" : {
                 "@class" : "DialogueState",
@@ -4006,7 +4781,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3200
+                }
             }
         }
     },{
@@ -4059,7 +4839,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Demander si tout va bien",
                     "nextStateId" : 26
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 30,
+                    "y" : 390
+                }
             },
             "2" : {
                 "@class" : "DialogueState",
@@ -4073,7 +4858,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 3
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 30
+                }
             },
             "3" : {
                 "@class" : "DialogueState",
@@ -4082,7 +4872,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 30
+                }
             },
             "5" : {
                 "@class" : "DialogueState",
@@ -4091,7 +4886,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Choisir un mandat",
                     "nextStateId" : 6
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 390
+                }
             },
             "6" : {
                 "@class" : "DialogueState",
@@ -4100,7 +4900,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 7
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 390
+                }
             },
             "7" : {
                 "@class" : "DialogueState",
@@ -4150,7 +4955,12 @@
                         "content" : "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskInst.getSkillset().size(); i++){\nskills=taskInst.getSkillset().keySet().toArray()[i];\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 210
+                }
             },
             "8" : {
                 "@class" : "DialogueState",
@@ -4168,14 +4978,19 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Obliger l'acceptation",
                     "nextStateId" : 10
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 210
+                }
             },
             "9" : {
                 "@class" : "DialogueState",
                 "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Oh pardon, je ne pensais que ça te rebuterait autant. Laisser-moi réfléchir à ce que je peux te donner d'autre.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienPerplexe.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "onEnterEvent" : {
                     "@class" : "Script",
-                   "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
+                    "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.setMoral(resInst.getMoral()+5);",
                     "language" : "JavaScript"
                 },
                 "transitions" : [{
@@ -4186,7 +5001,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 210
+                }
             },
             "10" : {
                 "@class" : "DialogueState",
@@ -4209,7 +5029,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1||(resInst.getProperty('leadershipLevel')<3&&resInst.getConfidence()<50);",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 390
+                }
             },
             "11" : {
                 "@class" : "DialogueState",
@@ -4223,7 +5048,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 390
+                }
             },
             "13" : {
                 "@class" : "DialogueState",
@@ -4237,7 +5067,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1230,
+                    "y" : 570
+                }
             },
             "15" : {
                 "@class" : "DialogueState",
@@ -4251,7 +5086,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 570
+                }
             },
             "16" : {
                 "@class" : "DialogueState",
@@ -4260,7 +5100,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 750
+                }
             },
             "17" : {
                 "@class" : "DialogueState",
@@ -4274,7 +5119,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],            
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 930
+                }
             },
             "18" : {
                 "@class" : "DialogueState",
@@ -4288,7 +5138,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 1110
+                }
             },
             "19" : {
                 "@class" : "DialogueState",
@@ -4297,7 +5152,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 1
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1430,
+                    "y" : 1110
+                }
             },
             "20" : {
                 "@class" : "DialogueState",
@@ -4325,7 +5185,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1290
+                }
             },
             "21" : {
                 "@class" : "DialogueState",
@@ -4339,7 +5204,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1290
+                }
             },
             "22" : {
                 "@class" : "DialogueState",
@@ -4353,7 +5223,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1470
+                }
             },
             "23" : {
                 "@class" : "DialogueState",
@@ -4381,7 +5256,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('lastWorkQuality')<50;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 1650
+                }
             },
             "24" : {
                 "@class" : "DialogueState",
@@ -4395,7 +5275,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1650
+                }
             },
             "25" : {
                 "@class" : "DialogueState",
@@ -4409,7 +5294,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 1830
+                }
             },
             "26" : {
                 "@class" : "DialogueState",
@@ -4418,7 +5308,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 27
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 2110
+                }
             },
             "27" : {
                 "@class" : "DialogueState",
@@ -4441,7 +5336,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getConfidence()+resInst.getProperty('bonusInducement')<75&&resInst.getProperty('leadershipLevel')<=1;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 2110
+                }
             },
             "28" : {
                 "@class" : "DialogueState",
@@ -4459,7 +5359,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 31
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2110
+                }
             },
             "29" : {
                 "@class" : "DialogueState",
@@ -4468,7 +5373,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 30
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2110
+                }
             },
             "30" : {
                 "@class" : "DialogueState",
@@ -4486,7 +5396,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2110
+                }
             },
             "31" : {
                 "@class" : "DialogueState",
@@ -4504,7 +5419,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 34
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2290
+                }
             },
             "32" : {
                 "@class" : "DialogueState",
@@ -4513,7 +5433,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 33
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2290
+                }
             },
             "33" : {
                 "@class" : "DialogueState",
@@ -4531,7 +5456,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2290
+                }
             },
             "34" : {
                 "@class" : "DialogueState",
@@ -4549,7 +5479,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
                     "nextStateId" : 37
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2480
+                }
             },
             "35" : {
                 "@class" : "DialogueState",
@@ -4558,7 +5493,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 36
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2480
+                }
             },
             "36" : {
                 "@class" : "DialogueState",
@@ -4576,7 +5516,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2480
+                }
             },
             "37" : {
                 "@class" : "DialogueState",
@@ -4589,7 +5534,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 2660
+                }
             },
             "38" : {
                 "@class" : "DialogueState",
@@ -4635,7 +5585,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('wishIsKnow')=='false'||resInst.getProperty('hateIsKnow')=='false'||resInst.getProperty('hiddenSkillsets')!=='';",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 830,
+                    "y" : 2660
+                }
             },
             "39" : {
                 "@class" : "DialogueState",
@@ -4653,7 +5608,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2660
+                }
             },
             "40" : {
                 "@class" : "DialogueState",
@@ -4671,7 +5631,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 2840
+                }
             },
             "41" : {
                 "@class" : "DialogueState",
@@ -4684,7 +5649,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3020
+                }
             },
             "42" : {
                 "@class" : "DialogueState",
@@ -4702,7 +5672,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 3200
+                }
             }
         }
     },{
@@ -4737,7 +5712,12 @@
                         "content" : "score.value>=1100",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 30,
+                    "y" : 30
+                }
             },
             "1" : {
                 "@class" : "DialogueState",
@@ -4746,7 +5726,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Donnez-moi une seconde chance !",
                     "nextStateId" : 2
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 30
+                }
             },
             "2" : {
                 "@class" : "DialogueState",
@@ -4755,7 +5740,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 3
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 30
+                }
             },
             "3" : {
                 "@class" : "DialogueState",
@@ -4780,7 +5770,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Lucien",
                     "nextStateId" : 11
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 30
+                }
             },
             "4" : {
                 "@class" : "DialogueState",
@@ -4789,16 +5784,26 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Merci !",
                     "nextStateId" : 5
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 230,
+                    "y" : 210
+                }
             },
             "5" : {
                 "@class" : "DialogueState",
                 "text" : "{\n\"speakerName\":\"Leader\",\n\"texts\":[\n\"Je ne sais pas comment vous remercier.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielNeutre.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
-                    "actionText" : "Merci !",
+                    "actionText" : "Suite",
                     "nextStateId" : 6
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 430,
+                    "y" : 210
+                }
             },
             "6" : {
                 "@class" : "DialogueState",
@@ -4823,7 +5828,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Lucien",
                     "nextStateId" : 11
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 630,
+                    "y" : 210
+                }
             },
             "7" : {
                 "@class" : "DialogueState",
@@ -4846,7 +5856,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1&&resInst.getProperty('numberOfWorkWithLeader')<=0;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 30
+                }
             },
             "8" : {
                 "@class" : "DialogueState",
@@ -4869,7 +5884,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1&&resInst.getProperty('numberOfWorkWithLeader')<=0;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 210
+                }
             },
             "9" : {
                 "@class" : "DialogueState",
@@ -4892,7 +5912,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1&&resInst.getProperty('numberOfWorkWithLeader')<=0;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 390
+                }
             },
             "10" : {
                 "@class" : "DialogueState",
@@ -4915,7 +5940,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1&&resInst.getProperty('numberOfWorkWithLeader')<=0;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 570
+                }
             },
             "11" : {
                 "@class" : "DialogueState",
@@ -4938,7 +5968,12 @@
                         "content" : "var resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\nresInst.getProperty('leadershipLevel')<=1&&resInst.getProperty('numberOfWorkWithLeader')<=0;",
                         "language" : "JavaScript"
                     }
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1030,
+                    "y" : 750
+                }
             },
             "12" : {
                 "@class" : "DialogueState",
@@ -4947,7 +5982,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Je comprends",
                     "nextStateId" : 13
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1430,
+                    "y" : 30
+                }
             },
             "13" : {
                 "@class" : "DialogueState",
@@ -4956,11 +5996,21 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 14
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1630,
+                    "y" : 30
+                }
             },
             "14" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"-\",\n\"texts\":[\n\"[Quelques mois plus tard] <br/>Vous avez travaillé avec le nouveau leader et lui avez ainsi servi de modèle. Vous avez développé sa confiance et son expérience pour qu'il ait envie de se battre pour l'entreprise. Maintenant, grâce à vos efforts, le travail du nouveau leader fait que l'entreprise continue d'évoluer !  Bravo à vous car un mauvais leader aurait pu gâcher tous vos effort et réduire à néant votre travail ainsi que celui de vos prédécesseurs.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n},{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/chartGood.jpg\",\n\"height\":\"200px\",\n\"width\":\"200px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}"
+                "text" : "{\n\"speakerName\":\"-\",\n\"texts\":[\n\"[Quelques mois plus tard] <br/>Vous avez travaillé avec le nouveau leader et lui avez ainsi servi de modèle. Vous avez développé sa confiance et son expérience pour qu'il ait envie de se battre pour l'entreprise. Maintenant, grâce à vos efforts, le travail du nouveau leader fait que l'entreprise continue d'évoluer !  Bravo à vous car un mauvais leader aurait pu gâcher tous vos effort et réduire à néant votre travail ainsi que celui de vos prédécesseurs.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n},{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/chartGood.jpg\",\n\"height\":\"200px\",\n\"width\":\"200px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1830,
+                    "y" : 30
+                }
             },
             "15" : {
                 "@class" : "DialogueState",
@@ -4969,7 +6019,12 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Je comprends",
                     "nextStateId" : 16
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1430,
+                    "y" : 210
+                }
             },
             "16" : {
                 "@class" : "DialogueState",
@@ -4978,16 +6033,26 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Suite",
                     "nextStateId" : 17
-                }]
+                }],
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1630,
+                    "y" : 210
+                }
             },
             "17" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"speakerName\":\"-\",\n\"texts\":[\n\"[Quelques mois plus tard] <br/> Malheureusement, le travail du leader a été réduit à néant car le nouveau leader n'était pas assez compétent. Peut-être que vous ne l'aviez pas assez préparé à ce poste. Il aurait peut-être dû avoir un niveau de leadership plus élevé et donc plus de confiance et d'expérience afin de se battre pour l'entreprise. Ou alors, peut-être n'a-t-il pas assez travaillé avec le leader. Manquant de modèle, il n'a donc pas pu voir comment agir pour devenir un bon leader.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n},{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/chartBad.jpg\",\n\"height\":\"200px\",\n\"width\":\"200px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}"
+                "text" : "{\n\"speakerName\":\"-\",\n\"texts\":[\n\"[Quelques mois plus tard] <br/> Malheureusement, le travail du leader a été réduit à néant car le nouveau leader n'était pas assez compétent. Peut-être que vous ne l'aviez pas assez préparé à ce poste. Il aurait peut-être dû avoir un niveau de leadership plus élevé et donc plus de confiance et d'expérience afin de se battre pour l'entreprise. Ou alors, peut-être n'a-t-il pas assez travaillé avec le leader. Manquant de modèle, il n'a donc pas pu voir comment agir pour devenir un bon leader.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background2.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n},{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/chartBad.jpg\",\n\"height\":\"200px\",\n\"width\":\"200px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                "editorPosition" : {
+                    "@class" : "Coordinate",
+                    "x" : 1830,
+                    "y" : 210
+                }
             }
         }
     }
     ],
     "scriptLibrary": {
-        "default":"function limitValues(){}\nfunction doIntroduction(){}\nfunction resetDialogueValues(){}\nfunction sendMessage(subject, content, from){}\nfunction lookupBean(name){}\nfunction assignTask(resourceDescriptorId, taskDescriptorId){}\nfunction sickenResource(resourceDescriptor, duration){}\nfunction calculateScore(){}\nfunction sendScore(){}\nfunction checkLeadershipLevel(){}\nfunction calculateTeamMotivation(){}\nfunction checkMoral(){}\nfunction getTasksAndAbsences(){}\nfunction removeDeactivatedAssignements(){}\nfunction payResources(){}\nfunction checkTasksState(){}\nfunction checkAbsencesEnd(){}\nfunction doTaskEnd(workersDescriptor, taskDescriptor){}\nfunction checkTasksEnd(){}\nfunction getWorkedTasks(listResources){}\nfunction getValideResources(){}\nfunction finishCurrentWeek(){}\nimportPackage(javax.naming);"
+        "default": "importPackage(javax.naming);\r\n\r\n/**\r\n * terminate the current week.\r\n * if value of week <= max value of week :\r\n * - Increment the value of week\r\n * - Check the end of all task (checkTasksEnd)\r\n * - Check the end of all absent (checkAbsencesEnd)\r\n * - Remove all deactivated assignments (removeDeactivatedAssignements)\r\n * - Active or Deactive some tasks (checkTasksState)\r\n * - Pay all active resources (payResources)\r\n * - Check the moral of all active resources (checkMoral)\r\n * - Check the 'LeadershipLevel' of all active resources (checkLeadershipLevel)\r\n */\r\nfunction finishCurrentWeek(){\r\n    var gm = self.getGameModel(),\r\n    weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),\r\n    actionsDescriptor = VariableDescriptorFacade.findByName(gm, 'actions'),\r\n    weekInstance = weekDescriptor.getInstance(self);\r\n    if(weekInstance.getValue() <= weekDescriptor.getMaxValue()){\r\n        weekInstance.setValue(weekInstance.getValue()+1);\r\n        actionsDescriptor.getInstance(self).setValue(actionsDescriptor.getMaxValue());\r\n        this.checkTasksEnd();\r\n        this.checkAbsencesEnd();\r\n        this.removeDeactivatedAssignements();\r\n        this.checkTasksState();\r\n        this.payResources();\r\n        this.checkMoral();\r\n        this.checkLeadershipLevel();\r\n        this.sendScore();\r\n        this.resetDialogueValues(); //specific to this scenario.\r\n    }\r\n}\r\n\r\n/**\r\n * @return an Array of all active and not absent resourceDescriptor.\r\n */\r\nfunction getValideResources(){\r\n    var i, j, k, gm = self.getGameModel(), valideResources = new Array(), isValid = false,\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceDescriptor, resourceInstance,\r\n    listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absencesInstance, assignment;\r\n    for(i=0; i<listResources.items.size();i++){\r\n        resourceDescriptor = listResources.items.get(i);\r\n        resourceInstance = resourceDescriptor.getInstance(self);\r\n        isValid = false;\r\n        if(resourceInstance.getActive() == true){\r\n            isValid = true;\r\n            for(j=0; j<resourceInstance.getAssignments().size(); j++){\r\n                assignment = resourceInstance.getAssignments().get(j);\r\n                for(k=0; k<listAbsences.items.size();k++){\r\n                    absencesInstance = listAbsences.items.get(k).getInstance(self);\r\n                    if(assignment.getTaskDescriptorId() == absencesInstance.getDescriptorId() && absencesInstance.getActive() == true){\r\n                        isValid = false;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if(isValid) valideResources.push(resourceDescriptor);\r\n    }\r\n    return valideResources;\r\n}\r\n\r\n/**\r\n * @param ListDescriptor of ResourceDescriptor listResources, the list of all resources\r\n * @return An Array of all task assigned at one or many active and not absent resource.\r\n */\r\nfunction getWorkedTasks(listResources){\r\n    var i, j, k, gm = self.getGameModel(), workedTasks = new Array(), isWorked = false, assignment,\r\n    resourceInstance, listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance;\r\n    for(i=0; i<listTasks.items.size();i++){\r\n        taskDescriptor = listTasks.items.get(i)\r\n        taskInstance = taskDescriptor.getInstance(self);\r\n        isWorked = false;\r\n        if(taskInstance.getActive() == true){\r\n            for(j=0; j<listResources.length; j++){\r\n                resourceInstance = listResources[j].getInstance(self);\r\n                for(k=0; k<resourceInstance.getAssignments().size();k++){\r\n                    assignment = resourceInstance.getAssignments().get(k);\r\n                    if(assignment.getTaskDescriptorId() == taskInstance.getDescriptorId()){\r\n                        isWorked = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if(isWorked) workedTasks.push(taskDescriptor);\r\n    }\r\n    return workedTasks;\r\n}\r\n\r\n/**\r\n * Decreases the duration of all worked task by the number of workers on this task.\r\n * for each worked task that have a duration <=0, call the fonction 'doTaskEnd'\r\n * with the task and the corresponding workers for args.\r\n */\r\nfunction checkTasksEnd(){\r\n    var i, j, k, assignment, taskWorkers = new Array(),\r\n    listValidResource = this.getValideResources(), resourceInstance,\r\n    listWorkedTasks = this.getWorkedTasks(listValidResource), taskInstance;\r\n    for(i=0; i<listWorkedTasks.length;i++){\r\n        taskWorkers.length = 0;\r\n        taskInstance = listWorkedTasks[i].getInstance(self);\r\n        for(j=0; j<listValidResource.length; j++){\r\n            resourceInstance = listValidResource[j].getInstance(self);\r\n            for(k=0; k<resourceInstance.getAssignments().size(); k++){\r\n                assignment = resourceInstance.getAssignments().get(k);\r\n                if(assignment.getTaskDescriptorId() == taskInstance.getDescriptorId()){\r\n                    taskWorkers.push(listValidResource[j]);\r\n                }\r\n            }\r\n        }\r\n        taskInstance.setDuration(taskInstance.getDuration()-taskWorkers.length);\r\n        if(taskInstance.getDuration() <= 0){\r\n            this.doTaskEnd(taskWorkers, listWorkedTasks[i]);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Calculate experience (general gained and experience in skillsets needed by\r\n * the finished task) for all workers on a finished tasks.\r\n * can remove the 'wish' or the 'hate' values of these workers.\r\n * add the remuneration of the task at the general budget.\r\n * send a rapport-email to the player\r\n * Deactivate the task\r\n * @param Array of resourceDescriptor workersDescriptor, all the resources that worked on the task.\r\n * @param TaskDescriptor taskDescriptor, the task ended.\r\n */\r\nfunction doTaskEnd(workersDescriptor, taskDescriptor){\r\n    if(workersDescriptor.length <= 0 || taskDescriptor == null) return;\r\n    var i,j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),\r\n    budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),\r\n    clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskSkillKey, wish, hate,\r\n    taskSkillValue, listTaskSkill = taskInstance.getSkillset(), taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), workerInstance,\r\n    workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,\r\n    sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),\r\n    punderationMoral = 0.1,\r\n    punderationConfidence = 0.2,\r\n    punderationSkillsets = 0.7,\r\n    punderationQualityWeight = 0.5\r\n\r\n    //get existing skills\r\n    for(i=0; i<workersDescriptor[0].getInstance(self).getSkillset().size(); i++){\r\n        existingSkills.push(workersDescriptor[0].getInstance(self).getSkillset().keySet().toArray()[i]);\r\n    }\r\n\r\n    for(i=0; i<workersDescriptor.length; i++){\r\n        workPartSkillsQuality.length = 0;\r\n        sumWorkPartSkills = 0;\r\n        workerInstance = workersDescriptor[i].getInstance(self);\r\n        moral = parseInt(workerInstance.getMoral());\r\n        confidence = parseInt(workerInstance.getConfidence());\r\n        learningCoefficient = parseInt(workerInstance.getProperty('learningCoefficient'));\r\n        totalExperience = 0;\r\n        from.push(workerInstance.getProperty('surname'));//for e-mail\r\n        for (j=0; j<listTaskSkill.size(); j++){\r\n            taskSkillKey = listTaskSkill.keySet().toArray()[j];\r\n            taskSkillValue = parseInt(listTaskSkill.get(taskSkillKey));\r\n            workerSkillsetValue = parseInt(workerInstance.getSkillset().get(taskSkillKey));\r\n            //calculate experience général (totalExperienceGained) part 1/2\r\n            if(workerSkillsetValue<taskSkillValue){\r\n                totalExperience += (taskSkillValue - workerSkillsetValue) * taskDuration / workersDescriptor.length;\r\n            }\r\n            //calculate experience in current skill\r\n            if(workerSkillsetValue<taskSkillValue){\r\n                skillExperience = Math.ceil((1-workerSkillsetValue/100)*10*learningCoefficient*taskDuration/workersDescriptor.length);\r\n                workerInstance.setSkillset(taskSkillKey, parseInt(workerInstance.getSkillset(taskSkillKey)) + skillExperience);\r\n            }\r\n            //calculate work Quality part 1/4\r\n            workPartSkillsQuality.push((workerSkillsetValue - taskSkillValue +100)/2);\r\n        }\r\n        //calculate experience général (totalExperienceGained) part 2/2\r\n        workerInstance.setProperty('totalExperienceGained',  parseInt(workerInstance.getProperty('totalExperienceGained')) + totalExperience);\r\n        //calculate work Quality part 2/4\r\n        for(j=0; j<workPartSkillsQuality.length; j++){\r\n            sumWorkPartSkills += workPartSkillsQuality[j];\r\n        }\r\n        averageWorkPartSkills = (sumWorkPartSkills/workPartSkillsQuality.length) * punderationSkillsets + moral * punderationMoral + confidence * punderationConfidence\r\n        // check wish and hate\r\n        for (j=0; j<listTaskSkill.size(); j++){\r\n            taskSkillKey = listTaskSkill.keySet().toArray()[j];\r\n            taskSkillValue = parseInt(listTaskSkill.get(taskSkillKey));\r\n            workerSkillsetValue = parseInt(workerInstance.getSkillset().get(taskSkillKey));\r\n            //calculate work Quality part 3/4\r\n            if(taskSkillKey == workerInstance.getProperty('wish')){\r\n                randomNumber = Math.floor(Math.random()*6)+5;\r\n                averageWorkPartSkills += randomNumber;\r\n                if(averageWorkPartSkills>100) averageWorkPartSkills = 100;\r\n            }\r\n            if(taskSkillKey == workerInstance.getProperty('hate')){\r\n                randomNumber = Math.floor(Math.random()*6)+5;\r\n                averageWorkPartSkills -= randomNumber;\r\n                if(averageWorkPartSkills<0) averageWorkPartSkills = 0;\r\n            }\r\n            //check wish\r\n            randomNumber = Math.random();\r\n            wish = workerInstance.getProperty('wish');\r\n            if((averageWorkPartSkills <= 50 || randomNumber < 0.33) && taskSkillKey == wish){\r\n                wish = '';\r\n            }\r\n            while(!wish){\r\n                wish = existingSkills[Math.floor(Math.random() * existingSkills.length)];\r\n                if(wish == workerInstance.getProperty('wish')) wish = '';\r\n            }\r\n            workerInstance.setProperty('wishIsKnow', false);\r\n            workerInstance.setProperty('wish', wish);\r\n            //check hate\r\n            randomNumber = Math.random();\r\n            hate = workerInstance.getProperty('hate');\r\n            if((averageWorkPartSkills > 50 && randomNumber < 0.33) && taskSkillKey == hate){\r\n                hate = '';\r\n            }\r\n            while(!hate){\r\n                hate = existingSkills[Math.floor(Math.random() * existingSkills.length)];\r\n                if(hate == workerInstance.getProperty('hate')) hate = '';\r\n            }\r\n            workerInstance.setProperty('hateIsKnow', false);\r\n            workerInstance.setProperty('hate', hate);\r\n        }\r\n        averageWorkPartSkills = Math.round(averageWorkPartSkills);\r\n        workPartsQuality.push(averageWorkPartSkills);\r\n        workerInstance.setProperty('lastWorkQuality', averageWorkPartSkills);\r\n        //set moral and confidence depending of averageWorkPartSkills.\r\n        if(averageWorkPartSkills<50){\r\n            workerInstance.setMoral(workerInstance.getMoral()-25);\r\n            workerInstance.setConfidence(workerInstance.getConfidence()-15);\r\n        }\r\n        else{\r\n            workerInstance.setMoral(workerInstance.getMoral()+15);\r\n            workerInstance.setConfidence(workerInstance.getConfidence()+10);\r\n        }\r\n        //check 'workWithLeader'\r\n        if(taskInstance.getProperty('workWithLeader') == 'true'){\r\n            workerInstance.setProperty('numberOfWorkWithLeader', parseInt(workerInstance.getProperty('numberOfWorkWithLeader'))+1);\r\n        }\r\n    }\r\n    //calculate work Quality part 4/4\r\n    for(i=0; i<workPartsQuality.length; i++){\r\n        sumWorkParts += (workPartsQuality[i]);\r\n    }\r\n    workQuality = (sumWorkParts/workPartSkillsQuality.length);\r\n    clientsSatisfaction.setValue(Math.round(clientsSatisfaction.getValue()+(workQuality-50)*punderationQualityWeight));\r\n    if(clientsSatisfaction.getValue()>100) clientsSatisfaction.setValue(100);\r\n    if(clientsSatisfaction.getValue()<0) clientsSatisfaction.getValue(0);\r\n    //calculate remuneration\r\n    remuneration = parseInt(taskInstance.getProperty('salary'));\r\n    if(workQuality >= parseInt(taskInstance.getProperty('workQualityMinForBonus'))){\r\n        remuneration+=parseInt(taskInstance.getProperty('bonus'));\r\n    }\r\n    budgetInstance.setValue(budgetInstance.getValue()+remuneration);\r\n    //e-mail\r\n    content.push('Boujour, <br />Le mandat <<');\r\n    content.push(taskDescriptor.getName());\r\n    content.push('>> vient de se terminer. Le client ');\r\n    switch(true){\r\n        case workQuality<20 :\r\n            content.push('est totalement instatisfait par notre travail. Aucune chance de décrocher un autre mandate auprès de ce client. ');\r\n            break;\r\n        case workQuality<40 :\r\n            content.push('a déclaré être instatisfait de notre travail. Il est vrai que certaine erreurs ont été commises. ');\r\n            break;\r\n        case workQuality<60 :\r\n            content.push('est moyennement satisfait. La qualité est faible mais le projet est satisfaisant. ');\r\n            break;\r\n        case workQuality<80 :\r\n            content.push('est content du travail réalisé. Il pense nous recontacter pour de futurs mandats. ');\r\n            break;\r\n        default :\r\n            content.push('est ravi par le travail réalisé. La qualité est au-delà de ses espérences et sera fidèle à notre entreprise. ');\r\n            break;\r\n    }\r\n    content.push('<br />');\r\n    if( parseInt(taskInstance.getProperty('workQualityMinForBonus')) > 0 && workQuality >= parseInt(taskInstance.getProperty('workQualityMinForBonus') && parseInt(taskInstance.getProperty('bonus')) > 0)){\r\n        content.push('Il nous remercier par un bonus de ');\r\n        content.push(taskInstance.getProperty('bonus'));\r\n        content.push('.-');\r\n    }\r\n    content.push('<br /> Bonne journée. <br />');\r\n    content.push(from.join(', '));\r\n    this.sendMessage('Fin de mandat', content.join(''), workersDescriptor[0].getInstance(self).getProperty('surname'));\r\n    //desactivate Task\r\n    taskInstance.setActive(false);\r\n}\r\n\r\n/**\r\n * Decrease absence duration by switch the current absenceTask with a other absenceTask wich have a duration 1 time smaller.\r\n * If the duration must reach 0, remove this assignation, set the resource 'moral' to 40 and recalculate the teamMotivation's value.\r\n * If duration is smaller than 0, deactivate the task.\r\n */\r\nfunction checkAbsencesEnd(){\r\n    var i, j, k, l, gm = self.getGameModel(), assignment, duration,\r\n    listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absenceInstance,\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance,\r\n    assignmentToRemove = new Array(), assignmentToAdd = new Array();\r\n    for(i=0; i<listResources.items.size();i++){\r\n        assignmentToRemove.length=0;\r\n        assignmentToAdd.length=0;\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        for(j=0; j<resourceInstance.getAssignments().size();j++){\r\n            assignment = resourceInstance.getAssignments().get(j);\r\n            for(k=0; k<listAbsences.items.size();k++){\r\n                absenceInstance = listAbsences.items.get(k).getInstance(self);\r\n                if(assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive() == true){\r\n                    duration = absenceInstance.getDuration();\r\n                    if(duration <= 0){\r\n                        absenceInstance.setActive(false);\r\n                    } else{\r\n                        assignmentToRemove.push(assignment);\r\n                        resourceInstance.setMoral(40);\r\n                        if (duration > 1){\r\n                            for(l=0; l<listAbsences.items.size();l++){\r\n                                if(listAbsences.items.get(l).getInstance(self).getDuration() == duration-1){\r\n                                    assignmentToAdd.push(listAbsences.items.get(l));\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        for(j=assignmentToRemove.length-1;j>=0;j--){\r\n            resourceInstance.getAssignments().remove(assignmentToRemove[j]);\r\n        }\r\n        for(j=0;j<assignmentToAdd.length;j++){\r\n            resourceInstance.assign(0, assignmentToAdd[j]);\r\n        }\r\n        this.calculateTeamMotivation()\r\n    }\r\n}\r\n\r\n/**\r\n * Check 'active' value in each tasks (from list 'tasks')\r\n * Activate and deactivate tasks according with its variables and if a resource work on.\r\n */\r\nfunction checkTasksState(){\r\n    var i, j, k, gm = self.getGameModel(), listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskInstance,\r\n    newWeek = VariableDescriptorFacade.findByName(gm, 'week').getInstance(self), inProgress = false,\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance, assignment,\r\n    newclientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self);\r\n    for(i=0; i<listTasks.items.size();i++){\r\n        inProgress = false;\r\n        taskInstance = listTasks.items.get(i).getInstance(self);\r\n        for(j=0; j<listResources.items.size();j++){\r\n            resourceInstance = listResources.items.get(j).getInstance(self);\r\n            if(resourceInstance.getActive() == true){\r\n                for(k=0; k< resourceInstance.getAssignments().size();k++){\r\n                    assignment = resourceInstance.getAssignments().get(k);\r\n                    if(assignment.getTaskDescriptorId() == taskInstance.getDescriptorId() && taskInstance.getActive() == true){\r\n                        inProgress = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if(inProgress ||\r\n            (newWeek.getValue() >= taskInstance.getProperty('appearAtWeek') &&\r\n            newWeek.getValue() < taskInstance.getProperty('disappearAtWeek') &&\r\n            newclientsSatisfaction.getValue() >= taskInstance.getProperty('clientSatisfactionMinToAppear') &&\r\n            newclientsSatisfaction.getValue() <= taskInstance.getProperty('clientSatisfactionMaxToAppear') &&\r\n            taskInstance.getDuration() > 0\r\n    )\r\n    ){\r\n            taskInstance.setActive(true);\r\n        }\r\n        else{\r\n            taskInstance.setActive(false);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Decreases current budget value by the sum of all salary of actives resources\r\n */\r\nfunction payResources(){\r\n    var i, gm = self.getGameModel(),\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n    budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),\r\n    budgetInstance = budgetDescriptor.getInstance(self),\r\n    resourceInstance,\r\n    sumSalary = 0;\r\n    for(i=0;i<listResources.items.size();i++){\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        if(resourceInstance.getActive() == true){\r\n            sumSalary+=parseInt(resourceInstance.getProperty('salary'));\r\n        }\r\n    }\r\n    budgetInstance.setValue(budgetInstance.getValue()-sumSalary);\r\n}\r\n\r\n/**\r\n * Remove all assignements of resources (from list of tasks and list of absence) which are not 'active'.\r\n */\r\nfunction removeDeactivatedAssignements(){\r\n    var i, j, k, assignments = new Array(), assignment, gm = self.getGameModel(), resourceInstance,\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n    listTasksObjects = this.getTasksAndAbsences(), taskObjectInstance;\r\n    for(i=0; i<listResources.items.size(); i++){\r\n        assignments.length = 0;\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        for(j=0; j<resourceInstance.getAssignments().size(); j++){\r\n            assignment = resourceInstance.getAssignments().get(j);\r\n            for(k=0; k<listTasksObjects.length; k++){\r\n                taskObjectInstance = listTasksObjects[k].getInstance(self);\r\n                if(assignment.getTaskDescriptorId() == taskObjectInstance.getDescriptorId() && taskObjectInstance.getActive() == false){\r\n                    assignments.push(assignment);\r\n                }\r\n            }\r\n        }\r\n        for(j=0; j<assignments.length; j++){\r\n            resourceInstance.getAssignments().remove(assignments[j]);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * @return a Array of all tasks comming from list of task and list of absences)\r\n */\r\nfunction getTasksAndAbsences(){\r\n    var i, taskObjects = new Array(), gm = self.getGameModel(),\r\n    listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'),\r\n    listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');\r\n    for(i=0; i<listTasks.items.size(); i++){\r\n        taskObjects.push(listTasks.items.get(i));\r\n    }\r\n    for(i=0; i<listAbsences.items.size(); i++){\r\n        taskObjects.push(listAbsences.items.get(i));\r\n    }\r\n    return taskObjects;\r\n}\r\n\r\n/**\r\n * for each active and not absent resource, check its moral.\r\n * If the moral value is low enough, give it a absence.\r\n * Recalculate the teamMotivation.\r\n */\r\nfunction checkMoral(){\r\n    var i, j, k, moral, randomNumber, absent = false, resourceDescriptor, resourceInstance,\r\n    gm = self.getGameModel(), listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'),\r\n    absenceInstance, listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    for(i=0; i<listResources.items.size(); i++){\r\n        resourceDescriptor = listResources.items.get(i);\r\n        resourceInstance = resourceDescriptor.getInstance(self);\r\n        for(j=0; j<listAbsences.items.size(); j++){\r\n            absenceInstance = listAbsences.items.get(j).getInstance(self);\r\n            if(absenceInstance.getActive() == true){\r\n                for(k=0; k<resourceInstance.getAssignments().size(); k++){\r\n                    if(resourceInstance.getAssignments().get(k).getTaskDescriptorId() == absenceInstance.getDescriptorId() || !resourceInstance.getActive()){\r\n                        absent = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if(!absent){\r\n            moral = resourceInstance.getMoral();\r\n            randomNumber = Math.random();\r\n            switch(true){\r\n                case moral<10 :\r\n                    if(randomNumber<0.33){\r\n                        this.sendMessage('Changement de départeemnt', 'Bonjour,<br /> Je vous informe que ma lettre de démission est sur votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère changer de team avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));\r\n                        resourceInstance.setActive(false);\r\n                    }\r\n                    else{\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor,2);\r\n                    }\r\n                    break;\r\n                case moral<20 :\r\n                    if(randomNumber<0.66){\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor,2);\r\n                    }\r\n                    break;\r\n                case moral<30 :\r\n                    if(randomNumber<0.33){\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien très bien, je crois que je tombe malade. Je préfère rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />'+resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor,1);\r\n                    }\r\n                    break;\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Calculate the current team motivation\r\n * firste, do the average of all moral value of resources.\r\n * then make an average between this value and the worst moral value.\r\n * set the 'teamMotivation' value with this new value.\r\n */\r\nfunction calculateTeamMotivation(){\r\n    var i, sumMotivation = 0, gm = self.getGameModel(), activeResources = 0, moral,\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources'), worstMoralValue = 100,\r\n    teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self);\r\n    for(i=0; i<listResources.items.size(); i++){\r\n        if(listResources.items.get(i).getInstance(self).getActive() == true){\r\n            moral = parseInt(listResources.items.get(i).getInstance(self).getMoral())\r\n            sumMotivation += moral;\r\n            activeResources++;\r\n            if(moral<worstMoralValue) worstMoralValue = moral;\r\n        }\r\n    }\r\n    teamMotivation.value = Math.round(((Math.round(sumMotivation/activeResources)+worstMoralValue)/2));\r\n}\r\n\r\n\r\n/**\r\n * Set the 'LeadershipLevel' value for each active resource.\r\n */\r\nfunction checkLeadershipLevel(){\r\n    var i, gm = self.getGameModel(), resourceInstance, newLeadershipLevel, leadershipPoints,\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n    weekMaxValue = parseInt(VariableDescriptorFacade.findByName(gm, 'week').getMaxValue()),\r\n    pointsMinToLlvl2 = 10*(weekMaxValue-1) + 75,\r\n    pointsMinToLlvl3 = 15*(weekMaxValue-1) + 85;\r\n    for(i=0; i<listResources.items.size(); i++){\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        if(resourceInstance.getActive() == true){\r\n            leadershipPoints = parseInt(resourceInstance.getConfidence()) + parseInt(resourceInstance.getProperty('totalExperienceGained'));\r\n            switch(true){\r\n                case leadershipPoints>=pointsMinToLlvl2 && leadershipPoints<pointsMinToLlvl3 :\r\n                    newLeadershipLevel = 2\r\n                    break;\r\n                case leadershipPoints >= pointsMinToLlvl3 :\r\n                    newLeadershipLevel = 3;\r\n                    break;\r\n                default :\r\n                    newLeadershipLevel = 1;\r\n            }\r\n            resourceInstance.setProperty('leadershipLevel', newLeadershipLevel);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * send an in-game message with the current score to the player.\r\n */\r\nfunction sendScore(){\r\n    var content = new Array(), oldScore, newScore;\r\n    oldScore = VariableDescriptorFacade.findByName(self.getGameModel(), 'score').getInstance(self).getValue(),\r\n    newScore = this.calculateScore();\r\n    content.push('Bonjour, <br />');\r\n    content.push('Comme chaque semaine, voici le score de votre entreprise.');\r\n    content.push('<br />');\r\n    content.push('Votre score la semaine est de  : ');\r\n    content.push(newScore);\r\n    content.push('<br />');\r\n    if(oldScore<=newScore){\r\n        content.push('Vous avez donc gagné ');\r\n        content.push(newScore-oldScore);\r\n    }\r\n    else{\r\n        content.push('Vous avez donc perdu ');\r\n        content.push(oldScore-newScore);\r\n    }\r\n    content.push(' points depuis la dernière semaine.');\r\n    content.push('<br /><br />');\r\n    content.push('Nous vous rappelons que votre score est calculé à partir de votre budget actuel, de votre taux de satisfaction clientèle ainsi sur le moral de votre personnel.');\r\n    content.push('<br /><br />');\r\n    content.push('A la semaine prochaine.');\r\n    content.push('<br />');\r\n    content.push('Team classement des entreprises');\r\n    this.sendMessage('Classement des entreprises', content.join(''), 'Top entreprises')\r\n}\r\n\r\n/**\r\n * @return Integer score, the current player's score\r\n */\r\nfunction calculateScore(){\r\n    var gm = self.getGameModel(), teamMotivation, budget, clientSatisfaction, score,\r\n    punderationBudget = 0.2,\r\n    punderationMotivation = 0.45,\r\n    punderationSatisfaction = 0.35;\r\n    teamMotivation = parseInt(VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self).getValue());\r\n    budget = parseInt(VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self).getValue());\r\n    clientSatisfaction = parseInt(VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self).getValue());\r\n    score =  Math.round(budget/50*punderationBudget + teamMotivation*20*punderationMotivation + clientSatisfaction*20*punderationSatisfaction);\r\n    VariableDescriptorFacade.findByName(gm, 'score').getInstance(self).setValue(score);\r\n    return score;\r\n}\r\n\r\n/**\r\n * Assign a task 'sick' to resource wich have a duration egal to the given duration\r\n * @param Integer resourceDescriptorId, the resourceDescriptor to sicken\r\n * @param Integer duration the duration of the sickness.\r\n */\r\nfunction sickenResource(resourceDescriptor, duration){\r\n    var i, resInstance, taskDescriptor, gm=self.getGameModel(),\r\n    listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');\r\n    resInstance = resourceDescriptor.getInstance(self);\r\n    for(i=0; i<listAbsences.items.size(); i++){\r\n        if(listAbsences.items.get(i).getInstance(self).getDuration() == duration){\r\n            taskDescriptor = listAbsences.items.get(i);\r\n            break;\r\n        }\r\n    }\r\n    if(resInstance != null){\r\n        resInstance.assign(0, taskDescriptor);\r\n    }\r\n    else{\r\n        println('unknow id of resourceDescriptor in function sickenResource');\r\n    }\r\n}\r\n\r\n/**\r\n * assign the given task at the given resource\r\n * if the given resource have already a assigned task, this new assignement will replace the old one.\r\n * @param Integer resourceDescriptorId, the id of resourceDescriptors to assign\r\n * @param Integer taskDescriptorId, the id of task to assign\r\n */\r\nfunction assignTask(resourceDescriptorId, taskDescriptorId){\r\n    var i, j, resInstance, taskDescriptor, gm=self.getGameModel(),\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n    listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');\r\n    //Search resource\r\n    for(i=0; i<listResources.items.size(); i++){\r\n        if(resourceDescriptorId == listResources.items.get(i).getId()){\r\n            resInstance = listResources.items.get(i).getInstance(self);\r\n        }\r\n    }\r\n    if(resInstance == null) return;\r\n    //Search task\r\n    for(i=0; i<listTasks.items.size(); i++){\r\n        if(taskDescriptorId == listTasks.items.get(i).getId()){\r\n            taskDescriptor = listTasks.items.get(i);\r\n        }\r\n        //remove old previous assigned task\r\n        for(j=0; j<resInstance.getAssignments().size(); j++){\r\n            if(resInstance.getAssignments().get(j).getTaskDescriptorId() == listTasks.items.get(i).getId() && listTasks.items.get(i).getInstance(self).getActive() == true){\r\n                resInstance.getAssignments().remove(j);\r\n            }\r\n        }\r\n    }\r\n    if(taskDescriptor == null) return;\r\n    // assign task to resource\r\n    resInstance.assign(0, taskDescriptor);\r\n}\r\n\r\n/**\r\n * get the specified wegas bean.\r\n * @param String name, the name of the bean\r\n * @return the wanted bean or null\r\n */\r\nfunction lookupBean(name){\r\n    var ctx = new InitialContext();\r\n    return ctx.lookup('java:module/'+name);\r\n}\r\n\r\n/**\r\n * Send a message to the current player.\r\n * @param String subject, the subject of the message.\r\n * @param String message, the content of the message.\r\n * @param String from, the sender of the message.\r\n */\r\nfunction sendMessage(subject, content, from){\r\n    var EF = lookupBean('InGameMailFacade');\r\n    if(EF != null){\r\n        EF.send(self, subject, content, from);\r\n    }\r\n    else{\r\n        println('Bean InGameMailFacade does not exist, unable to send in-game message: '+subject);\r\n    }\r\n}\r\n\r\n/**\r\n * Reset the values specific to the current scenario's dialogues.\r\n * Must be called weekly.\r\n */\r\nfunction resetDialogueValues(){\r\n    var i, gm=self.getGameModel(), resourceInstance,\r\n    listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    for(i=0; i<listResources.items.size(); i++){\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        resourceInstance.setProperty('isAdvised', false);\r\n        resourceInstance.setProperty('isConsidered', false);\r\n        resourceInstance.setProperty('bonusInducement', 0);\r\n    }\r\n}\r\n\r\n/**\r\n * initiate the game'scenario\r\n */\r\nfunction doIntroduction(){\r\n    var gm = self.getGameModel(),\r\n    budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),\r\n    budgetvalue = budgetDescriptor.getInstance(self).getValue(), mail = new Array();\r\n    mail.push('Bonjour');\r\n    mail.push('<br /><br />');\r\n    mail.push('Je vous félicite pour votre promotion. Sauf erreur de ma part, vous ne connissez pas encore avec vos équipiers. Aussi vous ais-je remis les dossiers de chaque personne dont vous avez la charge. Je sais que vous en ferai bon usage.');\r\n    mail.push('<br /><br />');\r\n    mail.push('La concurrence est rude, je vous demanderais donc de ne pas trop tarder avant de prendre en main votre service. Si vos résultats sont bons, les mandats deviendront de plus en plus intéressants. Vous avez également la possibilité de décrocher une promotion. Si cela devait arriver, je pense donner la responsabilité de votre équipe à un de ses membres actuels.');\r\n    mail.push('<br /><br />');\r\n    mail.push('Je vous souhaite le meilleur départ possible.');\r\n    mail.push('<br />');\r\n    mail.push('Daniel.');\r\n    this.sendMessage('Promotion au niveau de cadre.', mail.join(''), 'Daniel Müster.');\r\n    this.finishCurrentWeek();\r\n    budgetDescriptor.getInstance(self).setValue(budgetvalue);\r\n}\r\n\r\n\r\n/**\r\n * set limits (max and min) for several values.\r\n * General values to limit :\r\n * - actions\r\n * - teamMotivation\r\n * - clientsSatisfaction\r\n *\r\n * Ressource's value to limit :\r\n * - moral\r\n * - confidence\r\n * - frankness\r\n * - lastWorkQuality\r\n * - each skillset's value\r\n */\r\nfunction limitValues(){\r\n    var i, j, value, valueInst, valueDescr, gm=self.getGameModel(), skillsets,\r\n    skillKey, skillValue, listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    //actions\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'actions')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if(valueInst.getValue() > valueDescr.getMaxValue()) valueInst.setValue(valueDescr.getMaxValue());\r\n    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());\r\n    //teamMotivation\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'teamMotivation')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if(valueInst.getValue() > valueDescr.getMaxValue()) valueInst.setValue(valueDescr.getMaxValue());\r\n    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());\r\n    //clientsSatisfaction\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if(valueInst.getValue() > valueDescr.getMaxValue()) valueInst.setValue(valueDescr.getMaxValue());\r\n    if(valueInst.getValue() < valueDescr.getMinValue()) valueInst.setValue(valueDescr.getMinValue());\r\n    //ressources\r\n    for(i=0; i<listResources.items.size(); i++){\r\n        valueDescr = listResources.items.get(i);\r\n        valueInst = valueDescr.getInstance(self);\r\n        //moral\r\n        value = parseInt(valueInst.getMoral());\r\n        if(value > 100) valueInst.setMoral(100);\r\n        if(value < 0) valueInst.setMoral(0);\r\n        //moral\r\n        value = parseInt(valueInst.getConfidence());\r\n        if(value > 100) valueInst.setConfidence(100);\r\n        if(value < 0) valueInst.setConfidence(0);\r\n        //frankness\r\n        value = parseInt(valueInst.getProperty('frankness'));\r\n        if(value > 100) valueInst.setProperty('frankness', 100);\r\n        if(value < 0) valueInst.setProperty('frankness', 0);\r\n        //lastWorkQuality\r\n        value = parseInt(valueInst.getProperty('lastWorkQuality'));\r\n        if(value > 100) valueInst.setProperty('lastWorkQuality', 100);\r\n        if(value < 0) valueInst.setProperty('lastWorkQuality', 0);\r\n        //skillset\r\n        skillsets = valueInst.getSkillset();\r\n        for (j=0; j<skillsets.size(); j++){\r\n            skillKey = skillsets.keySet().toArray()[j];\r\n            skillValue = parseInt(skillsets.get(skillKey));\r\n            if(skillValue > 100) valueInst.setSkillset(skillKey, 100);\r\n            if(skillValue < 0) valueInst.setSkillset(skillKey, 0);\r\n        }\r\n    }\r\n}\r\n"
     }
 }

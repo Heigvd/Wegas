@@ -138,7 +138,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
                         'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode': 'false'
+                        'Managed-Mode': 'true'
                     },
                     cfg: {
                         method: "POST",
@@ -316,8 +316,8 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * change the current widget to go on the "dialogue" widget.
          */
         goToFinalPage: function(){
-            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
-            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week"),
+            targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue();
