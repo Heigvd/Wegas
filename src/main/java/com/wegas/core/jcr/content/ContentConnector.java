@@ -8,15 +8,13 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.content;
+package com.wegas.core.jcr.content;
 
+import com.wegas.core.jcr.JackrabbitConnector;
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.ResourceBundle;
 import javax.jcr.*;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import org.slf4j.LoggerFactory;
 
 /**
