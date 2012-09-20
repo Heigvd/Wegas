@@ -140,8 +140,8 @@ body{
     background-color:transparent;
     height:40px;
     width:40px;
-    font-size: 0;
     color: rgba(0,0,0,0);
+    vertical-align: top;
 }
 .leaderway-menu .button:hover{
     box-shadow:0px 0px 0px 1px rgba(0, 0, 0, 0.251) inset, 0px 2px 0px rgba(255, 255, 255, 0.298) inset, 0px 1px 2px rgba(0, 0, 0, 0.149);
@@ -164,6 +164,11 @@ body{
 
 .leaderway-menu .menu-email{
     background-image:url(/Wegas/wegas-leaderway/images/email.png);
+}
+
+.leaderway-menu .menu-email .unread-count{
+    color:black;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .leaderway-menu .menu-score{
@@ -424,9 +429,10 @@ body{
     border:outset 1px #6F89A2;
     border-radius: 5px;
     background-color: white;
-    width: 80px;
-    height:80px;
+    width: 100px;
+    height:60px;
     overflow: hidden;
+    vertical-align: top;
 }
 
 .leaderway-folder .folder .actions .action:hover{

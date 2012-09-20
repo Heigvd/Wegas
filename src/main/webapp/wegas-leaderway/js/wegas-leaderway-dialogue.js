@@ -407,6 +407,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         syncUI: function () {
             var cb = this.get(CONTENTBOX);
+            if(!this.currentDialogue){this.setCurrentDialogue();}
             if(!this.isDisplayingAResponse){
                 this.clear(cb);
                 this.createChart(this.resourceDescriptor);

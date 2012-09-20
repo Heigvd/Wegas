@@ -462,9 +462,9 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
                 targetPageLoader.once("widgetChange", function(e){
-                    e.newVal.setCurrentDialogue();                    
+                    this.set("pageId", 7)                 
                 });
-                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
+               // setTimeout(function(){targetPageLoader.set("pageId", 7)}, 5000);    
             }
         }
 

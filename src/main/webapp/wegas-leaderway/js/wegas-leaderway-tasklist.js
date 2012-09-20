@@ -138,7 +138,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
                         'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode': 'false'
+                        'Managed-Mode': 'true'
                     },
                     cfg: {
                         method: "POST",

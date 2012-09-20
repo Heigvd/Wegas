@@ -204,7 +204,7 @@
             },
             "transitions" : [{
                 "@class" : "DialogueTransition",
-                "actionText" : "Merci !",
+                "actionText" : "Suite",
                 "nextStateId" : 6
             }],
             "editorPosition" : {
