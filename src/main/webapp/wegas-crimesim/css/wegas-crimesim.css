@@ -293,7 +293,9 @@
     padding: 6px 0px;
     width:100%;
 }
-
+.wegas-crimesim .yui3-tabview-panel{
+    padding: 0;
+}
 .wegas-mcqtabview {
     line-height: normal;
 }
@@ -336,7 +338,7 @@
     border:none;
 }
 .wegas-mcqtabview .reply .name {
-    /*font-weight: bold;*/
+    font-weight: bold;
 }
 .wegas-mcqtabview .reply content {
     /*font-weight: bold;*/
