@@ -8,11 +8,12 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.content;
+package com.wegas.core.jcr;
 
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -81,7 +82,12 @@ public class JackrabbitConnector {
         }
     }
 
-    protected javax.jcr.Repository getRepo() {
+    public javax.jcr.Repository getRepo() {
         return JackrabbitConnector.repo;
+    }
+
+    @PreDestroy
+    private void close() {
+        JackrabbitConnector.repo.shutdown();
     }
 }
