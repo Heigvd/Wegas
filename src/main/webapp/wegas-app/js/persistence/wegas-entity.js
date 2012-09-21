@@ -579,7 +579,7 @@ YUI.add('wegas-entity', function (Y) {
                 type: "string",
                 optional: true,
                 _inputex: {
-                    label: "Alias"
+                    label: "Script Alias"
                 },
                 validator: function ( s ){
                     return s === null || Y.Lang.isString( s );
