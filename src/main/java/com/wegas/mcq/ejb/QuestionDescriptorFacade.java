@@ -17,6 +17,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.exception.WegasException;
 import com.wegas.mcq.persistence.*;
 import java.util.HashMap;
 import javax.ejb.EJB;
@@ -69,7 +70,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param time
      * @throws ScriptException
      */
-    public void setCurrentTime(ListDescriptor questionList, Player player, Long time) throws ScriptException {
+    public void setCurrentTime(ListDescriptor questionList, Player player, Long time) throws ScriptException, WegasException {
         for (VariableDescriptor question : questionList.getItems()) {
             this.setCurrentTime((QuestionDescriptor) question, player, time);
         }
@@ -82,7 +83,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param time
      * @throws ScriptException
      */
-    public void setCurrentTime(QuestionDescriptor question, Player player, Long time) throws ScriptException {
+    public void setCurrentTime(QuestionDescriptor question, Player player, Long time) throws ScriptException, WegasException {
         QuestionInstance questionInstance = (QuestionInstance) question.getInstance(player);
         for (Reply reply : questionInstance.getReplies()) {
             //logger.warn(reply.getStartTime()+"*"+reply.getChoiceDescriptor().getDuration()+"*"+time);
@@ -99,7 +100,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param startTime
      * @return
      */
-    public Reply selectChoice(Long choiceId, Player player, Long startTime) {
+    public Reply selectChoice(Long choiceId, Player player, Long startTime) throws WegasException {
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
 
         Query findListDescriptorByChildId = em.createNamedQuery("findListDescriptorByChildId");
@@ -126,14 +127,18 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param startTime
      * @return
      */
-    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
+    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) throws WegasException {
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
 
-    private Result getCurrentResult(ChoiceInstance choice) {
+    private Result getCurrentResult(ChoiceInstance choice) throws WegasException {
         Result r = choice.getCurrentResult();
         if (r == null) {
-            r = ( (ChoiceDescriptor) choice.getDescriptor() ).getResults().get(0);
+            try {
+                r = ((ChoiceDescriptor) choice.getDescriptor()).getResults().get(0);
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                throw new WegasException("No result found for choice [" + ((ChoiceDescriptor) choice.getDescriptor()).getEditorLabel() + "]", ex);
+            }
         }
         return r;
     }
@@ -155,7 +160,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param reply
      * @throws ScriptException
      */
-    public void validateReply(Player player, Reply reply) throws ScriptException {
+    public void validateReply(Player player, Reply reply) throws ScriptException, WegasException {
         HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
         ChoiceInstance choiceInstance = reply.getResult().getChoiceDescriptor().getInstance(player);
 
@@ -174,7 +179,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param replyVariableInstanceId
      * @throws ScriptException
      */
-    public void validateReply(Player player, Long replyVariableInstanceId) throws ScriptException {
+    public void validateReply(Player player, Long replyVariableInstanceId) throws ScriptException, WegasException {
         this.validateReply(player, this.replyFacade.find(replyVariableInstanceId));
     }
 
@@ -184,7 +189,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param replyVariableInstanceId
      * @throws ScriptException
      */
-    public void validateReply(Long playerId, Long replyVariableInstanceId) throws ScriptException {
+    public void validateReply(Long playerId, Long replyVariableInstanceId) throws ScriptException, WegasException {
         this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
     }
 
