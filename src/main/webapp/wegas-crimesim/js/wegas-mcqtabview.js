@@ -45,9 +45,12 @@ YUI.add('wegas-mcqtabview', function (Y) {
             this.tabView.after("selectionChange", this.onTabSelected, this)
 
             this.handlers.response = this.dataSource.after("response", this.syncUI, this);
+            this.handlers.error = this.dataSource.after("error", function(e){
+                this.showMessage("error", e.response.results.message);
+            }, this);
             this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
-
+        
         syncUI: function () {
             var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel, tab, cChoices, choiceDescriptor, reply,
             questions = this.dataSource.rest.find( 'name', "questions" ),
