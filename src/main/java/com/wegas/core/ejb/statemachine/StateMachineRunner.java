@@ -19,6 +19,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class StateMachineRunner implements Serializable {
     public StateMachineRunner() {
     }
 
-    public void entityUpdateListener(@Observes RequestManager.PlayerAction playerAction) {
+    public void entityUpdateListener(@Observes RequestManager.PlayerAction playerAction) throws WegasException {
         if (run) {
             logger.info("Running, received changed {}", requestManager.getUpdatedInstances());
             return;

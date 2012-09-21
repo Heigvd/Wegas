@@ -11,6 +11,7 @@ package com.wegas.mcq.rest;
 
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.rest.AbstractRestController;
+import com.wegas.exception.WegasException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
@@ -53,7 +54,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
     @Produces(MediaType.APPLICATION_JSON)
     public Response selectChoice(
             @PathParam("playerId") Long playerId,
-            @PathParam("choiceId") Long choiceId) throws ScriptException {
+            @PathParam("choiceId") Long choiceId) throws ScriptException, WegasException {
 
         Reply reply =
                 questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
@@ -94,7 +95,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
     public QuestionInstance selectChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId,
-            @PathParam("startTime") Long startTime) {
+            @PathParam("startTime") Long startTime) throws WegasException {
 
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
         return reply.getQuestionInstance();
