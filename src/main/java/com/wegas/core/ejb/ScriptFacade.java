@@ -135,8 +135,8 @@ public class ScriptFacade {
             try {
                 result = engine.eval(script);
             } catch (ScriptException ex) {
-                logger.warn("{}\n{}", ex.getMessage(), script);
-                throw ex;
+                logger.warn("{} in\n{}", ex.getMessage(), script);
+                throw new ScriptException(ex.getMessage(), "\"" + script + "\"", ex.getLineNumber());
             }
 
             em.flush();                                                             // Commit the transaction
@@ -159,8 +159,8 @@ public class ScriptFacade {
             try {
                 evt.getEngine().eval(arg.getValue());
             } catch (ScriptException ex) {
-                logger.warn("{}\n{}", ex.getMessage(), arg.getValue());
-                throw ex;
+                logger.warn("{} in\n{}", ex.getMessage(), arg.getValue());
+                throw new ScriptException(ex.getMessage(), "\"" + arg.getValue() + "\"", ex.getLineNumber());
             }
         }
 

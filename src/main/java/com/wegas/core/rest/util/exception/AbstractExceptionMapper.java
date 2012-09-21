@@ -45,8 +45,13 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof EJBException) {
             return processException(((EJBException) exception).getCausedByException());
 
-        } else if (exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK
-                || exception instanceof javax.script.ScriptException) {
+        } else if (exception instanceof javax.script.ScriptException) {
+            javax.script.ScriptException scriptException = (javax.script.ScriptException) exception;
+            return Response.status(
+                    Response.Status.BAD_REQUEST).entity(
+                    new ExceptionWrapper("400", scriptException.getClass(), scriptException.getLocalizedMessage())).build();
+
+        } else if (exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK) {
             return processException(exception.getCause());
 
         } else if (exception instanceof DatabaseException) {
