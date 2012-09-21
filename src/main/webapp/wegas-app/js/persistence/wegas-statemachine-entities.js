@@ -346,6 +346,7 @@ Y.add("wegas-statemachine-entities", function(Y){
             },
             oneShot: {
                 type: 'boolean',
+                value: true,
                 _inputex: {
                     label: 'Only once'
                 }

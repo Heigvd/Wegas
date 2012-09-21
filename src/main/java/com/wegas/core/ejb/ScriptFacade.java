@@ -14,8 +14,10 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.exception.WegasException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,14 +26,15 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import org.apache.shiro.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +92,7 @@ public class ScriptFacade {
      * @return
      * @throws ScriptException
      */
-    public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         while (scripts.remove(null)) {
         }                                           //remove null scripts
         if (scripts.isEmpty()) {
@@ -107,35 +110,38 @@ public class ScriptFacade {
         // Invocable invocableEngine = (Invocable) engine;
 
         engine.put("self", requestManager.getPlayer());                         // Inject current player
-
-        engineInvocationEvent.fire(
-                new EngineInvocationEvent(requestManager.getPlayer(), engine)); // Fires the engine invocation event, to allow extensions
-
-        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
-            engine.put(arg.getKey(), arg.getValue());
-        }
-
-        // @fixme test the most performant version
         Object result = null;
-        String script = "";
-        for (Script s : scripts) {                                              // Evaluate each script
-            try {
-                script += s.getContent() + ";";
-            } catch (NullPointerException ex) {
-                //script does not exist
-            }
-            //result = engine.eval(s.getContent());
-        }
         try {
-            result = engine.eval(script);
-        } catch (ScriptException ex) {
-            logger.warn("{}\n{}", ex.getMessage(), script);
-            throw ex;
+            engineInvocationEvent.fire(
+                    new EngineInvocationEvent(requestManager.getPlayer(), engine)); // Fires the engine invocation event, to allow extensions
+        } catch (ObserverException ex) {
+            throw (WegasException) ex.getCause();
+        } finally {                                                             //Try finishing evaluation
+            for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
+                engine.put(arg.getKey(), arg.getValue());
+            }
+
+            // @fixme test the most performant version
+
+            String script = "";
+            for (Script s : scripts) {                                              // Evaluate each script
+                try {
+                    script += s.getContent() + ";";
+                } catch (NullPointerException ex) {
+                    //script does not exist
+                }
+                //result = engine.eval(s.getContent());
+            }
+            try {
+                result = engine.eval(script);
+            } catch (ScriptException ex) {
+                logger.warn("{} in\n{}", ex.getMessage(), script);
+                throw new ScriptException(ex.getMessage(), "\"" + script + "\"", ex.getLineNumber());
+            }
+
+            em.flush();                                                             // Commit the transaction
+            requestManager.commit();
         }
-
-        em.flush();                                                             // Commit the transaction
-        requestManager.commit();
-
         return result;
     }
 
@@ -145,58 +151,74 @@ public class ScriptFacade {
      *
      * @param messageEvent
      */
-    public void onEngineInstantiation(@Observes ScriptFacade.EngineInvocationEvent evt) throws ScriptException {
+    public void onEngineInstantiation(@Observes ScriptFacade.EngineInvocationEvent evt) throws ScriptException, WegasException {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
         evt.getEngine().eval("importPackage(com.wegas.core.script)");           // Inject factory object
-
+        List<String> errorVariable = new ArrayList<>();
         for (Entry<String, String> arg : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) {        // Inject the arguments
             try {
                 evt.getEngine().eval(arg.getValue());
             } catch (ScriptException ex) {
-                logger.warn("{}\n{}", ex.getMessage(), arg.getValue());
-                throw ex;
+                logger.warn("{} in\n{}", ex.getMessage(), arg.getValue());
+                throw new ScriptException(ex.getMessage(), "\"" + arg.getValue() + "\"", ex.getLineNumber());
             }
         }
 
         for (VariableDescriptor vd : evt.getPlayer().getGameModel().getVariableDescriptors()) { // We inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());
-            evt.getEngine().put(vd.getName(), vi);
+            try {
+                evt.getEngine().put(vd.getName(), vi);
+            } catch (IllegalArgumentException ex) {
+                errorVariable.add(vd.getEditorLabel());
+
+            }
+        }
+        if (errorVariable.size() > 0) {
+            StringBuilder allVars = new StringBuilder();
+            Iterator<String> si = errorVariable.iterator();
+            while (si.hasNext()) {
+                allVars.append(si.next());
+                if (si.hasNext()) {
+                    allVars.append(",");
+                }
+            }
+            throw new WegasException("Missing name for Variable [" + allVars.toString() + "]");
         }
     }
 
     // *** Sugar *** //
-    public Object eval(List<Script> scripts) throws ScriptException {
+    public Object eval(List<Script> scripts) throws ScriptException, WegasException {
         return this.eval(scripts, new HashMap<String, AbstractEntity>());
     }
 
-    public Object eval(Script s, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(Script s, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         List<Script> scripts = new ArrayList<>();
         scripts.add(s);
         return this.eval(scripts, arguments);
     }
 
-    public Object eval(Player p, Script s) throws ScriptException {
+    public Object eval(Player p, Script s) throws ScriptException, WegasException {
         requestManager.setPlayer(p);
         return this.eval(s);
     }
 
-    public Object eval(Player p, List<Script> s) throws ScriptException {
+    public Object eval(Player p, List<Script> s) throws ScriptException, WegasException {
         requestManager.setPlayer(p);
         return this.eval(s);
     }
 
-    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         requestManager.setPlayer(player);
         return this.eval(s, arguments);
     }
 
-    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException {
+    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         requestManager.setPlayer(player);                                       // Set up request's execution context
         return this.eval(scripts, arguments);
     }
 
     public Object eval(Long playerId, Script s)
-            throws ScriptException {
+            throws ScriptException, WegasException {
         requestManager.setPlayer(playerEntityFacade.find(playerId));
         return this.eval(s);
     }
@@ -208,7 +230,7 @@ public class ScriptFacade {
      * @return
      * @throws ScriptException
      */
-    public Object eval(Script s) throws ScriptException {
+    public Object eval(Script s) throws ScriptException, WegasException {
         return this.eval(s, new HashMap<String, AbstractEntity>());
     }
 

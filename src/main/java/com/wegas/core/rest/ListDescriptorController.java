@@ -9,10 +9,14 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -44,6 +48,18 @@ public class ListDescriptorController extends AbstractRestController<VariableDes
     @Produces(MediaType.APPLICATION_JSON)
     public ListDescriptor create(@PathParam(value = "variableDescriptorId") Long variableDescriptorId, VariableDescriptor entity) {
         ListDescriptor listDescriptor = (ListDescriptor) descriptorFacade.find(variableDescriptorId);
+        Iterator<VariableDescriptor> iterator = listDescriptor.getItems().iterator();
+        List<String> usedNames = new ArrayList<>();
+        while(iterator.hasNext()){
+            usedNames.add(iterator.next().getName());
+        }
+        if (entity.getName().isEmpty() || entity.getName() == null) {
+            entity.setName(Helper.buildUniqueName(entity.getEditorLabel(), usedNames));
+        }
+        //build a unique name
+        if (usedNames.contains(entity.getName())) {
+            entity.setName(Helper.buildUniqueName(entity.getName(), usedNames));
+        }
         listDescriptor.addItem(entity);
         return listDescriptor;
     }

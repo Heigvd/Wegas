@@ -35,6 +35,9 @@ YUI.add('wegas-editor-treeview', function (Y) {
         bindUI: function () {
             if ( this.get( "dataSource" ) ) {
                 this.get( "dataSource" ).after( "response", this.syncUI, this );// Listen updates on the target datasource
+                this.get( "dataSource" ).after("error", function(e){            //GLOBAL error message
+                    this.showMessage("error", e.response.results.message);
+                }, this);
             }
             this.treeView.on( "*:click", this.onTreeViewClick, this );
 

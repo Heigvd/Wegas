@@ -18,6 +18,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.ejb.statemachine.StateMachineDescriptorFacade;
+import com.wegas.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;
 import java.util.List;
 import javax.ejb.EJB;
@@ -80,7 +81,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId,
             @PathParam("transitionId") Long transitionId)
-            throws ScriptException {
+            throws ScriptException, WegasException {
         StateMachineDescriptor stateMachineDescriptorEntity = (StateMachineDescriptor) stateMachineDescriptorFacade.find(stateMachineDescriptorId);
         StateMachineInstance stateMachineInstanceEntity = (StateMachineInstance) stateMachineDescriptorEntity.getInstance(playerFacade.find(playerId));
         State currentState = stateMachineInstanceEntity.getCurrentState();
