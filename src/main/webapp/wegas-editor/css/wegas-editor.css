@@ -596,10 +596,13 @@ img.inputEx-ListField-delButton {
     border: 1px solid #6E6E6E;
     color: white;
     text-shadow: 1px 1px 2px lightgray;
+    position: relative;
 }
 .wegas-systemmessage > div > .close{
     cursor:pointer;
-    float:right;
+    position: absolute;
+    top:7px;
+    right: 7px;
     width:18px;
     height:18px;
     background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;
@@ -613,6 +616,7 @@ img.inputEx-ListField-delButton {
     vertical-align: top;
     margin-top: 15px;
     display: inline-block;
+    white-space: pre-wrap;
 }
 /*.wegas-systemmessage > .success {
     border: 1px solid green;
