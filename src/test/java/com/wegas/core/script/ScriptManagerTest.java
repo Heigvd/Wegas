@@ -17,6 +17,7 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.exception.WegasException;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
 import junit.framework.Assert;
@@ -34,7 +35,7 @@ public class ScriptManagerTest extends AbstractEJBTest {
     final static private String VALUE2 = "test-value2";
 
     @Test
-    public void testEval() throws NamingException, ScriptException {
+    public void testEval() throws NamingException, ScriptException, WegasException {
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
         VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
