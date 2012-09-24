@@ -200,7 +200,7 @@ body{
 /*----------------------------------RHList------------------------------------*/
 /*
 .wegas-hrlist .leaderway-hrlist table{
-    width:100%;
+    width:980px;
 }
 
 .wegas-hrlist .leaderway-hrlist th, #hrlist td{
@@ -248,7 +248,7 @@ body{
     text-align: center;
     overflow-x:auto;
     overflow-y:hidden;
-    width:98%;
+    width:960px;
     height:85px;
 }
 
@@ -274,6 +274,7 @@ body{
 
 /*-----folder-----*/
 .leaderway-folder .folder{
+    width:945px;
     margin:10px;
     padding:5px;
     border:outset 2px #6F89A2;
@@ -416,7 +417,7 @@ body{
 }
 
 .leaderway-folder .folder .actions .actions-list{
-    width:98%;
+    width:960px;
     text-align: center;
     overflow-x: auto;
     overflow-y: hidden;
@@ -441,7 +442,7 @@ body{
 }
 /*---------------------------------tasklist-----------------------------------*/
 .leaderway-tasklist .yui3-datatable-content  table{
-    width:100%;
+    width:980px;
 }
 
 .leaderway-tasklist .yui3-datatable-content  th, #hrlist td{
@@ -479,6 +480,10 @@ body{
     border:none;
 }
 
+.leaderway-tasklist .yui3-datatable-content .selected td{
+    background-color:#FDE092;
+}
+
 .leaderway-tasklist .yui3-datatable-content tr .hidden{
     display:none;
 }
@@ -508,13 +513,13 @@ body{
 }
 
 .leaderway-tasklist .modePicking .footer .buttons{
-    margin:5px;
+    margin:5px 10px 5px 5px;
     float:right;
     width:230px;
 }
 
 .leaderway-tasklist .modePicking .footer .buttons div{
-    display: inline-block;
+    display: block;
     padding: 10px;
     margin-left:20px;
     border:outset 1px #6F89A2;
@@ -529,6 +534,19 @@ body{
     background-color:#BFDAFF;
     cursor:pointer;
 }
+
+.leaderway-tasklist .modePicking .footer .buttons .buttonOK{
+    float:left;
+}
+
+.leaderway-tasklist .modePicking .footer .buttons .buttonCancel{
+    float:right;
+}
+/*------------------------------------Inbox-----------------------------------*/
+.leaderway-inbox{
+    width:980px;
+}
+
 /*------------------------------------Score-----------------------------------*/
 .leaderway-score .scoreTitle{
     font-size: 1.2em;
@@ -573,24 +591,24 @@ body{
 
 
 /*----------------------------------Dialogue----------------------------------*/
- .leaderway-dialogue .pictures{
+.leaderway-dialogue .pictures{
     height: 315px;
     width:980px;
     overflow:hidden;
     z-index: 0;
 }
 
- .leaderway-dialogue .chart{
+.leaderway-dialogue .chart{
     float:right;
     margin-right:25px;
     margin-top:-275px;
 }
 
- .leaderway-dialogue .chart .yui3-categoryaxis{
+.leaderway-dialogue .chart .yui3-categoryaxis{
     display:none;
 }
 
- .leaderway-dialogue .speaker-name{
+.leaderway-dialogue .speaker-name{
     height: 50px;
     width:150px;
     margin: -65px 0 -20px 50px;
@@ -605,8 +623,9 @@ body{
     position:relative;
 }
 
- .leaderway-dialogue .dialogue{
+.leaderway-dialogue .dialogue{
     height: 150px;
+    width:920px;
     margin-top: 0px;
     padding:30px;
     background-color: #DCE5EF;
@@ -617,13 +636,13 @@ body{
     position:relative;
 }
 
- .leaderway-dialogue .dialogue,
- .leaderway-dialogue .speaker-name{
+.leaderway-dialogue .dialogue,
+.leaderway-dialogue .speaker-name{
     font-family:Verdana,sans-serif;
     font-size: 1.3em;
 }
 
- .leaderway-dialogue .dialogue .talk{
+.leaderway-dialogue .dialogue .talk{
     width:65%;
     height: 100%;
     float:left;
@@ -632,7 +651,7 @@ body{
     text-align: justify;
 }
 
- .leaderway-dialogue .dialogue .response{
+.leaderway-dialogue .dialogue .response{
     width:30%;
     height: 100%;
     float:right;
@@ -641,11 +660,11 @@ body{
     padding-left:20px;
 }
 
- .leaderway-dialogue .dialogue .response li{
+.leaderway-dialogue .dialogue .response li{
     margin-bottom:10px;
 }
 
- .leaderway-dialogue .dialogue .response li:hover{
+.leaderway-dialogue .dialogue .response li:hover{
     list-style-image: url(/Wegas/wegas-leaderway/images/fleche.png);
     cursor: pointer;
     font-style: normal;

@@ -25,7 +25,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             this.currentResourceDescriptor = resourceDescriptor;
             this.syncUI();
         },
-
+        
         /**
          * Clear each node created in the renderUI function
          * @param String cb, the widget's contentbox.
@@ -317,6 +317,30 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             selectedRowInformation.setHTML();
             selectedRowInformation.insert("Mandat sélectionné : "+eventContainTask.taskDescriptor.get('name'));
         },
+        
+        /**
+         *
+         */
+        decreaseResourceState: function(){
+            if(!this.currentResourceDescriptor)return;
+                //Decrease moral by 15 and confidence by 10
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    headers:{
+                        'Content-Type': 'application/json; charset=ISO-8859-1',
+                        'Managed-Mode':'true'
+                    },
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify({
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "importPackage(com.wegas.core.script);var i, listRes, resInst;\nlistRes = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '"+this.currentResourceDescriptor.get('name')+"'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
+                        })
+                    }
+                });
+        },
+
 
         // *** Lifecycle Methods *** //
         
@@ -364,6 +388,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
+            
             //bind each resource selector
             this.handlers.push(cb.one('.listResources').delegate('click', function (e) {
                 var i, newResource = null, resourceID = parseInt(e.currentTarget._node.childNodes[0].innerText),
@@ -376,38 +401,23 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 if(newResource == null) newResource = listResourcesDescriptor.get('items')[0];
                 this.setResourceDescriptor(newResource);
             }, '.resourceSelector', this));
+            
             //bind each action 'giveTask' change widget depending to the ATTRS 'taskListPageId'
             this.handlers.push(cb.one('.actions').delegate('click', function (e) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.switchToPickingMode(this.resourceDescriptor, this.folderPageId);
                 },{resourceDescriptor:this.currentResourceDescriptor, folderPageId :  this.get('folderPageId')});
-                //Decrease moral by 15 and confidence by 10
-                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-                    headers:{
-                        'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode':'true'
-                    },
-                    cfg: {
-                        method: "POST",
-                        data: Y.JSON.stringify({
-                            "@class": "Script",
-                            "language": "JavaScript",
-                            "content": "importPackage(com.wegas.core.script);var i, listRes, resInst;\nlistRes = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '"+this.currentResourceDescriptor.get('name')+"'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
-                        })
-                    }
-                });
                 targetPageLoader.set("pageId", this.get('taskListPageId'));
             }, '.giveTask', this));
+            
             //bind each action 'speak' change widget depending to the ATTRS 'dialoguePageId'
             this.handlers.push(cb.one('.actions').delegate('click', function (e) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue(this.resourceDescriptor.getInstance().get('properties').dialogue);
                 },{resourceDescriptor:this.currentResourceDescriptor});
-                // decrease number of actions by 1
-                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({ // decrease number of actions by 1
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
                         'Content-Type': 'application/json; charset=ISO-8859-1',
@@ -461,10 +471,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week"),
             targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
-                targetPageLoader.once("widgetChange", function(e){
-                    this.set("pageId", 7)                 
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.setCurrentDialogue("dialogueFinal");
                 });
-               // setTimeout(function(){targetPageLoader.set("pageId", 7)}, 5000);    
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }
         }
 

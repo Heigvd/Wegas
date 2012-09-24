@@ -116,7 +116,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
             targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
                 targetPageLoader.once("widgetChange", function(e) {
-                    e.newVal.setCurrentDialogue();
+                    e.newVal.setCurrentDialogue("dialogueFinal");
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }
