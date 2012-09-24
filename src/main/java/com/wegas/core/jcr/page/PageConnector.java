@@ -80,10 +80,19 @@ public class PageConnector {
     }
 
     protected Node addChild(String gameModelName, String name) throws RepositoryException {
-        try {
-            return this.getRootNode(gameModelName).addNode(name);
-        } catch (javax.jcr.ItemExistsException ex) {
+        Node root = this.getRootNode(gameModelName);
+        if (!root.hasNode(name)) {
+            Node node = root.addNode(name);
+            node.getSession().save();
+            return node;
+        } else {
             return this.getChild(gameModelName, name);
+        }
+    }
+
+    protected void save() throws RepositoryException {
+        if (PageConnector.session.isLive()) {
+            PageConnector.session.save();
         }
     }
 
@@ -104,7 +113,7 @@ public class PageConnector {
     }
 
     @PreDestroy
-    protected void close() {
+    private void close() {
         if (PageConnector.session != null && PageConnector.session.isLive()) {
             PageConnector.session.logout();
         }
