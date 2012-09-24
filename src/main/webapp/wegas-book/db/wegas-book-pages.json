@@ -1,0 +1,105 @@
+[{
+        "id": 1,
+        "label": "Main layout",
+        "type": "List",
+        "cssClass": "layout",
+        "children": [{
+                "label":"pageLoader",
+                "type": "PageLoader",
+                "id": "maindisplayarea",
+                "cssClass": "body",
+                "pageId": 2
+            },{
+                "label": "Titre",
+                "type": "Text",
+                "cssClass": "book-titre",
+                "content":"Tuto dont vous êtes le héros"
+            }]
+    },{
+        "id":2,
+        "label":"Page 2",
+        "cssClass":"book-page",
+        "type":"List",
+        "children":[{
+                "type": "VariableDisplay",
+                "cssClass":"book-text",
+                "label": "textPage",
+                "variable": "textPage1",
+                "view": "text",
+                "dataSource": "Text"
+            },{
+                "label":"Choices",
+                "cssClass":"book-choice",
+                "type":"List",
+                "children":[{
+                        "type": "Button",
+                        "cssClass": "book-bouton",
+                        "tooltip":"Rester sur cette page",
+                        "label":"Rester",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 2,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "cssClass": "book-bouton",
+                        "tooltip":"Aller à la page 2",
+                        "label":"Suivant",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 3,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    }]
+            }
+        ]
+    },{
+        "id":3,
+        "label":"Page 3",
+        "cssClass":"book-page",
+        "type":"List",
+        "children":[{
+                "type": "VariableDisplay",
+                "cssClass":"book-text",
+                "label": "textPage",
+                "variable": "textPage2",
+                "view": "text",
+                "dataSource": "Text"
+            },{
+                "label":"Choices",
+                "cssClass":"book-choice",
+                "type":"List",
+                "children":[{
+                        "type": "Button",
+                        "cssClass": "book-bouton",
+                        "tooltip":"Aller à la page 1",
+                        "label":"Précédent",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 2,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "cssClass": "book-bouton",
+                        "tooltip":"Aller à la page 2",
+                        "label":"Rester",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 3,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    }]
+            }
+        ]
+    }
+]

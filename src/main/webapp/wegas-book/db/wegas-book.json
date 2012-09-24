@@ -1,0 +1,23 @@
+{
+    "@class": "GameModel",
+    "name": "Book",
+    "cssUri": "wegas-book/css/wegas-book.css",
+    "widgetsUri": "wegas-book/db/wegas-book-pages.json",
+    "games":[{
+        "@class":"Game",
+        "name":"Test-37",
+        "teams":[{
+            "@class": "Team",
+            "name":"red",
+            "players": [ {
+                "@class": "Player",
+                "name": "Jack",
+                "user": {
+                    "@class": "User",
+                    "name": "Luc"
+                }
+            }]
+        }]
+    }],
+    "childVariableDescriptors": []
+}
