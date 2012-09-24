@@ -60,7 +60,7 @@ public class Pages implements Serializable {
             }
 
         }
-        this.connector.close();
+        //this.connector.close();
 
         return ret;
     }
@@ -77,7 +77,7 @@ public class Pages implements Serializable {
             logger.error(ex.getMessage());
 
         } finally {
-            this.connector.close();
+            //this.connector.close();
             return ret;
         }
     }
@@ -90,6 +90,7 @@ public class Pages implements Serializable {
         Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
         n.setProperty("content", page.getContent().toString());
         n.getSession().save();
-        this.connector.close();
+        this.connector.save();
+        //this.connector.close();
     }
 }

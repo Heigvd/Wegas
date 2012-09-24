@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
-@Path("Page/GameModelId/{gameModelId : [1-9][0-9]*}")
+@Path("Page/GameModel/{gameModelId : [1-9][0-9]*}")
 public class PageController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageController.class);
