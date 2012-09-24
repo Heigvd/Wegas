@@ -31,7 +31,7 @@ YUI().use(function (Y) {
                         'wegas-entity', 'wegas-mcq-entities', 'wegas-statemachine-entities',
                         'stylesheet', 'wegas-widget',
                         'wegas-pageloader', 'wegas-button',
-                        'wegas-gallery',
+                        'wegas-gallery', 'wegas-injector'
                         //'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -47,6 +47,9 @@ YUI().use(function (Y) {
                     'wegas-scripteval':{
                         path:'wegas-app/js/wegas-scripteval-min.js',
                         requires:['plugin']
+                    },
+                    'wegas-injector':{
+                        path:'wegas-app/js/widget/wegas-injector-min.js'
                     },
 
                     /** Persistence **/
