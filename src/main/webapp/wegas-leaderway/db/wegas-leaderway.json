@@ -78,17 +78,6 @@
             "@class": "TeamScope"
         }
     },{
-        "@class": "StringDescriptor",
-        "name": "defaultDialogue",
-
-        "defaultInstance": {
-            "@class": "StringInstance",
-            "value":"dialogueFinal"
-        },
-        "scope": {
-            "@class": "TeamScope"
-        }
-    },{
         "@class": "NumberDescriptor",
         "name": "score",
         "defaultInstance": {

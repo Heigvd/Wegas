@@ -320,18 +320,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         },
 
         /**
-         * If current dialogue is null or empty, get the defaultDialogue value.
-         * id defaultDialogue value doesn't exist, current dialogue will be null.
-         */
-        getDefaultDialogue: function(){
-            var dialogue;
-            if(!this.currentDialogue || this.currentDialogue.length === 0){
-                dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", 'defaultDialogue').getInstance().get('value');
-                if(dialogue && !dialogue.length == 0)this.currentDialogue = dialogue;
-            }
-        },
-
-        /**
          * Set the current dialogue and search the resource owner of this new dialogue.
          * If a resource is finded, set the resourceDescriptor of this widget.
          * call the function syncUI of this widget.
@@ -340,12 +328,8 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         setCurrentDialogue: function(newDialogueRef){
             var i, listResource = Y.Wegas.VariableDescriptorFacade.rest.find("name", 'resources'),
             resourceDescriptor;
-            if(typeof newDialogueRef === "string"){
-                this.currentDialogue = newDialogueRef;
-            }
-            else{
-                this.getDefaultDialogue();
-            }
+            if(!typeof newDialogueRef === "string") return;
+            this.currentDialogue = newDialogueRef;
             this.resourceDescriptor = null;
             for(i=0 ; i<listResource.get('items').length ; i++){
                 resourceDescriptor = listResource.get('items')[i];
@@ -365,8 +349,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         setResourceDescriptor: function(resourceDescriptor){
             if(!resourceDescriptor) return;
             this.resourceDescriptor = resourceDescriptor;
-            var dialogue = resourceDescriptor.getInstance().get('properties').dialogue;
-            this.setCurrentDialogue(dialogue);
+            this.setCurrentDialogue(resourceDescriptor.getInstance().get('properties').dialogue);
         },
 
         /***Lifecycle methode***/
@@ -407,7 +390,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         syncUI: function () {
             var cb = this.get(CONTENTBOX);
-            if(!this.currentDialogue){this.setCurrentDialogue();}
+            if(!this.currentDialogue)return;
             if(!this.isDisplayingAResponse){
                 this.clear(cb);
                 this.createChart(this.resourceDescriptor);
@@ -437,7 +420,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
                 targetPageLoader.once("widgetChange", function(e) {
-                    e.newVal.setCurrentDialogue();
+                    e.newVal.setCurrentDialogue("dialogueFinal");
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
             }

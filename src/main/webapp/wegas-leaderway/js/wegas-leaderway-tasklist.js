@@ -260,6 +260,9 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     if(e.newVal.setResourceDescriptor){
                         e.newVal.setResourceDescriptor(this.resourceDescriptor);
                     }
+                    if(e.newVal.decreaseResourceState){
+                        e.newVal.decreaseResourceState();
+                    }
                 },{resourceDescriptor:this.resourceDescriptor});
                 this.assignTask(this.resourceDescriptor, this.selectedTaskDescriptor);
                 targetPageLoader.set("pageId", this.nextPageId);
@@ -316,7 +319,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
                 targetPageLoader.once("widgetChange", function(e) {
-                    e.newVal.setCurrentDialogue();
+                    e.newVal.setCurrentDialogue("dialogueFinal");
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }
