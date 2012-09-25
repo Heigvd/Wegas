@@ -11,24 +11,42 @@
 
 YUI.add( "wegas-injector", function ( Y ) {
     "use strict";
-    var Injector;
+    var Injector,
+    parser = function(element){
+        var dico = {
+            UserName : Y.Wegas.app.get("currentUser").name,
+            PlayerName : Y.Wegas.GameFacade.rest.getCurrentPlayer().get("name"),
+            TeamName : Y.Wegas.GameFacade.rest.getCurrentTeam().get("name"),
+            ContentPath : Y.Wegas.app.get("dataSources").File.source + "read"
+        },
+        regExp = /\${([^}]*)}/g,
+        html = element.getHTML();
+        if(regExp.test(html)){
+            element.setHTML(html.replace(regExp, function(gr0, gr1){
+                return dico[gr1];
+            }));
+        }
+    };
+
     Injector = Y.Base.create("wegas-injector", Y.Base, [], {
+
         initializer: function(){
-            this.eventHandler = Y.delegate("DOMSubtreeModified", function(e){
+            this.eventHandler = Y.delegate("DOMSubtreeModified", function (e){
+                parser(e.currentTarget);
+            }, this.get("observe"), "*");
+        },
 
-                if(this._modified){
-                    return;
-                }
-                this._modified = true;
-                Y.later(20, this, function(){
-                    //var HTML = Y.one("#maindisplayarea").getHTML().replace(/\${ContentPath}/g, "hahaha");
-                    this._modified = false;
-                    //Y.one("#maindisplayarea").setHTML(HTML);
-                });
-
-
-            }, "#maindisplayarea", "*", this);
+        destructor: function(){
+            this.eventHandler.detach();
+        }
+        
+    }, {
+        ATTRS:{
+            observe:{
+                value: ".body"
+            }
         }
     });
+
     Y.namespace("Wegas").Injector = Injector;
 });
