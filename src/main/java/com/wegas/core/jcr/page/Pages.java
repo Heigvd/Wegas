@@ -45,7 +45,9 @@ public class Pages implements Serializable {
     }
 
     public JSONObject getPages() throws RepositoryException {
-        //Map<String, JSONObject> pageMap = new HashMap<>();
+        if(!this.connector.exist(this.gameModelName)){
+            return null;
+        }
         NodeIterator it = this.connector.listChildren(this.gameModelName);
         JSONObject ret = new JSONObject();
         while (it.hasNext()) {
@@ -89,8 +91,16 @@ public class Pages implements Serializable {
     public void store(Page page) throws RepositoryException {
         Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
         n.setProperty("content", page.getContent().toString());
-        n.getSession().save();
+       // n.getSession().save();
         this.connector.save();
         //this.connector.close();
+    }
+
+    public void deletePage(String pageId) throws RepositoryException {
+        this.connector.deleteChild(this.gameModelName, pageId);
+    }
+
+    public void delete() throws RepositoryException {
+        this.connector.deleteRoot(this.gameModelName);
     }
 }

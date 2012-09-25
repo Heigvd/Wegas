@@ -90,10 +90,33 @@ public class PageConnector {
         }
     }
 
+    protected void deleteChild(String gameModelName, String name) throws RepositoryException {
+        Node root = this.getRootNode(gameModelName);
+        if (root.hasNode(name)) {
+            root.getNode(name).remove();
+            if (!root.hasNodes()) {
+                root.remove();
+            }
+            this.save();
+        }
+    }
+
+    protected void deleteRoot(String gameModelName) throws RepositoryException {
+        Node root = this.getSession().getRootNode();
+        if (root.hasNode(gameModelName)) {
+            root.getNode(gameModelName).remove();
+            root.getSession().save();
+        }
+    }
+
     protected void save() throws RepositoryException {
         if (PageConnector.session.isLive()) {
             PageConnector.session.save();
         }
+    }
+
+    protected boolean exist(String gameModelName) throws RepositoryException {
+        return this.getSession().getRootNode().hasNode(gameModelName);
     }
 
     private Session getSession() throws RepositoryException {
