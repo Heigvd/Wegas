@@ -31,7 +31,7 @@ YUI.add('wegas-app', function (Y) {
         // ** Lifecycle methods ** //
         initializer: function () {
             Y.Wegas.app = this;
-            this.injector = new Y.Wegas.Injector();
+            this.injector = new Y.Wegas.Injector({observe:"#maindisplayarea"});
         },
         destructor : function () {
             this.injector.destroy();
