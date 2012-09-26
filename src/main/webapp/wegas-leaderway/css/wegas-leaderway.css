@@ -240,8 +240,10 @@ body{
 }*/
 
 /*-----------------------------------Folder-----------------------------------*/
-.wegas-folder .leaderway-folder .menuFolder{
+.wegas-folder-content{
+    overflow:hidden;
 }
+
 /*-----resourceSelector-----*/
 .leaderway-folder .listResources{
     padding:10px;
@@ -416,30 +418,30 @@ body{
     padding:15px 25px 0 0;
 }
 
-.leaderway-folder .folder .actions .actions-list{
-    width:960px;
-    text-align: center;
-    overflow-x: auto;
-    overflow-y: hidden;
+.leaderway-folder .folder .action{
+    display:block;
+    position:absolute;
+    margin: 150px 0 0 800px;
 }
 
-.leaderway-folder .folder .actions .action{
-    display:inline-block;
-    margin:0 20px 0 0;
+.leaderway-folder .folder .action .wegas-button{
     padding: 10px;
+    width: 142px;
+    height:3em;
     border:outset 1px #6F89A2;
     border-radius: 5px;
     background-color: white;
-    width: 100px;
-    height:60px;
     overflow: hidden;
     vertical-align: top;
+    text-align: center;
+
 }
 
-.leaderway-folder .folder .actions .action:hover{
+.leaderway-folder .folder .action .wegas-button:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }
+
 /*---------------------------------tasklist-----------------------------------*/
 .leaderway-tasklist .yui3-datatable-content  table{
     width:980px;
@@ -548,6 +550,10 @@ body{
 }
 
 /*------------------------------------Score-----------------------------------*/
+.leaderway-score{
+    width:980px;
+}
+
 .leaderway-score .scoreTitle{
     font-size: 1.2em;
     text-align: center;
@@ -555,11 +561,11 @@ body{
 }
 
 .leaderway-score .datatable table{
-    width:60%;
+    width:600px;
     margin:0 auto 0 auto;
 }
 
-.leaderway-score .datatable th, #hrlist td{
+.leaderway-score .datatable th, .hrlist td{
     border-width: 1px 0 1px 0;
 }
 

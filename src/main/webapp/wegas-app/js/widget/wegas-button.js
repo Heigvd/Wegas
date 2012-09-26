@@ -46,6 +46,10 @@ YUI.add( "wegas-button", function ( Y ) {
 
             //this.constructor.CSS_PREFIX = "yui3-button";                      // Revert changes done by Y.Wegas.Widget so styling will work
             this._cssPrefix = "yui3-button";
+            
+            if ( this.get( "cssClass" ) ) {
+                this.get( CONTENTBOX ).addClass( this.get( "cssClass" ) );
+            }
 
             if ( this.get( "tooltip" ) ) {
                 this.plug( Y.Plugin.Tooltip, {
@@ -68,6 +72,9 @@ YUI.add( "wegas-button", function ( Y ) {
             },
             data: {
                 "transient": true
+            },
+            cssClass: {
+                value : null
             }
         //selected: {
         //    value: false,
