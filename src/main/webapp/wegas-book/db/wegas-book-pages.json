@@ -87,17 +87,9 @@
                                 }
                             }]
                     },{
-                        "type": "Button",
-                        "cssClass": "book-bouton",
-                        "tooltip":"Aller à la page 2",
-                        "label":"Rester",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 3,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
+                        "type": "Dice",
+                        "min": "1",
+                        "max": "6"
                     }]
             }
         ]
