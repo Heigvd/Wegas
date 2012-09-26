@@ -315,6 +315,13 @@ YUI().use(function (Y) {
                     'wegas-projectmanagementgame': {
                         path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
                     },
+                    
+                    /**book CYOA**/
+                    'wegas-book': {
+                        path: 'wegas-book/js/wegas-book-dice.js',
+                        requires:['wegas-book-dice'],
+                        ix_provides: "Dice"
+                    },
 
                     /** CrimeSim **/
                     'wegas-mcqtabview': {
