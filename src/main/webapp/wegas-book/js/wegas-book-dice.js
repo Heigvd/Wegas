@@ -21,6 +21,7 @@ YUI.add( "wegas-book-dice", function ( Y ) {
         result:0,
         handlers: new Array(),
         rollButton:null,
+        isRolling:false,
         
         rollDice: function(when, iteration){
             var cb = this.get(CONTENTBOX), result,
@@ -34,6 +35,7 @@ YUI.add( "wegas-book-dice", function ( Y ) {
             else{
                 this.result = result;
                 this.fire("diceRolled");
+                this.isRolling = false;
             }
         },
         
@@ -54,8 +56,12 @@ YUI.add( "wegas-book-dice", function ( Y ) {
         },
         
         bindUI: function(){
-            var cb = this.get(CONTENTBOX); 
-            this.handlers.push(cb.one(".wegas-dice .button").delegate('click', Y.bind(this.rollDice, this, 60, 10), "button"));
+            var cb = this.get(CONTENTBOX);
+            this.handlers.push(cb.one(".wegas-dice .button").delegate('click', function(){
+                if(this.isRolling) return;
+                this.isRolling = true;
+                this.rollDice(60, 10);
+            }, "button", this));
         },
         
         destroy: function(){
@@ -64,8 +70,7 @@ YUI.add( "wegas-book-dice", function ( Y ) {
                 this.handlers[i].detach();
             }
             this.rollButton.destroy();
-        }
-        
+        }  
 
     }, {
         ATTRS : {
