@@ -22,11 +22,27 @@ YUI.add( "wegas-book-dice", function ( Y ) {
         handlers: new Array(),
         rollButton:null,
         
+        rollDice: function(when, iteration){
+            var cb = this.get(CONTENTBOX), result,
+            min = parseInt(this.get("min")), max = parseInt(this.get("max"));
+            result = Math.ceil(Math.random()*(max-min+1))+min-1;
+            cb.one(".result").setHTML();
+            cb.one(".result").append("<p class='result-value-"+result+"'>"+result+"</p>");
+            if(this.get("animated").indexOf("true")>-1 && iteration>0){
+                Y.later(when, this, Y.bind(this.rollDice, this, when+Math.ceil(when/4), iteration-1));
+            }
+            else{
+                this.result = result;
+                this.fire("diceRolled");
+            }
+        },
+        
         initializer: function(){
             this.publish("diceRolled", {});
             this.rollButton = new Y.Wegas.Button({
-                label:"Lancer le dé"
-            })
+                label:this.get("label"),
+                tooltip: this.get("tooltip")
+            });
         },
         
         renderUI: function(){
@@ -34,32 +50,44 @@ YUI.add( "wegas-book-dice", function ( Y ) {
             cb.append("<div class='wegas-dice'></div>");
             cb.one(".wegas-dice").append("<div class='button'></div>");
             cb.one(".wegas-dice").append("<div class='result'></div>");
-            this.rollButton.renderUI(cb.one('.wegas-dice .button'));
+            this.rollButton.render(cb.one('.wegas-dice .button'));
         },
         
         bindUI: function(){
             var cb = this.get(CONTENTBOX); 
-            //this.handlers.push(cb.one("wegas-dice"))
-        },
-        
-        syncUI: function(){
-            
+            this.handlers.push(cb.one(".wegas-dice .button").delegate('click', Y.bind(this.rollDice, this, 60, 10), "button"));
         },
         
         destroy: function(){
-            
+            var i;
+            for (i=0; i<this.handlers.length;i++) {
+                this.handlers[i].detach();
+            }
+            this.rollButton.destroy();
         }
         
 
     }, {
         ATTRS : {
             min: {
-                type: "integer",
+                type: "Integer",
                 value: 1
             },
             max: {
-                type: "integer",
+                type: "Integer",
                 value: 6                
+            },
+            animated: {
+                type : "Boolean",
+                value : false
+            },
+            label:{
+                type : "String",
+                value : "Lancer le dé"
+            },
+            tooltip:{
+                type : "String",
+                value : null
             }
         }
     });
