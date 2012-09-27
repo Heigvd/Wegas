@@ -89,7 +89,8 @@
                     },{
                         "type": "Dice",
                         "min": "1",
-                        "max": "6"
+                        "max": "6",
+                        "animated": "true",
                     }]
             }
         ]
