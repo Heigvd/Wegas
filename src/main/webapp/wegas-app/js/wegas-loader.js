@@ -318,8 +318,13 @@ YUI().use(function (Y) {
                     
                     /**book CYOA**/
                     'wegas-book': {
+                        path: 'wegas-book/js/wegas-book-fight.js',
+                        requires:['wegas-book-fight', 'wegas-book-dice'],
+                        ix_provides: "Fight"
+                    },
+                    
+                    'wegas-book-dice': {
                         path: 'wegas-book/js/wegas-book-dice.js',
-                        requires:['wegas-book-dice'],
                         ix_provides: "Dice"
                     },
 

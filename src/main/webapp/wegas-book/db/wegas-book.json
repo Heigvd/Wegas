@@ -1,8 +1,9 @@
 {
     "@class": "GameModel",
     "name": "Book",
-    "cssUri": "wegas-book/css/wegas-book.css",
-    "widgetsUri": "wegas-book/db/wegas-book-pages.json",
+    "scriptLibrary":{},
+    "cssUri":"wegas-book/css/wegas-book.css",
+    "widgetsUri":"wegas-book/db/wegas-book-pages.json",
     "games":[{
         "@class":"Game",
         "name":"Test-37",
@@ -19,5 +20,33 @@
             }]
         }]
     }],
-    "childVariableDescriptors": []
+    "childVariableDescriptors":[{
+        "@class":"NumberDescriptor",
+        "name":"combatSkill",
+        "editorLabel":"combatSkill",
+        "label":"Combat skill",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":1.0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "minValue":1,
+        "maxValue":20
+    },{
+        "@class":"NumberDescriptor",
+        "name":"stamina",
+        "editorLabel":"stamina",
+        "label":"Stamina",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":1.0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "minValue":1,
+        "maxValue":20
+    }],
 }

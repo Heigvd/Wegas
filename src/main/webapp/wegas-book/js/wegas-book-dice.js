@@ -40,6 +40,7 @@ YUI.add( "wegas-book-dice", function ( Y ) {
         },
         
         initializer: function(){
+            this.publish("diceRolling", {});
             this.publish("diceRolled", {});
             this.rollButton = new Y.Wegas.Button({
                 label:this.get("label"),
@@ -58,9 +59,10 @@ YUI.add( "wegas-book-dice", function ( Y ) {
         bindUI: function(){
             var cb = this.get(CONTENTBOX);
             this.handlers.push(cb.one(".wegas-dice .button").delegate('click', function(){
-                if(this.isRolling) return;
+                if(this.isRolling || this.rollButton.get("disabled")) return;
                 this.isRolling = true;
-                this.rollDice(60, 10);
+                this.fire("diceRolling");
+                this.rollDice(30, 12);
             }, "button", this));
         },
         
@@ -84,7 +86,7 @@ YUI.add( "wegas-book-dice", function ( Y ) {
             },
             animated: {
                 type : "Boolean",
-                value : false
+                value : "false"
             },
             label:{
                 type : "String",
