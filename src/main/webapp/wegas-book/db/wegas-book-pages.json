@@ -4,33 +4,29 @@
         "type": "List",
         "cssClass": "layout",
         "children": [{
+                "label": "Titre",
+                "type": "Text",
+                "cssClass": "book-titre",
+                "content":"Tuto dont vous êtes le héros"
+            },{
                 "label":"pageLoader",
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
                 "pageId": 2
-            },{
-                "label": "Titre",
-                "type": "Text",
-                "cssClass": "book-titre",
-                "content":"Tuto dont vous êtes le héros"
             }]
     },{
         "id":2,
-        "label":"Page 2",
+        "label":"Page 1",
         "cssClass":"book-page",
         "type":"List",
         "children":[{
-                "type": "VariableDisplay",
-                "cssClass":"book-text",
-                "label": "textPage",
-                "variable": "textPage1",
-                "view": "text",
-                "dataSource": "Text"
+                "type": "Text",
+                "content":"Bienvenue, ceci est la première page de ce tuto"
             },{
+                "type":"List",
                 "label":"Choices",
                 "cssClass":"book-choice",
-                "type":"List",
                 "children":[{
                         "type": "Button",
                         "cssClass": "book-bouton",
@@ -60,16 +56,12 @@
         ]
     },{
         "id":3,
-        "label":"Page 3",
+        "label":"Page 2",
         "cssClass":"book-page",
         "type":"List",
         "children":[{
-                "type": "VariableDisplay",
-                "cssClass":"book-text",
-                "label": "textPage",
-                "variable": "textPage2",
-                "view": "text",
-                "dataSource": "Text"
+                "type": "Text",
+                "content":"Bravo, vous voici sur la page deux de ce tuto."
             },{
                 "label":"Choices",
                 "cssClass":"book-choice",
@@ -87,10 +79,13 @@
                                 }
                             }]
                     },{
-                        "type": "Dice",
-                        "min": "1",
-                        "max": "6",
-                        "animated": "true"
+                        "type": "Fight",
+                        "stamina": 8,
+                        "combatSkill" : 7,
+                        "success":[{
+                                "type":"Text",
+                                "content":"test"
+                        }]
                     }]
             }
         ]

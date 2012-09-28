@@ -6,7 +6,20 @@
         Purpose of the stylesheet follows.
 */
 
+.wegas-pageloader {
+    margin:10px;
+}
 
+.body *{
+    margin-top:10px
+}
+
+.book-titre{
+    font-family: "helvetica";
+    font-size:1.2em;
+    margin:10px;
+    text-decoration: underline;
+}
 
 .wegas-book-dice .result p{
     height:33px;
