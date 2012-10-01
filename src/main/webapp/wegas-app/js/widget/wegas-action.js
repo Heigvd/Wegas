@@ -125,7 +125,7 @@ YUI.add('wegas-action', function (Y) {
     };
 
     Y.mix(ExecuteScriptAction, {
-        NS: "wegas",
+        NS: "ExecuteScriptAction",
         NAME: "ExecuteScriptAction"
     });
 
