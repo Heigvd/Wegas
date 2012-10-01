@@ -335,6 +335,35 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.namespace('Plugin').DataSourceREST = DataSourceREST;
 
+    /**
+    * Content repository dataSource REST plugin.
+    */
+
+    var CRDataSource = function () {
+        CRDataSource.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.extend( CRDataSource, DataSourceREST, {
+
+    }, {
+        NS: "rest",
+        NAME: "CRDataSource",
+        ATTRS: {
+
+        },
+        getFullpath: function ( relativePath ) {
+            return Y.Wegas.app.get( "base" ) + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") +
+                "/read" + relativePath;
+        },
+        getFilename: function ( path ) {
+            return path.replace(/^.*[\\\/]/, '');
+        }
+    });
+    Y.namespace('Plugin').CRDataSource = CRDataSource;
+
+    /**
+     *
+     */
     VariableDescriptorDataSourceREST = function () {
         VariableDescriptorDataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -343,7 +372,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
         NS: "rest",
         NAME: "VariableDescriptorDataSourceREST"
     });
-
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
 
         walkEntity: function(entity, callback) {

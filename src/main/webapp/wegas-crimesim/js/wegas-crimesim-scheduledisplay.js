@@ -248,13 +248,14 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     }, {
                         key:"fileLinks",
                         label:"Files",
-                        emptyCellValue: "no files"
+                        emptyCellValue: "no files",
+                        allowHTML: true
                     }]
                 });
                 this.datatable.render(this.get( CONTENTBOX ).one(".schedule-analysis"));
             },
             syncDetailsPanel: function () {
-                var i, reply, status, replyData, cb = this.get(CONTENTBOX),
+                var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
                 question = Y.Wegas.VariableDescriptorFacade.rest.findById( this.currentQuestionId ),
                 questionInstance = question.getInstance(),
                 data = [];
@@ -275,6 +276,16 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                         replyData.answer = "analysis in progress";
                     } else if (status === 2) {
                         replyData.answer = "analysis planified";
+                    } else {
+                        replyData.fileLinks = "";
+                        for ( k = 0; k < replyData.files.length; k = k + 1 ) {
+                            replyData.fileLinks += '<a target="_blank" href="' +
+                            Y.Plugin.CRDataSource.getFullpath( replyData.files[k] ) + '">' +
+                            Y.Plugin.CRDataSource.getFilename( replyData.files[k] ) + '</a><br />'
+                        }
+                        if ( !replyData.fileLinks ) {
+                            delete replyData.fileLinks;
+                        }
                     }
                     replyData.analyis = reply.getChoiceDescriptor().get( "name" );
                     replyData.startTime =  replyData.startTime + 1;
@@ -282,7 +293,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 }
                 this.datatable.addRows( data );
 
-                cb.one(".schedule-detail").setStyles( {
+                cb.one( ".schedule-detail" ).setStyles( {
                     position: 'display',
                     display:"block",
                     overflowX:"auto"

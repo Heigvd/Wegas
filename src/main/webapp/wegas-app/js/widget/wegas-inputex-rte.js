@@ -333,7 +333,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                                 });
 
                                 this.imageUrlField.on( "updated", function ( val ) {
-                                    val = Y.Wegas.app.get("base") + "rest/File/GameModelId/" + Y.Wegas.app.get( "currentGameModel" ) + "/read" + val
+                                    val = Y.Plugin.CRDataSource.getFullpath( val );
                                     this.fileInputNode.set('value', val);
                                     this.fileInputNode.focus();											//HACK we simulate the blur event to trigger the editor's image update
                                     this.fileInputNode.blur();
@@ -360,7 +360,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                                 });
 
                                 this.linkUrlField.on( "updated", function ( val ) {
-                                    val = Y.Wegas.app.get("base") + "rest/File/GameModelId/" + Y.Wegas.app.get( "currentGameModel" ) + "/read" + val
+                                    val = Y.Plugin.CRDataSource.getFullpath( val );
                                     this.inputNode.set('value', val);
                                     this.inputNode.focus();											//HACK we simulate the blur event to trigger the editor's image update
                                     this.inputNode.blur();
@@ -465,7 +465,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                 });
                 win.setHeader('Edit video');
                 that.videoUrlField.setValue( node.getAttribute( "data-url" ) );
-                
+
                 this.openWindow( win );
 
                 this.on( 'afterOpenWindow', function() {
@@ -605,7 +605,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                 '</object>';
 
             } else if ( /^\/.*\.mp4/i.test( url ) ) {                           // Self-hosted mp4 videos
-                var vidUrl = Y.Wegas.app.get("base") + "rest/File/GameModelId/" + Y.Wegas.app.get( "currentGameModel" ) + "/read" + url ;
+                var vidUrl = Y.Plugin.CRDataSource.getFullpath( url );
                 return '<video height="' + height + '" width="' + width + '" controls>' +
                 '<source src="' + vidUrl + '" type="video/mp4" />' +
                 //'<source src="" type="video/webm">' +

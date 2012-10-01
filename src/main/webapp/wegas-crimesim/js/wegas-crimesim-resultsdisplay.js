@@ -54,10 +54,11 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                     }, {
                         key:"fileLinks",
                         label:"Files",
-                        emptyCellValue: "no files"
+                        emptyCellValue: "no files",
+                        allowHTML: true
                     }]
                 });
-                this.datatable.render(this.get( CONTENTBOX ));
+                this.datatable.render( this.get( CONTENTBOX ) );
             },
 
             bindUI: function () {
@@ -103,15 +104,9 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
 
                         replyData.evidence = questions[i].get( "name" );
                         replyData.analyis = reply.getChoiceDescriptor().get( "name" );
-                        replyData.fileLinks = "";
+
                         replyData.startTime += 1;
-                        for ( k = 0; k < replyData.files.length; k = k + 1 ) {
-                            replyData.fileLinks += '<a href="' + Y.Wegas.app.get( "base") +
-                            replyData.files[i] + '">' + replyData.files[i] + ''
-                        }
-                        if (!replyData.fileLinks) {
-                            delete replyData.fileLinks;
-                        }
+
                         if (!replyData.description) {
                             delete replyData.description;
                         }
@@ -120,6 +115,16 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                             replyData.answer = "analysis in progress";
                         } else if (status === 2) {
                             replyData.answer = "analysis planified";
+                        } else {
+                            replyData.fileLinks = "";
+                            for ( k = 0; k < replyData.files.length; k = k + 1 ) {
+                                replyData.fileLinks += '<a target="_blank" href="' +
+                                Y.Plugin.CRDataSource.getFullpath( replyData.files[k] ) + '">' +
+                                Y.Plugin.CRDataSource.getFilename( replyData.files[k] ) + '</a><br />'
+                            }
+                            if ( !replyData.fileLinks ) {
+                                delete replyData.fileLinks;
+                            }
                         }
 
                         if (!responsesByStartTime[reply.get( "startTime" )]) {
