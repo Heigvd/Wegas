@@ -357,8 +357,7 @@ YUI.add("wegas-gallery", function(Y){
             img = Y.Node.create("<img />");
             imgLoader = new Y.Wegas.ImgageLoader({
                 target: img,
-                srcUrl: Y.Wegas.app.get( "base" ) + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") +
-                "/read" + this.get("gallery")[i].srcUrl
+                srcUrl: Y.Plugin.CRDataSource.getFullpath( this.get("gallery")[i].srcUrl )
             });
             imgLoader.fetch();
             imgLoader.once( "load", function ( e ) {
