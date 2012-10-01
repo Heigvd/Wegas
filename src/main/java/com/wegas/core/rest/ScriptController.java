@@ -11,6 +11,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.exception.WegasException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.script.ScriptException;
@@ -46,7 +47,7 @@ public class ScriptController {
     @Produces(MediaType.APPLICATION_JSON)
     public Object run(
             @PathParam("playerId") Long playerId, Script script)
-            throws ScriptException {
+            throws ScriptException, WegasException {
 
         return scriptManager.eval(playerId, script);
     }

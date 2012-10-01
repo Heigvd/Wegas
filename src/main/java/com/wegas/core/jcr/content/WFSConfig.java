@@ -8,7 +8,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.content;
+package com.wegas.core.jcr.content;
 
 import java.util.HashMap;
 import java.util.Map;

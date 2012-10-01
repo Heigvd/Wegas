@@ -34,7 +34,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             this.afterHostEvent( "render", function () {
                 this.get( "host" ).get( "contentBox" ).delegate( "click", function ( e ) {
                     var menu = this.getMenu();                                  // Get a menu instance
-
+    
                     menu.attachTo( e.target, this );                            // Attach it to the target node
                     menu.removeAll();                                           // Empty the node current content
                     try {

@@ -55,7 +55,7 @@
                     {
                         "type": "VariableDisplay",
                         "cssClass":"indicators-block",
-                        "label": "Temps restant",
+                        "label": "Action restante",
                         "variable": "actions",
                         "view": "box",
                         "dataSource": "VariableDescriptor"
@@ -69,7 +69,6 @@
                 "children": [
                     {
                         "type": "Button",
-                        "label": "Dossiers",
                         "cssClass": "menu-folder",
                         "tooltip":"Dossiers des membres",
                         "plugins": [{
@@ -81,7 +80,6 @@
                             }]
                     }, {
                         "type": "Button",
-                        "label": "Mandats",
                         "cssClass": "menu-tasklist",
                         "tooltip":"Liste des mandats",
                         "plugins": [{
@@ -94,7 +92,6 @@
                     },
                     {
                         "type": "Button",
-                        "label": "E-mail",
                         "cssClass": "menu-email",
                         "tooltip":"Réception e-mail",
                         "plugins": [{
@@ -112,7 +109,6 @@
                     },
                     {
                         "type": "Button",
-                        "label": "Score",
                         "cssClass": "menu-score",
                         "tooltip":"Score des entreprises",
                         "plugins": [{
@@ -125,8 +121,8 @@
                     },
                     {
                         "type": "LoginButton",
-                        "label":"Login button",
-                        "cssClass": "menu-loginbutton"
+                        "cssClass": "menu-loginbutton",
+                        "tooltip": "Logout"
                     }]
             },
             {

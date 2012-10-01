@@ -13,6 +13,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
+import com.wegas.core.rest.util.Views;
 import com.wegas.leaderway.persistence.DialogueState;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -39,6 +41,8 @@ public class State extends AbstractEntity {
     @Id
     @Column(name = "state_id")
     @GeneratedValue
+
+    @JsonView({Views.EditorI.class, Views.Private.class})
     private Long id;
     private String label;
     @Embedded

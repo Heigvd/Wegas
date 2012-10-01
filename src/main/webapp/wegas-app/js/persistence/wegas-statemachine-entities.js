@@ -346,6 +346,7 @@ Y.add("wegas-statemachine-entities", function(Y){
             },
             oneShot: {
                 type: 'boolean',
+                value: true,
                 _inputex: {
                     label: 'Only once'
                 }
@@ -489,17 +490,18 @@ Y.add("wegas-statemachine-entities", function(Y){
                     if(!transitions[i].get("triggerCondition")){
                         ctrlObj.availableActions.push(transitions[i]);
                     }else{
-                        transitions[i].get("triggerCondition").once("Script:evaluated", function(e, o, ctrlObj){
+                        transitions[i].get("triggerCondition").once("Script:evaluated", function(e, o, obj){
+                            var ctrlObj = obj[0], transition = obj[1];
                             ctrlObj.evaluatedCount +=1;
                             if(o === true){
-                                ctrlObj.availableActions.push(transitions[i]);
+                                ctrlObj.availableActions.push(transition);
                             }
                             if(ctrlObj.toEval === ctrlObj.evaluatedCount){
                                 this.fire("actionsAvailable", {
                                     actionsAvailable:ctrlObj.availableActions
                                 });
                             }
-                        }, this, ctrlObj);
+                        }, this, [ctrlObj, transitions[i]]);
                         ctrlObj.toEval +=1;
                         transitions[i].get("triggerCondition").localEval();
 

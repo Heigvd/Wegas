@@ -500,10 +500,17 @@ YUI.add("wegas-script-wysiwyg", function(Y){
             options.choices = [];
 
             for ( i = 0; i < results.length; i = i + 1 ) {
-                options.choices.push({
-                    value: results[i].get( "id"  ),
-                    label: results[i].get( "name" )
-                })
+                if(!(results[i] instanceof Y.Wegas.persistence.Entity)){        //Object is not an entity
+                    options.choices.push({                                      //TODO : result should be an entity
+                        value: results[i]["id"],
+                        label: results[i]["name" ]
+                    });
+                }else{
+                    options.choices.push({
+                        value: results[i].get( "id"  ),
+                        label: results[i].get( "name" )
+                    });
+                }
 
             }
 

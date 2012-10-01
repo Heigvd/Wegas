@@ -4,7 +4,9 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
     <ui:composition template="/wegas-app/view/template/app-default.xhtml">
-
+        <ui:define name="head">
+            <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
+        </ui:define>
         <ui:define name="body">
             <script type="text/javascript">
                 var Y = YUI().use("wegas-app", "wegas-editor", function (Y) {

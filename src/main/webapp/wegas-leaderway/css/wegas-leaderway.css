@@ -22,16 +22,6 @@ body{
     min-height: 300px;
 }
 
-.button .wegas-button-tooltips{
-    font-size: 1em;
-    display:block;
-    position:absolute;
-    padding:2px;
-    background-color:#F3E4D2;
-    border:solid 1px;
-    border-radius: 5px;
-}
-
 /*--------------------------------Indicators----------------------------------*/
 .leaderway-indicators > .wegas-list-content {
     background-color:#eed4aa;
@@ -49,7 +39,7 @@ body{
     margin-top: 41px;
 }
 
- .leaderway-indicators .indicators-text{
+.leaderway-indicators .indicators-text{
     margin: 41px 20px 0 0;
     width:140px;
     text-align: left;
@@ -64,11 +54,6 @@ body{
     margin: 36px 30px 0 5px;
     float:left;
 }
-
-.leaderway-indicators  button .wegas-button-tooltips{
-    margin: 0 0 0 25px;
-}
-
 
 .leaderway-indicators .indicators-gauge{
     margin:24px 20px 0 0;
@@ -155,17 +140,14 @@ body{
     background-color:transparent;
     height:40px;
     width:40px;
-    font-size: 0;
+    color: rgba(0,0,0,0);
+    vertical-align: top;
 }
 .leaderway-menu .button:hover{
     box-shadow:0px 0px 0px 1px rgba(0, 0, 0, 0.251) inset, 0px 2px 0px rgba(255, 255, 255, 0.298) inset, 0px 1px 2px rgba(0, 0, 0, 0.149);
     background-color:#DFC69F;
     border-radius: 10px;
     cursor:pointer;
-}
-
-.leaderway-menu .button .wegas-button-tooltips{
-    margin: 10px 0 0 40px;
 }
 
 .leaderway-menu .menu-HRList{
@@ -184,13 +166,18 @@ body{
     background-image:url(/Wegas/wegas-leaderway/images/email.png);
 }
 
+.leaderway-menu .menu-email .unread-count{
+    color:black;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
 .leaderway-menu .menu-score{
     background-image:url(/Wegas/wegas-leaderway/images/awards.png);
 }
 
 .leaderway-menu .wegas-login{
     float:right;
-    margin:15px 0 0 0;
+    background-image:url(/Wegas/wegas-leaderway/images/login.png);
 }
 
 /*---------------------------------Feedback-----------------------------------*/
@@ -213,7 +200,7 @@ body{
 /*----------------------------------RHList------------------------------------*/
 /*
 .wegas-hrlist .leaderway-hrlist table{
-    width:100%;
+    width:980px;
 }
 
 .wegas-hrlist .leaderway-hrlist th, #hrlist td{
@@ -253,18 +240,18 @@ body{
 }*/
 
 /*-----------------------------------Folder-----------------------------------*/
-/*-----folder-general-----*/
-.leaderway-folder .menuFolder{
- width:100%;
+.wegas-folder-content{
+    overflow:hidden;
 }
 
+/*-----resourceSelector-----*/
 .leaderway-folder .listResources{
     padding:10px;
+    text-align: center;
     overflow-x:auto;
     overflow-y:hidden;
-    width:98%;
-    float:left;
-    text-align: center;
+    width:960px;
+    height:85px;
 }
 
 .leaderway-folder .listResources .resourceSelector{
@@ -274,7 +261,7 @@ body{
     border:outset 1px #6F89A2;
     border-radius: 5px;
     background-color: #dce5ef;
-    min-width: 100px;
+    width: 100px;
     text-align: center;
 }
 
@@ -287,39 +274,15 @@ body{
     background-color:#BFDAFF;
 }
 
-.leaderway-folder .yui3-tabview{
-    display: block;
-    clear:both;
-    padding:0px 10px 10px 10px;
-}
-
-.leaderway-folder .yui3-tab-selected .yui3-tab-label{
-    background-image:url(/Wegas/wegas-leaderway/images/tabselected_background.png);
-    background-repeat: repeat-x;
+/*-----folder-----*/
+.leaderway-folder .folder{
+    width:945px;
+    margin:10px;
+    padding:5px;
+    border:outset 2px #6F89A2;
     background-color: #dce5ef;
-    background-position:center;
 }
 
-.leaderway-folder .yui3-tab-label{
-    display:block;
-    width:100px;
-    height:20px;
-    font-size:1em;
-    margin: 0;
-    padding:10px 0 0 5px;
-}
-
-.leaderway-folder .yui3-tabview-list{
-    border-bottom: 0px solid #6F89A2;
-}
-
-.leaderway-folder .yui3-tabview-panel{
-    background-color: #DCE5EF;
-    border:2px outset #6F89A2;
-    padding:30px 0 0 30px;
-}
-
-/*-----folder-folder-----*/
 .leaderway-folder .folder .section{
     background-image:url(/Wegas/wegas-leaderway/images/border_folder-section.png);
     background-repeat: no-repeat;
@@ -346,7 +309,7 @@ body{
 
 .leaderway-folder .folder .picture{
     position:absolute;
-    left:800px;
+    margin-left:800px;
     height:140px;
     width:140px;
 }
@@ -440,7 +403,7 @@ body{
     overflow: hidden;
 }
 
-.wegas-folder .wegas-folder-content .folder .gauge-unit{
+.leaderway-folder .folder .gauge-unit{
     display:block;
     background-color:#6F89A2;
     background-image:url(/Wegas/wegas-leaderway/images/gaugeFiller-background.png);
@@ -450,112 +413,115 @@ body{
     height:20px;
 }
 
-.wegas-folder .wegas-folder-content .folder .description{
+.leaderway-folder .folder .description{
     margin-bottom: 30px;
     padding:15px 25px 0 0;
 }
 
-/*-----folder-actions-----*/
-
-.leaderway-folder .actions .actions-list{
-    min-height: 150px;
-    width:98%;
-    text-align: center;
+.leaderway-folder .folder .action{
+    display:block;
+    position:absolute;
+    margin: 150px 0 0 800px;
 }
 
-.leaderway-folder .actions .action{
-    display:inline-block;
-    margin:0 20px 0 0;
+.leaderway-folder .folder .action .wegas-button{
     padding: 10px;
+    width: 142px;
+    height:3em;
     border:outset 1px #6F89A2;
     border-radius: 5px;
     background-color: white;
-    width: 80px;
-    height:80px;
-    text-align: center;
     overflow: hidden;
+    vertical-align: top;
+    text-align: center;
+
 }
 
-.leaderway-folder .actions .action:hover{
+.leaderway-folder .folder .action .wegas-button:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }
+
 /*---------------------------------tasklist-----------------------------------*/
-.wegas-tasklist .yui3-datatable-content  table{
-    width:100%;
+.leaderway-tasklist .yui3-datatable-content  table{
+    width:980px;
 }
 
-.wegas-tasklist .yui3-datatable-content  th, #hrlist td{
+.leaderway-tasklist .yui3-datatable-content  th, #hrlist td{
     border-width: 1px 0 1px 0;
 }
 
-.wegas-tasklist .yui3-datatable-content  th{
+.leaderway-tasklist .yui3-datatable-content  th{
     background-color: #dce5ef;
     background-repeat: repeat-x;
     background-image:url(/Wegas/wegas-leaderway/images/table-header_background.png);
     height:30px;
 }
 
-.wegas-tasklist .yui3-datatable-content  th{
+.leaderway-tasklist .yui3-datatable-content  th{
     vertical-align:middle;
     padding:0 5px 0 5px;
 }
 
-.wegas-tasklist .yui3-datatable-content  th div{
+.leaderway-tasklist .yui3-datatable-content  th div{
     height:17px;
     vertical-align:bottom;
 }
 
-.wegas-tasklist .yui3-datatable-content  th div .yui3-datatable-sort-indicator{
+.leaderway-tasklist .yui3-datatable-content  th div .yui3-datatable-sort-indicator{
     vertical-align:top;
 }
 
-.wegas-tasklist .yui3-datatable-content .yui3-datatable-odd td{
+.leaderway-tasklist .yui3-datatable-content .yui3-datatable-odd td{
     background-color:#DCE5EF;
 }
 
-.wegas-tasklist .yui3-datatable-content td{
+.leaderway-tasklist .yui3-datatable-content td{
     height:30px;
     padding:0 5px 0 5px;
     border:none;
 }
 
-.wegas-tasklist .yui3-datatable-content tr .hidden{
+.leaderway-tasklist .yui3-datatable-content .selected td{
+    background-color:#FDE092;
+}
+
+.leaderway-tasklist .yui3-datatable-content tr .hidden{
     display:none;
 }
 
-.wegas-tasklist .modePicking .yui3-datatable-content tr:hover td{
+.leaderway-tasklist .modePicking .yui3-datatable-content tr:hover td{
     background-color: #BFDAFF;
     cursor: pointer;
 }
 
-.wegas-tasklist .modePicking .resourceName{
+.leaderway-tasklist .modePicking .resourceName{
     padding:10px;
     text-align:center;
     font-size: 1.2em;
 }
 
-.wegas-tasklist .modePicking .footer{
+.leaderway-tasklist .modePicking .footer{
     padding:10px;
     overflow: hidden;
     clear:both;
 }
 
-.wegas-tasklist .modePicking .assignInfo{
+.leaderway-tasklist .modePicking .assignInfo{
     padding:10px;
     margin-top:5px;
     width:650px;
     float:left;
 }
 
-.wegas-tasklist .modePicking .footer .buttons{
-    margin:5px;
+.leaderway-tasklist .modePicking .footer .buttons{
+    margin:5px 10px 5px 5px;
     float:right;
     width:230px;
 }
 
-.wegas-tasklist .modePicking .footer .buttons div{
-    display: inline-block;
+.leaderway-tasklist .modePicking .footer .buttons div{
+    display: block;
     padding: 10px;
     margin-left:20px;
     border:outset 1px #6F89A2;
@@ -566,49 +532,66 @@ body{
     text-align:center;
 }
 
-.wegas-tasklist .modePicking .footer .buttons div:hover{
+.leaderway-tasklist .modePicking .footer .buttons div:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }
+
+.leaderway-tasklist .modePicking .footer .buttons .buttonOK{
+    float:left;
+}
+
+.leaderway-tasklist .modePicking .footer .buttons .buttonCancel{
+    float:right;
+}
+/*------------------------------------Inbox-----------------------------------*/
+.leaderway-inbox{
+    width:980px;
+}
+
 /*------------------------------------Score-----------------------------------*/
+.leaderway-score{
+    width:980px;
+}
+
 .leaderway-score .scoreTitle{
     font-size: 1.2em;
     text-align: center;
     padding:20px 0 10px 0;
 }
 
-.leaderway-score table{
-    width:60%;
+.leaderway-score .datatable table{
+    width:600px;
     margin:0 auto 0 auto;
 }
 
-.leaderway-score th, #hrlist td{
+.leaderway-score .datatable th, .hrlist td{
     border-width: 1px 0 1px 0;
 }
 
-.leaderway-score th{
+.leaderway-score .datatable th{
     background-color: #dce5ef;
     background-repeat: repeat-x;
     background-image:url(/Wegas/wegas-leaderway/images/table-header_background.png);
     height:30px;
 }
 
-.leaderway-score th{
+.leaderway-score .datatable th{
     vertical-align:middle;
     padding:0 5px 0 5px;
 }
 
-.leaderway-score .yui3-datatable-odd td{
+.leaderway-score .datatable .yui3-datatable-odd td{
     background-color: #DCE5EF;
 }
 
-.leaderway-score td{
+.leaderway-score .datatable td{
     height:30px;
     padding:0 5px 0 5px;
     border:none;
 }
 
-.leaderway-score tr:first-child td{
+.leaderway-score .datatable tr:first-child td{
     background-color:#FDE092;
 }
 
@@ -647,6 +630,7 @@ body{
 
 .leaderway-dialogue .dialogue{
     height: 150px;
+    width:920px;
     margin-top: 0px;
     padding:30px;
     background-color: #DCE5EF;

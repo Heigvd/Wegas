@@ -16,6 +16,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         resourceDescriptor: null,
         nextPageId: null,
         handlers: new Array(),
+        pickingMode:false,
 
         //*** Particular Methods ***/
         /**
@@ -32,6 +33,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.resourceDescriptor = resourceDescriptor;
             if(this.resourceDescriptor != null){
+                this.pickingMode=true;
                 this.nextPageId = nextPageId;
                 cb.addClass('modePicking');
                 cb.one('.resourceName p').setHTML('Assigner un mandat à '+this.resourceDescriptor.getInstance().get('properties').surname);
@@ -105,19 +107,20 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         /**
          * This function must be called by a click event.
          * set the current selected task
-         * fire a event "rowSelected" with a object "taskDescriptor"
          * @param e, a click event on a row from the datatable.
          */
         selectRow: function(e){
             var i, cb = this.get(CONTENTBOX),
             listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),taskDescriptorId;
+            //deselect old row
+            if(this.pickingMode){cb.all('.yui3-datatable-content .selected').removeClass('selected');}
+            //select new row
             taskDescriptorId = e.currentTarget.one("*").getContent();
+            if(this.pickingMode){e.currentTarget.addClass('selected');}
+            //get new task descriptor
             for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
                 if(listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId){
                     this.selectedTaskDescriptor = listTasksDescriptor.get('items')[i];
-                    this.fire("rowSelected", {
-                        taskDescriptor: this.selectedTaskDescriptor
-                    });
                     break;
                 }
             }
@@ -138,7 +141,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
                         'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode':'true'
+                        'Managed-Mode': 'true'
                     },
                     cfg: {
                         method: "POST",
@@ -146,13 +149,11 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                             "@class": "Script",
                             "language": "JavaScript",
                             "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.get('id')+","+taskDescriptor.get('id')+");"
-                        }),
-                        on: { //not work, call any function
-//                            success: Y.bind(this.assignTaskResult, this, true, Y.one('.leaderway-feedback')),
-//                            failure: Y.bind(this.assignTaskResult, this, false, Y.one('.leaderway-feedback'))
-                            success: Y.bind(this.assignTaskResult, this, true, Y.one('.leaderway-feedback')),
-                            failure: Y.bind(this.assignTaskResult, this, false, Y.one('.leaderway-feedback'))
-                        }
+                        })
+                    },
+                    callback: {
+                        //success: Y.bind(this.assignTaskResult, this, true), // useless, players expect a success
+                        failure: Y.bind(this.assignTaskResult, this, false)
                     }
                 });
             }
@@ -162,36 +163,28 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         /**
          * Display a feedback on the operation "add task to a resource"
          * This feedback will disappear after 5 seconde.
+         * the feedback message appear in node ".leaderway-feedback"
          * @param Boolean success, true if the opreation was a success, false otherwise.
-         * @param Node feedbackNode, the node to insert the feedback.
          */
-        assignTaskResult: function(success, feedbackNode){
-            console.log('test'+success);
-            feedbackNode.setStyle('display', 'block');
+        assignTaskResult: function(success){
+            Y.one('.leaderway-feedback').setStyle('display', 'block');
             if(success){
-                feedbackNode.one('p').addClass('green');
-                feedbackNode.one('p').insert("Le mandat à été délégué !");
+                Y.one('.leaderway-feedback').one('p').addClass('green');
+                Y.one('.leaderway-feedback').one('p').insert("Le mandat à été délégué !");
             }
             else{
-                feedbackNode.one('p').addClass('red');
-                feedbackNode.one('p').insert("Le mandat n'a pas pu être délégué.");
+                Y.one('.leaderway-feedback').one('p').addClass('red');
+                Y.one('.leaderway-feedback').one('p').insert("Le mandat n'a pas pu être délégué.");
             }
             setTimeout(function(){
-                feedbackNode.setHTML('<p></p>');
-                feedbackNode.setStyle('display', 'none');
-                feedbackNode.one('p').removeClass('green');
-                feedbackNode.one('p').removeClass('red');
+                Y.one('.leaderway-feedback').setHTML('<p></p>');
+                Y.one('.leaderway-feedback').setStyle('display', 'none');
+                Y.one('.leaderway-feedback').one('p').removeClass('green');
+                Y.one('.leaderway-feedback').one('p').removeClass('red');
             }, 5000);
         },
 
         // *** Lifecycle Methods *** //
-        /**
-         * Create the widget
-         * Publish event 'rowSelected' at this widget.
-         */
-        initializer: function() {
-            this.publish("rowSelected", {});
-        },
 
         /**
          * Render the widget.
@@ -267,6 +260,9 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     if(e.newVal.setResourceDescriptor){
                         e.newVal.setResourceDescriptor(this.resourceDescriptor);
                     }
+                    if(e.newVal.decreaseResourceState){
+                        e.newVal.decreaseResourceState();
+                    }
                 },{resourceDescriptor:this.resourceDescriptor});
                 this.assignTask(this.resourceDescriptor, this.selectedTaskDescriptor);
                 targetPageLoader.set("pageId", this.nextPageId);
@@ -319,11 +315,11 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * change the current widget to go on the "dialogue" widget.
          */
         goToFinalPage: function(){
-            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week");
-            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week"),
+            targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if(parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')){
                 targetPageLoader.once("widgetChange", function(e) {
-                    e.newVal.setCurrentDialogue();
+                    e.newVal.setCurrentDialogue("dialogueFinal");
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));    
             }

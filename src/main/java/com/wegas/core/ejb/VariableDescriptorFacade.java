@@ -52,11 +52,11 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         List<String> usedNames = this.getUsedNames(gameModelId);
         //Fill name with editor Label if it is empty
         if (variableDescriptor.getName().isEmpty() || variableDescriptor.getName() == null) {
-            variableDescriptor.setName(Helper.buildName(variableDescriptor.getEditorLabel(), usedNames));
+            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getEditorLabel(), usedNames));
         }
         //build a unique name
         if (usedNames.contains(variableDescriptor.getName())) {
-            variableDescriptor.setName(Helper.buildName(variableDescriptor.getName(), usedNames));
+            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getName(), usedNames));
         }
         this.gameModelFacade.find(gameModelId).addVariableDescriptor(variableDescriptor);
         //super.create(variableDescriptor);

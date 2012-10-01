@@ -21,7 +21,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     GameModelDataSourceREST,
     GameDataSourceREST,
     DEFAULTHEADERS = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json;charset=ISO-8859-1',
         'Managed-Mode': 'true'
     };
 
@@ -161,7 +161,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         _failureHandler: function (e) {
             //console.log("DataSourceRest._failureHandler", e);
-            Y.error("Datasource reply:", e, 'Y.Wegas.DataSourceRest');
+            try{
+                console.error(e.response.results.message);
+            }catch(ex){
+                Y.error("Datasource reply:", e, 'Y.Wegas.DataSourceRest');
+            }
         },
 
         /// *** Cache methods *** //
