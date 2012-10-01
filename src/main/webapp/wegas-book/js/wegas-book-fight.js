@@ -98,7 +98,7 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             if(success){
                 if(this.success)this.success.render(cb.one(".result"));
             } else{
-                if(this.failure)this.failure.failure(cb.one(".result"));
+                if(this.failure)this.failure.render(cb.one(".result"));
             }
         },
         
@@ -147,7 +147,7 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             cb.append("<div class='dice'></div>");
             cb.append("<div class='result'></div>");
             cb.append("<div class='alternative'></div>");
-            cb.one(".opponent .name").setHTML(this.get("name"));
+            cb.one(".opponent .name").setHTML(this.get("name")+" : ");
             this.dice.render(cb.one(".dice"));
             if(this.alternative)this.alternative.render(cb.one(".alternative"));
         },
