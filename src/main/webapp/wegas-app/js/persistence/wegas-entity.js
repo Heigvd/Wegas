@@ -1286,7 +1286,7 @@ YUI.add('wegas-entity', function (Y) {
     }, new Y.Wegas.persistence.ListDescriptor().getFormCfg()),
     Y.mix({
         name: 'ResourceDescriptor',
-        label: 'a number'
+        label: 'a resource'
     }, new Y.Wegas.persistence.ResourceDescriptor().getFormCfg()),
     Y.mix({
         name: 'TaskDescriptor',
