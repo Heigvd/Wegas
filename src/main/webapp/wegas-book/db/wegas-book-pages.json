@@ -4,25 +4,6 @@
         "type": "List",
         "cssClass": "layout",
         "children": [{
-                "label": "Titre",
-                "type": "Text",
-                "cssClass": "book-titre",
-                "content":"Tuto dont vous êtes le héros"
-            },{
-                "type": "VariableDisplay",
-                "label": "Stamina : ",
-                "cssClass":"indicator-stamina",
-                "view": "text",
-                "variable": "stamina",
-                "dataSource": "VariableDescriptor"
-            },{
-                "type": "VariableDisplay",
-                "label": "Combat skill : ",
-                "cssClass":"indicator-combatSkill",
-                "view": "text",
-                "variable": "combatSkill",
-                "dataSource": "VariableDescriptor"
-            },{
                 "label":"pageLoader",
                 "type": "PageLoader",
                 "id": "maindisplayarea",
@@ -36,7 +17,7 @@
         "type":"List",
         "children":[{
                 "type": "Text",
-                "content":"Bienvenue, ceci est la première page de ce tuto. La page (élément général existant sur chaque 'interface' du jeu) contient un titre ainsi que la valeure de vigueur (stamina) et de combat (combat skill) de notre héros. Cette page est constituée également d'une sous-page (inteface changeante du jeu) contenant un widget 'list' qui contient un widget 'text' (ce texte) ainsi qu'un widget 'button' (le bouton ci-dessous). Cliquez sur ce dernier pour aller à la sous-page suivante."
+                "content":"Bienvenue, ceci est la première page de ce tutoriel. La page (élément général existant sur chaque 'interface' du jeu) contient un titre ainsi que la valeure de vigueur (stamina) et de combat (combat skill) de notre héros. Cette page est constituée également d'une sous-page (inteface changeante du jeu) contenant un widget 'list' qui contient un widget 'text' (ce texte) ainsi qu'un widget 'button' (le bouton ci-dessous). Cliquez sur ce dernier pour aller à la sous-page suivante."
             },{
                 "type":"List",
                 "label":"Choices",
@@ -67,7 +48,9 @@
             },{
                 "type": "Fight",
                 "name" : "Loup",
+                "staminaLabel": "Vigueur : ",
                 "stamina": 8,
+                "combatSkillLabel" : "Talent de combat : ",
                 "combatSkill" : 7,
                 "success":[{
                         "type":"Text",

@@ -9,7 +9,7 @@
  */
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Benjamin Gerber ger.benjamin@gmail.com
  */
 YUI.add( "wegas-book-fight", function ( Y ) {
     "use strict";
@@ -141,13 +141,15 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             var cb = this.get(CONTENTBOX), opponement;
             opponement = Y.Node.create("<div class='opponent'></div>");
             opponement.append("<div class='name'></div>").append("<div class='stamina'></div>").append("<div class='combatSkill'></div>");
-            opponement.one(".stamina").append("<div class='label'>Stamina : </div>").append("<div class='value'></div>");
-            opponement.one(".combatSkill").append("<div class='label'>Combat skill : </div>").append("<div class='value'></div>");
+            opponement.one(".stamina").append("<div class='label'></div>").append("<div class='value'></div>");
+            opponement.one(".combatSkill").append("<div class='label'></div>").append("<div class='value'></div>");
+            opponement.one(".stamina .label").setHTML(this.get("staminaLabel"));
+            opponement.one(".combatSkill .label").setHTML(this.get("combatSkillLabel"));
+            opponement.one(".name").setHTML(this.get("name"));
             cb.append(opponement);
             cb.append("<div class='dice'></div>");
             cb.append("<div class='result'></div>");
             cb.append("<div class='alternative'></div>");
-            cb.one(".opponent .name").setHTML(this.get("name")+" : ");
             this.dice.render(cb.one(".dice"));
             if(this.alternative)this.alternative.render(cb.one(".alternative"));
         },
@@ -181,9 +183,17 @@ YUI.add( "wegas-book-fight", function ( Y ) {
                 type: "String",
                 value: "unknown"
             },
+            staminaLabel : {
+                type: "String",
+                value: "Stamina: "
+            },
             stamina : {
                 type: "Integer",
                 value: 1
+            },
+            combatSkillLabel : {
+                type: "String",
+                value: "Combat skill: "
             },
             combatSkill : {
                 type: "Integer",

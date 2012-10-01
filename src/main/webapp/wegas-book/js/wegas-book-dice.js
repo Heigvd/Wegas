@@ -9,7 +9,7 @@
  */
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 YUI.add( "wegas-book-dice", function ( Y ) {
     "use strict";
