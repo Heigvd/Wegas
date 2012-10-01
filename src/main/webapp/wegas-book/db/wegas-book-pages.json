@@ -4,6 +4,23 @@
         "type": "List",
         "cssClass": "layout",
         "children": [{
+                "type":"List",
+                "direction": "horizontal",
+                "cssClass":"menu",
+                "children":[{
+                        "type": "VariableDisplay",
+                        "label": "Combat skills",
+                        "view": "text",
+                        "variable": "combatSkill",
+                        "dataSource": "VariableDescriptor"
+                    }, {
+                        "type": "VariableDisplay",
+                        "label": "Stamina",
+                        "view": "text",
+                        "variable": "stamina",
+                        "dataSource": "VariableDescriptor"
+                    }
+                ]}, {
                 "label":"pageLoader",
                 "type": "PageLoader",
                 "id": "maindisplayarea",
