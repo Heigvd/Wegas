@@ -297,7 +297,7 @@ YUI.add('wegas-editor-action', function (Y) {
             method: {
                 value: "put"
             },
-            parentEntity: {},
+            parentEntity: { },
             targetClass: { },
             attributeKey: { }
         }
