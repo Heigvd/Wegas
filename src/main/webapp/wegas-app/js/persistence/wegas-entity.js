@@ -77,22 +77,22 @@ YUI.add('wegas-entity', function (Y) {
         toObject2: function () {
             return this.toObject();
             var i, k, ret = this.toJSON();
-            for ( k in ret ) {
-                if ( ret.hasOwnProperty( k ) ) {
-                    if ( Y.Lang.isObject( ret[ k ] ) && ret[ k ].toObject2 ) {
-                        ret[ k ] = ret[ k ].toObject2();
-
-                    } else if ( Y.Lang.isArray( ret[ k ] ) ) {
-                        for ( i = 0; i < ret[ k ].length; i = i + 1 ) {
-                            if ( Y.Lang.isObject( ret[ k ][ i ] ) && ret[ k ][ i ].toObject2 ) {
-                                ret[ k ][ i ] = ret[ k ][ i ].toObject2();
-                            }
-                        }
-                    }
-                }
-
-            }
-            return ret;
+            //for ( k in ret ) {
+            //    if ( ret.hasOwnProperty( k ) ) {
+            //        if ( Y.Lang.isObject( ret[ k ] ) && ret[ k ].toObject2 ) {
+            //            ret[ k ] = ret[ k ].toObject2();
+            //
+            //        } else if ( Y.Lang.isArray( ret[ k ] ) ) {
+            //            for ( i = 0; i < ret[ k ].length; i = i + 1 ) {
+            //                if ( Y.Lang.isObject( ret[ k ][ i ] ) && ret[ k ][ i ].toObject2 ) {
+            //                    ret[ k ][ i ] = ret[ k ][ i ].toObject2();
+            //                }
+            //            }
+            //        }
+            //    }
+            //
+            //}
+            //return ret;
         },
         /**
          * Create a new Object from this entity
@@ -151,9 +151,7 @@ YUI.add('wegas-entity', function (Y) {
             this.getStatic("EDITMENU")[0] || [];                                // And if no form is defined we return the default one defined in the entity
 
             for (i = 0; i < menu.length; i += 1 ) {                             // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
-                menu[i].data = menu[i].data || {};
-                menu[i].data.entity = this;
-                Y.mix( menu[i].data, data );
+                menu[i].data = Y.mix( {}, data );
             }
             return menu;
         },
