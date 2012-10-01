@@ -21,6 +21,21 @@
     text-decoration: underline;
 }
 
+.indicator-stamina{
+    float:left;
+    margin-left:10px;
+}
+
+.indicator-combatSkill{
+    float:left;
+    margin-left:10px;
+}
+
+.book-page{
+  clear:both; 
+  padding-top: 10px;
+}
+
 .wegas-book-dice .result p{
     height:33px;
     width:33px;
@@ -53,4 +68,14 @@
 
 .wegas-book-dice .result-value-6{
     background-image:url(/Wegas/wegas-book/images/de6.png);
+}
+
+.wegas-book-fight-content .opponent div{
+    display:inline-block;
+    margin-right:5px;
+}
+
+.wegas-book-fight-content .opponent .name{
+    font-weight: bold;
+    margin-right:10px;
 }
