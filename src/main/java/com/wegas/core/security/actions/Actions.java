@@ -4,13 +4,13 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 
 /**
- * 
+ *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public enum Actions {
 
     /**
-     * 
+     *
      */
     MANAGE_REPAIRMEN("MANAGE_REPAIRMEN", "functions:manage:repairmen"),
     /**
@@ -22,7 +22,7 @@ public enum Actions {
      */
     MANAGE_SCIENTISTS("MANAGE_SCIENTISTS", "functions:manage:scientists"),
     /**
-     * 
+     *
      */
     REPAIR_REFRIGERATOR("REPAIR_REFRIGERATOR", "functions:repair:refrigerator"),
     /**
@@ -34,7 +34,7 @@ public enum Actions {
      */
     REPAIR_DOOR("REPAIR_DOOR", "functions:repair:door"),
     /**
-     * 
+     *
      */
     SALE_PRODUCT("SALE_PRODUCT", "functions:sale:product"),
     /**
@@ -46,7 +46,7 @@ public enum Actions {
      */
     MEET_CUSTOMER("MEET_CUSTOMER", "functions:sale:meetcustomer"),
     /**
-     * 
+     *
      */
     RESEARCH_NEW_STUFF("RESEARCH_NEW_STUFF", "functions:science:research"),
     /**
@@ -59,35 +59,34 @@ public enum Actions {
     PREPARE_TALK("PREPARE_TALK", "functions:science:preparetalk");
 
     /**
-     * 
+     *
      * @return
      */
     public String doIt() {
-		String neededPermission = getNeededPermission();
-		if (SecurityUtils.getSubject().isPermitted(neededPermission)){
-			return "Function " + getName() + " run succesfully.";
-		
-                }throw new UnauthorizedException("Logged user does not have " + neededPermission + " permission");
-	}
+        String neededPermission = getNeededPermission();
+        if (SecurityUtils.getSubject().isPermitted(neededPermission)) {
+            return "Function " + getName() + " run succesfully.";
 
-	private String getNeededPermission() {
-	  return permission;
-  }
+        }
+        throw new UnauthorizedException("Logged user does not have " + neededPermission + " permission");
+    }
 
-        /**
-         * 
-         * @return
-         */
-        public String getName() {
-		return name;
-	}
+    private String getNeededPermission() {
+        return permission;
+    }
 
-	private Actions(String name, String permission) {
-		this.name = name;
-		this.permission = permission;
-	}
+    /**
+     *
+     * @return
+     */
+    public String getName() {
+        return name;
+    }
 
-	private final String name;
-	private final String permission;
-
+    private Actions(String name, String permission) {
+        this.name = name;
+        this.permission = permission;
+    }
+    private final String name;
+    private final String permission;
 }

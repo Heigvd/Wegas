@@ -68,6 +68,7 @@ public class Assignment extends AbstractEntity {
     public Assignment(Long startTime, TaskDescriptor taskDescriptor) {
         this.startTime = startTime;
         this.taskDescriptor = taskDescriptor;
+        this.taskDescriptorId = taskDescriptor.getId();
     }
 
     /**
@@ -80,6 +81,7 @@ public class Assignment extends AbstractEntity {
         this.setTaskDescriptor(other.getTaskDescriptor());
         this.setResourceInstance(other.getResourceInstance());
         this.setStartTime(other.getStartTime());
+        this.taskDescriptorId = this.getTaskDescriptor().getId();
     }
 
     @PostPersist
@@ -93,7 +95,6 @@ public class Assignment extends AbstractEntity {
     public Long getId() {
         return this.id;
     }
-
 
     /**
      * @return the MCQDescriptor
@@ -148,7 +149,7 @@ public class Assignment extends AbstractEntity {
     public Long getTaskDescriptorId() {
         return this.taskDescriptorId;
     }
-    
+
     /**
      *
      * @return

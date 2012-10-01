@@ -45,7 +45,7 @@ public class HelperTest {
     }
 
     /**
-     * Test of buildName method, of class Helper.
+     * Test of buildUniqueName method, of class Helper.
      */
     @Test
     public void testBuildName() {
@@ -57,11 +57,11 @@ public class HelperTest {
         unavailableNames.add("_1");
         unavailableNames.add("_2_1");
         unavailableNames.add("Test");
-        assertEquals("thisIsATest", Helper.buildName("This is a test", unavailableNames));
-        assertEquals("john_sTest", Helper.buildName("John's test", unavailableNames));
-        assertEquals("camelCase", Helper.buildName("CamelCase", unavailableNames));
-        assertEquals("test_2", Helper.buildName("Test", unavailableNames));
-        assertEquals("_1_1", Helper.buildName("1", unavailableNames));
-        assertEquals("_2_2", Helper.buildName("2_1", unavailableNames));
+        assertEquals("thisIsATest", Helper.buildUniqueName("This is a test", unavailableNames));
+        assertEquals("john_sTest", Helper.buildUniqueName("John's test", unavailableNames));
+        assertEquals("camelCase", Helper.buildUniqueName("CamelCase", unavailableNames));
+        assertEquals("test_2", Helper.buildUniqueName("Test", unavailableNames));
+        assertEquals("_1_1", Helper.buildUniqueName("1", unavailableNames));
+        assertEquals("_2_2", Helper.buildUniqueName("2_1", unavailableNames));
     }
 }

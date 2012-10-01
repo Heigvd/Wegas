@@ -3,6 +3,7 @@
     <module-name>Wegas</module-name>
     <description>Web Game Authoring System</description>
     <display-name>Web Game Authoring System</display-name>
+
     <distributable/>
     <session-config>
         <session-timeout>30</session-timeout>
@@ -65,8 +66,8 @@
             <param-value>com.wegas.core.rest.util.ViewRequestFilter</param-value>
         </init-param>
         <init-param>
-         <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-         <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
@@ -148,4 +149,9 @@
         <filter-name>FacebookUserFilter</filter-name>
         <url-pattern>/facebooktest/*</url-pattern>
     </filter-mapping>-->
+    <!--File Mime Types-->
+    <mime-mapping>
+        <extension>json</extension>
+        <mime-type>application/json;charset=ISO-8859-1</mime-type>
+    </mime-mapping>
 </web-app>

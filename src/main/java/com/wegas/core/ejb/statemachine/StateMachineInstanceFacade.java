@@ -14,6 +14,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.exception.WegasException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.persistence.EntityManager;
@@ -53,7 +54,7 @@ public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineI
 //        return entity;
 //    }
 
-    public void step(StateMachineInstance entity) throws ScriptException{
+    public void step(StateMachineInstance entity) throws ScriptException, WegasException{
         List<Transition> transitions = entity.getCurrentState().getTransitions();
         for(Transition transition: transitions){
             Script script = transition.getTriggerCondition();

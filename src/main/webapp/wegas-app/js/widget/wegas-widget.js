@@ -87,7 +87,7 @@ YUI.add("wegas-widget", function (Y) {
             message.closeHandler = message.one(".close").once( "click", destroySelf, message );
 
             if ( level === "success" && !timeout ) {                            // @hack successful messages disapear automatically
-                timeout = 2000;
+                timeout = 800;
             }
 
             if ( timeout ) {

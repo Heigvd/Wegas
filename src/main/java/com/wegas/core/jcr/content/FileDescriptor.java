@@ -8,7 +8,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.content;
+package com.wegas.core.jcr.content;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
