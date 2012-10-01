@@ -1,0 +1,82 @@
+/* 
+    Document   : wegas-book
+    Created on : 21 sept. 2012, 11:25:14
+    Author     : Benjamin
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.wegas-pageloader {
+    margin:10px;
+}
+
+.body *{
+    margin-top:10px;
+    max-width:700px;
+}
+
+.book-titre{
+    font-family: "helvetica";
+    font-size:1.2em;
+    margin:10px;
+    text-decoration: underline;
+}
+
+.indicator-stamina{
+    float:left;
+    margin-left:10px;
+}
+
+.indicator-combatSkill{
+    float:left;
+    margin-left:10px;
+}
+
+.book-page{
+  clear:both; 
+  padding-top: 10px;
+}
+
+.wegas-book-dice .result p{
+    height:33px;
+    width:33px;
+    color:rgba(0,0,0,0);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color:transparent;
+}
+
+.wegas-book-dice .result-value-1{
+    background-image:url(/Wegas/wegas-book/images/de1.png);
+    background-color: black;
+}
+
+.wegas-book-dice .result-value-2{
+    background-image:url(/Wegas/wegas-book/images/de2.png);
+}
+
+.wegas-book-dice .result-value-3{
+    background-image:url(/Wegas/wegas-book/images/de3.png);
+}
+
+.wegas-book-dice .result-value-4{
+    background-image:url(/Wegas/wegas-book/images/de4.png);
+}
+
+.wegas-book-dice .result-value-5{
+    background-image:url(/Wegas/wegas-book/images/de5.png);
+}
+
+.wegas-book-dice .result-value-6{
+    background-image:url(/Wegas/wegas-book/images/de6.png);
+}
+
+.wegas-book-fight-content .opponent div{
+    display:inline-block;
+    margin-right:5px;
+}
+
+.wegas-book-fight-content .opponent .name{
+    font-weight: bold;
+    margin-right:10px;
+}
