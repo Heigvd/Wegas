@@ -37,7 +37,32 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
             // *** Lifecycle Methods *** //
             renderUI: function () {
                 this.menu = new Y.Wegas.Menu();
+                this.menuDetails = new Y.Wegas.Menu({
+                    width: "250px"
+                });
+
+                // cb.on("clickoutside", this.hideMenu, this);
+                this.menu.on( "button:mouseenter", function ( e ) {
+                    this.menuDetails.set( "align", {
+                        node: this.menu.get( "boundingBox" ),
+                        points: ( e.details[0].domEvent.clientX > Y.DOM.winWidth()/2 ) ?
+                        [ "tr", "tl" ] : [ "tl", "tr" ]
+                    });
+                    this.menuDetails.show();
+                    this.menuDetails.get( "contentBox" ).setHTML( '<div style="padding:5px 10px">' +
+                        ( e.target.get("data").choice.get("description") || "<i>No description</i>" )
+                        +'</div>' );
+                }, this);
+
+                this.menu.on( "visibleChange", function ( e ) {                 // When the menu is hidden, hide the details panel
+                    if ( !e.newVal ) {
+                        this.menuDetails.hide();
+                    }
+                }, this);
+
+
                 this.renderDetailsPanel();
+
                 this.gallery = new Y.Wegas.FileExplorerGallery({
                     render:this.get(CONTENTBOX).one(".schedule-gallery"),
                     selectedHeight: 150
@@ -95,10 +120,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
             *
             */
             destructor: function () {
-                this.gallery.destroy();
-                this.menu.destroy();
-                this.datatable.destroy();
-
                 for (var i in this.handlers) {
                     this.handlers[i].detach();
                 }
@@ -367,7 +388,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     }
                     ret.push({
                         type: "Button",
-                        label: choice.get( "label" ) || choice.get( "name" ) || "undefined",
+                        label: '<span class="wegas-tooltip-trigger" title="' +
+                        escape( choice.get( "description" ) ) + '">' +
+                        ( choice.get( "label" ) || choice.get( "name" ) || "undefined" ) + "</span>",
                         data: {
                             choice: choice,
                             startTime: startTime

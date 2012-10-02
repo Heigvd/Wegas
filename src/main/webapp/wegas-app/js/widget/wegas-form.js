@@ -82,7 +82,7 @@ YUI.add('wegas-form', function (Y) {
         },
 
         destroyForm: function () {
-            this.get("form").destroy();
+            this.set( "form", null );
         }
 
     }, {
@@ -90,13 +90,16 @@ YUI.add('wegas-form', function (Y) {
             values: {
                 value: {}
             },
-            form: {},
-            formCfg: {
-                setter: function (val) {
-                    if (this.get("form")) {                                     // If there is alread a form instantiated, we destroy it
+            form: {
+                setter: function ( val ) {
+                    if ( this.get( "form" ) ) {                                 // If there is alread a form instantiated, we destroy it
                         this.get("form").destroy();
                     }
-
+                    return val;
+                }
+            },
+            formCfg: {
+                setter: function (val) {
                     val.parentEl = this.get(CONTENTBOX);                        //  Set up the form parentEl attribute, so it knows where to render
 
                     Y.inputEx.use(val, Y.bind(function (formCfg) {              // Load form dependencies

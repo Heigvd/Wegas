@@ -88,7 +88,7 @@
                             }]
                     }, {
                         "type": "Button",
-                        "label": "Analyis results",
+                        "label": "Analyze results",
                         "cssClass": "menu-button",
                         "plugins": [{
                                 "fn": "OpenPageAction",
