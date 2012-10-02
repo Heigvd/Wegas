@@ -159,6 +159,7 @@ input[type="submit"], input[type="reset"] {
     box-shadow: 1px 2px 4px #6D6D6D;
     z-index: 100;
     position: absolute;
+    font-size: 11px;
 }
 .yui3-menu-hidden {
     display:none;
