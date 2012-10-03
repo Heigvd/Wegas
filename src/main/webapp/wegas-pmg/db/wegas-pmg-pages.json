@@ -8,59 +8,93 @@
                 "direction": "horizontal",
                 "cssClass":"header",
                 "children":[{
-                        "type": "Breadcrumb",
-                        "locations": [
-                            "Initiation",
-                            "Planning",
-                            "Execution",
-                            "Closing"
-                        ],
-                        "variable" : "currentPhase"
+                        "type":"List",
+                        "direction": "horizontal",
+                        "cssClass":"time",
+                        "children":[{
+                                "type": "Breadcrumb",
+                                "locations": [
+                                    "Initiation",
+                                    "Planning",
+                                    "Execution",
+                                    "Closing"
+                                ],
+                                "variable" : "currentPhase"
+                            },{
+                                "type": "Button",
+                                "label": ">",
+                                "tooltip":"Next phase",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "onClick": "//todo"
+                                        }
+                                    }]
+                            },{
+                                "type": "VariableDisplay",
+                                "cssClass": "pmg-period",
+                                "label": "Periods",
+                                "view": "valuebox",
+                                "variable": "period",
+                                "dataSource": "VariableDescriptor"
+    
+                            }]
                     },{
-                        "type": "VariableDisplay",
-                        "label": "Direction",
-                        "view": "gauge",
-                        "variable": "managementApproval",
-                        "dataSource": "VariableDescriptor"
+                        "type":"List",
+                        "direction": "horizontal",
+                        "cssClass":"customers-gauges",
+                        "children":[{
+                                "type": "VariableDisplay",
+                                "label": "Direction",
+                                "view": "gauge",
+                                "variable": "managementApproval",
+                                "dataSource": "VariableDescriptor"
+                            },{
+                                "type": "VariableDisplay",
+                                "label": "User",
+                                "view": "gauge",
+                                "variable": "userApproval",
+                                "dataSource": "VariableDescriptor"
+                            }]
                     },{
-                        "type": "VariableDisplay",
-                        "label": "User",
-                        "view": "gauge",
-                        "variable": "userApproval",
-                        "dataSource": "VariableDescriptor"
-                    },{
-                        "type": "VariableDisplay",
-                        "label": "Fixed costs",
-                        "view": "gauge",
-                        "variable": "fixedCosts",
-                        "dataSource": "VariableDescriptor"
-                    },{
-                        "type": "VariableDisplay",
-                        "label": "Quality",
-                        "view": "gauge",
-                        "variable": "quality",
-                        "dataSource": "VariableDescriptor"
-                    },{
-                        "type": "VariableDisplay",
-                        "label": "Delay",
-                        "view": "gauge",
-                        "variable": "delay",
-                        "dataSource": "VariableDescriptor"
+                        "type":"List",
+                        "direction": "horizontal",
+                        "cssClass":"project-gauges",
+                        "children":[{
+                                "type": "VariableDisplay",
+                                "label": "Fixed costs",
+                                "view": "gauge",
+                                "variable": "fixedCosts",
+                                "dataSource": "VariableDescriptor"
+                            },{
+                                "type": "VariableDisplay",
+                                "label": "Quality",
+                                "view": "gauge",
+                                "variable": "quality",
+                                "dataSource": "VariableDescriptor"
+                            },{
+                                "type": "VariableDisplay",
+                                "label": "Delay",
+                                "view": "gauge",
+                                "variable": "delay",
+                                "dataSource": "VariableDescriptor"
+                            }]
                     },{
                         "cssClass": "pmg-timevariable",
                         "type": "VariableDisplay",
-                        "label": "Available time",
+                        "label": "Available time: ",
                         "variable": "timeCards",
                         "view": "box",
                         "dataSource": "VariableDescriptor"
+                    },{
+                        "label":"pageLoader",
+                        "type": "PageLoader",
+                        "id": "maindisplayarea",
+                        "cssClass": "body",
+                        "pageId": 2
                     }]
-            }, {
-                "label":"pageLoader",
-                "type": "PageLoader",
-                "id": "maindisplayarea",
-                "cssClass": "body",
-                "pageId": 2
-            }]
+            }
+        ]
     },{
         "id":2,
         "label":"Page 1",

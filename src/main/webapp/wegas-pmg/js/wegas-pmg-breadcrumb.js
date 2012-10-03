@@ -27,7 +27,7 @@ YUI.add( "wegas-pmg-breadcrumb", function ( Y ) {
         renderUI: function(){
             var i, node, cb = this.get(CONTENTBOX), locations = this.get("locations");
             if(locations.length == 0) return;
-            node = Y.Node.create("<div class='breadcrumb'></div>");
+            node = Y.Node.create("<div class='pmg-breadcrumb'></div>");
             for(i=0; i<locations.length; i++){
                 node.append("<span class='element_"+i+"'>"+locations[i]+"</span>");
             }
@@ -40,23 +40,34 @@ YUI.add( "wegas-pmg-breadcrumb", function ( Y ) {
         },
         
         syncUI: function(){
-            var i, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
+            var i, position = -1, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
             varDesc = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variable"));
             if(locations.length == 0 || varDesc == null) return;
             varValue = varDesc.getInstance().get("value");
             if(typeof varValue === "string"){
                 for(i=0; i<locations.length; i++){
                     if(locations[i] === varValue){
-                     cb.one(".breadcrumb .element_"+i).addClass("current");
+                     cb.one(".pmg-breadcrumb .element_"+i).addClass("current");
+                     position = i;
                      break;
                     }
                 }
             }
             else if(typeof varValue === "number"){
                 if(varValue > locations.length || varValue < 0) return;
-                cb.one(".breadcrumb .element_"+varValue).addClass("current");
+                cb.one(".pmg-breadcrumb .element_"+varValue).addClass("current");
+                position = i
             }
-            
+            if(position >= 0){
+                for(i=0; i<locations.length; i++){
+                    if(i < position){
+                     cb.one(".pmg-breadcrumb .element_"+i).addClass("previous");
+                    }
+                    if(i > position){
+                        cb.one(".pmg-breadcrumb .element_"+i).addClass("next");
+                    }
+                }
+            }
         },
         
         destroy: function(){

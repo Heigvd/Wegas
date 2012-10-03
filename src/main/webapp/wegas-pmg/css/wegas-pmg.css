@@ -1,0 +1,102 @@
+/*--------------------------------header--------------------------------------*/
+.header{
+    background-image: url(/Wegas/wegas-pmg/images/header.png);
+    background-repeat: repeat-x;
+    color:white;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 9pt;
+    width:100%;
+    padding:5px;
+}
+
+.header .pmg-breadcrumb span{
+    display:block;
+    width:90px;
+    height:18px;
+    padding:2px 0 1px 0;
+    margin-right:2px;
+    border: solid 1px #7D7D7D;
+    background-color: white;
+    color:black;
+    float:left;
+    text-align: center;
+}
+
+.header .pmg-breadcrumb .previous{
+    background-color:#BBBBBB;
+}
+
+.header .pmg-breadcrumb .current{
+    background-color:#66CC00;
+}
+
+.header button{
+    float:left;
+    width:15px;
+    padding:2px;
+    height:23px;
+}
+
+.header .pmg-period{
+    clear:both;
+}
+
+.header .wegas-variabledisplay-valuebox-label{
+    display:none;
+}
+
+.header .pmg-period .wegas-valuebox-unit{
+    width:18px;
+    height:17px;
+    float:left;
+    padding-top: 3px;
+    margin: 10px 1px 0 0;
+    border: solid 1px #7D7D7D;
+    color:black;
+    background-color: white;
+    text-align: center;
+}
+
+.header .pmg-period .wegas-valuebox-previous{
+    background-color:#BBBBBB;
+}
+
+.header .pmg-period .wegas-valuebox-selected{
+    background-image: url(/Wegas/wegas-pmg/images/next.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.header .customers-gauges{
+    margin-left:10px;
+}
+
+.header .project-gauges{
+    margin-left:30px;
+}
+
+.header .pmg-timevariable{
+    float:right;
+    display:block;
+    width:100px;
+    margin-right: 10px;
+}
+
+.header .pmg-timevariable .wegas-variabledisplay-box-unit{
+    width:5px;
+    height:10px;
+    margin: 2px 1px 0 0;
+    background-color: #FFFF00;
+    border: solid 1px #7D7D7D;
+    float:left;
+}
+
+.header .pmg-timevariable .wegas-variabledisplay-box-value{
+    float:left;
+}
+
+.header .pmg-timevariable .wegas-variabledisplay-box-valueMax{
+    display:none;
+}
+
+/*----------------------------------menu--------------------------------------*/
