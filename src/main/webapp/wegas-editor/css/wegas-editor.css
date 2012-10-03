@@ -46,7 +46,7 @@ select {
 /* YUI3 Button Widget styles redefinition */
 .yui3-skin-sam .yui3-button {
     vertical-align: top;
-    padding: .1em 0.4em .1em;
+    padding: .1em 0.6em .1em;
     min-height: 24px;
     background-color:white;
 }
