@@ -1,0 +1,75 @@
+[{
+        "id": 1,
+        "label": "Main layout",
+        "type": "List",
+        "cssClass": "layout",
+        "children": [{
+                "type":"List",
+                "direction": "horizontal",
+                "cssClass":"header",
+                "children":[{
+                        "type": "Breadcrumb",
+                        "locations": [
+                            "Initiation",
+                            "Planning",
+                            "Execution",
+                            "Closing"
+                        ],
+                        "variable" : "currentPhase"
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "Direction",
+                        "view": "gauge",
+                        "variable": "managementApproval",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "User",
+                        "view": "gauge",
+                        "variable": "userApproval",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "Fixed costs",
+                        "view": "gauge",
+                        "variable": "fixedCosts",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "Quality",
+                        "view": "gauge",
+                        "variable": "quality",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "Delay",
+                        "view": "gauge",
+                        "variable": "delay",
+                        "dataSource": "VariableDescriptor"
+                    },{
+                        "cssClass": "pmg-timevariable",
+                        "type": "VariableDisplay",
+                        "label": "Available time",
+                        "variable": "timeCards",
+                        "view": "box",
+                        "dataSource": "VariableDescriptor"
+                    }]
+            }, {
+                "label":"pageLoader",
+                "type": "PageLoader",
+                "id": "maindisplayarea",
+                "cssClass": "body",
+                "pageId": 2
+            }]
+    },{
+        "id":2,
+        "label":"Page 1",
+        "cssClass":"book-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"Bienvenue, ceci est la première page de ce tutoriel. La page (élément général existant sur chaque 'interface' du jeu) contient un titre ainsi que la valeure de vigueur (stamina) et de combat (combat skill) de notre héros. Cette page est constituée également d'une sous-page (inteface changeante du jeu) contenant un widget 'list' qui contient un widget 'text' (ce texte) ainsi qu'un widget 'button' (le bouton ci-dessous). Cliquez sur ce dernier pour aller à la sous-page suivante."
+            }
+        ]
+    }
+]

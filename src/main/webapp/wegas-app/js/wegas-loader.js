@@ -315,8 +315,10 @@ YUI().use(function (Y) {
                     },
 
                     /** Project Management Game **/
-                    'wegas-projectmanagementgame': {
-                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
+                    'wegas-pmg': {
+                        path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
+                        requires:['wegas-pmg-breadcrumb'],
+                        ix_provides: "Breadcrumb"
                     },
                     
                     /**book CYOA**/

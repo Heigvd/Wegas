@@ -1,0 +1,35 @@
+{
+    "@class": "GameModel",
+    "name": "Project Management Game",
+    "cssUri": "wegas-pmg/css/wegas-pmg.css",
+    "widgetsUri": "wegas-pmg/db/wegas-pmg-pages.json",
+    "games":[{
+        "@class":"Game",
+        "name":"Test-21",
+        "teams":[{
+            "@class": "Team",
+            "name":"red",
+            "players": [ {
+                "@class": "Player",
+                "name": "Jo",
+                "user": {
+                    "@class": "User",
+                    "name": "Jean"
+                }
+            }]
+        }]
+    }],
+    "childVariableDescriptors": [{
+        "@class": "NumberDescriptor",
+        "name": "currentPhase",
+        "minValue": 0,
+        "maxValue": 3,
+        "defaultInstance": {
+            "@class": "NumberInstance",
+            "value":"0"
+        },
+        "scope": {
+            "@class": "TeamScope"
+        }     
+    }]
+}
