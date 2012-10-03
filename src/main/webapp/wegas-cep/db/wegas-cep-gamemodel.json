@@ -1,0 +1,307 @@
+{
+    "@class":"GameModel",
+    "name":"CEP Game",
+    "games":[{
+        "@class":"Game",
+        "name":"Test-CEP",
+        "teams":[{
+            "@class": "Team",
+            "name":"Les rouges",
+            "players": [ {
+                "@class": "Player",
+                "name": "Jo"
+            }]
+        }]
+    }],
+    "scriptLibrary": {
+        "default": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passWeek() {\n period.value += 1; \nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\n qdf.setCurrentTime(evidences.descriptor, self, period.value); \nhumanResources.value = 15;\n } "
+    },
+    "cssUri": "wegas-cep/css/wegas-cep.css",
+    "widgetsUri": "wegas-cep/db/wegas-cep-pages.json",
+    "childVariableDescriptors": [{
+        "@class":"ListDescriptor",
+        "name":"phases",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "items":[{
+            "@class":"NumberDescriptor",
+            "name":"organisationalmap-1",
+            "label": "Élaborer la carte personnelle spontanée de l'organisation",
+            "defaultInstance":{
+                "@class":"NumberInstance",
+                "value":1
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "minValue":1,
+            "maxValue":5
+        }, {
+            "@class":"NumberDescriptor",
+            "name":"organisationalmap-2",
+            "label": "Elaborer la carte factuelle de l'organisation",
+            "defaultInstance":{
+                "@class":"NumberInstance",
+                "value":1
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "minValue":1,
+            "maxValue":3
+        }, {
+            "@class":"NumberDescriptor",
+            "name":"organisationalmap-3",
+            "label": "Elaborer la carte systématique de l'organisation",
+            "defaultInstance":{
+                "@class":"NumberInstance",
+                "value":1
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "minValue":1,
+            "maxValue":4
+        }]
+    }, {
+        "@class":"NumberDescriptor",
+        "name":"cost",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":0.0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "minValue":null,
+        "maxValue":null
+    },{
+        "@class":"NumberDescriptor",
+        "name":"humanResources",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":15.0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "tags":[],
+        "minValue":1,
+        "maxValue":15
+    },{
+        "@class":"NumberDescriptor",
+        "name":"period",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":1.0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "tags":[],
+        "minValue":1,
+        "maxValue":10
+    },{
+        "@class":"NumberDescriptor",
+        "label": "Direction",
+        "name":"managementApproval",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":1.0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "tags":[],
+        "minValue":1,
+        "maxValue":10
+    },{
+        "@class":"NumberDescriptor",
+        "label": "Utilisateurs",
+        "name":"customerApproval",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":1.0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "tags":[],
+        "minValue":1,
+        "maxValue":10
+    },{
+        "@class":"InboxDescriptor",
+        "name":"inbox",
+        "defaultInstance":{
+            "@class":"InboxInstance",
+            "messages":[]
+        },
+        "scope":{
+            "@class":"TeamScope"
+        }
+    }, {
+        "@class":"ListDescriptor",
+        "name":"choices",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":0.0
+        },
+        "scope":{
+            "@class":"GameModelScope"
+        },
+        "items":[{
+            "@class":"ListDescriptor",
+            "name":"Choices phase 1",
+            "defaultInstance":{
+                "@class":"NumberInstance"
+            },
+            "scope":{
+                "@class":"GameModelScope"
+            },
+            "items":[{
+                "@class":"QuestionDescriptor",
+                "name":"Comment faire cela?",
+                "defaultInstance":{
+                    "@class":"QuestionInstance"
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "items":[{
+                    "@class":"ChoiceDescriptor",
+                    "name":"a) Reponse 1",
+                    "defaultInstance":{
+                        "@class":"ChoiceInstance"
+                    },
+                    "scope":{
+                        "@class":"TeamScope"
+                    },
+                    "results": [{
+                        "@class": "Result",
+                        "name": "Normal",
+                        "answer": "Faux c'est pas lui."
+                    }]
+                }]
+            }]
+        }, {
+            "@class":"ListDescriptor",
+            "name":"Choices phase 2",
+            "defaultInstance":{
+                "@class":"NumberInstance"
+            },
+            "scope":{
+                "@class":"GameModelScope"
+            },
+            "items":[{
+                "@class":"QuestionDescriptor",
+                "name":"Comment faire cela?",
+                "defaultInstance":{
+                    "@class":"QuestionInstance"
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "items":[{
+                    "@class":"ChoiceDescriptor",
+                    "name":"a) Reponse 1",
+                    "defaultInstance":{
+                        "@class":"ChoiceInstance"
+                    },
+                    "scope":{
+                        "@class":"TeamScope"
+                    },
+                    "results": [{
+                        "@class": "Result",
+                        "name": "Normal",
+                        "answer": "Faux c'est pas lui."
+                    }]
+                }]
+            }]
+        }]
+    }, {
+        "@class":"ListDescriptor",
+        "name":"actions",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":0.0
+        },
+        "scope":{
+            "@class":"GameModelScope"
+        },
+        "tags":[],
+        "items":[{
+            "@class":"QuestionDescriptor",
+            "name":"Qui est la victime?",
+            "defaultInstance":{
+                "@class":"QuestionInstance",
+                "replies":[],
+                "active":true,
+                "unread":true
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "tags":[],
+            "items":[{
+                "@class":"ChoiceDescriptor",
+                "name":"a) Marc",
+                "defaultInstance":{
+                    "@class":"ChoiceInstance",
+                    "active":true,
+                    "unread":true
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "tags":[],
+                "description":"",
+                "results": [{
+                    "@class": "Result",
+                    "name": "Normal",
+                    "answer": "Non c'est pas lui.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"humanResources.value -= 2"
+                    }
+                }],
+                "duration":0,
+                "cost":0
+            },{
+                "@class":"ChoiceDescriptor",
+                "name":"b) Roger",
+                "defaultInstance":{
+                    "@class":"ChoiceInstance",
+                    "active":true,
+                    "unread":true,
+                    "descriptorId":-1
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "tags":[],
+                "description":"",
+                "results": [{
+                    "@class": "Result",
+                    "name": "Normal",
+                    "answer": "Oui c'est pas lui.",
+                    "impact":{
+                        "@class":"Script",
+                        "language":"JavaScript",
+                        "content":"humanResources.value -= 2"
+                    }
+                }],
+                "duration":0,
+                "cost":0
+            }],
+            "label":"",
+            "description":"",
+            "allowMultipleReplies":false
+        }]
+    }]
+}

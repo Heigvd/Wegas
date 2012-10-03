@@ -126,8 +126,12 @@ YUI().use(function (Y) {
                     },
                     'wegas-variabledisplay': {
                         path: 'wegas-app/js/widget/wegas-variabledisplay-min.js',
-                        requires: [ /*'excanvas'*/ ],
                         ix_provides: 'VariableDisplay'
+                    },
+                    'wegas-gaugedisplay': {
+                        path: 'wegas-app/js/widget/wegas-gaugedisplay-min.js',
+                        requires: [ "gauge" ],
+                        ix_provides: 'GaugeDisplay'
                     },
                     'wegas-inbox': {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
@@ -168,7 +172,7 @@ YUI().use(function (Y) {
                     'wegas-inputex-rte': {
                         path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',
                         requires: ['inputex-field', 'yui2-editor', 'panel',
-                        'wegas-fileexplorer' ],
+                        'wegas-fileexplorer', 'wegas-inputex-url' ],
                         ix_provides: 'html'
                     },
                     'wegas-inputex-hashlist': {
@@ -313,30 +317,30 @@ YUI().use(function (Y) {
                     'wegas-statemachineviewercss': {
                         path: 'wegas-editor/css/wegas-statemachineviewer.css'
                     },
+                    'wegas-mcqtabview': {
+                        path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
+                        requires: [ 'tabview' ],
+                        ix_provides: "MCQTabView"
+                    },
 
                     /** Project Management Game **/
                     'wegas-projectmanagementgame': {
                         path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
                     },
-                    
+
                     /**book CYOA**/
                     'wegas-book': {
                         path: 'wegas-book/js/wegas-book-fight.js',
                         requires:['wegas-book-fight', 'wegas-book-dice'],
                         ix_provides: "Fight"
                     },
-                    
+
                     'wegas-book-dice': {
                         path: 'wegas-book/js/wegas-book-dice.js',
                         ix_provides: "Dice"
                     },
 
                     /** CrimeSim **/
-                    'wegas-mcqtabview': {
-                        path: 'wegas-crimesim/js/wegas-mcqtabview-min.js',
-                        requires: [ 'tabview' ],
-                        ix_provides: "MCQTabView"
-                    },
                     'wegas-crimesim-scheduledisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',
                         requires: ['wegas-widget', 'wegas-widgetmenu', 'datatable' ],
@@ -476,6 +480,9 @@ YUI().use(function (Y) {
                     },
                     'escodegen': {
                         path: 'escodegen/escodegen-min.js'
+                    },
+                    'gauge': {
+                        path: "gauge.min.js"
                     }
                 }
             }

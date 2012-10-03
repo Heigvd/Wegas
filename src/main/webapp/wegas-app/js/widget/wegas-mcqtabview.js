@@ -12,13 +12,13 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-mcqtabview', function (Y) {
+YUI.add( 'wegas-mcqtabview', function ( Y ) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
     MCQTabView;
 
-    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    MCQTabView = Y.Base.create( "wegas-mcqtabview", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
 
         // *** Private fields *** //
         tabView: null,
@@ -50,7 +50,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
 
         syncUI: function () {
             var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel, tab, cChoices, choiceDescriptor, reply,
-            questions = this.dataSource.rest.find( 'name', "questions" ),
+            questions = this.get( "variable" ),
             selectedTab = this.tabView.get( 'selection' ),
             lastSelection = ( selectedTab ) ? selectedTab.get('index') : 0;
 
@@ -64,7 +64,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
             for (i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
                 cQuestionLabel = cQuestion.get("label") || cQuestion.get("name") || "undefined";
-                ret = ['<div class="title">Details</div>',
+                ret = [//'<div class="title">Details</div>',
                 '<div class="content">',
                 '<div class="title">', cQuestionLabel, '</div>',
                 '<div class="description">',
@@ -151,6 +151,25 @@ YUI.add('wegas-mcqtabview', function (Y) {
                     this.questionInstance.set( "unread" ) = false;
                     this.dataSource.rest.put(this.questionInstance);
                 });
+            }
+        }
+    }, {
+        ATTRS: {
+            variableName: {},
+            expr: {},
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variable: {
+                getter: function () {
+                    if ( this.get( "variableName" ) ) {
+                        return this.dataSource.rest.find( 'name', this.get( "variableName" ) )
+                    } else {
+                        return this.dataSource.rest.findById(
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
+                    }
+                }
             }
         }
     });
