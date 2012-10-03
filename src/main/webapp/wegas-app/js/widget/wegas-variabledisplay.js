@@ -60,7 +60,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
 
                 case 'box':
                     acc = [];
-                    for (i = 0; i < value; i += 1) {
+                    for ( i = 0; i < value; i += 1 ) {
                         acc.push('<div class="wegas-variabledisplay-box-unit"></div>');
                     }
                     return '<div class="wegas-variabledisplay-box-label">' + label + '</div>'

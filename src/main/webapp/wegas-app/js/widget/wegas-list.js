@@ -6,10 +6,10 @@ YUI.add('wegas-list', function (Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
-        CONTENTBOX = 'contentBox',
-        List;
+    CONTENTBOX = 'contentBox',
+    List;
 
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget ], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild,  Y.Wegas.Widget ], {
 
 
         // ** Lifecycle Methods ** //
@@ -33,6 +33,14 @@ YUI.add('wegas-list', function (Y) {
             },
             direction: {
                 value: 'vertical'
+            },
+
+            /**
+             * Prevent widgetchild selection to be propagated through the hierarchy
+             */
+            selected: {
+                value: 2,
+                readonly: true
             }
         }
     });

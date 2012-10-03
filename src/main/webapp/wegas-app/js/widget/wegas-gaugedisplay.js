@@ -32,8 +32,8 @@ YUI.add('wegas-gaugedisplay', function (Y) {
                     strokeWidth: 0.035,                                         // The rotation offset
                     color: '#000000'                                            // Fill color
                 },
-                colorStart: '#6FADCF',                                          // Colors
-                colorStop: '#8FC0DA',
+                colorStart: '#0981A9',                                          // Colors
+                colorStop: '#000000',
                 //strokeColor: '#E0E0E0',
                 strokeColor: '#FFFFFF',
                 generateGradient: true
