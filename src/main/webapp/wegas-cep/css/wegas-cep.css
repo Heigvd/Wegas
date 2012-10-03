@@ -73,7 +73,7 @@ h3 {
 
 .body {
     width: 100%;
-    height: 280px;
+    min-height: 280px;
     margin: 0 auto;
     background: white url(../../wegas-cep/images/templatemo_banner_bg_wrapper.jpg) top repeat-x;
 }
@@ -96,6 +96,8 @@ h3 {
     width: 100%;
     margin: 0 auto;
     background: #c1c1c1 url(../../wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;
+    min-height: 199px;
+
 }
 
 .footer > div {
@@ -133,7 +135,7 @@ h3 {
     float:left;
     width: 42px;
     display: block;
-    padding-top: 4px;
+    padding-top: 5px;
 }
 .timeIndicators .wegas-value {
     float:left;
@@ -154,6 +156,38 @@ h3 {
     -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
     -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.timecards {
+    width: 70px;
+    padding-top: 10px;
+}
+.timecards .wegas-variabledisplay-box-label {
+    line-height:normal;
+}
+.timecards .wegas-variabledisplay-box-value {
+    font-size: 10px;
+}
+
+.timecards .wegas-variabledisplay-box-unit {
+    width: 7px;
+    height:10px;
+    float:left;
+    border: inset 1px solid #999;
+    border-radius: 2px;
+    background-color: #0981A9;
+    margin: 1px 1px 0 0;
+    color: white;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));
+    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
+
 }
 .timeIndicators .wegas-variabledisplay-text-value {
     padding:2px 6px 1px;
@@ -178,8 +212,28 @@ h3 {
     font-size: 10px;
     font-weight: bold;
     background-color:#c2c2c2;
-    margin-top: 8px;
-    padding: 0em 1em .1em;
+    margin-top: 4px;
+    padding: 8px 1em;
+}
+.menu .yui3-button-selected {
+    background-color: #6D6D6D;
+}
+.menu .yui3-button .wegas-icon {
+    width: 20px;
+    margin: -4px 4px 0 0;
+    background-image: url(../../wegas-cep/images/cep-icons.png);
+}
+.menu .cep-icon-choices {
+    background-position-y:-86px;
+}
+.menu .cep-icon-home {
+    background-position-y:-157px;
+}
+.menu .cep-icon-history {
+    background-position-y:-121px;
+}
+.menu .cep-icon-mail {
+    background-position-y:-47px;
 }
 
 
@@ -271,10 +325,16 @@ h3 {
     float: right;
 }
 .wegas-mcqtabview .replies {
+    padding-bottom: 5px;
 }
 .wegas-mcqtabview .reply {
-    margin: 8px;
-    margin-bottom: 10px;
+    margin: 3px 8px 0px;
+}
+.wegas-mcqtabview .replies .subtitle {
+    border-bottom: none;
+    font-weight: normal;
+    font-style: italic;
+    padding: 4px 8px 0px;
 }
 .wegas-mcqtabview .reply .name {
     font-weight: bold;

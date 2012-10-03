@@ -27,9 +27,11 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
 
         // *** Lifecycle Methods *** //
         renderUI: function () {
+            var cb = this.get( CONTENTBOX );
             this.dataSource = Y.Wegas.VariableDescriptorFacade;
             this.tabView = new Y.TabView();
-            this.tabView.render(this.get(CONTENTBOX));
+            this.tabView.render( cb );
+            cb.append( "<div style='clear:both'></div>" );
             this.handlers = {};
         },
 
@@ -61,7 +63,7 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
 
             this.tabView.removeAll();
 
-            for (i = 0; i < questions.length; i += 1) {
+            for ( i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
                 cQuestionLabel = cQuestion.get("label") || cQuestion.get("name") || "undefined";
                 ret = [//'<div class="title">Details</div>',
@@ -75,8 +77,8 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
                 cChoices = cQuestion.get("items");
 
                 if ( cQuestionInstance.get( "active" ) ) {
-                    if (cQuestionInstance.get( "replies" ).length === 0         // If the question is not replied, we display its reply set
-                        || cQuestion.allowMultipleReplies) {
+                    if ( cQuestionInstance.get( "replies" ).length === 0        // If the question is not replied, we display its reply set
+                        || cQuestion.get( "allowMultipleReplies" ) ) {
 
                         ret.push('<div class="subtitle">Answers</div><div class="replies">');
 

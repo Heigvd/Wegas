@@ -93,20 +93,29 @@ YUI.add('wegas-action', function (Y) {
      *  @constructor
      */
     var OpenPageAction = function () {
-        OpenPageAction.superclass.constructor.apply(this, arguments);
+        OpenPageAction.superclass.constructor.apply( this, arguments );
     };
 
-    Y.mix(OpenPageAction, {
-        NS: "wegas",
-        NAME: "OpenPageAction"
-    });
+    Y.extend( OpenPageAction, Action, {
 
-    Y.extend(OpenPageAction, Action, {
+        initializer: function () {
+            OpenPageAction.superclass.initializer.apply( this, arguments );
+            this.afterHostEvent( "render", function() {
+                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                if ( targetPageLoader.get("pageId") === this.get( "subpageId" ) ) {
+                    this.get( "host" ).set( "selected", 1 );
+                }
+            }, this);
+        },
+
         execute: function () {
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             targetPageLoader.set("pageId", this.get("subpageId"));
+            this.get( "host" ).set( "selected", 1 );
         }
     }, {
+        NS: "OpenPageAction",
+        NAME: "OpenPageAction",
         ATTRS: {
             subpageId: {},
             targetPageLoaderId: {}

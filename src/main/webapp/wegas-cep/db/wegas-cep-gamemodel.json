@@ -14,7 +14,7 @@
         }]
     }],
     "scriptLibrary": {
-        "default": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passWeek() {\n period.value += 1; \nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\n qdf.setCurrentTime(evidences.descriptor, self, period.value); \nhumanResources.value = 15;\n } "
+        "default": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passPeriod() {var currentTime = phases.descriptor.items.get(phases.value),\ncurrentTimeInstance = currentTime.getInstance(self);\ncurrentTimeInstance.value += 1;\nif (currentTimeInstance.value > currentTime.maxValue) {\nphases.value += 1;\n}\nhumanResources.value = 15;\n } "
     },
     "cssUri": "wegas-cep/css/wegas-cep.css",
     "widgetsUri": "wegas-cep/db/wegas-cep-pages.json",
@@ -199,7 +199,7 @@
             },
             "items":[{
                 "@class":"QuestionDescriptor",
-                "name":"Comment faire cela?",
+                "name":"Sample choice phase 2?",
                 "defaultInstance":{
                     "@class":"QuestionInstance"
                 },
@@ -233,75 +233,86 @@
         "scope":{
             "@class":"GameModelScope"
         },
-        "tags":[],
         "items":[{
-            "@class":"QuestionDescriptor",
-            "name":"Qui est la victime?",
+            "@class":"ListDescriptor",
+            "name":"Actions phase 1",
             "defaultInstance":{
-                "@class":"QuestionInstance",
-                "replies":[],
-                "active":true,
-                "unread":true
+                "@class":"NumberInstance"
             },
             "scope":{
-                "@class":"TeamScope"
+                "@class":"GameModelScope"
             },
-            "tags":[],
             "items":[{
-                "@class":"ChoiceDescriptor",
-                "name":"a) Marc",
+                "@class":"QuestionDescriptor",
+                "name":"Effectuer action 1 phase 1",
+                "allowMultipleReplies": true,
                 "defaultInstance":{
-                    "@class":"ChoiceInstance",
-                    "active":true,
-                    "unread":true
+                    "@class":"QuestionInstance"
                 },
                 "scope":{
                     "@class":"TeamScope"
                 },
-                "tags":[],
-                "description":"",
-                "results": [{
-                    "@class": "Result",
-                    "name": "Normal",
-                    "answer": "Non c'est pas lui.",
-                    "impact":{
-                        "@class":"Script",
-                        "language":"JavaScript",
-                        "content":"humanResources.value -= 2"
-                    }
-                }],
-                "duration":0,
-                "cost":0
-            },{
-                "@class":"ChoiceDescriptor",
-                "name":"b) Roger",
+                "items":[{
+                    "@class":"ChoiceDescriptor",
+                    "name":"reponse 1)",
+                    "defaultInstance":{
+                        "@class":"ChoiceInstance"
+                    },
+                    "scope":{
+                        "@class":"TeamScope"
+                    },
+                    "results": [{
+                        "@class": "Result",
+                        "name": "Normal",
+                        "answer": "Tout c'est bien passé.",
+                        "impact":{
+                            "@class":"Script",
+                            "language":"JavaScript",
+                            "content":"humanResources.value -= 1;"
+                        }
+                    }]
+                }]
+            }]
+        }, {
+            "@class":"ListDescriptor",
+            "name":"Actions phase 2",
+            "defaultInstance":{
+                "@class":"NumberInstance"
+            },
+            "scope":{
+                "@class":"GameModelScope"
+            },
+            "items":[{
+                "@class":"QuestionDescriptor",
+                "name":"Effectuer action 1 phase 2",
+                "allowMultipleReplies": true,
                 "defaultInstance":{
-                    "@class":"ChoiceInstance",
-                    "active":true,
-                    "unread":true,
-                    "descriptorId":-1
+                    "@class":"QuestionInstance"
                 },
                 "scope":{
                     "@class":"TeamScope"
                 },
-                "tags":[],
-                "description":"",
-                "results": [{
-                    "@class": "Result",
-                    "name": "Normal",
-                    "answer": "Oui c'est pas lui.",
-                    "impact":{
-                        "@class":"Script",
-                        "language":"JavaScript",
-                        "content":"humanResources.value -= 2"
-                    }
-                }],
-                "duration":0,
-                "cost":0
-            }],
-            "label":"",
-            "description":"",
-            "allowMultipleReplies":false
+                "items":[{
+                    "@class":"ChoiceDescriptor",
+                    "name":"reponse 1)",
+                    "defaultInstance":{
+                        "@class":"ChoiceInstance"
+                    },
+                    "scope":{
+                        "@class":"TeamScope"
+                    },
+                    "results": [{
+                        "@class": "Result",
+                        "name": "Normal",
+                        "answer": "Tout c'est bien passé.",
+                        "impact":{
+                            "@class":"Script",
+                            "language":"JavaScript",
+                            "content":"humanResources.value -= 1;"
+                        }
+                    }]
+                }]
+            }]
         }]
     }]
 }

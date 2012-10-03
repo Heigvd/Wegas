@@ -38,10 +38,16 @@
                                 "plugins": [{
                                         "fn": "ExecuteScriptAction",
                                         "cfg": {
-                                            "onClick": "period.value += 1;"
+                                            "onClick": "passPeriod();"
                                         }
                                     }],
                                 "cssClass": "fl"
+                            },{
+                                "type": "VariableDisplay",
+                                "label": "Time cards",
+                                "view": "box",
+                                "variable": "humanResources",
+                                "cssClass": "fr timecards"
                             }, {
                                 "type": "GaugeDisplay",
                                 "variable": "customerApproval",
@@ -57,7 +63,7 @@
                         "direction": "horizontal",
                         "children": [{
                                 "type": "Button",
-                                "label": "Accueil",
+                                "label": "<span class=\"wegas-icon cep-icon-home\"></span>Accueil",
                                 "cssClass": "menu-button",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
@@ -68,7 +74,7 @@
                                     }]
                             },{
                                 "type": "Button",
-                                "label": "Choices",
+                                "label": "<span class=\"wegas-icon cep-icon-choices\"></span>Choices",
                                 "cssClass": "menu-button",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
@@ -84,7 +90,7 @@
                                     }]
                             },{
                                 "type": "Button",
-                                "label": "Actions",
+                                "label": "<span class=\"wegas-icon cep-icon-actions\"></span>Actions",
                                 "cssClass": "menu-button",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
@@ -100,7 +106,7 @@
                                     }]
                             }, {
                                 "type": "Button",
-                                "label": "Mails",
+                                "label": "<span class=\"wegas-icon cep-icon-mail\"></span>Mails",
                                 "cssClass": "menu-button",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
@@ -116,7 +122,7 @@
                                     }]
                             }, {
                                 "type": "Button",
-                                "label": "Historique",
+                                "label": "<span class=\"wegas-icon cep-icon-history\"></span>Historique",
                                 "cssClass": "menu-button",
                                 "disabled": true
                             }, {
@@ -141,7 +147,7 @@
     },{
         "id": 2,
         "type": "Text",
-        "content": "Welcome to CEP case."
+        "content": "Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />"
     },{
         "id": 3,
         "type": "MCQTabView",
