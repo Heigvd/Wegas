@@ -531,6 +531,7 @@
                         <exclude>lib/jsPlumb/**</exclude>
                         <exclude>lib/yui2in3/**</exclude>
                         <exclude>lib/yui3/**</exclude>
+                        <exclude>lib/gauge.min.js</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -1,0 +1,348 @@
+/* CEP Styles
+ * Credit: http://www.templatemo.com
+*/
+.layout {
+    margin: 0;
+    padding: 0;
+    line-height: 1.5em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    background-color: #c1c1c1;
+    min-height:100%;
+}
+
+
+.fl { float: left !important; }
+.fr { float: right !important; }
+a:link, a:visited { color: #006699; text-decoration: none; font-weight: normal; }
+a:active, a:hover { color: #CC0000; text-decoration: underline; }
+
+h1 {
+    margin: 0px;
+    padding: 0px;;
+    font-size: 30px;
+    font-weight: bold;
+    color: #000;
+}
+
+h2 {
+    margin: 0 0 15px 0;
+    padding: 3px 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000000;
+}
+
+h3 {
+    margin: 0px;
+    padding: 0px;
+    font-size: 12px;
+    font-weight: bold;
+    font-weight: bold;
+    color: #000;
+}
+
+/* site title */
+.header {
+    width: 100%;
+    height: 100px;
+    margin: 0 auto;
+    background: url(../../wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) top repeat-x;
+
+}
+
+.header > div {
+    width: 960px;
+    height: 100px;
+    margin: 0 auto;
+    padding: 0 10px;
+    background: url(../../wegas-cep/images/templatemo_site_title_bg.jpg) center top no-repeat;overflow: hidden;
+}
+.header .variables {
+    height: 71px;
+}
+.variables .cep-title {
+    background: url(../../wegas-cep/images/ceplogo3.gif) left top no-repeat;
+    width: 81px;
+    height: 100px;
+    background-size: 75px;
+    margin-top: 29px;
+}
+
+/* Body styles */
+
+.body {
+    width: 100%;
+    min-height: 280px;
+    margin: 0 auto;
+    background: white url(../../wegas-cep/images/templatemo_banner_bg_wrapper.jpg) top repeat-x;
+}
+
+.body > div  {
+    width: 960px;
+    min-height: 250px;
+    margin: 0 auto;
+    padding: 10px;
+    background: url(../../wegas-cep/images/templatemo_banner_bg.jpg) center top no-repeat;
+}
+
+.body .wegas-text-content {
+    padding: 50px;
+}
+
+/* Footer */
+
+.footer {
+    width: 100%;
+    margin: 0 auto;
+    background: #c1c1c1 url(../../wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;
+    min-height: 199px;
+
+}
+
+.footer > div {
+    width: 960px;
+    margin: 0 auto;
+    padding: 0 10px 30px 10px;
+    background: none;
+}
+.footer > div > div {
+    font-size: 10px;
+    padding-top: 20px;
+    float: none;
+    text-align: center;
+}
+
+/** Variable display 's styles */
+.wegas-valuebox-unit {
+    float:left;
+    padding: 0px 4px;
+    color: white;
+    margin: 1px 0;
+    border-right: 1px solid lightgray;
+}
+.wegas-valuebox-unit:last-child {
+    border-right:none;
+}
+.wegas-valuebox-selected {
+    background-color:white;
+    color: black;
+}
+.timeIndicators .wegas-variabledisplay {
+    padding-top:13px;
+}
+.timeIndicators .wegas-label {
+    float:left;
+    width: 42px;
+    display: block;
+    padding-top: 5px;
+}
+.timeIndicators .wegas-value {
+    float:left;
+    display: block;
+    padding:0px 2px;
+    border: inset 1px solid #999;
+    border-radius: 3px;
+    background-color: #0981A9;
+    margin-top: 3px;
+    color: white;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));
+    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.timecards {
+    width: 70px;
+    padding-top: 10px;
+}
+.timecards .wegas-variabledisplay-box-label {
+    line-height:normal;
+}
+.timecards .wegas-variabledisplay-box-value {
+    font-size: 10px;
+}
+
+.timecards .wegas-variabledisplay-box-unit {
+    width: 7px;
+    height:10px;
+    float:left;
+    border: inset 1px solid #999;
+    border-radius: 2px;
+    background-color: #0981A9;
+    margin: 1px 1px 0 0;
+    color: white;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));
+    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);
+    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
+
+}
+.timeIndicators .wegas-variabledisplay-text-value {
+    padding:2px 6px 1px;
+}
+.variables .yui3-button {
+    margin-left: 6px;
+    margin-top: 16px;
+    background-color: #AF0303;
+    color: white;
+    padding: 13px 12px;
+    font-weight: bold;
+    text-shadow: 1px 2px 1px #D34848;
+}
+.menu-loginbutton {
+    float:right;
+}
+.wegas-gauge {
+    padding-top: 3px;
+}
+
+.menu .yui3-button {
+    font-size: 10px;
+    font-weight: bold;
+    background-color:#c2c2c2;
+    margin-top: 4px;
+    padding: 8px 1em;
+}
+.menu .yui3-button-selected {
+    background-color: #6D6D6D;
+}
+.menu .yui3-button .wegas-icon {
+    width: 20px;
+    margin: -4px 4px 0 0;
+    background-image: url(../../wegas-cep/images/cep-icons.png);
+}
+.menu .cep-icon-choices {
+    background-position-y:-86px;
+}
+.menu .cep-icon-home {
+    background-position-y:-157px;
+}
+.menu .cep-icon-history {
+    background-position-y:-121px;
+}
+.menu .cep-icon-mail {
+    background-position-y:-47px;
+}
+
+
+/* TabView Styles */
+.wegas-mcqtabview  .yui3-tabview-content {
+    /*padding-left: 350px;*/
+}
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-list {
+    display: inline-block;
+    float:left;
+    /* margin-left: -350px;*/
+    border: none;
+    display: inline-block;
+    border-right: 1px solid lightgray;
+    width: 39.9%;
+}
+
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-panel {
+    display:inline-block;
+    width:60%;
+    float:left;
+    overflow:inherit;
+}
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-panel  {
+    border-left: 1px solid lightgray;
+}
+.wegas-mcqtabview .yui3-tab {
+    display: block;
+    border:none;
+    border-bottom:1px solid #DBDBDB;
+    margin: 0;
+    cursor:pointer;
+    width:100%;
+    padding:0;
+}
+.wegas-mcqtabview .pmg-subtitle {
+    padding:6px 0;
+    font-size: 1.2em;
+    font-weight: normal;
+    border-bottom: 2px solid #4D4D4D;
+}
+.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle  .left ,
+.yui3-skin-sam .wegas-mcqtabview .yui3-tab  .label {
+    float:left;
+    padding-left:8px;
+}
+.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle .right ,
+.yui3-skin-sam .wegas-mcqtabview .yui3-tab .status {
+    float:right;
+    padding-right:8px;
+}
+.yui3-skin-sam .wegas-mcqtabview .yui3-tab a.yui3-tab-label  {
+    background: none;
+    border: none;
+    padding: 6px 0px;
+    width:100%;
+}
+.wegas-mcqtabview {
+    line-height: normal;
+}
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tab a:hover {
+    background: rgba(178, 210, 255, 0.1);
+    box-shadow: 0px 0px 4px #6D6D6D;
+}
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected {
+    background: rgba(178, 210, 255, 0.5);
+    box-shadow: 0px 0px 4px #6D6D6D;
+}
+.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
+    color:black;
+}
+
+.wegas-mcqtabview .title {
+    font-weight: bold;
+    padding: 7px 5px 2px;
+    border-bottom: 1px solid lightgray;
+    font-size: 13px;
+}
+.wegas-mcqtabview .subtitle {
+    font-weight: bold;
+    padding: 2px 5px 0px;
+    border-bottom: 1px solid lightgray;
+}
+.wegas-mcqtabview  .description {
+    margin: 8px;
+    margin-bottom: 20px;
+}
+.wegas-mcqtabview  input {
+    float: right;
+}
+.wegas-mcqtabview .replies {
+    padding-bottom: 5px;
+}
+.wegas-mcqtabview .reply {
+    margin: 3px 8px 0px;
+}
+.wegas-mcqtabview .replies .subtitle {
+    border-bottom: none;
+    font-weight: normal;
+    font-style: italic;
+    padding: 4px 8px 0px;
+}
+.wegas-mcqtabview .reply .name {
+    font-weight: bold;
+}
+.wegas-mcqtabview .reply content {
+    /*font-weight: bold;*/
+    margin-bottom:5px;
+}
+.wegas-mcqtabview .unread {
+    font-weight:bold;
+}

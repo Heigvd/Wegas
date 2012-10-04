@@ -1,0 +1,167 @@
+[{
+        "id": 1,
+        "label": "Main layout",
+        "type": "List",
+        "cssClass": "layout wegas-cep",
+        "children": [{
+                "type": "List",
+                "cssClass": "header",
+                "children": [{
+                        "type": "List",
+                        "direction": "horizontal",
+                        "cssClass": "variables",
+                        "children": [{
+                                "type": "Text",
+                                "content": "",
+                                "cssClass": "cep-title"
+                            },{
+                                "type": "List",
+                                "cssClass": "timeIndicators",
+                                "children": [{
+                                        "type": "VariableDisplay",
+                                        "label": "Phase",
+                                        "view": "title",
+                                        "variable": "phases",
+                                        "dataSource": "VariableDescriptor"
+                                    }, {
+                                        "type": "VariableDisplay",
+                                        "label": "Period",
+                                        "view": "valuebox",
+                                        "variable": "phases",
+                                        "dataSource": "VariableDescriptor"
+                                    }]
+                            },{
+                                "type": "Button",
+                                "label": "Next period",
+                                "view": "button",
+                                "tooltip": "Advance to next period",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "onClick": "passPeriod();"
+                                        }
+                                    }],
+                                "cssClass": "fl"
+                            },{
+                                "type": "VariableDisplay",
+                                "label": "Time cards",
+                                "view": "box",
+                                "variable": "humanResources",
+                                "cssClass": "fr timecards"
+                            }, {
+                                "type": "GaugeDisplay",
+                                "variable": "customerApproval",
+                                "cssClass": "fr"
+                            }, {
+                                "type": "GaugeDisplay",
+                                "variable": "managementApproval",
+                                "cssClass": "fr"
+                            }]
+                    }, {
+                        "type": "List",
+                        "cssClass": "menu",
+                        "direction": "horizontal",
+                        "children": [{
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-home\"></span>Accueil",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 2,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-choices\"></span>Choices",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 3,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }, {
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": "questions"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-actions\"></span>Actions",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 4,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }, {
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": "questions"
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-mail\"></span>Mails",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 5,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    },{
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": "inbox"
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-history\"></span>Historique",
+                                "cssClass": "menu-button",
+                                "disabled": true
+                            }, {
+                                "type": "LoginButton",
+                                "cssClass": "menu-loginbutton"
+                            }]
+                    }]
+            }, {
+                "type": "PageLoader",
+                "id": "maindisplayarea",
+                "cssClass": "body",
+                "pageId": 2
+            }, {
+                "type": "List",
+                "cssClass": "footer",
+                "direction": "horizontal",
+                "children": [{
+                        "type": "Text",
+                        "content": "Copyright 2012 Heig-vd.ch"
+                    }]
+            }]
+    },{
+        "id": 2,
+        "type": "Text",
+        "content": "Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />"
+    },{
+        "id": 3,
+        "type": "MCQTabView",
+        "expr": "choices.items[phases.value].descriptorId"
+    },{
+        "id": 4,
+        "type": "MCQTabView",
+        "expr": "actions.items[phases.value].descriptorId"
+    },{
+        "id": 5,
+        "type": "InboxDisplay",
+        "variable": "inbox"
+    }, {
+        "id": 6,
+        "type": "ResultsDisplay"
+    }
+]

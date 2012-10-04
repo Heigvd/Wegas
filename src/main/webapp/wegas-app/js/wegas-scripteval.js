@@ -25,7 +25,16 @@ YUI.add('wegas-scripteval', function (Y) {
             this.publish("evaluated");
             this.publish("failure");
         },
-        scopedEval: function(script, id){
+        /**
+         *  the id should be generated and returned  by the function, not passed as a
+         *  a parameter
+         *
+         *  @param script The script to evaluate
+         *  @param id The transaction id
+         *  @param cb A callback object, containing success, failure and scope objects
+         */
+
+        scopedEval: function( script, id, cb ){
             var result, response, url;
             if(!this.upToDate){                                                 //Only compute if new value
                 this.buildContext();
@@ -33,6 +42,10 @@ YUI.add('wegas-scripteval', function (Y) {
             try{
                 result = (new Function( "with(this) { return "+ script +";}")).call(this.context);
                 this.fire("evaluated",result, id);
+
+                if ( cb && cb.success ) cb.success.call( cb.scope || this, result );
+                return result;
+
             }catch(error){
                 url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
                 return Y.io(url,{
