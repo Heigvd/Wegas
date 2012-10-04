@@ -74,7 +74,7 @@
                                     }]
                             },{
                                 "type": "Button",
-                                "label": "<span class=\"wegas-icon cep-icon-choices\"></span>Choices",
+                                "label": "<span class=\"wegas-icon cep-icon-questions\"></span>Questions",
                                 "cssClass": "menu-button",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
@@ -147,11 +147,11 @@
     },{
         "id": 2,
         "type": "Text",
-        "content": "Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />Welcome to CEP case.<br />"
+        "content": "Welcome to CEP case."
     },{
         "id": 3,
         "type": "MCQTabView",
-        "expr": "choices.items[phases.value].descriptorId"
+        "expr": "??????.items[phases.value].descriptorId"
     },{
         "id": 4,
         "type": "MCQTabView",

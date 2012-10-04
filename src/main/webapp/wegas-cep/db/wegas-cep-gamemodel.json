@@ -146,7 +146,7 @@
         }
     }, {
         "@class":"ListDescriptor",
-        "name":"choices",
+        "name":"questions",
         "defaultInstance":{
             "@class":"NumberInstance",
             "value":0.0
@@ -156,7 +156,7 @@
         },
         "items":[{
             "@class":"ListDescriptor",
-            "name":"Choices phase 1",
+            "name":"Questions phase 1",
             "defaultInstance":{
                 "@class":"NumberInstance"
             },
@@ -173,10 +173,10 @@
                     "@class":"TeamScope"
                 },
                 "items":[{
-                    "@class":"ChoiceDescriptor",
+                    "@class":"questionDescriptor",
                     "name":"a) Reponse 1",
                     "defaultInstance":{
-                        "@class":"ChoiceInstance"
+                        "@class":"questionInstance"
                     },
                     "scope":{
                         "@class":"TeamScope"
@@ -190,7 +190,7 @@
             }]
         }, {
             "@class":"ListDescriptor",
-            "name":"Choices phase 2",
+            "name":"Questions phase 2",
             "defaultInstance":{
                 "@class":"NumberInstance"
             },
@@ -199,7 +199,7 @@
             },
             "items":[{
                 "@class":"QuestionDescriptor",
-                "name":"Sample choice phase 2?",
+                "name":"Sample question phase 2?",
                 "defaultInstance":{
                     "@class":"QuestionInstance"
                 },
@@ -207,10 +207,10 @@
                     "@class":"TeamScope"
                 },
                 "items":[{
-                    "@class":"ChoiceDescriptor",
+                    "@class":"questionDescriptor",
                     "name":"a) Reponse 1",
                     "defaultInstance":{
-                        "@class":"ChoiceInstance"
+                        "@class":"questionInstance"
                     },
                     "scope":{
                         "@class":"TeamScope"
@@ -253,10 +253,10 @@
                     "@class":"TeamScope"
                 },
                 "items":[{
-                    "@class":"ChoiceDescriptor",
+                    "@class":"questionDescriptor",
                     "name":"reponse 1)",
                     "defaultInstance":{
-                        "@class":"ChoiceInstance"
+                        "@class":"questionInstance"
                     },
                     "scope":{
                         "@class":"TeamScope"
@@ -293,10 +293,10 @@
                     "@class":"TeamScope"
                 },
                 "items":[{
-                    "@class":"ChoiceDescriptor",
+                    "@class":"questionDescriptor",
                     "name":"reponse 1)",
                     "defaultInstance":{
-                        "@class":"ChoiceInstance"
+                        "@class":"questionInstance"
                     },
                     "scope":{
                         "@class":"TeamScope"
