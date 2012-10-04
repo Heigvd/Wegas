@@ -877,6 +877,7 @@ YUI.add('wegas-entity', function (Y) {
             }
             return object;
         }
+
     }, {
         ATTRS: {
             "@class":{
@@ -894,6 +895,15 @@ YUI.add('wegas-entity', function (Y) {
                         val[i].parentDescriptor = this;
                     }
                     return val;
+                }
+            },
+            /**
+             * The currently selected element based on current ListInstance.
+             */
+            currentItem: {
+                "transient": true,
+                getter: function () {
+                    return this.get( "items" )[ this.getInstance().get( "value" ) ];
                 }
             },
             defaultInstance: {
