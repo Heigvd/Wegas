@@ -90,7 +90,7 @@
             },{
                 "type":"List",
                 "direction": "horizontal",
-                "cssClass":"menu",
+                "cssClass":"horizontal-menu",
                 "children":[{
                         "type": "Button",
                         "label": "Home",
@@ -155,6 +155,72 @@
                         "type": "LoginButton",
                         "cssClass": "menu-loginbutton",
                         "tooltip": "Logout"
+                    }]
+            },{
+                "type":"List",
+                "direction": "vertical",
+                "cssClass":"vertical-menu",
+                "children":[{
+                        "type": "Button",
+                        "cssClass":"actions",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 8,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "cssClass":"choices",
+                        "plugins": [{
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": "choices"
+                                }
+                            },{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 9,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "cssClass":"inbox",
+                        "plugins": [{
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": "inbox"
+                                }
+                            },{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 10,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "cssClass":"history",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 11,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "cssClass":"help",
+                        "tooltip": "Help",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 11,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
                     }]
             },{
                 "label":"pageLoader",

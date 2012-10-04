@@ -1,3 +1,7 @@
+/*-----------------------------------body-------------------------------------*/
+html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
+    height:100%;
+}
 /*--------------------------------header--------------------------------------*/
 .header{
     background-image: url(/Wegas/wegas-pmg/images/header.png);
@@ -101,8 +105,8 @@
     display:none;
 }
 
-/*----------------------------------menu--------------------------------------*/
-.menu{
+/*-----------------------------horizontal-menu--------------------------------*/
+.horizontal-menu{
     background-image: url(/Wegas/wegas-pmg/images/nav_horizontal.png);
     background-repeat: repeat-x;
     background-color:#ADADAE;
@@ -110,7 +114,7 @@
     margin:0px;
 }
 
-.menu button{      
+.horizontal-menu button{      
     height:30px;
     width:120px;
     background:none;
@@ -124,22 +128,80 @@
     font-size: 1.1em;
 }
 
-.menu button:hover{ 
+.horizontal-menu button:hover{ 
     border-width:0 1px 0 0;
     padding-bottom:1px;
     background:none;
     background-color:#DDDDDD;
 }
 
-.menu .wegas-login{
+.horizontal-menu .wegas-login{
     float:right;
     border:none;
     padding:0 5px 0 0;
     width:50px;
 }
 
-.menu .wegas-login:hover{
+.horizontal-menu .wegas-login:hover{
     border:none;
     padding:0 5px 0 0;
     background:none;
 }
+
+/*------------------------------vertical-menu---------------------------------*/
+.vertical-menu{
+    width:60px;
+    float:right;
+    background-color: #7A7A7A;
+}
+
+.vertical-menu div button{
+    width:60px;
+    height:60px;
+    display:box;
+    padding:0;
+    margin-top:-3px;
+    float:none;
+    clear:both;
+    background:none;
+    border-radius:0px;
+    box-shadow: none;
+    border-style:solid;
+    border-color:black;
+    border-width:0 0 1px 1px;
+}
+
+.vertical-menu .actions, .vertical-menu .actions:hover{
+    background-image: url(/Wegas/wegas-pmg/images/available_action.png), url(/Wegas/wegas-pmg/images/nav_vertical.png);
+    background-position: center;
+    background-repeat: no-repeat, repeat-x;
+    margin-top:0px;
+}
+
+.vertical-menu .choices, .vertical-menu .choices:hover{
+    background-image: url(/Wegas/wegas-pmg/images/choice.png), url(/Wegas/wegas-pmg/images/nav_vertical.png);
+    background-position: center;
+    background-repeat: no-repeat, repeat-x;
+}
+
+.vertical-menu .inbox, .vertical-menu .inbox:hover{
+    background-image: url(/Wegas/wegas-pmg/images/messages.png), url(/Wegas/wegas-pmg/images/nav_vertical.png);
+    background-position: center;
+    background-repeat: no-repeat, repeat-x;
+}
+
+.vertical-menu .history, .vertical-menu .history:hover{
+    background-image: url(/Wegas/wegas-pmg/images/clock.png), url(/Wegas/wegas-pmg/images/nav_vertical.png);
+    background-position: center;
+    background-repeat: no-repeat, repeat-x;
+}
+
+.vertical-menu .help, .vertical-menu .help:hover{
+    border-width:0;
+    background:none;
+    background-image: url(/Wegas/wegas-pmg/images/help.png);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/*-----------------------------------body-------------------------------------*/

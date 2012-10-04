@@ -20,6 +20,15 @@
         }]
     }],
     "childVariableDescriptors": [{
+        "@class": "InboxDescriptor",
+        "name": "inbox",
+        "defaultInstance": {
+            "@class": "InboxInstance"
+        },
+        "scope": {
+            "@class": "PlayerScope"
+        }
+    },{
         "@class": "NumberDescriptor",
         "name": "currentPhase",
         "minValue": 0,
