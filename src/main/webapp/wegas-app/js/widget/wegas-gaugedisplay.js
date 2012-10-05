@@ -19,7 +19,8 @@ YUI.add('wegas-gaugedisplay', function (Y) {
 
     GaugeDisplay = Y.Base.create( "wegas-gauge", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
 
-        CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas height="50px" width="100px"></canvas><center class="label"></center></div>',
+        CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas height="50px" width="100px"></canvas><center class="label"></center><center class="percent"></center></div>',
+        MAXVAL: 200,
 
         // ** Lifecycle Methods ** //
         renderUI: function () {
@@ -40,7 +41,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
             };
             this.gauge = new Gauge( this.get( "contentBox" ).one( "canvas" ).getDOMNode() );// create the  gauge!
             this.gauge.setOptions( opts );
-            this.gauge.maxValue = 200;                                          // set max gauge value
+            this.gauge.maxValue = this.MAXVAL;                                          // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
         },
 
@@ -60,13 +61,15 @@ YUI.add('wegas-gaugedisplay', function (Y) {
                 return;
             }
 
-            //maxVal = variableDescriptor.get( "maxValue" );
-            //minVal = variableDescriptor.get( "minValue" );
-            value = variableDescriptor.getInstance().get( "value" );
+            minVal = variableDescriptor.get( "minValue" );
+            maxVal = variableDescriptor.get( "maxValue" ) - minVal;
+            value = (variableDescriptor.getInstance().get( "value" ) - minVal)/maxVal*this.MAXVAL;
+            
             label = this.get( "label" ) || variableDescriptor.getPublicLabel();
 
-            this.gauge.set( value * 100);                                       // set actual value
+            this.gauge.set( value );                                       // set actual value
             this.get( CONTENTBOX ).one( ".label" ).setContent( label );
+            this.get( CONTENTBOX ).one( ".percent" ).setContent( Math.round(value/this.MAXVAL*100) +"%" );
         },
 
         destructor: function () {
