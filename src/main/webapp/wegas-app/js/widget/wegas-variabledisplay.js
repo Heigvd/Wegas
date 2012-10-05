@@ -84,6 +84,8 @@ YUI.add('wegas-variabledisplay', function (Y) {
                         for (i = variableDescriptor.get("minValue"); i <= variableDescriptor.get("maxValue"); i += 1) {
                             acc.push('<div class="wegas-valuebox-unit '
                                 + ((i === value) ? "wegas-valuebox-selected" : "")
+                                + ((i < value) ? "wegas-valuebox-previous" : "")
+                                + ((i > value) ? "wegas-valuebox-next" : "")
                                 + '">' + i + '</div>');
                         }
                     }

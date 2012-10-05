@@ -40,32 +40,26 @@ YUI.add( "wegas-pmg-breadcrumb", function ( Y ) {
         },
         
         syncUI: function(){
-            var i, position = -1, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
+            var i, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
             varDesc = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variable"));
             if(locations.length == 0 || varDesc == null) return;
-            varValue = varDesc.getInstance().get("value");
-            if(typeof varValue === "string"){
-                for(i=0; i<locations.length; i++){
-                    if(locations[i] === varValue){
-                     cb.one(".pmg-breadcrumb .element_"+i).addClass("current");
-                     position = i;
-                     break;
-                    }
+            for(i=0; i<locations.length; i++){
+                cb.one(".pmg-breadcrumb span").removeClass("previous").removeClass("current").removeClass("next");
+            }
+            varValue = varDesc.getInstance().get("value") - varDesc.get("minValue");
+            if(typeof varValue === "string"){                                   
+                for(i=0; i<locations.length; i++){ 
+                    if (locations[i] === varValue) cb.one(".pmg-breadcrumb .element_"+i).addClass("current");
+                    if (locations[i] < varValue) cb.one(".pmg-breadcrumb .element_"+i).addClass("previous");
+                    if (locations[i] > varValue) cb.one(".pmg-breadcrumb .element_"+i).addClass("next");
                 }
             }
             else if(typeof varValue === "number"){
                 if(varValue > locations.length || varValue < 0) return;
-                cb.one(".pmg-breadcrumb .element_"+varValue).addClass("current");
-                position = i
-            }
-            if(position >= 0){
-                for(i=0; i<locations.length; i++){
-                    if(i < position){
-                     cb.one(".pmg-breadcrumb .element_"+i).addClass("previous");
-                    }
-                    if(i > position){
-                        cb.one(".pmg-breadcrumb .element_"+i).addClass("next");
-                    }
+                for(i=0; i<locations.length; i++){ 
+                    if (i === varValue) cb.one(".pmg-breadcrumb .element_"+i).addClass("current");
+                    if (i < varValue) cb.one(".pmg-breadcrumb .element_"+i).addClass("previous");
+                    if (i > varValue) cb.one(".pmg-breadcrumb .element_"+i).addClass("next");
                 }
             }
         },

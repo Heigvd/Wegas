@@ -20,25 +20,346 @@
         }]
     }],
     "childVariableDescriptors": [{
-        "@class": "InboxDescriptor",
-        "name": "inbox",
-        "defaultInstance": {
-            "@class": "InboxInstance"
+        "@class":"InboxDescriptor",
+        "name":"inbox",
+        "defaultInstance":{
+            "@class":"InboxInstance",
+            "messages":[]
         },
-        "scope": {
-            "@class": "PlayerScope"
+        "scope":{
+            "@class":"TeamScope"
         }
     },{
-        "@class": "NumberDescriptor",
-        "name": "currentPhase",
-        "minValue": 0,
-        "maxValue": 3,
-        "defaultInstance": {
-            "@class": "NumberInstance",
-            "value":"0"
+        "@class":"NumberDescriptor",
+        "name":"currentPhase",
+        "editorLabel":"currentPhase",
+        "label":"Current phase",
+        "minValue":0,
+        "maxValue":4,
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":0
         },
-        "scope": {
-            "@class": "TeamScope"
-        }     
+        "scope":{
+            "@class":"TeamScope"
+        }
+    },{
+        "@class":"NumberDescriptor",
+        "name":"managementApproval",
+        "editorLabel":"managementApproval",
+        "label":"managementApproval",
+        "minValue":0,
+        "maxValue":200,
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":100
+        },
+        "scope":{
+            "@class":"TeamScope"
+        }
+    },{
+        "@class":"NumberDescriptor",
+        "name":"userApproval",
+        "editorLabel":"userApproval",
+        "label":"userApproval",
+        "minValue":0,
+        "maxValue":200,
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":100
+        },
+        "scope":{
+            "@class":"TeamScope"
+        }
+    },{
+        "@class":"NumberDescriptor",
+        "name":"fixedCosts",
+        "editorLabel":"fixedCosts",
+        "label":"fixedCosts",
+        "minValue":0,
+        "maxValue":200,
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":100
+        },
+        "scope":{
+            "@class":"TeamScope"
+        }
+    },{
+        "@class":"NumberDescriptor",
+        "name":"quality",
+        "editorLabel":"quality",
+        "label":"quality",
+        "minValue":0,
+        "maxValue":200,
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":100
+        },
+        "scope":{
+            "@class":"TeamScope"
+        }
+    },{
+        "@class":"NumberDescriptor",
+        "name":"delay",
+        "editorLabel":"delay",
+        "label":"delay",
+        "minValue":0,
+        "maxValue":200,
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":100
+        },
+        "scope":{
+            "@class":"TeamScope"
+        }
+    },{
+        "@class":"NumberDescriptor",
+        "name":"timeCards",
+        "editorLabel":"timeCards",
+        "label":"timeCards",
+        "minValue":0,
+        "maxValue":50,
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":15
+        },
+        "scope":{
+            "@class":"TeamScope"
+        }
+    },{
+        "@class":"ListDescriptor",
+        "name":"currentPeriod",
+        "editorLabel":"currentPeriod",
+        "label":"Current period",
+        "defaultInstance":{
+            "@class":"ListInstance"
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "items":[{
+            "@class":"NumberDescriptor",
+            "name":"periodPhase1",
+            "editorLabel":"period phase 1",
+            "minValue":1,
+            "maxValue":1,
+            "defaultInstance":{
+                "@class":"NumberInstance",
+                "value":1
+            },
+            "scope":{
+                "@class":"TeamScope"
+            }
+        },{
+            "@class":"NumberDescriptor",
+            "name":"periodPhase2",
+            "editorLabel":"period phase 2",
+            "minValue":1,
+            "maxValue":1,
+            "defaultInstance":{
+                "@class":"NumberInstance",
+                "value":1
+            },
+            "scope":{
+                "@class":"TeamScope"
+            }
+        },{
+            "@class":"NumberDescriptor",
+            "name":"periodPhase3",
+            "editorLabel":"period phase 3",
+            "minValue":1,
+            "maxValue":10,    
+            "defaultInstance":{
+                "@class":"NumberInstance",
+                "value":1
+            },
+            "scope":{
+                "@class":"TeamScope"
+            }
+        },{
+            "@class":"NumberDescriptor",
+            "name":"periodPhase1_4",
+            "editorLabel":"period phase 4", 
+            "minValue":1,
+            "maxValue":1,
+            "defaultInstance":{
+                "@class":"NumberInstance",
+                "value":1
+            },
+            "scope":{
+                "@class":"TeamScope"
+            }
+        }]
+    },{
+        "@class":"ListDescriptor",
+        "name":"choices",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":0.0
+        },
+        "scope":{
+            "@class":"GameModelScope"
+        },
+        "items":[{
+            "@class":"ListDescriptor",
+            "name":"Choices phase 1",
+            "defaultInstance":{
+                "@class":"NumberInstance"
+            },
+            "scope":{
+                "@class":"GameModelScope"
+            },
+            "items":[{
+                "@class":"QuestionDescriptor",
+                "name":"Comment faire cela?",
+                "defaultInstance":{
+                    "@class":"QuestionInstance"
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "items":[{
+                    "@class":"ChoiceDescriptor",
+                    "name":"a) Reponse 1",
+                    "defaultInstance":{
+                        "@class":"ChoiceInstance"
+                    },
+                    "scope":{
+                        "@class":"TeamScope"
+                    },
+                    "results": [{
+                        "@class": "Result",
+                        "name": "Normal",
+                        "answer": "Faux c'est pas lui."
+                    }]
+                }]
+            }]
+        }, {
+            "@class":"ListDescriptor",
+            "name":"Choices phase 2",
+            "defaultInstance":{
+                "@class":"NumberInstance"
+            },
+            "scope":{
+                "@class":"GameModelScope"
+            },
+            "items":[{
+                "@class":"QuestionDescriptor",
+                "name":"Sample choice phase 2?",
+                "defaultInstance":{
+                    "@class":"QuestionInstance"
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "items":[{
+                    "@class":"ChoiceDescriptor",
+                    "name":"a) Reponse 1",
+                    "defaultInstance":{
+                        "@class":"ChoiceInstance"
+                    },
+                    "scope":{
+                        "@class":"TeamScope"
+                    },
+                    "results": [{
+                        "@class": "Result",
+                        "name": "Normal",
+                        "answer": "Faux c'est pas lui."
+                    }]
+                }]
+            }]
+        }]
+    },{
+        "@class":"ListDescriptor",
+        "name":"actions",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":0.0
+        },
+        "scope":{
+            "@class":"GameModelScope"
+        },
+        "items":[{
+            "@class":"ListDescriptor",
+            "name":"Actions phase 1",
+            "defaultInstance":{
+                "@class":"NumberInstance"
+            },
+            "scope":{
+                "@class":"GameModelScope"
+            },
+            "items":[{
+                "@class":"QuestionDescriptor",
+                "name":"Effectuer action 1 phase 1",
+                "allowMultipleReplies": true,
+                "defaultInstance":{
+                    "@class":"QuestionInstance"
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "items":[{
+                    "@class":"ChoiceDescriptor",
+                    "name":"reponse 1)",
+                    "defaultInstance":{
+                        "@class":"ChoiceInstance"
+                    },
+                    "scope":{
+                        "@class":"TeamScope"
+                    },
+                    "results": [{
+                        "@class": "Result",
+                        "name": "Normal",
+                        "answer": "Tout c'est bien passé.",
+                        "impact":{
+                            "@class":"Script",
+                            "language":"JavaScript",
+                            "content":"humanResources.value -= 1;"
+                        }
+                    }]
+                }]
+            }]
+        }, {
+            "@class":"ListDescriptor",
+            "name":"Actions phase 2",
+            "defaultInstance":{
+                "@class":"NumberInstance"
+            },
+            "scope":{
+                "@class":"GameModelScope"
+            },
+            "items":[{
+                "@class":"QuestionDescriptor",
+                "name":"Effectuer action 1 phase 2",
+                "allowMultipleReplies": true,
+                "defaultInstance":{
+                    "@class":"QuestionInstance"
+                },
+                "scope":{
+                    "@class":"TeamScope"
+                },
+                "items":[{
+                    "@class":"ChoiceDescriptor",
+                    "name":"reponse 1)",
+                    "defaultInstance":{
+                        "@class":"ChoiceInstance"
+                    },
+                    "scope":{
+                        "@class":"TeamScope"
+                    },
+                    "results": [{
+                        "@class": "Result",
+                        "name": "Normal",
+                        "answer": "Tout c'est bien passé.",
+                        "impact":{
+                            "@class":"Script",
+                            "language":"JavaScript",
+                            "content":"humanResources.value -= 1;"
+                        }
+                    }]
+                }]
+            }]
+        }]
     }]
 }

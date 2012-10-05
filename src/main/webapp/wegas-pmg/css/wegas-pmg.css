@@ -13,6 +13,7 @@ html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
     width:100%;
     height:80px;
     padding:5px;
+    min-width:970px;
 }
 
 .header .pmg-breadcrumb span{
@@ -73,12 +74,20 @@ html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
     background-position: center;
 }
 
-.header .customers-gauges{
-    margin-left:10px;
+.header .wegas-gauge-content{
+    margin-right: -20px
 }
 
 .header .project-gauges{
     margin-left:30px;
+}
+
+.header .wegas-gauge-content .label{
+    margin-top:5px;
+}
+
+.header .wegas-gauge-content .percent{
+    margin-top:10px;
 }
 
 .header .pmg-timevariable{
@@ -106,15 +115,19 @@ html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
 }
 
 /*-----------------------------horizontal-menu--------------------------------*/
-.horizontal-menu{
+.layout .horizontal-menu{
     background-image: url(/Wegas/wegas-pmg/images/nav_horizontal.png);
     background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
     margin:0px;
+    min-width:970px;
 }
 
-.horizontal-menu button{      
+.layout .horizontal-menu button{  
+    background-image: url(/Wegas/wegas-pmg/images/nav_horizontal.png);
+    background-repeat: repeat-x;
+    background-color:#ADADAE;
     height:30px;
     width:120px;
     background:none;
@@ -135,7 +148,15 @@ html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
     background-color:#DDDDDD;
 }
 
-.horizontal-menu .wegas-login{
+.layout .horizontal-menu .yui3-button-selected{
+    border-width:0 1px 0 0;
+    padding-bottom:1px;
+    background:none;
+    background-color:white;
+    color:black;
+}
+
+.layout .horizontal-menu .wegas-login{
     float:right;
     border:none;
     padding:0 5px 0 0;

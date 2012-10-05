@@ -44,15 +44,13 @@
                         "direction": "horizontal",
                         "cssClass":"customers-gauges",
                         "children":[{
-                                "type": "VariableDisplay",
+                                "type": "GaugeDisplay",
                                 "label": "Direction",
-                                "view": "gauge",
                                 "variable": "managementApproval",
                                 "dataSource": "VariableDescriptor"
                             },{
-                                "type": "VariableDisplay",
+                                "type": "GaugeDisplay",
                                 "label": "User",
-                                "view": "gauge",
                                 "variable": "userApproval",
                                 "dataSource": "VariableDescriptor"
                             }]
@@ -61,21 +59,18 @@
                         "direction": "horizontal",
                         "cssClass":"project-gauges",
                         "children":[{
-                                "type": "VariableDisplay",
+                                "type": "GaugeDisplay",
                                 "label": "Fixed costs",
-                                "view": "gauge",
                                 "variable": "fixedCosts",
                                 "dataSource": "VariableDescriptor"
                             },{
-                                "type": "VariableDisplay",
+                                "type": "GaugeDisplay",
                                 "label": "Quality",
-                                "view": "gauge",
                                 "variable": "quality",
                                 "dataSource": "VariableDescriptor"
                             },{
-                                "type": "VariableDisplay",
+                                "type": "GaugeDisplay",
                                 "label": "Delay",
-                                "view": "gauge",
                                 "variable": "delay",
                                 "dataSource": "VariableDescriptor"
                             }]
@@ -174,11 +169,6 @@
                         "type": "Button",
                         "cssClass":"choices",
                         "plugins": [{
-                                "fn": "UnreadCount",
-                                "cfg": {
-                                    "variable": "choices"
-                                }
-                            },{
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 9,
@@ -217,7 +207,7 @@
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
-                                    "subpageId": 11,
+                                    "subpageId": 12,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
                             }]
