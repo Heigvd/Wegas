@@ -26,8 +26,8 @@ YUI.add('wegas-inputex', function(Y) {
     YUI_config.groups.inputex.modulesByType.hashlist = "wegas-inputex-hashlist";
     YUI_config.groups.inputex.modulesByType.ace = "wegas-inputex-ace";
     YUI_config.groups.inputex.modulesByType.wegasurl = "wegas-inputex-url";
-    YUI_config.groups.inputex.modulesByType.script = "wegas-script-wysiwyg";
-    YUI_config.groups.inputex.modulesByType.entityarrayfieldselect = "wegas-script-wysiwyg"
+    YUI_config.groups.inputex.modulesByType.script = "wegas-inputex-wysiwygscript";
+    YUI_config.groups.inputex.modulesByType.entityarrayfieldselect = "wegas-inputex-wysiwygscript"
 
     /**
      *  @hack So we can easily change classs on inputex fields

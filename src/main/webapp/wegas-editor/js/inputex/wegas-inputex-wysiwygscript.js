@@ -12,7 +12,7 @@
  * @module wegas-script-wysiwyg
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-script-wysiwyg", function(Y){
+YUI.add( "wegas-inputex-wysiwygscript", function(Y){
 
     var inputEx = Y.inputEx;
 
