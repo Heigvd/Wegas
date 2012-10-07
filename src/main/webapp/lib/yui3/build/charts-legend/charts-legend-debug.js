@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('charts-legend', function(Y) {
+YUI.add('charts-legend', function (Y, NAME) {
 
 /**
  * Adds legend functionality to charts.
@@ -921,7 +921,7 @@ Y.ChartLegend = Y.Base.create("chartlegend", Y.Widget, [Y.Renderer], {
      */
     bindUI: function()
     {
-        this.get("chart").after("seriesCollectionChange", this._updateHandler);
+        this.get("chart").after("seriesCollectionChange", Y.bind(this._updateHandler, this));
         this.after("stylesChange", this._updateHandler);
         this.after("positionChange", this._positionChangeHandler);
         this.after("widthChange", this._handleSizeChange);
@@ -961,7 +961,7 @@ Y.ChartLegend = Y.Base.create("chartlegend", Y.Widget, [Y.Renderer], {
      * Handles position changes.
      *
      * @method _positionChangeHandler
-     * @parma {Object} e Event object
+     * @param {Object} e Event object
      * @private
      */
     _positionChangeHandler: function(e)
@@ -1698,4 +1698,4 @@ function Chart(cfg)
 Y.Chart = Chart;
 
 
-}, '3.6.0' ,{requires:['charts-base']});
+}, '3.7.2', {"requires": ["charts-base"]});

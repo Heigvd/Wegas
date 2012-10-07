@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('pluginhost-config', function(Y) {
+YUI.add('pluginhost-config', function (Y, NAME) {
 
     /**
      * Adds pluginhost constructor configuration and static configuration support
@@ -133,4 +133,4 @@ YUI.add('pluginhost-config', function(Y) {
     };
 
 
-}, '3.6.0' ,{requires:['pluginhost-base']});
+}, '3.7.2', {"requires": ["pluginhost-base"]});

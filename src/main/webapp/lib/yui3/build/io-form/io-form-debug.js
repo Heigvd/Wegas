@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('io-form', function(Y) {
+YUI.add('io-form', function (Y, NAME) {
 
 /**
 * Extends IO to enable HTML form data serialization, when specified
@@ -99,4 +99,4 @@ Y.mix(Y.IO.prototype, {
 }, true);
 
 
-}, '3.6.0' ,{requires:['io-base','node-base']});
+}, '3.7.2', {"requires": ["io-base", "node-base"]});

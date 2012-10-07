@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('text-data-wordbreak', function(Y) {
+YUI.add('text-data-wordbreak', function (Y, NAME) {
 
 Y.namespace('Text.Data').WordBreak = {
     // The UnicodeSet utility is helpful for enumerating the specific code
@@ -32,4 +32,4 @@ Y.namespace('Text.Data').WordBreak = {
 };
 
 
-}, '3.6.0' ,{requires:['yui-base']});
+}, '3.7.2', {"requires": ["yui-base"]});
