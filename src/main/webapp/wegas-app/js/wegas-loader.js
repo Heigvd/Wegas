@@ -166,8 +166,8 @@ YUI().use(function (Y) {
                     /** Inputex Fields **/
                     'wegas-inputex': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-min.js',
-                        requires: [ 'wegas-inputexcss', 'inputex', 'inputex-field', 'inputex-string',
-                        'inputex-keyvalue'  ]
+                        requires: [  'inputex', 'inputex-field', 'inputex-string',
+                        'inputex-keyvalue', 'wegas-inputexcss']
                     },
                     'wegas-inputexcss': {
                         path: 'wegas-editor/css/wegas-inputex.css',
@@ -175,15 +175,9 @@ YUI().use(function (Y) {
                     },
                     'wegas-inputex-rte': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-rte-min.js',
-                        requires: [ 'wegas-inputex-rtecss', 'wegas-inputex', 'inputex-field', 'yui2-editor', 'panel',
-                        'wegas-fileexplorer', 'wegas-inputex-url' ],
+                        requires: [ 'wegas-inputex', 'inputex-field', 'yui2-editor', 'panel',
+                        'wegas-fileexplorer', 'wegas-inputex-url', 'wegas-inputex-rtecss' ],
                         ix_provides: 'html'
-                    },
-
-                    'wegas-inputex-rtecss': {
-                        path: 'wegas-editor/css/wegas-inputex-rte.css',
-                        requires: [ "yui2-editor" ],
-                        type: 'css'
                     },
                     'wegas-inputex-hashlist': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-hashlist-min.js',
