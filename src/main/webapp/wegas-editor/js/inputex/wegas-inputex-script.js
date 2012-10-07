@@ -1,7 +1,7 @@
 /**
  * @module inputex-Script
  */
-YUI.add("wegas-script", function(Y){
+YUI.add( "wegas-inputex-script", function(Y){
 
     var inputEx = Y.inputEx;
 
@@ -20,10 +20,13 @@ YUI.add("wegas-script", function(Y){
         },
 
         setValue: function( val ) {
+            val = val || {
+                content: ""
+            };
             inputEx.Script.superclass.setValue.call(this, val.content);
         }
     });
 
 
-    //inputEx.registerType('script', inputEx.Script);                             // Register this class as "script" type
+//inputEx.registerType('script', inputEx.Script);                             // Register this class as "script" type
 });

@@ -86,16 +86,40 @@ YUI.add('wegas-mcq-entities', function (Y) {
             type: "EditEntityButton"
         }, {
             type: "Button",
-            label: "Add choice",
+            label: "Add",
+
             plugins: [{
-                fn: "AddEntityChildAction",
-                cfg: {
-                    childClass: "ChoiceDescriptor"
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "menuCfg": {
+                        points: [ "tl", "tr" ],
+                        width: "200px"
+                    },
+                    "event": "mouseenter",
+                    "children": [{
+                        type: "Button",
+                        label: "Add a choice",
+                        plugins: [{
+                            fn: "AddEntityChildAction",
+                            cfg: {
+                                childClass: "SingleResultChoiceDescriptor"
+                            }
+                        }]
+                    }, {
+                        type: "Button",
+                        label: "Add a choice with multiple results",
+                        plugins: [{
+                            fn: "AddEntityChildAction",
+                            cfg: {
+                                childClass: "ChoiceDescriptor"
+                            }
+                        }]
+                    }]
                 }
             }]
         }, {
             type: "CloneEntityButton"
-        },{
+        }, {
             type: "DeleteEntityButton"
         }],
         /**
@@ -152,6 +176,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             }
         }
     });
+
     /**
      * ChoiceDescriptor mapper
      */
@@ -218,10 +243,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
             //},
             impact: {
                 _inputex: {
-                    //_type: "script"
-                    _type: "hidden"
+                    _type: "script"
                 },
-                value: null,
                 optional: true
             },
             results: {
@@ -258,6 +281,94 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     type: "entityarrayfieldselect"
                 }]
             },
+            activate: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
+            },
+            desactivate: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
+            }
+        }
+    });
+
+    /**
+     * ChoiceDescriptor mapper
+     */
+    Y.Wegas.persistence.SingleResultChoiceDescriptor = Y.Base.create( "SingleResultChoiceDescriptor", Y.Wegas.persistence.ChoiceDescriptor, [], { }, {
+        ATTRS:{
+            "@class":{
+                value:"SingleResultChoiceDescriptor"
+            },
+            results: {
+                type: "array",
+                value: [{"@class": "Result"}],
+                items: {
+                    type: "object",
+                    optional:true,
+                    properties: {
+                        "@class": {
+                            type: "string",
+                            _inputex: {
+                                _type: "hidden"
+                            }
+                        },
+                        name: {
+                            type: "string",
+                            _inputex: {
+                                _type: "hidden"
+                            }
+                        },
+                        answer: {
+                            type: "string",
+                            format: "html"
+                        },
+                        impact: {
+                            optional: true,
+                            _inputex: {
+                                _type: "script"
+                            }
+                        },
+                        choiceDescriptorId: {
+                            type: "string",
+                            optional: true,
+                            _inputex: {
+                                _type: 'hidden'
+                            }
+                        },
+                        files: {
+                            optional: true,
+                            type: "array",
+                            items: {
+                                type: "string",
+                                optional:true,
+                                _inputex: {
+                                    _type: "wegasurl",
+                                    label: ""
+                                }
+                            },
+                            _inputex: {
+                                useButtons: true
+                            }
+                        }
+                    }
+                },
+                _inputex: {
+                    listAddLabel: " ",
+                    listRemoveLabel: " "
+                }
+            }
+        },
+        EDITMENU: [{
+            type: "EditEntityButton"
+        }, {
+            type: "DeleteEntityButton"
+        }],
+        METHODS: {
             activate: {
                 arguments: [{
                     type: "hidden",

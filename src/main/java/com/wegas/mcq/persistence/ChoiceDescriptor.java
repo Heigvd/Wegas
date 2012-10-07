@@ -61,7 +61,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     private Long cost = new Long(1);
 
-
     /**
      *
      * @param a
@@ -78,7 +77,22 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         ListUtils.mergeLists(this.getResults(), other.getResults());
     }
 
+    /**
+     * When a choice is created, we automatically add a result by default
+     */
+    @PrePersist
+    public void prePersist() {
+        if (this.getResults().isEmpty()) {
+            this.addResult(new Result("defaultResult"));
+        }
+    }
+
+    public void addResult(Result r) {
+        this.results.add(r);
+        r.setChoiceDescriptor(this);
+    }
     // ***  Sugar to use from scripts *** //
+
     /**
      *
      * @param player

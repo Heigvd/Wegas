@@ -173,10 +173,10 @@
                     "@class":"TeamScope"
                 },
                 "items":[{
-                    "@class":"questionDescriptor",
+                    "@class":"ChoiceDescriptor",
                     "name":"a) Reponse 1",
                     "defaultInstance":{
-                        "@class":"questionInstance"
+                        "@class":"ChoiceInstance"
                     },
                     "scope":{
                         "@class":"TeamScope"
@@ -207,10 +207,10 @@
                     "@class":"TeamScope"
                 },
                 "items":[{
-                    "@class":"questionDescriptor",
+                    "@class":"ChoiceDescriptor",
                     "name":"a) Reponse 1",
                     "defaultInstance":{
-                        "@class":"questionInstance"
+                        "@class":"ChoiceInstance"
                     },
                     "scope":{
                         "@class":"TeamScope"
@@ -253,10 +253,10 @@
                     "@class":"TeamScope"
                 },
                 "items":[{
-                    "@class":"questionDescriptor",
+                    "@class":"ChoiceDescriptor",
                     "name":"reponse 1)",
                     "defaultInstance":{
-                        "@class":"questionInstance"
+                        "@class":"ChoiceInstance"
                     },
                     "scope":{
                         "@class":"TeamScope"
@@ -293,10 +293,10 @@
                     "@class":"TeamScope"
                 },
                 "items":[{
-                    "@class":"questionDescriptor",
+                    "@class":"ChoiceDescriptor",
                     "name":"reponse 1)",
                     "defaultInstance":{
-                        "@class":"questionInstance"
+                        "@class":"ChoiceInstance"
                     },
                     "scope":{
                         "@class":"TeamScope"

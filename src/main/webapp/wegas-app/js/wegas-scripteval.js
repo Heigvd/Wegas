@@ -25,6 +25,7 @@ YUI.add('wegas-scripteval', function (Y) {
             this.publish("evaluated");
             this.publish("failure");
         },
+
         /**
          *  the id should be generated and returned  by the function, not passed as a
          *  a parameter
@@ -33,19 +34,14 @@ YUI.add('wegas-scripteval', function (Y) {
          *  @param id The transaction id
          *  @param cb A callback object, containing success, failure and scope objects
          */
-
         scopedEval: function( script, id, cb ){
             var result, response, url;
-            if(!this.upToDate){                                                 //Only compute if new value
-                this.buildContext();
-            }
-            try{
-                result = (new Function( "with(this) { return "+ script +";}")).call(this.context);
-                this.fire("evaluated",result, id);
 
+            try{
+                result = this.localEval( script );
+                this.fire("evaluated",result, id);
                 if ( cb && cb.success ) cb.success.call( cb.scope || this, result );
                 return result;
-
             }catch(error){
                 url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
                 return Y.io(url,{
@@ -76,6 +72,17 @@ YUI.add('wegas-scripteval', function (Y) {
                 });
             }
         },
+
+        /**
+         * Tries to evaluate the script locally, using variables cache
+         */
+        localEval: function ( script ) {
+            if(!this.upToDate){                                                 //Only compute if new value
+                this.buildContext();
+            }
+            return ( new Function( "with(this) { return " + script +";}" ) ).call( this.context );
+        },
+
         buildContext: function(){
             var data = this.get("host").data;
             this.upToDate = true;
@@ -96,6 +103,7 @@ YUI.add('wegas-scripteval', function (Y) {
                 YUI:undefined
             });
         }
+
     }, {
         NS:"script",
         NAME:"scriptEval"

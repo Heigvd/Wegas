@@ -165,40 +165,50 @@ YUI().use(function (Y) {
 
                     /** Inputex Fields **/
                     'wegas-inputex': {
-                        path: 'wegas-app/js/widget/wegas-inputex-min.js',
-                        requires: [ 'inputex', 'inputex-field', 'inputex-string',
-                        'inputex-keyvalue' ]
+                        path: 'wegas-editor/js/inputex/wegas-inputex-min.js',
+                        requires: [ 'wegas-inputexcss', 'inputex', 'inputex-field', 'inputex-string',
+                        'inputex-keyvalue'  ]
+                    },
+                    'wegas-inputexcss': {
+                        path: 'wegas-editor/css/wegas-inputex.css',
+                        type: 'css'
                     },
                     'wegas-inputex-rte': {
-                        path: 'wegas-app/js/widget/wegas-inputex-rte-min.js',
-                        requires: ['inputex-field', 'yui2-editor', 'panel',
+                        path: 'wegas-editor/js/inputex/wegas-inputex-rte-min.js',
+                        requires: [ 'wegas-inputex-rtecss', 'wegas-inputex', 'inputex-field', 'yui2-editor', 'panel',
                         'wegas-fileexplorer', 'wegas-inputex-url' ],
                         ix_provides: 'html'
                     },
+
+                    'wegas-inputex-rtecss': {
+                        path: 'wegas-editor/css/wegas-inputex-rte.css',
+                        requires: [ "yui2-editor" ],
+                        type: 'css'
+                    },
                     'wegas-inputex-hashlist': {
-                        path: 'wegas-app/js/widget/wegas-inputex-hashlist-min.js',
+                        path: 'wegas-editor/js/inputex/wegas-inputex-hashlist-min.js',
                         requires: ['inputex-list'],
                         ix_provides: 'hashlist'
                     },
-                    'wegas-script': {
-                        path: 'wegas-app/js/widget/wegas-script-min.js',
+                    'wegas-inputex-script': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-script-min.js',
                         requires: [ 'inputex-textarea' ]
                     //ix_provides: 'script'
                     },
-                    'wegas-script-wysiwyg': {
-                        path: 'wegas-app/js/widget/wegas-script-wysiwyg-min.js',
-                        requires: [ 'wegas-script', 'wegas-button', 'wegas-inputex',
+                    'wegas-inputex-wysiwygscript': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
+                        requires: [ 'wegas-inputex-script', 'wegas-button', 'wegas-inputex',
                         'inputex', 'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
                         'esprima' /*, 'escodegen'*/ ],
                         ix_provides: 'script'
                     },
                     'wegas-inputex-url': {
-                        path: 'wegas-app/js/widget/wegas-inputex-url-min.js',
+                        path: 'wegas-editor/js/inputex/wegas-inputex-url-min.js',
                         requires: [ 'inputex-url', 'panel', 'wegas-fileexplorer'],
                         ix_provides: 'wegasurl'
                     },
                     'wegas-inputex-ace': {
-                        path: 'wegas-app/js/widget/wegas-inputex-ace-min.js',
+                        path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
                         requires: [ 'inputex-field', 'ace' ],
                         ix_provides: 'wegasurl'
                     },

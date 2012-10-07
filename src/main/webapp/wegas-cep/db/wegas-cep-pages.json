@@ -85,7 +85,7 @@
                                     }, {
                                         "fn": "UnreadCount",
                                         "cfg": {
-                                            "variable": "questions"
+                                            "variable": "questions2"
                                         }
                                     }]
                             },{
@@ -101,7 +101,7 @@
                                     }, {
                                         "fn": "UnreadCount",
                                         "cfg": {
-                                            "variable": "questions"
+                                            "variable": "questions2"
                                         }
                                     }]
                             }, {
@@ -151,7 +151,7 @@
     },{
         "id": 3,
         "type": "MCQTabView",
-        "expr": "??????.items[phases.value].descriptorId"
+        "expr": "questions.items[phases.value].descriptorId"
     },{
         "id": 4,
         "type": "MCQTabView",
