@@ -241,12 +241,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
             //        }
             //    }
             //},
-            impact: {
-                _inputex: {
-                    _type: "script"
-                },
-                optional: true
-            },
+            //impact: {
+            //    _inputex: {
+            //        _type: "script"
+            //    },
+            //    optional: true
+            //},
             results: {
                 type: "array",
                 value: [],
@@ -306,7 +306,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             results: {
                 type: "array",
-                value: [{"@class": "Result"}],
+                value: [{
+                    "@class": "Result"
+                }],
                 items: {
                     type: "object",
                     optional:true,
@@ -319,6 +321,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         },
                         name: {
                             type: "string",
+                            optional: true,
                             _inputex: {
                                 _type: "hidden"
                             }
@@ -358,6 +361,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }
                 },
                 _inputex: {
+                    label: "Result",
                     listAddLabel: " ",
                     listRemoveLabel: " "
                 }
