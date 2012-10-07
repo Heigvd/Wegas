@@ -154,80 +154,132 @@
             },{
                 "type":"List",
                 "direction": "vertical",
-                "cssClass":"vertical-menu",
+                "cssClass":"main",
                 "children":[{
-                        "type": "Button",
-                        "cssClass":"actions",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 8,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
-                    },{
-                        "type": "Button",
-                        "cssClass":"choices",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 9,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
-                    },{
-                        "type": "Button",
-                        "cssClass":"inbox",
-                        "plugins": [{
-                                "fn": "UnreadCount",
-                                "cfg": {
-                                    "variable": "inbox"
-                                }
+                        "type":"List",
+                        "direction": "vertical",
+                        "cssClass":"vertical-menu",
+                        "children":[{
+                                "type": "Button",
+                                "cssClass":"actions",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 8,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
                             },{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 10,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
+                                "type": "Button",
+                                "cssClass":"choices",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 9,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "cssClass":"inbox",
+                                "plugins": [{
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": "inbox"
+                                        }
+                                    },{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 10,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "cssClass":"history",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 11,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "cssClass":"help",
+                                "tooltip": "Help",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 12,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
                             }]
                     },{
-                        "type": "Button",
-                        "cssClass":"history",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 11,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
-                    },{
-                        "type": "Button",
-                        "cssClass":"help",
-                        "tooltip": "Help",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 12,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
+                        "label":"pageLoader",
+                        "type": "PageLoader",
+                        "id": "maindisplayarea",
+                        "cssClass": "body",
+                        "pageId": 2
                     }]
-            },{
-                "label":"pageLoader",
-                "type": "PageLoader",
-                "id": "maindisplayarea",
-                "cssClass": "body",
-                "pageId": 2
             }
         ]
     },{
         "id":2,
-        "label":"Page 1",
-        "cssClass":"book-page",
+        "cssClass":"welcome-page",
         "type":"List",
         "children":[{
                 "type": "Text",
                 "content":"Welcome"
+            }
+        ]
+    },{
+        "id":8,
+        "cssClass":"actions-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"<div class='title'><h2>Available Actions During this Phase</h2></div><div class='title'><h2>Description</h2></div>"
+            },{
+                "type": "MCQTabView",
+                "expr": "actions.items[currentPhase.value].descriptorId"
+            }
+        ]
+    },{
+        "id":9,
+        "cssClass":"choices-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"<div class='title'><h2>Choices to be made during this week</h2></div><div class='title'><h2>Details</h2></div>"
+            },{
+                "type": "MCQTabView",
+                "expr": "choices.items[currentPhase.value].descriptorId"
+            }
+        ]
+    },{
+        "id":10,
+        "cssClass":"inbox-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Messages</h2></div>"
+            },{
+                "type": "InboxDisplay",
+                "variable": "inbox"
+            }
+        ]
+    },{
+        "id":11,
+        "cssClass":"history-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"<div class='title'><h2>Choices and Actions History</h2></div><div class='title'><h2>Details</h2></div>"
+            },{
+                "type": "InboxDisplay",
+                "variable": "inbox"
             }
         ]
     }
