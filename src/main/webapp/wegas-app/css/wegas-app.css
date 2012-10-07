@@ -35,12 +35,6 @@ input[type="submit"], input[type="reset"] {
     display:none;
 }
 
-/*  TabView Styles */
-.yui3-skin-sam .yui3-tabview-panel {
-    border: none;
-    background: none;
-}
-
 /* List styles */
 .wegas-list-horizontal > div {
     display:block;
