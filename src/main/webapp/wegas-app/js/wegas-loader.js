@@ -121,8 +121,12 @@ YUI().use(function (Y) {
                     },
                     'wegas-tabview': {
                         path: 'wegas-app/js/widget/wegas-tabview-min.js',
-                        requires: ['tabview', 'button'],
+                        requires: [ 'tabview', 'button', 'wegas-tabviewcss' ],
                         ix_provides: 'TabView'
+                    },
+                    'wegas-tabviewcss': {
+                        path: 'wegas-app/css/wegas-tabview.css',
+                        type: "css"
                     },
                     'wegas-variabledisplay': {
                         path: 'wegas-app/js/widget/wegas-variabledisplay-min.js',
