@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('node-event-delegate', function(Y) {
+YUI.add('node-event-delegate', function (Y, NAME) {
 
 /**
  * Functionality to make the node a delegated event container
@@ -57,4 +57,4 @@ Y.Node.prototype.delegate = function(type) {
 };
 
 
-}, '3.6.0' ,{requires:['node-base', 'event-delegate']});
+}, '3.7.2', {"requires": ["node-base", "event-delegate"]});

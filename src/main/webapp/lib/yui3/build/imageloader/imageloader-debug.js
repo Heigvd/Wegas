@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('imageloader', function(Y) {
+YUI.add('imageloader', function (Y, NAME) {
 
 /**
  * The ImageLoader Utility is a framework to dynamically load images according to certain triggers,
@@ -668,4 +668,4 @@ YUI.add('imageloader', function(Y) {
 
 
 
-}, '3.6.0' ,{requires:['base-base', 'node-style', 'node-screen']});
+}, '3.7.2', {"requires": ["base-base", "node-style", "node-screen"]});

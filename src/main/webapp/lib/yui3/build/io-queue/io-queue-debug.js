@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('io-queue', function(Y) {
+YUI.add('io-queue', function (Y, NAME) {
 
 /**
 Extends IO to implement Queue for synchronous
@@ -162,4 +162,4 @@ _queue.size = function () { io.qSize(); };
 Y.io.queue = _queue;
 
 
-}, '3.6.0' ,{requires:['io-base','queue-promote']});
+}, '3.7.2', {"requires": ["io-base", "queue-promote"]});

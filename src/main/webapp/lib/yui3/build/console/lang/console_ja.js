@@ -1,7 +1,7 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add("lang/console_ja",function(a){a.Intl.add("console","ja",{title:"\u30ED\u30B0\u30B3\u30F3\u30BD\u30FC\u30EB",pause:"\u4E00\u6642\u505C\u6B62",clear:"\u30AF\u30EA\u30A2",collapse:"\u9589\u3058\u308B",expand:"\u958B\u304F"});},"3.6.0");
+YUI.add("lang/console_ja",function(e){e.Intl.add("console","ja",{title:"\u30ed\u30b0\u30b3\u30f3\u30bd\u30fc\u30eb",pause:"\u4e00\u6642\u505c\u6b62",clear:"\u30af\u30ea\u30a2",collapse:"\u9589\u3058\u308b",expand:"\u958b\u304f"})},"3.7.2");
