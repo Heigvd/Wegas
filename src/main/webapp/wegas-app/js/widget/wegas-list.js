@@ -33,15 +33,15 @@ YUI.add('wegas-list', function (Y) {
             },
             direction: {
                 value: 'vertical'
-            },
+            }
 
             /**
              * Prevent widgetchild selection to be propagated through the hierarchy
              */
-            selected: {
-                value: 2,
-                readonly: true
-            }
+            //selected: {
+            //    value: 2,
+            //    readonly: true
+            //}
         }
     });
 

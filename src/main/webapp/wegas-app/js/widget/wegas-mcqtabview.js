@@ -52,7 +52,7 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
 
         syncUI: function () {
             var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel, tab, cChoices, choiceDescriptor, reply,
-            questions = this.get( "variable" ),
+            questions = this.get( "variableDesc" ),
             selectedTab = this.tabView.get( 'selection' ),
             lastSelection = ( selectedTab ) ? selectedTab.get('index') : 0;
 
@@ -157,16 +157,16 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
         }
     }, {
         ATTRS: {
-            variableName: {},
+            variable: {},
             expr: {},
             /**
              * The target variable, returned either based on the variableName attribute,
              * and if absent by evaluating the expr attribute.
              */
-            variable: {
+            variableDesc: {
                 getter: function () {
-                    if ( this.get( "variableName" ) ) {
-                        return this.dataSource.rest.find( 'name', this.get( "variableName" ) )
+                    if ( this.get( "variable" ) ) {
+                        return this.dataSource.rest.find( 'name', this.get( "variable" ) )
                     } else {
                         return this.dataSource.rest.findById(
                             Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
