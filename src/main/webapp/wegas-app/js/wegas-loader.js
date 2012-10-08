@@ -147,7 +147,7 @@ YUI().use(function (Y) {
                         ix_provides: 'InboxDisplay'
                     },
                     'wegas-inboxcss': {
-                        path: 'wegas-app/csswegas-inbox.css',
+                        path: 'wegas-app/css/wegas-inbox.css',
                         type: 'css'
                     },
                     'wegas-form': {
@@ -179,7 +179,7 @@ YUI().use(function (Y) {
                     'wegas-inputex': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-min.js',
                         requires: [  'inputex', 'inputex-field', 'inputex-string',
-                        'inputex-keyvalue', 'wegas-inputexcss']
+                        "inputex-list", 'inputex-keyvalue', 'wegas-inputexcss']
                     },
                     'wegas-inputexcss': {
                         path: 'wegas-editor/css/wegas-inputex.css',

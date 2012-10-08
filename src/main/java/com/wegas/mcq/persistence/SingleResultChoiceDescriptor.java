@@ -18,9 +18,9 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "SingeResultChoiceDescriptor")
-@Table(name = "MCQSingeResultChoiceDescriptor")
-public class SingeResultChoiceDescriptor extends ChoiceDescriptor {
+@XmlType(name = "SingleResultChoiceDescriptor")
+@Table(name = "MCQSingleResultChoiceDescriptor")
+public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
 
     private static final long serialVersionUID = 1L;
 }

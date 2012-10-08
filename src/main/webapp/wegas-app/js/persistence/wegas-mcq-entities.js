@@ -304,6 +304,32 @@ YUI.add('wegas-mcq-entities', function (Y) {
             "@class":{
                 value:"SingleResultChoiceDescriptor"
             },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: "string",
+                        _inputex: {
+                            _type: 'hidden',
+                            value:'ChoiceInstance'
+                        }
+                    },
+                    id: IDATTRDEF,
+                    active: {
+                        type: "boolean",
+                        _inputex: {
+                            label:'Active by default',
+                            value: true
+                        }
+                    },
+                    currentResultId: {
+                        type: "string",
+                        optional: true,
+                        _inputex: {
+                            _type: "hidden"
+                        }
+                    }
+                }
+            },
             results: {
                 type: "array",
                 value: [{
@@ -313,6 +339,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     type: "object",
                     optional:true,
                     properties: {
+                        id: IDATTRDEF,
                         "@class": {
                             type: "string",
                             _inputex: {
@@ -328,6 +355,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         },
                         answer: {
                             type: "string",
+                            optional: true,
                             format: "html"
                         },
                         impact: {
@@ -361,7 +389,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }
                 },
                 _inputex: {
-                    label: "Result",
+                    label: null,
                     listAddLabel: " ",
                     listRemoveLabel: " "
                 }

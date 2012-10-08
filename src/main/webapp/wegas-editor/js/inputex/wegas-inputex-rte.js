@@ -555,9 +555,10 @@ YUI.add("wegas-inputex-rte", function (Y){
                 if (!Y.YUI2.util.Dom.get(iframeId)) {                           // if editor iframe not rendered
                     //this.el.value = value;                                    // put value in textarea : will be processed by this.editor._setInitialContent (clean html, etc...)
                     this.loaded = false;
-                    this.editor.on( 'editorContentLoaded', function () {  /* @modified */
+                    this.value = value;
+                    this.editor.on( 'editorContentLoaded', function ( v ) {  /* @modified */
                         if ( !this.loaded ) {
-                            this.editor.setEditorHTML( value );
+                            this.editor.setEditorHTML( this.value );
                             this.loaded = true;
                         }
                     }, value, this);

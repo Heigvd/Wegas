@@ -46,8 +46,8 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
 
             this.tabView.after("selectionChange", this.onTabSelected, this)
 
-            this.handlers.response = this.dataSource.after("response", this.syncUI, this);
-            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handlers.response = this.dataSource.after( "response", this.syncUI, this);
+            this.handlers.playerChange = Y.Wegas.app.after( 'currentPlayerChange', this.syncUI, this);
         },
 
         syncUI: function () {
@@ -65,7 +65,7 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
 
             for ( i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
-                cQuestionLabel = cQuestion.get("label") || cQuestion.get("name") || "undefined";
+                cQuestionLabel = cQuestion.getPublicLabel() || "undefined";
                 ret = [//'<div class="title">Details</div>',
                 '<div class="content">',
                 '<div class="title">', cQuestionLabel, '</div>',
@@ -84,7 +84,7 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
 
                         for (j = 0; j < cChoices.length; j += 1) {
                             ret.push('<div class="reply ', firstChild, '">',
-                                '<div class="name">', cChoices[j].get( "name" ), '</div>',
+                                '<div class="name">', cChoices[j].getPublicLabel(), '</div>',
                                 '<div class="content">', cChoices[j].get( "description" ), '</div>',
                                 '<input type="submit" id="', cChoices[j].get( "id" ),'" value="Submit"></input>',
                                 '<div style="clear:both"></div>',
@@ -107,7 +107,7 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
                                 '<div class="replies"><div class="reply first-child">', reply.get( "result" ).get( "answer" ), '</div></div>');
 
                             if (!cReplyLabel) {
-                                cReplyLabel = choiceDescriptor.get( "name" ).substr( 0, 15 ) + "...";
+                                cReplyLabel = choiceDescriptor.getPublicLabel().substr( 0, 15 ) + "...";
                             }
                         }
                         ret.push( "</div>" );
