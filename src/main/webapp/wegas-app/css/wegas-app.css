@@ -13,7 +13,7 @@
 */
 
 /* Override some browser styles */
-input[type="submit"], input[type="reset"] {
+input [type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
 }
@@ -42,108 +42,6 @@ input[type="submit"], input[type="reset"] {
     vertical-align:top;
 }
 .wegas-list-vertical > div {
-}
-
-/* Inbox styles */
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-list {
-    display: inline-block;
-    float:left;
-    /* margin-left: -350px;*/
-    border: none;
-    display: inline-block;
-    border-right: 1px solid lightgray;
-    width: 39.9%;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-content {
-    overflow:auto;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
-    display:inline-block;
-    width:58%;
-    float:left;
-    overflow:inherit;
-}
-.yui3-skin-sam .wegas-inbox .yui3-tab {
-    display: block;
-    border:none;
-    border-bottom:1px solid #DBDBDB;
-    margin: 0;
-    cursor:pointer;
-    width:100%;
-    padding:0;
-}
-.yui3-skin-sam .wegas-inbox .yui3-tab a.yui3-tab-label  {
-    background: none;
-    border: none;
-    padding: 6px 0px;
-    font-size: 9pt;
-    width:100%;
-}
-.yui3-skin-sam .wegas-inbox .yui3-tab-selected a.yui3-tab-label {
-    color:black;
-}
-.yui3-skin-sam .wegas-inbox .subject,
-.yui3-skin-sam .wegas-inbox .from {
-    background: lightSteelBlue;
-    padding: 5px 10px;
-}
-.yui3-skin-sam .wegas-inbox .body {
-    border-bottom: 1px solid lightgray;
-    padding: 5px 10px;
-}
-
-.yui3-skin-sam .wegas-inbox .yui3-tab-selected {
-
-    background: #CCCCCC;
-}
-
-.yui3-skin-sam .wegas-inbox .unread {
-    font-weight:bold;
-}
-
-
-/* Wegas Layout Widget Styles */
-.yui3-skin-sam .wegas-layout {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-}
-.yui3-skin-sam .wegas-layout-content {
-    height:100%;
-    background:white;
-    overflow: hidden;
-}
-.yui3-skin-sam .wegas-layout-left,
-.yui3-skin-sam .wegas-layout-center,
-.yui3-skin-sam .wegas-layout-right {
-    position: absolute;
-    height: 100% !important;
-}
-.yui3-skin-sam .wegas-layout-left > .yui3-widget,
-.yui3-skin-sam .wegas-layout-center > .yui3-widget,
-.yui3-skin-sam .wegas-layout-right > .yui3-widget {
-    position: relative;
-}
-.yui3-skin-sam .wegas-layout-content > .yui-widget-bd {
-    position: relative;
-}
-.yui3-skin-sam .wegas-layout-center {
-    margin-right: 6px;
-    margin-left: 6px;
-}
-.yui3-skin-sam .wegas-layout-left {
-    width: 300px;
-    padding-right: 6px;
-}
-.yui3-skin-sam .wegas-layout-right {
-    padding-left: 6px;
-    width: 320px;
-    right: 0;
-}
-.yui3-skin-sam .wegas-layout .yui3-resize-handle {
-    background: #F2F2F2;
 }
 
 /* Menu styles */
