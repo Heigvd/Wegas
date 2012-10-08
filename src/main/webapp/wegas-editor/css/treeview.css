@@ -115,8 +115,8 @@
 .yui3-treeview-visible-right .yui3-treeleaf-content-rightwidget{
     opacity: 1;
 }
-.yui3-treeleaf-focused .yui3-treeleaf-content-header,
-.yui3-treenode-focused > .yui3-treenode-content-header{
+.selected > div > .yui3-treeleaf-content-header,
+.selected > .yui3-treenode-content-header{
     background-color:#F2F2F2;
     box-shadow: 0px 0px 6px #6D6D6D;
 }
