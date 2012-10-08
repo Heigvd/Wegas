@@ -35,7 +35,7 @@
                                 "cssClass": "pmg-period",
                                 "label": "Periods",
                                 "view": "valuebox",
-                                "variable": "period",
+                                "expr": "currentPeriod.items[currentPhase.value].descriptorId",
                                 "dataSource": "VariableDescriptor"
     
                             }]
@@ -162,7 +162,13 @@
                         "children":[{
                                 "type": "Button",
                                 "cssClass":"actions",
+                                "tooltip":"Actions",
                                 "plugins": [{
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "expr": "actions.items[currentPhase.value].descriptorId"
+                                        }
+                                    },{
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 8,
@@ -171,8 +177,14 @@
                                     }]
                             },{
                                 "type": "Button",
-                                "cssClass":"choices",
+                                "cssClass":"questions",
+                                "tooltip":"Questions",
                                 "plugins": [{
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "expr": "questions.items[currentPhase.value].descriptorId"
+                                        }
+                                    },{
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 9,
@@ -182,6 +194,7 @@
                             },{
                                 "type": "Button",
                                 "cssClass":"inbox",
+                                "tooltip":"Inbox",
                                 "plugins": [{
                                         "fn": "UnreadCount",
                                         "cfg": {
@@ -197,6 +210,7 @@
                             },{
                                 "type": "Button",
                                 "cssClass":"history",
+                                "tooltip":"History",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
@@ -207,7 +221,7 @@
                             },{
                                 "type": "Button",
                                 "cssClass":"help",
-                                "tooltip": "Help",
+                                "tooltip":"Help",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
@@ -240,7 +254,7 @@
         "type":"List",
         "children":[{
                 "type": "Text",
-                "content":"<div class='title'><h2>Available Actions During this Phase</h2></div><div class='title'><h2>Description</h2></div>"
+                "content":"<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
             },{
                 "type": "MCQTabView",
                 "expr": "actions.items[currentPhase.value].descriptorId"
@@ -248,14 +262,14 @@
         ]
     },{
         "id":9,
-        "cssClass":"choices-page",
+        "cssClass":"questions-page",
         "type":"List",
         "children":[{
                 "type": "Text",
-                "content":"<div class='title'><h2>Choices to be made during this week</h2></div><div class='title'><h2>Details</h2></div>"
+                "content":"<div class='title'><h2>Questions to be made during this week</h2></div><div class='title'><h2>Details</h2></div>"
             },{
                 "type": "MCQTabView",
-                "expr": "choices.items[currentPhase.value].descriptorId"
+                "expr": "questions.items[currentPhase.value].descriptorId"
             }
         ]
     },{
@@ -276,7 +290,7 @@
         "type":"List",
         "children":[{
                 "type": "Text",
-                "content":"<div class='title'><h2>Choices and Actions History</h2></div><div class='title'><h2>Details</h2></div>"
+                "content":"<div class='title'><h2>Questions and actions history</h2></div><div class='title'><h2>Details</h2></div>"
             },{
                 "type": "InboxDisplay",
                 "variable": "inbox"

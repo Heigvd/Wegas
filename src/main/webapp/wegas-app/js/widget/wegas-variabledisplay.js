@@ -27,7 +27,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
         },
 
         syncUI: function () {
-            var variableDescriptor = this.get("dataSource").rest.find( "name", this.get( "variable" ) );
+            var variableDescriptor = this.get( "variableDesc" );
 
             if ( !variableDescriptor ) {
                 return;
@@ -97,8 +97,21 @@ YUI.add('wegas-variabledisplay', function (Y) {
         }
     }, {
         ATTRS : {
-            variable: {
-                type: "string"
+            variable: {},
+            expr: {},
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variableDesc: {
+                getter: function () {
+                    if ( this.get( "variable" ) ) {
+                        return this.get("dataSource").rest.find( 'name', this.get( "variable" ) )
+                    } else {
+                        return this.get("dataSource").rest.findById(
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
+                    }
+                }
             },
             dataSource: {
                 "transient": true,
@@ -135,7 +148,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
 
         syncUI: function () {
             var acc, angle_pourcent, maxVal, minVal, ctx, i, value_x, value_y, angle_value, value, label,
-            variableDescriptor = this.get("dataSource").rest.find( "name", this.get( "variable" ) );
+            variableDescriptor = this.get( "variableDesc" );
 
             if (!variableDescriptor) {
                 return;
@@ -191,8 +204,21 @@ YUI.add('wegas-variabledisplay', function (Y) {
         }
     }, {
         ATTRS : {
-            variable: {
-                type: "string"
+            variable: {},
+            expr: {},
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variableDesc: {
+                getter: function () {
+                    if ( this.get( "variable" ) ) {
+                        return this.get("dataSource").rest.find( 'name', this.get( "variable" ) )
+                    } else {
+                        return this.get("dataSource").rest.findById(
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
+                    }
+                }
             },
             dataSource: {
                 "transient": true,

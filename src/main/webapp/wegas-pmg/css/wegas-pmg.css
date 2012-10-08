@@ -1,18 +1,15 @@
-/*-----------------------------------body-------------------------------------*/
-html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
-    height:100%;
-}
 /*--------------------------------header--------------------------------------*/
 .header{
     position:absolute;
     top:0px;
+    right:0;
+    left:0;
     background-image: url(/Wegas/wegas-pmg/images/header.png);
     background-repeat: repeat-x;
     background-color:#353B41;
     color:white;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-size: 9pt;
-    width:100%;
     height:80px;
     padding:5px;
     min-width:970px;
@@ -120,17 +117,18 @@ html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
 .layout .horizontal-menu{
     position:absolute;
     top:90px;
+    right:0;
+    left:0;
     background-image: url(/Wegas/wegas-pmg/images/nav_horizontal.png);
     background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
     margin:0px;
     min-width:970px;
-    width:100%;
 }
 
 .layout .horizontal-menu button{  
-    background-image: url(/Wegas/wegas-pmg/images/nav_horizontal.png);
+
     background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
@@ -162,6 +160,7 @@ html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
 }
 
 .layout .horizontal-menu .wegas-login{
+
     float:right;
     border:none;
     padding:0 5px 0 0;
@@ -176,12 +175,12 @@ html, body, .wegas-widget, .wegas-pageloader-content, .wegas-list-vertical{
 
 /*-----------------------------------body-------------------------------------*/
 .body{
-    bottom: 0px;
-    height: 100%;
-    left: 0px;
+    bottom: 0;
+    left: 0;
     position: absolute;
     right: 60px;
     top: 120px;
+    /*min-width: 970px;*/
 }
 
 .title{
@@ -205,9 +204,9 @@ h2{
 .vertical-menu{
     float: right;
     top:120px;
-    height: 100%;
     position: absolute;
-    right: 0px;
+    right: 0;
+    bottom:0;
     width: 60px;
     background-color: #7A7A7A;
 }
@@ -215,7 +214,6 @@ h2{
 .vertical-menu div button{
     width:60px;
     height:60px;
-    display:box;
     padding:0;
     margin-top:-3px;
     float:none;
@@ -235,8 +233,8 @@ h2{
     margin-top:0px;
 }
 
-.vertical-menu .choices, .vertical-menu .choices:hover{
-    background-image: url(/Wegas/wegas-pmg/images/choice.png), url(/Wegas/wegas-pmg/images/nav_vertical.png);
+.vertical-menu .questions, .vertical-menu .questions:hover{
+    background-image: url(/Wegas/wegas-pmg/images/question.png), url(/Wegas/wegas-pmg/images/nav_vertical.png);
     background-position: center;
     background-repeat: no-repeat, repeat-x;
 }
@@ -259,10 +257,25 @@ h2{
     background-image: url(/Wegas/wegas-pmg/images/help.png);
     background-position: center;
     background-repeat: no-repeat;
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+}
+.unread-count{
+    margin-left:20px;
 }
 
-/*---------------------------choices and actions------------------------------*/
-.choices-page .wegas-text, 
+.unread-count .value{
+    background-image: url(/Wegas/wegas-pmg/images/unread-count.png);
+    background-position: center;
+    background-repeat: no-repeat; 
+    padding:20px;
+    color:white;
+}
+
+/*---------------------------questions and actions----------------------------*/
+.questions-page .wegas-text, 
 .actions-page .wegas-text{
     height:27px;
 }
@@ -303,7 +316,7 @@ h2{
 .yui3-skin-sam .wegas-mcqtabview .yui3-tab  .label {
     float:left;
     padding-left:8px;
-        text-decoration: underline;
+    text-decoration: underline;
 }
 .yui3-skin-sam .wegas-mcqtabview .pmg-subtitle .right ,
 .yui3-skin-sam .wegas-mcqtabview .yui3-tab .status {
@@ -385,4 +398,21 @@ h2{
     width:50%;
     float:left;
     padding:0;
+}
+
+.wegas-inbox .read{
+    padding:0 5px 0;
+}
+
+.wegas-inbox .body{
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    text-align: justify;
+}
+
+.bracket{
+    display:none;
 }
