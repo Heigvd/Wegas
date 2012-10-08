@@ -113,7 +113,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             renderUI: function () {
                 var bb = this.get( "boundingBox" );
 
-                bb.on("clickoutside", this.hide, this );
+                bb.on( "clickoutside", this.hide, this );
                 bb.on( "click", this.menuClick, this );
                 bb.on( "mouseenter", this.cancelMenuTimer, this );
                 bb.on( "mouseleave", this.startMenuHideTimer, this );

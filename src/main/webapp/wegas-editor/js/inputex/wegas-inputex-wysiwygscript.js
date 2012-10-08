@@ -48,7 +48,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
 
             this.wrapEl.style[ "display" ] = ( wysiwygmode) ? "none" : "block";
 
-            this.viewSrc.set( "selected", !wysiwygmode );
+            this.viewSrc.set( "selected", wysiwygmode ? 0 : 1 );
             this.form.addButton.set( "disabled", !wysiwygmode);
 
             if ( wysiwygmode ) {
@@ -70,10 +70,11 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
             this.viewSrc = new Y.Wegas.Button({                                 // Add the "view src" button
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>"
             });
-            this.viewSrc.on( "click", function () {
+            this.viewSrc.after( "click", function () {
                 if ( this.viewSrc.get( "disabled" ) ) {
                     return;
                 }
+                this.updateTextareaValue();
                 this.setMode( ( this.options.mode === "wysiwyg" ) ? "text" : "wysiwyg" );
             }, this );
             this.viewSrc.render( this.fieldContainer );
@@ -127,15 +128,16 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
 
             this.form.addButton.get( "boundingBox" ).setStyle( "display", "inline-block" );
 
-            this.form.on( "updated", function () {
-                if ( this.options.mode === "wysiwyg" ) {
-                    this.el.value =  this.form.getArray().join(";\n") + ";";
-                }
-                console.log("form updated");
-            }, this );
+            this.form.on( "updated", this.updateTextareaValue, this );
 
             this.setMode( this.options.mode );
             this.viewSrc.set( "disabled", false );
+        },
+
+        updateTextareaValue: function () {
+            if ( this.options.mode === "wysiwyg" ) {
+                this.el.value =  this.form.getArray().join(";\n") + ";";
+            }
         },
         /**
          *
@@ -228,8 +230,8 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
         getValue: function () {
             var l = this.inputs.length;
             return "VariableDescriptorFacade.find(" + this.inputs[ l - 3].getValue() + ")" +
-            "." + this.inputs[ l - 2 ].getValue() +
-            "(" + this.inputs[ l - 1 ].getValue().join( ", ") + ")";
+                "." + this.inputs[ l - 2 ].getValue() +
+                "(" + this.inputs[ l - 1 ].getValue().join( ", ") + ")";
 
         },
         getEntityId: function () {
@@ -301,7 +303,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
             this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
             ret.push( this.generateSelectConfig( null,                          // Pushes the current entity to the fields stack
-                currentEntity, currentEntity.get( "items" ) ) );
+            currentEntity, currentEntity.get( "items" ) ) );
 
             if ( currentEntity.parentDescriptor ) {                             // Add its hierarchy
                 while ( currentEntity.parentDescriptor ) {
@@ -310,7 +312,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 }
             }
             ret.push( this.generateSelectConfig( currentEntity,                 // And finally the root context (entities that are at the root of the gameModel
-                null, rootEntities ) );
+            null, rootEntities ) );
 
             return ret.reverse();
         },
@@ -496,7 +498,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
 	 */
         setOptions: function(options) {
             var i, results = options.entity ? options.entity.get( "results" ) :
-            Y.Plugin.EditEntityAction.currentEntity.get( "results" );
+                Y.Plugin.EditEntityAction.currentEntity.get( "results" );
             options.choices = [];
 
             for ( i = 0; i < results.length; i = i + 1 ) {

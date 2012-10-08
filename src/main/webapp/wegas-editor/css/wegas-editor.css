@@ -254,8 +254,8 @@ select {
 
 /* YUI 2 RTE Styles */
 .yui-skin-sam .yui-editor-container {
-    border: 1px solid lightgray;
-    margin: 0 -2px;
+    border: none;
+    margin: 0 ;
 }
 .yui-skin-sam .yui-toolbar-container {
     background-color: transparent;
@@ -265,13 +265,16 @@ select {
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont {
     padding: .3em .3em 0;
-    border-bottom: 1px solid lightgray;
+    border-bottom: none;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-group {
     margin-bottom: .3em;
 }
 .yui-skin-sam .yui-editor-panel .hd span.close {
     top: 4px;
+}
+.yui-skin-sam .yui-editor-container .yui-editor-editable-container {
+    border: 1px solid lightgray
 }
 
 /* YUI2 RTE: Add file/image panel styles */

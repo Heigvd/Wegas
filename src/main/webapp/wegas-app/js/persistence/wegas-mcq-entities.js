@@ -391,7 +391,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 _inputex: {
                     label: null,
                     listAddLabel: " ",
-                    listRemoveLabel: " "
+                    listRemoveLabel: " ",
+                    wrapperClassName: "inputEx-fieldWrapper-nomargin"
                 }
             }
         },

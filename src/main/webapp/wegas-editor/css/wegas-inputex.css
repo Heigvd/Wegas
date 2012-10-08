@@ -61,24 +61,23 @@ div.inputEx-fieldWrapper {
     width: 129px;
 }
 /* And cancel it for nested fields */
-/*.wegas-form div.inputEx-CombineField ,*/
 .wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper {
-/*    margin-right: 0px;*/
     padding-left: 0;
+    margin-bottom: 0;
 }
-.wegas-form .inputEx-fieldWrapper .inputEx-ListField-childContainer {
-/*    margin-left: -135px;*/
+.wegas-form div.inputEx-ListField-subFieldEl {
+    margin-left: 0px;
 }
-
-.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper /*,
-.wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper*/  {
+.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper  {
     padding-left:0;
 }
-.wegas-form div.inputEx-fieldWrapper >.inputEx-fieldWrapper > div.inputEx-label {
-    margin-left:-85px;
-    width: 79px;
-}
 
+.wegas-form .yui3-button {
+
+}
+.wegas-form .inputEx-ListField >span {
+    display: none;
+}
 /* Wegas Url Field styles */
 .inputEx-wegas-UrlField {
     padding-right:40px;
@@ -90,22 +89,6 @@ div.inputEx-fieldWrapper {
     vertical-align: top;
     margin-top: -4px;
 }
-
-/* Inputex List styles */
-div.inputEx-ListField {
-    /*    position: relative;*/
-    /*    padding-bottom: 20px;*/
-}
-div.inputEx-ListField > span {
-    /*    display:none;*/
-}
-/*div.inputEx-ListField-subFieldEl {
-    width: 100%;
-    margin-left: -135px;
-}
-.inputEx-ListField-childContainer > div {
-    position:relative;
-}*/
 
 /* The "add"" button */
 img.inputEx-ListField-delButton {
