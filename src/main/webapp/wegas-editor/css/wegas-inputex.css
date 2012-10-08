@@ -47,6 +47,7 @@ div.inputEx-fieldWrapper {
     vertical-align: top;
     width: 100%;
 }
+/* Set up fluid layout for inputex fields */
 .wegas-form div.inputEx-CombineField,
 .wegas-form .inputEx-fieldWrapper {
     padding-left:135px;
@@ -58,6 +59,15 @@ div.inputEx-fieldWrapper {
 .wegas-form div.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-135px;
     width: 129px;
+}
+/* And cancel it for nested fields */
+/*.wegas-form div.inputEx-CombineField ,*/
+.wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper {
+/*    margin-right: 0px;*/
+    padding-left: 0;
+}
+.wegas-form .inputEx-fieldWrapper .inputEx-ListField-childContainer {
+/*    margin-left: -135px;*/
 }
 
 .wegas-form div.inputEx-CombineField .inputEx-fieldWrapper /*,
@@ -89,13 +99,13 @@ div.inputEx-ListField {
 div.inputEx-ListField > span {
     /*    display:none;*/
 }
-div.inputEx-ListField-subFieldEl {
+/*div.inputEx-ListField-subFieldEl {
     width: 100%;
     margin-left: -135px;
 }
 .inputEx-ListField-childContainer > div {
     position:relative;
-}
+}*/
 
 /* The "add"" button */
 img.inputEx-ListField-delButton {

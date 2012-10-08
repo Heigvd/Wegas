@@ -20,6 +20,7 @@ import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -27,8 +28,11 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "ChoiceDescriptor")
 @Table(name = "MCQChoiceDescriptor")
+@XmlType(name = "ChoiceDescriptor")
+@JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
+})
 public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     private static final long serialVersionUID = 1L;
@@ -83,7 +87,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     @PrePersist
     public void prePersist() {
         if (this.getResults().isEmpty()) {
-            this.addResult(new Result("defaultResult"));
+            this.addResult(new Result("defaultResult"));                        // When a choice is created, we automatically add a result by default
         }
     }
 

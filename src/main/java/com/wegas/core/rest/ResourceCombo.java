@@ -10,8 +10,8 @@
  */
 package com.wegas.core.rest;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 import java.util.Set;
 import javax.ejb.Stateless;
@@ -82,7 +82,7 @@ public class ResourceCombo {
         StringBuilder combinedJavaScript = new StringBuilder();
         for (String fileName : fileList) {
             try {
-                FileInputStream fis = (FileInputStream) servletContext.getResource(fileName).getContent();
+                InputStream fis = (InputStream) servletContext.getResource(fileName).getContent();
                 String content = new Scanner(fis).useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
 
                 if (mediaType.equals("text/css")) {                             // @hack for css files, we correct the path
