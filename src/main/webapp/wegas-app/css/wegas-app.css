@@ -26,7 +26,70 @@ input[type="submit"], input[type="reset"] {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 2;
+    z-index: 10;
+}
+/* System messages */
+.wegas-systemmessage {
+    position:absolute;
+    top: 25px;
+    left: 0;
+    right: 0;
+    z-index:11;
+}
+.wegas-systemmessage > div{
+    margin: 25px;
+    background: rgba(110, 110, 110, 0.8);
+    border-radius: 10px;
+    box-shadow: 1px 2px 4px #6D6D6D;
+    border: 1px solid #6E6E6E;
+    color: white;
+    text-shadow: 1px 1px 2px lightgray;
+    position: relative;
+    padding: 19px 19px 40px 60px;
+}
+.wegas-systemmessage > div > .close{
+    cursor:pointer;
+    position: absolute;
+    top:4px;
+    right: 6px;
+    width:18px;
+    height:18px;
+    background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;
+}
+.wegas-systemmessage  .icon {
+    width: 55px;
+    height: 50px;
+    position: absolute;
+    top: 17px;
+    left: 8px;
+}
+.wegas-systemmessage  .content {
+    vertical-align: top;
+    width:100%;
+    display: inline-block;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap; /* Mozilla */
+    white-space: -hp-pre-wrap;  /* HP printers */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    white-space: -pre-wrap;     /* Opera 4-6 */
+    white-space: pre-wrap;      /* CSS 2.1 */
+    white-space: pre-line;      /* CSS 3 (and 2.1 as well, actually) */
+    word-wrap: break-word;      /* IE */
+    -moz-binding: url('xbl.xml#wordwrap'); /* Firefox (using XBL) */
+}
+.wegas-systemmessage > .success .icon {
+    background: url(../images/wegas-icon-success-48.png) no-repeat;
+}
+.wegas-systemmessage > .error .icon {
+    background: url(../images/wegas-icon-error-48.png) no-repeat;
+}
+
+/* */
+.wegas-smallmessage {
+    padding: 20px;
+    margin: 20px;
+    text-align: center;
+    font-style: italic;
 }
 
 /* YUI3 Buttons Styles */
