@@ -59,7 +59,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachine-entities': {
                         path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
-                        requires: [ 'wegas-entity' ]
+                        requires: [ 'wegas-entity', 'wegas-widget' ]
                     },
                     'wegas-mcq-entities': {
                         path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
