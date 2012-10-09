@@ -37,8 +37,8 @@ YUI.add("wegas-gallery", function(Y){
         images:{},
 
         initializer : function(){
-            var prev;
-            if(prev = Y.Widget.getByNode(".wegas-lightGallery")){               // TODO: currently destroying previous one, do a singleton
+            var prev = Y.Widget.getByNode(".wegas-lightGallery");
+            if(prev){               // TODO: currently destroying previous one, do a singleton
                 prev.destroy();
             }
             this.images = {};
@@ -46,9 +46,9 @@ YUI.add("wegas-gallery", function(Y){
             this.isFullScreen = false;
             this.fullScreenNode = new Y.Node.create("<span></span>");
             this.scrollView = new Y.ScrollView({
-
                 width: (parseInt(this.get("selectedWidth")) + 30),
                 srcNode:this.get(BOUNDING_BOX),
+                axis: "x",
                 flick:{
                     minDistance:10,
                     minVelocity:0.3,
@@ -56,9 +56,7 @@ YUI.add("wegas-gallery", function(Y){
                 },
                 bounce:0
             });
-            this.scrollView.plug(Y.Plugin.ScrollViewPaginator, {
-                selector: 'li'
-            });
+
             if(this.get("lightGallery")){
                 this.set("render", "body");
                 this.set("gallery", []);
@@ -67,11 +65,11 @@ YUI.add("wegas-gallery", function(Y){
 
         },
         renderUI : function(){
-
-            //this.get("gallery");                                                // LAZY init
+            // LAZY init
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-left'><div>PREVIOUS</div></div>");
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-right'><div>NEXT</div></div>");
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-toggle'></div>");
+            this.get(CONTENT_BOX).appendChild("<li class='img-loading'></li>");
             if(this.get("lightGallery")){
                 this.scrollView.get(BOUNDING_BOX).addClass("wegas-lightGallery");
             }else if(this.get("gallery").length > 0){
@@ -79,9 +77,11 @@ YUI.add("wegas-gallery", function(Y){
             }
             this.fullScreenNode.appendTo(Y.one("body"));
 
-            this.scrollView.render();
         },
         syncUI: function(){
+            if(!this.scrollView.get("rendered")){
+                return;
+            }
             var scrollViewId = "#" + this.scrollView.get("id") + " ",           // prefix css with id, allow multiple instance with different style
             selW = parseInt(this.get("selectedWidth")),
             selH = this.get("selectedHeight"),
@@ -144,11 +144,10 @@ YUI.add("wegas-gallery", function(Y){
                 padding:"0 "+ (smaW+45) + "px 0 " + (smaW+15) + "px"
             });
 
-            if(this.scrollView.get("rendered")){
-                this.scrollView.scrollTo((selW + 60)*this.scrollView.pages.get("index"),0);
-            }
-            this.setSelected(this.scrollView.pages.get("index"));
             this.scrollView.syncUI();
+            if(this.scrollView.get("rendered")){
+                this.scrollView.pages.scrollToIndex(this.scrollView.pages.get("index"));
+            }
             if(this.get("lightGallery") && !this.get("fullScreen")){
                 this.scrollView.hide();
             }
@@ -185,17 +184,40 @@ YUI.add("wegas-gallery", function(Y){
             this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-right').on("mousedown", function(e){
                 e.halt(true);
             }));
-            this.scrollView.on("flick", function(e){
-                this.setSelected(e.target.pages.get("index"));
+            this.scrollView.after("scrollEnd", function(e){
+                this.scrollView.pages.scrollToIndex(this.scrollView.pages.get("index"));              //Constrain
+                Y.later(600, this, function(){                                  // Let some time before loading next one
+                    var index = this.scrollView.pages.get("index");
+                    if(this.images[index + 1] && !this.images[index + 1].loaded){
+                        this.loadImage(index + 1);
+                    }
+                    if(this.images[index - 1] && !this.images[index - 1].loaded){
+                        this.loadImage(index - 1);
+                    }
+                });
 
             }, this);
-            //this.eventInstances.push();
             this.eventInstances.push( Y.on("windowresize", Y.bind(this.windowResizeEvent, this)));
             this.after("galleryChange", function(e){
                 if(e.newVal.length > 0){
                     this.loadImage(0);
+                    if(e.newVal.length > 1){
+                        this.loadImage(1);
+                    }
                 }
-                this.scrollView.scrollTo(0,0, 500);
+                if(!this.scrollView.get("rendered")){
+                    this.scrollView.plug(Y.Plugin.ScrollViewPaginator, {
+                        selector: 'li'
+                    });
+
+                    this.scrollView.render();
+                    this.scrollView.pages.after("indexChange", function(e){
+                        this.setSelected(e.target.get("index"));
+                    }, this);
+                }else{
+                    this.scrollView.syncUI();
+
+                }
                 this.setSelected(0);
                 this.scrollView.pages.set("index", 0);
                 this.syncUI();
@@ -237,11 +259,9 @@ YUI.add("wegas-gallery", function(Y){
         },
         next: function(){
             this.scrollView.pages.next();
-            this.setSelected(this.scrollView.pages.get("index"));
         },
         prev: function(){
             this.scrollView.pages.prev();
-            this.setSelected(this.scrollView.pages.get("index"));
         },
         setSelected: function(index){
             var list = this.get(CONTENT_BOX).all("li");
@@ -255,16 +275,13 @@ YUI.add("wegas-gallery", function(Y){
             if(list.size()> index){
                 list.item(index).addClass("gallery-selected");
             }
-            if(this.images[index -1] && !this.images[index-1].loaded){
-                this.loadImage(index - 1);
-            }
-            if(this.images[index + 1] && !this.images[index+1].loaded){
-                this.loadImage(index + 1);
+            if(this.images[index] && !this.images[index].loaded){
+                this.loadImage(index);
             }
 
         },
         loadImage: function(i){
-            var img, imgLoader;
+            var img;
             if(this.get(CONTENT_BOX).all("li").item(i).hasChildNodes()){
                 return;
             }
