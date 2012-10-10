@@ -76,7 +76,7 @@
 
 /* treeview + wegas-menu hack */
 .wegas-fileexplorer-content > .yui3-treenode > .yui3-treenode-content-header .wegas-menu-itemlist-horizontal > ul{
-    margin:0;
+    margin-right:0;
     right:0;
 }
 .wegas-fileexplorer yui3-treeleaf-content-icon,
