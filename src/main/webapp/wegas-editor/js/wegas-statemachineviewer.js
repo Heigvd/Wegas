@@ -80,7 +80,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     outlineWidth:3
                 }
             });
-            this.events.transitionDeleted = jp.bind("jsPlumbConnectionDetached", function(e){
+            this.events.transitionDeleted = jp.bind("connectionDetached", function(e){
                 //Clean panel
                 try{
                     jp.deleteEndpoint(e.sourceEndpoint);
@@ -171,14 +171,14 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         },
         destructor: function (){
             var i;
-            jp.unload();
             for(i in this.events){
                 try{
                     this.events[i].detach();
                 } catch(e){
-                    this.events[i].unbind();
+
                 }
             }
+            jp.unbind();
             delete this.nodes;
             delete this.events;
         },
