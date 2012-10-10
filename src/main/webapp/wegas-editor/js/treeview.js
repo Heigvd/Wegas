@@ -51,7 +51,9 @@ YUI.add('treeview', function (Y) {
         bindUI : function() {
             this.on("*:click", function(e){
                 this.deselectAll();
-                e.node.set("selected", 2);
+                if(e.node){
+                    e.node.set("selected", 2);
+                }
                 e.target.get(BOUNDING_BOX).addClass("selected");
             });
             this.before("*:selectedChange", function(e){
