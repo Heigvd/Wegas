@@ -25,14 +25,19 @@ YUI.add('wegas-pageloader', function (Y) {
         },
 
         bindUI: function () {
-            //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
+        //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
         },
 
         syncUI: function () {
-            this.set( "pageId", this.get( "pageId" ) );
+            if(this.get("pageId")){
+                 this.set( "pageId", this.get( "pageId" ) );  
+            }else{
+                this.set( "pageId", this.get("variableDesc"));
+            }
         }
     }, {
         ATTRS : {
+            variableName:{},
             pageId: {
                 setter: function (val) {
                     if (!val) {
@@ -73,6 +78,17 @@ YUI.add('wegas-pageloader', function (Y) {
                     }
 
                     return val;
+                }
+            },
+            variableDesc:{
+                getter: function(){
+                    var variable;
+                    variable = Y.Wegas.VariableDescriptorFacade.rest.find( 'name', this.get("variableName") );
+                    if(!variable || !variable.getInstance().get("value")){
+                        return null;
+                    }else{
+                        return variable.getInstance().get("value");
+                    }
                 }
             },
             widget: {}
