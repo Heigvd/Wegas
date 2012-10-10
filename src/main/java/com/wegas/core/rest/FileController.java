@@ -96,7 +96,7 @@ public class FileController {
                         logger.info(details.getFormDataContentDisposition().getFileName() + "(" + details.getMediaType() + ") uploaded as \"" + name + "\"");
                     } catch (IOException ex) {
                         logger.error("Error reading uploaded file :", ex);
-                        connector.close();
+                        connector.save();
                     }
                 } else {
                     detachedFile.sync();
@@ -108,7 +108,7 @@ public class FileController {
         } else {
             logger.debug("Parent Directory does not exist");
         }
-        connector.close();
+        connector.save();
         return detachedFile;
     }
 
@@ -130,11 +130,10 @@ public class FileController {
             fileDescriptor = DescriptorFactory.getDescriptor(name, connector);
         } catch (PathNotFoundException e) {
             logger.debug("Asked path does not exist: {}", e.getMessage());
-            connector.close();
+            connector.save();
             return response.build();
         } catch (RepositoryException e) {
             logger.error("Need to check those errors", e);
-            connector.close();
             return response.build();
         }
         if (fileDescriptor instanceof FileDescriptor) {
@@ -152,7 +151,7 @@ public class FileController {
             } catch (IOException ex) {
                 Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                connector.close();
+                connector.save();
             }
         }
         return response.build();
@@ -173,11 +172,11 @@ public class FileController {
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
             AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(directory, connector);
             if (!dir.exist() || dir instanceof FileDescriptor) {
-                connector.close();
+                connector.save();
                 return null;
             } else if (dir instanceof DirectoryDescriptor) {
                 List<AbstractContentDescriptor> ret = ((DirectoryDescriptor) dir).list();
-                connector.close();
+                connector.save();
                 return ret;
             }
         } catch (LoginException ex) {
@@ -217,10 +216,10 @@ public class FileController {
                 } catch (ItemExistsException e) {
                     return Response.notModified(e.getMessage()).build();
                 }
-                connector.close();
+                connector.save();
                 return descriptor;
             } else {
-                connector.close();
+                connector.save();
                 return Response.notModified("Path" + absolutePath + " does not exist").build();
             }
         } catch (RepositoryException ex) {
@@ -247,7 +246,7 @@ public class FileController {
         } catch (RepositoryException ex) {
             logger.debug("File does not exist", ex);
         } finally {
-            connector.close();
+            connector.save();
         }
         return descriptor;
     }
@@ -263,7 +262,7 @@ public class FileController {
         try {
             ContentConnector fileManager = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
             fileManager.deleteWorkspace();
-            fileManager.close();
+            fileManager.save();
         } catch (LoginException ex) {
             Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (RepositoryException ex) {
