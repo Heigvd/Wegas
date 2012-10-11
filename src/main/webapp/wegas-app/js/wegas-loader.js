@@ -528,7 +528,7 @@ YUI().use(function (Y) {
                 if (modules[moduleName].ix_provides) {                          // Build a reverse index on which module provides what type
 
                     if (Y.Lang.isArray(modules[moduleName].ix_provides)) {
-                        for (var i = 0; i < modules[moduleName].ix_provides.length; i = i + 1) {
+                        for (i = 0; i < modules[moduleName].ix_provides.length; i = i + 1) {
                             modulesByType[modules[moduleName].ix_provides[i]] = moduleName;
                         }
                     } else {
