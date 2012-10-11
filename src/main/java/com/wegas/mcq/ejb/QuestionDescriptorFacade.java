@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -11,7 +11,6 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
@@ -22,7 +21,6 @@ import com.wegas.mcq.persistence.*;
 import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -111,7 +109,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         Reply reply = new Reply();
 
         reply.setStartTime(startTime);
-        reply.setResult(this.getCurrentResult(choice.getInstance(player)));
+        reply.setResult(this.getCurrentResult(player, choice));
         questionInstance.addReply(reply);
 
         this.em.flush();
@@ -131,13 +129,14 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
 
-    private Result getCurrentResult(ChoiceInstance choice) throws WegasException {
-        Result r = choice.getCurrentResult();
+    private Result getCurrentResult(Player p, ChoiceDescriptor choice) throws WegasException {
+        Result r = choice.getInstance(p).getCurrentResult();
         if (r == null) {
             try {
-                r = ((ChoiceDescriptor) choice.getDescriptor()).getResults().get(0);
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                throw new WegasException("No result found for choice [" + ((ChoiceDescriptor) choice.getDescriptor()).getEditorLabel() + "]", ex);
+                r = choice.getResults().get(0);
+            }
+            catch (ArrayIndexOutOfBoundsException ex) {
+                throw new WegasException("No result found for choice \"" + choice.getEditorLabel() + "\"", ex);
             }
         }
         return r;
@@ -162,12 +161,13 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     public void validateReply(Player player, Reply reply) throws ScriptException, WegasException {
         HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
-        ChoiceInstance choiceInstance = reply.getResult().getChoiceDescriptor().getInstance(player);
+        ChoiceDescriptor choiceDescriptor = reply.getResult().getChoiceDescriptor();
+        //choiceInstance = reply.getResult().getChoiceDescriptor().getInstance(player);
 
-        reply.setResult(this.getCurrentResult(choiceInstance));                 // Refresh the current result
+        reply.setResult(this.getCurrentResult(player, choiceDescriptor));       // Refresh the current result
 
         arguments.put("selectedReply", reply);
-        arguments.put("selectedChoice", choiceInstance);
+        arguments.put("selectedChoice", choiceDescriptor.getInstance(player));
         arguments.put("selectedQuestion", reply.getQuestionInstance());
         scriptManager.eval(player, reply.getResult().getImpact(), arguments);
         scriptManager.eval(player, reply.getResult().getChoiceDescriptor().getImpact(), arguments);

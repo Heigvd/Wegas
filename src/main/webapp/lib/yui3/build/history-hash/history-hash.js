@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('history-hash', function(Y) {
+YUI.add('history-hash', function (Y, NAME) {
 
 /**
  * Provides browser history management backed by
@@ -470,4 +470,4 @@ if (useHistoryHTML5 === false || (!Y.History && useHistoryHTML5 !== true &&
 }
 
 
-}, '3.6.0' ,{requires:['event-synthetic', 'history-base', 'yui-later']});
+}, '3.7.2', {"requires": ["event-synthetic", "history-base", "yui-later"]});

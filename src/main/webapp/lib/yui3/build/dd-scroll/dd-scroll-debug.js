@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('dd-scroll', function(Y) {
+YUI.add('dd-scroll', function (Y, NAME) {
 
 
     /**
@@ -430,4 +430,4 @@ YUI.add('dd-scroll', function(Y) {
 
 
 
-}, '3.6.0' ,{skinnable:false, optional:['dd-proxy'], requires:['dd-drag']});
+}, '3.7.2', {"requires": ["dd-drag"]});

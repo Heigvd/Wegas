@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('attribute-extras', function(Y) {
+YUI.add('attribute-extras', function (Y, NAME) {
 
     /**
      * The attribute module provides an augmentable Attribute implementation, which 
@@ -147,4 +147,4 @@ YUI.add('attribute-extras', function(Y) {
     Y.AttributeExtras = AttributeExtras;
 
 
-}, '3.6.0' );
+}, '3.7.2', {"requires": ["oop"]});

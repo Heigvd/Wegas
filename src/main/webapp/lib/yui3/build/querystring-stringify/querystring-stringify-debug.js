@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('querystring-stringify', function(Y) {
+YUI.add('querystring-stringify', function (Y, NAME) {
 
 /**
  * Provides Y.QueryString.stringify method for converting objects to Query Strings.
@@ -115,4 +115,4 @@ QueryString.stringify = function (obj, c, name) {
 };
 
 
-}, '3.6.0' ,{requires:['yui-base'], supersedes:['querystring-stringify-simple']});
+}, '3.7.2', {"requires": ["yui-base"]});

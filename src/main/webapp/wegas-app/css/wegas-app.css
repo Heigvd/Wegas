@@ -6,18 +6,17 @@
  * Media Engineering :: Information Technology Managment :: Comem
  *
  * Copyright (C) 2012
-*/
+ */
 
-/**
+/*
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
-*/
+ */
 
 /* Override some browser styles */
 input[type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
 }
-/* Style for the body element, before loading */
 
 /* Y.Wegas.Widget extension styles */
 .wegas-widget-loading {
@@ -27,18 +26,75 @@ input[type="submit"], input[type="reset"] {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 2;
+    z-index: 10;
+}
+/* System messages */
+.wegas-systemmessage {
+    position:absolute;
+    top: 25px;
+    left: 0;
+    right: 0;
+    z-index:11;
+}
+.wegas-systemmessage > div{
+    margin: 25px;
+    background: rgba(110, 110, 110, 0.8);
+    border-radius: 10px;
+    box-shadow: 1px 2px 4px #6D6D6D;
+    border: 1px solid #6E6E6E;
+    color: white;
+    text-shadow: 1px 1px 2px lightgray;
+    position: relative;
+    padding: 19px 19px 40px 60px;
+}
+.wegas-systemmessage > div > .close{
+    cursor:pointer;
+    position: absolute;
+    top:4px;
+    right: 6px;
+    width:18px;
+    height:18px;
+    background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;
+}
+.wegas-systemmessage  .icon {
+    width: 55px;
+    height: 50px;
+    position: absolute;
+    top: 17px;
+    left: 8px;
+}
+.wegas-systemmessage  .content {
+    vertical-align: top;
+    width:100%;
+    display: inline-block;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap; /* Mozilla */
+    white-space: -hp-pre-wrap;  /* HP printers */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    white-space: -pre-wrap;     /* Opera 4-6 */
+    white-space: pre-wrap;      /* CSS 2.1 */
+    white-space: pre-line;      /* CSS 3 (and 2.1 as well, actually) */
+    word-wrap: break-word;      /* IE */
+    -moz-binding: url('xbl.xml#wordwrap'); /* Firefox (using XBL) */
+}
+.wegas-systemmessage > .success .icon {
+    background: url(../images/wegas-icon-success-48.png) no-repeat;
+}
+.wegas-systemmessage > .error .icon {
+    background: url(../images/wegas-icon-error-48.png) no-repeat;
+}
+
+/* */
+.wegas-smallmessage {
+    padding: 20px;
+    margin: 20px;
+    text-align: center;
+    font-style: italic;
 }
 
 /* YUI3 Buttons Styles */
 .yui3-button-hidden {
     display:none;
-}
-
-/*  TabView Styles */
-.yui3-skin-sam .yui3-tabview-panel {
-    border: none;
-    background: none;
 }
 
 /* List styles */
@@ -48,108 +104,6 @@ input[type="submit"], input[type="reset"] {
     vertical-align:top;
 }
 .wegas-list-vertical > div {
-}
-
-/* Inbox styles */
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-list {
-    display: inline-block;
-    float:left;
-    /* margin-left: -350px;*/
-    border: none;
-    display: inline-block;
-    border-right: 1px solid lightgray;
-    width: 39.9%;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-content {
-    overflow:auto;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
-    display:inline-block;
-    width:58%;
-    float:left;
-    overflow:inherit;
-}
-.yui3-skin-sam .wegas-inbox .yui3-tab {
-    display: block;
-    border:none;
-    border-bottom:1px solid #DBDBDB;
-    margin: 0;
-    cursor:pointer;
-    width:100%;
-    padding:0;
-}
-.yui3-skin-sam .wegas-inbox .yui3-tab a.yui3-tab-label  {
-    background: none;
-    border: none;
-    padding: 6px 0px;
-    font-size: 9pt;
-    width:100%;
-}
-.yui3-skin-sam .wegas-inbox .yui3-tab-selected a.yui3-tab-label {
-    color:black;
-}
-.yui3-skin-sam .wegas-inbox .subject,
-.yui3-skin-sam .wegas-inbox .from {
-    background: lightSteelBlue;
-    padding: 5px 10px;
-}
-.yui3-skin-sam .wegas-inbox .body {
-    border-bottom: 1px solid lightgray;
-    padding: 5px 10px;
-}
-
-.yui3-skin-sam .wegas-inbox .yui3-tab-selected {
-
-    background: #CCCCCC;
-}
-
-.yui3-skin-sam .wegas-inbox .unread {
-    font-weight:bold;
-}
-
-
-/* Wegas Layout Widget Styles */
-.yui3-skin-sam .wegas-layout {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-}
-.yui3-skin-sam .wegas-layout-content {
-    height:100%;
-    background:white;
-    overflow: hidden;
-}
-.yui3-skin-sam .wegas-layout-left,
-.yui3-skin-sam .wegas-layout-center,
-.yui3-skin-sam .wegas-layout-right {
-    position: absolute;
-    height: 100% !important;
-}
-.yui3-skin-sam .wegas-layout-left > .yui3-widget,
-.yui3-skin-sam .wegas-layout-center > .yui3-widget,
-.yui3-skin-sam .wegas-layout-right > .yui3-widget {
-    position: relative;
-}
-.yui3-skin-sam .wegas-layout-content > .yui-widget-bd {
-    position: relative;
-}
-.yui3-skin-sam .wegas-layout-center {
-    margin-right: 6px;
-    margin-left: 6px;
-}
-.yui3-skin-sam .wegas-layout-left {
-    width: 300px;
-    padding-right: 6px;
-}
-.yui3-skin-sam .wegas-layout-right {
-    padding-left: 6px;
-    width: 320px;
-    right: 0;
-}
-.yui3-skin-sam .wegas-layout .yui3-resize-handle {
-    background: #F2F2F2;
 }
 
 /* Menu styles */

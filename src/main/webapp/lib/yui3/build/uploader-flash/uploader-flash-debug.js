@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('uploader-flash', function(Y) {
+YUI.add('uploader-flash', function (Y, NAME) {
 
 
     /**
@@ -1038,4 +1038,4 @@ Y.UploaderFlash.Queue = UploaderQueue;
 
 
 
-}, '3.6.0' ,{requires:['swf', 'widget', 'substitute', 'base', 'cssbutton', 'node', 'event-custom', 'file-flash', 'uploader-queue']});
+}, '3.7.2', {"requires": ["swf", "widget", "substitute", "base", "cssbutton", "node", "event-custom", "file-flash", "uploader-queue"]});

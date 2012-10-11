@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('widget-position-constrain', function(Y) {
+YUI.add('widget-position-constrain', function (Y, NAME) {
 
 /**
  * Provides constrained xy positioning support for Widgets, through an extension.
@@ -349,4 +349,4 @@ PositionConstrain.prototype = {
 Y.WidgetPositionConstrain = PositionConstrain;
 
 
-}, '3.6.0' ,{requires:['widget-position']});
+}, '3.7.2', {"requires": ["widget-position"]});

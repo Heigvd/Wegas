@@ -1,0 +1,68 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+*/
+
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+*/
+
+/* Inbox styles */
+.yui3-skin-sam  .wegas-inbox .yui3-tabview-list {
+    display: inline-block;
+    float:left;
+    /* margin-left: -350px;*/
+    border: none;
+    display: inline-block;
+    border-right: 1px solid lightgray;
+    width: 39.9%;
+}
+.yui3-skin-sam  .wegas-inbox .yui3-tabview-content {
+    overflow:auto;
+}
+.yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
+    display:inline-block;
+    width:58%;
+    float:left;
+    overflow:inherit;
+}
+.yui3-skin-sam .wegas-inbox .yui3-tab {
+    display: block;
+    border:none;
+    border-bottom:1px solid #DBDBDB;
+    margin: 0;
+    cursor:pointer;
+    width:100%;
+    padding:0;
+}
+.yui3-skin-sam .wegas-inbox .yui3-tab a.yui3-tab-label  {
+    background: none;
+    border: none;
+    padding: 6px 0px;
+    font-size: 9pt;
+    width:100%;
+}
+.yui3-skin-sam .wegas-inbox .yui3-tab-selected a.yui3-tab-label {
+    color:black;
+}
+.yui3-skin-sam .wegas-inbox .subject,
+.yui3-skin-sam .wegas-inbox .from {
+    background: lightSteelBlue;
+    padding: 5px 10px;
+}
+.yui3-skin-sam .wegas-inbox .body {
+    border-bottom: 1px solid lightgray;
+    padding: 5px 10px;
+}
+.yui3-skin-sam .wegas-inbox .yui3-tab-selected {
+    background: #CCCCCC;
+}
+.yui3-skin-sam .wegas-inbox .unread {
+    font-weight:bold;
+}
+

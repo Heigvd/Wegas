@@ -1,0 +1,59 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+*/
+
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+*/
+
+/* Wegas Layout Widget Styles */
+.yui3-skin-sam .wegas-layout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+.yui3-skin-sam .wegas-layout-content {
+    height:100%;
+    background:white;
+    overflow: hidden;
+}
+.yui3-skin-sam .wegas-layout-left,
+.yui3-skin-sam .wegas-layout-center,
+.yui3-skin-sam .wegas-layout-right {
+    position: absolute;
+    height: 100% !important;
+}
+.yui3-skin-sam .wegas-layout-left > .yui3-widget,
+.yui3-skin-sam .wegas-layout-center > .yui3-widget,
+.yui3-skin-sam .wegas-layout-right > .yui3-widget {
+    position: relative;
+}
+.yui3-skin-sam .wegas-layout-content > .yui-widget-bd {
+    position: relative;
+}
+.yui3-skin-sam .wegas-layout-center {
+    margin-right: 6px;
+    margin-left: 6px;
+}
+.yui3-skin-sam .wegas-layout-left {
+    width: 300px;
+    padding-right: 6px;
+}
+.yui3-skin-sam .wegas-layout-right {
+    padding-left: 6px;
+    width: 320px;
+    right: 0;
+}
+.yui3-skin-sam .wegas-layout .yui3-resize-handle {
+    background: #F2F2F2;
+}
+
+

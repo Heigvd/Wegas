@@ -1,11 +1,9 @@
 [{
         "id": 1,
         "label": "Main layout",
-        "@class": "Page",
         "type": "List",
         "cssClass": "layout",
         "children": [{
-                "id":"menu",
                 "label": "Menu",
                 "type": "List",
                 "cssClass": "menu",
@@ -18,22 +16,36 @@
                     }, {
                         "type": "Button",
                         "label": "Battle!",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpageId": 2
-                    }, {
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 2,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
                         "type": "Button",
                         "label": "History",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpageId": 3
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 3,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
                     }, {
                         "type": "Button",
                         "label": "Mails",
-                        "targetPageLoaderId": "maindisplayarea",
                         "cssClass": "menu-button",
-                        "subpageId": 5,
                         "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 5,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            },{
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": "inbox"

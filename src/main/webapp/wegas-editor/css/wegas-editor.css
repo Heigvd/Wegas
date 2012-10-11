@@ -18,30 +18,6 @@ body {
 select {
     margin: 0;
 }
-.yui3-tab{
-    position: relative;
-}
-.yui3-tab .closable-closeicon{
-    /*background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;*/
-    background: url(../../wegas-app/images/sprite_icons.png) no-repeat 1px 2px,
-        url(../../lib/yui3/build/tabview/assets/skins/sam/sprite.png) repeat-x left -1300px;
-    position: absolute;
-    right: 1px;
-    width: 13px;
-    height: 13px;
-    display: none;
-    top: -12px;
-    border: 1px solid #A3A3A3;
-    border-bottom: none;
-}
-.yui3-tab-selected > .closable-closeicon{
-    background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 1px 2px,
-        url(../../lib/yui3/build/tabview/assets/skins/sam/sprite.png) repeat-x left -1400px;
-    border-color: black;
-}
-.yui3-tab:hover .closable-closeicon{
-    display:inline-block;
-}
 
 /* YUI3 Button Widget styles redefinition */
 .yui3-skin-sam .yui3-button {
@@ -58,106 +34,6 @@ select {
 }
 .yui3-skin-sam .yui3-button .wegas-icon {
     margin: -2px 2px 0 0;
-}
-
-/* InputEx Styles */
-div.inputEx-hidden {
-    display: none;
-}
-div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
-    border: 1px solid lightgray;
-}
-.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label:first-letter {
-    text-transform: uppercase;
-}
-div.inputEx-message {
-    margin: 0;
-}
-div.inputEx-fieldWrapper {
-    margin-bottom: 0.4em;
-}
-
-/* Wegas Form Widget Styles */
-.wegas-form-content {
-    padding: 10px 0 20px !important;
-}
-.wegas-form div.inputEx-fieldWrapper,
-.wegas-form div.inputEx-Field {
-    float:none;
-}
-.wegas-form .inputEx-Group,
-.wegas-form input[type=text],
-.wegas-form select,
-.wegas-form textarea {
-    width: 100%;
-}
-.wegas-form div.inputEx-StringField-wrapper {
-    display: inline-block;
-    vertical-align: top;
-    width: 100%;
-}
-.wegas-form div.inputEx-CombineField,
-.wegas-form .inputEx-fieldWrapper {
-    padding-left:135px;
-    margin-right: 7px;
-    white-space: nowrap;
-    position: relative;
-}
-.wegas-form div.inputEx-CombineField > div.inputEx-label,
-.wegas-form div.inputEx-fieldWrapper > div.inputEx-label {
-    margin-left:-135px;
-    width: 129px;
-}
-
-.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper /*,
-.wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper*/  {
-    padding-left:0;
-}
-.wegas-form div.inputEx-fieldWrapper >.inputEx-fieldWrapper > div.inputEx-label {
-    margin-left:-85px;
-    width: 79px;
-}
-
-/* Wegas Url Field styles */
-.inputEx-wegas-UrlField {
-    padding-right:40px;
-}
-.inputEx-wegas-UrlField button {
-    float: right;
-    margin-right: -40px;
-    padding: 5px 7px 1px;
-    vertical-align: top;
-    margin-top: -4px;
-}
-
-/* Inputex List styles */
-div.inputEx-ListField {
-    /*    position: relative;*/
-    /*    padding-bottom: 20px;*/
-}
-div.inputEx-ListField > span {
-    /*    display:none;*/
-}
-div.inputEx-ListField-subFieldEl {
-    width: 100%;
-    margin-left: -135px;
-}
-.inputEx-ListField-childContainer > div {
-    position:relative;
-}
-
-/* The "add"" button */
-img.inputEx-ListField-delButton {
-    margin-left: -20px;
-    margin-top: 2px;
-    position: absolute; /* to allow click events */
-    z-index: 5;
-}
-
-
-/* TabView styles */
-.yui3-skin-sam .yui3-tabview-panel {
-    padding:0px;
 }
 
 /* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
@@ -182,78 +58,6 @@ img.inputEx-ListField-delButton {
         top: 57px;*/
 }
 
-/** Toolbar styles **/
-.wegas-toolbar {
-    position: absolute;
-    top: 0;
-    vertical-align: top;
-    min-height: 26px;
-    padding: 2px 0;
-    border-bottom: 1px solid lightgray;
-    width: 100%;
-    box-shadow: 1px 2px 4px #6D6D6D;
-    background:white;
-    z-index: 23;
-}
-.yui-layout-unit-right .wegas-toolbar {
-    padding-left:6px;
-}
-.wegas-toolbar-header{
-    vertical-align: top;
-    border: none;
-    min-height: 26px;
-}
-.wegas-toolbar-panel {
-    overflow: hidden;
-    max-height: 0px;
-    background-color: white;
-    -webkit-transition-property: max-height;
-    -webkit-transition-duration: 0.5s;
-    -webkit-transition-timing-function: linear;
-    -webkit-transition-delay: 0.3s;
-    -moz-transition-property: max-height;
-    -moz-transition-duration: 0.5s;
-    -moz-transition-timing-function: linear;
-    -moz-transition-delay: 0.3s;
-    -ms-transition-property: max-height;
-    -ms-transition-duration: 0.5s;
-    -ms-transition-timing-function: linear;
-    -ms-transition-delay: 0.3s;
-    -o-transition-property: max-height;
-    -o-transition-duration: 0.5s;
-    -o-transition-timing-function: linear;
-    -o-transition-delay: 0.3s;
-    transition-property: max-height;
-    transition-duration: 0.5s;
-    transition-timing-function: linear;
-    transition-delay: 0.3s;
-}
-.wegas-toolbar:hover > .wegas-toolbar-panel {
-    max-height: 200px;
-    overflow-y: auto;
-}
-.wegas-toolbar .yui3-button {
-    margin: 0;
-    margin-left: 0.3em;
-}
-.wegas-toolbar .wegas-selectbutton {
-    display:inline-block;
-}
-.wegas-toolbar .inputEx-fieldWrapper {
-    margin:0;
-    padding-left: 4px;
-    display:inline-block;
-}
-.wegas-toolbar select {
-    margin: 1px 0;
-    height: 22px;
-}
-/*.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectplayer .first-child a:before {
-    content: 'Current user: ';
-}*/
-.wegas-toolbar div.inputEx-label {
-    padding: 4px 1px 0 0;
-}
 /* Wegas small icons */
 .yui3-skin-sam .wegas-icon {
     display: inline-block;
@@ -335,11 +139,6 @@ img.inputEx-ListField-delButton {
 }
 .yui3-skin-sam .wegas-icon-designmode {
     background: url(../images/wegas-editor-sprite.png) no-repeat 0px -1110px;
-}
-/* wegas-inputex-ace styles */
-.ace_editor {
-    width: 100%;
-    height: 150px;
 }
 
 /* Console Widget Styles */
@@ -452,10 +251,11 @@ img.inputEx-ListField-delButton {
     bottom:0px;
     height: auto;
 }
+
 /* YUI 2 RTE Styles */
 .yui-skin-sam .yui-editor-container {
-    border: 1px solid lightgray;
-    margin: 0 -2px;
+    border: none;
+    margin: 0 ;
 }
 .yui-skin-sam .yui-toolbar-container {
     background-color: transparent;
@@ -465,13 +265,16 @@ img.inputEx-ListField-delButton {
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont {
     padding: .3em .3em 0;
-    border-bottom: 1px solid lightgray;
+    border-bottom: none;
 }
 .yui-skin-sam .yui-toolbar-container .yui-toolbar-group {
     margin-bottom: .3em;
 }
 .yui-skin-sam .yui-editor-panel .hd span.close {
     top: 4px;
+}
+.yui-skin-sam .yui-editor-container .yui-editor-editable-container {
+    border: 1px solid lightgray
 }
 
 /* YUI2 RTE: Add file/image panel styles */
@@ -579,70 +382,6 @@ img.inputEx-ListField-delButton {
     background: transparent url(../images/wegas-editor-sprite.png) 0 -974px no-repeat;
 }
 
-/* System messages */
-.wegas-systemmessage {
-    position:absolute;
-    top: 25px;
-    left: 0;
-    right: 0;
-    z-index:4;
-}
-.wegas-systemmessage > div{
-    margin: 25px;
-    background: rgba(110, 110, 110, 0.8);
-    border-radius: 10px;
-    box-shadow: 1px 2px 4px #6D6D6D;
-    border: 1px solid #6E6E6E;
-    color: white;
-    text-shadow: 1px 1px 2px lightgray;
-    position: relative;
-    padding: 19px 19px 40px 60px;
-}
-.wegas-systemmessage > div > .close{
-    cursor:pointer;
-    position: absolute;
-    top:4px;
-    right: 6px;
-    width:18px;
-    height:18px;
-    background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;
-}
-.wegas-systemmessage  .icon {
-    width: 55px;
-    height: 50px;
-    position: absolute;
-    top: 17px;
-    left: 8px;
-}
-.wegas-systemmessage  .content {
-    vertical-align: top;
-    width:100%;
-    display: inline-block;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap; /* Mozilla */
-    white-space: -hp-pre-wrap;  /* HP printers */
-    white-space: -o-pre-wrap;   /* Opera 7 */
-    white-space: -pre-wrap;     /* Opera 4-6 */
-    white-space: pre-wrap;      /* CSS 2.1 */
-    white-space: pre-line;      /* CSS 3 (and 2.1 as well, actually) */
-    word-wrap: break-word;      /* IE */
-    -moz-binding: url('xbl.xml#wordwrap'); /* Firefox (using XBL) */
-}
-.wegas-systemmessage > .success .icon {
-    background: url(../images/wegas-icon-success-48.png) no-repeat;
-}
-.wegas-systemmessage > .error .icon {
-    background: url(../images/wegas-icon-error-48.png) no-repeat;
-}
-
-/* */
-.wegas-smallmessage {
-    padding: 20px;
-    margin: 20px;
-    text-align: center;
-    font-style: italic;
-}
-
 /* Panel Widget Styles */
 .yui3-panel-hidden {
     display: none;                                                              /* added to the defaulty yui3 visibility: hidden */
@@ -672,30 +411,6 @@ img.inputEx-ListField-delButton {
     padding: 0;                                                                 /* Override yui default */
 }
 
-/* Wysiwyg code editor */
-.inputEx-WysiwigScript .inputEx-fieldWrapper,
-.inputEx-WysiwigScript .inputEx-CombineField,
-.inputEx-WysiwigScript .inputEx-Group .inputEx-Group,
-.inputEx-WysiwigScript div.inputEx-fieldWrapper {
-    float: left;
-    padding-left:0;
-}
-.inputEx-WysiwigScript fieldset {
-    display: inline-block;
-}
-.inputEx-WysiwigScript select {
-    width:auto;
-    max-width: 150px;
-}
-.inputEx-WysiwigScript div.inputEx-CombineField {
-    padding:0;
-}
-.inputEx-WysiwigScript .inputEx-ListField .yui3-button {
-    background: none;
-    border: none;
-    box-shadow: none;
-    margin: -2px 5px 0;
-}
 
 /* Editor layout styles */
 .wegas-layout-top > div {

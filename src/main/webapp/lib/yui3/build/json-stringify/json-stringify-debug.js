@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('json-stringify', function(Y) {
+YUI.add('json-stringify', function (Y, NAME) {
 
 /**
  * Provides Y.JSON.stringify method for converting objects to JSON strings.
@@ -351,4 +351,4 @@ Y.mix(Y.namespace('JSON'),{
 });
 
 
-}, '3.6.0' ,{requires:['yui-base']});
+}, '3.7.2', {"requires": ["yui-base"]});
