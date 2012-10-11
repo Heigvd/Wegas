@@ -102,8 +102,8 @@
             YUI_config.groups.jsplumb.base = base + YUI_config.groups.jsplumb.root; // Set up jsplumb path
             YUI_config.groups.jsplumb.comboBase = comboBase;
 
-            <ui:fragment rendered="#{wegasConfig.assets_local}">
-            YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+                <ui:fragment rendered="#{wegasConfig.assets_local}">
+                YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
             YUI_config.filter = "min";
             YUI_config.combine = true;
             YUI_config.root = "/lib/yui3/build/"
@@ -126,7 +126,7 @@
                 }
 
             };
-                </ui:fragment>
+        </ui:fragment>
         </script>
 
         <ui:insert name="body">
@@ -134,7 +134,7 @@
                 var Y = YUI({
                     //filter: 'raw'
                     //filters: { event: 'debug' }
-                }).use('wegas-app', function ( Y ) {
+                }).use( 'wegas-app', function ( Y ) {
                     var cfg = {
                         layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                         debug : true,
