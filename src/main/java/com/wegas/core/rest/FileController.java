@@ -18,12 +18,15 @@ import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.DirectoryDescriptor;
 import com.wegas.core.jcr.content.FileDescriptor;
+import com.wegas.exception.WegasException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.jcr.ItemExistsException;
 import javax.jcr.LoginException;
@@ -44,6 +47,7 @@ import org.slf4j.LoggerFactory;
 public class FileController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
+    private final String FILENAME_REGEXP = "(\\w|\\.| )+";
 
     /**
      *
@@ -66,13 +70,15 @@ public class FileController {
             @FormDataParam("note") String description,
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
+            @FormDataParam("file") FormDataBodyPart details) throws RepositoryException, WegasException {
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
         if (name == null) {
             name = details.getContentDisposition().getFileName();
         }
-        if (name.equals("") || name.contains("/")) {
-            return null;
+        Pattern pattern = Pattern.compile(FILENAME_REGEXP);
+        Matcher matcher = pattern.matcher(name);
+        if (name.equals("") || !matcher.matches()) {
+            throw new WegasException(name + " is not a valid filename.");
         }
         ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
 
@@ -103,7 +109,7 @@ public class FileController {
                     logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
                 }
             } else {
-                logger.debug("File already exists");
+                throw new WegasException(detachedFile.getPath() + "/" + name + " already exists" );
             }
         } else {
             logger.debug("Parent Directory does not exist");
