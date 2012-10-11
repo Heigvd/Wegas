@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('features', function(Y) {
+YUI.add('features', function (Y, NAME) {
 
 var feature_tests = {};
 
@@ -336,5 +336,4 @@ add('load', '17', {
     "ua": "ie"
 });
 
-
-}, '3.6.0' ,{requires:['yui-base']});
+}, '3.7.2', {"requires": ["yui-base"]});

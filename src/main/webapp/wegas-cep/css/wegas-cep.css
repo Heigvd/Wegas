@@ -1,6 +1,8 @@
-/* CEP Styles
- * Credit: http://www.templatemo.com
-*/
+/*
+ * CEP Styles
+ */
+ 
+ /* Global style override */
 .layout {
     margin: 0;
     padding: 0;
@@ -10,13 +12,10 @@
     background-color: #c1c1c1;
     min-height:100%;
 }
-
-
 .fl { float: left !important; }
 .fr { float: right !important; }
 a:link, a:visited { color: #006699; text-decoration: none; font-weight: normal; }
 a:active, a:hover { color: #CC0000; text-decoration: underline; }
-
 h1 {
     margin: 0px;
     padding: 0px;;
@@ -24,7 +23,6 @@ h1 {
     font-weight: bold;
     color: #000;
 }
-
 h2 {
     margin: 0 0 15px 0;
     padding: 3px 0;
@@ -32,7 +30,6 @@ h2 {
     font-weight: bold;
     color: #000000;
 }
-
 h3 {
     margin: 0px;
     padding: 0px;
@@ -42,15 +39,13 @@ h3 {
     color: #000;
 }
 
-/* site title */
+/* Headers style */
 .header {
     width: 100%;
     height: 100px;
     margin: 0 auto;
     background: url(../../wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) top repeat-x;
-
 }
-
 .header > div {
     width: 960px;
     height: 100px;
@@ -70,14 +65,12 @@ h3 {
 }
 
 /* Body styles */
-
 .body {
     width: 100%;
     min-height: 280px;
     margin: 0 auto;
     background: white url(../../wegas-cep/images/templatemo_banner_bg_wrapper.jpg) top repeat-x;
 }
-
 .body > div  {
     width: 960px;
     min-height: 250px;
@@ -85,21 +78,17 @@ h3 {
     padding: 10px;
     background: url(../../wegas-cep/images/templatemo_banner_bg.jpg) center top no-repeat;
 }
-
 .body .wegas-text-content {
     padding: 50px;
 }
 
 /* Footer */
-
 .footer {
     width: 100%;
     margin: 0 auto;
     background: #c1c1c1 url(../../wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;
     min-height: 199px;
-
 }
-
 .footer > div {
     width: 960px;
     margin: 0 auto;
@@ -113,7 +102,7 @@ h3 {
     text-align: center;
 }
 
-/** Variable display 's styles */
+/* Variable display 's styles */
 .wegas-valuebox-unit {
     float:left;
     padding: 0px 4px;
@@ -158,7 +147,7 @@ h3 {
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
 }
 .timecards {
-    width: 70px;
+    width: 72px;
     padding-top: 10px;
 }
 .timecards .wegas-variabledisplay-box-label {
@@ -227,7 +216,7 @@ h3 {
     margin: -4px 4px 0 0;
     background-image: url(../../wegas-cep/images/cep-icons.png);
 }
-.menu .cep-icon-choices {
+.menu .cep-icon-questions {
     background-position-y:-86px;
 }
 .menu .cep-icon-home {

@@ -27,21 +27,21 @@ public class Script implements Serializable {
     /**
      *
      */
-    private String lang;
+    private String lang = "JavaScript";
     /**
      *
      */
     @Lob
-    private String content;
+    private String content = "";
 
     public Script() {
-
     }
 
     public Script(String language, String content) {
         this.lang = language;
         this.content = content;
     }
+
     /**
      * @return the content
      */

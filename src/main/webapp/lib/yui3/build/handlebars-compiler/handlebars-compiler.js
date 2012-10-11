@@ -1,10 +1,10 @@
 /*
-YUI 3.6.0 (build 5521)
+YUI 3.7.2 (build 5639)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('handlebars-compiler', function(Y) {
+YUI.add('handlebars-compiler', function (Y, NAME) {
 
 /*!
 Handlebars.js - Copyright (C) 2011 Yehuda Katz
@@ -1798,4 +1798,4 @@ function.
 */
 
 
-}, '3.6.0' ,{requires:['handlebars-base']});
+}, '3.7.2', {"requires": ["handlebars-base"]});

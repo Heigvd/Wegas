@@ -110,7 +110,7 @@ YUI.add('wegas-action', function (Y) {
 
         execute: function () {
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-            targetPageLoader.set("pageId", this.get("subpageId"));
+            targetPageLoader.set( "pageId", this.get( "subpageId" ) );
             this.get( "host" ).set( "selected", 1 );
         }
     }, {

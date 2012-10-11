@@ -21,7 +21,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         'Content-Type': 'application/json; charset=ISO-8859-1'
     };
 
-    StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
+    StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.Wegas.Widget, Y.WidgetParent, Y.WidgetChild], {
         //TODO : zoom on simple scroll (ie without altKey), move panel with mouse (overflow hidden); zoom disabled
         //Zoom and Endpoint pos, sould mult by zoom
         //DRAG and Zoom, same problem
@@ -80,7 +80,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     outlineWidth:3
                 }
             });
-            this.events.transitionDeleted = jp.bind("jsPlumbConnectionDetached", function(e){
+            this.events.transitionDeleted = jp.bind("connectionDetached", function(e){
                 //Clean panel
                 try{
                     jp.deleteEndpoint(e.sourceEndpoint);
@@ -102,7 +102,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             });
             this.jpLoaded = true;
             this.fire("jsPlumbLoaded");
-            this.rebuild();
+            this.fire("rebuild");
         },
         renderUI: function() {
             this.panel = this.toolbar.get("panel");
@@ -123,6 +123,11 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         },
 
         bindUI: function() {
+            this.on("rebuild", function(e){
+                e.halt(true);
+                this.showOverlay();
+                Y.later(30, this, this.rebuild);
+            })
             this.events.toolbarNodeNew = this.on("button:load", function(e){
                 this.processMenu("load");
             });
@@ -142,7 +147,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             }, this);
 
             this.events.smUpdate = this.after("entityChange", function (e){
-                this.rebuild();
+                this.fire("rebuild");
             });
             this.events.zoom = this.get(CONTENT_BOX).delegate("mousewheel", function (e){
                 if(e.altKey){
@@ -166,14 +171,14 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         },
         destructor: function (){
             var i;
-            jp.unload();
             for(i in this.events){
                 try{
                     this.events[i].detach();
                 } catch(e){
-                    this.events[i].unbind();
+
                 }
             }
+            jp.unbind();
             delete this.nodes;
             delete this.events;
         },
@@ -199,6 +204,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
         },
         rebuild: function(){
             if(!this.jpLoaded){
+                this.hideOverlay();
                 return false;
             }
             var state, states, sm = this.get("entity");
@@ -222,6 +228,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                     }
                 });
             }
+            this.hideOverlay();
             return true;
 
         },
@@ -265,7 +272,17 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             return true;
         },
         processMenu: function(type){
-            var entity;
+            var entity,
+            DEFAULTCB = {
+                success: Y.bind(function(e){
+                    this.showMessage("success", "States successfully saved", 1500);
+                    this.hideOverlay();
+                }, this),
+                failure: Y.bind(function(e){
+                    this.showMessage("error", e.response.data.message);
+                    this.hideOverlay();
+                }, this)
+            };
             switch(type){
                 case "load":
                     this.loader();
@@ -278,13 +295,13 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 case "save":
                     entity = this.get("entity");
                     if(entity){
+                        this.showOverlay();
                         entity = JSON.parse(JSON.stringify(entity));
                         if(entity.id){
-                            Y.Wegas.VariableDescriptorFacade.rest.put(entity);
+                            Y.Wegas.VariableDescriptorFacade.rest.put(entity, DEFAULTCB);
                         }else{
-                            Y.Wegas.VariableDescriptorFacade.rest.post(entity)
+                            Y.Wegas.VariableDescriptorFacade.rest.post(entity, DEFAULTCB);
                         }
-                    //Y.Wegas.VariableDescriptorFacade.rest.put / post (entity, callback, scope)
                     }
                     break;
                 default:

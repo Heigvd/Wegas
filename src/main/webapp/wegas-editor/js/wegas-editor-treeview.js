@@ -203,6 +203,19 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 });
                                 break;
 
+                            case 'SingleResultChoiceDescriptor':
+                                text = 'Choice: ' + el.getPrivateLabel();
+                                ret.push({
+                                    type: 'TreeLeaf',
+                                    label: text,
+                                    data: {
+                                        entity: el
+                                    },
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                    iconCSS: "wegas-icon-variabledescriptor"
+                                });
+                                break;
+
                             case 'Game':
                                 text = 'Game: ' + el.get("name") + ' (token:' + el.get("token") + ')';
                                 ret.push({

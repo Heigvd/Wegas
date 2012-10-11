@@ -10,10 +10,9 @@
  */
 package com.wegas.core.jcr.content;
 
-import com.wegas.core.jcr.JackrabbitConnector;
+import com.wegas.core.jcr.SessionHolder;
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.ResourceBundle;
 import javax.jcr.*;
 import org.slf4j.LoggerFactory;
 
@@ -24,20 +23,19 @@ import org.slf4j.LoggerFactory;
 public class ContentConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
-    final private ResourceBundle resourceBundle = ResourceBundle.getBundle("wegas");
-    final private SimpleCredentials admin = new SimpleCredentials(resourceBundle.getString("jcr.admin.username"), resourceBundle.getString("jcr.admin.password").toCharArray());
-    private Repository repo;
     private Session session;
     private String workspace = null;
 
     protected ContentConnector(Long gameModelId) throws RepositoryException {
         this.workspace = "GM_" + gameModelId;
-        this.repositoryLookup();
+        this.session = SessionHolder.getSession(this.workspace);
+        this.initializeNamespaces();
 
     }
 
     protected ContentConnector() throws RepositoryException {
-        this.repositoryLookup();
+        this.session = SessionHolder.getSession(null);
+        this.initializeNamespaces();
     }
 
     protected Node getNode(String absolutePath) throws RepositoryException {
@@ -148,39 +146,14 @@ public class ContentConnector {
 //        session.getWorkspace().deleteWorkspace(name);
     }
 
-    protected void save() throws RepositoryException {
+    public void save() {
         if (session.isLive()) {
-            session.save();
-        }
-    }
-
-    public void close() {
-        try {
-            if (session.isLive()) {
+            try {
                 session.save();
-                session.logout();
+            } catch (RepositoryException e) {
+                logger.warn(e.getMessage());
             }
-        } catch (RepositoryException ex) {
         }
-    }
-
-    private void repositoryLookup() throws RepositoryException {
-
-        this.repo = (Repository) new JackrabbitConnector().getRepo();
-        if (this.repo == null) {
-            logger.error("Repository initialization failed ");
-            throw new RepositoryException("JCR initialization failed");
-        }
-        try {
-            session = repo.login(admin, this.workspace);
-        } catch (RepositoryException exception) {
-            session = repo.login(admin);
-            session.getWorkspace().createWorkspace(this.workspace);
-            this.close();
-            session = repo.login(admin, this.workspace);
-        }
-
-        this.initializeNamespaces();
     }
 
     /**
@@ -195,20 +168,6 @@ public class ContentConnector {
             } catch (NamespaceException e) {
                 session.getWorkspace().getNamespaceRegistry().registerNamespace(prefix, WFSConfig.namespaces.get(prefix));
             }
-        }
-    }
-
-    /**
-     * Ensure garbage collector closes the session.
-     *
-     * @throws Throwable
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            this.close();
-        } finally {
-            super.finalize();
         }
     }
 }

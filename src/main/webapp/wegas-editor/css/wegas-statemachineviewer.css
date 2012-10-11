@@ -16,12 +16,12 @@
     border-radius: 20px;
     padding: 10px;
     box-shadow: 2px 3px 5px #6D6D6D;
-    z-index: 10;
+    z-index: 5;
     background-color:rgba(255,255,255,0.9);
     cursor: move;
 }
 .yui3-wegas-state:hover, .jsPlumb_dragged{
-    z-index:11;
+    z-index:7;
 }
 .yui3-wegas-state-text{
     width: 100%;
@@ -33,7 +33,7 @@
     background-color: transparent;
 }
 .yui3-wegas-state-text:focus{
-    z-index:25;
+    z-index:6;
     width: 500px;
     height: 18em;
     overflow-y:auto;
@@ -126,7 +126,7 @@ yui3-wegas-script-content{
     z-index:1;
 }
 ._jsPlumb_endpoint{
-    z-index:7;
+    z-index:1;
 }
 
 .yui3-wegas-transition{
@@ -134,7 +134,7 @@ yui3-wegas-script-content{
     width: 100%;
     height: 100%;
     position:absolute;
-    z-index:12;
+    z-index:9;
 }
 .yui3-wegas-transition-content{
     position:absolute;
@@ -154,14 +154,14 @@ yui3-wegas-script-content{
 .transition-label{
     background-color: white;
     padding:3px;
-    z-index:8;
+    z-index:2;
     border: 1px solid lightgray;
     box-shadow: 2px 3px 5px #6D6D6D;
     opacity: 0.9;
     cursor:pointer;
 }
 .transition-label:hover{
-    z-index:9;
+    z-index:8;
 }
 .yui3-wegas-statemachineviewer-content .yui3-dd-dragging > *{
     display:none;

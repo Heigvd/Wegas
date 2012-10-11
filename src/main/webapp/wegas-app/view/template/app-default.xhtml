@@ -24,7 +24,7 @@
         <!-- YUI -->
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
             <!-- CDN  -->
-            <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.6.0/build/cssfonts/fonts-min.css&amp;3.6.0/build/cssreset/reset-min.css&amp;3.6.0/build/cssgrids/grids-min.css&amp;3.6.0/build/widget-base/assets/skins/sam/widget-base.css" />
+            <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.7.2/build/cssfonts/fonts-min.css&amp;3.7.2/build/cssreset/reset-min.css&amp;3.7.2/build/cssgrids/grids-min.css&amp;3.7.2/build/widget-base/assets/skins/sam/widget-base.css" />
         </ui:fragment>
         <ui:fragment rendered="#{wegasConfig.assets_local}">
             <!-- Self hosted -->
@@ -44,7 +44,7 @@
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
             <!-- YUI Base -->
             <!-- CDN -->
-            <script type="text/javascript" src="http://yui.yahooapis.com/3.6.0/build/yui/yui-min.js"></script>
+            <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
         </ui:fragment>
         <ui:fragment rendered="#{wegasConfig.assets_local}">
             <!-- Self hosted -->
@@ -88,7 +88,7 @@
             YUI_config.groups.inputex.base = base + '/lib/inputex/src/';	// Set up inputex path
             YUI_config.groups.inputex.comboBase = comboBase;
             YUI_config.groups.inputex.root = "/lib/inputex/src/";
-            YUI_config.groups.inputex.combine = true;
+            YUI_config.groups.inputex.combine = false;
 
             YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
             YUI_config.groups.ace.comboBase = comboBase;
@@ -102,8 +102,8 @@
             YUI_config.groups.jsplumb.base = base + YUI_config.groups.jsplumb.root; // Set up jsplumb path
             YUI_config.groups.jsplumb.comboBase = comboBase;
 
-                <ui:fragment rendered="#{wegasConfig.assets_local}">
-                YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+            <ui:fragment rendered="#{wegasConfig.assets_local}">
+            YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
             YUI_config.filter = "min";
             YUI_config.combine = true;
             YUI_config.root = "/lib/yui3/build/"

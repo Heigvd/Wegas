@@ -49,6 +49,16 @@ YUI.add('treeview', function (Y) {
         initializer : function() {
         },
         bindUI : function() {
+            this.on("*:click", function(e){
+                this.deselectAll();
+                if(e.node){
+                    e.node.set("selected", 2);
+                }
+                e.target.get(BOUNDING_BOX).addClass("selected");
+            });
+            this.before("*:selectedChange", function(e){
+                e.target.get(BOUNDING_BOX).removeClass("selected");
+            });
         },
         renderUI:function() {
             if(this.get("visibleRightWidget")){
@@ -273,6 +283,9 @@ YUI.add('treeview', function (Y) {
             },
             defaultChildType: {
                 value: "TreeLeaf"
+            },
+            multiple:{
+                value:false
             },
             data: {}
         }

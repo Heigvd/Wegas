@@ -22,6 +22,7 @@ import com.wegas.leaderway.persistence.ResourceDescriptor;
 import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.messaging.persistence.variable.InboxDescriptor;
 import java.util.List;
 import javax.persistence.*;
@@ -50,7 +51,8 @@ import org.codehaus.jackson.map.annotate.JsonView;
     @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
-    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class)
+    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
 })
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity {
 

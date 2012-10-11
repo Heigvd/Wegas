@@ -38,7 +38,6 @@ public class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
     final private ResourceBundle resourceBundle = ResourceBundle.getBundle("wegas");
-    final private SimpleCredentials admin = new SimpleCredentials(resourceBundle.getString("jcr.admin.username"), resourceBundle.getString("jcr.admin.password").toCharArray());
     final private String DIR = resourceBundle.getString("jcr.repository.home");
     private static JackrabbitRepository repo;
     private JackrabbitRepositoryFactory rf;
@@ -64,7 +63,7 @@ public class JackrabbitConnector {
         try {
             logger.info("Running Jackrabbit GarbageCollector");
             RepositoryManager rm = rf.getRepositoryManager(JackrabbitConnector.repo);
-            Session session = JackrabbitConnector.repo.login(admin);
+            SessionHolder.getSession(null);
             Integer countDeleted = 0;
             DataStoreGarbageCollector gc = rm.createDataStoreGarbageCollector();
             try {
@@ -74,7 +73,7 @@ public class JackrabbitConnector {
                 gc.close();
             }
 
-            session.logout();
+            SessionHolder.closeSession(null);
             rm.stop();
             logger.info("Jackrabbit GarbageCollector ended, {} items removed", countDeleted);
         } catch (RepositoryException ex) {
@@ -82,7 +81,7 @@ public class JackrabbitConnector {
         }
     }
 
-    public javax.jcr.Repository getRepo() {
+    protected javax.jcr.Repository getRepo() {
         return JackrabbitConnector.repo;
     }
 
