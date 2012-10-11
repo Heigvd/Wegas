@@ -87,7 +87,9 @@ public class StateMachineRunner implements Serializable {
                 } catch (ScriptException ex) {
                     logger.error("Script Failed : {} returned: {}", transition.getTriggerCondition(), ex);
                 }
-                if (validTransition) {
+                if (validTransition == null) {
+                    throw new WegasException("Please review condition [" + stateMachine.getDescriptor().getName() + "]:\n" + transition.getTriggerCondition().getContent());
+                } else if (validTransition) {
                     if (passedTransitions.contains(transition)) {
                         logger.warn("Loop detected, already marked {} IN {}", transition, passedTransitions);
                     } else {
