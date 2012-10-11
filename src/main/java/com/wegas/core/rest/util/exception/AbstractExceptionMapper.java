@@ -14,6 +14,7 @@ import com.wegas.exception.WegasException;
 import java.sql.SQLException;
 import java.util.Iterator;
 import javax.ejb.EJBException;
+import javax.enterprise.event.ObserverException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
 import javax.validation.ConstraintViolation;
@@ -69,6 +70,9 @@ public abstract class AbstractExceptionMapper {
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
                     new ExceptionWrapper("400", wegasException.getClass(), wegasException.getLocalizedMessage())).build();
+
+        } else if (exception instanceof ObserverException) {
+            return processException(exception.getCause());
 
         } else if (exception instanceof ConstraintViolationException) {
             ConstraintViolationException constraintViolationException = (ConstraintViolationException) exception;

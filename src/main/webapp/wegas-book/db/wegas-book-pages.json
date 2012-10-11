@@ -25,7 +25,7 @@
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
-                "pageId": 2
+                "variableName": "currentPage"
             }]
     },{
         "id":2,
@@ -45,6 +45,11 @@
                         "tooltip":"Aller à la page 2",
                         "label":"Suivant",
                         "plugins": [{
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 3;"
+                                }
+                            },{
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 3,
@@ -78,6 +83,11 @@
                         "tooltip":"Aller à la page 3",
                         "label":"Continuer",
                         "plugins": [{
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 4;"
+                                }
+                            },{
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 4,
@@ -99,6 +109,11 @@
                                     "onClick": "importPackage(com.wegas.core.script);\nstamina.value += 10;"
                                 }
                             },{
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 4;"
+                                }
+                            },{
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 4,
@@ -115,6 +130,11 @@
                         "tooltip":"Aller à la page 1",
                         "label":"Fuire !",
                         "plugins": [{
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 2;"
+                                }
+                            },{
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 2,

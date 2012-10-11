@@ -59,7 +59,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-statemachine-entities': {
                         path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
-                        requires: [ 'wegas-entity' ]
+                        requires: [ 'wegas-entity', 'wegas-widget' ]
                     },
                     'wegas-mcq-entities': {
                         path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
@@ -465,7 +465,7 @@ YUI().use(function (Y) {
                         requires: ['jsplumb']
                     },
                     'jsplumb-yui-all': {
-                        path:'yui.jsPlumb-1.3.10-all-min.js',
+                        path:'yui.jsPlumb-1.3.15-all-min.js',
                         requires: ["node", "dd", "anim"/*, "node-event-simulate"*/]
                     },
                     'jsbezier': {
