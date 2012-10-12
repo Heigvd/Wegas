@@ -92,12 +92,13 @@ input[type="submit"], input[type="reset"] {
     font-style: italic;
 }
 .wegas-status-message{
-    color: #BDB6B6;
+    color: gray;
     float: right;
     position: absolute;
     right: 10px;
     bottom: 5px;
-    text-shadow: 1px 1px 0px #868686;
+    text-shadow: 1px 1px 0px #DDD;
+    font-size: 11px;
 }
 
 /* YUI3 Buttons Styles */
