@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 public class FileController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
-    private final String FILENAME_REGEXP = "(\\w|\\.| )+";
+    private final String FILENAME_REGEXP = "(\\w|\\.| |-|_)+";
 
     /**
      *

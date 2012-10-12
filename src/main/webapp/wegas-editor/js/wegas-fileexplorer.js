@@ -8,8 +8,7 @@
 YUI.add('wegas-fileexplorer', function (Y) {
     'use strict';
 
-    var FileExplorer, ProgressBar,
-    getClassName = Y.ClassNameManager.getClassName,
+    var FileExplorer,
     CONTENTBOX = 'contentBox',
     DEFAULTHEADERS = {
         'Content-Type': 'application/json; charset=ISO-8859-1'
@@ -578,7 +577,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 this.uploader = new Y.UploaderHTML5({
                     fileFieldName: "file",
                     selectButtonLabel: "Select File",
-                    multipleFiles: true
+                    multipleFiles: true,
+                    retryCount: 0
                 });
                 this.publish("fileuploadcomplete");
                 this.publish("fileuploaderror");
@@ -601,10 +601,13 @@ YUI.add('wegas-fileexplorer', function (Y) {
                         uploaded += this.fileList[f].get("bytesUploaded");
                         total += this.fileList[f].get("size");
                     }
+                    if(total == 0 & uploaded == 0){
+                        total = uploaded = 1;
+                    }
                     this.overallProgress.set("percent", uploaded/total * 100);
                 }, this);
 
-                this.events.progress = this.uploader.on("uploadprogress", function(e){               //Not working, traking files individually
+                this.events.progress = this.uploader.on("uploadprogress", function(e){
                     e.file.progressBar.set("percent", e.percentLoaded);
                     if(e.file.treeLeaf){
                         e.file.treeLeaf.get("rightWidget").set("percent",e.percentLoaded);
@@ -614,10 +617,24 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     this.fire("fileuploadcomplete", e);
                 }, this);
                 this.events.error = this.uploader.on("uploaderror", function(e){
+                    var files = this.fileList, i;
+                    for(i = 0 ; i < files.length; i = i + 1){
+                        if(files[i] === e.file){
+                            files.splice(i, 1);
+                            break;
+                        }
+                    }
+                    this.fileList = files;
+                    if(this.uploader.queue.queuedFiles.length < 1){             //@hack start, queue does not continue on failure
+                        this.uploader.queue.fire("alluploadscomplete");
+                    }else{
+                        this.uploader.queue._startNextFile();
+                    }
+                    this.uploader.fire("totaluploadprogress");                  //@hack end
                     this.fire("fileuploaderror", e);
                 }, this);
-            },
-            syncUI: function () {
+
+
             },
             destructor: function () {
                 for (var i in events){
