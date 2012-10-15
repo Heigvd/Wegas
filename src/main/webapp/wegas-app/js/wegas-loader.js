@@ -346,8 +346,14 @@ YUI().use(function (Y) {
                     /** Project Management Game **/
                     'wegas-pmg': {
                         path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
-                        requires:['wegas-pmg-breadcrumb'],
-                        ix_provides: "Breadcrumb"
+                        requires:['wegas-pmg-breadcrumb', 'wegas-pmg-tasklist'],
+                        ix_provides: "PmgBreadcrumb"
+                    },
+                    
+                    'wegas-pmg-tasklist':{
+                        path: 'wegas-pmg/js/wegas-pmg-tasklist.js',
+                        requires:['wegas-pmg-tasklist', "datatable"],
+                        ix_provides: "PmgTasklist"
                     },
 
                     /**book CYOA**/
