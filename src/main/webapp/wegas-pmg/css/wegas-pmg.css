@@ -437,10 +437,15 @@ h2{
 .task-page .yui3-datatable-odd .yui3-datatable-cell,
 .task-page .yui3-datatable-even .yui3-datatable-cell{
     background: none;
+    height: 30px;
 }
 
 .task-page .yui3-datatable-cell{
     border-bottom:1px solid #ADADAE;
+}
+
+.task-page td{
+    cursor: pointer;
 }
 
 .task-page .started{

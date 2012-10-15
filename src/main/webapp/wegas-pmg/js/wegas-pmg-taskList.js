@@ -71,8 +71,7 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
         },
         
         displayDescription: function(e){
-            var i, name, tasks, taskDesc, description, divDesc;
-            console.log(this.get("viewDescription"));
+            var i, name, tasks, taskDesc, description;
             if(this.get("viewDescription") == "false") return;
             name = e.currentTarget.ancestor().one("*").getContent()
             tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("tasks"));
