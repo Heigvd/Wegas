@@ -36,13 +36,6 @@
     background-color:#66CC00;
 }
 
-.header button{
-    float:left;
-    width:15px;
-    padding:2px;
-    height:23px;
-}
-
 .header .pmg-period{
     clear:both;
 }
@@ -71,6 +64,14 @@
     background-image: url(/Wegas/wegas-pmg/images/next.png);
     background-repeat: no-repeat;
     background-position: center;
+}
+
+.header button{
+    float:left;
+    width:15px;
+    padding:2px;
+    height:23px;
+    margin-top: 10px;
 }
 
 .header .wegas-gauge-content{
@@ -128,7 +129,6 @@
 }
 
 .layout .horizontal-menu button{  
-
     background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
@@ -262,9 +262,6 @@ h2{
     left:0;
     right:0;
 }
-.unread-count{
-    margin-left:20px;
-}
 
 .unread-count .value{
     background-image: url(/Wegas/wegas-pmg/images/unread-count.png);
@@ -281,7 +278,6 @@ h2{
 }
 
 /* TabView Styles */
-
 .yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-list {
     display: inline-block;
     float:left;
@@ -294,6 +290,7 @@ h2{
     width:50%;
     float:left;
     padding:0;
+    border:none;
 }
 
 .wegas-mcqtabview .yui3-tab {
@@ -398,6 +395,7 @@ h2{
     width:50%;
     float:left;
     padding:0;
+    border: none;
 }
 
 .wegas-inbox .read{
@@ -415,4 +413,64 @@ h2{
 
 .bracket{
     display:none;
+}
+
+/*----------------------------------task-page---------------------------------*/
+.task-page .yui3-datatable table{
+    width:100%;
+    border-width: 0px 1px 1px;
+}
+
+.task-page .yui3-datatable-cell,
+.task-page .yui3-datatable-header{
+    border-left:none;
+}
+
+.task-page .yui3-datatable-col-_name{
+    display:none;
+}
+
+.task-page .yui3-datatable-col-No{
+    width:20px;
+}
+
+.task-page .yui3-datatable-odd .yui3-datatable-cell,
+.task-page .yui3-datatable-even .yui3-datatable-cell{
+    background: none;
+}
+
+.task-page .yui3-datatable-cell{
+    border-bottom:1px solid #ADADAE;
+}
+
+.task-page .started{
+    background-color: #CCFFCC;
+}
+
+.task-page .completed{
+    background-color: #FEFFCB;
+}
+
+.task-page .description{
+    max-width: 250px;
+    position:absolute;
+    padding:5px;
+    background-color:white;
+    border:solid 1px #888;
+    border-radius: 5px;
+    box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;
+}
+
+.task-page .description p{
+    position:relative;
+    background:none;
+    border:none;
+    padding:0;
+    box-shadow: none;
+}
+
+.task-page .description .task_name{
+    text-transform: capitalize;
+    text-decoration: underline;
+    padding-bottom: 10px;
 }

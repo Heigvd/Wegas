@@ -83,5 +83,5 @@ YUI.add( "wegas-pmg-breadcrumb", function ( Y ) {
         }
     });
 
-    Y.namespace( "Wegas" ).Breadcrumb = Breadcrumb;
+    Y.namespace( "Wegas" ).PmgBreadcrumb = Breadcrumb;
 });

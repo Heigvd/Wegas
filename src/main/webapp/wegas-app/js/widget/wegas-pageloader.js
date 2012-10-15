@@ -30,7 +30,7 @@ YUI.add('wegas-pageloader', function (Y) {
 
         syncUI: function () {
             if(this.get("pageId")){
-                 this.set( "pageId", this.get( "pageId" ) );  
+                 this.set( "pageId", this.get( "pageId" ) ); 
             }else{
                 this.set( "pageId", this.get("variableDesc"));
             }

@@ -12,7 +12,7 @@
                         "direction": "horizontal",
                         "cssClass":"time",
                         "children":[{
-                                "type": "Breadcrumb",
+                                "type": "PmgBreadcrumb",
                                 "locations": [
                                     "Initiation",
                                     "Planning",
@@ -21,23 +21,22 @@
                                 ],
                                 "variable" : "currentPhase"
                             },{
-                                "type": "Button",
-                                "label": ">",
-                                "tooltip":"Next phase",
-                                "plugins": [{
-                                        "fn": "ExecuteScriptAction",
-                                        "cfg": {
-                                            "onClick": "//todo"
-                                        }
-                                    }]
-                            },{
                                 "type": "VariableDisplay",
                                 "cssClass": "pmg-period",
                                 "label": "Periods",
                                 "view": "valuebox",
                                 "expr": "currentPeriod.items[currentPhase.value].descriptorId",
                                 "dataSource": "VariableDescriptor"
-    
+                            },{
+                                "type": "Button",
+                                "label": ">",
+                                "tooltip":"Next period",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "onClick": "//todo"
+                                        }
+                                    }]
                             }]
                     },{
                         "type":"List",
@@ -88,7 +87,7 @@
                 "cssClass":"horizontal-menu",
                 "children":[{
                         "type": "Button",
-                        "label": "Home",
+                        "label": "Project",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
@@ -98,7 +97,7 @@
                             }]
                     },{
                         "type": "Button",
-                        "label": "Project",
+                        "label": "Tasks",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
@@ -108,7 +107,7 @@
                             }]
                     },{
                         "type": "Button",
-                        "label": "Tasks",
+                        "label": "Gantt",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
@@ -118,31 +117,11 @@
                             }]
                     },{
                         "type": "Button",
-                        "label": "Gantt",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 5,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
-                    },{
-                        "type": "Button",
                         "label": "Resources",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
-                                    "subpageId": 6,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }]
-                    },{
-                        "type": "Button",
-                        "label": "EVM",
-                        "plugins": [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 7,
+                                    "subpageId": 5,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
                             }]
@@ -171,7 +150,7 @@
                                     },{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 8,
+                                            "subpageId": 6,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }]
@@ -187,7 +166,7 @@
                                     },{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 9,
+                                            "subpageId": 7,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }]
@@ -203,7 +182,7 @@
                                     },{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 10,
+                                            "subpageId": 8,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }]
@@ -214,7 +193,7 @@
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 11,
+                                            "subpageId": 9,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }]
@@ -225,7 +204,7 @@
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 12,
+                                            "subpageId": 10,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }]
@@ -241,15 +220,38 @@
         ]
     },{
         "id":2,
-        "cssClass":"welcome-page",
+        "cssClass":"project-page",
         "type":"List",
         "children":[{
                 "type": "Text",
-                "content":"Welcome"
+                "content":"To do..."
             }
         ]
     },{
-        "id":8,
+        "id":3,
+        "cssClass":"task-page",
+        "type":"List",
+        "children":[{
+                "type": "PmgTasklist",
+                "tasks": "tasks",
+                "columnTitle":[
+                    "No",
+                    "Name",
+                    "Estimated duration",
+                    "Realized"
+                ],
+                "columnValue":[
+                    "no",
+                    "name",
+                    "duration",
+                    "realized"
+                ],
+                "viewDescription":"true",
+                "assignements":"false"
+            }
+        ]
+    },{
+        "id":6,
         "cssClass":"actions-page",
         "type":"List",
         "children":[{
@@ -261,7 +263,7 @@
             }
         ]
     },{
-        "id":9,
+        "id":7,
         "cssClass":"questions-page",
         "type":"List",
         "children":[{
@@ -273,7 +275,7 @@
             }
         ]
     },{
-        "id":10,
+        "id":8,
         "cssClass":"inbox-page",
         "type":"List",
         "children":[{
@@ -285,7 +287,7 @@
             }
         ]
     },{
-        "id":11,
+        "id":9,
         "cssClass":"history-page",
         "type":"List",
         "children":[{
