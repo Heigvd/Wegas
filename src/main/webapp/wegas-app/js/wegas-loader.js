@@ -352,8 +352,20 @@ YUI().use(function (Y) {
                     
                     'wegas-pmg-tasklist':{
                         path: 'wegas-pmg/js/wegas-pmg-tasklist.js',
-                        requires:['wegas-pmg-tasklist', "datatable"],
+                        requires:['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
                         ix_provides: "PmgTasklist"
+                    },    
+                    
+                    'wegas-pmg-Gantt':{
+                        path: 'wegas-pmg/js/wegas-pmg-gantt.js',
+                        requires:['wegas-pmg-gantt', 'wegas-pmg-datatable'],
+                        ix_provides: "PmgGantt"
+                    },   
+                    
+                    'wegas-pmg-datatable':{
+                        path: 'wegas-pmg/js/wegas-pmg-datatable.js',
+                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable'],
+                        ix_provides: "PmgDatatable"
                     },
 
                     /**book CYOA**/
