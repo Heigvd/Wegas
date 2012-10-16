@@ -377,7 +377,7 @@ YUI.add('wegas-entity', function (Y) {
                     value:"wegas-leaderway/db/wegas-leaderway-pages.json",
                     label:"Leaderway"
                 }, {
-                    value:"wegas-crimesim/db/wegas-leaderway-crimesim.json",
+                    value:"wegas-crimesim/db/wegas-crimesim-pages.json",
                     label:"Crimesim"
                 }, {
                     value:"wegas-mmo/db/wegas-leaderway-mmo.json",
