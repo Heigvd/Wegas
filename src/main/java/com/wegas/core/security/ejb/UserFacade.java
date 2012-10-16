@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -7,12 +7,15 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.ejb;
+package com.wegas.core.security.ejb;
 
+import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.user.User;
-import com.wegas.core.persistence.user.User_;
+import com.wegas.core.security.jdbcrealm.JdbcRealmAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.AbstractAccount_;
+import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.LocalBean;
@@ -58,6 +61,8 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     }
 
     /**
+     * Return a user based on his principal. @todo Currently only lookup in hte
+     * jdbcrealm
      *
      * @param principal
      * @return
@@ -66,13 +71,14 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     public User getUserByPrincipal(String principal) throws NoResultException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
-        Root<User> user = cq.from(User.class);
-        cq.where(cb.equal(user.get(User_.name), principal));
+        Root<AbstractAccount> account = cq.from(AbstractAccount.class);
+        cq.where(cb.equal(account.get(AbstractAccount_.principal), principal));
         Query q = em.createQuery(cq);
-        return (User) q.getSingleResult();
+        return ( (AbstractAccount) q.getSingleResult() ).getUser();
     }
 
     /**
+     *
      *
      * @return a User entity, based on the shiro login state
      */
@@ -83,8 +89,9 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             return this.getUserByPrincipal(subject.getPrincipal().toString());
         }
         catch (NoResultException e) {                                           // If the user is logged in but we cannot find a
-            User newUser = new User();                                          // corresponding account, that means we need to create one.
-            newUser.setName(subject.getPrincipal().toString());
+            JdbcRealmAccount acc = new JdbcRealmAccount();
+            acc.setPrincipal(subject.getPrincipal().toString());
+            User newUser = new User(acc);                                       // corresponding account, that means we need to create one.
             this.create(newUser);
             return newUser;
         }

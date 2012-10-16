@@ -110,7 +110,6 @@ public class GameModelFacadeTest {
         Assert.assertNotNull(t.getId());
 
         Player p = new Player();
-        p.setName("test-player");
         tf.createPlayer(t.getId(), p);
         Assert.assertNotNull(p.getId());
 

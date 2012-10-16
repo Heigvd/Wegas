@@ -212,7 +212,7 @@
 
                         Y.Wegas.editor.after("render", function () {
                             var gm = Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
-                            Y.one(".wegas-editor-title").setContent(gm.get("name"));
+                            Y.one(".wegas-title").setContent(gm.get("name"));
                         })
 
                         editor.render();

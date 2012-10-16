@@ -9,12 +9,14 @@
  */
 package com.wegas.app.jsf.controllers;
 
-import com.wegas.core.ejb.UserFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
-import com.wegas.core.persistence.user.User;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.GuestAccount;
+import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -57,8 +59,6 @@ public class RequestController implements Serializable {
         if (this.lang != null) { // If a language parameter is provided, it overrides the Accept-Language header
             FacesContext.getCurrentInstance().getViewRoot().setLocale(new Locale(this.lang));
         }
-
-        this.setCurrentUser(findUser());
     }
 
     /**
@@ -97,35 +97,41 @@ public class RequestController implements Serializable {
         return Locale.getDefault();
     }
 
-    //public String getLocales() {
-    //}
-    /**
-     *
-     * @return
-     */
-    public User findUser() {
-
-        final Subject subject = SecurityUtils.getSubject();
-        try {
-            return userFacade.getUserByPrincipal(subject.getPrincipal().toString());
-        }
-        catch (EJBException e) {                                                   // If the user is logged in but we cannot find a
-            if (e.getCause() instanceof PersistenceException) {                // corresponding account, that means we need to create one.
-                User newUser = new User();
-                newUser.setName(subject.getPrincipal().toString());
-                userFacade.create(newUser);
-                return newUser;
-            } else {
-                throw e;
-            }
-        }
-    }
-
     /**
      * @return the currentUser
      */
     public User getCurrentUser() {
-        return currentUser;
+        final Subject subject = SecurityUtils.getSubject();
+
+        if (subject.isAuthenticated()) {                                        // If the user is logged
+            final String principal = subject.getPrincipal().toString();
+            try {
+                return userFacade.getUserByPrincipal(
+                        subject.getPrincipal().toString());
+            }
+            catch (EJBException e) {                                            // If we cannot find a corresponding account.
+                if (e.getCause() instanceof PersistenceException) {             // that means we need to create one.
+                    // @fixme normally an authenticated user should always have an account
+                    //User newUser = new User();
+                    //AbstractAccount acc = new JdbcRealmAccount();
+                    //acc.setPrincipal(principal);
+                    //acc.setFirstname(principal);
+                    //acc.setLastname("");
+                    //newUser.addAccount(acc);
+                    //userFacade.create(newUser);
+                    return null;
+                } else {
+                    throw e;
+                }
+            }
+        } else {                                                                // If the user is not logged in
+            User newUser = new User(new GuestAccount());                        // return a Guest user
+
+            if (ResourceBundle.getBundle("wegas").getString("guestallowed").equals("true")) {
+                //userFacade.create(newUser);                                   // @fixme For now we do not persist this new user
+            }
+            return newUser;
+        }
     }
 
     /**

@@ -147,8 +147,13 @@ YUI.add('wegas-entity', function (Y) {
         getMenuCfg: function ( data ) {
             var menus = Y.Wegas.app.get('editorMenus'),
             //    staticMenus =
-            menu = menus[this.get('@class')] || menus[this.get("type")] ||      // Select first server defined forms, based on the @class or the type attribute
-            this.getStatic("EDITMENU")[0] || [];                                // And if no form is defined we return the default one defined in the entity
+            menu;
+
+            if ( menus ) {
+                menu =  menus[ this.get( '@class' ) ] || menus[ this.get( "type" ) ];  // Select first server defined forms, based on the @class or the type attribute
+            }
+            menu = menu || this.getStatic("EDITMENU")[0] || [];                 // And if no form is defined we return the default one defined in the entity
+
 
             function mixMenuCfg ( elts, data ) {
                 var i, j;
@@ -522,39 +527,101 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-         * User mapper
-         */
-    Y.Wegas.persistence.User = Y.Base.create("User", Y.Wegas.persistence.Entity, [], {}, {
+     * User mapper
+     */
+    Y.Wegas.persistence.User = Y.Base.create( "User", Y.Wegas.persistence.Entity, [], {
+        getMainAccount: function () {
+            return this.get( "accounts" )[0];
+        }
+    }, {
         ATTRS: {
             name: {
                 type: "string"
             },
             password: {
                 type: "string"
+            },
+            accounts: {
+                type: "array"
             }
-        },
-        EDITFORM : [{
-            name: 'name',
-            label:'Name',
-            required: true
-        }, {
-            name: 'password',
-            type: 'password',
-            label: 'New password',
-            showMsg: true,
-            id: 'firstPassword',
-            strengthIndicator: true,
-            capsLockWarning: true
-        }, {
-            type: 'password',
-            label: 'Confirmation',
-            showMsg: true,
-            confirm: 'firstPassword'
-        }]
+        }
     });
     /**
-         * VariableDescriptor mapper
-         */
+     * JdbcRealmAccount mapper
+     */
+    Y.Wegas.persistence.JdbcRealmAccount = Y.Base.create( "JdbcRealmAccount", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                type: "string",
+                value: "JdbcRealmAccount",
+                _inputex: {
+                    _type: 'hidden'
+                }
+            },
+            firstname: {
+                type: "string",
+                _inputex: {
+                    label: "First name"
+                }
+            },
+            lastname: {
+                label: "Last name",
+                type: "string",
+                _inputex: {
+                    label: "Last name"
+                }
+            },
+            email: {
+                type: "string",
+                _inputex: {
+                    label: "Email",
+                    _type: "email"
+                }
+            },
+            password: {
+                type: "string",
+                _inputex: {
+                    _type: "password",
+                    label: "Password",
+                    strengthIndicator: true,
+                    capsLockWarning: true,
+                    id: "password"
+                }
+            },
+            passwordConfirm: {
+                type: "string",
+                //"transient": true,
+                _inputex: {
+                    _type: "password",
+                    label: "Password(confirm)",
+                    showMsg: true,
+                    confirm: "password"
+                }
+            }
+        }
+    //EDITFORM : [{
+    //    name: 'name',
+    //    label:'Name',
+    //    required: true
+    //}, {
+    //    name: 'password',
+    //    type: 'password',
+    //    label: 'New password',
+    //    showMsg: true,
+    //    id: 'firstPassword',
+    //    strengthIndicator: true,
+    //    capsLockWarning: true
+    //}, {
+    //    type: 'password',
+    //    label: 'Confirmation',
+    //    showMsg: true,
+    //    confirm: 'firstPassword'
+    //}]
+    });
+
+    /**
+     * VariableDescriptor mapper
+     */
     Y.Wegas.persistence.VariableDescriptor = Y.Base.create("VariableDescriptor", Y.Wegas.persistence.Entity, [], {
         getInstance: function ( playerId ) {
             playerId = playerId || Y.Wegas.app.get('currentPlayer');

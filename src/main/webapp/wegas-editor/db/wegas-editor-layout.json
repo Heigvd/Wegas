@@ -8,7 +8,7 @@
         "children": [{
             "type": "Text",
             "content": "",
-            "cssClass": "wegas-editor-title"
+            "cssClass": "wegas-title"
         }, {
             "type": "SelectGameButton"
         }, {

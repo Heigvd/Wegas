@@ -11,8 +11,7 @@
                 "@class": "Player",
                 "name": "Jo",
                 "user": {
-                    "@class": "User",
-                    "name": "Fred"
+                    "@class": "User"
                 }
             }]
         }]
