@@ -16,11 +16,36 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
 
     var CONTENTBOX = "contentBox", Tasklist;
 
-    Tasklist = Y.Base.create( "wegas-pmg-tasklist", Y.Wegas.PmgDatatable, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    Tasklist = Y.Base.create( "wegas-pmg-tasklist", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
         
         handlers:null,
+        datatable:null,
+        data:null,
         
         //*** Private Methods ***/
+        getData: function(){
+            var i, j, tasks, taskDesc, taskInst, oneRowDatas,
+            ct = this.get("columnTitles"), cv = this.get("columnValues");
+            if(cv == null) return;
+            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("tasks"));
+            for (i = 0; i < tasks.get('items').length; i++) {
+                taskDesc = tasks.get('items')[i];
+                taskInst = taskDesc.getInstance();
+                oneRowDatas = {};
+                oneRowDatas["_name"] = taskDesc.get("name"); 
+                for (j = 0; j< ct.length; j++) {
+                    if(taskDesc.get(cv[j])){
+                        oneRowDatas[ct[j]] = taskDesc.get(cv[j]);
+                    }else if(taskInst.get(cv[j])){
+                        oneRowDatas[ct[j]] = taskInst.get(cv[j]);
+                    }else {
+                        oneRowDatas[ct[j]] = taskInst.get('properties')[cv[j]];
+                    }
+                }
+                this.data.push(oneRowDatas);
+            }
+        },
+        
         checkRealization: function(){
             var i, cb = this.get(CONTENTBOX), tasks, taskInst, realized, allRow;
             if(this.data == null
@@ -28,7 +53,7 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
                 || this.get("columnValues").indexOf('realized')<=-1){
                 return; 
             }
-            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
+            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("tasks"));
             allRow = cb.all(".yui3-datatable-data tr");
             allRow.removeClass("started").removeClass("completed");
             for(i=0; i<tasks.get('items').length; i++){
@@ -49,7 +74,7 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
             var i, name, tasks, taskDesc, description;
             if(this.get("viewDescription") == "false") return;
             name = e.currentTarget.ancestor().one("*").getContent()
-            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
+            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("tasks"));
             if(!name || !tasks) return;
             for (i = 0; i < tasks.get('items').length; i++) {
                 taskDesc = tasks.get('items')[i];
@@ -65,16 +90,36 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
                 </div>")
         },
         
+        // *** Lifecycle Methods *** //
         initializer: function(){
-            this.handlers = new Array();
-        },   
+            var i, ct = this.get("columnTitles"), columnTitles = new Array();
+            this.handlers = new Array(); 
+            this.data = new Array();
+            if(ct == null || ct.length == 0 || ct.length != this.get("columnValues").length) return;
+            columnTitles.push({
+                key:"_name", 
+                label:"_name"
+            });                      //First column is always the name (but not displayed)
+            for(i=0; i<ct.length; i++){                                         //construct Datatable's columns
+                columnTitles.push(
+                {
+                    key:ct[i],
+                    label:ct[i]
+                }
+                );
+            }
+            this.datatable = new Y.DataTable({
+                columns: columnTitles
+            });
+        },
         
         renderUI: function(){
-            this.constructor.superclass.renderUI.apply(this);
+            var cb = this.get(CONTENTBOX);
+            if(this.datatable == null) return;
+            this.datatable.render(cb);
         },
         
         bindUI: function(){
-            this.constructor.superclass.bindUI.apply(this);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
             this.handlers.push(this.datatable.delegate('click', function (e) {
@@ -86,12 +131,35 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
         },
         
         syncUI: function(){
-            this.constructor.superclass.syncUI.apply(this);
+            if(this.datatable == null || this.get("tasks") == null) return;
+            this.data.length = 0;
+            this.getData();
+            this.datatable.addRows(this.data);
             this.checkRealization();
-        }
+        },
+        
+        destructor: function(){
+            var i;
+            for (i=0; i<this.handlers.length;i++) {
+                this.handlers[i].detach();
+            } 
+            this.datatable.destroy();
+        }  
 
     }, {
         ATTRS : {
+            tasks:{
+                value: null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            columnTitles:{
+                validator: Y.Lang.isArray
+            },
+            columnValues:{
+                validator: Y.Lang.isArray
+            },
             viewDescription:{
                 value: true,
                 validator: function (b){

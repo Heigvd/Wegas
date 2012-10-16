@@ -64,7 +64,7 @@ YUI.add( "wegas-pmg-breadcrumb", function ( Y ) {
             }
         },
         
-        destroy: function(){
+        destructor: function(){
             var i;
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();

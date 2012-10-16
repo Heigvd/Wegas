@@ -113,10 +113,14 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             var i, cb = this.get(CONTENTBOX),
             listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),taskDescriptorId;
             //deselect old row
-            if(this.pickingMode){cb.all('.yui3-datatable-content .selected').removeClass('selected');}
+            if(this.pickingMode){
+                cb.all('.yui3-datatable-content .selected').removeClass('selected');
+            }
             //select new row
             taskDescriptorId = e.currentTarget.one("*").getContent();
-            if(this.pickingMode){e.currentTarget.addClass('selected');}
+            if(this.pickingMode){
+                e.currentTarget.addClass('selected');
+            }
             //get new task descriptor
             for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
                 if(listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId){
@@ -247,7 +251,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * Bind some function at nodes of this widget
          */
         bindUI: function() {
-             var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
             this.handlers.push(this.table.delegate('click', function (e) {
@@ -263,7 +267,9 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     if(e.newVal.decreaseResourceState){
                         e.newVal.decreaseResourceState();
                     }
-                },{resourceDescriptor:this.resourceDescriptor});
+                },{
+                    resourceDescriptor:this.resourceDescriptor
+                    });
                 this.assignTask(this.resourceDescriptor, this.selectedTaskDescriptor);
                 targetPageLoader.set("pageId", this.nextPageId);
             }, '.buttonOK', this));
@@ -274,7 +280,9 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     if(e.newVal.setResourceDescriptor){
                         e.newVal.setResourceDescriptor(this.resourceDescriptor);
                     }
-                },{resourceDescriptor:this.resourceDescriptor});
+                },{
+                    resourceDescriptor:this.resourceDescriptor
+                    });
                 targetPageLoader.set("pageId", this.nextPageId);
             }, '.buttonCancel', this));
 
@@ -298,10 +306,10 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             this.goToFinalPage();// ! hack function
         },
 
-         /*
+        /*
          * Destroy all child widget and all function
          */
-        destroy: function(){
+        destructor: function(){
             var i;
             this.table.destroy();
             for (i=0; i<this.handlers.length;i++) {
@@ -340,7 +348,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     return s === null || Y.Lang.isString(s);
                 }
             }
-         }
+        }
     });
 
     Y.namespace('Wegas').TaskList = TaskList;

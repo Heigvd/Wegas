@@ -401,7 +401,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         /*
          * Destroy all child widget and all function
          */
-        destroy: function(){
+        destructor: function(){
             var i, cb = this.get(CONTENTBOX);
             cb.all('.menu div').show();
             if(this.chart != null){this.chart.destroy();}

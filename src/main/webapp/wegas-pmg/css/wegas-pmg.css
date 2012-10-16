@@ -415,48 +415,46 @@ h2{
     display:none;
 }
 
-/*----------------------------------task-page---------------------------------*/
-.task-page .yui3-datatable table{
+/*----------------------------------Datatable---------------------------------*/
+.body .yui3-datatable-col-_name{
+    display:none;
+}
+
+.body .yui3-datatable table{
     width:100%;
     border-width: 0px 1px 1px;
 }
 
-.task-page .yui3-datatable-cell,
-.task-page .yui3-datatable-header{
+.body .yui3-datatable-cell,
+.body .yui3-datatable-header{
     border-left:none;
 }
 
-.task-page .yui3-datatable-col-_name{
-    display:none;
-}
-
-.task-page .yui3-datatable-col-No{
-    width:20px;
-}
-
-.task-page .yui3-datatable-odd .yui3-datatable-cell,
-.task-page .yui3-datatable-even .yui3-datatable-cell{
+.body .yui3-datatable-odd .yui3-datatable-cell,
+.body .yui3-datatable-even .yui3-datatable-cell{
     background: none;
     height: 30px;
+    padding-top:6px;
+    padding-bottom:6px;
 }
 
-.task-page .yui3-datatable-cell{
+.body .yui3-datatable-cell{
     border-bottom:1px solid #ADADAE;
 }
 
-.task-page td{
+/*----------------------task-page & gantt-page--------------------------------*/
+.task-page .yui3-datatable-col-No,
+.gantt-page .yui3-datatable-col-No{
+    width:20px;
+}
+
+.task-page td,
+.gantt-page td{
     cursor: pointer;
 }
 
-.task-page .started{
-    background-color: #CCFFCC;
-}
-
-.task-page .completed{
-    background-color: #FEFFCB;
-}
-
-.task-page .description{
+.task-page .description,
+.gantt-page .description{
     max-width: 250px;
     position:absolute;
     padding:5px;
@@ -466,7 +464,8 @@ h2{
     box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;
 }
 
-.task-page .description p{
+.task-page .description p,
+.gantt-page .description p{
     position:relative;
     background:none;
     border:none;
@@ -474,8 +473,39 @@ h2{
     box-shadow: none;
 }
 
-.task-page .description .task_name{
+.task-page .description .task_name,
+.gantt-page .description .task_name{
     text-transform: capitalize;
     text-decoration: underline;
     padding-bottom: 10px;
+}
+
+.task-page .started,
+.gantt-page .started{
+    background-color: #FEFFCB;
+}
+
+.task-page .completed,
+.gantt-page .completed{
+
+    background-color: #CCFFCC;
+}
+
+/*----------------------------------gantt-page--------------------------------*/
+.gantt-page .yui3-datatable-table .yui3-datatable-data .booked{
+    background-color: #3399FF;
+}
+
+.gantt-page .yui3-datatable-table .week{
+    background-color: white;
+    border-left:1px #DBDBDB solid;
+    width:40px;
+}
+
+.gantt-page .yui3-datatable-col-Realized{
+    width:100px;
+}
+
+.gantt-page .yui3-datatable-col-Name{
+    width:300px;
 }

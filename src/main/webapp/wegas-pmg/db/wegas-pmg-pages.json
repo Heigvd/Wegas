@@ -233,14 +233,14 @@
         "type":"List",
         "children":[{
                 "type": "PmgTasklist",
-                "tasks": "tasks",
-                "columnTitle":[
+                "variables": "tasks",
+                "columnTitles":[
                     "No",
                     "Name",
                     "Estimated duration",
                     "Realized"
                 ],
-                "columnValue":[
+                "columnValues":[
                     "no",
                     "name",
                     "duration",
@@ -248,6 +248,36 @@
                 ],
                 "viewDescription":"true",
                 "assignements":"false"
+            }
+        ]
+    },{
+        "id":4,
+        "cssClass":"gantt-page",
+        "type":"List",
+        "children":[{
+                "type": "PmgGantt",
+                "variables": "tasks",
+                "columnTitles":[
+                    "No",
+                    "Name",
+                    "Realized"
+                ],
+                "columnValues":[
+                    "no",
+                    "name",
+                    "realized"
+                ],
+                "viewDescription":"true",
+                "periods":"currentPeriod.items[currentPhase.value].descriptorId"
+            }
+        ]
+    },{
+        "id":5,
+        "cssClass":"project-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"To do..."
             }
         ]
     },{

@@ -11,12 +11,12 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-YUI.add( "wegas-pmg-tasklist", function ( Y ) {
+YUI.add( "wegas-pmg-gantt", function ( Y ) {
     "use strict";
 
-    var CONTENTBOX = "contentBox", Tasklist;
+    var CONTENTBOX = "contentBox", Gantt;
 
-    Tasklist = Y.Base.create( "wegas-pmg-tasklist", Y.Wegas.PmgDatatable, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    Gantt = Y.Base.create( "wegas-pmg-gantt", Y.Wegas.PmgDatatable, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
         
         handlers:null,
         
@@ -47,8 +47,8 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
         
         displayDescription: function(e){
             var i, name, tasks, taskDesc, description;
-            if(this.get("viewDescription") == "false") return;
-            name = e.currentTarget.ancestor().one("*").getContent()
+            if(this.get("viewDescription") == "false" || e.currentTarget.get("className").indexOf("week")>-1) return;
+            name = e.currentTarget.ancestor().one("*").getContent();
             tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
             if(!name || !tasks) return;
             for (i = 0; i < tasks.get('items').length; i++) {
@@ -62,7 +62,24 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
                 <div class='description'>\n\
                     <p class='task_name'>"+name+"</p>\n\
                     <p class='description'>"+description+"</p>\n\
-                </div>")
+                </div>\n");
+        },
+        
+        toggleBooking: function(e){
+            var node, week, taskName, booked = false;
+            node = e.currentTarget;
+            taskName = node.ancestor().one("*").getContent();
+            week = node.get("className").substring(node.get("className").indexOf("yui3-datatable-col-week")+23)
+            if(week.indexOf(" ")>-1){
+                week = week.substring(0, week.indexOf(" "));   
+            }
+            if(node.get("className").indexOf("booked")>-1){
+                node.removeClass("booked");
+            } else{
+                node.addClass("booked");
+                booked = true;
+            }
+            console.log(taskName, week, booked);
         },
         
         initializer: function(){
@@ -70,7 +87,16 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
         },   
         
         renderUI: function(){
+            var i, periods, cb = this.get(CONTENTBOX);
             this.constructor.superclass.renderUI.apply(this);
+            periods = this.get("periodsDesc");
+            if(!periods)return;
+            for(i=periods.get("minValue"); i<=periods.get("maxValue"); i++){
+                this.datatable.addColumn({
+                    key:'week'+i,
+                    label:''+i
+                });
+            }
         },
         
         bindUI: function(){
@@ -83,11 +109,20 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
             this.handlers.push(this.datatable.delegate('mouseout', function (e) {
                 this.get(CONTENTBOX).all(".description").remove();  
             }, '.yui3-datatable-data tr', this));
+            this.handlers.push(this.datatable.delegate('click', function (e) {
+                this.toggleBooking(e);
+            }, '.yui3-datatable-data .week', this));
         },
         
         syncUI: function(){
+            var cb = this.get(CONTENTBOX);
             this.constructor.superclass.syncUI.apply(this);
             this.checkRealization();
+            cb.all(".yui3-datatable-data td").each(function (node){
+                if(node.get('className').indexOf("yui3-datatable-col-week")>-1){
+                    node.addClass("week");
+                }
+            });
         }
 
     }, {
@@ -98,14 +133,15 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
                     return b == "false" || b == "true";
                 }
             },
-            viewAssignements:{                                                  //todo
-                value: true,
-                validator: function (b){
-                    return b == "false" || b == "true";                               
+            periods: {}, // to change to accept global expresssion or simple variable.
+            periodsDesc: {
+                getter: function () {
+                    return Y.Wegas.VariableDescriptorFacade.rest.findById(
+                        Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "periods" ) ) );
                 }
             }
         }
     });
 
-    Y.namespace( "Wegas" ).PmgTasklist = Tasklist;
+    Y.namespace( "Wegas" ).PmgGantt = Gantt;
 });
