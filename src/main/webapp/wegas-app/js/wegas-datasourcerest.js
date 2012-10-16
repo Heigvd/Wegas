@@ -70,11 +70,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *
          * @method sendRequest
          */
-        sendRequest: function (requestCfg) {
+        sendRequest: function ( requestCfg ) {
             requestCfg.callback = requestCfg.callback || {
                 success: this._successHandler,
                 failure: this._failureHandler
             };
+            if ( requestCfg.cfg && Y.Lang.isObject( requestCfg.cfg.data ) ) {
+                requestCfg.cfg.data = Y.JSON.stringify( requestCfg.cfg.data )
+            }
             requestCfg.cfg = requestCfg.cfg || {};
             requestCfg.cfg.headers =  requestCfg.cfg.headers || {};
             Y.mix( requestCfg.cfg.headers, DEFAULTHEADERS );

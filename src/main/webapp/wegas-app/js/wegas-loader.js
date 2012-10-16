@@ -155,9 +155,15 @@ YUI().use(function (Y) {
                         requires: ['wegas-widget', 'wegas-inputex'],
                         ix_provides: "FormWidget"
                     },
+                    'wegas-loginwidget': {
+                        path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
+                        requires: [ 'wegas-widget', 'inputex-password', 'inputex-string',
+                            "inputex-hidden", "inputex-email", 'button' ],
+                        ix_provides: "LoginWidget"
+                    },
                     'wegas-joingamewidget': {
                         path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
-                        requires: ['wegas-widget', 'inputex-select', 'inputex-string', 'button'],
+                        requires: [ 'wegas-widget', 'inputex-select', 'inputex-string', 'button' ],
                         ix_provides: "JoinGameWidget"
                     },
                     'wegas-imageloader': {

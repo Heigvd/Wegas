@@ -18,14 +18,14 @@ YUI.add('wegas-form', function (Y) {
     var CONTENTBOX = 'contentBox',
     FormWidget;
 
-    FormWidget = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    FormWidget = Y.Base.create( "wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         // ** Private Fields ** //
 
         // ** Lifecycle Methods ** //
         initializer: function () {
             this.plug( Y.Plugin.WidgetToolbar );
-            this.publish("submit", {
+            this.publish( "submit", {
                 emitFacade: true
             });
         },
@@ -34,51 +34,44 @@ YUI.add('wegas-form', function (Y) {
             this.renderToolbar();
         },
 
-        bindUI: function () {
-        },
-
-        syncUI: function () {
-        },
-
         // ** Private Methods ** //
 
         renderToolbar: function () {
             var toolbarNode = this.toolbar.get( 'header' );
 
-
             this.saveButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
                 on: {
-                    click: Y.bind(function () {
-                        var form = this.get("form"),
+                    click: Y.bind( function () {
+                        var form = this.get( "form" ),
                         val = form.getValue();
 
-                        if (!form.validate()) {
+                        if ( !form.validate() ) {
                             return;
                         }
-                        form.fire("afterValidation");
+                        form.fire( "afterValidation");
                         if (val.valueselector) {
                             val = val.valueselector;
                         }
-                        this.fire("submit", {
+                        this.fire( "submit", {
                             value: val
                         });
                     }, this)
                 }
             }).render(toolbarNode);
 
-            this.cancelButton = new Y.Button({
+            this.cancelButton = new Y.Button( {
                 label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Cancel",
                 on: {
                     click: Y.bind(function () {
-                        this.fire("cancel");
+                        this.fire( "cancel" );
                     }, this)
                 }
-            }).render(toolbarNode);
+            } ).render(toolbarNode);
         },
         setForm: function (values, formCfg) {
-            this.set("values", values);
-            this.set("formCfg", formCfg)
+            this.set( "values", values);
+            this.set( "formCfg", formCfg)
         },
 
         destroyForm: function () {

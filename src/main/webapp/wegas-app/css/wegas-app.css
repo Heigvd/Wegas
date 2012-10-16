@@ -6,16 +6,25 @@
  * Media Engineering :: Information Technology Managment :: Comem
  *
  * Copyright (C) 2012
- */
+*/
 
 /*
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- */
+*/
 
 /* Override some browser styles */
 input[type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
+}
+
+/*  App styles*/
+.wegas-title {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 1.9em;
+    color: #6E6E6E;
+    margin: 0px 15px;
 }
 
 /* Y.Wegas.Widget extension styles */

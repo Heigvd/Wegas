@@ -13,15 +13,13 @@
                 "@class": "Player",
                 "name": "Francois",
                 "user": {
-                    "@class": "User",
-                    "name": "Francois"
+                    "@class": "User"
                 }
             },{
                 "@class": "Player",
                 "name": "Dominique",
                 "user": {
-                    "@class": "User",
-                    "name": "Dominique"
+                    "@class": "User"
                 }
             }]
         },{

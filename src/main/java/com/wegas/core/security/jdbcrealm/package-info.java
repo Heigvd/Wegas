@@ -7,4 +7,4 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.app.jsf.controllers.util;
+package com.wegas.core.security.jdbcrealm;

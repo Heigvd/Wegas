@@ -24,7 +24,7 @@ YUI.add('wegas-app', function (Y) {
 
         // ** Private fields ** //
         /**
-         * Holds a reference to all the dataSources used in the game
+         * Holds a reference to all the dataSources used.
          */
         dataSources: [],
 
@@ -33,8 +33,9 @@ YUI.add('wegas-app', function (Y) {
             Y.Wegas.app = this;
             this.injector = new Y.Wegas.Injector({observe:"#maindisplayarea"});
         },
+
+
         destructor : function () {
-            this.injector.destroy();
             for (var i = 0; i < this.dataSources.length; i = i + 1) {
                 this.dataSources[i].destroy();
             }
@@ -68,11 +69,15 @@ YUI.add('wegas-app', function (Y) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
                     dataSource = new Y.Wegas.DataSource(dataSources[k]);
                     this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = dataSource;
-                    dataSource.once("response", this.onInitialRequest, this);
-                    if ( Y.Lang.isNumber( dataSource.sendInitialRequest() ) ) {           // Send an initial request
+                    dataSource.once( "response", this.onInitialRequest, this );
+                    if ( Y.Lang.isNumber( dataSource.sendInitialRequest() ) ) { // Send an initial request
                         this.requestCounter += 1;                               // If the request was sent, we update the counter, which is used n the onInitialRequest() callback
                     }
                 }
+            }
+
+            if (this.requestCounter == 0) {                                     // If no request was sent, render directly
+                this.renderUI();
             }
         },
 
@@ -84,7 +89,7 @@ YUI.add('wegas-app', function (Y) {
          *  @private
          *  @parameter {Y.Event}
          */
-        onInitialRequest: function (e) {
+        onInitialRequest: function ( e ) {
             this.requestCounter -= 1;
             if (this.requestCounter == 0) {
                 this.renderUI();

@@ -6,6 +6,7 @@
       xmlns:f="http://java.sun.com/jsf/core">
 
     <f:loadBundle basename="wegas-app.wegasapp" var="wegasConfig"/>
+
     <h:head>
 
         <meta charset="ISO-8859-1" />
@@ -31,7 +32,6 @@
             <link rel="stylesheet" type="text/css" href="/Wegas/rest/combo?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
         </ui:fragment>
 
-
         <!-- Those styles are placed here, since they should be above any other in the CSS cascading
             (even dependencies added on the fly). -->
         <meta id="customstyles" />
@@ -41,6 +41,7 @@
     </h:head>
 
     <h:body class="yui3-skin-sam yui-skin-sam wegas-widget-loading">
+
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
             <!-- YUI Base -->
             <!-- CDN -->
@@ -143,7 +144,7 @@
                         currentTeam: #{gameController.currentPlayer.team.id},
                         currentPlayer: #{gameController.currentPlayer.id},
                         currentUser: #{requestController.getCurrentUser().toJson()},
-                        cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
+                        cssStylesheets: [ "#{gameController.currentGameModel.cssUri}" ],
 
                         /**
                          * This field is used to override Entities edition menus.

@@ -1,0 +1,16 @@
+{
+    "id": 2003,
+    "type" : "Layout",
+    "top" : {
+        "children": []
+    },
+    "center": {
+        "children": [{
+            "type": "Text",
+            "content": "Login",
+            "cssClass": "wegas-title"
+        }, {
+            "type": "LoginWidget"
+        }]
+    }
+}

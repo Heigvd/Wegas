@@ -269,6 +269,18 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 });
                                 break;
 
+                            case 'User':
+                                ret.push({
+                                    label: 'User:' + el.get("name"),
+                                    data: {
+                                        entity: el.getMainAccount()
+                                    },
+                                    iconCSS: 'wegas-icon-gamemodel',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                                break;
+                                break;
+
                             case 'List':
                             case 'Folder':
                             case "TaskList":

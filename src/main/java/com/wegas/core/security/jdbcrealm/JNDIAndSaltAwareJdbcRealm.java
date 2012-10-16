@@ -1,4 +1,4 @@
-package com.wegas.core.security.realm;
+package com.wegas.core.security.jdbcrealm;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,31 +26,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This realm has all {@link JdbcRealm} capabilities. It also supports JNDI as datasource source and 
- * can add salt to passwords.
+ * This realm has all {@link JdbcRealm} capabilities. It also supports JNDI as
+ * datasource source and can add salt to passwords.
  */
 public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
-    
+
     /**
-     * 
+     *
      */
     protected static final String DEFAULT_CREATEUSER_QUERY = "insert into sec_users (name, password, salt) values (?, ?, ?)";
     /**
-     * 
+     *
      */
     private static final Logger log = LoggerFactory.getLogger(JNDIAndSaltAwareJdbcRealm.class);
     /**
-     * 
+     *
      */
     protected String jndiDataSourceName;
+
     /**
-     * 
+     *
      */
     public JNDIAndSaltAwareJdbcRealm() {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getJndiDataSourceName() {
@@ -58,7 +59,7 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
     }
 
     /**
-     * 
+     *
      * @param jndiDataSourceName
      */
     public void setJndiDataSourceName(String jndiDataSourceName) {
@@ -67,38 +68,28 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
     }
 
     /**
-     * 
+     *
      * @param userName
      * @param password
      * @throws SQLException
      */
     public void createUser(String userName, String password) throws SQLException {
-        ByteSource salt = this.generateSalt();
-        String hPassword = JNDIAndSaltAwareJdbcRealm.saltedHash(password, salt);
+
+        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+        ByteSource salt = rng.nextBytes();
+
+        String hPassword = new Sha256Hash(password, salt).toHex();
+
+        hPassword = ( new Sha256Hash(password,                                  // @hack Method above does not functionate when storing the salt as an hex,
+                ( new SimpleByteSource( salt.toHex()) ).getBytes()) ).toHex();   // so we use this tricks
+
         Connection conn = this.dataSource.getConnection();
         PreparedStatement userStmt = conn.prepareStatement(JNDIAndSaltAwareJdbcRealm.DEFAULT_CREATEUSER_QUERY);
         userStmt.setString(1, userName);
         userStmt.setString(2, hPassword);
-        // @fixme dont know why it does not work w/the real salt see above
-        // userStmt.setString(3, salt.toString());
-        userStmt.setString(3, "random_salt_value_" + password);
+        userStmt.setString(3, salt.toHex());
+//        userStmt.setString(3, "random_salt_value_" + password);               // @fixme dont know why it does not work w/the real salt see above
         userStmt.executeUpdate();
-    }
-
-    private ByteSource generateSalt() {
-        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        return rng.nextBytes();
-
-    }
-
-    private static String hash(String password) {
-        return new Sha256Hash(password).toHex();
-    }
-
-    private static String saltedHash(String password, ByteSource salt) {
-        // @fixme dont know why it does not work w/the real salt see above
-        //return (new Sha256Hash(password, salt.getBytes())).toHex();
-        return ( new Sha256Hash(password, ( new SimpleByteSource("random_salt_value_" + password) ).getBytes()) ).toHex();
     }
 
     private DataSource getDataSourceFromJNDI(String jndiDataSourceName) {
@@ -113,7 +104,7 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
     }
 
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {        
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         //identify account to log to
         UsernamePasswordToken userPassToken = (UsernamePasswordToken) token;
         String username = userPassToken.getUsername();
@@ -123,10 +114,10 @@ public class JNDIAndSaltAwareJdbcRealm extends JdbcRealm {
             return null;
         }
 
-        // read password hash and salt from db 
+        // read password hash and salt from db
         PasswdSalt passwdSalt = getPasswordForUser(username);
 
-        if (passwdSalt == null) {        
+        if (passwdSalt == null) {
             log.debug("No account found for user [" + username + "]");
             return null;
         }
