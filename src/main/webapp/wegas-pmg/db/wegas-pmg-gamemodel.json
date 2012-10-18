@@ -13,8 +13,7 @@
                 "@class": "Player",
                 "name": "Jo",
                 "user": {
-                    "@class": "User",
-                    "name": "Jean"
+                    "@class": "User"
                 }
             }]
         }]
@@ -193,6 +192,79 @@
         }]
     },{
         "@class":"ListDescriptor",
+        "name":"tasks",
+        "editorLabel":"tasks",
+        "label":"",
+        "defaultInstance":{
+            "@class":"ListInstance"
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "tags":[],
+        "items":[{
+            "@class":"TaskDescriptor",
+            "name":"test",
+            "editorLabel":"test",
+            "label":"",
+            "defaultInstance":{
+                "@class":"TaskInstance",
+                "active":true,
+                "duration":2,
+                "properties":{
+                    "realized":"60",
+                    "no":"3"
+                },
+                "skillset":{}
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "tags":[],
+            "description":"Ceci est un test"
+        },{
+            "@class":"TaskDescriptor",
+            "name":"task2",
+            "editorLabel":"task2",
+            "label":"",
+            "defaultInstance":{
+                "@class":"TaskInstance",
+                "active":true,
+                "duration":4,
+                "properties":{
+                    "realized":"60",
+                    "no":"5"
+                },
+                "skillset":{}
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "tags":[],
+            "description":"Ceci est un deuxième test"
+        },{
+            "@class":"TaskDescriptor",
+            "name":"task3",
+            "editorLabel":"task 3",
+            "label":"",
+            "defaultInstance":{
+                "@class":"TaskInstance",
+                "active":true,
+                "duration":5,
+                "properties":{
+                    "realized":"0",
+                    "no":"4"
+                },
+                "skillset":{}
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "tags":[],
+            "description":"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et nesciunt."
+        }]
+    },{
+        "@class":"ListDescriptor",
         "name":"questions",
         "defaultInstance":{
             "@class":"NumberInstance",
@@ -320,7 +392,7 @@
                     }]
                 }]
             }]
-        }, {
+        },{
             "@class":"ListDescriptor",
             "name":"Actions phase 2",
             "defaultInstance":{
