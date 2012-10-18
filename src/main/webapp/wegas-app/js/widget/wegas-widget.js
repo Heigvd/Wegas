@@ -82,16 +82,20 @@ YUI.add("wegas-widget", function (Y) {
         showMessage: function ( level, txt, timeout ) {
             var msgNode = this.getMessageNode(),
             message = Y.Node.create( "<div class='" + ( LEVEL[level] ? LEVEL[level] : "" ) + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
+            if ( level === "success" && !timeout ) {                            // @hack successful messages disapear automatically
+                if(this.toolbar instanceof Y.Plugin.WidgetToolbar){
+                    this.setStatusMessage(txt);
+                    return;
+                }else{
+                    timeout = 800;
+                }
+            }
             msgNode.append(message);
 
             message.closeHandler = message.one(".close").once( "click", destroySelf, message );
 
-            if ( level === "success" && !timeout ) {                            // @hack successful messages disapear automatically
-                timeout = 800;
-            }
-
             if ( timeout ) {
-               message.timeout = Y.later( timeout, message, destroySelf);
+                message.timeout = Y.later( timeout, message, destroySelf);
             }
         },
 
@@ -102,6 +106,26 @@ YUI.add("wegas-widget", function (Y) {
                 return this.get( BOUNDING_BOX ).one( ".wegas-systemmessage" );
             }
             return msgNode;
+        },
+        setStatusMessage: function(txt){
+            var statusNode = this._getStatusNode();
+            if(statusNode === null){
+                return false;
+            }
+            statusNode.setContent(txt);
+            return true;
+        },
+        _getStatusNode: function(){
+            var statusNode;
+            if(!(this.toolbar instanceof Y.Plugin.WidgetToolbar)){
+                return null;
+            }
+            statusNode = this.toolbar.get("header").one(".wegas-status-message");
+            if(!statusNode){
+                statusNode = new Y.Node.create("<span class='wegas-status-message'></span>");
+                this.toolbar.get("header").append(statusNode);
+            }
+            return statusNode;
         }
 
     } );

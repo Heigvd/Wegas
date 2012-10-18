@@ -87,10 +87,10 @@ input[type="submit"], input[type="reset"] {
     -moz-binding: url('xbl.xml#wordwrap'); /* Firefox (using XBL) */
 }
 .wegas-systemmessage > .success .icon {
-    background: url(../images/wegas-icon-success-48.png) no-repeat;
+    background: url(../../wegas-editor/images/wegas-icon-success-48.png) no-repeat;
 }
 .wegas-systemmessage > .error .icon {
-    background: url(../images/wegas-icon-error-48.png) no-repeat;
+    background: url(../../wegas-editor/images/wegas-icon-error-48.png) no-repeat;
 }
 
 /* */
@@ -99,6 +99,15 @@ input[type="submit"], input[type="reset"] {
     margin: 20px;
     text-align: center;
     font-style: italic;
+}
+.wegas-status-message{
+    color: gray;
+    float: right;
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+    text-shadow: 1px 1px 0px #DDD;
+    font-size: 11px;
 }
 
 /* YUI3 Buttons Styles */
