@@ -281,7 +281,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        requires: []
+                        requires: ['diff_match_patch']
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -509,6 +509,17 @@ YUI().use(function (Y) {
                     },
                     'gauge': {
                         path: "gauge.min.js"
+                    }
+                }
+            },
+            diffmatchpatch:{
+                async: false,
+                combine:false,
+                base:"./lib/diffmatchpatch/",
+                root:"/lib/diffmatchpatch/",
+                modules: {
+                    'diff_match_patch':{
+                        path:"diff_match_patch.js"
                     }
                 }
             }
