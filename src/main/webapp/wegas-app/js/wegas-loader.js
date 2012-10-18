@@ -346,7 +346,7 @@ YUI().use(function (Y) {
                     /** Project Management Game **/
                     'wegas-pmg': {
                         path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
-                        requires:['wegas-pmg-breadcrumb', 'wegas-pmg-tasklist'],
+                        requires:['wegas-pmg-breadcrumb', 'wegas-pmg-tasklist', 'wegas-pmg-resourcelist'],
                         ix_provides: "PmgBreadcrumb"
                     },
                     
@@ -360,6 +360,12 @@ YUI().use(function (Y) {
                         path: 'wegas-pmg/js/wegas-pmg-gantt.js',
                         requires:['wegas-pmg-gantt', 'wegas-pmg-datatable'],
                         ix_provides: "PmgGantt"
+                    },   
+                    
+                    'wegas-pmg-resourcelist':{
+                        path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
+                        requires:['wegas-pmg-resourcelist', 'wegas-pmg-datatable'],
+                        ix_provides: "PmgResourcelist"
                     },   
                     
                     'wegas-pmg-datatable':{
