@@ -11,10 +11,12 @@ package com.wegas.core.security.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.facebook.FacebookAccount;
-import com.wegas.core.security.jdbcrealm.JdbcRealmAccount;
-import java.util.logging.Logger;
+import com.wegas.core.security.jparealm.Role;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -22,18 +24,18 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@Cacheable(true)
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = "email"),
-    @UniqueConstraint(columnNames = "principal")
+    @UniqueConstraint(columnNames = "email")
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "JdbcRealmAccount", value = JdbcRealmAccount.class),
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
-    @JsonSubTypes.Type(name = "GuestAccount", value = GuestAccount.class)
+    @JsonSubTypes.Type(name = "GuestAccount", value = GuestAccount.class),
+    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class)
 })
+@JsonIgnoreProperties({"passwordConfirm"})
 public class AbstractAccount extends AbstractEntity {
 
-    private static final Logger logger = Logger.getLogger("Account");
     /**
      *
      */
@@ -50,7 +52,9 @@ public class AbstractAccount extends AbstractEntity {
      *
      */
     //@Pattern(regexp = "^\\w+$")
-    private String principal;
+    @Basic(optional = false)
+    @Column(length = 100)
+    private String username;
     /**
      *
      */
@@ -63,6 +67,12 @@ public class AbstractAccount extends AbstractEntity {
      *
      */
     private String email;
+    /**
+     *
+     */
+    @ManyToMany
+    @JoinTable(name = "users_roles")
+    private Set<Role> roles = new HashSet<>();
 
     /**
      * @return the id
@@ -85,7 +95,7 @@ public class AbstractAccount extends AbstractEntity {
         this.setEmail(a.getEmail());
         this.setFirstname(a.getFirstname());
         this.setEmail(a.getEmail());
-        this.setPrincipal(a.getPrincipal());
+        this.setUsername(a.getUsername());
     }
 
     /**
@@ -103,17 +113,17 @@ public class AbstractAccount extends AbstractEntity {
     }
 
     /**
-     * @return the principal
+     * @return the username
      */
-    public String getPrincipal() {
-        return principal;
+    public String getUsername() {
+        return username;
     }
 
     /**
-     * @param principal the principal to set
+     * @param username the username to set
      */
-    public void setPrincipal(String principal) {
-        this.principal = principal;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     /**
@@ -163,5 +173,19 @@ public class AbstractAccount extends AbstractEntity {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     * @return the roles
+     */
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    /**
+     * @param roles the roles to set
+     */
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

@@ -93,7 +93,7 @@ YUI.add('wegas-inputex', function(Y) {
         this.options.maxLength = options.maxLength;
         this.options.minLength = options.minLength;
         this.options.typeInvite = options.typeInvite;
-        if (!this.options.required && !this.options.typeInvite) { // !!!MODIFIED!!!
+        if (!this.options.required && this.options.typeInvite === undefined) { // !!!MODIFIED!!!
             this.options.typeInvite = "optional";
         }
         this.options.readonly = options.readonly;

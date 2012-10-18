@@ -36,7 +36,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/StateMachine/")
-public class StateMachineController extends AbstractRestController<StateMachineDescriptorFacade> {
+public class StateMachineController extends AbstractRestController<StateMachineDescriptorFacade, StateMachineDescriptor> {
     /*
      *
      */

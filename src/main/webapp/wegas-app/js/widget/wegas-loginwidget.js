@@ -42,24 +42,76 @@ YUI.add('wegas-loginwidget', function (Y) {
 
             this.loginForm = new Y.inputEx.Group({
                 fields:[{
-                    name: "username",
+                    name: "email",
                     label: "Email",
-                    required: "true",
+                    required: true,
                     type: "email"
                 }, {
                     name: "password",
                     label: "Password",
-                    required: "true",
+                    required: true,
                     type: "password",
                     capsLockWarning: true
+                }, {
+                    label: "",
+                    type: "boolean",
+                    name: "remember",
+                    rightLabel: "&nbsp;Remember me"
                 }],
                 parentEl: cb
             });
 
-            var newEntity = new Y.Wegas.persistence.JdbcRealmAccount(),
+            var newEntity = new Y.Wegas.persistence.JpaAccount(),
             formCfg = newEntity.getFormCfg();
-            formCfg.parentEl = cb;
             this.createAccountForm = Y.inputEx( formCfg );
+
+            formCfg.parentEl = cb;
+            this.createAccountForm = new Y.inputEx.Group({
+                parentEl: cb,
+                fields:[{
+                    name: "id",
+                    type: "hidden"
+                },{
+                    name:"@class",
+                    required: true,
+                    type: "hidden",
+                    value: "JpaAccount"
+                },{
+                    label: "First name",
+                    name: "firstname",
+                    required: true,
+                    type: "string",
+                    showMsg: true
+                },{
+                    label: "Last name",
+                    name: "lastname",
+                    required:true,
+                    type: "string",
+                    showMsg: true
+                },{
+                    label: "Email",
+                    name: "email",
+                    required: true,
+                    type: "email",
+                    showMsg: true
+                },{
+                    label: "Password",
+                    name: "password",
+                    strengthIndicator: true,
+                    capsLockWarning: true,
+                    id: "password",
+                    required: true,
+                    type: "password",
+                    showMsg: true
+                },{
+                    label: "Password (confirm)",
+                    name: "passwordConfirm",
+                    showMsg: true,
+                    required: true,
+                    confirm: "password",
+                    type: "password"
+                }]
+            });
 
             this.loginButton = new Y.Button();
             this.loginButton.render( cb );
@@ -78,7 +130,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                     if ( !this.loginForm.validate() ) return;
 
                     var value = this.loginForm.getValue();
-                    this.doLogin( value.username, value.password );
+                    this.doLogin( value.email, value.password, value.remember );
 
                 } else {
                     if ( !this.createAccountForm.validate() ) return;
@@ -115,9 +167,11 @@ YUI.add('wegas-loginwidget', function (Y) {
             }
         },
 
-        doLogin: function ( username, password ) {
+        doLogin: function ( email, password, remember ) {
             Y.Wegas.UserFacade.rest.sendRequest({
-                request: "/Authenticate/?username=" + username + "&password=" + password,
+                request: "/Authenticate/?email=" + email
+                + "&password=" + password
+                + "&remember=" + remember,
                 cfg: {
                     method: "POST"
                 },

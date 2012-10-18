@@ -348,20 +348,20 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend( CRDataSource, DataSourceREST, {
 
-    }, {
-        NS: "rest",
-        NAME: "CRDataSource",
-        ATTRS: {
+        }, {
+            NS: "rest",
+            NAME: "CRDataSource",
+            ATTRS: {
 
-        },
-        getFullpath: function ( relativePath ) {
-            return Y.Wegas.app.get( "base" ) + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") +
+            },
+            getFullpath: function ( relativePath ) {
+                return Y.Wegas.app.get( "base" ) + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") +
                 "/read" + relativePath;
-        },
-        getFilename: function ( path ) {
-            return path.replace(/^.*[\\\/]/, '');
-        }
-    });
+            },
+            getFilename: function ( path ) {
+                return path.replace(/^.*[\\\/]/, '');
+            }
+        });
     Y.namespace('Plugin').CRDataSource = CRDataSource;
 
     /**
@@ -598,6 +598,70 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
+    /**
+     *
+     */
+    var UserDataSourceREST = function () {
+        UserDataSourceREST.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.extend( UserDataSourceREST, DataSourceREST, {
+
+        //walkEntity: function(entity, callback) {
+        //    if (entity.get && entity.get( "accounts" ) ) {
+        //        if (callback(entity.get( "accounts" ) ) ) {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //},
+
+        //updateCache: function ( method, entity ) {
+        //
+        //},
+
+        put: function ( data, callback) {
+            if ( data[ '@class' ] === "JpaAccount" ) {
+                this.sendRequest({
+                    request: '/Account/' + data.id,
+                    cfg: {
+                        method: "PUT",
+                        data: Y.JSON.stringify( data )
+                    },
+                    callback: callback
+                });
+                return;
+            } else {
+                VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
+            }
+        },
+
+        post: function ( data, parentData, callback ) {
+            var request = "";
+            if (parentData) {
+                switch ( parentData["@class"] ) {
+                    default:
+                        request = "/" + parentData.id + "/VariableInstance/";
+                        break;
+                }
+            }
+            this.sendRequest({
+                request: request,
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify( data )
+                },
+                callback: callback
+            });
+        }
+
+    }, {
+        NS: "rest",
+        NAME: "UserDataSourceREST"
+    });
+
+    Y.namespace('Plugin').UserDataSourceREST = UserDataSourceREST;
+
 
     /**
      * FIXME We redefine this so we can use a "." selector and a "@..." field name

@@ -44,16 +44,13 @@
                         "type": "OpenTabButton",
                         "label": "Users",
                         "subpage": {
-                            "type": "DataTable",
+                            "type": "EditorTreeView",
                             "dataSource": "User",
-                            "columnset": [ {
-                                "key":"id",
-                                "sortable": true
-                            }, {
-                                "key":"name",
-                                "sortable": true
-                            }, {
-                                "key":"@class"
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": []
+                                }
                             }]
                         }
                     }]

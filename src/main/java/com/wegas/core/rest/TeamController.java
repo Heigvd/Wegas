@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/{gameId : [1-9][0-9]*}/Team")
-public class TeamController extends AbstractRestController<TeamFacade> {
+public class TeamController extends AbstractRestController<TeamFacade, Team> {
 
     private static final Logger logger = LoggerFactory.getLogger(TeamController.class);
     /**
@@ -43,7 +43,7 @@ public class TeamController extends AbstractRestController<TeamFacade> {
     }
 
     @Override
-    public AbstractEntity create(AbstractEntity entity) {
+    public Team create(Team entity) {
         this.teamFacade.create(new Long(this.getPathParam("gameId")),
                 (Team) entity);
         return entity;
@@ -59,8 +59,8 @@ public class TeamController extends AbstractRestController<TeamFacade> {
      * @Consumes(MediaType.APPLICATION_JSON)
      * @Produces(MediaType.APPLICATION_JSON) public PlayerEntity
      * addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long
-     * userId) { // return TeamFacadeBean.joinTeam(teamId, userId); return
-     * null; }
+     * userId) { // return TeamFacadeBean.joinTeam(teamId, userId); return null;
+     * }
      */
     /**
      *
