@@ -19,10 +19,11 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
     Gantt = Y.Base.create( "wegas-pmg-gantt", Y.Wegas.PmgDatatable, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
         
         handlers:null,
+        schedule:null,
         
         //*** Private Methods ***/
         checkRealization: function(){
-            var i, cb = this.get(CONTENTBOX), tasks, taskInst, realized, allRow;
+            var i, cb = this.get(CONTENTBOX), tasks, taskDesc, taskInst, realized, allRow;
             if(this.data == null
                 || this.data.length == 0
                 || this.get("columnValues").indexOf('realized')<=-1){
@@ -30,25 +31,35 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
             }
             tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
             allRow = cb.all(".yui3-datatable-data tr");
-            allRow.removeClass("started").removeClass("completed");
-            for(i=0; i<tasks.get('items').length; i++){
-                taskInst = tasks.get('items')[i].getInstance();
-                realized = (taskInst.get('properties').realized)?taskInst.get('properties').realized:null;
-                if(realized){
-                    if(realized > 0 && realized < 100){
-                        allRow.item(i).addClass("started");
-                    }
-                    if(realized == 100){
-                        allRow.item(i).addClass("completed");
+            allRow.removeClass("notstarted").removeClass("started").removeClass("completed");
+            allRow.each(function (node){
+                for(i=0; i<tasks.get('items').length; i++){
+                    taskDesc = tasks.get('items')[i];
+                    taskInst = taskDesc.getInstance();
+                    realized = (taskInst.get('properties').realized)?taskInst.get('properties').realized:null;
+                    if(realized){
+                        if(node.one("*").getContent() == taskDesc.get('name')){
+                            if(realized >= 100){
+                                node.addClass("completed");
+                            } else if(realized > 0){
+                                node.addClass("started");
+                            } else{
+                                node.addClass("notstarted");
+                            }
+                            break;
+                        }
                     }
                 }
-            }
+            });
         },
         
         displayDescription: function(e){
-            var i, name, tasks, taskDesc, description;
-            if(this.get("viewDescription") == "false" || e.currentTarget.get("className").indexOf("week")>-1) return;
-            name = e.currentTarget.ancestor().one("*").getContent();
+            var i, name, tasks, node, divDesc, taskDesc, description;
+            node = e.currentTarget;
+            if(this.get("viewDescription") == "false"
+                || node.one(".description")
+                || node.get("className").indexOf("cell-gantt")>-1) return;
+            name = node.ancestor().one("*").getContent();
             tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
             if(!name || !tasks) return;
             for (i = 0; i < tasks.get('items').length; i++) {
@@ -58,28 +69,51 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
                     break;
                 } 
             }
-            e.currentTarget.append("\
-                <div class='description'>\n\
-                    <p class='task_name'>"+name+"</p>\n\
-                    <p class='description'>"+description+"</p>\n\
-                </div>\n");
+            divDesc = Y.Node.create("<div class='description'></div>");
+            divDesc.append("<p class='task_name'>"+name+"</p>").append("<p class='content'>"+description+"</p>");
+            node.append(divDesc);
+        },
+        
+        removeDescription: function(e){
+            var disappearAnim, node;
+            node = this.get(CONTENTBOX).one('.description');
+            if(!node) return;
+            disappearAnim = new Y.Anim({
+                node: node,
+                to: {
+                    opacity: 0
+                },
+                duration: 0.2
+            });
+            disappearAnim.run();
+            disappearAnim.on('end', function(){
+                node.remove();
+            });
         },
         
         toggleBooking: function(e){
-            var node, week, taskName, booked = false;
+            var node, week, taskName, scheduled = false;
             node = e.currentTarget;
+            if(node.get("className").indexOf("previous-week")>-1)return;
             taskName = node.ancestor().one("*").getContent();
-            week = node.get("className").substring(node.get("className").indexOf("yui3-datatable-col-week")+23)
+            week = this.getCellWeek(node);
+            if(node.one(".scheduled")){
+                node.one(".scheduled").remove();
+            } else{
+                node.append("<span class='scheduled'></span>");
+                scheduled = true;
+            }
+            console.log(taskName, week, scheduled);
+        },
+        
+        getCellWeek:function(cell){
+            var week;
+            if(cell.get("className").indexOf("yui3-datatable-col-week")<=-1) return null;
+            week = cell.get("className").substring(cell.get("className").indexOf("yui3-datatable-col-week")+23)
             if(week.indexOf(" ")>-1){
                 week = week.substring(0, week.indexOf(" "));   
             }
-            if(node.get("className").indexOf("booked")>-1){
-                node.removeClass("booked");
-            } else{
-                node.addClass("booked");
-                booked = true;
-            }
-            console.log(taskName, week, booked);
+            return week;
         },
         
         initializer: function(){
@@ -87,8 +121,8 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
         },   
         
         renderUI: function(){
-            var i, periods, cb = this.get(CONTENTBOX);
-            this.constructor.superclass.renderUI.apply(this);
+            var i, periods;
+            Gantt.superclass.renderUI.apply(this);
             periods = this.get("periodsDesc");
             if(!periods)return;
             for(i=periods.get("minValue"); i<=periods.get("maxValue"); i++){
@@ -100,29 +134,42 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
         },
         
         bindUI: function(){
-            this.constructor.superclass.bindUI.apply(this);
+            Gantt.superclass.bindUI.apply(this);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
+            this.handlers.push(this.datatable.after('sort', this.syncUI, this));
             this.handlers.push(this.datatable.delegate('click', function (e) {
                 this.displayDescription(e);
             }, '.yui3-datatable-data td', this));
             this.handlers.push(this.datatable.delegate('mouseout', function (e) {
-                this.get(CONTENTBOX).all(".description").remove();  
+                this.removeDescription(e);
             }, '.yui3-datatable-data tr', this));
             this.handlers.push(this.datatable.delegate('click', function (e) {
                 this.toggleBooking(e);
-            }, '.yui3-datatable-data .week', this));
+            }, '.yui3-datatable-data .cell-gantt', this));
         },
         
         syncUI: function(){
-            var cb = this.get(CONTENTBOX);
-            this.constructor.superclass.syncUI.apply(this);
+            var cb = this.get(CONTENTBOX), week, currentWeek;
+            Gantt.superclass.syncUI.apply(this);
+            currentWeek = (this.get("periodsDesc"))?this.get("periodsDesc").getInstance().get("value"):null;
             this.checkRealization();
-            cb.all(".yui3-datatable-data td").each(function (node){
+            if(!currentWeek) return; //add class "previous-week", "current-week" and "next-week" to the column title in Gantt
+            cb.all(".yui3-datatable-columns th, .yui3-datatable-data td").each(function (node){
                 if(node.get('className').indexOf("yui3-datatable-col-week")>-1){
-                    node.addClass("week");
+                    if(node.get("nodeName")=="td" || node.get("nodeName")=="TD"){
+                        node.addClass("cell-gantt");   
+                    }
+                    week = this.getCellWeek(node);
+                    if(week < currentWeek){
+                        node.addClass('previous-week');
+                    } else if(week == currentWeek){
+                        node.addClass('current-week');
+                    } else if(week > currentWeek){
+                        node.addClass('next-week');
+                    }
                 }
-            });
+            }, this);
         }
 
     }, {

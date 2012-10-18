@@ -425,6 +425,11 @@ h2{
     border-width: 0px 1px 1px;
 }
 
+.body .yui3-datatable-columns th{
+    background-image: url(/Wegas/wegas-pmg/images/h2.png);
+    background-repeat: repeat-x;
+}
+
 .body .yui3-datatable-cell,
 .body .yui3-datatable-header{
     border-left:none;
@@ -440,6 +445,11 @@ h2{
 
 .body .yui3-datatable-cell{
     border-bottom:1px solid #ADADAE;
+}
+
+.body .yui3-datatable-data tr:hover td{
+    background-image:url(/Wegas/wegas-pmg/images/previous-week.png);
+    background-repeat: repeat;
 }
 
 /*----------------------task-page & gantt-page--------------------------------*/
@@ -464,15 +474,6 @@ h2{
     box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;
 }
 
-.task-page .description p,
-.gantt-page .description p{
-    position:relative;
-    background:none;
-    border:none;
-    padding:0;
-    box-shadow: none;
-}
-
 .task-page .description .task_name,
 .gantt-page .description .task_name{
     text-transform: capitalize;
@@ -480,26 +481,37 @@ h2{
     padding-bottom: 10px;
 }
 
-.task-page .started,
-.gantt-page .started{
+.task-page .yui3-datatable-data  .notstarted .yui3-datatable-cell ,
+.gantt-page .yui3-datatable-data .notstarted .yui3-datatable-cell{
+    background-color: transparent;
+}
+
+.task-page .yui3-datatable-data  .started .yui3-datatable-cell ,
+.gantt-page .yui3-datatable-data .started .yui3-datatable-cell{
     background-color: #FEFFCB;
 }
 
-.task-page .completed,
-.gantt-page .completed{
-
+.task-page .yui3-datatable-data  .completed .yui3-datatable-cell ,
+.gantt-page .yui3-datatable-data .completed .yui3-datatable-cell{
     background-color: #CCFFCC;
 }
 
 /*----------------------------------gantt-page--------------------------------*/
-.gantt-page .yui3-datatable-table .yui3-datatable-data .booked{
-    background-color: #3399FF;
-}
-
-.gantt-page .yui3-datatable-table .week{
-    background-color: white;
+.gantt-page .yui3-datatable-table .yui3-datatable-data .cell-gantt{
+    background-color: transparent;
     border-left:1px #DBDBDB solid;
     width:40px;
+    text-align: center;
+    padding:0;
+    overflow:hidden;
+}
+
+.gantt-page .yui3-datatable-table .yui3-datatable-data .scheduled{
+    display:block;
+    background-color: #3399FF;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
 }
 
 .gantt-page .yui3-datatable-col-Realized{
@@ -508,4 +520,19 @@ h2{
 
 .gantt-page .yui3-datatable-col-Name{
     width:300px;
+}
+
+.gantt-page .yui3-datatable-columns .previous-week{
+    background-color:#BBBBBB;
+    background-image: none;
+}
+
+.gantt-page .yui3-datatable-columns .current-week{
+    background-image: url(/Wegas/wegas-pmg/images/next.png), url(/Wegas/wegas-pmg/images/h2.png);
+    background-repeat: no-repeat, repeat-x;
+    background-position: left, center;
+}
+
+.gantt-page .yui3-datatable-table .yui3-datatable-data .previous-week{
+    background-color:#DDDDDD;
 }

@@ -22,7 +22,7 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
         
         //*** Private Methods ***/
         checkRealization: function(){
-            var i, cb = this.get(CONTENTBOX), tasks, taskInst, realized, allRow;
+            var i, cb = this.get(CONTENTBOX), tasks, taskDesc, taskInst, realized, allRow;
             if(this.data == null
                 || this.data.length == 0
                 || this.get("columnValues").indexOf('realized')<=-1){
@@ -30,25 +30,35 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
             }
             tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
             allRow = cb.all(".yui3-datatable-data tr");
-            allRow.removeClass("started").removeClass("completed");
-            for(i=0; i<tasks.get('items').length; i++){
-                taskInst = tasks.get('items')[i].getInstance();
-                realized = (taskInst.get('properties').realized)?taskInst.get('properties').realized:null;
-                if(realized){
-                    if(realized > 0 && realized < 100){
-                        allRow.item(i).addClass("started");
-                    }
-                    if(realized == 100){
-                        allRow.item(i).addClass("completed");
+            allRow.removeClass("notstarted").removeClass("started").removeClass("completed");
+            allRow.each(function (node){
+                for(i=0; i<tasks.get('items').length; i++){
+                    taskDesc = tasks.get('items')[i];
+                    taskInst = taskDesc.getInstance();
+                    realized = (taskInst.get('properties').realized)?taskInst.get('properties').realized:null;
+                    if(realized){
+                        if(node.one("*").getContent() == taskDesc.get('name')){
+                            if(realized >= 100){
+                                node.addClass("completed");
+                            } else if(realized > 0){
+                                node.addClass("started");
+                            } else{
+                                node.addClass("notstarted");
+                            }
+                            break;
+                        }
                     }
                 }
-            }
+            });
         },
         
         displayDescription: function(e){
-            var i, name, tasks, taskDesc, description;
-            if(this.get("viewDescription") == "false") return;
-            name = e.currentTarget.ancestor().one("*").getContent()
+            var i, name, tasks, node, divDesc, taskDesc, description;
+            node = e.currentTarget;
+            if(this.get("viewDescription") == "false"
+                || node.one(".description")
+                || node.get("className").indexOf("cell-gantt")>-1) return;
+            name = node.ancestor().one("*").getContent();
             tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
             if(!name || !tasks) return;
             for (i = 0; i < tasks.get('items').length; i++) {
@@ -58,11 +68,26 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
                     break;
                 } 
             }
-            e.currentTarget.append("\
-                <div class='description'>\n\
-                    <p class='task_name'>"+name+"</p>\n\
-                    <p class='description'>"+description+"</p>\n\
-                </div>")
+            divDesc = Y.Node.create("<div class='description'></div>");
+            divDesc.append("<p class='task_name'>"+name+"</p>").append("<p class='content'>"+description+"</p>");
+            node.append(divDesc);
+        },
+        
+        removeDescription: function(e){
+            var disappearAnim, node;
+            node = this.get(CONTENTBOX).one('.description');
+            if(!node) return;
+            disappearAnim = new Y.Anim({
+                node: node,
+                to: {
+                    opacity: 0
+                },
+                duration: 0.2
+            });
+            disappearAnim.run();
+            disappearAnim.on('end', function(){
+                node.remove();
+            });
         },
         
         initializer: function(){
@@ -70,23 +95,24 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
         },   
         
         renderUI: function(){
-            this.constructor.superclass.renderUI.apply(this);
+            Tasklist.superclass.renderUI.apply(this);
         },
         
         bindUI: function(){
-            this.constructor.superclass.bindUI.apply(this);
+            Tasklist.superclass.bindUI.apply(this);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
+            this.handlers.push(this.datatable.after('sort', this.syncUI, this));
             this.handlers.push(this.datatable.delegate('click', function (e) {
                 this.displayDescription(e);
             }, '.yui3-datatable-data td', this));
             this.handlers.push(this.datatable.delegate('mouseout', function (e) {
-                this.get(CONTENTBOX).all(".description").remove();  
+                this.removeDescription(e);  
             }, '.yui3-datatable-data tr', this));
         },
         
         syncUI: function(){
-            this.constructor.superclass.syncUI.apply(this);
+            Tasklist.superclass.syncUI.apply(this);
             this.checkRealization();
         }
 

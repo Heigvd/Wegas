@@ -247,7 +247,7 @@
                     "realized"
                 ],
                 "viewDescription":"true",
-                "assignements":"false"
+                "assignements":"false",
             }
         ]
     },{
@@ -276,8 +276,20 @@
         "cssClass":"project-page",
         "type":"List",
         "children":[{
-                "type": "Text",
-                "content":"To do..."
+                "type": "PmgGantt",
+                "variables": "tasks",
+                "columnTitles":[
+                    "No",
+                    "Name",
+                    "Realized"
+                ],
+                "columnValues":[
+                    "no",
+                    "name",
+                    "realized"
+                ],
+                "viewDescription":"true",
+                "periods":"currentPeriod.items[currentPhase.value].descriptorId"
             }
         ]
     },{

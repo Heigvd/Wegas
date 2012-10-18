@@ -60,13 +60,19 @@ YUI.add( "wegas-pmg-datatable", function ( Y ) {
                 columnTitles.push(
                 {
                     key:ct[i],
-                    label:ct[i]
+                    label:ct[i],
+                    sortable:true
                 }
-                );
+            );
             }
             this.datatable = new Y.DataTable({
                 columns: columnTitles
             });
+            if(this.get("defaultSort") && this.get("defaultSort").indexOf(this.get("columnValues") > -1)){
+                this.datatable.sort(this.get("defaultSort"));
+            } else{
+                this.datatable.sort(this.get("columnTitles")[0]);
+            }
         },
         
         renderUI: function(){
@@ -82,6 +88,7 @@ YUI.add( "wegas-pmg-datatable", function ( Y ) {
         
         syncUI: function(){
             if(this.datatable == null || this.get("variables") == null) return;
+            this.datatable.set("data",[]);
             this.data.length = 0;
             this.getData();
             this.datatable.addRows(this.data);
@@ -108,6 +115,12 @@ YUI.add( "wegas-pmg-datatable", function ( Y ) {
             },
             columnValues:{
                 validator: Y.Lang.isArray
+            },
+            defaultSort:{
+                value:null,
+                validator: function (s){
+                    return s === null || Y.Lang.isString(s);
+                }
             }
         }
     });
