@@ -13,8 +13,7 @@
                 "@class": "Player",
                 "name": "Jo",
                 "user": {
-                    "@class": "User",
-                    "name": "Jean"
+                    "@class": "User"
                 }
             }]
         }]
@@ -1544,7 +1543,7 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }],            
+                }],
                 "editorPosition" : {
                     "@class" : "Coordinate",
                     "x" : 830,
@@ -2435,7 +2434,7 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }],            
+                }],
                 "editorPosition" : {
                     "@class" : "Coordinate",
                     "x" : 830,
@@ -3326,7 +3325,7 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }],            
+                }],
                 "editorPosition" : {
                     "@class" : "Coordinate",
                     "x" : 830,
@@ -4217,7 +4216,7 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }],            
+                }],
                 "editorPosition" : {
                     "@class" : "Coordinate",
                     "x" : 830,
@@ -5108,7 +5107,7 @@
                     "@class" : "DialogueTransition",
                     "actionText" : "Quitter",
                     "nextStateId" : 19
-                }],            
+                }],
                 "editorPosition" : {
                     "@class" : "Coordinate",
                     "x" : 830,

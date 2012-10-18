@@ -17,12 +17,11 @@ YUI.add('wegas-joingamewidget', function (Y) {
 
     var CONTENTBOX = 'contentBox',
     BOUNDINGBOX = 'boundingBox',
-    JoinGameWidget, SystemMessage;
+    JoinGameWidget;
 
     /**
      *
      *  @class Y.Wegas.JoinGameWidget
-     *
      */
     JoinGameWidget = Y.Base.create("wegas-joingamewidget", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         // *** Private fields *** //
@@ -152,14 +151,10 @@ YUI.add('wegas-joingamewidget', function (Y) {
                         this.tokenField.addClassName( "inputEx-hidden" );
                     }, this),
                     failure: Y.bind( function ( e ) {
-                        this.showMessage("error", "Error joinging team");
+                        this.showMessage( "error", "Error joinging team" );
                     }, this)
                 }
             });
-        },
-        destructor: function () {
-            this.tokenField.destroy();
-            this.teamsField.destroy();
         }
     });
 

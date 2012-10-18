@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -7,9 +7,10 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.ejb;
+package com.wegas.core.security.ejb;
 
-import com.wegas.core.persistence.user.Group;
+import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.security.persistence.Role;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -21,7 +22,8 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @LocalBean
-public class GroupFacade extends AbstractFacadeImpl<Group> {
+public class RoleFacade extends AbstractFacadeImpl<Role> {
+
     /**
      *
      */
@@ -30,17 +32,17 @@ public class GroupFacade extends AbstractFacadeImpl<Group> {
 
     /**
      *
+     */
+    public RoleFacade() {
+        super(Role.class);
+    }
+
+    /**
+     *
      * @return
      */
     @Override
     protected EntityManager getEntityManager() {
         return em;
-    }
-
-    /**
-     *
-     */
-    public GroupFacade() {
-        super(Group.class);
     }
 }

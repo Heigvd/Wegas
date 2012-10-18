@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,12 +9,16 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.ejb.UserFacade;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -30,7 +34,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/")
-public class GameController extends AbstractRestController<GameFacade> {
+public class GameController extends AbstractRestController<GameFacade, Game> {
 
     /**
      *
@@ -63,14 +67,14 @@ public class GameController extends AbstractRestController<GameFacade> {
      * @return
      */
     @Override
-    public Collection<AbstractEntity> index() {
+    public Collection<Game> index() {
         GameModel gameModel = gameModelEntityFacade.find(new Long(this.getPathParam("gameModelId")));
-        return (Collection) gameModel.getGames();
+        return gameModel.getGames();
     }
 
     @Override
-    public AbstractEntity create(AbstractEntity entity) {
-        this.gameFacade.create(new Long(this.getPathParam("gameModelId")), (Game) entity);
+    public Game create(Game entity) {
+        this.gameFacade.create(new Long(this.getPathParam("gameModelId")), entity);
         return entity;
     }
 

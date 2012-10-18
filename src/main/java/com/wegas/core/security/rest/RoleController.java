@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -7,9 +7,11 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.rest;
+package com.wegas.core.security.rest;
 
-import com.wegas.core.ejb.UserFacade;
+import com.wegas.core.rest.AbstractRestController;
+import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.persistence.Role;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
@@ -19,21 +21,21 @@ import javax.ws.rs.Path;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("User")
-public class UserController extends AbstractRestController<UserFacade> {
+@Path("Role")
+public class RoleController extends AbstractRestController<RoleFacade, Role> {
 
     /**
      *
      */
     @EJB
-    private UserFacade userFacade;
+    private RoleFacade roleFacade;
 
     /**
      *
      * @return
      */
     @Override
-    protected UserFacade getFacade() {
-        return this.userFacade;
+    protected RoleFacade getFacade() {
+        return this.roleFacade;
     }
 }

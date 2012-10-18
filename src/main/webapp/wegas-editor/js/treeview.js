@@ -57,7 +57,11 @@ YUI.add('treeview', function (Y) {
                 e.target.get(BOUNDING_BOX).addClass("selected");
             });
             this.before("*:selectedChange", function(e){
-                e.target.get(BOUNDING_BOX).removeClass("selected");
+                try{
+                    e.target.get(BOUNDING_BOX).removeClass("selected");
+                }catch(e){
+
+                }
             });
         },
         renderUI:function() {
@@ -352,6 +356,11 @@ YUI.add('treeview', function (Y) {
                     domEvent: e
                 });
             }, this);
+
+            //one line, prevent special chars
+            this.labelNode.on("blur", function(e){
+                e.target.setContent(e.target.getContent().replace(/&[^;]*;/gm, "").replace(/(\r\n|\n|\r|<br>|<br\/>)/gm,"").replace(/(<|>|\|\\|:|;)/gm,"").replace(/^\s+/g,'').replace(/\s+$/g,''));
+            }, this);
         },
         syncUI: function () {
             this.set("label", this.get("label"));
@@ -364,7 +373,11 @@ YUI.add('treeview', function (Y) {
         destructor: function () {
             this.blur();                                                        //remove a focused node generates some errors
             if(this.get("rightWidget") && this.get("rightWidget").destroy){
-                this.get("rightWidget").destroy();
+                try{
+                    this.get("rightWidget").destroy();
+                }catch(e){
+                    console.error("Failed destroying " + this.get("rightWidget"));
+                }
             }
             this.iconNode.remove(true);
             this.labelNode.remove(true);

@@ -8,16 +8,13 @@
 YUI.add('wegas-fileexplorer', function (Y) {
     'use strict';
 
-    var FileExplorer, ProgressBar,
-    getClassName = Y.ClassNameManager.getClassName,
+    var FileExplorer,
     CONTENTBOX = 'contentBox',
     DEFAULTHEADERS = {
         'Content-Type': 'application/json; charset=ISO-8859-1'
     },
     CONTENT_BOX="contentBox",
     BOUNDING_BOX="boundingBox";
-
-    //TODO: preview!
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
 
@@ -126,7 +123,14 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 ret += FileExplorer.formatFileSize( leaf.data.bytes ) + "<br /";
                 this.tooltip.setTriggerContent( ret )
             }, this );
-
+            //Prevent drop to avoid application exit
+            this.get(BOUNDING_BOX).on("drop", function(e){
+                e.halt(true);
+            });
+            this.get(BOUNDING_BOX).on("dragover", function(e){
+                e._event.dataTransfer.dropEffect='none';
+                e.halt(true);
+            });
             this.events.push(this.treeView.get(CONTENT_BOX).delegate("drop", function(e){
 
                 var node = Y.Widget.getByNode(e.currentTarget),
@@ -221,10 +225,21 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     e.file.progressBar.set("color", "red");
                     this.showMessage("error", JSON.parse(e.data).name + ": upload failed");
                 }
-                e.file.treeLeaf.destroy();
+                try{
+                    e.file.treeLeaf.destroy();
+                }catch(ex){
+                    console.log(ex);
+                }
             }, this);
             this.fileUploader.on("fileuploaderror", function(e){
-                console.log(e);
+                e.file.progressBar.set("color", "red");
+                e.file.treeLeaf.set("loading", false);
+                this.showMessage("error", e.file.get("name") + ": upload failed");
+                try{
+                    e.file.treeLeaf.destroy();
+                }catch(ex){
+                    console.log(ex);
+                }
             }, this)
         },
         destructor: function () {
@@ -268,8 +283,8 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     node.destroy();
                     break;
                 case 'upload':
-                    if(node.get("label").length < 4 || node.get("label").indexOf("<") > -1 || node.get("label").indexOf(">") > -1){
-                        console.error("Filename length > 3, \"<>\" forbidden");
+                    if(node.get("label").length < 1 ){
+                        this.showMessage("error", node.get("label") + " must contain at least 1 characters.");
                         break;
                     }
                     node.set("editable", false);
@@ -292,7 +307,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     name = prompt("Directory name:");
                     path = Y.Wegas.app.get("dataSources").File.source + "upload" + node.path;
                     if(name === null || name === ""){
-                        console.log("Well ... no name, exiting");
+                        this.showMessage("error", "Directory name is required");
                     } else {
                         this.uploader.upload(this.fakeFile, path, {
                             name: name
@@ -562,9 +577,11 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 this.uploader = new Y.UploaderHTML5({
                     fileFieldName: "file",
                     selectButtonLabel: "Select File",
-                    multipleFiles: true
+                    multipleFiles: true,
+                    retryCount: 0
                 });
                 this.publish("fileuploadcomplete");
+                this.publish("fileuploaderror");
             },
             renderUI: function (){
                 try{
@@ -584,10 +601,13 @@ YUI.add('wegas-fileexplorer', function (Y) {
                         uploaded += this.fileList[f].get("bytesUploaded");
                         total += this.fileList[f].get("size");
                     }
+                    if(total == 0 & uploaded == 0){
+                        total = uploaded = 1;
+                    }
                     this.overallProgress.set("percent", uploaded/total * 100);
                 }, this);
 
-                this.events.progress = this.uploader.on("uploadprogress", function(e){               //Not working, traking files individually
+                this.events.progress = this.uploader.on("uploadprogress", function(e){
                     e.file.progressBar.set("percent", e.percentLoaded);
                     if(e.file.treeLeaf){
                         e.file.treeLeaf.get("rightWidget").set("percent",e.percentLoaded);
@@ -596,8 +616,25 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 this.events.complete = this.uploader.on("uploadcomplete", function(e){
                     this.fire("fileuploadcomplete", e);
                 }, this);
-            },
-            syncUI: function () {
+                this.events.error = this.uploader.on("uploaderror", function(e){
+                    var files = this.fileList, i;
+                    for(i = 0 ; i < files.length; i = i + 1){
+                        if(files[i] === e.file){
+                            files.splice(i, 1);
+                            break;
+                        }
+                    }
+                    this.fileList = files;
+                    if(this.uploader.queue.queuedFiles.length < 1){             //@hack start, queue does not continue on failure
+                        this.uploader.queue.fire("alluploadscomplete");
+                    }else{
+                        this.uploader.queue._startNextFile();
+                    }
+                    this.uploader.fire("totaluploadprogress");                  //@hack end
+                    this.fire("fileuploaderror", e);
+                }, this);
+
+
             },
             destructor: function () {
                 for (var i in events){

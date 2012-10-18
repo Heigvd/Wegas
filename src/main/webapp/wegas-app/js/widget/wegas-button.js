@@ -57,7 +57,7 @@ YUI.add( "wegas-button", function ( Y ) {
                 } );
             }
         },
-        
+
         renderUI: function () {
             Button.superclass.renderUI.apply( this, arguments );
             this.get( BOUNDINGBOX ).addClass( "wegas-button" );
@@ -149,7 +149,7 @@ YUI.add( "wegas-button", function ( Y ) {
                 for (i = 0; i < descriptor.get("items").length; i = i + 1) {
                     instance = descriptor.get("items")[i].getInstance();
                     //count += instance.get("unread") ? 1 : 0;
-                    count += instance.get("replies").length === 0 ? 1 : 0;
+                    count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
                 }
             }
 

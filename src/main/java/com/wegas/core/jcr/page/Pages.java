@@ -10,20 +10,16 @@
  */
 package com.wegas.core.jcr.page;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jackson.JsonNode;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -44,19 +40,19 @@ public class Pages implements Serializable {
         this.connector = new PageConnector();
     }
 
-    public JSONObject getPages() throws RepositoryException {
+    public Map<Integer, JsonNode> getPages() throws RepositoryException {
         if(!this.connector.exist(this.gameModelName)){
             return null;
         }
         NodeIterator it = this.connector.listChildren(this.gameModelName);
-        JSONObject ret = new JSONObject();
+        Map<Integer, JsonNode> ret = new HashMap<>();
         while (it.hasNext()) {
             Node n = (Node) it.next();
             try {
                 Page p = new Page(new Integer(n.getName()), n.getProperty("content").getString());
                 //pageMap.put(p.getId().toString(),  p.getContent());
-                ret.put(n.getName(), p.getContent());
-            } catch (JSONException ex) {
+                ret.put(p.getId(), p.getContent());
+            } catch (IOException ex) {
                 //Stored String is wrong
                 logger.error(ex.getMessage());
             }
@@ -74,7 +70,7 @@ public class Pages implements Serializable {
             if (n != null) {
                 ret = new Page(new Integer(n.getName()), n.getProperty("content").getString());
             }
-        } catch (JSONException ex) {
+        } catch (IOException ex) {
             //Well Stored String is wrong
             logger.error(ex.getMessage());
 
@@ -91,9 +87,7 @@ public class Pages implements Serializable {
     public void store(Page page) throws RepositoryException {
         Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
         n.setProperty("content", page.getContent().toString());
-       // n.getSession().save();
         this.connector.save();
-        //this.connector.close();
     }
 
     public void deletePage(String pageId) throws RepositoryException {

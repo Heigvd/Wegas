@@ -48,7 +48,6 @@ YUI.add('wegas-layout', function (Y) {
 
             var i, cWidget, target = null, positionCfg = this.get(position);
 
-            if (!positionCfg) return;
 
             if (position === "top") {
                 target = this.getStdModNode("header");
@@ -58,31 +57,42 @@ YUI.add('wegas-layout', function (Y) {
 
             } else if (position == "left") {
                 target = this.getStdModNode("body").one(".wegas-layout-left");
-                this.leftResize = new Y.Resize({
-                    node: target,
-                    handles: 'r'
-                });
-                this.leftResize.on("resize", this.syncCenterNode, this);
 
+                if ( positionCfg ) {
+                    this.leftResize = new Y.Resize({
+                        node: target,
+                        handles: 'r'
+                    });
+                    this.leftResize.on("resize", this.syncCenterNode, this);
+                }
             } else if (position == "center") {
                 target = this.getStdModNode("body").one(".wegas-layout-center");
 
             } else if (position == "right") {
                 target = this.getStdModNode("body").one(".wegas-layout-right");
-                this.rightResize = new Y.Resize({
-                    node: target,
-                    handles: 'l'
-                });
-                this.rightResize.on("resize", this.syncCenterNode, this);
+
+                if ( positionCfg ) {
+                    this.rightResize = new Y.Resize({
+                        node: target,
+                        handles: 'l'
+                    });
+                    this.rightResize.on("resize", this.syncCenterNode, this);
+                }
             //this.rightResize.plug(Y.Plugin.ResizeConstrained, {
             //minWidth: 200
             // maxWidth: 300,
             //});
             }
-            for (i = 0; i < positionCfg.children.length; i = i + 1) {
-                cWidget = Y.Wegas.Widget.create(positionCfg.children[i]);
-                // cWidget.after( "render", this.syncUI, this );
-                cWidget.render(target);
+
+
+            if ( positionCfg ) {                                               // If there is a provided configuration
+                for ( i = 0; i < positionCfg.children.length; i = i + 1) {      // render the children
+                    cWidget = Y.Wegas.Widget.create( positionCfg.children[ i ] );
+                    // cWidget.after( "render", this.syncUI, this );
+                    cWidget.render( target );
+                }
+            } else {
+                target.setStyle( "width", "0" );
             }
         },
 
