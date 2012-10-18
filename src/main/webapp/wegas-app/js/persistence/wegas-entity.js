@@ -547,6 +547,29 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
     /**
+     * Role mapper
+     */
+    Y.Wegas.persistence.Role = Y.Base.create( "Role", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            name: {
+                type: "string"
+            },
+            description: {
+                type: "string"
+            },
+            permissions: {
+                optional: true,
+                type: "array",
+                items: {
+                    type: "string"
+                },
+                _inputex: {
+                    useButtons: true
+                }
+            }
+        }
+    });
+    /**
      * JpaAccount mapper
      */
     Y.Wegas.persistence.JpaAccount = Y.Base.create( "JpaAccount", Y.Wegas.persistence.Entity, [], {}, {
@@ -583,11 +606,12 @@ YUI.add('wegas-entity', function (Y) {
                 optional: true,
                 _inputex: {
                     _type: "password",
-                    label: "Password <br/><em>(leave blank for no changes)</em>",
+                    label: "Password",
                     strengthIndicator: true,
                     capsLockWarning: true,
                     id: "password",
-                    typeInvite: null
+                    typeInvite: null,
+                    description: "Leave blank for no change"
                 }
             },
             passwordConfirm: {
@@ -957,12 +981,12 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
     /**
-         * ListDescriptor mapper
-         */
+    * ListDescriptor mapper
+    */
     Y.Wegas.persistence.ListDescriptor = Y.Base.create("ListDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
         /**
-             * Extend clone to add transient childs
-             */
+        * Extend clone to add transient childs
+        */
         clone:function(){
             var object = Y.Wegas.persistence.Editable.prototype.clone.call(this);
             object.items = [];

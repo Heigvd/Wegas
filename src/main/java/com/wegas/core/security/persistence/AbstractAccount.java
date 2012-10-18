@@ -11,7 +11,6 @@ package com.wegas.core.security.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.facebook.FacebookAccount;
-import com.wegas.core.security.jparealm.Role;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;

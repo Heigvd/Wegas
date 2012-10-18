@@ -103,6 +103,22 @@
                                     }
                                 ]
                             },
+                            "Role": {
+                                source: "rest/Role",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                            }
+                                        }
+                                    }, {
+                                        fn: "DataSourceREST"
+                                    }
+                                ]
+                            },
                             "VariableDescriptor": {
                                 source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
