@@ -32,7 +32,12 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
     @Override
     protected void redirectToLogin(ServletRequest request, ServletResponse response) throws IOException {
         String loginUrl = getLoginUrl();
-        loginUrl += "?redirect=" + URLEncoder.encode(WebUtils.getRequestUri((HttpServletRequest) request), "UTF-8");                            //
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String url = WebUtils.getRequestUri(httpRequest);
+        if (httpRequest.getQueryString() != null) {
+            url += "?" + httpRequest.getQueryString();
+        }
+        loginUrl += "?redirect=" + URLEncoder.encode(url, "UTF-8");
         WebUtils.issueRedirect(request, response, loginUrl);
     }
 }

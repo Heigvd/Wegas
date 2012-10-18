@@ -11,7 +11,6 @@ package com.wegas.core.security.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.security.jdbcrealm.JdbcRealmAccount;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -114,10 +113,18 @@ public class User extends AbstractEntity {
 
     @XmlTransient
     public final AbstractAccount getMainAccount() {
-        return this.accounts.get(0);
+        if (!this.accounts.isEmpty()) {
+            return this.accounts.get(0);
+        } else {
+            return null;
+        }
     }
 
     public String getName() {
-        return this.getMainAccount().getName();
+        if (this.getMainAccount() != null) {
+            return this.getMainAccount().getName();
+        } else {
+            return "unnamed";
+        }
     }
 }

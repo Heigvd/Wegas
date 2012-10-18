@@ -158,7 +158,7 @@ YUI().use(function (Y) {
                     'wegas-loginwidget': {
                         path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
                         requires: [ 'wegas-widget', 'inputex-password', 'inputex-string',
-                            "inputex-hidden", "inputex-email", 'button' ],
+                            "inputex-hidden", "inputex-email", "inputex-checkbox", 'button' ],
                         ix_provides: "LoginWidget"
                     },
                     'wegas-joingamewidget': {

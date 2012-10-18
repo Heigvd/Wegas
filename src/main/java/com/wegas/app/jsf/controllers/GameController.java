@@ -66,11 +66,6 @@ public class GameController implements Serializable {
      *
      */
     @EJB
-    private GameFacade gameFacade;
-    /**
-     *
-     */
-    @EJB
     private UserFacade userFacade;
     /**
      *

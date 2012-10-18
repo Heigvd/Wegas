@@ -9,11 +9,11 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;

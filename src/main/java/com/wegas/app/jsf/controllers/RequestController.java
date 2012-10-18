@@ -9,23 +9,17 @@
  */
 package com.wegas.app.jsf.controllers;
 
-import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.GuestAccount;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -45,10 +39,6 @@ public class RequestController implements Serializable {
      */
     @ManagedProperty(value = "#{param.lang}")
     private String lang = "en";
-    /**
-     *
-     */
-    private User currentUser;
 
     /**
      *
@@ -101,43 +91,6 @@ public class RequestController implements Serializable {
      * @return the currentUser
      */
     public User getCurrentUser() {
-        final Subject subject = SecurityUtils.getSubject();
-
-        if (subject.isAuthenticated()) {                                        // If the user is logged
-            final String principal = subject.getPrincipal().toString();
-            try {
-                return userFacade.getUserByPrincipal(
-                        subject.getPrincipal().toString());
-            }
-            catch (EJBException e) {                                            // If we cannot find a corresponding account.
-                if (e.getCause() instanceof PersistenceException) {             // that means we need to create one.
-                    // @fixme normally an authenticated user should always have an account
-                    //User newUser = new User();
-                    //AbstractAccount acc = new JdbcRealmAccount();
-                    //acc.setPrincipal(principal);
-                    //acc.setFirstname(principal);
-                    //acc.setLastname("");
-                    //newUser.addAccount(acc);
-                    //userFacade.create(newUser);
-                    return null;
-                } else {
-                    throw e;
-                }
-            }
-        } else {                                                                // If the user is not logged in
-            User newUser = new User(new GuestAccount());                        // return a Guest user
-
-            if (ResourceBundle.getBundle("wegas").getString("guestallowed").equals("true")) {
-                //userFacade.create(newUser);                                   // @fixme For now we do not persist this new user
-            }
-            return newUser;
-        }
-    }
-
-    /**
-     * @param currentUser the currentUser to set
-     */
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
+        return userFacade.getCurrentUser();
     }
 }

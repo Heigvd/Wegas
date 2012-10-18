@@ -10,6 +10,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.persistence.game.GameModel;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @Path("GameModel")
-public class GameModelController extends AbstractRestController<GameModelFacade> {
+public class GameModelController extends AbstractRestController<GameModelFacade, GameModel> {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelController.class);
     /**

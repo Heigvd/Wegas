@@ -547,13 +547,13 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
     /**
-     * JdbcRealmAccount mapper
+     * JpaAccount mapper
      */
-    Y.Wegas.persistence.JdbcRealmAccount = Y.Base.create( "JdbcRealmAccount", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.JpaAccount = Y.Base.create( "JpaAccount", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 type: "string",
-                value: "JdbcRealmAccount",
+                value: "JpaAccount",
                 _inputex: {
                     _type: 'hidden'
                 }
@@ -580,25 +580,39 @@ YUI.add('wegas-entity', function (Y) {
             },
             password: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     _type: "password",
-                    label: "Password",
+                    label: "Password <br/><em>(leave blank for no changes)</em>",
                     strengthIndicator: true,
                     capsLockWarning: true,
-                    id: "password"
+                    id: "password",
+                    typeInvite: null
                 }
             },
             passwordConfirm: {
                 type: "string",
                 //"transient": true,
+                optional: true,
                 _inputex: {
                     _type: "password",
-                    label: "Password(confirm)",
+                    label: "Password (confirm)",
                     showMsg: true,
-                    confirm: "password"
+                    confirm: "password",
+                    typeInvite: null
                 }
             }
-        }
+        },
+        EDITMENU: [{
+            type: "EditEntityButton",
+            label: "Edit user"
+        },  {
+            type: "Button",
+            disabled: true,
+            label: "Permissions"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     //EDITFORM : [{
     //    name: 'name',
     //    label:'Name',
