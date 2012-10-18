@@ -155,9 +155,15 @@ YUI().use(function (Y) {
                         requires: ['wegas-widget', 'wegas-inputex'],
                         ix_provides: "FormWidget"
                     },
+                    'wegas-loginwidget': {
+                        path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
+                        requires: [ 'wegas-widget', 'inputex-password', 'inputex-string',
+                            "inputex-hidden", "inputex-email", "inputex-checkbox", 'button' ],
+                        ix_provides: "LoginWidget"
+                    },
                     'wegas-joingamewidget': {
                         path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
-                        requires: ['wegas-widget', 'inputex-select', 'inputex-string', 'button'],
+                        requires: [ 'wegas-widget', 'inputex-select', 'inputex-string', 'button' ],
                         ix_provides: "JoinGameWidget"
                     },
                     'wegas-imageloader': {
@@ -218,6 +224,11 @@ YUI().use(function (Y) {
                         requires: [ 'inputex-field', 'ace' ],
                         ix_provides: 'wegasurl'
                     },
+                    'wegas-inputex-roleselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-roleselect-min.js',
+                        requires: [ 'inputex-select' ],
+                        ix_provides: 'roleselect'
+                    },
 
                     /** Common Widgets **/
                     'wegas-widgetmenu': {
@@ -275,7 +286,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        requires: []
+                        requires: ['diff_match_patch']
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -531,6 +542,17 @@ YUI().use(function (Y) {
                         path: "gauge.min.js"
                     }
                 }
+            },
+            diffmatchpatch:{
+                async: false,
+                combine:false,
+                base:"./lib/diffmatchpatch/",
+                root:"/lib/diffmatchpatch/",
+                modules: {
+                    'diff_match_patch':{
+                        path:"diff_match_patch.js"
+                    }
+                }
             }
         }
     };
@@ -554,7 +576,7 @@ YUI().use(function (Y) {
                 if (modules[moduleName].ix_provides) {                          // Build a reverse index on which module provides what type
 
                     if (Y.Lang.isArray(modules[moduleName].ix_provides)) {
-                        for (var i = 0; i < modules[moduleName].ix_provides.length; i = i + 1) {
+                        for (i = 0; i < modules[moduleName].ix_provides.length; i = i + 1) {
                             modulesByType[modules[moduleName].ix_provides[i]] = moduleName;
                         }
                     } else {

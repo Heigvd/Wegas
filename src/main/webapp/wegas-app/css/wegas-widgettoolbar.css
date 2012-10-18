@@ -32,6 +32,7 @@
     vertical-align: top;
     border: none;
     min-height: 26px;
+    position:relative;
 }
 .wegas-toolbar-panel {
     overflow: hidden;

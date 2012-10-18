@@ -147,8 +147,13 @@ YUI.add('wegas-entity', function (Y) {
         getMenuCfg: function ( data ) {
             var menus = Y.Wegas.app.get('editorMenus'),
             //    staticMenus =
-            menu = menus[this.get('@class')] || menus[this.get("type")] ||      // Select first server defined forms, based on the @class or the type attribute
-            this.getStatic("EDITMENU")[0] || [];                                // And if no form is defined we return the default one defined in the entity
+            menu;
+
+            if ( menus ) {
+                menu =  menus[ this.get( '@class' ) ] || menus[ this.get( "type" ) ];  // Select first server defined forms, based on the @class or the type attribute
+            }
+            menu = menu || this.getStatic("EDITMENU")[0] || [];                 // And if no form is defined we return the default one defined in the entity
+
 
             function mixMenuCfg ( elts, data ) {
                 var i, j;
@@ -377,7 +382,7 @@ YUI.add('wegas-entity', function (Y) {
                     value:"wegas-leaderway/db/wegas-leaderway-pages.json",
                     label:"Leaderway"
                 }, {
-                    value:"wegas-crimesim/db/wegas-leaderway-crimesim.json",
+                    value:"wegas-crimesim/db/wegas-crimesim-pages.json",
                     label:"Crimesim"
                 }, {
                     value:"wegas-mmo/db/wegas-leaderway-mmo.json",
@@ -506,7 +511,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
          * Player mapper
          */
-    Y.Wegas.persistence.Player = Y.Base.create("Player", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.Player = Y.Base.create( "Player", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: "string"
@@ -522,39 +527,189 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-         * User mapper
-         */
-    Y.Wegas.persistence.User = Y.Base.create("User", Y.Wegas.persistence.Entity, [], {}, {
+     * User mapper
+     */
+    Y.Wegas.persistence.User = Y.Base.create( "User", Y.Wegas.persistence.Entity, [], {
+        getMainAccount: function () {
+            return this.get( "accounts" )[0];
+        }
+    }, {
+        ATTRS: {
+            name: {
+                type: "string",
+                getter: function ( val ) {
+                    if ( this.getMainAccount() ) {
+                        return this.getMainAccount().getPublicName();
+                    }
+                    return val;
+                }
+            },
+            password: {
+                type: "string"
+            },
+            accounts: {
+                type: "array"
+
+            }
+        }
+    });
+    /**
+     * Role mapper
+     */
+    Y.Wegas.persistence.Role = Y.Base.create( "Role", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: "string"
             },
-            password: {
-                type: "string"
+            description: {
+                type: "string",
+                format: "text",
+                optional: true
+            },
+            permissions: {
+                optional: true,
+                type: "array",
+                items: {
+                    type: "string",
+                    _inputex: {
+                        label: ""
+                    }
+                },
+                _inputex: {
+                    useButtons: true
+                }
             }
         },
-        EDITFORM : [{
-            name: 'name',
-            label:'Name',
-            required: true
+        EDITMENU: [{
+            type: "EditEntityButton",
+            label: "Edit group"
         }, {
-            name: 'password',
-            type: 'password',
-            label: 'New password',
-            showMsg: true,
-            id: 'firstPassword',
-            strengthIndicator: true,
-            capsLockWarning: true
-        }, {
-            type: 'password',
-            label: 'Confirmation',
-            showMsg: true,
-            confirm: 'firstPassword'
+            type: "DeleteEntityButton"
         }]
     });
     /**
-         * VariableDescriptor mapper
-         */
+     * JpaAccount mapper
+     */
+    Y.Wegas.persistence.JpaAccount = Y.Base.create( "JpaAccount", Y.Wegas.persistence.Entity, [], {
+
+        getPublicName: function () {
+            return this.get( "firstname" ) + " " + this.get( "lastname" );
+        }
+
+    }, {
+        ATTRS: {
+            "@class": {
+                type: "string",
+                value: "JpaAccount",
+                _inputex: {
+                    _type: 'hidden'
+                }
+            },
+            firstname: {
+                type: "string",
+                _inputex: {
+                    label: "First name"
+                }
+            },
+            lastname: {
+                label: "Last name",
+                type: "string",
+                _inputex: {
+                    label: "Last name"
+                }
+            },
+            email: {
+                type: "string",
+                _inputex: {
+                    label: "Email",
+                    _type: "email"
+                }
+            },
+            password: {
+                type: "string",
+                optional: true,
+                _inputex: {
+                    _type: "password",
+                    label: "Password",
+                    strengthIndicator: true,
+                    capsLockWarning: true,
+                    id: "password",
+                    typeInvite: null,
+                    description: "Leave blank for no change"
+                }
+            },
+            passwordConfirm: {
+                type: "string",
+                //"transient": true,
+                optional: true,
+                _inputex: {
+                    _type: "password",
+                    label: "Confirm password",
+                    showMsg: true,
+                    confirm: "password",
+                    typeInvite: null
+                }
+            },
+            roles: {
+                optional: true,
+                type: "array",
+                items: {
+                    type: "string",
+                    choices: [{
+                        value: 1,
+                        label: 'Administrator'
+                    }, {
+                        value: 4,
+                        label: 'Scenarist'
+                    }, {
+                        value: 5,
+                        label: 'Animator'
+                    }],
+                    _inputex: {
+                        label: "",
+                        _type: "roleselect"
+                    }
+                },
+                _inputex: {
+                    useButtons: true
+                }
+            }
+        },
+        EDITMENU: [{
+            type: "EditEntityButton",
+            label: "Edit user"
+        },  {
+            type: "Button",
+            disabled: true,
+            label: "Permissions"
+        }
+        //        , {
+        //            type: "DeleteEntityButton"
+        //        }
+        ]
+    //EDITFORM : [{
+    //    name: 'name',
+    //    label:'Name',
+    //    required: true
+    //}, {
+    //    name: 'password',
+    //    type: 'password',
+    //    label: 'New password',
+    //    showMsg: true,
+    //    id: 'firstPassword',
+    //    strengthIndicator: true,
+    //    capsLockWarning: true
+    //}, {
+    //    type: 'password',
+    //    label: 'Confirmation',
+    //    showMsg: true,
+    //    confirm: 'firstPassword'
+    //}]
+    });
+
+    /**
+     * VariableDescriptor mapper
+     */
     Y.Wegas.persistence.VariableDescriptor = Y.Base.create("VariableDescriptor", Y.Wegas.persistence.Entity, [], {
         getInstance: function ( playerId ) {
             playerId = playerId || Y.Wegas.app.get('currentPlayer');
@@ -876,12 +1031,12 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
     /**
-         * ListDescriptor mapper
-         */
+    * ListDescriptor mapper
+    */
     Y.Wegas.persistence.ListDescriptor = Y.Base.create("ListDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
         /**
-             * Extend clone to add transient childs
-             */
+        * Extend clone to add transient childs
+        */
         clone:function(){
             var object = Y.Wegas.persistence.Editable.prototype.clone.call(this);
             object.items = [];

@@ -288,7 +288,11 @@
             <version>2.4.2</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.madgag</groupId>
+            <artifactId>util-diff</artifactId>
+            <version>1.33</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -526,6 +530,7 @@
                 </executions>
                 <configuration>
                     <excludes>
+                        <exclude>lib/diffmatchpatch/**</exclude>
                         <exclude>lib/ace/**</exclude>
                         <exclude>lib/excanvas/**</exclude>
                         <exclude>lib/jsPlumb/**</exclude>

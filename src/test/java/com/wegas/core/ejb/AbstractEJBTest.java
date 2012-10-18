@@ -81,7 +81,6 @@ public class AbstractEJBTest {
         game.addTeam(team);
 
         player = new Player();
-        player.setName("test-player");
         team.addPlayer(player);
 
         gameModelFacade.create(gameModel);

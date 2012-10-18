@@ -14,6 +14,7 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.GameModel;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -27,8 +28,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -52,7 +53,7 @@ public class PageController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject getPages(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
+    public Map<Integer, JsonNode> getPages(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
         GameModel gm = gmFacade.find(new Long(gameModelId));
         Pages pages = new Pages(gm.getName());
         return pages.getPages();
@@ -69,7 +70,7 @@ public class PageController {
     @GET
     @Path("/{pageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject getPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId) throws RepositoryException {
+    public JsonNode getPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId) throws RepositoryException {
         GameModel gm = gmFacade.find(new Long(gameModelId));
         Pages pages = new Pages(gm.getName());
         Page page = pages.getPage(new Integer(pageId));
@@ -92,7 +93,8 @@ public class PageController {
     @POST
     @Path("/{pageId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public JSONObject setPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId, JSONObject content) throws RepositoryException {
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonNode setPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId, JsonNode content) throws RepositoryException, IOException {
         GameModel gm = gmFacade.find(new Long(gameModelId));
         Pages pages = new Pages(gm.getName());
         Page page = new Page(new Integer(pageId), content);
@@ -101,8 +103,9 @@ public class PageController {
     }
 
     /**
-     * Merges exisiting gameModelId's pages with the provided content, replacing existing
-     * pages with those given, storing new pages and keeping previous pages.
+     * Merges exisiting gameModelId's pages with the provided content, replacing
+     * existing pages with those given, storing new pages and keeping previous
+     * pages.
      *
      * @param gameModelId The GameMoldel's ID
      * @param content A JSON map <Integer, JSONObject>
@@ -112,14 +115,15 @@ public class PageController {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public JSONObject setPages(@PathParam("gameModelId") String gameModelId, JSONObject content) throws RepositoryException, JSONException {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<Integer, JsonNode> setPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap) throws RepositoryException, JSONException {
         GameModel gm = gmFacade.find(new Long(gameModelId));
         Pages pages = new Pages(gm.getName());
         //pages.delete();                                                       //remove first existing Pages currently merges, uncomment to replace
-        Iterator kIterator = content.keys();
+        Iterator kIterator = pageMap.keySet().iterator();
         while (kIterator.hasNext()) {
-            String key = (String) kIterator.next();
-            Page page = new Page(new Integer(key), content.getJSONObject(key));
+            Integer key = (Integer) kIterator.next();
+            Page page = new Page(key, pageMap.get(key));
             pages.store(page);
         }
         return getPages(gameModelId);
@@ -151,5 +155,18 @@ public class PageController {
         GameModel gm = gmFacade.find(new Long(gameModelId));
         Pages pages = new Pages(gm.getName());
         pages.deletePage(pageId);
+    }
+
+    @POST
+    @Path("/patch/{pageId : [1-9][0-9]*}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonNode patch(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") Integer pageId, String patch) throws RepositoryException, JSONException, IOException {
+        GameModel gm = gmFacade.find(new Long(gameModelId));
+        Pages pages = new Pages(gm.getName());
+        Page page = pages.getPage(pageId);
+        page.patch(patch);
+        pages.store(page);
+        return page.getContent();
     }
 }

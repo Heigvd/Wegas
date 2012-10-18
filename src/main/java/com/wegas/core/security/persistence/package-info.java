@@ -7,4 +7,4 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.security.realm;
+package com.wegas.core.security.persistence;

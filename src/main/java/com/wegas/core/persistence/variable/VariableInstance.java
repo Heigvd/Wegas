@@ -104,8 +104,6 @@ abstract public class VariableInstance extends AbstractEntity {
 //    public Long getId() {
 //        return id;
 //    }
-
-
     /**
      * @return the scope
      */
@@ -125,7 +123,7 @@ abstract public class VariableInstance extends AbstractEntity {
      * @return the scope
      */
     @XmlTransient
-     @JsonIgnore
+    @JsonIgnore
     public VariableDescriptor getDescriptor() {
         return this.getScope().getVariableDescriptor();
     }

@@ -26,7 +26,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/{variableDescriptorId : [1-9][0-9]*}/VariableInstance/")
-public class VariableInstanceController extends AbstractRestController<VariableInstanceFacade> {
+public class VariableInstanceController extends AbstractRestController<VariableInstanceFacade, VariableInstance> {
 
     /**
      *
@@ -46,9 +46,9 @@ public class VariableInstanceController extends AbstractRestController<VariableI
     @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<AbstractEntity> index() {
+    public Collection<VariableInstance> index() {
         VariableDescriptor vd = variableDescriptorFacade.find(new Long(this.getPathParam("variableDescriptorId")));
-        return (Collection) vd.getScope().getVariableInstances().values();
+        return vd.getScope().getVariableInstances().values();
     }
 
     /**

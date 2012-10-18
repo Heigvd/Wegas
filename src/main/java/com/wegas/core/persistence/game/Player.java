@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -10,8 +10,7 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.user.User;
-import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.persistence.User;
 import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,21 +21,18 @@ import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-//@Table(uniqueConstraints =
-//@UniqueConstraint(columnNames = {"name"}))
 @NamedQueries({
     @NamedQuery(name = "findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
     @NamedQuery(name = "findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId")
 })
 @XmlRootElement
-@XmlType(name = "Player", propOrder = {"@class", "id", "name"})
+@XmlType(name = "Player")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Player extends AbstractEntity {
@@ -48,14 +44,12 @@ public class Player extends AbstractEntity {
     /**
      *
      */
-    @NotNull
-    // @javax.validation.constraints.Pattern(regexp = "^\\w+$")
-    private String name;
+    @ManyToOne(cascade = {CascadeType.PERSIST})
+    private User user;
     /**
      *
      */
-    @ManyToOne(cascade = {CascadeType.PERSIST})
-    private User user;
+    private String name;
     /**
      * The game model this belongs to
      */
@@ -78,17 +72,6 @@ public class Player extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Player p = (Player) a;
-        this.setName(p.getName());
-    }
-
-    /**
-     *
-     */
-    @PrePersist
-    public void prePersist() {
-        if (this.name == null) {
-            this.setName(this.user.getName());
-        }
     }
 
     /**
@@ -132,19 +115,6 @@ public class Player extends AbstractEntity {
         this.team = team;
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
 
     /**
      * @return the teamId
@@ -173,4 +143,19 @@ public class Player extends AbstractEntity {
     public Game getGame() {
         return this.getTeam().getGame();
     }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }

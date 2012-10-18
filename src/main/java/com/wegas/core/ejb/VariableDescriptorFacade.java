@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -10,8 +10,8 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.user.User;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;

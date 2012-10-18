@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -7,18 +7,15 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.persistence.user;
+package com.wegas.core.security.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
@@ -26,10 +23,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(name = "users", uniqueConstraints =
-@UniqueConstraint(columnNames = "name"))
-@XmlRootElement
-@XmlType(name = "User", propOrder = {"@class", "id", "name"})
+@Table(name = "users")
 public class User extends AbstractEntity {
 
     private static final Logger logger = Logger.getLogger("UserEntity");
@@ -42,20 +36,22 @@ public class User extends AbstractEntity {
     /**
      *
      */
-    @NotNull
-    @Pattern(regexp = "^\\w+$")
-    private String name;
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    @JsonManagedReference(value = "player-user")
+    private List<Player> players = new ArrayList<>();
     /**
      *
-     *
-     * @ManyToMany(cascade = CascadeType.ALL) @JoinTable(name = "user_player",
-     * joinColumns = { @JoinColumn(name = "playerId")}, inverseJoinColumns = {
-     * @JoinColumn(name = "userId")}) Collection<TeamEntity> players;
      */
-    @OneToMany(mappedBy = "user",
-    cascade = {CascadeType.ALL})
-    @JsonManagedReference(value = "player-user")
-    private List<Player> players;
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    @JsonManagedReference(value = "user-account")
+    private List<AbstractAccount> accounts = new ArrayList<>();
+
+    public User() {
+    }
+
+    public User(AbstractAccount acc) {
+        this.addAccount(acc);
+    }
 
     /**
      *
@@ -64,23 +60,6 @@ public class User extends AbstractEntity {
     @Override
     public Long getId() {
         return id;
-    }
-
-
-    /**
-     *
-     * @return
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     *
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -107,5 +86,45 @@ public class User extends AbstractEntity {
     @JsonManagedReference(value = "player-user")
     public void setPlayers(List<Player> players) {
         this.players = players;
+    }
+
+    /**
+     * @return the accounts
+     */
+    public List<AbstractAccount> getAccounts() {
+        return accounts;
+    }
+
+    /**
+     * @param accounts the accounts to set
+     */
+    public void setAccounts(List<AbstractAccount> accounts) {
+        this.accounts = accounts;
+    }
+
+    /**
+     *
+     * @param account
+     */
+    public final void addAccount(AbstractAccount account) {
+        this.accounts.add(account);
+        account.setUser(this);
+    }
+
+    @XmlTransient
+    public final AbstractAccount getMainAccount() {
+        if (!this.accounts.isEmpty()) {
+            return this.accounts.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public String getName() {
+        if (this.getMainAccount() != null) {
+            return this.getMainAccount().getName();
+        } else {
+            return "unnamed";
+        }
     }
 }
