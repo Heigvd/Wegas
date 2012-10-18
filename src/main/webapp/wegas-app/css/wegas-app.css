@@ -87,10 +87,10 @@ input[type="submit"], input[type="reset"] {
     -moz-binding: url('xbl.xml#wordwrap'); /* Firefox (using XBL) */
 }
 .wegas-systemmessage > .success .icon {
-    background: url(../../wegas-editor/images/wegas-icon-success-48.png) no-repeat;
+    background: url(../images/wegas-icon-success-48.png) no-repeat;
 }
 .wegas-systemmessage > .error .icon {
-    background: url(../../wegas-editor/images/wegas-icon-error-48.png) no-repeat;
+    background: url(../images/wegas-icon-error-48.png) no-repeat;
 }
 
 /* */

@@ -34,13 +34,16 @@
                                 }
                             }]
                         }
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Log",
-                        "subpage": {
-                            "type": "Logger"
-                        }
-                    }, {
+                    }]
+                }
+            }]
+        },{
+            "type": "Button",
+            "label": "Administrator",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": [{
                         "type": "OpenTabButton",
                         "label": "Users",
                         "subpage": {
@@ -49,7 +52,29 @@
                             "plugins": [{
                                 "fn": "WidgetToolbar",
                                 "cfg": {
-                                    "children": []
+                                    "children": [{
+                                        "type": "NewEntityButton",
+                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                        "targetClass": "JpaAccount",
+                                        "dataSource": "User"
+                                    }]
+                                }
+                            }]
+                        }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Groups",
+                        "subpage": {
+                            "type": "EditorTreeView",
+                            "dataSource": "Role",
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
+                                        "type": "NewEntityButton",
+                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                        "targetClass": "Role"
+                                    }]
                                 }
                             }]
                         }
