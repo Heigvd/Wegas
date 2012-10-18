@@ -35,7 +35,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
         bindUI: function () {
             if ( this.get( "dataSource" ) ) {
                 this.get( "dataSource" ).after( "response", this.syncUI, this );// Listen updates on the target datasource
-                this.get( "dataSource" ).after("error", function(e){            //GLOBAL error message
+                this.get( "dataSource" ).after( "error", function(e){            //GLOBAL error message
                     this.showMessage("error", e.response.results.message);
                 }, this);
             }
@@ -258,7 +258,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'GameModel':
-                                text = 'Game model: ' + el.get("name");
+                                text = 'Game model: ' + el.get( "name" );
                                 ret.push({
                                     label: text,
                                     data: {
@@ -271,14 +271,24 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
                             case 'User':
                                 ret.push({
-                                    label: 'User:' + el.get("name"),
+                                    label: 'User:' + el.get( "name" ),
                                     data: {
                                         entity: el.getMainAccount()
                                     },
-                                    iconCSS: 'wegas-icon-gamemodel',
+                                    iconCSS: 'wegas-icon-player',
                                     rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                                 break;
+
+                            case 'Role':
+                                ret.push({
+                                    label: 'Group:' + el.get( "name" ),
+                                    data: {
+                                        entity: el
+                                    },
+                                    iconCSS: 'wegas-icon-team',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
                                 break;
 
                             case 'List':

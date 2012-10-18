@@ -133,7 +133,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *  @return {Boolean} `true` if object could be located and method applied
          *  @for DataSourceREST
          */
-        updateCache: function (method, entity) {
+        updateCache: function ( method, entity ) {
             var ret = null;
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.DataSourceRest");
             switch (method) {
@@ -607,18 +607,20 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend( UserDataSourceREST, DataSourceREST, {
 
-        //walkEntity: function(entity, callback) {
-        //    if (entity.get && entity.get( "accounts" ) ) {
-        //        if (callback(entity.get( "accounts" ) ) ) {
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //},
+        walkEntity: function( entity, callback ) {
+            if ( entity.get( "accounts" ) ) {
+                if ( callback(entity.get( "accounts" ) ) ) {
+                    return true;
+                }
+            }
+            return false;
+        },
 
-        //updateCache: function ( method, entity ) {
-        //
-        //},
+//      updateCache: function ( method, entity ) {
+//
+//            for
+//            VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
+//       },
 
         put: function ( data, callback) {
             if ( data[ '@class' ] === "JpaAccount" ) {
@@ -637,16 +639,16 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
 
         post: function ( data, parentData, callback ) {
-            var request = "";
-            if (parentData) {
-                switch ( parentData["@class"] ) {
-                    default:
-                        request = "/" + parentData.id + "/VariableInstance/";
-                        break;
-                }
+
+            if ( data["@class"] === "JpaAccount" ) {                            // Allow user creation based on a Jpa Account
+                data = {
+                    "@class": "User",
+                    "accounts": [ data ]
+                };
             }
+
             this.sendRequest({
-                request: request,
+                request: "",
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify( data )

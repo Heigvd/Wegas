@@ -19,7 +19,9 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(name = "roles")
+@Table(name = "roles", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "name")
+})
 @Cacheable(true)
 public class Role extends AbstractEntity {
 

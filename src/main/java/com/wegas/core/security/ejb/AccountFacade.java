@@ -12,6 +12,11 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.AbstractAccount_;
+import com.wegas.core.security.persistence.Role;
+import java.util.HashSet;
+import java.util.Set;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -35,6 +40,11 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+    /**
+     *
+     */
+    @EJB
+    private RoleFacade roleFacade;
 
     /**
      *
@@ -50,6 +60,28 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    /**
+     *
+     * @param entityId
+     * @param entity
+     * @return
+     */
+    @Override
+    public AbstractAccount update(final Long entityId, final AbstractAccount account) {
+        Set<Role> revivedRoles = new HashSet<>();
+        for (Role r : account.getRoles()) {
+            try {
+                revivedRoles.add(roleFacade.find(r.getId()));
+            }
+            catch (EJBException e) {
+                // not able to revive this role
+            }
+        }
+        AbstractAccount oAccount = super.update(entityId, account);
+        oAccount.setRoles(revivedRoles);
+        return oAccount;
     }
 
     /**

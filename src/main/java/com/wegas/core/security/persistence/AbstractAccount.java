@@ -93,6 +93,7 @@ public class AbstractAccount extends AbstractEntity {
         AbstractAccount a = (AbstractAccount) other;
         this.setEmail(a.getEmail());
         this.setFirstname(a.getFirstname());
+        this.setLastname(a.getLastname());
         this.setEmail(a.getEmail());
         this.setUsername(a.getUsername());
     }

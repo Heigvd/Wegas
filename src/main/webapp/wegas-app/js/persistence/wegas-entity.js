@@ -511,7 +511,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
          * Player mapper
          */
-    Y.Wegas.persistence.Player = Y.Base.create("Player", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.Player = Y.Base.create( "Player", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: "string"
@@ -536,13 +536,20 @@ YUI.add('wegas-entity', function (Y) {
     }, {
         ATTRS: {
             name: {
-                type: "string"
+                type: "string",
+                getter: function ( val ) {
+                    if ( this.getMainAccount() ) {
+                        return this.getMainAccount().getPublicName();
+                    }
+                    return val;
+                }
             },
             password: {
                 type: "string"
             },
             accounts: {
                 type: "array"
+
             }
         }
     });
@@ -555,24 +562,41 @@ YUI.add('wegas-entity', function (Y) {
                 type: "string"
             },
             description: {
-                type: "string"
+                type: "string",
+                format: "text",
+                optional: true
             },
             permissions: {
                 optional: true,
                 type: "array",
                 items: {
-                    type: "string"
+                    type: "string",
+                    _inputex: {
+                        label: ""
+                    }
                 },
                 _inputex: {
                     useButtons: true
                 }
             }
-        }
+        },
+        EDITMENU: [{
+            type: "EditEntityButton",
+            label: "Edit group"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
     /**
      * JpaAccount mapper
      */
-    Y.Wegas.persistence.JpaAccount = Y.Base.create( "JpaAccount", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.JpaAccount = Y.Base.create( "JpaAccount", Y.Wegas.persistence.Entity, [], {
+
+        getPublicName: function () {
+            return this.get( "firstname" ) + " " + this.get( "lastname" );
+        }
+
+    }, {
         ATTRS: {
             "@class": {
                 type: "string",
@@ -620,10 +644,34 @@ YUI.add('wegas-entity', function (Y) {
                 optional: true,
                 _inputex: {
                     _type: "password",
-                    label: "Password (confirm)",
+                    label: "Confirm password",
                     showMsg: true,
                     confirm: "password",
                     typeInvite: null
+                }
+            },
+            roles: {
+                optional: true,
+                type: "array",
+                items: {
+                    type: "string",
+                    choices: [{
+                        value: 1,
+                        label: 'Administrator'
+                    }, {
+                        value: 4,
+                        label: 'Scenarist'
+                    }, {
+                        value: 5,
+                        label: 'Animator'
+                    }],
+                    _inputex: {
+                        label: "",
+                        _type: "roleselect"
+                    }
+                },
+                _inputex: {
+                    useButtons: true
                 }
             }
         },
@@ -634,9 +682,11 @@ YUI.add('wegas-entity', function (Y) {
             type: "Button",
             disabled: true,
             label: "Permissions"
-        }, {
-            type: "DeleteEntityButton"
-        }]
+        }
+        //        , {
+        //            type: "DeleteEntityButton"
+        //        }
+        ]
     //EDITFORM : [{
     //    name: 'name',
     //    label:'Name',
