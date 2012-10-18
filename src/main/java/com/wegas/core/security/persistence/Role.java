@@ -7,9 +7,10 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.security.jparealm;
+package com.wegas.core.security.persistence;
 
-import java.io.Serializable;
+import com.wegas.core.persistence.AbstractEntity;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 
@@ -20,7 +21,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "roles")
 @Cacheable(true)
-public class Role implements Serializable {
+public class Role extends AbstractEntity {
 
     /**
      *
@@ -45,7 +46,7 @@ public class Role implements Serializable {
      */
     @ElementCollection
     @JoinTable(name = "roles_permissions")
-    private Set<String> permissions;
+    private Set<String> permissions = new HashSet<>();
 
     /**
      *
@@ -61,10 +62,19 @@ public class Role implements Serializable {
         this.name = name;
     }
 
+    @Override
+    public void merge(AbstractEntity other) {
+        Role r = (Role) other;
+        this.setName(r.getName());
+        this.setDescription(r.getDescription());
+        this.setPermissions(r.getPermissions());
+    }
+
     /**
      *
      * @return
      */
+    @Override
     public Long getId() {
         return id;
     }
