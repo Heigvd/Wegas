@@ -72,7 +72,6 @@
                             },
                             "Page": {
                                 source: "#{gameController.currentGameModel.widgetsUri}",
-                                initialRequest: "",
                                 plugins: [
                                     {
                                         fn: "DataSourceJSONSchema",
@@ -83,7 +82,7 @@
                                             }
                                         }
                                     }, {
-                                        fn: "DataSourceREST"
+                                        fn: "PageDataSourceREST"
                                     }
                                 ]
                             },
