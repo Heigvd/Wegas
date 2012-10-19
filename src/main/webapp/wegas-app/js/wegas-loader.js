@@ -42,7 +42,7 @@ YUI().use(function (Y) {
                     'wegas-datasourcerest': {
                         path: 'wegas-app/js/wegas-datasourcerest-min.js',
                         requires: ['plugin', 'json', 'array-extras', 'io-base',
-                        "datasource-io", "datasource-jsonschema", "datasource-cache"]
+                        "datasource-io", "datasource-jsonschema", "datasource-cache", 'diff_match_patch']
                     },
                     'wegas-scripteval':{
                         path:'wegas-app/js/wegas-scripteval-min.js',
@@ -274,8 +274,7 @@ YUI().use(function (Y) {
                         ix_provides: 'SelectPlayerButton'
                     },
                     'wegas-pageeditor': {
-                        path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        requires: ['diff_match_patch']
+                        path: 'wegas-editor/js/wegas-pageeditor-min.js'
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
