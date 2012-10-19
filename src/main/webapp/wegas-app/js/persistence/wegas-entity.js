@@ -47,7 +47,7 @@ YUI.add('wegas-entity', function (Y) {
             attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
-                if ( attrCfgs[ k ][ "transient" ] ) {                           // Remove any transient attribute
+                if ( attrCfgs[ k ] && attrCfgs[ k ][ "transient" ] ) {                           // Remove any transient attribute
                     delete ret[ k ];
                 }
             }
@@ -107,14 +107,14 @@ YUI.add('wegas-entity', function (Y) {
          * Returns the form configuration associated to this object, to be used a an inputex object.
          */
         getFormCfg: function () {
-            var i, form;
+            var i, form, schemaMap, attrCfgs, builder;
             // forms = Y.Wegas.app.get('editorForms'),                          // Select first server defined forms, based on the @class or the type attribute
             // form = forms[this.get('@class')] || forms[this.get("type")]
 
             form = form ||  this.constructor.EDITFORM;                          // And if no form is defined we check if there is a default one defined in the entity
 
             if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
-                var schemaMap, attrCfgs = this.getAttrCfgs();
+                attrCfgs = this.getAttrCfgs();
 
                 for (i in attrCfgs) {
                     attrCfgs[i]["default"] = attrCfgs[i].value;                 // Use the value as default (useful form json object serialization)
@@ -130,7 +130,7 @@ YUI.add('wegas-entity', function (Y) {
                     }
                 };
 
-                var builder = new Y.inputEx.JsonSchema.Builder({
+                builder = new Y.inputEx.JsonSchema.Builder({
                     'schemaIdentifierMap': schemaMap,
                     'defaultOptions':{
                         'showMsg':true
@@ -883,9 +883,9 @@ YUI.add('wegas-entity', function (Y) {
              * Extend clone to add transient childs
              */
         clone:function(){
-            var object = Y.Wegas.persistence.Editable.prototype.clone.call(this);
+            var object = Y.Wegas.persistence.Editable.prototype.clone.call(this), i;
             object.items = [];
-            for(var i in this.get("items")){
+            for(i in this.get("items")){
                 object.items.push(this.get("items")[i].clone());
             }
             return object;
@@ -1270,12 +1270,12 @@ YUI.add('wegas-entity', function (Y) {
             language: {
                 value: "JavaScript",
                 type: "string",
-                choices:[{
+                choices: [{
                     value:"JavaScript"
                 }],
                 _inputex: {
                     //type:"select",
-                    type:"hidden"
+                    _type:"hidden"
                 }
             },
             content: {
