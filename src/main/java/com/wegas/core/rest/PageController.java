@@ -56,10 +56,10 @@ public class PageController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<Integer, JsonNode> getPages(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
+    public Response getPages(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
         GameModel gm = gmFacade.find(new Long(gameModelId));
         Pages pages = new Pages(gm.getName());
-        return pages.getPages();
+        return Response.ok(pages.getPages(), MediaType.APPLICATION_JSON).header("Page", "*").build();
     }
 
     /**
@@ -163,7 +163,7 @@ public class PageController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<Integer, JsonNode> setPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap) throws RepositoryException, JSONException {
+    public Response setPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap) throws RepositoryException, JSONException {
         GameModel gm = gmFacade.find(new Long(gameModelId));
         Pages pages = new Pages(gm.getName());
         //pages.delete();                                                       //remove first existing Pages currently merges, uncomment to replace

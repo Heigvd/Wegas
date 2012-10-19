@@ -20,6 +20,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
     VariableDescriptorDataSourceREST,
     GameModelDataSourceREST,
     GameDataSourceREST,
+    PageDataSourceREST,
     DEFAULTHEADERS = {
         'Content-Type': 'application/json;charset=ISO-8859-1',
         'Managed-Mode': 'true'
@@ -336,8 +337,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').DataSourceREST = DataSourceREST;
 
     /**
-    * Content repository dataSource REST plugin.
-    */
+     * Content repository dataSource REST plugin.
+     */
 
     var CRDataSource = function () {
         CRDataSource.superclass.constructor.apply(this, arguments);
@@ -345,20 +346,20 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend( CRDataSource, DataSourceREST, {
 
-    }, {
-        NS: "rest",
-        NAME: "CRDataSource",
-        ATTRS: {
+        }, {
+            NS: "rest",
+            NAME: "CRDataSource",
+            ATTRS: {
 
-        },
-        getFullpath: function ( relativePath ) {
-            return Y.Wegas.app.get( "base" ) + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") +
+            },
+            getFullpath: function ( relativePath ) {
+                return Y.Wegas.app.get( "base" ) + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") +
                 "/read" + relativePath;
-        },
-        getFilename: function ( path ) {
-            return path.replace(/^.*[\\\/]/, '');
-        }
-    });
+            },
+            getFilename: function ( path ) {
+                return path.replace(/^.*[\\\/]/, '');
+            }
+        });
     Y.namespace('Plugin').CRDataSource = CRDataSource;
 
     /**
@@ -559,8 +560,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.find("id", playerId * 1);
         },
         /**
-             *
-             */
+         *
+         */
         getGameByTeamId: function (teamId) {
             var i, j, data = this.getCache();
 
@@ -576,8 +577,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return null;
         },
         /**
-             *
-             */
+         *
+         */
         getTeamByPlayerId: function (playerId) {
             var i, j, k, cTeam, data = getCache();
             for (i = 0; i < data.length; i += 1) {
@@ -595,6 +596,183 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
+
+    PageDataSourceREST = function () {
+        PageDataSourceREST.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.mix(PageDataSourceREST, {
+        NS: "rest",
+        NAME: "PageDataSourceREST"
+    });
+
+    Y.extend( PageDataSourceREST, Y.Plugin.Base, {
+        initializer: function(cfg){
+            this.get("host").data = {};
+            this.pageQuery = {};
+            this.doBefore( "_defResponseFn", this.beforeResponse, this );
+            /* Publishing */
+            this.publish("pageUpdated");
+        },
+        beforeResponse: function(e){
+            var result = e.response.results,
+            page = +e.data.getResponseHeader("Page") || e.cfg.Page || '',
+            i;
+
+            if(page === "*"){
+                for(i in result){
+                    this.setCache(i, result[i]);
+                    this.pageQuery[i] = false;
+                }
+            }else{
+                this.setCache(page, result);
+                this.pageQuery[page] = false;
+            }
+
+
+        },
+        setCache: function(pageId, object){
+            this.get("host").data["" + pageId] = object;
+        },
+        getCache: function(pageId){
+            return this.get("host").data["" + pageId] || null;
+        },
+        destroyCache: function(){
+            for(var i in this.get("host").data){
+                this.get("host").data.destroy();
+            }
+            this.get("host").data = {};
+        },
+        /**
+         * Server requests methods
+         *
+         * @method sendRequest
+         */
+        sendRequest: function (requestCfg) {
+            requestCfg.callback = requestCfg.callback || {
+                success: this._successHandler,
+                failure: this._failureHandler
+            };
+            requestCfg.cfg = requestCfg.cfg || {};
+            requestCfg.cfg.Page = requestCfg.cfg.Page || '';
+            requestCfg.cfg.headers =  requestCfg.cfg.headers || {};
+            Y.mix( requestCfg.cfg.headers, {
+                'Content-Type': 'application/json;charset=ISO-8859-1'
+            } );
+
+            return this.get('host').sendRequest(requestCfg);
+        },
+        put: function(entity){
+            var pageId = entity["@pageId"], pe = Y.clone(entity);
+            delete pe["@pageId"];
+            this.sendRequest({
+                request: ""+pageId,
+                cfg:{
+                    method: 'PUT',
+                    data : JSON.stringify(pe),
+                    Page : pageId
+                },
+                callback:{
+                    success: Y.bind(function(e){
+                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
+                    }, this)
+                }
+            });
+        },
+        post: function(entity){
+            var pe = Y.clone(entity);
+            delete pe["@pageId"];
+            this.sendRequest({
+                request: "new",
+                cfg:{
+                    method: 'POST',
+                    data : JSON.stringify(pe)
+                },
+                callback:{
+                    success: Y.bind(function(e){
+                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
+                    }, this)
+                }
+            });
+        },
+        patch : function(o){
+            var dmp = new diff_match_patch(),
+            oldPage = this.getCache(o["@pageId"]),
+            newPage = Y.clone(o),
+            pageId = o["@pageId"],
+            patch;
+            delete newPage["@pageId"];
+            patch = dmp.patch_toText(dmp.patch_make(JSON.stringify(oldPage), JSON.stringify(newPage)));
+            this.sendRequest({
+                request: ""+pageId,
+                cfg:{
+                    method: 'PUT',
+                    headers:{
+                        'Content-Type': 'text/plain;charset=ISO-8859-1'
+                    },
+                    data : patch,
+                    Page : pageId
+                },
+                callback:{
+                    success: Y.bind(function(e){
+                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
+                    }, this)
+                }
+            });
+        },
+        deletePage: function(pageId){
+            this.sendRequest({
+                request: ""+pageId,
+                cfg:{
+                    method: 'DELETE',
+                    Page:pageId
+                },
+                callback:{
+                    success: Y.bind(function(e){
+                        delete this.getCache(e.cfg.Page);
+                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
+                    }, this)
+                }
+            });
+        },
+        getPage: function(pageId){
+            var page = null;
+            if(this.getCache(pageId)){
+                page = Y.clone(this.getCache(pageId));
+                page["@pageId"] = pageId;
+            }else if (!this.pageQuery[pageId]){
+                this.pageQuery[pageId] = true;
+                this.sendRequest({
+                request: ""+pageId,
+
+                    sync:true,
+                cfg:{
+                    method: 'GET',
+                    Page : pageId
+                },
+                callback:{
+                    success: Y.bind(function(e){
+                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
+                    }, this)
+                }
+            });
+            }
+
+            return page;
+        },
+        _successHandler: function (e) {
+
+        },
+        _failureHandler: function (e) {
+            try{
+                console.error(e.response.results.message);
+            }catch(ex){
+                Y.error("PageDatasource reply:", e, 'Y.Wegas.DataSourceRest');
+            }
+        }
+    });
+
+    Y.namespace('Plugin').PageDataSourceREST = PageDataSourceREST;
 
     /**
      * FIXME We redefine this so we can use a "." selector and a "@..." field name
