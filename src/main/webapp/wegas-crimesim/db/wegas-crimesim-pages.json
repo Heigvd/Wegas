@@ -1,4 +1,4 @@
-[{
+{"1":{
         "id": 1,
         "label": "Main layout",
         "type": "List",
@@ -123,23 +123,23 @@
                 "cssClass": "body",
                 "pageId": 2
             }]
-    },{
+    },"2":{
         "id": 2,
         "type": "Text",
         "content": "Welcome to CrimeSim."
-    },{
+    },"3":{
         "id": 3,
         "type": "MCQTabView",
         "variableName": "questions"
-    },{
+    },"4":{
         "id": 4,
         "type": "ScheduleDisplay"
-    },{
+    },"5":{
         "id": 5,
         "type": "InboxDisplay",
         "variable": "inbox"
-    }, {
+    }, "6":{
         "id": 6,
         "type": "ResultsDisplay"
     }
-]
+}
