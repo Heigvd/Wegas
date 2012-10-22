@@ -1,4 +1,4 @@
-[{
+{"1":{
         "id": 1,
         "label": "Main layout",
         "type": "List",
@@ -137,7 +137,7 @@
                 "pageId": 2
             }]
     },
-    {
+    "2":{
         "id":2,
         "label":"Folder",
         "type":"Folder",
@@ -147,7 +147,7 @@
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     },
-    {
+   "4": {
         "id":4,
         "label":"TaskList",
         "type":"TaskList",
@@ -156,7 +156,7 @@
         "targetPageLoaderId": "maindisplayarea",
         "dialoguePageId": "7"
     },
-    {
+    "5":{
         "id":5,
         "label":"Inbox",
         "type":"InboxDisplay",
@@ -165,7 +165,7 @@
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     },
-    {
+    "6":{
         "id":6,
         "label":"Score",
         "type":"Score",
@@ -175,7 +175,7 @@
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     },
-    {
+    "7":{
         "id":7,
         "label":"Dialogue",
         "type":"Dialogue",
@@ -185,4 +185,4 @@
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     }
-]
+}
