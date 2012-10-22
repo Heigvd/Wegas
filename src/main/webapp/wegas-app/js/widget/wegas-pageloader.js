@@ -17,7 +17,7 @@ YUI.add('wegas-pageloader', function (Y) {
 
     var CONTENTBOX = 'contentBox', PageLoader;
 
-    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget], {
+    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
 
         // *** Lifecycle Methods ***/
         initializer: function () {
@@ -25,12 +25,17 @@ YUI.add('wegas-pageloader', function (Y) {
         },
 
         bindUI: function () {
+            Y.Wegas.PageFacade.rest.after("pageUpdated", function(e){
+                if(e.page && e.page["@pageId"] == this.get("pageId")){
+                    this.syncUI();
+                }
+            }, this);
         //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
         },
 
         syncUI: function () {
-            if(this.get("pageId")){
-                 this.set( "pageId", this.get( "pageId" ) );  
+            if( this.get("pageId")){
+                this.set( "pageId", this.get( "pageId" ) );
             }else{
                 this.set( "pageId", this.get("variableDesc"));
             }
@@ -38,29 +43,37 @@ YUI.add('wegas-pageloader', function (Y) {
     }, {
         ATTRS : {
             variableName:{},
+            id:{
+                "transient":false
+            },
+            children: {
+                "transient": true
+            },
             pageId: {
                 setter: function (val) {
                     if (!val) {
                         return val;
                     }
 
-                    var widgetCfg = Y.Wegas.PageFacade.rest.findById(val).toObject2(),
+                    var widgetCfg = Y.Wegas.PageFacade.rest.getPage(val),
                     oldWidget = this.get("widget");
-
-                    if (widgetCfg && widgetCfg.id && this.widgetCfg             // If the widget is currently being loaded, escape
-                        && this.widgetCfg.id && this.widgetCfg.id == widgetCfg.id) {
-                        return val;
-                    }
+                    //                    if (widgetCfg && widgetCfg.id && this.widgetCfg             // If the widget is currently being loaded, escape
+                    //                        && this.widgetCfg.id && this.widgetCfg.id == widgetCfg.id) {
+                    //                        return val;
+                    //                    }
                     this.widgetCfg = widgetCfg;
 
                     if (oldWidget) {                                            // If there is already a widget, we destroy it
-                        if (oldWidget.get("id") == val) {                       // If the widget is the same as the one currently loaded, exit
-                            return val;
-                        }
+                        //                        if (oldWidget.get("id") == val) {                       // If the widget is the same as the one currently loaded, exit
+                        //                            return val;
+                        //                        }
                         oldWidget.destroy();                                    // @fixme we should remove the widget instead of destroying it
                         this.get(CONTENTBOX).empty();
                     }
-
+                    this.hideOverlay();
+                    if(widgetCfg == null){
+                        this.showOverlay();
+                    }
                     widgetCfg = widgetCfg || {
                         // id: Y.Wegas.App.genId(),
                         type: "Text",
@@ -76,13 +89,19 @@ YUI.add('wegas-pageloader', function (Y) {
                     } catch (e) {
                         Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
                     }
-
                     return val;
                 }
             },
+
             variableDesc:{
-                getter: function(){
+                "transient": true,
+                getter: function () {
                     var variable;
+
+                    if ( !this.get("variableName") ) {
+                        return null;
+                    }
+
                     variable = Y.Wegas.VariableDescriptorFacade.rest.find( 'name', this.get("variableName") );
                     if(!variable || !variable.getInstance().get("value")){
                         return null;
@@ -91,7 +110,9 @@ YUI.add('wegas-pageloader', function (Y) {
                     }
                 }
             },
-            widget: {}
+            widget: {
+                "transient":true
+            }
         },
 
         pageLoaderInstances: [],
