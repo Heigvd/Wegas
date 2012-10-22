@@ -9,7 +9,7 @@ YUI.add('wegas-list', function (Y) {
     CONTENTBOX = 'contentBox',
     List;
 
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild,  Y.Wegas.Widget ], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild,  Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
 
 
         // ** Lifecycle Methods ** //
@@ -25,14 +25,29 @@ YUI.add('wegas-list', function (Y) {
                 cb.removeClass(this.getClassName('vertical'));
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
+        },
+        //Children serialization
+        toObject: function () {
+            var i, s = Y.Wegas.persistence.Editable.prototype.toObject.call(this),
+            children = [];
+            for ( i = 0; i< this.size(); i = i + 1 ) {
+                children.push( this.item( i ).toObject() );
+            }
+            s.children = children;
+            return s;
         }
     }, {
         ATTRS : {
             defaultChildType: {
                 value: "Text"
             },
+            children:{
+            },
             direction: {
                 value: 'vertical'
+            },
+            multiple:{
+                "transient":true
             },
 
             /**
