@@ -18,6 +18,4 @@ import javax.persistence.Entity;
  */
 @Entity
 public class FacebookAccount extends AbstractAccount {
-
-
 }

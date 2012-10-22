@@ -50,7 +50,7 @@ public class Views {
     /**
      *
      */
-    public static class Export extends Public {
+    public static class Export extends Public implements EditorI {
     }
 
     /**

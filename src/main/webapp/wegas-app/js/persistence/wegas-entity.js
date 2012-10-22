@@ -537,6 +537,7 @@ YUI.add('wegas-entity', function (Y) {
         ATTRS: {
             name: {
                 type: "string",
+                "transient": true,
                 getter: function ( val ) {
                     if ( this.getMainAccount() ) {
                         return this.getMainAccount().getPublicName();
@@ -593,7 +594,12 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.JpaAccount = Y.Base.create( "JpaAccount", Y.Wegas.persistence.Entity, [], {
 
         getPublicName: function () {
-            return this.get( "firstname" ) + " " + this.get( "lastname" );
+            if ( this.get( "firstname" ) ) {
+                return this.get( "firstname" ) + " " + this.get( "lastname" );
+                
+            } else {
+                return this.get( "email" ) + " " + this.get( "lastname" );
+            }
         }
 
     }, {
