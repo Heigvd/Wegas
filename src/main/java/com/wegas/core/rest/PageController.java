@@ -13,7 +13,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.persistence.game.GameModel;
+import com.wegas.exception.WegasException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -56,9 +56,9 @@ public class PageController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPages(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
+    public Response getPages(@PathParam("gameModelId") String gameModelId)
+            throws RepositoryException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
         return Response.ok(pages.getPages(), MediaType.APPLICATION_JSON).header("Page", "*").build();
     }
 
@@ -73,14 +73,15 @@ public class PageController {
     @GET
     @Path("/{pageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonNode getPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId) throws RepositoryException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
+    public Response getPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId)
+            throws RepositoryException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
         Page page = pages.getPage(new Integer(pageId));
         if (page == null) {
-            return null;
+            return Response.status(404).header("Page", pageId).build();
+            // return Response.noContent().header("Page", pageId).build();
         } else {
-            return page.getContent();
+            return Response.ok(page.getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();
         }
     }
 
@@ -94,11 +95,10 @@ public class PageController {
     @GET
     @Path("/index")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Integer> getIndex(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
-        return pages.getIndex();
-
+    public Response getIndex(@PathParam("gameModelId") String gameModelId)
+            throws RepositoryException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
+        return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON).header("Page", "index").build();
     }
 
     /**
@@ -115,12 +115,12 @@ public class PageController {
     @Path("/{pageId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonNode setPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId, JsonNode content) throws RepositoryException, IOException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
+    public Response setPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId, JsonNode content)
+            throws RepositoryException, IOException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
         Page page = new Page(new Integer(pageId), content);
         pages.store(page);
-        return pages.getPage(new Integer(pageId)).getContent();
+        return Response.ok(pages.getPage(new Integer(pageId)).getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();
     }
 
     /**
@@ -135,9 +135,9 @@ public class PageController {
     @Path("/new")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createPage(@PathParam("gameModelId") String gameModelId, JsonNode content) throws RepositoryException, IOException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
+    public Response createPage(@PathParam("gameModelId") String gameModelId, JsonNode content)
+            throws RepositoryException, IOException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
         List<Integer> index = pages.getIndex();
         Integer pageId = 1;
         while (index.contains(pageId)) {
@@ -163,9 +163,9 @@ public class PageController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response setPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap) throws RepositoryException, JSONException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
+    public Response setPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap)
+            throws RepositoryException, JSONException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
         //pages.delete();                                                       //remove first existing Pages currently merges, uncomment to replace
         Iterator kIterator = pageMap.keySet().iterator();
         while (kIterator.hasNext()) {
@@ -183,10 +183,11 @@ public class PageController {
      * @throws RepositoryException
      */
     @DELETE
-    public void delete(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response delete(@PathParam("gameModelId") String gameModelId) throws RepositoryException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
         pages.delete();
+        return Response.ok().header("Page", "*").build();
     }
 
     /**
@@ -198,10 +199,12 @@ public class PageController {
      */
     @DELETE
     @Path("/{pageId : [1-9][0-9]*}")
-    public void deletePage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId) throws RepositoryException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deletePage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId)
+            throws RepositoryException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
         pages.deletePage(pageId);
+        return Response.ok().header("Page", pageId).build();
     }
 
     /**
@@ -219,12 +222,23 @@ public class PageController {
     @Path("/{pageId : [1-9][0-9]*}")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonNode patch(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") Integer pageId, String patch) throws RepositoryException, JSONException, IOException {
-        GameModel gm = gmFacade.find(new Long(gameModelId));
-        Pages pages = new Pages(gm.getName());
+    public Response patch(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") Integer pageId, String patch)
+            throws RepositoryException, JSONException, IOException, WegasException {
+        Pages pages = getGameModelPages(new Long(gameModelId));
         Page page = pages.getPage(pageId);
+        if (page == null) {
+            return Response.status(404).header("Page", pageId).build();
+        }
         page.patch(patch);
         pages.store(page);
-        return page.getContent();
+        return Response.ok(page.getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();
+    }
+
+    private Pages getGameModelPages(Long gameModelId) throws WegasException, RepositoryException {
+        try {
+            return new Pages(gmFacade.find(gameModelId).getName());
+        } catch (NullPointerException ex) {
+            throw new WegasException("GameModel id " + gameModelId + " not found", ex);
+        }
     }
 }
