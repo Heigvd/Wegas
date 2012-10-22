@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.rest.util.exception;
+package com.wegas.core.restl.exception;
 
 import com.wegas.core.ejb.RequestManagerFacade;
 import com.wegas.exception.WegasException;
@@ -44,7 +44,7 @@ public abstract class AbstractExceptionMapper {
             return processException(exception.getCause());
 
         } else if (exception instanceof EJBException) {
-            return processException(((EJBException) exception).getCausedByException());
+            return processException(( (EJBException) exception ).getCausedByException());
 
         } else if (exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK) {
             return processException(exception.getCause());
@@ -93,7 +93,7 @@ public abstract class AbstractExceptionMapper {
                     new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
 
         } else {
-            logger.error(RequestManagerFacade.lookup().getBundle("localisation.errors").getString("unexpected"), exception.getLocalizedMessage()); //internationalised error (sample)
+            logger.error(RequestManagerFacade.lookup().getBundle("localisation.errors").getString("unexpected"), exception); //internationalised error (sample)
             return Response.status(
                     Response.Status.BAD_REQUEST).entity(
                     new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();

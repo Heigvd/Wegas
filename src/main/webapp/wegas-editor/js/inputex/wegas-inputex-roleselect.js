@@ -44,5 +44,5 @@ YUI.add("wegas-inputex-roleselect",function(Y){
         }
     });
 
-    inputEx.registerType( "roleselect", inputEx.Wegas.RoleSelect );                 // Register this class as "wegasurl" type
+    inputEx.registerType( "roleselect", inputEx.Wegas.RoleSelect );             // Register this class as "wegasurl" type
 });

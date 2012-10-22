@@ -85,9 +85,20 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
     }
 
     /**
-     * Return a user based on his principal.
      *
-     * @todo Currently only lookup in the jdbcrealm
+     * @param entity
+     */
+    @Override
+    public void create(AbstractAccount entity) {
+        getEntityManager().persist(entity);
+    }
+
+    public void reviveRoles() {
+        
+    }
+
+    /**
+     * Return a user based on his principal.
      *
      * @param principal
      * @return

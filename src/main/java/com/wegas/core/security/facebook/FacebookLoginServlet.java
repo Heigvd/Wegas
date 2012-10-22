@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -54,7 +54,7 @@ public class FacebookLoginServlet extends HttpServlet {
     /**
      * @param request
      * @param response
-     * @throws ServletException 
+     * @throws ServletException
      * @throws IOException
      * @see HttpServlet.Post(HttpServletRequest request, HttpServletResponse)
      */

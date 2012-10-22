@@ -47,7 +47,6 @@ public class Role extends AbstractEntity {
      *
      */
     @ElementCollection
-    @JoinTable(name = "roles_permissions")
     private Set<String> permissions = new HashSet<>();
 
     /**
