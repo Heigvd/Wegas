@@ -616,31 +616,36 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         beforeResponse: function(e){
             var result = e.response.results,
-            page = +e.data.getResponseHeader("Page") || e.cfg.Page || '',
+            page = e.data.getResponseHeader("Page") || '',
             i;
 
-            if(page === "*"){
+            result = (e.error) ? null : result;                                 //No Content found
+            if(page === "*" || page === ''){
                 for(i in result){
-                    this.setCache(i, result[i]);
                     this.pageQuery[i] = false;
+                    this.setCache(i, result[i]);
+
                 }
-            }else{
-                this.setCache(page, result);
+            }else if (page != "index"){
                 this.pageQuery[page] = false;
+                this.setCache(page, result);
             }
 
 
         },
         setCache: function(pageId, object){
-            this.get("host").data["" + pageId] = object;
+            var old = JSON.stringify(this.getCache(pageId));
+            if(JSON.stringify(object) != old){
+                this.get("host").data["" + pageId] = object;
+                this.fire("pageUpdated", {
+                    "page":this.getPage(pageId)
+                });
+            }
         },
         getCache: function(pageId){
             return this.get("host").data["" + pageId] || null;
         },
         destroyCache: function(){
-            for(var i in this.get("host").data){
-                this.get("host").data.destroy();
-            }
             this.get("host").data = {};
         },
         /**
@@ -669,13 +674,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 request: ""+pageId,
                 cfg:{
                     method: 'PUT',
-                    data : JSON.stringify(pe),
-                    Page : pageId
-                },
-                callback:{
-                    success: Y.bind(function(e){
-                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
-                    }, this)
+                    data : JSON.stringify(pe)
                 }
             });
         },
@@ -687,11 +686,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 cfg:{
                     method: 'POST',
                     data : JSON.stringify(pe)
-                },
-                callback:{
-                    success: Y.bind(function(e){
-                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
-                    }, this)
                 }
             });
         },
@@ -710,13 +704,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     headers:{
                         'Content-Type': 'text/plain;charset=ISO-8859-1'
                     },
-                    data : patch,
-                    Page : pageId
-                },
-                callback:{
-                    success: Y.bind(function(e){
-                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
-                    }, this)
+                    data : patch
                 }
             });
         },
@@ -724,13 +712,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.sendRequest({
                 request: ""+pageId,
                 cfg:{
-                    method: 'DELETE',
-                    Page:pageId
+                    method: 'DELETE'
                 },
                 callback:{
                     success: Y.bind(function(e){
-                        delete this.getCache(e.cfg.Page);
-                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
+                        delete this.getCache(e.data.getResponseHeader("Page"));
                     }, this)
                 }
             });
@@ -743,29 +729,38 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }else if (!this.pageQuery[pageId]){
                 this.pageQuery[pageId] = true;
                 this.sendRequest({
-                request: ""+pageId,
+                    request: ""+pageId,
 
                     sync:true,
-                cfg:{
-                    method: 'GET',
-                    Page : pageId
-                },
-                callback:{
-                    success: Y.bind(function(e){
-                        this.fire("pageUpdated", {"page":this.getPage(e.cfg.Page)});
-                    }, this)
-                }
-            });
+                    cfg:{
+                        method: 'GET'
+                    }
+                });
             }
 
             return page;
+        },
+        getIndex: function(callback){
+            this.sendRequest({
+                request: "index",
+                cfg:{
+                    method: 'GET'
+                },
+                callback:{
+                    success: Y.bind(function(e){
+                        if(callback instanceof Function){
+                            callback(e.response.results);
+                        }
+                    }, this)
+                }
+            });
         },
         _successHandler: function (e) {
 
         },
         _failureHandler: function (e) {
             try{
-                console.error(e.response.results.message);
+                console.error(e.data.status, e.error.message);
             }catch(ex){
                 Y.error("PageDatasource reply:", e, 'Y.Wegas.DataSourceRest');
             }
@@ -775,8 +770,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').PageDataSourceREST = PageDataSourceREST;
 
     /**
-     * FIXME We redefine this so we can use a "." selector and a "@..." field name
-     */
+         * FIXME We redefine this so we can use a "." selector and a "@..." field name
+         */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
         keys = [],
