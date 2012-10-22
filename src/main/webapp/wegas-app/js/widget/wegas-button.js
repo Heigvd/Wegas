@@ -69,7 +69,8 @@ YUI.add( "wegas-button", function ( Y ) {
             },
             tooltip: {
                 type: "string",
-                optional: true
+                optional: true,
+                "transient": true
             },
             data: {
                 "transient": true

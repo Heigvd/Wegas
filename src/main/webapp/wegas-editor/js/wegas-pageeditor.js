@@ -75,11 +75,12 @@ YUI.add('wegas-pageeditor', function (Y) {
                     label: "Edit",
                     on: {
                         click: Y.bind( function () {                            // Display the edit form
-                            Y.Plugin.EditEntityAction.showEditForm( this.targetWidget, Y.bind( function ( val ) {
+                            Y.Plugin.EditEntityAction.showEditForm( this.targetWidget, Y.bind( function ( targetWidget, val,e, f ) {
                                 Y.Plugin.EditEntityAction.hideEditFormOverlay();
-                                this.targetWidget.setAttrs( val );
-                                this.targetWidget.syncUI();
-                            }, this ) );
+                                targetWidget.setAttrs( val );
+                                targetWidget.syncUI();
+                                Y.Wegas.PageFacade.rest.patch(targetWidget.get("root").toObject());
+                            }, this, this.targetWidget ) );
                         }, this )
                     }
                 }, {

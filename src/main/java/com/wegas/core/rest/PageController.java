@@ -143,7 +143,6 @@ public class PageController {
         while (index.contains(pageId)) {
             pageId++;
         }
-        Response.ok(index);
         Page page = new Page(new Integer(pageId), content);
         pages.store(page);
         return Response.ok(pages.getPage(new Integer(pageId)).getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();

@@ -127,6 +127,7 @@ YUI.add("wegas-widget", function (Y) {
             }
             return statusNode;
         },
+        //Get Class From plugin name. Hopefully a unique name ...
         _getPluginFromName: function(name){
             for(var i in Y.Plugin){
                 if(Y.Plugin[i].NAME == name){
@@ -240,7 +241,7 @@ YUI.add("wegas-widget", function (Y) {
                         attrs = this[this._plugins[i].NS].getAttrs();
                         delete attrs.host;
                         p.push({
-                            "fn": this._getPluginFromName(this._plugins[i].NAME),
+                            "fn": this._getPluginFromName(this._plugins[i].NAME),   //TODO: find an other referencing way
                             "cfg": this.toObject.call(attrs, "destroyed", "initialized")
                         });
                     }
