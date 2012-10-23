@@ -98,7 +98,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                     var team = new Y.Wegas.persistence.Team({
                         name: this.createTeamField.getValue()
                     });
-                    Y.Wegas.GameFacade.rest.post(team.toObject2(), this.currentGame.toObject2(), {
+                    Y.Wegas.GameFacade.rest.post( team.toObject(), this.currentGame.toObject(), {
                         success: Y.bind( function ( e ) {
                             this.sendJoinTeamRequest( e.response.entity.get( "id" ) );
                         }, this),
