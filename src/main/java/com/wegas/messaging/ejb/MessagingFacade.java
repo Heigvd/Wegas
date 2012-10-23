@@ -10,7 +10,7 @@
 package com.wegas.messaging.ejb;
 
 import com.wegas.core.persistence.game.Player;
-import com.wegas.messaging.persistence.variable.Message;
+import com.wegas.messaging.persistence.Message;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;

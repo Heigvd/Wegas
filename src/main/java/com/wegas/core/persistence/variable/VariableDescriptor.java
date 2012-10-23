@@ -23,7 +23,7 @@ import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
-import com.wegas.messaging.persistence.variable.InboxDescriptor;
+import com.wegas.messaging.persistence.InboxDescriptor;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
