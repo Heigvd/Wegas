@@ -1,38 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <h:head>
-        <meta charset="ISO-8859-1" />
-        <title>Access denied</title>
+    <ui:composition template="template/page-message.xhtml">
 
-        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
+        <ui:define name="title">#{wegasAppErrors.AccessDenied}</ui:define>
 
-        <style type="text/css">
-            .bd {
-                margin: 100px auto !important;
-                position: initial;
-                width: 600px;
-            }
-            button {
-                margin-left: 136px;
-                margin-top: 10px;
-            }
-            .wegas-title {
-                border: solid #2647A0;
-                border-width: 0 0 5px;
-                line-height: 1.5em;
-                margin-bottom: 19px;
-            }
-        </style>
-    </h:head>
+        <ui:define name="body">#{wegasAppErrors.AccessDenied[Message]}</ui:define>
 
-    <h:body>
-        <div class="bd">
-            <div class="wegas-title">Access denied</div>
-            You don not have the admin right to access this page.
-        </div>
-    </h:body>
+    </ui:composition>
 </html>
