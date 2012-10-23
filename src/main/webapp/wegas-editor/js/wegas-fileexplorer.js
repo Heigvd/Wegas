@@ -68,21 +68,21 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 rightWidget: new Y.Wegas.WegasMenu({
                     items: [{
                         label:"",
-                        cssClass:"wegas-icon-refresh",
+                        cssClass:"wegas-icon wegas-icon-refresh",
                         tooltip:"Refresh",
                         data:"refresh"
                     },{
                         label:"",
-                        cssClass:"wegas-icon-new",
+                        cssClass:"wegas-icon wegas-icon-new",
                         tooltip:"Add ...",
                         items:[{
                             label:"",
-                            cssClass:"wegas-icon-newdir",
+                            cssClass:"wegas-icon wegas-icon-newdir",
                             tooltip:"Add a directory",
                             data:"add dir"
                         },{
                             label:"",
-                            cssClass:"wegas-icon-newfile",
+                            cssClass:"wegas-icon wegas-icon-newfile",
                             tooltip:"Add a file",
                             data:"add file"
                         }]
@@ -197,12 +197,12 @@ YUI.add('wegas-fileexplorer', function (Y) {
                 this.uploader.parentNode.set("rightWidget", new Y.Wegas.WegasMenu({
                     items: [{
                         label:"Upload",
-                        cssClass:"wegas-icon-upload",
+                        cssClass:"wegas-icon wegas-icon-upload",
                         data:"upload"
                     },
                     {
                         label: "Cancel",
-                        cssClass: "wegas-icon-cancel",
+                        cssClass: "wegas-icon wegas-icon-cancel",
                         data:"cancel"
                     }],
                     horizontal: true,
@@ -400,31 +400,31 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
                             label:"",
-                            cssClass:"wegas-icon-refresh",
+                            cssClass:"wegas-icon wegas-icon-refresh",
                             tooltip:"Refresh",
                             data:"refresh"
                         },{
                             label:"",
-                            cssClass:"wegas-icon-new",
+                            cssClass:"wegas-icon wegas-icon-new",
                             tooltip:"Add ...",
                             items:[{
                                 label:"",
-                                cssClass:"wegas-icon-newdir",
+                                cssClass:"wegas-icon wegas-icon-newdir",
                                 tooltip:"Add a directory",
                                 data:"add dir"
                             },{
                                 label:"",
-                                cssClass:"wegas-icon-newfile",
+                                cssClass:"wegas-icon wegas-icon-newfile",
                                 tooltip:"Add a file",
                                 data:"add file"
                             }]
                         }, {
-                            cssClass:"wegas-icon-edit",
+                            cssClass:"wegas-icon wegas-icon-edit",
                             tooltip:"Edit",
                             data:"edit"
                         },{
                             label:"",
-                            cssClass:"wegas-icon-delete",
+                            cssClass:"wegas-icon wegas-icon-delete",
                             tooltip:"Delete directory",
                             data:"delete"
                         }],
@@ -440,12 +440,12 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     label: data.name /*+ " [" + data.mimeType + "]"*/,
                     rightWidget: new Y.Wegas.WegasMenu({
                         items: [{
-                            cssClass:"wegas-icon-edit",
+                            cssClass:"wegas-icon wegas-icon-edit",
                             tooltip:"Edit",
                             data:"edit"
                         },{
                             label:"",
-                            cssClass:"wegas-icon-delete",
+                            cssClass:"wegas-icon wegas-icon-delete",
                             tooltip:"Delete file",
                             data:"delete"
                         }],
