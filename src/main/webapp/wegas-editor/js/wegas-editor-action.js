@@ -131,7 +131,7 @@ YUI.add('wegas-editor-action', function (Y) {
             }
             EditEntityAction.tab.set( "selected", 2 );
             EditEntityAction.form.emptyMessage();
-            EditEntityAction.form.setForm( entity.toObject2(), entity.getFormCfg() );
+            EditEntityAction.form.setForm( entity.toObject(), entity.getFormCfg() );
         },
 
         /**
@@ -194,7 +194,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
         showAddForm: function (entity, parentData, dataSource) {
             EditEntityAction.showEditForm( entity, function ( newVal ) {
-                dataSource.rest.post(newVal, (parentData) ? parentData.toObject2() : parentData , {
+                dataSource.rest.post(newVal, (parentData) ? parentData.toObject() : parentData , {
                     success: function ( e ) {
                         EditEntityAction.hideEditFormOverlay();
                         EditEntityAction.showUpdateForm( e.response.entity, dataSource );
@@ -237,7 +237,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
                         entity.setAttrs( newVal );
 
-                        dataSource.rest.put( parentEntity.toObject2(), {
+                        dataSource.rest.put( parentEntity.toObject(), {
                             success: function () {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage( "success", "Item has been updated" );
@@ -258,7 +258,7 @@ YUI.add('wegas-editor-action', function (Y) {
                         newEntity.setAttrs( newVal);
                         entity.get( this.get( "attributeKey" ) ).push( newEntity );
 
-                        dataSource.rest.put( entity.toObject2(), {
+                        dataSource.rest.put( entity.toObject(), {
                             success: function () {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage( "success", "Item has been added" );
@@ -282,7 +282,7 @@ YUI.add('wegas-editor-action', function (Y) {
                             }
                             return false;
                         });
-                        dataSource.rest.put( parentEntity.toObject2() );
+                        dataSource.rest.put( parentEntity.toObject() );
                     } else {
                         return;
                     }

@@ -5,256 +5,228 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
 
-    <f:loadBundle basename="wegas-app.wegasapp" var="wegasConfig"/>
+    <ui:composition template="page-default.xhtml">
 
-    <h:head>
+        <ui:define name="title">#{wegasAppBundle.LobbyPage_Title}</ui:define>
 
-        <meta charset="ISO-8859-1" />
-        <meta http-equiv="Content-Type" content="text/html" />
-        <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
-        <title><ui:insert name="title">#{wegasAppBundle.LobbyPage_Title}</ui:insert></title>
-        <meta name="description" content="" />
-        <meta name="keywords" content="" />
-        <meta name="robots" content="index, follow" />
-        <meta name="contact" content="fx@red-agent.com" />
-        <meta name="audience" content="General" />
-        <meta name="distribution" content="Global" />
-        <meta name="revisit-after" content="30 days" />
-        <link rel="icon" type="image/ico" href="/favicon.ico" />
-
-        <!-- YUI -->
-        <ui:fragment rendered="#{!wegasConfig.assets_local}">
-            <!-- CDN  -->
-            <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.7.2/build/cssfonts/fonts-min.css&amp;3.7.2/build/cssreset/reset-min.css&amp;3.7.2/build/cssgrids/grids-min.css&amp;3.7.2/build/widget-base/assets/skins/sam/widget-base.css" />
-        </ui:fragment>
-        <ui:fragment rendered="#{wegasConfig.assets_local}">
-            <!-- Self hosted -->
-            <link rel="stylesheet" type="text/css" href="/Wegas/rest/combo?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
-        </ui:fragment>
-
-        <!-- Those styles are placed here, since they should be above any other in the CSS cascading
-            (even dependencies added on the fly). -->
-        <meta id="customstyles" />
-        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
-        <ui:insert name="head"/>
-
-    </h:head>
-
-    <h:body class="yui3-skin-sam yui-skin-sam wegas-widget-loading">
-
-        <ui:fragment rendered="#{!wegasConfig.assets_local}">
-            <!-- YUI Base -->
-            <!-- CDN -->
-            <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
-        </ui:fragment>
-        <ui:fragment rendered="#{wegasConfig.assets_local}">
-            <!-- Self hosted -->
-            <script type="text/javascript" src="/Wegas/lib/yui3/build/yui/yui-min.js"></script>
-        </ui:fragment>
-
-        <!-- InputEx Loader -->
-        <script src="/Wegas/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
-
-        <!-- Wegas Loader -->
-        <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
-
-        <script type="text/javascript">
-            var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-            comboBase = base + '/rest/combo?';
-
-            // Set up some YUI3 default parameters. Will be use for every call to
-            // the YUI(cfg) function. Can be overridden by the cfg parameter.
-            YUI_config.useBrowserConsole = true;
-            YUI_config.charset = 'ISO-8859-1';
-            YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
-            YUI_config.insertBefore = 'customstyles';
-            YUI_config.throwFail = true;
-            YUI_config.debug = true;
-            YUI_config.errorFn = function(e) {
-                Y.log( 'Uncaught error: ' + ( ( e.stack ) ? e.stack : e ), 'error', 'Wegas.App' );
-            };
-            //YUI_config.gallery = 'gallery-2011.02.18-23-10';
-            //YUI_config.filter = 'raw';                                        // Allows to select normal or minified version of dependencies
-            //YUI_config.filters = { event: 'debug' };                          // Like filter, but can be set for each module
-            //YUI_config.loadOptional = true;
-            //YUI_config.timeout = 10000;
-            //YUI_config.logExclude = { event : true };
-            //YUI_config.logInclude = { event : true };
-
-            YUI_config.groups.wegas.base = base + "/";                          // Set up wegas path
-            YUI_config.groups.wegas.comboBase = comboBase;
-            YUI_config.groups.wegas.combine = false;
-            YUI_config.groups.wegas.filter = "raw";
-
-            YUI_config.groups.inputex.base = base + '/lib/inputex/src/';	// Set up inputex path
-            YUI_config.groups.inputex.comboBase = comboBase;
-            YUI_config.groups.inputex.root = "/lib/inputex/src/";
-            YUI_config.groups.inputex.combine = false;
-
-            YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
-            YUI_config.groups.ace.comboBase = comboBase;
-
-            YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
-            YUI_config.groups.excanvas.comboBase = comboBase;
-
-            YUI_config.groups.esprima.base = base + YUI_config.groups.esprima.root; // Set up esprima path
-            YUI_config.groups.esprima.comboBase = comboBase;
-
-            YUI_config.groups.jsplumb.base = base + YUI_config.groups.jsplumb.root; // Set up jsplumb path
-            YUI_config.groups.jsplumb.comboBase = comboBase;
-
-            YUI_config.groups.diffmatchpatch.base = base + YUI_config.groups.diffmatchpatch.root; // Set up diff_match_patch path
-            YUI_config.groups.diffmatchpatch.comboBase = comboBase;
-
+        <ui:define name="page">
+            <h:body class="yui3-skin-sam yui-skin-sam wegas-widget-loading">
+                <ui:fragment rendered="#{!wegasConfig.assets_local}">
+                    <!-- YUI Base -->
+                    <!-- CDN -->
+                    <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+                </ui:fragment>
                 <ui:fragment rendered="#{wegasConfig.assets_local}">
-                YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
-            YUI_config.filter = "min";
-            YUI_config.combine = true;
-            YUI_config.root = "/lib/yui3/build/"
+                    <!-- Self hosted -->
+                    <script type="text/javascript" src="/Wegas/lib/yui3/build/yui/yui-min.js"></script>
+                </ui:fragment>
 
-            YUI_config.groups.yui2 = {                                          // Set up local version of yui2
-                base: base + '/lib/yui2in3/build/',
-                combine: true,
-                comboBase: comboBase,
-                root: '/lib/yui2in3/build/',
-                patterns:  {
-                    'yui2-': {
-                        configFn: function(me) {
-                            if(/-skin|reset|fonts|grids|base/.test(me.name)) {
-                                me.type = 'css';
-                                me.path = me.path.replace(/\.js/, '.css');
-                                me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
+                <!-- InputEx Loader -->
+                <script src="/Wegas/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
+
+                <!-- Wegas Loader -->
+                <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
+
+                <script type="text/javascript">
+
+                    var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
+                    comboBase = base + '/rest/combo?';
+
+                    // Set up some YUI3 default parameters. Will be use for every call to
+                    // the YUI(cfg) function. Can be overridden by the cfg parameter.
+                    YUI_config.useBrowserConsole = true;
+                    YUI_config.charset = 'ISO-8859-1';
+                    YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
+                    YUI_config.insertBefore = 'customstyles';
+                    YUI_config.throwFail = true;
+                    YUI_config.debug = true;
+                    YUI_config.errorFn = function(e) {
+                        Y.log( 'Uncaught error: ' + ( ( e.stack ) ? e.stack : e ), 'error', 'Wegas.App' );
+                    };
+                    //YUI_config.gallery = 'gallery-2011.02.18-23-10';
+                    //YUI_config.filter = 'raw';                                        // Allows to select normal or minified version of dependencies
+                    //YUI_config.filters = { event: 'debug' };                          // Like filter, but can be set for each module
+                    //YUI_config.loadOptional = true;
+                    //YUI_config.timeout = 10000;
+                    //YUI_config.logExclude = { event : true };
+                    //YUI_config.logInclude = { event : true };
+
+                    YUI_config.groups.wegas.base = base + "/";                          // Set up wegas path
+                    YUI_config.groups.wegas.comboBase = comboBase;
+                    YUI_config.groups.wegas.combine = false;
+                    YUI_config.groups.wegas.filter = "raw";
+
+                    YUI_config.groups.inputex.base = base + '/lib/inputex/src/';	// Set up inputex path
+                    YUI_config.groups.inputex.comboBase = comboBase;
+                    YUI_config.groups.inputex.root = "/lib/inputex/src/";
+                    YUI_config.groups.inputex.combine = false;
+
+                    YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
+                    YUI_config.groups.ace.comboBase = comboBase;
+
+                    YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
+                    YUI_config.groups.excanvas.comboBase = comboBase;
+
+                    YUI_config.groups.esprima.base = base + YUI_config.groups.esprima.root; // Set up esprima path
+                    YUI_config.groups.esprima.comboBase = comboBase;
+
+                    YUI_config.groups.jsplumb.base = base + YUI_config.groups.jsplumb.root; // Set up jsplumb path
+                    YUI_config.groups.jsplumb.comboBase = comboBase;
+
+                    YUI_config.groups.diffmatchpatch.base = base + YUI_config.groups.diffmatchpatch.root; // Set up diff_match_patch path
+                    YUI_config.groups.diffmatchpatch.comboBase = comboBase;
+
+                        <ui:fragment rendered="#{wegasConfig.assets_local}">
+                        YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+                    YUI_config.filter = "min";
+                    YUI_config.combine = true;
+                    YUI_config.root = "/lib/yui3/build/"
+
+                    YUI_config.groups.yui2 = {                                          // Set up local version of yui2
+                        base: base + '/lib/yui2in3/build/',
+                        combine: true,
+                        comboBase: comboBase,
+                        root: '/lib/yui2in3/build/',
+                        patterns:  {
+                            'yui2-': {
+                                configFn: function(me) {
+                                    if(/-skin|reset|fonts|grids|base/.test(me.name)) {
+                                        me.type = 'css';
+                                        me.path = me.path.replace(/\.js/, '.css');
+                                        me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
+                                    }
+                                }
                             }
                         }
-                    }
-                }
 
-            };
-        </ui:fragment>
-        </script>
-
-        <ui:insert name="body">
-            <script type="text/javascript">
-                var Y = YUI({
-                    //filter: 'raw'
-                    //filters: { event: 'debug' }
-                }).use( 'wegas-app', function ( Y ) {
-                    var cfg = {
-                        layoutSrc: 'wegas-app/db/wegas-app-layout.json',
-                        debug : true,
-                        currentGameModel: #{gameController.currentGameModel.id},
-                        currentGame: #{gameController.currentGame.id},
-                        currentTeam: #{gameController.currentPlayer.team.id},
-                        currentPlayer: #{gameController.currentPlayer.id},
-                        currentUser: #{requestController.getCurrentUser().toJson()},
-                        cssStylesheets: [ "#{gameController.currentGameModel.cssUri}" ],
-
-                        /**
-                         * This field is used to override Entities edition menus.
-                         * Use the target class name as the key.
-                         */
-                        dataSources: {
-                            "GameModel": {
-                                source: "rest/GameModel",
-                                initialRequest: "/#{gameController.currentGameModel.id}",
-                                plugins: [{
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
-                                        fn: "GameModelDataSourceREST"
-                                    }]
-                            },
-                            "Game": {
-                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
-                                initialRequest: "/#{gameController.currentGame.id}",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
-                                        fn: "GameDataSourceREST"
-                                    }
-                                ]
-                            },
-                            "Page": {
-                                source: "#{gameController.currentGameModel.widgetsUri}",
-                                initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                //resultFields: ["name", "id", "@class"]
-                                            }
-                                        }
-                                    }, {
-                                        fn: "DataSourceREST"
-                                    }
-                                ]
-                            },
-                            "VariableDescriptor": {
-                                source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                            }
-                                        }
-                                    }, {
-                                        fn: "VariableDescriptorDataSourceREST"
-                                    },{
-                                        fn: "ScriptEval"
-                                    }
-                                ]
-                            },
-                            "File": {
-                                source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                //resultFields: ["name", "id", "@class"]
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        /**
-                         * This field is used to override Entities edition menus.
-                         * Use the target class name as the key.
-                         */
-                        editorMenus: {},
-
-                        /**
-                         * This field is used to override Entities edition forms.
-                         * Use the target class name as the key.
-                         */
-                        editorForms: {}
                     };
+                        </ui:fragment>
+                </script>
 
-                    Y.once('domready', function() {                             // When dom is ready,
-                        var app = new Y.Wegas.App(cfg);                         // launch the app
-                        app.render();
-                    });
-                });
-            </script>
-        </ui:insert>
-    </h:body>
+                <ui:insert name="body">
+                    <script type="text/javascript">
+                        var Y = YUI({
+                            //filter: 'raw'
+                            //filters: { event: 'debug' }
+                        }).use( 'wegas-app', function ( Y ) {
+                            var cfg = {
+                                layoutSrc: 'wegas-app/db/wegas-app-layout.json',
+                                debug : true,
+                                currentGameModel: #{gameController.currentGameModel.id},
+                                currentGame: #{gameController.currentGame.id},
+                                currentTeam: #{gameController.currentPlayer.team.id},
+                                currentPlayer: #{gameController.currentPlayer.id},
+                                currentUser: #{requestController.getCurrentUser().toJson()},
+                                cssStylesheets: [ "#{gameController.currentGameModel.cssUri}" ],
+
+                                /**
+                                 * This field is used to override Entities edition menus.
+                                 * Use the target class name as the key.
+                                 */
+                                dataSources: {
+                                    "GameModel": {
+                                        source: "rest/GameModel",
+                                        initialRequest: "/#{gameController.currentGameModel.id}",
+                                        plugins: [{
+                                                fn: "DataSourceJSONSchema",
+                                                cfg: {
+                                                    schema: {
+                                                        resultListLocator: "."
+                                                        // resultFields: ["name", "id", "@class", "errors"]
+                                                    }
+                                                }
+                                            }, {
+                                                fn: "GameModelDataSourceREST"
+                                            }]
+                                    },
+                                    "Game": {
+                                        source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
+                                        initialRequest: "/#{gameController.currentGame.id}",
+                                        plugins: [
+                                            {
+                                                fn: "DataSourceJSONSchema",
+                                                cfg: {
+                                                    schema: {
+                                                        resultListLocator: "."
+                                                        // resultFields: ["name", "id", "@class", "errors"]
+                                                    }
+                                                }
+                                            }, {
+                                                fn: "GameDataSourceREST"
+                                            }
+                                        ]
+                                    },
+                                    "Page": {
+                                        source: "#{gameController.currentGameModel.widgetsUri}",
+                                        initialRequest: "",
+                                        plugins: [
+                                            {
+                                                fn: "DataSourceJSONSchema",
+                                                cfg: {
+                                                    schema: {
+                                                        resultListLocator: "."
+                                                        //resultFields: ["name", "id", "@class"]
+                                                    }
+                                                }
+                                            }, {
+                                                fn: "DataSourceREST"
+                                            }
+                                        ]
+                                    },
+                                    "VariableDescriptor": {
+                                        source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                        initialRequest: "",
+                                        plugins: [
+                                            {
+                                                fn: "DataSourceJSONSchema",
+                                                cfg: {
+                                                    schema: {
+                                                        resultListLocator: "."
+                                                    }
+                                                }
+                                            }, {
+                                                fn: "VariableDescriptorDataSourceREST"
+                                            },{
+                                                fn: "ScriptEval"
+                                            }
+                                        ]
+                                    },
+                                    "File": {
+                                        source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
+                                        plugins: [
+                                            {
+                                                fn: "DataSourceJSONSchema",
+                                                cfg: {
+                                                    schema: {
+                                                        resultListLocator: "."
+                                                        //resultFields: ["name", "id", "@class"]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                /**
+                                 * This field is used to override Entities edition menus.
+                                 * Use the target class name as the key.
+                                 */
+                                editorMenus: {},
+
+                                /**
+                                 * This field is used to override Entities edition forms.
+                                 * Use the target class name as the key.
+                                 */
+                                editorForms: {}
+                            };
+
+                            Y.once('domready', function() {                             // When dom is ready,
+                                var app = new Y.Wegas.App(cfg);                         // launch the app
+                                app.render();
+                            });
+                        });
+                    </script>
+                </ui:insert>
+            </h:body>
+        </ui:define>
+    </ui:composition>
 </html>

@@ -10,6 +10,7 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.persistence.GuestAccount;
@@ -17,6 +18,8 @@ import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -24,6 +27,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,6 +37,7 @@ import org.apache.shiro.subject.Subject;
 @LocalBean
 public class UserFacade extends AbstractFacadeImpl<User> {
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
     /**
      *
      */
@@ -43,6 +48,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     @EJB
     private AccountFacade accountFacade;
+    /**
+     *
+     */
+    @EJB
+    private RoleFacade roleFacade;
 
     /**
      *
@@ -85,5 +95,22 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             ret.add(p.getGame());
         }
         return ret;
+    }
+
+    @Override
+    public void create(User user) {
+        super.create(user);
+        try {
+            user.getMainAccount().addRole(roleFacade.findByName("Administrator"));
+        }
+        catch (PersistenceException ex) {
+            logger.error("Unable to find Role: Administrator", ex);
+        }
+        try {
+            user.getMainAccount().addRole(roleFacade.findByName("Registered"));
+        }
+        catch (PersistenceException ex) {
+            logger.error("Unable to find Role: Registered", ex);
+        }
     }
 }

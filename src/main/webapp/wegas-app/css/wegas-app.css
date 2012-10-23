@@ -21,10 +21,13 @@ input[type="submit"], input[type="reset"] {
 /*  App styles*/
 .wegas-title {
     font-weight: bold;
-    font-size: 20px;
-    line-height: 1.9em;
+    font-size: 25px;
+    line-height: 1.7em;
     color: #6E6E6E;
-    margin: 0px 15px;
+    background: url(../images/wegas-logoicon-40.png) no-repeat;
+    padding: 0px 0 0 45px;
+    margin: 10px 7px 8px 10px;
+    height: 40px;
 }
 
 /* Y.Wegas.Widget extension styles */

@@ -2,19 +2,46 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
     <h:head>
-        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-        <title><ui:insert name="title">Default Title</ui:insert></title>
+
+        <meta charset="ISO-8859-1" />
+        <meta http-equiv="Content-Type" content="text/html" />
+        <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
+        <title><ui:insert name="title"><ui:insert name="title">Default Title</ui:insert></ui:insert></title>
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index, follow" />
+        <meta name="contact" content="fx@red-agent.com" />
+        <meta name="audience" content="General" />
+        <meta name="distribution" content="Global" />
+        <meta name="revisit-after" content="30 days" />
+        <link rel="icon" type="image/ico" href="/Wegas/favicon.ico" />
+
+        <!-- YUI -->
+        <ui:fragment rendered="#{!wegasConfig.assets_local}">
+            <!-- CDN  -->
+            <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.7.2/build/cssfonts/fonts-min.css&amp;3.7.2/build/cssreset/reset-min.css&amp;3.7.2/build/cssgrids/grids-min.css&amp;3.7.2/build/widget-base/assets/skins/sam/widget-base.css" />
+        </ui:fragment>
+        <ui:fragment rendered="#{wegasConfig.assets_local}">
+            <!-- Self hosted -->
+            <link rel="stylesheet" type="text/css" href="/Wegas/rest/combo?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
+        </ui:fragment>
+
+        <!-- Those styles are placed here, since they should be above any other in the CSS cascading
+            (even dependencies added on the fly). -->
+        <meta id="customstyles" />
+        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
+        <ui:insert name="head"/>
+
     </h:head>
 
-    <h:body>
-        <!--<h1>
-            <ui:insert name="title">Default Title</ui:insert>
-        </h1>-->
-        <p>
+    <ui:insert name="page">
+        <h:body>
             <ui:insert name="body">Default Body</ui:insert>
-        </p>
-    </h:body>
+        </h:body>
+    </ui:insert>
 
 </html>

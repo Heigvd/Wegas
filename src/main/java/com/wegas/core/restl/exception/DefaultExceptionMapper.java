@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -7,9 +7,8 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.rest.util.exception;
+package com.wegas.core.restl.exception;
 
-import javax.ejb.EJBException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -21,10 +20,10 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Provider
-public class EJBExceptionMapper extends AbstractExceptionMapper
-        implements ExceptionMapper<EJBException> {
+public class DefaultExceptionMapper extends AbstractExceptionMapper
+        implements ExceptionMapper<Exception> {
 
-    final private Logger logger = LoggerFactory.getLogger(EJBExceptionMapper.class);
+    final private Logger logger = LoggerFactory.getLogger(DefaultExceptionMapper.class);
 
     /**
      *
@@ -32,7 +31,7 @@ public class EJBExceptionMapper extends AbstractExceptionMapper
      * @return
      */
     @Override
-    public Response toResponse(EJBException exception) {
-        return processException(exception.getCause());
+    public Response toResponse(Exception exception) {
+        return processException(exception);
     }
 }

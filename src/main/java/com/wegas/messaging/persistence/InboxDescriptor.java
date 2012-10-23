@@ -7,9 +7,10 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.messaging.persistence.variable;
+package com.wegas.messaging.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.logging.Logger;
 import javax.persistence.Column;
@@ -26,7 +27,6 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger("MCQDescriptorEntity");
-
     /**
      *
      */
@@ -54,5 +54,18 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     *
+     * Sugar to be used from scripts.
+     *
+     * @param p
+     * @param from
+     * @param subject
+     * @param content
+     */
+    public void sendMessage(Player p, String from, String subject, String body) {
+        this.getInstance(p).addMessage(new Message(from, subject, body));
     }
 }

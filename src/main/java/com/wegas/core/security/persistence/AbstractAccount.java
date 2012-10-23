@@ -69,8 +69,12 @@ public class AbstractAccount extends AbstractEntity {
     /**
      *
      */
+    @ElementCollection
+    private Set<String> permissions = new HashSet<>();
+    /**
+     *
+     */
     @ManyToMany
-    @JoinTable(name = "users_roles")
     private Set<Role> roles = new HashSet<>();
 
     /**
@@ -187,5 +191,23 @@ public class AbstractAccount extends AbstractEntity {
      */
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    /**
+     * @return the permissions
+     */
+    public Set<String> getPermissions() {
+        return permissions;
+    }
+
+    /**
+     * @param permissions the permissions to set
+     */
+    public void setPermissions(Set<String> permissions) {
+        this.permissions = permissions;
     }
 }

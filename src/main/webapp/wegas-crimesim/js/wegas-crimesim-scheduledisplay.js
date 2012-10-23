@@ -73,7 +73,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 var cb = this.get(CONTENTBOX);
                 this.handlers = {};
 
-                cb.delegate("click", function (e) {                             // Show the available menu options on cell click
+                cb.delegate( "click", function (e) {                            // Show the available menu options on cell click
                     var questionId =  e.target.ancestor( "tr" ).getAttribute( "data-questionid" ),
                     startTime = e.target.ancestor( "td" ).getAttribute( "data-startTime" ) * 1,
                     question = Y.Wegas.VariableDescriptorFacade.rest.findById( questionId );
@@ -225,9 +225,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                         acc.push('<td data-startTime="', j,
                             '" class="', cols[j].join(" "), '"><div>');
                         if ( replies[j] ) {
-                            acc.push('<div class="icon wegas-tooltip-trigger" title="',
-                                escape( this.renderDetails( replies[j] ) ), '" data-replyid="',
-                                replies[j].get("id"), '">',  names[j], '<div class="close-icon"></div></div>');
+                            acc.push('<div ' +
+                                ' class="icon wegas-tooltip-trigger" title="',  // Tooltip
+                                escape( this.renderDetails( replies[j] ) ), '"',
+                                ' data-replyid="', replies[j].get("id"), '">',  names[j],
+                                '<div class="close-icon"></div></div>');
                         } else {
                             acc.push('<div class="icon"> <div class="close-icon"></div></div>');
                         }
@@ -388,9 +390,10 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     }
                     ret.push({
                         type: "Button",
-                        label: '<span class="wegas-tooltip-trigger" title="' +
-                        escape( choice.get( "description" ) ) + '">' +
-                        ( choice.get( "label" ) || choice.get( "name" ) || "undefined" ) + "</span>",
+                        label: '<span ' +
+                        //'class="wegas-tooltip-trigger" title="' +
+                        //escape( choice.get( "description" ) ) + '"' +
+                        '>' + ( choice.get( "label" ) || choice.get( "name" ) || "undefined" ) + "</span>",
                         data: {
                             choice: choice,
                             startTime: startTime

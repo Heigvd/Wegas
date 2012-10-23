@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.rest.util.exception;
+package com.wegas.core.restl.exception;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;

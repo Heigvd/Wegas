@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.messaging.persistence.variable;
+package com.wegas.messaging.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;

@@ -14,6 +14,8 @@ import com.wegas.core.persistence.game.GameModel;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,5 +41,23 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
     @Override
     protected GameModelFacade getFacade() {
         return gameModelFacade;
+    }
+
+    @Override
+    public GameModel create(GameModel entity) {
+        // logger.info(Level.INFO, "POST GameModel");
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("GameModel:Create");
+
+        return super.create(entity);
+    }
+
+    @Override
+    public GameModel update(Long entityId, GameModel entity) {
+
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("GameModel:Edit:" + entityId);
+
+        return super.update(entityId, entity);
     }
 }
