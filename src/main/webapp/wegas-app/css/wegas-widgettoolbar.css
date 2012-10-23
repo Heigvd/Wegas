@@ -33,6 +33,7 @@
     border: none;
     min-height: 26px;
     position:relative;
+    overflow: hidden;
 }
 .wegas-toolbar-panel {
     overflow: hidden;
