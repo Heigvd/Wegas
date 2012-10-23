@@ -18,16 +18,17 @@ input[type="submit"], input[type="reset"] {
     cursor: pointer;
 }
 
-/*  App styles*/
+/*  App styles */
 .wegas-title {
-    font-weight: bold;
-    font-size: 25px;
-    line-height: 1.7em;
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1.3em;
     color: #6E6E6E;
-    background: url(../images/wegas-logoicon-40.png) no-repeat;
-    padding: 0px 0 0 45px;
-    margin: 10px 7px 8px 10px;
-    height: 40px;
+    background: url(../images/wegas-logoicon-30.png) no-repeat;
+    padding: 0px 0 0 36px;
+    margin: 8px 6px 6px 10px;
+    height: 30px;
+    text-shadow: 1px 0 1px lightgray, 0 1px 1px lightgray;
 }
 
 /* Y.Wegas.Widget extension styles */

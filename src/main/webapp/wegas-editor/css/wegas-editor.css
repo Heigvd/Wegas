@@ -427,7 +427,7 @@ select {
     box-shadow: none;
     background: url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
     padding: 3px 20px 3px 10px;
-    margin-top: 19px;
+    margin-top: 12px;
 }
 .wegas-layout-top .wegas-login {
     float:right  !important;

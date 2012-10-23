@@ -31,7 +31,9 @@ YUI.add('wegas-app', function (Y) {
         // ** Lifecycle methods ** //
         initializer: function () {
             Y.Wegas.app = this;
-            this.injector = new Y.Wegas.Injector({observe:"#maindisplayarea"});
+            this.injector = new Y.Wegas.Injector({
+                observe:"#maindisplayarea"
+            });
         },
 
 
@@ -133,16 +135,16 @@ YUI.add('wegas-app', function (Y) {
                         //Y.log("RedCMS.onWidgetReloadContentReceived():"+  o.responseText, 'log');
                         var cfg;
                         try {
-                            cfg = Y.JSON.parse(o.responseText);			// Process the JSON data returned from the server
+                            cfg = Y.JSON.parse( o.responseText );		// Process the JSON data returned from the server
                         } catch (e) {
-                            alert("Wegas.App.initUI(): JSON Parse failed!");
+                            alert( "Wegas.App.initUI(): JSON Parse failed!" );
                             return;
                         }
 
-                        Y.Wegas.Widget.use(cfg, Y.bind( function (cfg) {        // Load the subwidget dependencies
-                            var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
-                            widget.render();
-                            this.fire("render");                                   // Fire a render event for some eventual post processing
+                        Y.Wegas.Widget.use(cfg, Y.bind( function ( cfg ) {      // Load the subwidget dependencies
+                            this.widget = Y.Wegas.Widget.create( cfg );         // Render the subwidget
+                            this.widget.render();
+                            this.fire( "render" );                              // Fire a render event for some eventual post processing
                         }, this, cfg));
 
                     //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader

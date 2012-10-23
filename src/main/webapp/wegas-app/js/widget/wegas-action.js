@@ -15,11 +15,6 @@
 YUI.add('wegas-action', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
-    BOUNDINGBOX = 'boundingBox',
-    LoginButton,
-    Button;
-
     var Action = function () {
         Action.superclass.constructor.apply(this, arguments);
     };
