@@ -108,6 +108,7 @@ input[type="submit"], input[type="reset"] {
     color: gray;
     float: right;
     margin-top: 6px;
+    margin-right: 5px;
     text-shadow: 1px 1px 0px #DDD;
     font-size: 11px;
 }
