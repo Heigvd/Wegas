@@ -58,6 +58,7 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
             node = e.currentTarget;
             if(this.get("viewDescription") == "false"
                 || node.one(".description")
+                || node.get("className").indexOf("noDescription")>-1
                 || node.get("className").indexOf("cell-gantt")>-1) return;
             name = node.ancestor().one("*").getContent();
             tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
@@ -108,7 +109,7 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
                     week = this.schedule[key][i].week;
                     type = this.schedule[key][i].type;
                     if(type == "suppressible"){
-                       row.one('.yui3-datatable-col-week'+week).append("<span class='scheduled'></span>");  
+                        row.one('.yui3-datatable-col-week'+week).append("<span class='scheduled'></span>");  
                     }
                 }
                 
@@ -236,7 +237,14 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
             this.checkRealization();
             this.displayCurrentWeek(currentWeek);
             this.syncGantt();
-        }
+        },
+        
+        destructor: function(){
+            var i;
+            for (i=0; i<this.handlers.length;i++) {
+                this.handlers[i].detach();
+            } 
+        }  
 
     }, {
         ATTRS : {

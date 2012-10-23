@@ -452,33 +452,31 @@ h2{
     background-repeat: repeat;
 }
 
-/*----------------------task-page & gantt-page--------------------------------*/
-.task-page .yui3-datatable-col-No,
-.gantt-page .yui3-datatable-col-No{
-    width:20px;
-}
-
-.task-page td,
-.gantt-page td{
+.body td{
     cursor: pointer;
 }
 
-.task-page .description,
-.gantt-page .description{
+.body .description{
     max-width: 250px;
-    position:absolute;
+    position:fixed;
+    z-index: 100;
     padding:5px;
     background-color:white;
     border:solid 1px #888;
     border-radius: 5px;
-    box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;
+    box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;    
 }
 
-.task-page .description .task_name,
-.gantt-page .description .task_name{
+.body .description .task_name{
     text-transform: capitalize;
     text-decoration: underline;
     padding-bottom: 10px;
+}
+
+/*----------------------task-page & gantt-page--------------------------------*/
+.task-page .yui3-datatable-col-No,
+.gantt-page .yui3-datatable-col-No{
+    width:20px;
 }
 
 .task-page .yui3-datatable-data  .notstarted .yui3-datatable-cell ,
@@ -496,8 +494,9 @@ h2{
     background-color: #CCFFCC;
 }
 
-/*----------------------------------gantt-page--------------------------------*/
-.gantt-page .yui3-datatable-table .yui3-datatable-data .cell-gantt{
+/*------------------------gantt-page & resources-pages------------------------*/
+.gantt-page .yui3-datatable-table .yui3-datatable-data .cell-gantt,
+.resources-page .yui3-datatable-table .yui3-datatable-data .cell-gantt{
     background-color: transparent;
     border-left:1px #DBDBDB solid;
     width:40px;
@@ -506,7 +505,8 @@ h2{
     overflow:hidden;
 }
 
-.gantt-page .yui3-datatable-table .yui3-datatable-data .scheduled{
+.gantt-page .yui3-datatable-table .yui3-datatable-data .scheduled,
+.resources-page .yui3-datatable-table .yui3-datatable-data .scheduled{
     display:block;
     background-color: #3399FF;
     width:100%;
@@ -514,25 +514,53 @@ h2{
     padding-top: 1px;
 }
 
-.gantt-page .yui3-datatable-col-Realized{
-    width:100px;
-}
-
-.gantt-page .yui3-datatable-col-Name{
+.gantt-page .yui3-datatable-col-Name,
+.resources-page .yui3-datatable-col-Name{
     width:300px;
 }
 
-.gantt-page .yui3-datatable-columns .previous-week{
+.gantt-page .yui3-datatable-columns .previous-week,
+.resources-page .yui3-datatable-columns .previous-week{
     background-color:#BBBBBB;
     background-image: none;
 }
 
-.gantt-page .yui3-datatable-columns .current-week{
+.gantt-page .yui3-datatable-columns .current-week,
+.resources-page .yui3-datatable-columns .current-week{
     background-image: url(/Wegas/wegas-pmg/images/next.png), url(/Wegas/wegas-pmg/images/h2.png);
     background-repeat: no-repeat, repeat-x;
     background-position: left, center;
 }
 
-.gantt-page .yui3-datatable-table .yui3-datatable-data .previous-week{
+.gantt-page .yui3-datatable-table .yui3-datatable-data .previous-week,
+.resources-page .yui3-datatable-table .yui3-datatable-data .previous-week{
     background-color:#DDDDDD;
+}
+
+/*----------------------------------resources-page----------------------------*/
+.resources-page .slidepanel{
+    position:relative;
+}
+
+.resources-page .slidepanel-content{
+    overflow:hidden;
+    width:100%;
+    border:solid black;
+    border-width:1px 0 1px 0;
+}
+
+.resources-page .slidepanel-title{
+    background-image: url(/Wegas/wegas-pmg/images/h2.png);
+    background-repeat: repeat-x;    
+    background-color: white; 
+    height:26px;
+    width:100%;
+}
+
+.resources-page .assignement{
+    display:inline-block;
+    background-image: url(/Wegas/wegas-pmg/images/add.png);
+    background-repeat: no-repeat;    
+    height:16px;
+    width:16px;
 }

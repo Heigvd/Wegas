@@ -24,7 +24,7 @@ YUI.add('wegas-list', function (Y) {
                 cb.addClass(this.getClassName('horizontal'));
                 cb.removeClass(this.getClassName('vertical'));
             }
-            this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
+            this.get(BOUNDINGBOX).append('<div class="list-clearing" style="clear:both"></div>');
         }
     }, {
         ATTRS : {
