@@ -107,7 +107,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
-                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize', 'resize', 'wegas-layoutcss' ],
+                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize',
+                            'anim', 'resize', 'wegas-layoutcss' ],
                         ix_provides: 'Layout'
                     },
                     'wegas-layoutcss': {
