@@ -107,9 +107,8 @@ input[type="submit"], input[type="reset"] {
 .wegas-status-message{
     color: gray;
     float: right;
-    position: absolute;
-    right: 10px;
-    bottom: 5px;
+    margin-top: 6px;
+    margin-right: 5px;
     text-shadow: 1px 1px 0px #DDD;
     font-size: 11px;
 }
