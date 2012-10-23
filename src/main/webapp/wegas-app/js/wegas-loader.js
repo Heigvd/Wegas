@@ -357,7 +357,7 @@ YUI().use(function (Y) {
                     /** Project Management Game **/
                     'wegas-pmg': {
                         path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
-                        requires:['wegas-pmg-breadcrumb', 'wegas-pmg-tasklist', 'wegas-pmg-resourcelist'],
+                        requires:['wegas-pmg-breadcrumb'],
                         ix_provides: "PmgBreadcrumb"
                     },
                     
@@ -367,7 +367,7 @@ YUI().use(function (Y) {
                         ix_provides: "PmgTasklist"
                     },    
                     
-                    'wegas-pmg-Gantt':{
+                    'wegas-pmg-gantt':{
                         path: 'wegas-pmg/js/wegas-pmg-gantt.js',
                         requires:['wegas-pmg-gantt', 'wegas-pmg-datatable'],
                         ix_provides: "PmgGantt"
@@ -375,7 +375,7 @@ YUI().use(function (Y) {
                     
                     'wegas-pmg-resourcelist':{
                         path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
-                        requires:['wegas-pmg-resourcelist', 'wegas-pmg-datatable'],
+                        requires:['wegas-pmg-resourcelist', 'wegas-pmg-gantt'],
                         ix_provides: "PmgResourcelist"
                     },   
                     
@@ -383,6 +383,11 @@ YUI().use(function (Y) {
                         path: 'wegas-pmg/js/wegas-pmg-datatable.js',
                         requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable'],
                         ix_provides: "PmgDatatable"
+                    },
+                    
+                    'wegas-pmg-slidepanel':{
+                        path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
+                        ix_provides: "PmgSlidePanel"
                     },
 
                     /**book CYOA**/
