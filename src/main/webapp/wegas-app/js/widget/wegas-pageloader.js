@@ -30,7 +30,7 @@ YUI.add('wegas-pageloader', function (Y) {
 
         syncUI: function () {
             if(this.get("pageId")){
-                 this.set( "pageId", this.get( "pageId" ) );  
+                 this.set( "pageId", this.get( "pageId" ) );
             }else{
                 this.set( "pageId", this.get("variableDesc"));
             }
@@ -44,7 +44,7 @@ YUI.add('wegas-pageloader', function (Y) {
                         return val;
                     }
 
-                    var widgetCfg = Y.Wegas.PageFacade.rest.findById(val).toObject2(),
+                    var widgetCfg = Y.Wegas.PageFacade.rest.findById(val).toObject(),
                     oldWidget = this.get("widget");
 
                     if (widgetCfg && widgetCfg.id && this.widgetCfg             // If the widget is currently being loaded, escape

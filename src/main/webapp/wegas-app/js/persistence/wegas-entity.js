@@ -63,7 +63,7 @@ YUI.add('wegas-entity', function (Y) {
          * @return {Object} a filtered out clone
          */
         toObject: function(mask){
-            var e = JSON.parse(JSON.stringify(this));
+            var e = JSON.parse( JSON.stringify( this  ) );
             mask = Y.Lang.isArray( mask ) ? mask : Array.prototype.slice.call( arguments );
             return mask.length > 0 ? Y.clone( e, true, function( value, key, output, input){
                 if( mask.indexOf ( key ) != -1) {
@@ -74,26 +74,7 @@ YUI.add('wegas-entity', function (Y) {
             }) : e;
 
         },
-        toObject2: function () {
-            return this.toObject();
-        //var i, k, ret = this.toJSON();
-        //for ( k in ret ) {
-        //    if ( ret.hasOwnProperty( k ) ) {
-        //        if ( Y.Lang.isObject( ret[ k ] ) && ret[ k ].toObject2 ) {
-        //            ret[ k ] = ret[ k ].toObject2();
-        //
-        //        } else if ( Y.Lang.isArray( ret[ k ] ) ) {
-        //            for ( i = 0; i < ret[ k ].length; i = i + 1 ) {
-        //                if ( Y.Lang.isObject( ret[ k ][ i ] ) && ret[ k ][ i ].toObject2 ) {
-        //                    ret[ k ][ i ] = ret[ k ][ i ].toObject2();
-        //                }
-        //            }
-        //        }
-        //    }
-        //
-        //}
-        //return ret;
-        },
+        
         /**
          * Create a new Object from this entity
          * may be used by revive
