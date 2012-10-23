@@ -596,7 +596,7 @@ YUI.add('wegas-entity', function (Y) {
         getPublicName: function () {
             if ( this.get( "firstname" ) ) {
                 return this.get( "firstname" ) + " " + this.get( "lastname" );
-                
+
             } else {
                 return this.get( "email" ) + " " + this.get( "lastname" );
             }
@@ -1313,22 +1313,62 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
 
-    Y.Wegas.persistence.InboxDescriptor = Y.Base.create("", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+    Y.Wegas.persistence.InboxDescriptor = Y.Base.create( "", Y.Wegas.persistence.VariableDescriptor, [], {}, {
         ATTRS:{
             "@class":{
                 value:"InboxDescriptor"
+            },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: 'InboxInstance',
+                        _inputex: {
+                            _type: 'hidden',
+                            value:'TaskInstance'
+                        }
+                    },
+                    id: IDATTRDEF
+                }
+            }
+        },
+        METHODS: {
+            sendMessage: {
+                label: "send message",
+                className: "wegas-method-sendmessage",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    label: "from",
+                    scriptType: "string"
+                }, {
+                    type: "string",
+                    label: "title",
+                    scriptType: "string"
+                }, {
+                    type: "text",
+                    label: "Content",
+                    scriptType: "string"
+                }]
             }
         }
     });
     /**
          * InboxInstance mapper
          */
-    Y.Wegas.persistence.InboxInstance = Y.Base.create("InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
+    Y.Wegas.persistence.InboxInstance = Y.Base.create( "InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS: {
             "@class":{
-                value:"InboxInstance"
+                value:"InboxInstance",
+                _inputex: {
+                    disabled: true,
+                    label: "Nothing to edit"
+                }
             },
             messages: {
+                type: "array",
+                "transient": true,
                 value: []
             }
         }
@@ -1355,7 +1395,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
          * Script mapper
          */
-    Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
+    Y.Wegas.persistence.Script = Y.Base.create( "Script", Y.Wegas.persistence.Entity, [], {
         initializer: function(){
             this.publish("evaluated");
             this._inProgress = false;
