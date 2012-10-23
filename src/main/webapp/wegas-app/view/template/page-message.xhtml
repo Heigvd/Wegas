@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <ui:composition template="page-default.xhtml">
+
+        <ui:define name="title">Error</ui:define>
+
+        <ui:define name="head">
+            <style type="text/css">
+                .bd {
+                    margin: 100px auto !important;
+                    position: initial;
+                    width: 600px;
+                }
+                button {
+                    margin-left: 136px;
+                    margin-top: 10px;
+                }
+                .wegas-title {
+                    border: solid #2647A0;
+                    border-width: 0 0 5px;
+                    margin: 0 0 19px 0;
+                    padding-bottom: 5px;
+                }
+            </style>
+        </ui:define>
+
+        <ui:define name="page">
+
+            <h:body>
+                <div class="bd">
+                    <div class="wegas-title">
+                        <ui:insert name="title">Message</ui:insert></div>
+                    <ui:insert name="body">Message</ui:insert>
+                </div>
+            </h:body>
+        </ui:define>
+    </ui:composition>
+</html>

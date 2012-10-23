@@ -63,7 +63,7 @@ YUI.add('wegas-entity', function (Y) {
          * @return {Object} a filtered out clone
          */
         toObject: function(mask){
-            var e = JSON.parse(JSON.stringify(this));
+            var e = JSON.parse( JSON.stringify( this  ) );
             mask = Y.Lang.isArray( mask ) ? mask : Array.prototype.slice.call( arguments );
             return mask.length > 0 ? Y.clone( e, true, function( value, key, output, input){
                 if( mask.indexOf ( key ) != -1) {
@@ -74,26 +74,7 @@ YUI.add('wegas-entity', function (Y) {
             }) : e;
 
         },
-        toObject2: function () {
-            return this.toObject();
-        //var i, k, ret = this.toJSON();
-        //for ( k in ret ) {
-        //    if ( ret.hasOwnProperty( k ) ) {
-        //        if ( Y.Lang.isObject( ret[ k ] ) && ret[ k ].toObject2 ) {
-        //            ret[ k ] = ret[ k ].toObject2();
-        //
-        //        } else if ( Y.Lang.isArray( ret[ k ] ) ) {
-        //            for ( i = 0; i < ret[ k ].length; i = i + 1 ) {
-        //                if ( Y.Lang.isObject( ret[ k ][ i ] ) && ret[ k ][ i ].toObject2 ) {
-        //                    ret[ k ][ i ] = ret[ k ][ i ].toObject2();
-        //                }
-        //            }
-        //        }
-        //    }
-        //
-        //}
-        //return ret;
-        },
+        
         /**
          * Create a new Object from this entity
          * may be used by revive
@@ -537,6 +518,7 @@ YUI.add('wegas-entity', function (Y) {
         ATTRS: {
             name: {
                 type: "string",
+                "transient": true,
                 getter: function ( val ) {
                     if ( this.getMainAccount() ) {
                         return this.getMainAccount().getPublicName();
@@ -593,7 +575,12 @@ YUI.add('wegas-entity', function (Y) {
     Y.Wegas.persistence.JpaAccount = Y.Base.create( "JpaAccount", Y.Wegas.persistence.Entity, [], {
 
         getPublicName: function () {
-            return this.get( "firstname" ) + " " + this.get( "lastname" );
+            if ( this.get( "firstname" ) ) {
+                return this.get( "firstname" ) + " " + this.get( "lastname" );
+
+            } else {
+                return this.get( "email" ) + " " + this.get( "lastname" );
+            }
         }
 
     }, {
@@ -1307,22 +1294,62 @@ YUI.add('wegas-entity', function (Y) {
         }
     });
 
-    Y.Wegas.persistence.InboxDescriptor = Y.Base.create("", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+    Y.Wegas.persistence.InboxDescriptor = Y.Base.create( "", Y.Wegas.persistence.VariableDescriptor, [], {}, {
         ATTRS:{
             "@class":{
                 value:"InboxDescriptor"
+            },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: 'InboxInstance',
+                        _inputex: {
+                            _type: 'hidden',
+                            value:'TaskInstance'
+                        }
+                    },
+                    id: IDATTRDEF
+                }
+            }
+        },
+        METHODS: {
+            sendMessage: {
+                label: "send message",
+                className: "wegas-method-sendmessage",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    label: "from",
+                    scriptType: "string"
+                }, {
+                    type: "string",
+                    label: "title",
+                    scriptType: "string"
+                }, {
+                    type: "text",
+                    label: "Content",
+                    scriptType: "string"
+                }]
             }
         }
     });
     /**
          * InboxInstance mapper
          */
-    Y.Wegas.persistence.InboxInstance = Y.Base.create("InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
+    Y.Wegas.persistence.InboxInstance = Y.Base.create( "InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS: {
             "@class":{
-                value:"InboxInstance"
+                value:"InboxInstance",
+                _inputex: {
+                    disabled: true,
+                    label: "Nothing to edit"
+                }
             },
             messages: {
+                type: "array",
+                "transient": true,
                 value: []
             }
         }
@@ -1349,7 +1376,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
          * Script mapper
          */
-    Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
+    Y.Wegas.persistence.Script = Y.Base.create( "Script", Y.Wegas.persistence.Entity, [], {
         initializer: function(){
             this.publish("evaluated");
             this._inProgress = false;

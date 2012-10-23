@@ -128,3 +128,23 @@ img.inputEx-ListField-delButton {
     box-shadow: none;
     margin: -2px 5px 0;
 }
+.inputEx-WysiwigScript .wegas-method-sendmessage {
+    padding: 26px 0px 0px 135px;
+}
+.inputEx-WysiwigScript .wegas-method-sendmessage .inputEx-fieldWrapper {
+    float:none !important;
+}
+
+.inputEx-WysiwigScript .wegas-method-sendmessage input,
+.inputEx-WysiwigScript .wegas-method-sendmessage textarea {
+    width: 400px;
+}
+
+/* List field style */
+.inputEx-ListField {
+    position: relative;
+}
+.inputEx-ListField > fieldset > div > button {
+    position:absolute;
+    left:-35px;
+}

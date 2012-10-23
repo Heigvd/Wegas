@@ -1,7 +1,7 @@
 /*
- * Wegas.
+ * Wegas
+ * http://www.albasim.com/wegas/
  *
- * http://www.albasim.com/wegas/  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
@@ -13,12 +13,10 @@ package com.wegas.core.security.jparealm;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.ejb.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.wegas.core.security.persistence.Role;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
 import org.apache.shiro.authc.*;
@@ -33,7 +31,6 @@ public class JpaRealm extends AuthorizingRealm {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JpaRealm.class);
 
-    //private BaseJPAService<User, Long> userService = new BaseJPAService<User, Long>(User.class);
     public JpaRealm() {
         setName("JpaRealm");                                                    //This name must match the name in the User class's getPrincipals() method
     }
@@ -51,7 +48,7 @@ public class JpaRealm extends AuthorizingRealm {
             return null;
         }
         catch (NamingException ex) {
-            logger.error("Unable to fins UserFacade EJB.");
+            logger.error("Unable to find AocountFacade EJB", ex);
             return null;
         }
     }
@@ -73,7 +70,7 @@ public class JpaRealm extends AuthorizingRealm {
             return null;
         }
         catch (NamingException ex) {
-            Logger.getLogger(JpaRealm.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Unable to find AocountFacade EJB", ex);
             return null;
         }
     }

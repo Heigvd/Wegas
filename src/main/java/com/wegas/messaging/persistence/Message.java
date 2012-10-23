@@ -7,13 +7,12 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.messaging.persistence.variable;
+package com.wegas.messaging.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import java.util.Date;
 import java.util.logging.Logger;
-import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -71,6 +70,15 @@ public class Message extends NamedEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
     private InboxInstance inboxInstanceEntity;
+
+    public Message() {
+    }
+
+    public Message(String from, String subject, String body) {
+        this.from = from;
+        this.subject = subject;
+        this.body = body;
+    }
 
     /**
      *
@@ -149,7 +157,6 @@ public class Message extends NamedEntity {
     public Long getId() {
         return this.id;
     }
-
 
     /**
      * @return the MCQDescriptor

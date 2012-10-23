@@ -93,6 +93,7 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Path("Signup")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
+
     public void signup(@FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("firstname") String firstname,

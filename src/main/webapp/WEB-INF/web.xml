@@ -81,6 +81,7 @@
         <url-pattern>/\/*</url-pattern>
         <!-- Just for Cyril -->
     </servlet-mapping>
+
     <!-- Liquibase configuration -->
     <context-param>
         <param-name>liquibase.changelog</param-name>
@@ -94,6 +95,7 @@
     <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
+
     <!-- Facebook Servlet -->
     <servlet>
         <servlet-name>Facebook Servlet</servlet-name>
@@ -104,6 +106,13 @@
         <servlet-name>Facebook Servlet</servlet-name>
         <url-pattern>/FacebookServlet</url-pattern>
     </servlet-mapping>
+
+    <!--File Mime Types-->
+    <mime-mapping>
+        <extension>json</extension>
+        <mime-type>application/json;charset=ISO-8859-1</mime-type>
+    </mime-mapping>
+
     <!-- Atmosphere Servlet -->
     <!-- <servlet>
         <description>AtmosphereServlet</description>
@@ -149,9 +158,4 @@
         <filter-name>FacebookUserFilter</filter-name>
         <url-pattern>/facebooktest/*</url-pattern>
     </filter-mapping>-->
-    <!--File Mime Types-->
-    <mime-mapping>
-        <extension>json</extension>
-        <mime-type>application/json;charset=ISO-8859-1</mime-type>
-    </mime-mapping>
 </web-app>
