@@ -13,6 +13,8 @@
     </welcome-file-list>
 
     <!-- Apache Shiro Listener -->
+    <!-- shiro filter must be declared before any other filter, to ensure
+        security checks. -->
     <listener>
         <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
     </listener>
@@ -73,13 +75,20 @@
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
             <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
         </init-param>
+        <!--<init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+        </init-param>-->
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>Rest Facade</servlet-name>
         <url-pattern>/rest/*</url-pattern>
-        <url-pattern>/\/*</url-pattern>
-        <!-- Just for Cyril -->
+        <url-pattern>/\/*</url-pattern><!-- Just for Cyril -->
     </servlet-mapping>
 
     <!-- Liquibase configuration -->
