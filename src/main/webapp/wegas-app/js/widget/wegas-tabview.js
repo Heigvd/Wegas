@@ -15,9 +15,15 @@
 YUI.add( 'wegas-tabview', function ( Y ) {
     "use strict";
 
-    var TabView, Tab, Closable;
+    var TabView, Tab;
 
     TabView = Y.Base.create( "tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
+
+        initializer: function () {
+            TabView.superclass.initializer.apply(this, arguments);
+        //this.plug( Removeable );
+        },
+
         bindUI: function () {
             TabView.superclass.bindUI.apply(this, arguments);
 
@@ -45,7 +51,8 @@ YUI.add( 'wegas-tabview', function ( Y ) {
                     label: id,
                     id: id
                 });
-                tabView.add( tabCfg );                                          // Instantiate a new tab
+                var tabs = tabView.add( tabCfg );                                // Instantiate a new tab
+                return tabs.item(0);
             } else {                                                            // Otherwise,
                 TabView.tabs[id].setAttrs( tabCfg )                             // update the tab config
             }
@@ -62,17 +69,17 @@ YUI.add( 'wegas-tabview', function ( Y ) {
          */
         findTabAndLoadWidget: function (id, tabViewSelector, tabCfg, widgetCfg, fn) {
             var tab = TabView.getTab( id );                                     // Look for the tab
-            if (!tab) {                                                         // If it does not exist,
+            if ( !tab ) {                                                       // If it does not exist,
                 tab = TabView.createTab( id, tabViewSelector, tabCfg);          // create a new one
                 tab.load(widgetCfg, fn);                                        // and load the widget in it.
             } else {                                                            // Otherwise,
                 tab.setAttrs(tabCfg);                                           // update the tab config
                 if (fn) {
-                    fn(tab.item(0));                                            // and trigger the callback
+                    fn( tab.item(0) );                                          // and trigger the callback
                 }
             }
-            //tab.plug(Y.Plugin.Closable);                                      //TODO: currently bugged if the tab is active
             tab.set("selected", 2);
+            tab.plug( Removeable );
         }
     });
     Y.namespace('Wegas').TabView = TabView;
@@ -140,8 +147,10 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         // *** Lifecycle Methods *** //
         initializer: function(cfg) {
             Tab.superclass.initializer.apply(this, arguments);
-            TabView.tabs[cfg.id] = this;
+            TabView.tabs[ cfg.id ] = this;
             this._witems = [];
+
+        //this.plug( Closable );
         },
 
         renderUI: function () {
@@ -196,38 +205,56 @@ YUI.add( 'wegas-tabview', function ( Y ) {
     });
     Y.namespace( 'Wegas' ).Tab = Tab;
 
-    Closable = Y.Base.create("closable", Y.Plugin.Base, [], {
-        initializer: function (){
-            this._closableNode = Y.Node.create("<span class='closable-closeicon'></span>");
-            if(!this.get("host").get("rendered")){
-                this._renderEvent = this.get("host").onceAfter("widget:render", function(e){
-                    this.get("host").get("boundingBox").append(this._closableNode);
-                }, this);
-            }else{
-                this.get("host").get("boundingBox").append(this._closableNode);
-            }
 
-            this._closableNode.once("click", function(e){
-                var id = this.get("host").get("label");
-                this.get("host").blur();
-                if(this.get("host") instanceof Tab && TabView.tabs[id]){        //FIX : check tab instances.
-                    TabView.destroyTab(id);
-                }else{
-                    this.get("host").destroy();
-                }
-            }, this)
+    /**
+    * Removable plugin for tabview
+    */
+    var Removeable = function () {
+        Removeable.superclass.constructor.apply( this, arguments);
+    };
+
+    Y.extend( Removeable, Y.Plugin.Base, {
+
+        REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
+
+        initializer: function( config ) {
+            var tab = this.get( 'host' ),
+            //cb = tab.get( "parent" ).get( "contentBox"),
+            bb = tab.get( "boundingBox" );
+
+            bb.addClass( 'yui3-tabview-removeable' );
+            bb.delegate( 'click', this.onRemoveClick, '.yui3-tab-remove', this );
+            bb.append(this.REMOVE_TEMPLATE);
+
+        // Tab events bubble to TabView
+        // Here to plug on tabview
+        //var tabview = this.get('host'),
+        //cb = tabview.get('contentBox');
+        //
+        //cb.addClass( 'yui3-tabview-removeable' );
+        //cb.delegate( 'click', this.onRemoveClick, '.yui3-tab-remove', this );
+        //
+        //// Tab events bubble to TabView
+        //tabview.after('tab:render', this.afterTabRender, this);
         },
-        destructor: function(){
-            if(this._renderEvent){
-                this._renderEvent.detach();
-            }
-            if(this._closableNode){
-                this._closableNode.remove(true);
-            }
+
+        //afterTabRender: function(e) {
+        //    e.target.get( 'boundingBox' ).append(this.REMOVE_TEMPLATE);           // boundingBox is the Tab's LI
+        //},
+
+        onRemoveClick: function( e ) {
+            e.stopPropagation();
+            var host = this.get( "host" );
+
+            delete TabView.tabs[ host.get( "id" ) ];
+            host.remove();
+        //var tab = Y.Widget.getByNode( e.target );
+        // tab.remove();
         }
     }, {
-        NS:"close",
-        NAME:"Closable"
+        NS:"removeable",
+        NAME:"removeableTabs"
     });
-    Y.namespace( "Plugin" ).Closable = Closable
+    
+    Y.namespace( "Plugin" ).Removeable = Removeable;
 });

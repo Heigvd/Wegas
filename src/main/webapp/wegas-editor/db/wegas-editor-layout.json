@@ -214,15 +214,7 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
-            "children": [
-            {
-                "type": "Tab",
-                "label": "Chat",
-                "toolbarLabel": "Chat",
-                "children": [{
-                    "type": "Chat"
-                }]
-            }]
+            "children": []
         }]
     }
 }
