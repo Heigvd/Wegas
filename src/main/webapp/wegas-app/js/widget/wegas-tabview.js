@@ -60,8 +60,7 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         },
         destroyTab: function( id ){                                             //FIX destroy config
             if ( TabView.tabs[ id ] ) {
-                TabView.tabs[id].destroy();
-                delete TabView.tabs[id];
+                TabView.tabs[id].remove();
             }
         },
         /**
@@ -146,7 +145,7 @@ YUI.add( 'wegas-tabview', function ( Y ) {
 
         // *** Lifecycle Methods *** //
         initializer: function(cfg) {
-            Tab.superclass.initializer.apply(this, arguments);
+            Tab.superclass.initializer.apply( this, arguments );
             TabView.tabs[ cfg.id ] = this;
             this._witems = [];
 
@@ -154,11 +153,16 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         },
 
         renderUI: function () {
-            Tab.superclass.renderUI.apply(this, arguments);
+            Tab.superclass.renderUI.apply( this, arguments );
         },
 
         syncUI: function () {
-            Tab.superclass.syncUI.apply(this, arguments);
+            Tab.superclass.syncUI.apply( this, arguments );
+        },
+
+        destructor: function () {
+            delete TabView.tabs[ this.get( "id" ) ];
+            Tab.superclass.destructor.apply( this, arguments );
         },
 
         // *** Private Methods *** //
@@ -246,7 +250,6 @@ YUI.add( 'wegas-tabview', function ( Y ) {
             e.stopPropagation();
             var host = this.get( "host" );
 
-            delete TabView.tabs[ host.get( "id" ) ];
             host.remove();
         //var tab = Y.Widget.getByNode( e.target );
         // tab.remove();
@@ -255,6 +258,6 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         NS:"removeable",
         NAME:"removeableTabs"
     });
-    
+
     Y.namespace( "Plugin" ).Removeable = Removeable;
 });
