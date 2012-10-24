@@ -116,7 +116,7 @@ YUI.add('wegas-editor-action', function (Y) {
             EditEntityAction.callback = callback;
             EditEntityAction.currentEntity = entity;
 
-            if ( !EditEntityAction.tab ) {
+            if ( !EditEntityAction.tab ) {                                      // First make sure the edit tab exists
                 EditEntityAction.tab = Y.Wegas.TabView.createTab( "Edit", '#rightTabView' );
                 //EditEntityAction.tab = Y.Wegas.TabView.createTab("Edit", '#centerTabView');
                 EditEntityAction.form = new Y.Wegas.FormWidget();
@@ -129,20 +129,25 @@ YUI.add('wegas-editor-action', function (Y) {
                 EditEntityAction.form.on( "cancel", EditEntityAction.hideEditForm, EditEntityAction );
                 EditEntityAction.tab.add( EditEntityAction.form );
             }
+
             EditEntityAction.tab.set( "selected", 2 );
             EditEntityAction.form.emptyMessage();
             EditEntityAction.form.setForm( entity.toObject(), entity.getFormCfg() );
+
+            Y.Wegas.app.widget.showPosition( "right" );                         // Finally show the layout widget position
         },
 
         /**
          *
          */
         hideEditForm: function () {
-            EditEntityAction.tab.get( "parent" ).selectChild( 0 );
-            Y.Wegas.TabView.destroyTab(EditEntityAction.tab.get("id"));
+            //EditEntityAction.tab.get( "parent" ).selectChild( 0 );
+            //Y.Wegas.TabView.destroyTab( EditEntityAction.tab.get( "id" ) );
             // EditEntityAction.tab.destroy();
-            delete EditEntityAction.tab;
-            delete EditEntityAction.form;
+            //delete EditEntityAction.tab;
+            //delete EditEntityAction.form;
+
+            Y.Wegas.app.widget.hidePosition( "right" );
         },
 
         /**

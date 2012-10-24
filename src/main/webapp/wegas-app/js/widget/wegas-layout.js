@@ -44,11 +44,8 @@ YUI.add('wegas-layout', function (Y) {
 
         // ** Private Methods ** //
 
-        renderPosition: function (position) {
-
-            var i, cWidget, target = null, positionCfg = this.get(position);
-
-
+        getPositionNode: function ( position ) {
+            var target;
             if (position === "top") {
                 target = this.getStdModNode("header");
 
@@ -58,35 +55,74 @@ YUI.add('wegas-layout', function (Y) {
             } else if (position == "left") {
                 target = this.getStdModNode("body").one(".wegas-layout-left");
 
-                if ( positionCfg ) {
-                    this.leftResize = new Y.Resize({
-                        node: target,
-                        handles: 'r'
-                    });
-                    this.leftResize.on("resize", this.syncCenterNode, this);
-                }
             } else if (position == "center") {
                 target = this.getStdModNode("body").one(".wegas-layout-center");
 
             } else if (position == "right") {
                 target = this.getStdModNode("body").one(".wegas-layout-right");
+            }
+            return target;
+        },
 
-                if ( positionCfg ) {
+        hidePosition: function ( position ) {
+            var anim = new Y.Anim({
+                node: this.getPositionNode( position ),
+                to: {
+                    width: "0px"
+                },
+                easing: 'easeIn',
+                duration: 0.6
+            });
+            anim.on( 'tween', this.syncCenterNode, this );
+            //anim.on( 'end', this.syncCenterNode, this );
+            anim.run();
+        },
+
+        showPosition: function ( position ) {
+            var anim,
+            target = this.getPositionNode( position );
+
+            if ( target.getStyle( "width" ) === "0px" ) {                       // Only display if hidden
+                anim = new Y.Anim({
+                    node: this.getPositionNode( position ),
+                    to: {
+                        width: "350px"
+                    },
+                    easing: 'easeOut',
+                    duration: 0.6
+                });
+                anim.on( 'tween', this.syncCenterNode, this );
+                //anim.on( 'end ', this.syncCenterNode, this );
+                anim.run();
+            }
+        },
+
+        renderPosition: function ( position ) {
+            var i, cWidget,
+            target = this.getPositionNode( position ),
+            positionCfg = this.get( position );
+
+
+            if ( positionCfg ) {                                                // If there is a provided configuration
+                if (position == "left") {
+                    this.leftResize = new Y.Resize({
+                        node: target,
+                        handles: 'r'
+                    });
+                    this.leftResize.on("resize", this.syncCenterNode, this);
+
+
+                } else if (position == "right") {
                     this.rightResize = new Y.Resize({
                         node: target,
                         handles: 'l'
                     });
                     this.rightResize.on("resize", this.syncCenterNode, this);
+
+                    target.setStyle("width", 0 );
                 }
-            //this.rightResize.plug(Y.Plugin.ResizeConstrained, {
-            //minWidth: 200
-            // maxWidth: 300,
-            //});
-            }
 
-
-            if ( positionCfg ) {                                               // If there is a provided configuration
-                for ( i = 0; i < positionCfg.children.length; i = i + 1) {      // render the children
+                for ( i = 0; i < positionCfg.children.length; i = i + 1) {      // ender the children
                     cWidget = Y.Wegas.Widget.create( positionCfg.children[ i ] );
                     // cWidget.after( "render", this.syncUI, this );
                     cWidget.render( target );
@@ -158,7 +194,7 @@ YUI.add('wegas-layout', function (Y) {
         },
         TEMPLATES: {
             header : '<div class="yui-widget-hd wegas-layout-top"></div>',
-            body : '<div class="yui-widget-bd"><div class="wegas-layout-left"></div><div class="wegas-layout-center"></div><div class="wegas-layout-right"></div></div>',
+            body : '<div class="yui-widget-bd wegas-layout-bd"><div class="wegas-layout-left"></div><div class="wegas-layout-center"></div><div class="wegas-layout-right"></div></div>',
             footer : '<div class="yui-widget-ft wegas-layout-bottom"></div>'
         }
     });
