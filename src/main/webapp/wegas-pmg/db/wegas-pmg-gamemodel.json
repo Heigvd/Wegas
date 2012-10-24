@@ -192,6 +192,137 @@
         }]
     },{
         "@class":"ListDescriptor",
+        "name":"resources",
+        "editorLabel":"resources",
+        "label":"",
+        "defaultInstance":{
+            "@class":"ListInstance"
+        },
+        "scope":{
+            "@class":"TeamScope"
+        },
+        "items":[{
+            "@class":"ListDescriptor",
+            "name":"businessSpecialist",
+            "editorLabel":"Business specialist",
+            "label":"",
+            "defaultInstance":{
+                "@class":"ListInstance"
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "items":[{
+                "@class": "ResourceDescriptor",
+                "name": "Marcel",
+                "description":"Description de Marcel",
+                "defaultInstance":{
+                    "@class":"ResourceInstance",
+                    "moral":0,
+                    "confidence":0,
+                    "properties":{
+                        "grade":"senior",
+                        "motivation":"9",
+                        "ratio":"80",
+                        "wage":"7800"
+                    },
+                    "skillset":{}
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ResourceDescriptor",
+                "name": "Béatrice",
+                "description":"Description de Béatrice",
+                "defaultInstance":{
+                    "@class":"ResourceInstance",
+                    "moral":0,
+                    "confidence":0,
+                    "properties":{
+                        "grade":"junior",
+                        "motivation":"10",
+                        "ratio":"100",
+                        "wage":"5600"
+                    },
+                    "skillset":{}
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                } 
+            }]
+        },{
+            "@class":"ListDescriptor",
+            "name":"webDesigner",
+            "editorLabel":"Web designer",
+            "label":"",
+            "defaultInstance":{
+                "@class":"ListInstance"
+            },
+            "scope":{
+                "@class":"TeamScope"
+            },
+            "items":[{
+                "@class": "ResourceDescriptor",
+                "name": "Claude",
+                "description":"Description de Claude",
+                "defaultInstance":{
+                    "@class":"ResourceInstance",
+                    "moral":0,
+                    "confidence":0,
+                    "properties":{
+                        "grade":"expert",
+                        "motivation":"10",
+                        "ratio":"80",
+                        "wage":"10000"
+                    },
+                    "skillset":{}
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                }
+            },{
+                "@class": "ResourceDescriptor",
+                "name": "Michael",
+                "description":"Description de Michael",
+                "defaultInstance":{
+                    "@class":"ResourceInstance",
+                    "moral":0,
+                    "confidence":0,
+                    "properties":{
+                        "grade":"junior",
+                        "motivation":"6",
+                        "ratio":"100",
+                        "wage":"4500"
+                    },
+                    "skillset":{}
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                } 
+            },{
+                "@class": "ResourceDescriptor",
+                "name": "Lucie",
+                "description":"Description de Lucie",
+                "defaultInstance":{
+                    "@class":"ResourceInstance",
+                    "moral":0,
+                    "confidence":0,
+                    "properties":{
+                        "grade":"senior",
+                        "motivation":"9",
+                        "ratio":"100",
+                        "wage":"5300"
+                    },
+                    "skillset":{}
+                },
+                "scope": {
+                    "@class": "TeamScope"
+                } 
+            }]
+        }]
+    },{
+        "@class":"ListDescriptor",
         "name":"tasks",
         "editorLabel":"tasks",
         "label":"",
