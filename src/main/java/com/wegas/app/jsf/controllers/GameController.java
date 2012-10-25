@@ -13,7 +13,7 @@ import com.sun.faces.util.Util;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.UserFacade;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -62,11 +62,6 @@ public class GameController implements Serializable {
      */
     @EJB
     private GameModelFacade gameModelFacade;
-    /**
-     *
-     */
-    @EJB
-    private GameFacade gameFacade;
     /**
      *
      */

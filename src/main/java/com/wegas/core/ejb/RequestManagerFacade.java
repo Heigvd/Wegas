@@ -51,6 +51,10 @@ public class RequestManagerFacade {
         this.requestManager.setView(view);
     }
 
+    public Class getView() {
+        return this.requestManager.getView();
+    }
+
     public void setPlayer(Long playerId) {
         Player p = playerFacade.find(playerId);
         //playerFacade.getEntityManager().detach(p);
@@ -68,7 +72,8 @@ public class RequestManagerFacade {
     public static RequestManagerFacade lookup() {
         try {
             return Helper.lookupBy(RequestManagerFacade.class);
-        } catch (NamingException ex) {
+        }
+        catch (NamingException ex) {
             logger.error("Error retrieving requestmanager", ex);
             return null;
         }

@@ -1,0 +1,11 @@
+{
+    "id": 2003,
+    "type" : "List",
+    "children": [{
+        "type": "Text",
+        "content": "Login",
+        "cssClass": "wegas-title"
+    }, {
+        "type": "LoginWidget"
+    }]
+}
