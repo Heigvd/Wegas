@@ -367,7 +367,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 for ( i = 0 ; i < items.length ; i++ ) {
                     choices.push({
                         value: items[i].get( "id" ),
-                        label: items[i].get( "name" )
+                        label: items[i].getPrivateLabel()
                     });
                 }
             }
@@ -535,7 +535,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 }else{
                     options.choices.push({
                         value: results[i].get( "id"  ),
-                        label: results[i].get( "name" )
+                        label: results[i].getPrivateLabel()
                     });
                 }
 
