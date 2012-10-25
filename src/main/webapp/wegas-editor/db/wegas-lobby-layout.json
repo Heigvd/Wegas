@@ -5,7 +5,7 @@
         "children": [{
             "type": "Text",
             "content": "Lobby",
-            "cssClass": "wegas-editor-title"
+            "cssClass": "wegas-title"
         },{
             "type": "LoginButton",
             "cssClass": "menu-loginbutton"
@@ -71,15 +71,7 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
-            "children": [
-            {
-                "type": "Tab",
-                "label": "Chat",
-                "toolbarLabel": "Chat",
-                "children": [{
-                    "type": "Chat"
-                }]
-            }]
+            "children": []
         }]
     }
 }

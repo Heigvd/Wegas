@@ -71,11 +71,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *
          * @method sendRequest
          */
-        sendRequest: function (requestCfg) {
+        sendRequest: function ( requestCfg ) {
             requestCfg.callback = requestCfg.callback || {
                 success: this._successHandler,
                 failure: this._failureHandler
             };
+            if ( requestCfg.cfg && Y.Lang.isObject( requestCfg.cfg.data ) ) {
+                requestCfg.cfg.data = Y.JSON.stringify( requestCfg.cfg.data )
+            }
             requestCfg.cfg = requestCfg.cfg || {};
             requestCfg.cfg.headers =  requestCfg.cfg.headers || {};
             Y.mix( requestCfg.cfg.headers, DEFAULTHEADERS );
@@ -131,7 +134,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *  @return {Boolean} `true` if object could be located and method applied
          *  @for DataSourceREST
          */
-        updateCache: function (method, entity) {
+        updateCache: function ( method, entity ) {
             var ret = null;
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.DataSourceRest");
             switch (method) {
@@ -294,7 +297,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         deleteObject: function (entity) {
             this.sendRequest({
-                request: this.generateRequest(entity.toObject2()),
+                request: this.generateRequest(entity.toObject()),
                 cfg: {
                     method: "DELETE"
                 }
@@ -596,6 +599,72 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
+    /**
+     *
+     */
+    var UserDataSourceREST = function () {
+        UserDataSourceREST.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.extend( UserDataSourceREST, DataSourceREST, {
+
+        walkEntity: function( entity, callback ) {
+            if ( entity.get( "accounts" ) ) {
+                if ( callback(entity.get( "accounts" ) ) ) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+//      updateCache: function ( method, entity ) {
+//
+//            for
+//            VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
+//       },
+
+        put: function ( data, callback) {
+            if ( data[ '@class' ] === "JpaAccount" ) {
+                this.sendRequest({
+                    request: '/Account/' + data.id,
+                    cfg: {
+                        method: "PUT",
+                        data: Y.JSON.stringify( data )
+                    },
+                    callback: callback
+                });
+                return;
+            } else {
+                VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
+            }
+        },
+
+        post: function ( data, parentData, callback ) {
+
+            if ( data["@class"] === "JpaAccount" ) {                            // Allow user creation based on a Jpa Account
+                data = {
+                    "@class": "User",
+                    "accounts": [ data ]
+                };
+            }
+
+            this.sendRequest({
+                request: "",
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify( data )
+                },
+                callback: callback
+            });
+        }
+
+    }, {
+        NS: "rest",
+        NAME: "UserDataSourceREST"
+    });
+
+    Y.namespace('Plugin').UserDataSourceREST = UserDataSourceREST;
+
 
     PageDataSourceREST = function () {
         PageDataSourceREST.superclass.constructor.apply(this, arguments);

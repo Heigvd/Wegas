@@ -1,17 +1,23 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
 package com.wegas.core.security.servlet;
 
+import com.wegas.core.security.actions.Actions;
 import java.io.IOException;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.shiro.ShiroException;
-import com.wegas.core.security.actions.Actions;
-import org.apache.shiro.web.servlet.ShiroFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

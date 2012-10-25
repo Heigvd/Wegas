@@ -227,12 +227,19 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
         setValue: function ( val ) {
             console.log( "VariableDescriptorSelect.setValue", val );
         },
-        getValue: function () {
-            var l = this.inputs.length;
-            return "VariableDescriptorFacade.find(" + this.inputs[ l - 3].getValue() + ")" +
-                "." + this.inputs[ l - 2 ].getValue() +
-                "(" + this.inputs[ l - 1 ].getValue().join( ", ") + ")";
 
+        getValue: function () {
+            var i, l = this.inputs.length,
+            args = this.inputs[ l - 1 ].getValue();
+
+            for ( i = 0; i < args.length; i = i + 1 ) {
+                if ( this.currentMethod.arguments[i].scriptType === "string" ) {
+                    args[i] = '"' + args[i] + '"';
+                }
+            }
+            return "VariableDescriptorFacade.find(" + this.inputs[ l - 3].getValue() + ")" +
+            "." + this.inputs[ l - 2 ].getValue() +
+            "(" + args.join( ", ") + ")";
         },
         getEntityId: function () {
             return this.inputs[ this.inputs.length - 3 ].getValue();
@@ -258,11 +265,27 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 args[i].entity = this.currentEntity;                            // Adds a reference to the target entity to the argument Fields;
             }
 
-            this.addField( {
+            this.currentMethod = cMethod;
+
+            this.addField( Y.mix({
                 type: "combine",
                 fields: args,
-                value: this.options.arguments
-            } );
+                value: this.options.arguments,
+                label: null
+            }, cMethod ) );
+
+        // Same as above, but using json object format for method definitions
+        //var schemaMap = {
+        //    Entity: {
+        //        type: "array",
+        //        items: cMethod.arguments
+        //    }
+        //}, builder = new Y.inputEx.JsonSchema.Builder({
+        //    'schemaIdentifierMap': schemaMap,
+        //    'defaultOptions':{
+        //        'showMsg':true
+        //    }
+        //}), field  = builder.schemaToInputEx( schemaMap.Entity );
         },
         /**
          *
@@ -303,7 +326,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
             this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
             ret.push( this.generateSelectConfig( null,                          // Pushes the current entity to the fields stack
-            currentEntity, currentEntity.get( "items" ) ) );
+                currentEntity, currentEntity.get( "items" ) ) );
 
             if ( currentEntity.parentDescriptor ) {                             // Add its hierarchy
                 while ( currentEntity.parentDescriptor ) {
@@ -312,7 +335,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 }
             }
             ret.push( this.generateSelectConfig( currentEntity,                 // And finally the root context (entities that are at the root of the gameModel
-            null, rootEntities ) );
+                null, rootEntities ) );
 
             return ret.reverse();
         },
@@ -344,7 +367,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 for ( i = 0 ; i < items.length ; i++ ) {
                     choices.push({
                         value: items[i].get( "id" ),
-                        label: items[i].get( "name" )
+                        label: items[i].getPrivateLabel()
                     });
                 }
             }
@@ -385,13 +408,13 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
      * @extends VariableDescriptorSelect
      * @param {Object} options InputEx definition object
      */
-    var VariableDescriptorMethodSelect = function(options) {
-        VariableDescriptorMethodSelect.superclass.constructor.call(this, options);
-    };
-
-    Y.extend( VariableDescriptorMethodSelect, VariableDescriptorSelect, {});
-
-    inputEx.registerType("variabledescriptormethodselect", VariableDescriptorMethodSelect, {});
+    //var VariableDescriptorMethodSelect = function(options) {
+    //    VariableDescriptorMethodSelect.superclass.constructor.call(this, options);
+    //};
+    //
+    //Y.extend( VariableDescriptorMethodSelect, VariableDescriptorSelect, {});
+    //
+    //inputEx.registerType("variabledescriptormethodselect", VariableDescriptorMethodSelect, {});
 
 
     /**
@@ -408,7 +431,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
         this.addButton.render( this.divEl.parentNode );
         parentNode.prepend( this.addButton.get( "boundingBox" ) );
     };
-    Y.extend(ListField, inputEx.Group, {
+    Y.extend( ListField, inputEx.Group, {
 
         /**
 	 * Set the ListField classname
@@ -450,9 +473,11 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
             removebutton = new Y.Wegas.Button({
                 label: '<span class="wegas-icon wegas-icon-remove"></span>'
             });
+
             removebutton.targetField = fieldInstance;
             removebutton.render( fieldInstance.divEl );
             removebutton.on( "click", this.onRemove, this);
+
             return fieldInstance;
         },
 
@@ -478,7 +503,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
 
     });
 
-    inputEx.registerType("inputlist", ListField);
+    inputEx.registerType( "inputlist", ListField);
 
 
     /**
@@ -498,7 +523,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
 	 */
         setOptions: function(options) {
             var i, results = options.entity ? options.entity.get( "results" ) :
-                Y.Plugin.EditEntityAction.currentEntity.get( "results" );
+            Y.Plugin.EditEntityAction.currentEntity.get( "results" );
             options.choices = [];
 
             for ( i = 0; i < results.length; i = i + 1 ) {
@@ -510,7 +535,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 }else{
                     options.choices.push({
                         value: results[i].get( "id"  ),
-                        label: results[i].get( "name" )
+                        label: results[i].getPrivateLabel()
                     });
                 }
 

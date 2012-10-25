@@ -65,10 +65,10 @@ YUI.add('wegas-widgetmenu', function (Y) {
 
                 }
                 //else {
-                    host.get( "contentBox" ).delegate( "mouseleave", function () {
-                        this.menu.startMenuHideTimer( false );
-                    }, this.get( "selector" ), this )
-               // }
+                host.get( "contentBox" ).delegate( "mouseleave", function () {
+                    this.menu.startMenuHideTimer( false );
+                }, this.get( "selector" ), this )
+            // }
             }
             return this.menu;
         }
@@ -113,7 +113,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             renderUI: function () {
                 var bb = this.get( "boundingBox" );
 
-                bb.on( "clickoutside", this.hide, this );
+                bb.on( "clickoutside", this.clickOutside, this );
                 bb.on( "click", this.menuClick, this );
                 bb.on( "mouseenter", this.cancelMenuTimer, this );
                 bb.on( "mouseleave", this.startMenuHideTimer, this );
@@ -125,6 +125,9 @@ YUI.add('wegas-widgetmenu', function (Y) {
                     }, this);
             },
 
+            hide: function () {
+                Y.Wegas.Menu.superclass.hide.call( this );
+            },
             // *** Public methods *** //
             /**
             *
@@ -138,6 +141,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
 
                 //node.on( "mouseenter", this.show, this);
                 //node.on( "mouseleave", this.hide, this);
+                this.currentNode = node;
 
                 this.set( "align", {
                     node: node,
@@ -146,7 +150,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
 
                 this.cancelMenuTimer();
                 this.show();
-                console.log("attachTo", this.get("contentBox").one("button").getHTML());
+            // console.log("attachTo", this.get("contentBox").one("button").getHTML());
             },
 
             // *** Private methods *** //
@@ -155,8 +159,14 @@ YUI.add('wegas-widgetmenu', function (Y) {
                 this.fire( "menuClick" );
             },
 
+            clickOutside: function ( e ) {
+                if ( this.currentNode !== e.target ) {
+                    this.hide();
+                }
+            },
+
             startMenuHideTimer: function ( fireEvent ) {
-                console.log("startMenuHideTimer",this.get("contentBox").one("button").getHTML());
+                //console.log("startMenuHideTimer",this.get("contentBox").one("button").getHTML());
                 this.cancelMenuTimer();
                 this.timer = Y.later( 500, this, this.hide );
 
@@ -165,7 +175,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
                 }
             },
             cancelMenuTimer: function () {
-                console.log("cancelMenuTimer", this.get("contentBox").one("button").getHTML());
+                //console.log("cancelMenuTimer", this.get("contentBox").one("button").getHTML());
                 if ( this.timer ) {
                     this.timer.cancel();
                 }

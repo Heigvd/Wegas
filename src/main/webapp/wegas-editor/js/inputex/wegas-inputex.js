@@ -28,6 +28,7 @@ YUI.add('wegas-inputex', function(Y) {
     YUI_config.groups.inputex.modulesByType.wegasurl = "wegas-inputex-url";
     YUI_config.groups.inputex.modulesByType.script = "wegas-inputex-wysiwygscript";
     YUI_config.groups.inputex.modulesByType.entityarrayfieldselect = "wegas-inputex-wysiwygscript"
+    YUI_config.groups.inputex.modulesByType.roleselect = "wegas-inputex-roleselect"
 
     /**
      *  @hack So we can easily change classs on inputex fields
@@ -93,7 +94,7 @@ YUI.add('wegas-inputex', function(Y) {
         this.options.maxLength = options.maxLength;
         this.options.minLength = options.minLength;
         this.options.typeInvite = options.typeInvite;
-        if (!this.options.required && !this.options.typeInvite) { // !!!MODIFIED!!!
+        if (!this.options.required && this.options.typeInvite === undefined) { // !!!MODIFIED!!!
             this.options.typeInvite = "optional";
         }
         this.options.readonly = options.readonly;

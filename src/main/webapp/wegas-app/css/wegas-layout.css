@@ -36,8 +36,11 @@
 .yui3-skin-sam .wegas-layout-right > .yui3-widget {
     position: relative;
 }
-.yui3-skin-sam .wegas-layout-content > .yui-widget-bd {
+.yui3-skin-sam .wegas-layout-content .wegas-layout-bd {
     position: relative;
+}
+.yui3-skin-sam .wegas-layout-content .wegas-layout-bd > div {
+    background: white;
 }
 .yui3-skin-sam .wegas-layout-center {
     margin-right: 6px;

@@ -116,7 +116,7 @@ YUI.add('wegas-editor-action', function (Y) {
             EditEntityAction.callback = callback;
             EditEntityAction.currentEntity = entity;
 
-            if ( !EditEntityAction.tab ) {
+            if ( !EditEntityAction.tab ) {                                      // First make sure the edit tab exists
                 EditEntityAction.tab = Y.Wegas.TabView.createTab( "Edit", '#rightTabView' );
                 //EditEntityAction.tab = Y.Wegas.TabView.createTab("Edit", '#centerTabView');
                 EditEntityAction.form = new Y.Wegas.FormWidget();
@@ -129,20 +129,25 @@ YUI.add('wegas-editor-action', function (Y) {
                 EditEntityAction.form.on( "cancel", EditEntityAction.hideEditForm, EditEntityAction );
                 EditEntityAction.tab.add( EditEntityAction.form );
             }
+
             EditEntityAction.tab.set( "selected", 2 );
             EditEntityAction.form.emptyMessage();
-            EditEntityAction.form.setForm( entity.toObject2(), entity.getFormCfg() );
+            EditEntityAction.form.setForm( entity.toObject(), entity.getFormCfg() );
+
+            Y.Wegas.app.widget.showPosition( "right" );                         // Finally show the layout widget position
         },
 
         /**
          *
          */
         hideEditForm: function () {
-            EditEntityAction.tab.get( "parent" ).selectChild( 0 );
-            Y.Wegas.TabView.destroyTab(EditEntityAction.tab.get("id"));
+            //EditEntityAction.tab.get( "parent" ).selectChild( 0 );
+            //Y.Wegas.TabView.destroyTab( EditEntityAction.tab.get( "id" ) );
             // EditEntityAction.tab.destroy();
-            delete EditEntityAction.tab;
-            delete EditEntityAction.form;
+            //delete EditEntityAction.tab;
+            //delete EditEntityAction.form;
+
+            Y.Wegas.app.widget.hidePosition( "right" );
         },
 
         /**
@@ -194,7 +199,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
         showAddForm: function (entity, parentData, dataSource) {
             EditEntityAction.showEditForm( entity, function ( newVal ) {
-                dataSource.rest.post(newVal, (parentData) ? parentData.toObject2() : parentData , {
+                dataSource.rest.post(newVal, (parentData) ? parentData.toObject() : parentData , {
                     success: function ( e ) {
                         EditEntityAction.hideEditFormOverlay();
                         EditEntityAction.showUpdateForm( e.response.entity, dataSource );
@@ -237,7 +242,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
                         entity.setAttrs( newVal );
 
-                        dataSource.rest.put( parentEntity.toObject2(), {
+                        dataSource.rest.put( parentEntity.toObject(), {
                             success: function () {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage( "success", "Item has been updated" );
@@ -258,7 +263,7 @@ YUI.add('wegas-editor-action', function (Y) {
                         newEntity.setAttrs( newVal);
                         entity.get( this.get( "attributeKey" ) ).push( newEntity );
 
-                        dataSource.rest.put( entity.toObject2(), {
+                        dataSource.rest.put( entity.toObject(), {
                             success: function () {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage( "success", "Item has been added" );
@@ -282,7 +287,7 @@ YUI.add('wegas-editor-action', function (Y) {
                             }
                             return false;
                         });
-                        dataSource.rest.put( parentEntity.toObject2() );
+                        dataSource.rest.put( parentEntity.toObject() );
                     } else {
                         return;
                     }

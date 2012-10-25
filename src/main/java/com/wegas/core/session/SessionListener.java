@@ -4,7 +4,6 @@
  */
 package com.wegas.core.session;
 
-import javax.ejb.EJB;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -14,10 +13,10 @@ import javax.servlet.http.HttpSessionListener;
  * @author maxence
  */
 public class SessionListener implements HttpSessionListener {
-     
+
 
     /**
-     * 
+     *
      * @param se
      */
     @Override
@@ -27,7 +26,7 @@ public class SessionListener implements HttpSessionListener {
     }
 
     /**
-     * 
+     *
      * @param se
      */
     @Override

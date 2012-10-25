@@ -21,7 +21,7 @@ import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskInstance;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
-import com.wegas.messaging.persistence.variable.InboxInstance;
+import com.wegas.messaging.persistence.InboxInstance;
 import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
@@ -104,8 +104,6 @@ abstract public class VariableInstance extends AbstractEntity {
 //    public Long getId() {
 //        return id;
 //    }
-
-
     /**
      * @return the scope
      */
@@ -125,7 +123,7 @@ abstract public class VariableInstance extends AbstractEntity {
      * @return the scope
      */
     @XmlTransient
-     @JsonIgnore
+    @JsonIgnore
     public VariableDescriptor getDescriptor() {
         return this.getScope().getVariableDescriptor();
     }

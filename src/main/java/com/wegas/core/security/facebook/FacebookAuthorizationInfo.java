@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -21,17 +21,17 @@ public class FacebookAuthorizationInfo implements AuthorizationInfo {
 
     @Override
     public Collection<String> getRoles() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null;
     }
 
     @Override
     public Collection<String> getStringPermissions() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null;
     }
 
     @Override
     public Collection<Permission> getObjectPermissions() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null;
     }
 
 }

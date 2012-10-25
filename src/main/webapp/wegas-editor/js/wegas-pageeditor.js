@@ -132,7 +132,7 @@ YUI.add('wegas-pageeditor', function (Y) {
         showOverlay: function( widget ) {
             var targetNode = widget.get( BOUNDINGBOX );
 
-            if ( !widget.toObject2 ) {
+            if ( !widget.toObject ) {
                 return;
             }
 

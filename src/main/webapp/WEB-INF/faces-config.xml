@@ -15,8 +15,18 @@
         </locale-config>
 
         <resource-bundle>
-            <base-name>wegas-app.Bundle</base-name>
+            <base-name>wegas</base-name>
+            <var>wegasConfig</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>com.wegas.app.messages</base-name>
             <var>wegasAppBundle</var>
+        </resource-bundle>
+
+        <resource-bundle>
+            <base-name>com.wegas.app.errors</base-name>
+            <var>wegasAppErrors</var>
         </resource-bundle>
 
     </application>

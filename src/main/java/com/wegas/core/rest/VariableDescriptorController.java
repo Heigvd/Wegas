@@ -32,9 +32,10 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor")
-public class VariableDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
+public class VariableDescriptorController extends AbstractRestController<VariableDescriptorFacade, VariableDescriptor> {
 
-    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorController.class);;
+    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorController.class);
+    ;
     /**
      *
      */
@@ -53,16 +54,16 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<AbstractEntity> index() {
+    public Collection<VariableDescriptor> index() {
         Long gameModelId = this.getGameModelId();
         GameModel gameModel = gameModelFacade.find(gameModelId);
-        return (Collection) gameModel.getChildVariableDescriptors();
+        return gameModel.getChildVariableDescriptors();
     }
 
     @Override
-    public AbstractEntity create(AbstractEntity entity) {
+    public VariableDescriptor create(VariableDescriptor entity) {
         this.variableDescriptorFacade.create(new Long(this.getPathParam("gameModelId")),
-                (VariableDescriptor) entity);
+                entity);
         return entity;
     }
 

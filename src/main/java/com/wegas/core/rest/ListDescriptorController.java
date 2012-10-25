@@ -11,7 +11,6 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ListDescriptor/")
-public class ListDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
+public class ListDescriptorController extends AbstractRestController<VariableDescriptorFacade, ListDescriptor> {
 
     /**
      *

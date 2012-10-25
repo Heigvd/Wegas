@@ -13,6 +13,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.exception.WegasException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
@@ -32,7 +33,7 @@ import javax.ws.rs.core.Response;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
-public class QuestionController extends AbstractRestController<QuestionDescriptorFacade> {
+public class QuestionController extends AbstractRestController<QuestionDescriptorFacade, QuestionDescriptor> {
 
     /**
      *

@@ -18,6 +18,19 @@ input[type="submit"], input[type="reset"] {
     cursor: pointer;
 }
 
+/*  App styles */
+.wegas-title {
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1.3em;
+    color: #6E6E6E;
+    background: url(../images/wegas-logoicon-30.png) no-repeat;
+    padding: 0px 0 0 36px;
+    margin: 8px 6px 6px 10px;
+    height: 30px;
+    text-shadow: 1px 0 1px lightgray, 0 1px 1px lightgray;
+}
+
 /* Y.Wegas.Widget extension styles */
 .wegas-widget-loading {
     background: rgba(255, 255, 255, 0.8) url(../images/loading.gif) center center no-repeat;
@@ -78,10 +91,10 @@ input[type="submit"], input[type="reset"] {
     -moz-binding: url('xbl.xml#wordwrap'); /* Firefox (using XBL) */
 }
 .wegas-systemmessage > .success .icon {
-    background: url(../../wegas-editor/images/wegas-icon-success-48.png) no-repeat;
+    background: url(../images/wegas-icon-success-48.png) no-repeat;
 }
 .wegas-systemmessage > .error .icon {
-    background: url(../../wegas-editor/images/wegas-icon-error-48.png) no-repeat;
+    background: url(../images/wegas-icon-error-48.png) no-repeat;
 }
 
 /* */
@@ -94,9 +107,8 @@ input[type="submit"], input[type="reset"] {
 .wegas-status-message{
     color: gray;
     float: right;
-    position: absolute;
-    right: 10px;
-    bottom: 5px;
+    margin-top: 6px;
+    margin-right: 5px;
     text-shadow: 1px 1px 0px #DDD;
     font-size: 11px;
 }
