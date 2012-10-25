@@ -646,11 +646,11 @@
 
         <addForeignKeyConstraint baseColumnNames="gamemodelid" baseTableName="widget" baseTableSchemaName="public" constraintName="fk_widget_gamemodelid" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="gamemodelid" referencedTableName="gamemodel" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
 
-        <createSequence schemaName="public" sequenceName="mcqvarinstrep_seq"/>
+        <createSequence schemaName="public" sequenceName="mcqvarinstrep_seq" incrementBy="50" startValue="50"/>
 
-        <createSequence schemaName="public" sequenceName="seq_gen_sequence"/>
+        <createSequence schemaName="public" sequenceName="seq_gen_sequence" incrementBy="50" startValue="50"/>
 
-        <createSequence schemaName="public" sequenceName="widget_seq"/>
+        <createSequence schemaName="public" sequenceName="widget_seq" incrementBy="50" startValue="50"/>
         <insert tableName="sequence">
             <column name="seq_name" value="SEQ_GEN"/>
             <column name="seq_count" value="0"/>
