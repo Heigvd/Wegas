@@ -18,15 +18,27 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class Views {
 
     /**
-     * Extend view (w/ impacts and stuff
+     * Index minimal (w/ with ids)
+     */
+    public static interface IndexI {
+    }
+
+    /**
+     * Extended (w/ blob texts)
+     */
+    public static interface ExtendedI {
+    }
+
+    /**
+     * Extend view (w/ scripts, impacts)
      */
     public static interface EditorI {
     }
 
     /**
-     * Extend view (w/ impacts and stuff
+     * Full export
      */
-    public static interface IndexI {
+    public static interface ExportI {
     }
 
     /**
@@ -50,13 +62,13 @@ public class Views {
     /**
      *
      */
-    public static class Export extends Public implements EditorI {
+    public static class Editor extends Public implements IndexI, EditorI {
     }
 
     /**
      *
      */
-    public static class Editor extends Public implements EditorI {
+    public static class Export implements EditorI, ExportI {
     }
 
     /**

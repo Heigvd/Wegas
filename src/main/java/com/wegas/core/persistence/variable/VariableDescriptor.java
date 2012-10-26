@@ -39,8 +39,11 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
-@Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"rootgamemodel_id", "name"}))
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"gamemodel_id", "name"}) // Name has to be unique for the whole game model
+//    @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"}),             // Names have to be unique at the base of a game model (root elements)
+//    @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})              // Names have to be unique within a list
+})
 @NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptor variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
@@ -63,7 +66,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @Id
     @Column(name = "variabledescriptor_id")
     @GeneratedValue
-    @JsonView({Views.EditorI.class, Views.Private.class})
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *
@@ -229,9 +232,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @param scope the scope to set
-     * @fixme here we cannot use managed references since this.class is
-     * abstract.
+     * @param scope the scope to set @fixme here we cannot use managed
+     * references since this.class is abstract.
      */
     //@JsonManagedReference
     public void setScope(AbstractScope scope) {
@@ -287,7 +289,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
             if (this.editorLabel.isEmpty() || this.editorLabel == null) {
                 this.editorLabel = this.name;
             }
-        } catch (NullPointerException ex) {
+        }
+        catch (NullPointerException ex) {
             this.editorLabel = this.name;
         }
     }

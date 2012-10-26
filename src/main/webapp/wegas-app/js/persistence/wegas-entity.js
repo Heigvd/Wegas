@@ -74,7 +74,7 @@ YUI.add('wegas-entity', function (Y) {
             }) : e;
 
         },
-        
+
         /**
          * Create a new Object from this entity
          * may be used by revive
@@ -415,6 +415,12 @@ YUI.add('wegas-entity', function (Y) {
         //    label: "Properties"
         //},
         {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
             type: "DeleteEntityButton"
         }]
     });
