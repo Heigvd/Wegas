@@ -53,7 +53,7 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
         },
         
         displayDescription: function(e){
-            var i, name, tasks, node, divDesc, taskDesc, description;
+            var i, name, label, tasks, node, divDesc, taskDesc, description;
             node = e.currentTarget;
             if(this.get("viewDescription") == "false"
                 || node.one(".description")
@@ -64,12 +64,13 @@ YUI.add( "wegas-pmg-tasklist", function ( Y ) {
             for (i = 0; i < tasks.get('items').length; i++) {
                 taskDesc = tasks.get('items')[i];
                 if(taskDesc.get('name') === name){
+                    label = (taskDesc.get("label") || name);
                     description = taskDesc.get("description");
                     break;
                 } 
             }
             divDesc = Y.Node.create("<div class='description'></div>");
-            divDesc.append("<p class='task_name'>"+name+"</p>").append("<p class='content'>"+description+"</p>");
+            divDesc.append("<p class='task_name'>"+label+"</p>").append("<p class='content'>"+description+"</p>");
             node.append(divDesc);
         },
         

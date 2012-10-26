@@ -242,7 +242,7 @@
                 ],
                 "columnValues":[
                     "no",
-                    "name",
+                    "label",
                     "duration",
                     "realized"
                 ],
@@ -264,7 +264,7 @@
                 ],
                 "columnValues":[
                     "no",
-                    "name",
+                    "label",
                     "realized"
                 ],
                 "viewDescription":"true",
@@ -289,14 +289,16 @@
                             "Motivation"
                         ],
                         "columnValues":[
-                            "name",
+                            "label",
                             "grade",
                             "wage",
                             "ratio",
                             "motivation"
                         ],
                         "viewDescription":"true",
-                        "periods":"currentPeriod.items[currentPhase.value].descriptorId"
+                        "periods":"currentPeriod.items[currentPhase.value].descriptorId",
+                        "taskList":"tasks",
+                        "taskSortBy":"no"
                     }]  
             },{
                 "type":"PmgSlidePanel",
@@ -313,13 +315,15 @@
                         ],
                         "columnValues":[
                             "name",
-                            "grade",
+                            "label",
                             "wage",
                             "ratio",
                             "motivation"
                         ],
                         "viewDescription":"true",
-                        "periods":"currentPeriod.items[currentPhase.value].descriptorId"
+                        "periods":"currentPeriod.items[currentPhase.value].descriptorId",
+                        "taskList":"tasks",
+                        "taskSortBy":"no"
                     }]  
             }]
     },{

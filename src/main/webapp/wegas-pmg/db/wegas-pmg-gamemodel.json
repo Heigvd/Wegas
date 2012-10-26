@@ -214,7 +214,9 @@
             },
             "items":[{
                 "@class": "ResourceDescriptor",
-                "name": "Marcel",
+                "name":"marcel",
+                "editorLabel":"Marcel",
+                "label":"Marcel",
                 "description":"Description de Marcel",
                 "defaultInstance":{
                     "@class":"ResourceInstance",
@@ -233,7 +235,9 @@
                 }
             },{
                 "@class": "ResourceDescriptor",
-                "name": "Béatrice",
+                "name":"beatrice",
+                "editorLabel":"Béatrice",
+                "label":"Béatrice",
                 "description":"Description de Béatrice",
                 "defaultInstance":{
                     "@class":"ResourceInstance",
@@ -264,7 +268,9 @@
             },
             "items":[{
                 "@class": "ResourceDescriptor",
-                "name": "Claude",
+                "name":"claude",
+                "editorLabel":"Claude",
+                "label":"Claude",
                 "description":"Description de Claude",
                 "defaultInstance":{
                     "@class":"ResourceInstance",
@@ -283,7 +289,9 @@
                 }
             },{
                 "@class": "ResourceDescriptor",
-                "name": "Michael",
+                "name":"michael",
+                "editorLabel":"Michael",
+                "label":"Michael",
                 "description":"Description de Michael",
                 "defaultInstance":{
                     "@class":"ResourceInstance",
@@ -302,7 +310,9 @@
                 } 
             },{
                 "@class": "ResourceDescriptor",
-                "name": "Lucie",
+                "name":"lucie",
+                "editorLabel":"Lucie",
+                "label":"Lucie",
                 "description":"Description de Lucie",
                 "defaultInstance":{
                     "@class":"ResourceInstance",
@@ -336,14 +346,14 @@
         "items":[{
             "@class":"TaskDescriptor",
             "name":"test",
-            "editorLabel":"test",
-            "label":"",
+            "editorLabel":"Test",
+            "label":"Test",
             "defaultInstance":{
                 "@class":"TaskInstance",
                 "active":true,
                 "duration":2,
                 "properties":{
-                    "realized":"60",
+                    "realized":"100",
                     "no":"3"
                 },
                 "skillset":{}
@@ -356,8 +366,8 @@
         },{
             "@class":"TaskDescriptor",
             "name":"task2",
-            "editorLabel":"task2",
-            "label":"",
+            "editorLabel":"Task 2",
+            "label":"Task 2",
             "defaultInstance":{
                 "@class":"TaskInstance",
                 "active":true,

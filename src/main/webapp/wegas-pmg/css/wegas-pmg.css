@@ -545,8 +545,6 @@ h2{
 .resources-page .slidepanel-content{
     overflow:hidden;
     width:100%;
-    border:solid black;
-    border-width:1px 0 1px 0;
 }
 
 .resources-page .slidepanel-title{
@@ -555,12 +553,47 @@ h2{
     background-color: white; 
     height:26px;
     width:100%;
+    border:solid black;
+    border-width: 1px 0 0 0;
 }
 
-.resources-page .assignement{
+.resources-page .noDescription{
+    cursor:default;
+}
+
+.resources-page .yui3-datatable-col-assignements span:hover{
+    box-shadow:0px 0px 0px 1px rgba(0, 0, 0, 0.251) inset, 0px 2px 0px rgba(255, 255, 255, 0.298) inset, 0px 1px 2px rgba(0, 0, 0, 0.149);
+    border-radius: 8px;
+    cursor:pointer;
+}
+
+.resources-page .yui3-datatable-col-assignements .assignement{
     display:inline-block;
-    background-image: url(/Wegas/wegas-pmg/images/add.png);
+    width:20%;
+    text-align: center;
+}
+
+.resources-page .yui3-datatable-col-assignements .assignement span{
+    display:inline-block;
     background-repeat: no-repeat;    
     height:16px;
     width:16px;
+}
+
+.resources-page .yui3-datatable-col-assignements .assignement .assign{
+    background-image: url(/Wegas/wegas-pmg/images/add.png);
+}
+
+.resources-page .yui3-datatable-col-assignements .assignement .remove{
+    background-image: url(/Wegas/wegas-pmg/images/remove.png);
+}
+
+.resources-page .yui3-datatable-col-assignements .tasks{
+    display:inline-block;
+    width:80%;
+}
+
+.resources-page .yui3-datatable-col-assignements .task{
+    display:inline-block;
+    padding: 0 5px;
 }

@@ -24,7 +24,7 @@ YUI.add( "wegas-pmg-datatable", function ( Y ) {
         
         //*** Private Methods ***/
         getData: function(){
-            var i, j, variables, variableDesc, variableInst, oneRowDatas,
+            var i, j, variables, variableDesc, variableInst, oneRowDatas, data,
             ct = this.get("columnTitles"), cv = this.get("columnValues");
             if(cv == null) return;
             variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
@@ -35,12 +35,17 @@ YUI.add( "wegas-pmg-datatable", function ( Y ) {
                 oneRowDatas["_name"] = variableDesc.get("name"); 
                 for (j = 0; j< ct.length; j++) {
                     if(variableDesc.get(cv[j])){
-                        oneRowDatas[ct[j]] = variableDesc.get(cv[j]);
+                        data = variableDesc.get(cv[j]);
                     }else if(variableInst.get(cv[j])){
-                        oneRowDatas[ct[j]] = variableInst.get(cv[j]);
+                        data = variableInst.get(cv[j]);
                     }else {
-                        oneRowDatas[ct[j]] = variableInst.get('properties')[cv[j]];
+                        data = variableInst.get('properties')[cv[j]];
                     }
+                    //change texte-number in number to prepare the value to be sorted.
+                    if(parseFloat(data)){
+                        data = parseFloat(data);
+                    }
+                    oneRowDatas[ct[j]] = data;
                 }
                 this.data.push(oneRowDatas);
             }
