@@ -376,7 +376,7 @@ YUI().use(function (Y) {
                     
                     'wegas-pmg-resourcelist':{
                         path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
-                        requires:['wegas-pmg-resourcelist', 'wegas-pmg-gantt'],
+                        requires:['wegas-pmg-resourcelist', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
                         ix_provides: "PmgResourcelist"
                     },   
                     
