@@ -115,7 +115,7 @@ YUI.add('wegas-pageloader', function (Y) {
             }
         },
 
-        pageLoaderInstances: [],
+        pageLoaderInstances: {},
         find: function (id) {
             return PageLoader.pageLoaderInstances[id];
         }
