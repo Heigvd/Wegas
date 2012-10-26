@@ -353,6 +353,11 @@ YUI().use(function (Y) {
                         requires: [ 'tabview' ],
                         ix_provides: "MCQTabView"
                     },
+                    'wegas-editor-page':{
+                        path:'wegas-editor/js/wegas-editor-page-min.js',
+                        requires: [ 'wegas-datasourcerest' ],
+                        ix_provides: "PageEditor"
+                    },
 
                     /** Project Management Game **/
                     'wegas-projectmanagementgame': {

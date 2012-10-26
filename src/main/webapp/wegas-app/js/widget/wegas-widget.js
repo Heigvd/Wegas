@@ -171,7 +171,7 @@ YUI.add("wegas-widget", function (Y) {
             type:{
                 type:"string",
                 _inputex:{
-                    _type:"hidden"
+                    _type:"uneditable"
                 }
             },
             initialized: {
@@ -246,7 +246,34 @@ YUI.add("wegas-widget", function (Y) {
                         });
                     }
                     return (p.length > 0 ? p : undefined);
+                },
+
+                optional:true,
+                type: "array",
+                items: {
+                    type: "object",
+                    properties:{
+                        "fn":{
+                            type:"string",
+                            _inputex:{
+                                label:"Name",
+                                _type:"select",
+                                choices:(function(){
+                                    var plug=[];for(var i in Y.Plugin){plug.push(i)}
+                                    return plug;
+                                })()
+                            }
+                        },
+                        "cfg":{
+                            type:"object",
+                            properties:{}
+                        }
+                    }
+                },
+                _inputex: {
+                    useButtons: true
                 }
+
             }
         },
         create: function (config) {

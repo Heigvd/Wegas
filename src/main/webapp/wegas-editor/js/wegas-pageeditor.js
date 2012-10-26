@@ -103,24 +103,27 @@ YUI.add('wegas-pageeditor', function (Y) {
         bind: function() {
             var cb = this.get( 'host' ).get( CONTENTBOX );
 
-            this.handlers.push( cb.delegate( "mouseenter", function ( e ) {
-                var widget = Y.Widget.getByNode( e.currentTarget );
+            this.handlers.push( cb.delegate( "mouseover", function ( e ) {
+                var widget;
+                e.halt(true);
+                widget = Y.Widget.getByNode( e.currentTarget );
+
                 if ( widget ) {
                     this.showOverlay( widget );
                 }
-                e.halt();
-            }, '.yui3-widget', this ) );
+
+            }, '.wegas-widget', this ) );
 
             this.handlers.push( cb.delegate( "mouseleave", function(e){
                 //console.log("out", e.currentTarget.get('id'));
                 this.hideOverlay();
                 e.halt();
 
-                var parentWidget = Y.Widget.getByNode( e.currentTarget.get( 'parentNode' ) );
-                if (parentWidget && parentWidget.get( 'root' ) != parentWidget) {
-                    this.showOverlay( parentWidget );
-                }
-            }, '.yui3-widget', this) );
+            //                var parentWidget = Y.Widget.getByNode( e.currentTarget.get( 'parentNode' ) );
+            //                if (parentWidget && parentWidget.get( 'root' ) != parentWidget) {
+            //                    this.showOverlay( parentWidget );
+            //                }
+            }, '.wegas-widget', this) );
         },
 
         detach: function () {
@@ -132,10 +135,11 @@ YUI.add('wegas-pageeditor', function (Y) {
         showOverlay: function( widget ) {
             var targetNode = widget.get( BOUNDINGBOX );
 
-            if ( !widget.toObject ) {
+            if ( !widget.toObject || this.overlayWidget == widget ) {
                 return;
             }
 
+            console.log("Highlight", widget.get('id'));
             this.overlayWidget = widget;
 
             targetNode.prepend( this.highlightOverlay.get( BOUNDINGBOX ) );
