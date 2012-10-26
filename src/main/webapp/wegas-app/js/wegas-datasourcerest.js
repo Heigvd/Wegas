@@ -294,6 +294,16 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 callback: callback
             });
         },
+
+        duplicateObject: function (entity) {
+            this.sendRequest({
+                request: this.generateRequest( entity.toObject() ) + "/Duplicate/",
+                cfg: {
+                    method: "POST"
+                }
+            });
+        },
+
         deleteObject: function (entity) {
             this.sendRequest({
                 request: this.generateRequest(entity.toObject()),

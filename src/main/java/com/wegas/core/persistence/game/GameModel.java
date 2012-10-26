@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
 
@@ -41,6 +42,7 @@ public class GameModel extends NamedEntity {
     @Id
     @Column(name = "gamemodelid")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *
@@ -70,7 +72,8 @@ public class GameModel extends NamedEntity {
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    @JsonView(Views.EditorI.class)
+    //@JsonView(Views.EditorI.class)
+    @JsonIgnore
     private List<Game> games = new ArrayList<Game>();
     /**
      *

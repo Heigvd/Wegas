@@ -10,6 +10,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.AbstractEntity;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -30,7 +31,6 @@ public interface AbstractFacade<T extends AbstractEntity> {
      * @param entity
      */
 //    public void edit(final T entity);
-
     /**
      *
      * @param entityId
@@ -38,6 +38,13 @@ public interface AbstractFacade<T extends AbstractEntity> {
      * @return
      */
     public T update(final Long entityId, final T entity);
+
+    /**
+     *
+     * @param entityId
+     * @return
+     */
+    public T duplicate(final Long entityId) throws IOException;
 
     /**
      *
