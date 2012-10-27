@@ -1,7 +1,7 @@
 /*
  * CEP Styles
  */
- 
+
  /* Global style override */
 .layout {
     margin: 0;
@@ -237,7 +237,7 @@ h3 {
     border: none;
     display: inline-block;
     border-right: 1px solid lightgray;
-    width: 39.9%;
+    width: 39.7%;
 }
 
 .yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-panel {

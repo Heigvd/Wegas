@@ -101,15 +101,15 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      */
     @Override
     public T duplicate(final Long entityId) throws IOException {
-        
+
         ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
 
         T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
 
-        String serialized = mapper.writerWithView(Views.Export.class).
-                writeValueAsString(oldEntity);                                  // Serilize the entity
-        System.out.println(serialized);
+        String serialized = mapper.writerWithView(Views.Export.class)
+                .writeValueAsString(oldEntity);                                  // Serilize the entity
         T newEntity = (T) mapper.readValue(serialized, AbstractEntity.class);   // and deserialize it
+
         this.create(newEntity);                                                 // Store it db
         return newEntity;
     }
