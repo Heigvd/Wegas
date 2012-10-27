@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.ejb.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
@@ -282,16 +283,11 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public void setLabel(String label) {
         this.label = label;
     }
-
-    @PostLoad
-    public void fillEditorLabel() {
-        try {
-            if (this.editorLabel.isEmpty() || this.editorLabel == null) {
-                this.editorLabel = this.name;
-            }
-        }
-        catch (NullPointerException ex) {
-            this.editorLabel = this.name;
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if (this.name == null && this.label != null) {
+            this.name = Helper.encodeVariableName(this.label);
         }
     }
 }

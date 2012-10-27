@@ -10,7 +10,6 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.NamedEntity;
-import com.wegas.core.persistence.layout.Widget;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
@@ -75,12 +74,6 @@ public class GameModel extends NamedEntity {
     //@JsonView(Views.EditorI.class)
     @JsonIgnore
     private List<Game> games = new ArrayList<Game>();
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference("gamemodel-widget")
-    private List<Widget> widgets;
     /**
      * Holds all the scripts contained in current game model.
      *
@@ -237,23 +230,6 @@ public class GameModel extends NamedEntity {
     public void addGame(Game game) {
         this.games.add(game);
         game.setGameModel(this);
-    }
-
-    /**
-     * @return the widgets
-     */
-    @JsonManagedReference("gamemodel-widget")
-    @XmlTransient
-    public List<Widget> getWidgets() {
-        return widgets;
-    }
-
-    /**
-     * @param widgets the widgets to set
-     */
-    @JsonManagedReference("gamemodel-widget")
-    public void setWidgets(List<Widget> widgets) {
-        this.widgets = widgets;
     }
 
     /**
