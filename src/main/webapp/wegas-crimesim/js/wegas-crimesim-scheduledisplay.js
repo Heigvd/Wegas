@@ -88,6 +88,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 cb.delegate( "click", function (e) {                            // Show the question detail on left label click
                     var questionId = e.target.ancestor( "tr" ).getAttribute( "data-questionid" );
                     this.currentQuestionId = questionId;
+                    e.target.addClass( "schedule-leftcolum-selected" );
                     this.syncDetailsPanel();
                 }, "td.schedule-leftcolum", this);
 
@@ -342,10 +343,12 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 return ret.join("");
             },
             hideDetails: function () {
-                this.get(CONTENTBOX).one(".schedule-detail").setStyles({
+                var cb = this.get(CONTENTBOX);
+                cb.one(".schedule-detail").setStyles({
                     position: 'display',
                     display: "none"
                 });
+                cb.all(".schedule-leftcolum-selected" ).removeClass("schedule-leftcolum-selected");
                 this.currentQuestionId = null;
             },
 
