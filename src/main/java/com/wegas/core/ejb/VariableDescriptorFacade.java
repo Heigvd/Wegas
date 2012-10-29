@@ -12,6 +12,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.persistence.User;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -60,6 +61,15 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         }
         this.gameModelFacade.find(gameModelId).addVariableDescriptor(variableDescriptor);
         //super.create(variableDescriptor);
+    }
+    @Override
+    public VariableDescriptor duplicate(final Long entityId) throws IOException {
+        try {
+            return super.duplicate(entityId);
+        } catch (Exception e) {
+            System.out.println("mmm");
+            return null;
+        }
     }
 
     /**

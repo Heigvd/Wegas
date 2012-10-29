@@ -158,8 +158,14 @@
     cursor: pointer;
     padding: 4px 10px;
 }
+
 .schedule-table td.schedule-leftcolum:hover {
     background: lightgray;
+}
+.schedule-table td.schedule-leftcolum-selected {
+    cursor: auto;
+    background:#6D6D6D;
+    color:white;
 }
 .schedule-table .schedule-maincolum {
     width:60px;

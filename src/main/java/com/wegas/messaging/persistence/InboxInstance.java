@@ -64,9 +64,17 @@ public class InboxInstance extends VariableInstance {
      *
      * @param message
      */
-    public void addMessage(Message message) {
+    public void sendMessage(Message message) {
         this.messages.add(message);
         message.setMailboxInstanceEntity(this);
+    }
+
+    /**
+     *
+     * @param message
+     */
+    public void sendMessage(String from, String subject, String body) {
+        this.sendMessage(new Message(from, subject, body));
     }
 
     @Override
