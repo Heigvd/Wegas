@@ -12,9 +12,7 @@ package com.wegas.core.jcr.page;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -42,15 +40,21 @@ public class Pages implements Serializable {
         this.connector = new PageConnector();
     }
 
-    public List<Integer> getIndex() throws RepositoryException {
+    public Map<Integer, String> getIndex() throws RepositoryException {
         if (!this.connector.exist(this.gameModelName)) {
             return null;
         }
         NodeIterator it = this.connector.listChildren(this.gameModelName);
-        List<Integer> ret = new ArrayList<>();
+        Map<Integer, String> ret = new HashMap<>();
+        Node n;
+        String name;
         while (it.hasNext()) {
-            Node n = (Node) it.next();
-            ret.add(new Integer(n.getName()));
+            name = "";
+            n = (Node) it.next();
+            if (n.hasProperty("pageName")) {
+                name = n.getProperty("pageName").getString();
+            }
+            ret.put(new Integer(n.getName()), name);
         }
         return ret;
     }
@@ -102,6 +106,17 @@ public class Pages implements Serializable {
     public void store(Page page) throws RepositoryException {
         Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
         n.setProperty("content", page.getContent().toString());
+        if (page.getName() != null) {
+            n.setProperty("pageName", page.getName());
+        }
+        this.connector.save();
+    }
+
+    public void setMeta(Page page) throws RepositoryException {
+        Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
+        if (page.getName() != null) {
+            n.setProperty("pageName", page.getName());
+        }
         this.connector.save();
     }
 
