@@ -16,7 +16,6 @@ import com.wegas.core.jcr.page.Pages;
 import com.wegas.exception.WegasException;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -122,6 +121,16 @@ public class PageController {
         pages.store(page);
         return Response.ok(pages.getPage(new Integer(pageId)).getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();
     }
+    @PUT
+    @Path("/{pageId : [1-9][0-9]*}/meta")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response setMeta(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId, Page page) throws RepositoryException, WegasException{
+        Pages pages = getGameModelPages(new Long(gameModelId));
+        page.setId(new Integer(pageId));
+        pages.setMeta(page);
+        return this.getPage(gameModelId, pageId);
+    }
 
     /**
      * Create a new page. page'is is generated
@@ -138,9 +147,9 @@ public class PageController {
     public Response createPage(@PathParam("gameModelId") String gameModelId, JsonNode content)
             throws RepositoryException, IOException, WegasException {
         Pages pages = getGameModelPages(new Long(gameModelId));
-        List<Integer> index = pages.getIndex();
+        Map<Integer, String> index = pages.getIndex();
         Integer pageId = 1;
-        while (index.contains(pageId)) {
+        while (index.containsKey(pageId)) {
             pageId++;
         }
         Page page = new Page(new Integer(pageId), content);

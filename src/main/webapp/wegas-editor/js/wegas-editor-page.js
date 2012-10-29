@@ -36,8 +36,8 @@ YUI.add('wegas-editor-page', function(Y){
             this.tw.removeAll();
             for(i in index){
                 this.tw.add(new Y.TreeLeaf({
-                    label: "Page: "+index[i],
-                    data: index[i]
+                    label: "Page: "+ index[i] + " (" + i+ ")",
+                    data: i
                 }));
             }
         },
