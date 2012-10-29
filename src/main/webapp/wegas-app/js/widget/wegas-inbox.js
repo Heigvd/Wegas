@@ -50,9 +50,9 @@ YUI.add('wegas-inbox', function (Y) {
                 tab = new Y.Tab({
                     label: '<div class="' + (msg.get("unread") ? "unread" : "read") + '"><div class="left">' + from + '</div>'
                     + '<div class="right">' + msg.get("subject") + '</div></div>',
-                    content: '<div class="subject">Subject: ' + msg.get("subject") + '</div>'
-                    + '<div class="from">From: ' + from + '</div>'
-                    + '<div class="body">' + msg.get("body") + '</div>'
+                    content: '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
+                    + '<div class="msg-from">From: ' + from + '</div>'
+                    + '<div class="msg-body">' + msg.get("body") + '</div>'
                 });
                 tab.msg = msg;
                 tabs.push(tab);
