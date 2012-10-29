@@ -1,21 +1,17 @@
 {
     "@class": "GameModel",
     "name": "Book",
-    "scriptLibrary":{},
     "cssUri":"wegas-book/css/wegas-book.css",
     "widgetsUri":"wegas-book/db/wegas-book-pages.json",
-    "games":[{
-        "@class":"Game",
-        "name":"Test-37",
-        "teams":[{
+    "games": [{
+        "@class": "Game",
+        "name": "First game",
+        "teams": [{
             "@class": "Team",
-            "name":"red",
-            "players": [ {
+            "name": "Red",
+            "players": [{
                 "@class": "Player",
-                "name": "Jack",
-                "user": {
-                    "@class": "User"
-                }
+                "name": "Jo"
             }]
         }]
     }],
@@ -47,5 +43,17 @@
         },
         "minValue":1,
         "maxValue":20
+    },{
+        "@class":"NumberDescriptor",
+        "name":"currentPage",
+        "editorLabel":"currentPage",
+        "label":"currentPage",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":2.0
+        },
+        "scope":{
+            "@class":"TeamScope"
+        }
     }]
 }

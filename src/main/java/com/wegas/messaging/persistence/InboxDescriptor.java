@@ -66,6 +66,6 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param content
      */
     public void sendMessage(Player p, String from, String subject, String body) {
-        this.getInstance(p).addMessage(new Message(from, subject, body));
+        this.getInstance(p).sendMessage(from, subject, body);
     }
 }

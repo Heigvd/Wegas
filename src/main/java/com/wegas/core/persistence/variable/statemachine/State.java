@@ -37,16 +37,26 @@ import org.codehaus.jackson.map.annotate.JsonView;
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 public class State extends AbstractEntity {
-
+/**
+ *
+ */
     @Id
     @Column(name = "state_id")
     @GeneratedValue
-
-    @JsonView({Views.EditorI.class, Views.Private.class})
+    @JsonView(Views.IndexI.class)
     private Long id;
+    /**
+     *
+     */
     private String label;
     @Embedded
+    /**
+     *
+     */
     private Script onEnterEvent;
+    /**
+     * 
+     */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "transition_id", referencedColumnName = "state_id")
     private List<Transition> transitions = new ArrayList<>();

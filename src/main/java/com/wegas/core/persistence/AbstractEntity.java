@@ -16,7 +16,6 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -113,9 +112,12 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      */
     public String toJson() throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        mapper.writeValue(baos, this);
-        return baos.toString();
+        return mapper.writeValueAsString(this);
+    }
+
+    public String toJson(Class view) throws IOException {
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        return mapper.writerWithView(view).writeValueAsString(this);
     }
 
     /**
