@@ -12,6 +12,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.AbstractFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import java.io.IOException;
 import java.util.Collection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -90,6 +91,19 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
     @Produces(MediaType.APPLICATION_JSON)
     public U update(@PathParam("entityId") Long entityId, U entity) {
         return (U) getFacade().update(entityId, entity);
+    }
+
+    /**
+     *
+     * @param entityId
+     * @return
+     */
+    @POST
+    @Path("{entityId: [1-9][0-9]*}/Duplicate")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public U duplicate(@PathParam("entityId") Long entityId) throws IOException {
+        return (U) getFacade().duplicate(entityId);
     }
 
     /**

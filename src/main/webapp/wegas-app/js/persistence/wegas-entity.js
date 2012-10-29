@@ -74,7 +74,7 @@ YUI.add('wegas-entity', function (Y) {
             }) : e;
 
         },
-        
+
         /**
          * Create a new Object from this entity
          * may be used by revive
@@ -286,6 +286,18 @@ YUI.add('wegas-entity', function (Y) {
                 _inputex: {
                     _type: 'hidden'
                 }
+            },
+            "label": {
+                "transient": true,
+                getter: function ( val ) {
+                    return val || this.get( "name" );
+                }
+            },
+            "editorLabel": {
+                "transient": true,
+                getter: function ( val ) {
+                    return val || this.get( "name" );
+                }
             }
         },
 
@@ -415,6 +427,12 @@ YUI.add('wegas-entity', function (Y) {
         //    label: "Properties"
         //},
         {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
             type: "DeleteEntityButton"
         }]
     });
@@ -704,28 +722,33 @@ YUI.add('wegas-entity', function (Y) {
         },
 
         getPrivateLabel: function () {
-            return this.get( "editorLabel" ) || this.get( "label" );
+            return this.get( "editorLabel" );
         },
 
         getPublicLabel: function () {
-            return this.get( "label" ) ||  this.get( "editorLabel" );
+            return this.get( "label" );
         }
     }, {
         ATTRS: {
+            label: {
+                type: "string",
+                "transient": false,
+                getter: function ( val ) {
+                    return val || this.get( "name");
+                }
+            },
             editorLabel:{
                 type: "string",
+                optional: true,
+                "transient": false,
                 _inputex:{
-                    label: "Public label"
+                    label: "Editor label"
                 },
                 validator: function ( s ) {
                     return s === null || Y.Lang.isString(s);
-                }
-            },
-            label: {
-                type: "string",
-                optional: true,
-                _inputex:{
-                    label: "Private label"
+                },
+                getter: function ( val ) {
+                    return val || this.get( "label");
                 }
             },
             name: {
@@ -733,7 +756,7 @@ YUI.add('wegas-entity', function (Y) {
                 type: "string",
                 optional: true,
                 _inputex: {
-                    label: "Script Alias"
+                    label: "Script alias"
                 },
                 validator: function ( s ){
                     return s === null || Y.Lang.isString( s );

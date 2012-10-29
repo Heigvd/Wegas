@@ -11,13 +11,20 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
@@ -82,6 +89,29 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
         T oldEntity = this.find(entityId);
         oldEntity.merge(entity);
         return oldEntity;
+    }
+
+    /**
+     *
+     * Duplicate an entity by serialising it using the "Editor" view and
+     * serializing it back.
+     *
+     * @param entityId
+     * @return
+     */
+    @Override
+    public T duplicate(final Long entityId) throws IOException {
+
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
+
+        T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
+
+        String serialized = mapper.writerWithView(Views.Export.class)
+                .writeValueAsString(oldEntity);                                  // Serilize the entity
+        T newEntity = (T) mapper.readValue(serialized, AbstractEntity.class);   // and deserialize it
+
+        this.create(newEntity);                                                 // Store it db
+        return newEntity;
     }
 
     /**
