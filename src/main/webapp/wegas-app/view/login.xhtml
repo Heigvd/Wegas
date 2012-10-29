@@ -5,11 +5,9 @@
 
     <ui:composition template="/wegas-app/view/template/app-default.xhtml">
 
-
-        <ui:define name="title">#{wegasAppBundle.LoginPage[Title]}</ui:define>
+        <ui:define name="title">#{wegasAppBundle[LoginPage.Title]}</ui:define>
 
         <ui:define name="head">
-            <!-- <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />-->
             <style type="text/css">
                 .wegas-list {
                     margin: 100px auto !important;
@@ -60,7 +58,7 @@
                     });
                 });
             </script>
-
         </ui:define>
+
     </ui:composition>
 </html>

@@ -193,6 +193,7 @@
                 "children": [{
                     "type": "PageLoader",
                     "pageId": 1,
+                    "cssClass":"preview-content",
                     "plugins": [{
                         "fn": "WidgetToolbar",
                         "cfg": {

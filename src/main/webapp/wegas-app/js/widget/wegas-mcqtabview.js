@@ -80,30 +80,32 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
                     if ( cQuestionInstance.get( "replies" ).length === 0        // If the question is not replied, we display its reply set
                         || cQuestion.get( "allowMultipleReplies" ) ) {
 
-                        ret.push('<div class="subtitle">Answers</div><div class="replies">');
+                        ret.push('<div class="subtitle">Possible replies</div><div class="replies">');
 
                         for (j = 0; j < cChoices.length; j += 1) {
-                            ret.push('<div class="reply ', firstChild, '">',
-                                '<div class="name">', cChoices[j].getPublicLabel(), '</div>',
-                                '<div class="content">', cChoices[j].get( "description" ), '</div>',
-                                '<input type="submit" id="', cChoices[j].get( "id" ),'" value="Submit"></input>',
-                                '<div style="clear:both"></div>',
-                                '</div>');
-                            firstChild = "";
+                            if ( cChoices[j].getInstance().get( "active" ) ) {
+                                ret.push('<div class="reply ', firstChild, '">',
+                                    '<div class="name">', cChoices[j].get( "label" ), '</div>',
+                                    '<div class="content">', cChoices[j].get( "description" ), '</div>',
+                                    '<input type="submit" id="', cChoices[j].get( "id" ),'" value="Submit"></input>',
+                                    '<div style="clear:both"></div>',
+                                    '</div>');
+                                firstChild = "";
+                            }
                         }
                         ret.push('</div>');
                     }
 
-                    if ( cQuestionInstance.get( "replies" ).length > 0 ){              // Display the selected replies
-                        ret.push('<div class="subtitle">Selected answer</div><div class="replies">');
+                    if ( cQuestionInstance.get( "replies" ).length > 0 ){       // Display the selected replies
+                        ret.push('<div class="subtitle">Selected replies</div><div class="replies">');
                         for (j = 0; j < cQuestionInstance.get( "replies" ).length; j += 1) {
                             reply = cQuestionInstance.get( "replies" )[j];
                             choiceDescriptor = reply.getChoiceDescriptor();
-                            ret.push('<div class="reply"><div class="name">', choiceDescriptor.get( "name" ), '</div>',
+                            ret.push('<div class="reply"><div class="name">', choiceDescriptor.get( "label" ), '</div>',
                                 '<div>', choiceDescriptor.get( "description" ), '</div>',
                                 '<div style="clear:both"></div></div>');
 
-                            ret.push('<div class="subtitle">Results</div>',
+                            ret.push('<div class="subtitle">Result</div>',
                                 '<div class="replies"><div class="reply first-child">', reply.get( "result" ).get( "answer" ), '</div></div>');
 
                             if (!cReplyLabel) {
