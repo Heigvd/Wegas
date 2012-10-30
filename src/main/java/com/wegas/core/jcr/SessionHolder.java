@@ -40,11 +40,8 @@ public class SessionHolder {
             sessionMap.remove(repository);
             try {
                 session = repo.login(admin, repository);
-            } catch (RepositoryException ex) {
-                Session s;
-                s = repo.login(admin);
-                s.getWorkspace().createWorkspace(repository);
-                s.logout();
+            } catch (javax.jcr.NoSuchWorkspaceException ex) {
+                createWorkspace(repository);
                 session = repo.login(admin, repository);
             }
             sessionMap.put(repository, session);
@@ -58,6 +55,13 @@ public class SessionHolder {
             SessionHolder.sessionMap.get(repository).logout();
         }
         SessionHolder.sessionMap.remove(repository);
+    }
+
+    protected static void createWorkspace(String repository) throws RepositoryException {
+        Session s;
+
+        s = getSession(null);
+        s.getWorkspace().createWorkspace(repository);
     }
 
     @PreDestroy

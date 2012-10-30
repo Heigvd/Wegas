@@ -10,11 +10,23 @@
  */
 package com.wegas.core.jcr.content;
 
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import com.wegas.core.jcr.SessionHolder;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jcr.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  *
@@ -139,11 +151,37 @@ public class ContentConnector {
      * @throws RepositoryException, UnsupportedOperationException
      */
     public void deleteWorkspace() throws RepositoryException {
-        throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
-//        String name = session.getWorkspace().getName();
-//        this.close();
-//        session = repo.login(admin);
-//        session.getWorkspace().deleteWorkspace(name);
+        //throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
+        String name = session.getWorkspace().getName();
+        SessionHolder.closeSession(workspace);
+        Session s = SessionHolder.getSession(null);
+        try {
+            s.getWorkspace().deleteWorkspace(name);
+        } catch (UnsupportedRepositoryOperationException ex) {
+            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace. Further : improve to remove workspace");
+            session = SessionHolder.getSession(workspace);
+            this.clearWorkspace();
+            SessionHolder.closeSession(workspace);
+        }
+    }
+
+    public void cloneWorkspace(Long oldGameModelId) throws RepositoryException {
+        ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId);
+        NodeIterator it = connector.listChildren("/");
+        String path;
+        while (it.hasNext()) {
+            path = it.nextNode().getPath();
+            session.getWorkspace().clone("GM_" + oldGameModelId, path, path, true);
+        }
+        session.save();
+    }
+
+    public void clearWorkspace() throws RepositoryException {
+        NodeIterator it = this.listChildren("/");
+        while (it.hasNext()) {
+            it.nextNode().remove();
+        }
+        this.save();
     }
 
     public void save() {
@@ -154,6 +192,20 @@ public class ContentConnector {
                 logger.warn(e.getMessage());
             }
         }
+    }
+
+    public void exportXML(OutputStream out) throws RepositoryException, IOException, SAXException {
+        NodeIterator it = this.listChildren("/");
+        OutputFormat format = new OutputFormat("XML", "UTF-8", true);
+        XMLSerializer serializer = new XMLSerializer(out, format);
+        ContentHandler handler = serializer.asContentHandler();
+        handler.startDocument();
+        handler.startElement("", "", "root", null);
+        while (it.hasNext()) {
+            session.exportDocumentView(it.nextNode().getPath(), handler, false, false);
+        }
+        handler.endElement("", "", "root");
+        handler.endDocument();
     }
 
     /**
