@@ -477,6 +477,20 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
     Y.namespace( 'Wegas' ).EditorTreeView = EditorTreeView;
 
+    var VariableDescriptorTreeview = Y.Base.create("wegas-editor-variabledescriptortreeview", Y.Wegas.EditorTreeView, [], {
+        bindUI: function () {
+            VariableDescriptorTreeview.superclass.bindUI.call( this );
+
+//            this.sortable = new Y.Sortable({
+//                container: this.get( "contentBox"),
+//                nodes: 'li',
+//                opacity: '.2'
+//            });
+        }
+    });
+
+    Y.namespace( 'Wegas' ).VariableDescriptorTreeview = VariableDescriptorTreeview;
+
     var LobbyTreeView = Y.Base.create("wegas-editor-treeview", Y.Wegas.EditorTreeView, [], {
 
         genTreeViewElements: function (elements) {
@@ -505,4 +519,6 @@ YUI.add('wegas-editor-treeview', function (Y) {
     });
 
     Y.namespace( 'Wegas' ).LobbyTreeView = LobbyTreeView;
+
+
 });
