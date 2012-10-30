@@ -403,6 +403,13 @@ YUI().use(function (Y) {
                         ix_provides: "Dice"
                     },
 
+                    /**CEP**/
+                    'wegas-cep': {
+                        path: 'wegas-cep/js/wegas-cep-itemselector.js',
+                        requires:['wegas-cep-itemselector'],
+                        ix_provides: "CepItemSelector"
+                    },
+
                     /** CrimeSim **/
                     'wegas-crimesim-scheduledisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',

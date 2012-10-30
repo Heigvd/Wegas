@@ -74,12 +74,23 @@
                                     }]
                             },{
                                 "type": "Button",
-                                "label": "<span class=\"wegas-icon cep-icon-questions\"></span>Questions",
+                                "label": "<span class=\"wegas-icon cep-icon-characters\"></span>Characters",
                                 "cssClass": "menu-button",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 3,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-questions\"></span>Questions",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 4,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }, {
@@ -95,7 +106,7 @@
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 4,
+                                            "subpageId": 5,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }, {
@@ -111,7 +122,7 @@
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 5,
+                                            "subpageId": 6,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     },{
@@ -150,18 +161,38 @@
         "content": "Welcome to CEP case."
     },{
         "id": 3,
-        "type": "MCQTabView",
-        "expr": "questions.items[phases.value].descriptorId"
+        "type": "CepItemSelector",
+        "listVariables": "employees",
+        "informationsNames":[
+            "name",
+            "surname"
+        ],
+        "informationsLabels":[
+            "Nom : ",
+            "Prénom : "
+        ],
+        "selectorNames":[
+            "name",
+            "salary"
+        ],
+        "selectorLabels":[
+            "Nom : ",
+            "Salaire : "
+        ]
     },{
         "id": 4,
         "type": "MCQTabView",
-        "expr": "actions.items[phases.value].descriptorId"
+        "expr": "questions.items[phases.value].descriptorId"
     },{
         "id": 5,
+        "type": "MCQTabView",
+        "expr": "actions.items[phases.value].descriptorId"
+    },{
+        "id": 6,
         "type": "InboxDisplay",
         "variable": "inbox"
     }, {
-        "id": 6,
+        "id": 7,
         "type": "ResultsDisplay"
     }
 ]
