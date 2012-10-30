@@ -94,7 +94,22 @@ YUI.add( "wegas-button", function ( Y ) {
         NS: "button",
         NAME: "UnreadCount",
         ATTRS: {
-            variable: {}
+            variable: {},
+            expr: {},
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variableDesc: {
+                getter: function () {
+                    if ( this.get( "variable" ) ) {
+                        return Y.Wegas.VariableDescriptorFacade.rest.find( 'name', this.get( "variable" ) )
+                    } else {
+                        return Y.Wegas.VariableDescriptorFacade.rest.findById(
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
+                    }
+                }
+            }
         }
     });
 
@@ -116,7 +131,7 @@ YUI.add( "wegas-button", function ( Y ) {
             }
 
             if (unreadCount > 0) {                                              // Update the content
-                target.setContent(" (" + unreadCount + ")");
+                target.setContent(" <span class='bracket'>(</span><span class='value'>" + unreadCount + "</span><span class='bracket'>)</span>");
             } else {
                 target.setContent("");
             }
@@ -124,7 +139,7 @@ YUI.add( "wegas-button", function ( Y ) {
 
         getUnreadCount:  function () {
             var i, instance, messages, count = 0,
-            descriptor = Y.Wegas.VariableDescriptorFacade.rest.find('name', this.get('variable'));
+            descriptor = this.get('variableDesc');
 
             if (!descriptor){
                 return 0;
