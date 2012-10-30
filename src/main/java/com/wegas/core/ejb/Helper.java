@@ -81,7 +81,6 @@ public class Helper {
     }
 
     public static String encodeVariableName(String name) {
-        Pattern pattern = Pattern.compile("[^\\w]|(^\\d)");                     //Search for special chars or initial digit
 
         StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(name);
@@ -97,10 +96,11 @@ public class Helper {
             }
             sb.append(tmp.substring(1));
             //sb.append(tmp.substring(1).toLowerCase());
-
         }
+
+        Pattern pattern = Pattern.compile("[^\\w]|(^\\d)");                     //Search for special chars or initial digit
         Matcher matcher = pattern.matcher(sb.toString());
-        return matcher.replaceAll("_$1");                                    //Replace special chars and initial digit with "_"
+        return matcher.replaceAll("_$1");                                       //Replace special chars and initial digit with "_"
     }
 
     /**
@@ -112,22 +112,55 @@ public class Helper {
      * @return a new name, unique.
      */
     public static String buildUniqueName(String name, List<String> unavailableNames) {
-
         String newName = Helper.encodeVariableName(name);
+        String base = Helper.stripNameSuffix(newName);
 
-        Pattern pattern = Pattern.compile("^(\\w+)_(\\d+)$");                   //Build a unique name, adding _# at the end
-        Matcher matcher = pattern.matcher(newName);
         Integer nb = 1;
-        String tmp;
-        if (matcher.find()) {
-            tmp = matcher.group(1);
-        } else {
-            tmp = newName;
-        }
         while (unavailableNames.contains(newName)) {
-            newName = tmp + "_" + nb;
-            nb = nb + 1;
+            newName = base + "_" + nb;
+            nb++;
         }
         return newName;
+    }
+
+    /**
+     *
+     * @param name
+     * @return the provided name stripped of its _# suffix.
+     */
+    public static String stripNameSuffix(String name) {
+        Pattern pattern = Pattern.compile("^(\\w+)_(\\d+)$");
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return name;
+        }
+    }
+
+    /**
+     *
+     * @param name
+     * @return the provided name stripped of its (#) suffix.
+     */
+    public static String stripLabelSuffix(String label) {
+        Pattern pattern = Pattern.compile("^(.*)\\((\\d+)\\)$");
+        Matcher matcher = pattern.matcher(label);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return label;
+        }
+    }
+
+    public static int getLabelSuffix(String label) {
+        Pattern pattern = Pattern.compile("^(.*)\\((\\d+)\\)$");
+        Matcher matcher = pattern.matcher(label);
+
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(2));
+        } else {
+            return 0;
+        }
     }
 }
