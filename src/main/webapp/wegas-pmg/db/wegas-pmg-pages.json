@@ -1,0 +1,378 @@
+[{
+        "id": 1,
+        "label": "Main layout",
+        "type": "List",
+        "cssClass": "layout",
+        "children": [{
+                "type":"List",
+                "direction": "horizontal",
+                "cssClass":"header",
+                "children":[{
+                        "type":"List",
+                        "direction": "horizontal",
+                        "cssClass":"time",
+                        "children":[{
+                                "type": "PmgBreadcrumb",
+                                "locations": [
+                                    "Initiation",
+                                    "Planning",
+                                    "Execution",
+                                    "Closing"
+                                ],
+                                "variable" : "currentPhase"
+                            },{
+                                "type": "VariableDisplay",
+                                "cssClass": "pmg-period",
+                                "label": "Periods",
+                                "view": "valuebox",
+                                "expr": "currentPeriod.items[currentPhase.value].descriptorId",
+                                "dataSource": "VariableDescriptor"
+                            },{
+                                "type": "Button",
+                                "label": ">",
+                                "tooltip":"Next period",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "onClick": "//todo"
+                                        }
+                                    }]
+                            }]
+                    },{
+                        "type":"List",
+                        "direction": "horizontal",
+                        "cssClass":"customers-gauges",
+                        "children":[{
+                                "type": "GaugeDisplay",
+                                "label": "Direction",
+                                "variable": "managementApproval",
+                                "dataSource": "VariableDescriptor"
+                            },{
+                                "type": "GaugeDisplay",
+                                "label": "User",
+                                "variable": "userApproval",
+                                "dataSource": "VariableDescriptor"
+                            }]
+                    },{
+                        "type":"List",
+                        "direction": "horizontal",
+                        "cssClass":"project-gauges",
+                        "children":[{
+                                "type": "GaugeDisplay",
+                                "label": "Fixed costs",
+                                "variable": "fixedCosts",
+                                "dataSource": "VariableDescriptor"
+                            },{
+                                "type": "GaugeDisplay",
+                                "label": "Quality",
+                                "variable": "quality",
+                                "dataSource": "VariableDescriptor"
+                            },{
+                                "type": "GaugeDisplay",
+                                "label": "Delay",
+                                "variable": "delay",
+                                "dataSource": "VariableDescriptor"
+                            }]
+                    },{
+                        "cssClass": "pmg-timevariable",
+                        "type": "VariableDisplay",
+                        "label": "Available time: ",
+                        "variable": "timeCards",
+                        "view": "box",
+                        "dataSource": "VariableDescriptor"
+                    }]
+            },{
+                "type":"List",
+                "direction": "horizontal",
+                "cssClass":"horizontal-menu",
+                "children":[{
+                        "type": "Button",
+                        "label": "Project",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 2,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "label": "Tasks",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 3,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "label": "Gantt",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 4,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "Button",
+                        "label": "Resources",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 5,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },{
+                        "type": "LoginButton",
+                        "cssClass": "menu-loginbutton",
+                        "tooltip": "Logout"
+                    }]
+            },{
+                "type":"List",
+                "direction": "vertical",
+                "cssClass":"main",
+                "children":[{
+                        "type":"List",
+                        "direction": "vertical",
+                        "cssClass":"vertical-menu",
+                        "children":[{
+                                "type": "Button",
+                                "cssClass":"actions",
+                                "tooltip":"Actions",
+                                "plugins": [{
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "expr": "actions.items[currentPhase.value].descriptorId"
+                                        }
+                                    },{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 6,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "cssClass":"questions",
+                                "tooltip":"Questions",
+                                "plugins": [{
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "expr": "questions.items[currentPhase.value].descriptorId"
+                                        }
+                                    },{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 7,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "cssClass":"inbox",
+                                "tooltip":"Inbox",
+                                "plugins": [{
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": "inbox"
+                                        }
+                                    },{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 8,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "cssClass":"history",
+                                "tooltip":"History",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 9,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "cssClass":"help",
+                                "tooltip":"Help",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 10,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            }]
+                    },{
+                        "label":"pageLoader",
+                        "type": "PageLoader",
+                        "id": "maindisplayarea",
+                        "cssClass": "body",
+                        "pageId": 2
+                    }]
+            }
+        ]
+    },{
+        "id":2,
+        "cssClass":"project-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"To do..."
+            }
+        ]
+    },{
+        "id":3,
+        "cssClass":"task-page",
+        "type":"List",
+        "children":[{
+                "type": "PmgTasklist",
+                "variables": "tasks",
+                "columnTitles":[
+                    "No",
+                    "Name",
+                    "Estimated duration",
+                    "Realized (%)"
+                ],
+                "columnValues":[
+                    "no",
+                    "label",
+                    "duration",
+                    "realized"
+                ],
+                "viewDescription":"true",
+                "assignements":"false"
+            }
+        ]
+    },{
+        "id":4,
+        "cssClass":"gantt-page",
+        "type":"List",
+        "children":[{
+                "type": "PmgGantt",
+                "variables": "tasks",
+                "columnTitles":[
+                    "No",
+                    "Name",
+                    "Realized (%)"
+                ],
+                "columnValues":[
+                    "no",
+                    "label",
+                    "realized"
+                ],
+                "viewDescription":"true",
+                "periods":"currentPeriod.items[currentPhase.value].descriptorId"
+            }
+        ]
+    },{
+        "id":5,
+        "cssClass":"resources-page",
+        "type":"List",
+        "children":[{
+                "type":"PmgSlidePanel",
+                "title":"Web designer",
+                "children":[{
+                        "type": "PmgResourcelist",
+                        "variables": "webDesigner",
+                        "columnTitles":[
+                            "Name",
+                            "Grade",
+                            "Wage",
+                            "%",
+                            "Motivation"
+                        ],
+                        "columnValues":[
+                            "label",
+                            "grade",
+                            "wage",
+                            "ratio",
+                            "motivation"
+                        ],
+                        "viewDescription":"true",
+                        "periods":"currentPeriod.items[currentPhase.value].descriptorId",
+                        "taskList":"tasks",
+                        "taskSortBy":"no"
+                    }]  
+            },{
+                "type":"PmgSlidePanel",
+                "title":"Business specialist",
+                "children":[{
+                        "type": "PmgResourcelist",
+                        "variables": "businessSpecialist",
+                        "columnTitles":[
+                            "Name",
+                            "Grade",
+                            "Wage",
+                            "%",
+                            "Motivation"
+                        ],
+                        "columnValues":[
+                            "name",
+                            "label",
+                            "wage",
+                            "ratio",
+                            "motivation"
+                        ],
+                        "viewDescription":"true",
+                        "periods":"currentPeriod.items[currentPhase.value].descriptorId",
+                        "taskList":"tasks",
+                        "taskSortBy":"no"
+                    }]  
+            }]
+    },{
+        "id":6,
+        "cssClass":"actions-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
+            },{
+                "type": "MCQTabView",
+                "expr": "actions.items[currentPhase.value].descriptorId"
+            }
+        ]
+    },{
+        "id":7,
+        "cssClass":"questions-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"<div class='title'><h2>Questions to be made during this week</h2></div><div class='title'><h2>Details</h2></div>"
+            },{
+                "type": "MCQTabView",
+                "expr": "questions.items[currentPhase.value].descriptorId"
+            }
+        ]
+    },{
+        "id":8,
+        "cssClass":"inbox-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Messages</h2></div>"
+            },{
+                "type": "InboxDisplay",
+                "variable": "inbox"
+            }
+        ]
+    },{
+        "id":9,
+        "cssClass":"history-page",
+        "type":"List",
+        "children":[{
+                "type": "Text",
+                "content":"<div class='title'><h2>Questions and actions history</h2></div><div class='title'><h2>Details</h2></div>"
+            },{
+                "type": "InboxDisplay",
+                "variable": "inbox"
+            }
+        ]
+    }
+]

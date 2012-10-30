@@ -18,8 +18,6 @@ import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.api.JackrabbitRepositoryFactory;
 import org.apache.jackrabbit.api.management.DataStoreGarbageCollector;
@@ -50,9 +48,9 @@ public class JackrabbitConnector {
         prop.setProperty("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
         try {
             repo = (JackrabbitRepository) rf.getRepository(prop);
-            logger.debug("Jackrabbit setup done");
+            logger.debug("Jackrabbit setup done in {}/{}", System.getProperty("user.dir"), DIR);
         } catch (RepositoryException ex) {
-            logger.error("Check your repository setup {}", DIR);
+            logger.error("Check your repository setup {}/{}", System.getProperty("user.dir"), DIR);
         }
         //Enable GC on startup
         //this.runGC();

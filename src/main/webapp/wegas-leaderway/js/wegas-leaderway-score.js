@@ -102,7 +102,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
         /*
          * Destroy all child widget
          */
-        destroy: function(){
+        destructor: function(){
             this.table.destroy();
         },
         

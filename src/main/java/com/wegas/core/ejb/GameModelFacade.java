@@ -9,6 +9,9 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.content.ContentConnectorFactory;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel_;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -16,13 +19,10 @@ import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -78,8 +78,18 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
                 added = true;
             }
         }
+
         newEntity.setName(newName);
         this.create(newEntity);                                                 // store it db
+        em.flush();
+
+        try {                                                                   //Clone jcr FILES
+            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newEntity.getId());
+            connector.cloneWorkspace(oldEntity.getId());
+        }
+        catch (RepositoryException ex) {
+            System.err.println(ex);
+        }
         return newEntity;
     }
 

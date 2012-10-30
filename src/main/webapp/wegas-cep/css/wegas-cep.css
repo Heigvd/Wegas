@@ -197,6 +197,10 @@ h3 {
     padding-top: 3px;
 }
 
+.percent{
+    display:none;
+}
+
 .menu .yui3-button {
     font-size: 10px;
     font-weight: bold;

@@ -475,7 +475,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         /*
          * Destroy all child widget and all remanent function
          */
-        destroy: function(){
+        destructor: function(){
             var i;
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
