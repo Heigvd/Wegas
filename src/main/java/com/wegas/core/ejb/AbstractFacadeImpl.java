@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -13,11 +13,8 @@ import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
@@ -107,7 +104,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
         T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
 
         String serialized = mapper.writerWithView(Views.Export.class)
-                .writeValueAsString(oldEntity);                                  // Serilize the entity
+                .writeValueAsString(oldEntity);                                 // Serilize the entity
         T newEntity = (T) mapper.readValue(serialized, AbstractEntity.class);   // and deserialize it
 
         this.create(newEntity);                                                 // Store it db

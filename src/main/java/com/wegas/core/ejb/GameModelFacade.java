@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,18 +9,21 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModel_;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import org.apache.poi.ss.formula.functions.T;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
  *
@@ -54,34 +57,44 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
-        //GameModel newEntity = super.duplicate(entityId);  
-
         ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
 
-        GameModel oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
+        GameModel oldEntity = this.find(entityId);                              // Retrieve the entity to duplicate
 
         String serialized = mapper.writerWithView(Views.Export.class).
-                writeValueAsString(oldEntity);                                  // Serilize the entity
-        System.out.println(serialized);
-        GameModel newEntity = (GameModel) mapper.readValue(serialized, AbstractEntity.class);   // and deserialize it
-
+                writeValueAsString(oldEntity);
+        GameModel newEntity = mapper.readValue(serialized, GameModel.class);    // and deserialize it
 
         boolean added = false;
-        int suffix = 0;
+        int suffix = 1;
+        String newName = null;
         while (!added) {
+            newName = oldEntity.getName() + "(" + suffix + ")";
             try {
-                this.create(newEntity);                                         // Store it db
+                this.findByName(newName);
                 suffix++;
-                newEntity.setName(oldEntity.getName() + "(" + suffix + ")");
-                em.flush();
+            }
+            catch (NoResultException ex) {
                 added = true;
             }
-            catch (DatabaseException e) {
-                //e.
-                System.out.println("error");
-            }
         }
+        newEntity.setName(newName);
+        this.create(newEntity);                                                 // store it db
         return newEntity;
+    }
+
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public GameModel findByName(String name) throws NoResultException {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery();
+        Root<GameModel> gameModel = cq.from(GameModel.class);
+        cq.where(cb.equal(gameModel.get(GameModel_.name), name));
+        Query q = em.createQuery(cq);
+        return (GameModel) q.getSingleResult();
     }
 
     /**

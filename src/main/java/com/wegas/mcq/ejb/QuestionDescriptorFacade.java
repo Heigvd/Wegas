@@ -12,6 +12,7 @@ package com.wegas.mcq.ejb;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
@@ -23,7 +24,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +53,11 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     @EJB
     private ScriptFacade scriptManager;
+    /**
+     *
+     */
+    @EJB
+    private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      *
@@ -99,11 +104,9 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @return
      */
     public Reply selectChoice(Long choiceId, Player player, Long startTime) throws WegasException {
-        ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
+        ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
 
-        Query findListDescriptorByChildId = em.createNamedQuery("findListDescriptorByChildId");
-        findListDescriptorByChildId.setParameter("itemId", choice.getId());
-        QuestionDescriptor questionDescriptor = (QuestionDescriptor) findListDescriptorByChildId.getSingleResult();
+        QuestionDescriptor questionDescriptor = (QuestionDescriptor) variableDescriptorFacade.findParentListDescriptor(choice);
 
         QuestionInstance questionInstance = (QuestionInstance) questionDescriptor.getInstance(player);
         Reply reply = new Reply();
@@ -112,8 +115,8 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         reply.setResult(this.getCurrentResult(player, choice));
         questionInstance.addReply(reply);
 
-        this.em.flush();
-        this.em.refresh(reply);
+        em.flush();
+        em.refresh(reply);
 
         return reply;
     }

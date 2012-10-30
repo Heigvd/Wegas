@@ -235,9 +235,13 @@ Y.add("wegas-statemachine-entities", function(Y){
             plugins: [{
                 fn: "EditFSMAction"
             }]
-        },{
-            type: "CloneEntityButton"
-        },{
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
             type: "DeleteEntityButton"
         }]
     });
