@@ -16,6 +16,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jcr.RepositoryException;
@@ -90,6 +92,19 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
             System.err.println(ex);
         }
         return newEntity;
+    }
+
+    @Override
+    public void remove(GameModel gameModel) {
+        super.remove(gameModel);
+        //Remove jcr repo.
+        //TODO : in fact, removes all files but not the workspace.
+        try {
+            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId());
+            connector.deleteWorkspace();
+        } catch (RepositoryException ex) {
+            System.err.println(ex);
+        }
     }
 
     /**
