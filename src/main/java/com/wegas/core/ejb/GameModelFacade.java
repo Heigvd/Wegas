@@ -9,6 +9,8 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -16,9 +18,9 @@ import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.apache.poi.ss.formula.functions.T;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
@@ -54,7 +56,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
-        //GameModel newEntity = super.duplicate(entityId);  
+        //GameModel newEntity = super.duplicate(entityId);
 
         ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
 
@@ -75,11 +77,17 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
                 newEntity.setName(oldEntity.getName() + "(" + suffix + ")");
                 em.flush();
                 added = true;
-            }
-            catch (DatabaseException e) {
+            } catch (DatabaseException e) {
                 //e.
                 System.out.println("error");
             }
+        }
+        //Clone jcr FILES
+        try {
+            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newEntity.getId());
+            connector.cloneWorkspace(oldEntity.getId());
+        } catch (RepositoryException ex) {
+            System.err.println(ex);
         }
         return newEntity;
     }
