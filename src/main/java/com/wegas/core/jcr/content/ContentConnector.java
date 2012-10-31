@@ -10,23 +10,27 @@
  */
 package com.wegas.core.jcr.content;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import com.wegas.core.jcr.SessionHolder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.jcr.*;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamResult;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
+import org.xml.sax.XMLReader;
 
 /**
  *
@@ -195,17 +199,35 @@ public class ContentConnector {
     }
 
     public void exportXML(OutputStream out) throws RepositoryException, IOException, SAXException {
+
+        XMLSerializer handler = new XMLSerializer(out);
         NodeIterator it = this.listChildren("/");
-        OutputFormat format = new OutputFormat("XML", "UTF-8", true);
-        XMLSerializer serializer = new XMLSerializer(out, format);
-        ContentHandler handler = serializer.asContentHandler();
         handler.startDocument();
         handler.startElement("", "", "root", null);
         while (it.hasNext()) {
             session.exportDocumentView(it.nextNode().getPath(), handler, false, false);
         }
+
+
         handler.endElement("", "", "root");
         handler.endDocument();
+
+    }
+
+    public void importXML(InputStream input) throws RepositoryException, IOException {
+        //session.importXML("/", input, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW);
+//        SAXParserFactory sf = SAXParserFactory.newInstance();
+//        try {
+//            SAXParser parser = sf.newSAXParser();
+//            DefaultHandler handler = new SAXContentHandler();
+//            parser.parse(input, handler);
+//        } catch (IOException ex) {
+//            Logger.getLogger(ContentConnector.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (ParserConfigurationException ex) {
+//            Logger.getLogger(ContentConnector.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (SAXException ex) {
+//            Logger.getLogger(ContentConnector.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     /**
@@ -220,6 +242,148 @@ public class ContentConnector {
             } catch (NamespaceException e) {
                 session.getWorkspace().getNamespaceRegistry().registerNamespace(prefix, WFSConfig.namespaces.get(prefix));
             }
+        }
+    }
+/**
+ * Some hijacking so that input and output are on the same stream. Transform on itself.
+ */
+    public class XMLSerializer implements ContentHandler {
+
+        final private TransformerFactory tf = TransformerFactory.newInstance();
+        private ContentHandler ch;
+
+        public XMLSerializer(OutputStream os) throws SAXException {
+            try {
+                final Transformer t = tf.newTransformer();
+
+                t.transform(new SAXSource(
+                        new XMLReader() {
+                            @Override
+                            public ContentHandler getContentHandler() {
+                                return ch;
+                            }
+
+                            @Override
+                            public DTDHandler getDTDHandler() {
+                                return null;
+                            }
+
+                            @Override
+                            public EntityResolver getEntityResolver() {
+                                return null;
+                            }
+
+                            @Override
+                            public ErrorHandler getErrorHandler() {
+                                return null;
+                            }
+
+                            @Override
+                            public boolean getFeature(String name) {
+                                return false;
+                            }
+
+                            @Override
+                            public Object getProperty(String name) {
+                                return null;
+                            }
+
+                            @Override
+                            public void parse(InputSource input) {
+                            }
+
+                            @Override
+                            public void parse(String systemId) {
+                            }
+
+                            @Override
+                            public void setContentHandler(ContentHandler handler) {
+                                ch = handler;
+                            }
+
+                            @Override
+                            public void setDTDHandler(DTDHandler handler) {
+                            }
+
+                            @Override
+                            public void setEntityResolver(EntityResolver resolver) {
+                            }
+
+                            @Override
+                            public void setErrorHandler(ErrorHandler handler) {
+                            }
+
+                            @Override
+                            public void setFeature(String name, boolean value) {
+                            }
+
+                            @Override
+                            public void setProperty(String name, Object value) {
+                            }
+                        }, new InputSource()),
+                        new StreamResult(os));
+            } catch (TransformerException e) {
+                throw new SAXException(e);
+            }
+
+            if (ch == null) {
+                throw new SAXException("Transformer didn't set ContentHandler");
+            }
+        }
+
+        @Override
+        public void setDocumentLocator(Locator locator) {
+            ch.setDocumentLocator(locator);
+        }
+
+        @Override
+        public void startDocument() throws SAXException {
+            ch.startDocument();
+        }
+
+        @Override
+        public void endDocument() throws SAXException {
+            ch.endDocument();
+        }
+
+        @Override
+        public void startPrefixMapping(String prefix, String uri) throws SAXException {
+            ch.startPrefixMapping(prefix, uri);
+        }
+
+        @Override
+        public void endPrefixMapping(String prefix) throws SAXException {
+            ch.endPrefixMapping(prefix);
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+            ch.startElement(uri, localName, qName, atts);
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            ch.endElement(uri, localName, qName);
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            this.ch.characters(ch, start, length);
+        }
+
+        @Override
+        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+            this.ch.ignorableWhitespace(ch, start, length);
+        }
+
+        @Override
+        public void processingInstruction(String target, String data) throws SAXException {
+            ch.processingInstruction(target, data);
+        }
+
+        @Override
+        public void skippedEntity(String name) throws SAXException {
+            ch.skippedEntity(name);
         }
     }
 }
