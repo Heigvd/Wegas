@@ -11,17 +11,33 @@
 package com.wegas.core.jcr.content;
 
 import com.wegas.core.jcr.SessionHolder;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Calendar;
 import javax.jcr.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import org.dom4j.dom.DOMDocument;
+import org.dom4j.io.SAXContentHandler;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -31,6 +47,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.AttributesImpl;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
@@ -205,29 +223,41 @@ public class ContentConnector {
         handler.startDocument();
         handler.startElement("", "", "root", null);
         while (it.hasNext()) {
-            session.exportDocumentView(it.nextNode().getPath(), handler, false, false);
+            session.exportSystemView(it.nextNode().getPath(), handler, false, false);
         }
-
-
         handler.endElement("", "", "root");
         handler.endDocument();
 
     }
 
-    public void importXML(InputStream input) throws RepositoryException, IOException {
-        //session.importXML("/", input, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW);
-//        SAXParserFactory sf = SAXParserFactory.newInstance();
-//        try {
-//            SAXParser parser = sf.newSAXParser();
-//            DefaultHandler handler = new SAXContentHandler();
-//            parser.parse(input, handler);
-//        } catch (IOException ex) {
-//            Logger.getLogger(ContentConnector.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (ParserConfigurationException ex) {
-//            Logger.getLogger(ContentConnector.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (SAXException ex) {
-//            Logger.getLogger(ContentConnector.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+    public void importXML(InputStream input)
+            throws IOException, SAXException, ParserConfigurationException,
+            TransformerException, RepositoryException {
+        try {
+            DocumentBuilder rootBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document root = rootBuilder.parse(input);
+            NodeList list = root.getFirstChild().getChildNodes();
+            for (Integer i = 0; i < list.getLength(); i++) {
+                Document node = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+                logger.info("Node {}", list.item(i).getNodeName());
+                node.appendChild(node.importNode(list.item(i), true));
+                DOMSource source = new DOMSource(node);
+                StringWriter writer = new StringWriter();
+                StreamResult result = new StreamResult(writer);
+                TransformerFactory.newInstance().newTransformer().transform(source, result);
+                InputStream nodeAsStream = null;
+                try {
+                    nodeAsStream = new ByteArrayInputStream(writer.toString().getBytes());
+                    session.getWorkspace().importXML("/", nodeAsStream, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
+                } finally {
+                    if (nodeAsStream != null) {
+                        nodeAsStream.close();
+                    }
+                }
+            }
+        } finally {
+            input.close();
+        }
     }
 
     /**
@@ -244,13 +274,16 @@ public class ContentConnector {
             }
         }
     }
-/**
- * Some hijacking so that input and output are on the same stream. Transform on itself.
- */
+
+    /**
+     * Some hijacking so that input and output are on the same stream. Transform
+     * on itself.
+     */
     public class XMLSerializer implements ContentHandler {
 
         final private TransformerFactory tf = TransformerFactory.newInstance();
         private ContentHandler ch;
+        private Boolean started = false;
 
         public XMLSerializer(OutputStream os) throws SAXException {
             try {
@@ -338,12 +371,16 @@ public class ContentConnector {
 
         @Override
         public void startDocument() throws SAXException {
-            ch.startDocument();
+            if (!started) {                                                     //Document should only be started once.
+                ch.startDocument();
+                started = true;
+            }
         }
 
         @Override
         public void endDocument() throws SAXException {
             ch.endDocument();
+            started = false;
         }
 
         @Override
