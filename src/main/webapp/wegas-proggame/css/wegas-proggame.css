@@ -1,0 +1,109 @@
+/* CrimeSim GENERAL STYLES */
+.layout {
+    width:100%;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 9pt;
+}
+.menu {
+    background:orange;
+    border-top: 1px solid gray;
+}
+.wegas-login {
+    padding:5px;
+    float:right  !important;
+    cursor: pointer;
+}
+.body {
+}
+
+.menu.wegas-list-horizontal > div {
+    border-right: 1px solid gray;
+    padding: 5px 10px;
+    border-right: 1px solid gray;
+    height:15px;
+}
+.layout {
+    background:#6e6e6e;
+}
+.layout .yui3-button {
+    background-color: orange;
+    font-weight: bold;
+}
+.layout .title {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 10px;
+}
+.layout .yui3-button-selected {
+    background-color: #6e6e6e;
+}
+/* level styles */
+.wegas-proggame-level {
+    color:white;
+}
+.wegas-proggame-level-content > .yui3-g {
+    padding-left:250px;
+}
+.wegas-proggame-level .left {
+    width:250px;
+    margin-left:-250px;
+}
+.wegas-proggame-level .right {
+    width:100%;
+}
+.wegas-proggame-level .topright {
+    padding-right:250px;
+}
+.wegas-proggame-level .topcenter {
+    width:100%;
+}
+.wegas-proggame-level .toptopright {
+    width:250px;
+    margin-right:-250px;
+}
+.wegas-proggame-level .inventory,
+.wegas-proggame-level .api,
+.wegas-proggame-level .terrain,
+.wegas-proggame-level .bottomright,
+.wegas-proggame-level .ai,
+.wegas-proggame-level .debugger {
+    border: 1px solid orange;
+    margin:5px;
+    padding:5px;
+}
+.wegas-proggame-level .terrain {
+    height:200px;
+}
+.wegas-proggame-level .inventory {
+    //background: transparent url("/Wegas/wegas-proggame/images/inventory.png");
+    height:280px;
+}
+.wegas-proggame-level h1 {
+    font-weight: bold;
+    font-size: 15px;
+    color: orange;
+}
+/* Code input styles */
+.wegas-proggame-level .code {
+    border: 1px solid orange;
+    margin: 5px;
+    position: relative;
+    height: 200px;
+}
+.wegas-proggame-level .code h1{
+    padding:5px;
+}
+.wegas-proggame-level div.inputEx-Field {
+    float:none;
+}
+.wegas-proggame-level .ace-tm .ace_gutter {
+    background: #6e6e6e;
+    color: orange;
+    border-right: 1px solid orange;
+}
+.wegas-proggame-level .ace_text-layer {
+    color: white;
+}
+.wegas-proggame-level .ace_editor .ace_print_margin_layer {
+    display:none;
+}
