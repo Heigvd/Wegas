@@ -24,17 +24,20 @@ YUI.add('wegas-app', function (Y) {
 
         // ** Private fields ** //
         /**
-         * Holds a reference to all the dataSources used in the game
+         * Holds a reference to all the dataSources used.
          */
         dataSources: [],
 
         // ** Lifecycle methods ** //
         initializer: function () {
             Y.Wegas.app = this;
-            this.injector = new Y.Wegas.Injector({observe:"#maindisplayarea"});
+            this.injector = new Y.Wegas.Injector({
+                observe:"#maindisplayarea"
+            });
         },
+
+
         destructor : function () {
-            this.injector.destroy();
             for (var i = 0; i < this.dataSources.length; i = i + 1) {
                 this.dataSources[i].destroy();
             }
@@ -68,11 +71,15 @@ YUI.add('wegas-app', function (Y) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
                     dataSource = new Y.Wegas.DataSource(dataSources[k]);
                     this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = dataSource;
-                    dataSource.once("response", this.onInitialRequest, this);
-                    if ( Y.Lang.isNumber( dataSource.sendInitialRequest() ) ) {           // Send an initial request
+                    dataSource.once( "response", this.onInitialRequest, this );
+                    if ( Y.Lang.isNumber( dataSource.sendInitialRequest() ) ) { // Send an initial request
                         this.requestCounter += 1;                               // If the request was sent, we update the counter, which is used n the onInitialRequest() callback
                     }
                 }
+            }
+
+            if (this.requestCounter == 0) {                                     // If no request was sent, render directly
+                this.renderUI();
             }
         },
 
@@ -84,7 +91,7 @@ YUI.add('wegas-app', function (Y) {
          *  @private
          *  @parameter {Y.Event}
          */
-        onInitialRequest: function (e) {
+        onInitialRequest: function ( e ) {
             this.requestCounter -= 1;
             if (this.requestCounter == 0) {
                 this.renderUI();
@@ -128,16 +135,16 @@ YUI.add('wegas-app', function (Y) {
                         //Y.log("RedCMS.onWidgetReloadContentReceived():"+  o.responseText, 'log');
                         var cfg;
                         try {
-                            cfg = Y.JSON.parse(o.responseText);			// Process the JSON data returned from the server
+                            cfg = Y.JSON.parse( o.responseText );		// Process the JSON data returned from the server
                         } catch (e) {
-                            alert("Wegas.App.initUI(): JSON Parse failed!");
+                            alert( "Wegas.App.initUI(): JSON Parse failed!" );
                             return;
                         }
 
-                        Y.Wegas.Widget.use(cfg, Y.bind( function (cfg) {        // Load the subwidget dependencies
-                            var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
-                            widget.render();
-                            this.fire("render");                                   // Fire a render event for some eventual post processing
+                        Y.Wegas.Widget.use(cfg, Y.bind( function ( cfg ) {      // Load the subwidget dependencies
+                            this.widget = Y.Wegas.Widget.create( cfg );         // Render the subwidget
+                            this.widget.render();
+                            this.fire( "render" );                              // Fire a render event for some eventual post processing
                         }, this, cfg));
 
                     //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader

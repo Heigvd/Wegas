@@ -11,6 +11,7 @@ package com.wegas.leaderway.rest;
 
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
@@ -29,7 +30,7 @@ import javax.ws.rs.core.Response;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ResourceDescriptor/")
-public class ResourceController extends AbstractRestController<QuestionDescriptorFacade> {
+public class ResourceController extends AbstractRestController<QuestionDescriptorFacade, QuestionDescriptor> {
 
     /**
      *
@@ -37,7 +38,7 @@ public class ResourceController extends AbstractRestController<QuestionDescripto
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
 
-   
+
     /**
      *
      * @return

@@ -17,15 +17,16 @@ import com.wegas.core.ejb.RequestManagerFacade;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  * This filters takes the first path segment and uses it as the current View in
- * the com.wegas.core.ejb.RequestManager. Available view are "Index", "Public",
- * "Private" and "Export".
+ * the
+ *
+ * @see com.wegas.core.ejb.RequestManager . Available view are "Index",
+ * "Public", "Private" and "Export".
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -41,9 +42,11 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
      */
     @Override
     public ContainerRequest filter(ContainerRequest cr) {
-        String firstPathSeg = cr.getPathSegments().get(0).getPath();
         RequestManagerFacade rmf = RequestManagerFacade.lookup();
-        if (cr.getHeaderValue("lang") != null && !cr.getHeaderValue("lang").isEmpty()) {
+
+        // Handle language parameter
+        if (cr.getHeaderValue("lang") != null
+                && !cr.getHeaderValue("lang").isEmpty()) {
             rmf.setLocale(new Locale(cr.getHeaderValue("lang")));
         } else if (cr.getHeaderValue("Accept-Language") != null && !cr.getHeaderValue("Accept-Language").isEmpty()) {
             rmf.setLocale(new Locale(cr.getHeaderValue("Accept-Language")));
@@ -51,8 +54,9 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             rmf.setLocale(Locale.getDefault());
         }
 
+        // Handle view parameter
         String newUri = cr.getRequestUri().toString();
-
+        String firstPathSeg = cr.getPathSegments().get(0).getPath();
         switch (firstPathSeg) {
             case "Index":
                 rmf.setView(Views.Index.class);
@@ -84,9 +88,11 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
         }
         try {
             cr.setUris(cr.getBaseUri(), new URI(newUri));
-        } catch (URISyntaxException ex) {
-            java.util.logging.Logger.getLogger(ViewRequestFilter.class.getName()).log(Level.SEVERE, null, ex);
         }
+        catch (URISyntaxException ex) {
+            logger.error(null, ex);
+        }
+
         return cr;
     }
 

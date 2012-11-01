@@ -13,16 +13,64 @@
 */
 
 /*  TabView Styles */
+.yui3-skin-sam .yui3-tab {
+    position: relative;
+}
 .yui3-skin-sam .yui3-tabview-panel {
     border: none;
     background: none;
     padding:0px;
 }
-.yui3-tab{
-    position: relative;
+
+/* Tab's Removeable plugin */
+.yui3-skin-sam .yui3-tabview-removeable .yui3-tab-label,
+.yui3-skin-sam .yui3-tabview-removeable .yui3-tab-selected .yui3-tab-label {
+    padding-right: 2em; /* make room for close link */
 }
-.yui3-tab .closable-closeicon{
-    /*background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;*/
+
+.yui3-skin-sam .yui3-tab-add {
+    color: #999;
+    font: bold 120%/1 verdana;
+    margin-left: 0.25em;
+}
+
+.yui3-tab-remove {
+    font:bold 85% verdana;
+    position: absolute;
+    right: 0.6em;
+    border:1px solid transparent;
+    top: 0.4em;
+    padding: 0 2px 2px;
+    line-height: 1em;
+    /*
+        margin-top: 1px;*/
+    /*    background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 1px 2px,
+            url(../../lib/yui3/build/tabview/assets/skins/sam/sprite.png) repeat-x left -1400px;*/
+    /*    width: 13px;
+        height: 13px;*/
+}
+
+.yui3-tab-remove:hover {
+    color:gray;
+    /*    background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 1px 2px,
+            url(../../lib/yui3/build/tabview/assets/skins/sam/sprite.png) repeat-x left -1400px;*/
+    /*    border:1px solid gray;*/
+    border-color:gray;
+}
+
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-remove {
+    top: 0.52em;
+    color:white;
+}
+
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-remove:hover {
+    color: #fff;
+    border-color:white;
+}
+
+/* Tabview's closable plugin */
+/*.yui3-tab .closable-closeicon{
+        background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;*/
     background: url(../../wegas-app/images/sprite_icons.png) no-repeat 1px 2px,
         url(../../lib/yui3/build/tabview/assets/skins/sam/sprite.png) repeat-x left -1300px;
     position: absolute;
@@ -41,4 +89,4 @@
 }
 .yui3-tab:hover .closable-closeicon{
     display:inline-block;
-}
+}*/

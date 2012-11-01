@@ -12,8 +12,9 @@ package com.wegas.messaging.rest;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.messaging.ejb.InGameMailFacade;
-import com.wegas.messaging.persistence.variable.InboxInstance;
-import com.wegas.messaging.persistence.variable.Message;
+import com.wegas.messaging.persistence.InboxDescriptor;
+import com.wegas.messaging.persistence.InboxInstance;
+import com.wegas.messaging.persistence.Message;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.PUT;
@@ -28,7 +29,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/InboxDescriptor/")
-public class InboxDescriptorController extends AbstractRestController<VariableDescriptorFacade> {
+public class InboxDescriptorController extends AbstractRestController<VariableDescriptorFacade, InboxDescriptor> {
     /*
      *
      */

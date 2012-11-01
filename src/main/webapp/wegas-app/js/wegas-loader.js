@@ -107,7 +107,8 @@ YUI().use(function (Y) {
                     },
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
-                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize', 'resize', 'wegas-layoutcss' ],
+                        requires: [ 'wegas-widget', 'widget-stdmod', 'event-resize',
+                            'anim', 'resize', 'wegas-layoutcss' ],
                         ix_provides: 'Layout'
                     },
                     'wegas-layoutcss': {
@@ -155,9 +156,15 @@ YUI().use(function (Y) {
                         requires: ['wegas-widget', 'wegas-inputex'],
                         ix_provides: "FormWidget"
                     },
+                    'wegas-loginwidget': {
+                        path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
+                        requires: [ 'wegas-widget', 'inputex-password', 'inputex-string',
+                            "inputex-hidden", "inputex-email", "inputex-checkbox", 'button' ],
+                        ix_provides: "LoginWidget"
+                    },
                     'wegas-joingamewidget': {
                         path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
-                        requires: ['wegas-widget', 'inputex-select', 'inputex-string', 'button'],
+                        requires: [ 'wegas-widget', 'inputex-select', 'inputex-string', 'button' ],
                         ix_provides: "JoinGameWidget"
                     },
                     'wegas-imageloader': {
@@ -218,6 +225,11 @@ YUI().use(function (Y) {
                         requires: [ 'inputex-field', 'ace' ],
                         ix_provides: 'wegasurl'
                     },
+                    'wegas-inputex-roleselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-roleselect-min.js',
+                        requires: [ 'inputex-select' ],
+                        ix_provides: 'roleselect'
+                    },
 
                     /** Common Widgets **/
                     'wegas-widgetmenu': {
@@ -275,7 +287,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        requires: []
+                        requires: ['diff_match_patch']
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -344,8 +356,39 @@ YUI().use(function (Y) {
                     },
 
                     /** Project Management Game **/
-                    'wegas-projectmanagementgame': {
-                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
+                    'wegas-pmg': {
+                        path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
+                        requires:['wegas-pmg-breadcrumb'],
+                        ix_provides: "PmgBreadcrumb"
+                    },
+                    
+                    'wegas-pmg-tasklist':{
+                        path: 'wegas-pmg/js/wegas-pmg-tasklist.js',
+                        requires:['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
+                        ix_provides: "PmgTasklist"
+                    },    
+                    
+                    'wegas-pmg-gantt':{
+                        path: 'wegas-pmg/js/wegas-pmg-gantt.js',
+                        requires:['wegas-pmg-gantt', 'wegas-pmg-datatable'],
+                        ix_provides: "PmgGantt"
+                    },   
+                    
+                    'wegas-pmg-resourcelist':{
+                        path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
+                        requires:['wegas-pmg-resourcelist', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
+                        ix_provides: "PmgResourcelist"
+                    },   
+                    
+                    'wegas-pmg-datatable':{
+                        path: 'wegas-pmg/js/wegas-pmg-datatable.js',
+                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable'],
+                        ix_provides: "PmgDatatable"
+                    },
+                    
+                    'wegas-pmg-slidepanel':{
+                        path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
+                        ix_provides: "PmgSlidePanel"
                     },
 
                     /**book CYOA**/
@@ -358,6 +401,18 @@ YUI().use(function (Y) {
                     'wegas-book-dice': {
                         path: 'wegas-book/js/wegas-book-dice.js',
                         ix_provides: "Dice"
+                    },
+
+                    /**CEP**/
+                    'wegas-cep': {
+                        path: 'wegas-cep/js/wegas-cep-itemselector.js',
+                        requires:['wegas-cep-itemselector', 'wegas-cep-nodeformatter'],
+                        ix_provides: "CepItemSelector"
+                    },
+                    
+                    'wegas-cep-nodeformatter': {
+                        path: 'wegas-cep/js/wegas-cep-nodeformatter.js',
+                        ix_provides: "CepNodeFormatter"
                     },
 
                     /** CrimeSim **/
@@ -505,6 +560,17 @@ YUI().use(function (Y) {
                         path: "gauge.min.js"
                     }
                 }
+            },
+            diffmatchpatch:{
+                async: false,
+                combine:false,
+                base:"./lib/diffmatchpatch/",
+                root:"/lib/diffmatchpatch/",
+                modules: {
+                    'diff_match_patch':{
+                        path:"diff_match_patch.js"
+                    }
+                }
             }
         }
     };
@@ -528,7 +594,7 @@ YUI().use(function (Y) {
                 if (modules[moduleName].ix_provides) {                          // Build a reverse index on which module provides what type
 
                     if (Y.Lang.isArray(modules[moduleName].ix_provides)) {
-                        for (var i = 0; i < modules[moduleName].ix_provides.length; i = i + 1) {
+                        for (i = 0; i < modules[moduleName].ix_provides.length; i = i + 1) {
                             modulesByType[modules[moduleName].ix_provides[i]] = moduleName;
                         }
                     } else {

@@ -24,7 +24,7 @@ YUI.add('wegas-list', function (Y) {
                 cb.addClass(this.getClassName('horizontal'));
                 cb.removeClass(this.getClassName('vertical'));
             }
-            this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
+            this.get(BOUNDINGBOX).append('<div class="list-clearing" style="clear:both"></div>');
         }
     }, {
         ATTRS : {
@@ -33,15 +33,15 @@ YUI.add('wegas-list', function (Y) {
             },
             direction: {
                 value: 'vertical'
-            },
+            }
 
             /**
              * Prevent widgetchild selection to be propagated through the hierarchy
              */
-            selected: {
-                value: 2,
-                readonly: true
-            }
+            //selected: {
+            //    value: 2,
+            //    readonly: true
+            //}
         }
     });
 
