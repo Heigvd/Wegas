@@ -35,7 +35,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
         bindUI: function () {
             if ( this.get( "dataSource" ) ) {
                 this.get( "dataSource" ).after( "response", this.syncUI, this );// Listen updates on the target datasource
-                this.get( "dataSource" ).after("error", function(e){            //GLOBAL error message
+                this.get( "dataSource" ).after( "error", function(e){            //GLOBAL error message
                     this.showMessage("error", e.response.results.message);
                 }, this);
             }
@@ -258,13 +258,35 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'GameModel':
-                                text = 'Game model: ' + el.get("name");
+                                text = 'Game model: ' + el.get( "name" );
                                 ret.push({
                                     label: text,
                                     data: {
                                         entity: el
                                     },
                                     iconCSS: 'wegas-icon-gamemodel',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                                break;
+
+                            case 'User':
+                                ret.push({
+                                    label: 'User:' + el.get( "name" ),
+                                    data: {
+                                        entity: el.getMainAccount()
+                                    },
+                                    iconCSS: 'wegas-icon-player',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                                break;
+
+                            case 'Role':
+                                ret.push({
+                                    label: 'Group:' + el.get( "name" ),
+                                    data: {
+                                        entity: el
+                                    },
+                                    iconCSS: 'wegas-icon-team',
                                     rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                                 break;
@@ -455,6 +477,20 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
     Y.namespace( 'Wegas' ).EditorTreeView = EditorTreeView;
 
+    var VariableDescriptorTreeview = Y.Base.create("wegas-editor-variabledescriptortreeview", Y.Wegas.EditorTreeView, [], {
+        bindUI: function () {
+            VariableDescriptorTreeview.superclass.bindUI.call( this );
+
+//            this.sortable = new Y.Sortable({
+//                container: this.get( "contentBox"),
+//                nodes: 'li',
+//                opacity: '.2'
+//            });
+        }
+    });
+
+    Y.namespace( 'Wegas' ).VariableDescriptorTreeview = VariableDescriptorTreeview;
+
     var LobbyTreeView = Y.Base.create("wegas-editor-treeview", Y.Wegas.EditorTreeView, [], {
 
         genTreeViewElements: function (elements) {
@@ -483,4 +519,6 @@ YUI.add('wegas-editor-treeview', function (Y) {
     });
 
     Y.namespace( 'Wegas' ).LobbyTreeView = LobbyTreeView;
+
+
 });

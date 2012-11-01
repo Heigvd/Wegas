@@ -139,7 +139,7 @@ YUI.add('wegas-leaderway', function (Y) {
         /*
          * Destroy all child widget and all remanent function
          */
-        destroy: function(){
+        destructor: function(){
             var i;
             this.table.destroy();
             for (i=0; i<this.handlers.length;i++) {

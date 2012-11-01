@@ -6,11 +6,12 @@
  * Media Engineering :: Information Technology Managment :: Comem
  *
  * Copyright (C) 2012
-*/
+ */
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
-*/
+ */
+
 /* Default form styles */
 body {
     overflow: hidden;
@@ -64,16 +65,16 @@ select {
     height: 18px;
     width: 18px;
     overflow: hidden;
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
+    background-image: url(../images/wegas-editor-sprite.png);
 }
 .yui3-skin-sam .wegas-icon-reset {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -300px;
+    background-position: 0px -300px;
 }
 .yui3-skin-sam .wegas-icon-refresh {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -300px;
+    background-position: 0px -300px;
 }
 .yui3-skin-sam .wegas-icon-new {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px 0px;
+    background-position: 0px 0px;
 }
 .yui3-skin-sam .wegas-icon-newfile {
     background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1210px,
@@ -84,61 +85,61 @@ select {
         url(../images/wegas-editor-sprite.png) no-repeat 1px -272px;
 }
 .yui3-skin-sam .wegas-icon-play {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -192px;
+    background-position: 0px -192px;
 }
 .yui3-skin-sam .wegas-icon-stop {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -172px;
+    background-position: 0px -172px;
 }
 .yui3-skin-sam .wegas-icon-zoomin {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -124px;
+    background-position: 0px -124px;
 }
 .yui3-skin-sam .wegas-icon-zoomout {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -152px;
+    background-position: 0px -152px;
 }
 .yui3-skin-sam .wegas-icon-select{
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -244px;
+    background-position: 0px -244px;
 }
 .yui3-skin-sam .wegas-icon-move {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -214px;
+    background-position: 0px -214px;
 }
 .yui3-skin-sam .wegas-icon-cut {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -42px;
+    background-position: 0px -42px;
 }
 .yui3-skin-sam .wegas-icon-copy {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -68px;
+    background-position: 0px -68px;
 }
 .yui3-skin-sam .wegas-icon-paste {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -271px;
+    background-position: 0px -271px;
 }
 .yui3-skin-sam .wegas-icon-save {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -654px;
+    background-position: 0px -654px;
 }
 .yui3-skin-sam .wegas-icon-delete {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -771px;
+    background-position: 0px -771px;
 }
 .yui3-skin-sam .wegas-icon-preview {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -741px;
+    background-position: 0px -741px;
 }
 .yui3-skin-sam .wegas-icon-cancel {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -834px;
+    background-position: 0px -834px;
 }
 .yui3-skin-sam .wegas-icon-fileexplorer {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -870px;
+    background-position: 0px -870px;
 }
 .yui3-skin-sam .wegas-icon-add {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1027px;
+    background-position: 1px -1027px;
 }
 .yui3-skin-sam .wegas-icon-remove {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1002px;
+    background-position: 1px -1002px;
 }
 .yui3-skin-sam .wegas-icon-viewsrc {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 2px -804px;
+    background-position: 2px -804px;
 }
 .yui3-skin-sam .wegas-icon-edit {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 2px -943px;
+    background-position: 2px -943px;
 }
 .yui3-skin-sam .wegas-icon-designmode {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 0px -1110px;
+    background-position: 0px -1110px;
 }
 
 /* Console Widget Styles */
@@ -255,7 +256,7 @@ select {
 /* YUI 2 RTE Styles */
 .yui-skin-sam .yui-editor-container {
     border: none;
-    margin: 0 ;
+    margin: 0;
 }
 .yui-skin-sam .yui-toolbar-container {
     background-color: transparent;
@@ -411,18 +412,10 @@ select {
     padding: 0;                                                                 /* Override yui default */
 }
 
-
 /* Editor layout styles */
 .wegas-layout-top > div {
     display: inline-block;
     vertical-align: top;
-}
-.wegas-layout-top .wegas-editor-title {
-    font-weight: bold;
-    font-size: 20px;
-    line-height: 1.9em;
-    color: #6E6E6E;
-    margin: 0px 15px;
 }
 .wegas-layout-top .yui3-button {
     border: none;
@@ -433,7 +426,7 @@ select {
     box-shadow: none;
     background: url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
     padding: 3px 20px 3px 10px;
-    margin-top: 7px;
+    margin-top: 12px;
 }
 .wegas-layout-top .wegas-login {
     float:right  !important;

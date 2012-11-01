@@ -5,19 +5,19 @@
     Description:
         Purpose of the stylesheet follows.
 */
-/*---------------------------------Général------------------------------------*/
-html{
+/*---------------------------------General------------------------------------*/
+.layout, html, .preview-content{
     background-color:#E4DDCC;
 }
 
-body{
+.layout .wegas-list-content{
     width:980px;
     margin:0 auto 0 auto;
     border-style: solid;
     border-width: 0 1px 1px 1px;
 }
 
-#maindisplayarea{
+.layout .wegas-list-content .body{
     background-color:#FFFFFF;
     min-height: 300px;
 }
@@ -32,7 +32,8 @@ body{
     min-height:70px;
     clear:both;
     overflow: auto;
-    border-bottom: 1px solid;
+    border: 1px solid;
+    border-width: 0 0 1px 0;
 }
 
 .leaderway-indicators .indicators-fraction{
@@ -119,7 +120,7 @@ body{
     float:left;
 }
 /*-----------------------------------menu-------------------------------------*/
-.leaderway-menu{
+.leaderway-menu > .wegas-list-content{
     background-color:#E1D2B9;
     background-image:url(/Wegas/wegas-leaderway/images/menu_background.png);
     background-repeat: repeat-x;
@@ -127,7 +128,8 @@ body{
     padding:5px;
     height:40px;
     overflow:auto;
-    border-bottom: 1px solid;
+    border: 1px solid;
+    border-width: 0 0 1px 0;
 }
 
 .leaderway-menu .button{

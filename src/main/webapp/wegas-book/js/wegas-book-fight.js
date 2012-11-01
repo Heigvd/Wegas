@@ -166,7 +166,7 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             this.displayOpponentState(cb);
         },
         
-        destroy: function(){
+        destructor: function(){
             var i;
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();

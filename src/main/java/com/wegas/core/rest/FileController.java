@@ -21,6 +21,7 @@ import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.exception.WegasException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -36,7 +37,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -109,7 +112,7 @@ public class FileController {
                     logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
                 }
             } else {
-                throw new WegasException(detachedFile.getPath() + "/" + name + " already exists" );
+                throw new WegasException(detachedFile.getPath() + "/" + name + " already exists");
             }
         } else {
             logger.debug("Parent Directory does not exist");
@@ -191,6 +194,28 @@ public class FileController {
             Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return new ArrayList<>();
+    }
+
+    @GET
+    @Path("export")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response exportXML(@PathParam("gameModelId") String gameModelId) throws RepositoryException, IOException {
+        final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
+        StreamingOutput out = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try {
+                    try {
+                        connector.exportXML(output);
+                    } catch (SAXException ex) {
+                        Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } catch (RepositoryException ex) {
+                    Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition", "attachment; filename=GM_" + extractGameModelId(gameModelId) + "files.xml").build();
     }
 
     /**

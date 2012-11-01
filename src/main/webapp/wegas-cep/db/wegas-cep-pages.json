@@ -74,12 +74,23 @@
                                     }]
                             },{
                                 "type": "Button",
-                                "label": "<span class=\"wegas-icon cep-icon-questions\"></span>Questions",
+                                "label": "<span class=\"wegas-icon cep-icon-employees\"></span>Employees",
                                 "cssClass": "menu-button",
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 3,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            },{
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-questions\"></span>Questions",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 4,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }, {
@@ -95,7 +106,7 @@
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 4,
+                                            "subpageId": 5,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }, {
@@ -111,7 +122,7 @@
                                 "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
-                                            "subpageId": 5,
+                                            "subpageId": 6,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     },{
@@ -150,18 +161,75 @@
         "content": "Welcome to CEP case."
     },{
         "id": 3,
-        "type": "MCQTabView",
-        "expr": "questions.items[phases.value].descriptorId"
+        "type": "CepItemSelector",
+        "listVariables": "employees",
+        "searchInProperties":[
+            "properties",
+            "skillset"
+        ],
+        "selectors":[{
+                "type":"image",
+                "name":"picture",
+                "height":"35",
+                "width":"35"
+            },{
+                "name":"surname",
+                "label":"Prénom : "
+            }
+        ],
+        "informations":[{
+                "name":"Information personnelles : ",
+                "className":"titre"
+            },{
+                "type":"image",
+                "name":"picture",
+                "height":"150",
+                "width":"150",
+                "className": "picture"
+            },{
+                "name":"name",
+                "label":"Nom : "
+            },{
+                "name":"surname",
+                "label":"Prénom : "
+            },{
+                "name":"salary",
+                "label":"Salaire : "
+            },{
+                "type":"valueBox",
+                "name":"moral",
+                "label":"Morale : ",
+                "maxValue":"100"
+            },{
+                "type":"valueBox",
+                "name":"experience",
+                "label":"Expérience : ",
+                "maxValue":"100"
+            },{
+                "name":"description",
+                "label":"Description : "
+            },{
+                "type":"position",
+                "html":"<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 5 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 4 : Elle se rend compte de toute l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 3 : Elle sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li><li>Niveau 2 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 1 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li></ul>",
+                "selector":"li",
+                "name":"leadershipLevel",
+                "invert":"true"
+            }
+        ]
     },{
         "id": 4,
         "type": "MCQTabView",
-        "expr": "actions.items[phases.value].descriptorId"
+        "expr": "questions.items[phases.value].descriptorId"
     },{
         "id": 5,
+        "type": "MCQTabView",
+        "expr": "actions.items[phases.value].descriptorId"
+    },{
+        "id": 6,
         "type": "InboxDisplay",
         "variable": "inbox"
     }, {
-        "id": 6,
+        "id": 7,
         "type": "ResultsDisplay"
     }
 ]

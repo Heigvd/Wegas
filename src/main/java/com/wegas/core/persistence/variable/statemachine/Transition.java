@@ -34,12 +34,21 @@ import org.codehaus.jackson.map.annotate.JsonView;
 })
 public class Transition extends AbstractEntity {
 
+    /**
+     *
+     */
     @Id
     @GeneratedValue
-    @JsonView({Views.EditorI.class, Views.Private.class})
+    @JsonView(Views.IndexI.class)
     private Long id;
+    /**
+     *
+     */
     @Embedded
     private Script triggerCondition;
+    /**
+     *
+     */
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "content",

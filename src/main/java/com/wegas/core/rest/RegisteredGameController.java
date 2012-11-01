@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,8 +9,8 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.UserFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.ejb.UserFacade;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

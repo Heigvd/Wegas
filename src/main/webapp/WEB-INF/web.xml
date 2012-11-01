@@ -13,6 +13,8 @@
     </welcome-file-list>
 
     <!-- Apache Shiro Listener -->
+    <!-- shiro filter must be declared before any other filter, to ensure
+        security checks. -->
     <listener>
         <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
     </listener>
@@ -73,14 +75,22 @@
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
             <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
         </init-param>
+        <!--<init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+        </init-param>-->
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>Rest Facade</servlet-name>
         <url-pattern>/rest/*</url-pattern>
-        <url-pattern>/\/*</url-pattern>
-        <!-- Just for Cyril -->
+        <url-pattern>/\/*</url-pattern><!-- Just for Cyril -->
     </servlet-mapping>
+
     <!-- Liquibase configuration -->
     <context-param>
         <param-name>liquibase.changelog</param-name>
@@ -94,6 +104,7 @@
     <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
+
     <!-- Facebook Servlet -->
     <servlet>
         <servlet-name>Facebook Servlet</servlet-name>
@@ -104,6 +115,13 @@
         <servlet-name>Facebook Servlet</servlet-name>
         <url-pattern>/FacebookServlet</url-pattern>
     </servlet-mapping>
+
+    <!--File Mime Types-->
+    <mime-mapping>
+        <extension>json</extension>
+        <mime-type>application/json;charset=ISO-8859-1</mime-type>
+    </mime-mapping>
+
     <!-- Atmosphere Servlet -->
     <!-- <servlet>
         <description>AtmosphereServlet</description>
@@ -149,9 +167,4 @@
         <filter-name>FacebookUserFilter</filter-name>
         <url-pattern>/facebooktest/*</url-pattern>
     </filter-mapping>-->
-    <!--File Mime Types-->
-    <mime-mapping>
-        <extension>json</extension>
-        <mime-type>application/json;charset=ISO-8859-1</mime-type>
-    </mime-mapping>
 </web-app>

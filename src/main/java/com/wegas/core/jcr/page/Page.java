@@ -10,12 +10,16 @@
  */
 package com.wegas.core.jcr.page;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.LinkedList;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import javax.xml.bind.annotation.XmlTransient;
+import name.fraser.neil.plaintext.StandardBreakScorer;
+import name.fraser.neil.plaintext.diff_match_patch;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -24,17 +28,20 @@ import org.slf4j.LoggerFactory;
  */
 @XmlRootElement
 public class Page implements Serializable {
+
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Page.class);
-
+    @JsonIgnore
+    @XmlTransient
+    private static ObjectMapper mapper = new ObjectMapper();
     private Integer id;
-    private JSONObject content;
+    private JsonNode content;
 
-    public Page(Integer id, String content) throws JSONException {
+    public Page(Integer id, String content) throws IOException {
         this.id = id;
-        this.content = new JSONObject(content);
+        this.content = mapper.readTree(content);
     }
 
-    public Page(Integer id, JSONObject content) {
+    public Page(Integer id, JsonNode content) {
         this.id = id;
         this.content = content;
     }
@@ -47,20 +54,23 @@ public class Page implements Serializable {
         this.id = id;
     }
 
-    public JSONObject getContent() {
+    public JsonNode getContent() {
         return content;
     }
 
-    public void setContent(JSONObject content) {
+    public void setContent(JsonNode content) {
         this.content = content;
     }
 
-    public void setContent(String content) throws JSONException {
-        this.content = new JSONObject(content);
+    public void setContent(String content) throws IOException {
+        this.content = mapper.readTree(content);
     }
-    @JsonCreator
-    public static Page getPage(@JsonProperty("id") Integer id, @JsonProperty("content") JSONObject content) throws JSONException{
-        logger.debug(content.toString());
-        return new Page(id, content);
+
+    public void patch(String patch) throws IOException {
+        diff_match_patch dmp = new diff_match_patch(new StandardBreakScorer());
+        LinkedList<diff_match_patch.Patch> patches = (LinkedList<diff_match_patch.Patch>) dmp.patch_fromText(patch);
+        Object[] result = dmp.patch_apply(patches, this.content.toString());
+        logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + (String) result[0]);
+        this.setContent((String) result[0]);
     }
 }

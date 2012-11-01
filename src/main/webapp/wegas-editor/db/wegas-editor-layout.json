@@ -8,7 +8,7 @@
         "children": [{
             "type": "Text",
             "content": "",
-            "cssClass": "wegas-editor-title"
+            "cssClass": "wegas-title"
         }, {
             "type": "SelectGameButton"
         }, {
@@ -34,26 +34,48 @@
                                 }
                             }]
                         }
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Log",
-                        "subpage": {
-                            "type": "Logger"
-                        }
-                    }, {
+                    }]
+                }
+            }]
+        },{
+            "type": "Button",
+            "label": "Administrator",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": [{
                         "type": "OpenTabButton",
                         "label": "Users",
                         "subpage": {
-                            "type": "DataTable",
+                            "type": "EditorTreeView",
                             "dataSource": "User",
-                            "columnset": [ {
-                                "key":"id",
-                                "sortable": true
-                            }, {
-                                "key":"name",
-                                "sortable": true
-                            }, {
-                                "key":"@class"
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
+                                        "type": "NewEntityButton",
+                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                        "targetClass": "JpaAccount",
+                                        "dataSource": "User"
+                                    }]
+                                }
+                            }]
+                        }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Groups",
+                        "subpage": {
+                            "type": "EditorTreeView",
+                            "dataSource": "Role",
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
+                                        "type": "NewEntityButton",
+                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                        "targetClass": "Role"
+                                    }]
+                                }
                             }]
                         }
                     }]
@@ -129,7 +151,7 @@
                 "type": "Tab",
                 "label": "Variables",
                 "children": [{
-                    "type": "EditorTreeView",
+                    "type": "VariableDescriptorTreeview",
                     "dataSource": "VariableDescriptor",
                     "excludeClasses": {
                         "MCQDescriptor": true
@@ -171,6 +193,7 @@
                 "children": [{
                     "type": "PageLoader",
                     "pageId": 1,
+                    "cssClass":"preview-content",
                     "plugins": [{
                         "fn": "WidgetToolbar",
                         "cfg": {
@@ -192,15 +215,7 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
-            "children": [
-            {
-                "type": "Tab",
-                "label": "Chat",
-                "toolbarLabel": "Chat",
-                "children": [{
-                    "type": "Chat"
-                }]
-            }]
+            "children": []
         }]
     }
 }
