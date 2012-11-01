@@ -63,7 +63,15 @@
             }]
     },{
         "id": 2,
-        "type": "MMOWidget"
+        "type": "ProgGameLevel",
+        "ia": "move();",
+        "cssClass": "wegas-proggame-level",
+        "children": [{
+                "type": "player"
+            }, {
+                "type": "enemy",
+                "direction": 3
+            }]
     },{
         "id": 3,
         "type": "Text",

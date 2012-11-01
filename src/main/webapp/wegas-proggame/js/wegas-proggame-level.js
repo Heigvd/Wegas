@@ -2,15 +2,15 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-mmo', function (Y) {
+YUI.add('wegas-proggame-level', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', MMOWidget;
+    var CONTENTBOX = 'contentBox', ProgGameLevel;
 
     /**
      *  The schedule display class.
      */
-    MMOWidget = Y.Base.create("wegas-mmo", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget], {
+    ProgGameLevel = Y.Base.create( "wegas-proggame-level", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         // *** Fields *** //
 
@@ -28,13 +28,16 @@ YUI.add('wegas-mmo', function (Y) {
                 +'<div class="yui3-g topright">'
                 +'<div class="yui3-u topcenter"><div class="terrain"><h1>Battleground</h1></div></div>'
                 +'<div class="yui3-u toptopright">'
-                +'<div class="ai"><h1>A.I.</h1></div>'
+                +'<div class="ai"><h1>A.I.</h1>'
+                + this.get( "ia" ) + '</div>'
                 +'<div class="debugger"><h1>Debugger</h1></div>'
                 +'</div>'
                 +'</div>'
 
                 +'<div class="code"><h1>Your code</h1></div>'
-                +'</div>');
+                + '<div style="clear:both"></div>'
+                +'</div>'
+                + '<div style="clear:both"></div>');
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code"),
@@ -56,8 +59,11 @@ YUI.add('wegas-mmo', function (Y) {
             console.log("sync");
         }
     }, {
-        ATTRS : {}
+        ATTRS : {
+            children: {},
+            ia: {}
+        }
     });
 
-    Y.namespace('Wegas').MMOWidget = MMOWidget;
+    Y.namespace('Wegas').ProgGameLevel = ProgGameLevel;
 });

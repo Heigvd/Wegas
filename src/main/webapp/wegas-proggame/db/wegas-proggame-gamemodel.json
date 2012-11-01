@@ -1,6 +1,6 @@
 {
     "@class":"GameModel",
-    "name":"MMO",
+    "name":"Programming Game",
     "games":[{
         "@class":"Game",
         "name":"Test-16",
@@ -43,6 +43,6 @@
         "label":null,
         "description":null
     }],
-    "cssUri":"wegas-mmo/css/wegas-mmo.css",
-    "widgetsUri":"wegas-mmo/db/wegas-mmo-pages.json"
+    "cssUri":"wegas-proggame/css/wegas-proggame.css",
+    "widgetsUri":"wegas-proggame/db/wegas-proggame-pages.json"
 }
