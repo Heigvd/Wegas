@@ -7,7 +7,7 @@ YUI.add('wegas-cep-itemselector', function (Y) {
 
     var CONTENTBOX = 'contentBox', ItemSelector;
 
-    ItemSelector = Y.Base.create("wegas-cep", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    ItemSelector = Y.Base.create("wegas-cep-itemselector", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable, Y.Wegas.CepNodeFormatter], {
         
         handlers: null,
         currentItem:null,
@@ -20,42 +20,66 @@ YUI.add('wegas-cep-itemselector', function (Y) {
                 if(variables[i] === this.currentItem){
                     selector.addClass('current');
                 }
-                this.createDOMProperties(selector, variables[i], this.get('selectorNames'), this.get('selectorLabels'));
+                this.createDOMProperties(selector, variables[i], this.get('selectors'));
                 node.append(selector);
             }
         },
         
         createInformations: function(cb){
-            var node = cb.one('.informations'),
-            variable = this.currentItem,
-            names = this.get('informationsNames'),
-            labels = this.get('informationsLabels');
+            var node = cb.one('.informations');
             node.empty();
-            this.createDOMProperties(node, variable, names, labels);
+            this.createDOMProperties(node, this.currentItem, this.get('informations'));
         },
         
-        createDOMProperties: function(node, variable, names, labels){
-            var j, value, content,label;
-            if(!node || !variable || !names || !labels) return;
-            for(j=0; j<names.length; j++){
-                content = Y.Node.create('<div class="'+names[j]+'"></div>')
-                value = this.getVariableValue(variable, names[j]);
-                label = (labels[j] || 'undefine');
-                content.append('<span class="label">'+label+'</span>');
-                content.append('<span class="value">'+value+'</span>');
-                node.append(content);
+        createDOMProperties: function(node, variable, attrs){
+            var i, type, value, label, className, obj;
+            if(!node || !variable || !attrs) return;
+            for(i=0; i<attrs.length; i++){
+                obj = attrs[i];
+                if(typeof obj === 'object'){
+                    value = (this.getVariableValue(variable, obj['name']) || obj['name']);
+                    label = (obj['label'] || null);
+                    type = (obj['type'] || 'undefine');
+                    className = (obj['className'] || null);
+                    switch(type){
+                        case 'image' :
+                            node.append(this.makeNodeImage({
+                                "src":value,
+                                "width":obj['height'],
+                                "height":obj['width']
+                            }, className));
+                            break;
+                        case 'position' :
+                            node.append(this.makeNodePosition(obj['html'], obj['selector'], value, obj['invert'], className));
+                            break;
+                        case 'valueBox' :
+                            node.append(this.makeNodeValueBox(value, obj['maxValue'], label, className));
+                            break;
+                        default :
+                            node.append(this.makeNodeText(value, label, className));
+                            break;
+                    }      
+                }
             }
         },
         
         getVariableValue:function(variable, varName){
-            var value = 'undefine';
+            var i, prop = this.get('searchInProperties'), value = null;
             if(!variable || !varName) return value;
             if(variable.get(varName)){
                 value = variable.get(varName);
             }else if(variable.getInstance().get(varName)){
                 value = variable.getInstance().get(varName);
             }else {
-                value = variable.getInstance().get('properties')[varName];
+                for(i=0;i<prop.length; i++){
+                    if(variable.getInstance().get(prop[i]) && variable.getInstance().get(prop[i])[varName]){
+                        value = variable.getInstance().get(prop[i])[varName];
+                        break;
+                    }
+                }
+            }
+            if(parseFloat(value)){
+                value = parseFloat(value);
             }
             return value;
         },
@@ -85,7 +109,12 @@ YUI.add('wegas-cep-itemselector', function (Y) {
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
             this.handlers.push(cb.one('.selectors').delegate('click', function (e) {
-                var i, variables, name = e.target.ancestors('.selector').item(0).getAttribute("data-name");
+                var i, variables, name;
+                if(e.target.ancestors('.selector').item(0)){
+                    name = e.target.ancestors('.selector').item(0).getAttribute("data-name");
+                }else{
+                    name = e.target.getAttribute("data-name");
+                }
                 variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('listVariables'));
                 if(!variables || !variables.get('items')) return;
                 for(i=0; i<variables.get('items').length; i++){
@@ -128,19 +157,15 @@ YUI.add('wegas-cep-itemselector', function (Y) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
-            informationsNames: {
+            searchInProperties:{
                 validator: Y.Lang.isArray,
                 value: new Array()
             },
-            informationsLabels: {
+            selectors: {
                 validator: Y.Lang.isArray,
                 value: new Array()
             },
-            selectorNames: {
-                validator: Y.Lang.isArray,
-                value: new Array()
-            },
-            selectorLabels: {
+            informations: {
                 validator: Y.Lang.isArray,
                 value: new Array()
             }

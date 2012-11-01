@@ -330,8 +330,8 @@
                     "surname":"Fernand",
                     "male":true,
                     "salary":4000,
-                    "leadershipLevel":3,
-                    "skillset":75
+                    "leadershipLevel":2,
+                    "experience":75
                 },
                 "skillset":{}
             },
@@ -351,8 +351,8 @@
                     "surname":"Daniela",
                     "male":false,
                     "salary":3800,
-                    "leadershipLevel":1,
-                    "skillset":49
+                    "leadershipLevel":0,
+                    "experience":49
                 },
                 "skillset":{}
             },
@@ -365,15 +365,15 @@
             "description":"Description de Jessica.",
             "defaultInstance":{
                 "@class":"ResourceInstance",
-                "moral":64,
+                "moral":92,
                 "confidence":0,
                 "properties":{
                     "picture":"/Wegas/rest/File/GameModelId/1/read/jessicaPortrait.png",
                     "surname":"Jessica",
                     "male":false,
                     "salary":3300,
-                    "leadershipLevel":1,
-                    "skillset":35
+                    "leadershipLevel":0,
+                    "experience":35
                 },
                 "skillset":{}
             },
@@ -393,8 +393,8 @@
                     "surname":"Hector",
                     "male":true,
                     "salary":3400,
-                    "leadershipLevel":2,
-                    "skillset":87
+                    "leadershipLevel":1,
+                    "experience":87
                 },
                 "skillset":{}
             },
@@ -414,8 +414,8 @@
                     "surname":"Lucien",
                     "male":true,
                     "salary":3500,
-                    "leadershipLevel":1,
-                    "skillset":59
+                    "leadershipLevel":0,
+                    "experience":59
 
                 },
                 "skillset":{}

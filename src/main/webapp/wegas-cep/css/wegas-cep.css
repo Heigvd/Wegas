@@ -1,8 +1,8 @@
 /*
  * CEP Styles
- */
+*/
 
- /* Global style override */
+/* Global style override */
 .layout {
     margin: 0;
     padding: 0;
@@ -335,4 +335,112 @@ h3 {
 }
 .wegas-mcqtabview .unread {
     font-weight:bold;
+}
+
+/* --- employees --- */
+/*selectors*/
+.selectors{
+    text-align:center;
+}
+
+.selector{
+    display:inline-block;
+    width:100px;
+    text-align: center;
+    margin:10px;
+    padding:5px;
+    background: rgba(60, 100, 200, 0.1);
+    box-shadow: 0px 0px 4px #6D6D6D;
+}
+
+.selector:hover{
+    box-shadow: 0px 0px 4px #000000;
+    cursor:pointer;
+}
+
+.selector .nodeformatter-properties .label{
+    display: none;
+}
+
+/*informations*/
+.informations{
+    background: rgba(60, 100, 200, 0.1);
+    box-shadow: 0px 0px 4px #6D6D6D;
+    padding:10px;
+}
+
+.informations .titre{
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.informations .picture{
+    position:absolute;
+    margin-left:785px;
+    background-color: white;
+    border:1px solid #006699;
+}
+
+.informations .nodeformatter-properties{
+    margin:10px 0;
+    max-width: 760px
+}
+
+.informations .nodeformatter-valuebox {
+    clear:both;
+    height:15px;
+    margin:10px 0;
+}
+
+.informations .nodeformatter-valuebox .label,
+.informations .nodeformatter-valuebox .box-units,
+.informations .nodeformatter-valuebox .box-value{
+    float:left;
+}
+
+.informations .nodeformatter-valuebox .label{
+    width:80px;
+}
+
+.informations .nodeformatter-valuebox .box-units{
+    display:block;
+    background: rgba(60, 100, 200, 0.3);
+    width:200px;
+    height:15px;
+    font-size: 1em;
+    border: #006699 solid 1px;
+    overflow: hidden;
+}
+
+.informations .nodeformatter-valuebox .box-unit{
+    display:block;
+    background-color:#6F89A2;
+    background-image:url(/Wegas/wegas-cep/images/gaugeFiller.png);
+    background-repeat: repeat-x;
+    float:left;
+    width:2px;
+    height:15px;
+}
+
+.informations .nodeformatter-valuebox .box-value{
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+.informations .nodeformatter-position{
+    margin:10px 0;
+}
+
+.informations li{
+    color:#6F89A2;
+    margin-left:15px;
+}
+
+.informations .nodeformatter-position .previous{
+    color:black;
+}
+
+.informations .nodeformatter-position .current{
+    list-style-type:circle;
+    color:black;
 }
