@@ -38,6 +38,8 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
@@ -197,7 +199,7 @@ public class FileController {
     }
 
     @GET
-    @Path("export")
+    @Path("exportXML")
     @Produces(MediaType.APPLICATION_XML)
     public Response exportXML(@PathParam("gameModelId") String gameModelId) throws RepositoryException, IOException {
         final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
@@ -216,6 +218,20 @@ public class FileController {
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition", "attachment; filename=GM_" + extractGameModelId(gameModelId) + "files.xml").build();
+    }
+
+    @POST
+    @Path("importXML")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public void importXML(@PathParam("gameModelId") String gameModelId, @FormDataParam("file") InputStream file,
+            @FormDataParam("file") FormDataBodyPart details) throws RepositoryException, IOException, SAXException, ParserConfigurationException, TransformerException {
+        try {
+            final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
+            connector.importXML(file);
+            connector.save();
+        } finally {
+            file.close();
+        }
     }
 
     /**

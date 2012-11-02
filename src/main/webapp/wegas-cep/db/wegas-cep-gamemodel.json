@@ -314,5 +314,122 @@
                 }]
             }]
         }]
+    },{
+        "@class": "ListDescriptor",
+        "name": "employees",
+        "items":[{
+            "@class": "ResourceDescriptor",
+            "name": "Salmero",
+            "description":"Description de Fernand.",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":72,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/fernandPortrait.png",
+                    "surname":"Fernand",
+                    "male":true,
+                    "salary":4000,
+                    "leadershipLevel":2,
+                    "experience":75
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Brossard",
+            "description":"Description de Daniela.",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":45,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/danielaPortrait.png",
+                    "surname":"Daniela",
+                    "male":false,
+                    "salary":3800,
+                    "leadershipLevel":0,
+                    "experience":49
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Vogt",
+            "description":"Description de Jessica.",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":92,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/jessicaPortrait.png",
+                    "surname":"Jessica",
+                    "male":false,
+                    "salary":3300,
+                    "leadershipLevel":0,
+                    "experience":35
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Auguste",
+            "description":"Description d'Auguste",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":95,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/hectorPortrait.png",
+                    "surname":"Hector",
+                    "male":true,
+                    "salary":3400,
+                    "leadershipLevel":1,
+                    "experience":87
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Torr",
+            "description":"Description de Lucien.",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":78,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/lucienPortrait.png",
+                    "surname":"Lucien",
+                    "male":true,
+                    "salary":3500,
+                    "leadershipLevel":0,
+                    "experience":59
+
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }],
+        "defaultInstance":{
+            "@class": "NumberInstance",
+            "value": 0
+        },
+        "scope": {
+            "@class": "GameModelScope"
+        }
     }]
 }
