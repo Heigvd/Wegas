@@ -24,7 +24,20 @@
             "value":0
         },
         "scope":{
-            "@class":"TeamScope"
+            "@class":"PlayerScope"
+        },
+        "tags":[],
+        "minValue":null,
+        "maxValue":null
+    },{
+        "@class":"NumberDescriptor",
+        "name":"money",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":2
+        },
+        "scope":{
+            "@class":"PlayerScope"
         },
         "tags":[],
         "minValue":null,
@@ -37,7 +50,7 @@
             "messages":[]
         },
         "scope":{
-            "@class":"TeamScope"
+            "@class":"PlayerScope"
         },
         "tags":[],
         "label":null,
