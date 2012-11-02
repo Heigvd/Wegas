@@ -409,7 +409,7 @@ YUI().use(function (Y) {
                         requires:['wegas-cep-itemselector', 'wegas-cep-nodeformatter'],
                         ix_provides: "CepItemSelector"
                     },
-                    
+
                     'wegas-cep-nodeformatter': {
                         path: 'wegas-cep/js/wegas-cep-nodeformatter.js',
                         ix_provides: "CepNodeFormatter"
@@ -471,7 +471,6 @@ YUI().use(function (Y) {
 
             /* Ace */
             ace: {
-                //combine: true,
                 base: './lib/ace/',
                 root: '/lib/ace/',
                 modules:  {
@@ -529,24 +528,9 @@ YUI().use(function (Y) {
                 }
             },
 
-            /* ExCanvas */
-            excanvas: {
-                combine: true,
-                async: false,
-                //combine: false,
-                base: "./lib/excanvas/",
-                root: "/excanvas/",
-                modules:  {
-                    'excanvas': {
-                        path: 'excanvas.compiled.js'
-                    }
-                }
-            },
-
             /* Esprima */
             esprima: {
                 async: false,
-                //combine: false,
                 base: "./lib/",
                 root: "/lib/",
                 modules:  {
@@ -561,9 +545,10 @@ YUI().use(function (Y) {
                     }
                 }
             },
+
+            /* DiffMatchPatch */
             diffmatchpatch:{
                 async: false,
-                combine:false,
                 base:"./lib/diffmatchpatch/",
                 root:"/lib/diffmatchpatch/",
                 modules: {
@@ -572,6 +557,21 @@ YUI().use(function (Y) {
                     }
                 }
             }
+
+
+            /* ExCanvas */
+            //excanvas: {
+            //    combine: true,
+            //    async: false,
+            //    //combine: false,
+            //    base: "./lib/excanvas/",
+            //    root: "/excanvas/",
+            //    modules:  {
+            //        'excanvas': {
+            //            path: 'excanvas.compiled.js'
+            //        }
+            //    }
+            //},
         }
     };
 
@@ -610,7 +610,7 @@ YUI().use(function (Y) {
 
     loadModules(YUI_config.groups.wegas);
     loadModules(YUI_config.groups.ace);
-    loadModules(YUI_config.groups.excanvas);
     loadModules(YUI_config.groups.esprima);
     loadModules(YUI_config.groups.jsplumb);
+    //loadModules(YUI_config.groups.excanvas);
 });

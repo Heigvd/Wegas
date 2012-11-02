@@ -74,17 +74,6 @@
                                     }]
                             },{
                                 "type": "Button",
-                                "label": "<span class=\"wegas-icon cep-icon-employees\"></span>Employees",
-                                "cssClass": "menu-button",
-                                "plugins": [{
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "subpageId": 3,
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }]
-                            },{
-                                "type": "Button",
                                 "label": "<span class=\"wegas-icon cep-icon-questions\"></span>Questions",
                                 "cssClass": "menu-button",
                                 "plugins": [{
@@ -113,6 +102,17 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": "questions2"
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-employees\"></span>Employees",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 3,
+                                            "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }]
                             }, {
