@@ -198,7 +198,7 @@
             },{
                 "type":"valueBox",
                 "name":"moral",
-                "label":"Morale : ",
+                "label":"Moral : ",
                 "maxValue":"100"
             },{
                 "type":"valueBox",
