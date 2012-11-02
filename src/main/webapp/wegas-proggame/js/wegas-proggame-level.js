@@ -101,15 +101,16 @@ YUI.add('wegas-proggame-level', function (Y) {
                         + "sendCommand({type:'log', 'text': 'Enemy turn.'});"
                         + this.get( "ai" )
                         + "}"
+                        + "sendCommand({type:'log', 'text': 'Max turn reached, match is a draw.'});"
                         + "JSON.stringify(ret)"
                     },
                     on: {
                         success: Y.bind( this.onServerReply, this ),
-                        failure: function () {
+                        failure: Y.bind( function () {
                             this.runButton.set( "label", "RUN SCRIPT" );
                             this.runButton.set( "disabled", false );
                             alert( "Your script contians an error." );
-                        }
+                        }, this )
                     }
 
                 });
