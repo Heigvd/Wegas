@@ -40,7 +40,7 @@ YUI.add('wegas-console', function (Y) {
                                     content: this.aceField.getValue()
                                 })
                             },
-                            callback: {
+                            on: {
                                 scope: this,
                                 success: function(e) {
                                     cb.one(".results").prepend('<div class="result">Script exectuted. Returned value: '

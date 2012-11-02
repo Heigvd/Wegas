@@ -106,7 +106,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
             variableDesc: {
                 getter: function () {
                     if ( this.get( "variable" ) ) {
-                        return this.get("dataSource").rest.find( 'name', this.get( "variable" ) )
+                        return this.get("dataSource").rest.find( 'name', this.get( "variable" ) );
                     } else {
                         return this.get("dataSource").rest.findById(
                             Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );

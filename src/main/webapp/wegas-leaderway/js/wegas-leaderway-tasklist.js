@@ -155,7 +155,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                             "content": "importPackage(com.wegas.core.script);\nassignTask("+resourceDescriptor.get('id')+","+taskDescriptor.get('id')+");"
                         })
                     },
-                    callback: {
+                    on: {
                         //success: Y.bind(this.assignTaskResult, this, true), // useless, players expect a success
                         failure: Y.bind(this.assignTaskResult, this, false)
                     }
@@ -329,7 +329,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue("dialogueFinal");
                 });
-                targetPageLoader.set("pageId", this.get('dialoguePageId'));    
+                targetPageLoader.set("pageId", this.get('dialoguePageId'));
             }
         }
 
