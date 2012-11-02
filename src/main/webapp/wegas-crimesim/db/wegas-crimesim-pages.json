@@ -130,7 +130,7 @@
     },{
         "id": 3,
         "type": "MCQTabView",
-        "variableName": "questions"
+        "variable": "questions"
     },{
         "id": 4,
         "type": "ScheduleDisplay"

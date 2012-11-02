@@ -6,13 +6,17 @@
         "name":"Test-16",
         "teams":[{
             "@class": "Team",
-            "name":"Les autres",
+            "name":"Les rouges",
             "players": [ {
                 "@class": "Player",
-                "name": "Jo",
-                "user": {
-                    "@class": "User"
-                }
+                "name": "Roger"
+            }]
+        }, {
+            "@class": "Team",
+            "name":"Les bleus",
+            "players": [ {
+                "@class": "Player",
+                "name": "Marc"
             }]
         }]
     }],
@@ -31,7 +35,7 @@
         "maxValue":null
     },{
         "@class":"NumberDescriptor",
-        "name":"money",
+        "name":"currentLevel",
         "defaultInstance":{
             "@class":"NumberInstance",
             "value":2
