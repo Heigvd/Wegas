@@ -18,6 +18,7 @@ import java.util.List;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -103,8 +104,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
 
         T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
 
-        String serialized = mapper.writerWithView(Views.Export.class)
-                .writeValueAsString(oldEntity);                                 // Serilize the entity
+        String serialized = mapper.writerWithView(Views.Export.class).writeValueAsString(oldEntity);                                 // Serilize the entity
         T newEntity = (T) mapper.readValue(serialized, AbstractEntity.class);   // and deserialize it
 
         this.create(newEntity);                                                 // Store it db
@@ -180,8 +180,9 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
             //    entityManager.flush();
             //}
         }
-        catch (javax.persistence.NoResultException e) {                         // NoResultException are caught and wrapped exception
+        catch (NoResultException e) {                                           // NoResultException are caught and wrapped exception
             throw new PersistenceException(e);                                  // so they do not cause transaction rollback
+            //throw e;
         }
 
         return o;
