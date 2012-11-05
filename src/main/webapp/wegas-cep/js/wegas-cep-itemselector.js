@@ -24,14 +24,6 @@ YUI.add('wegas-cep-itemselector', function (Y) {
                 this.createDOMProperties(selector, variables[i], this.get('selectors'));
                 node.append(selector);
             }
-            for(i=0; i<variables.length; i++){
-                selector = Y.Node.create('<div class="selector" data-name="'+variables[i].get('name')+'"></div>');
-                if(variables[i] === this.currentItem){
-                    selector.addClass('current');
-                }
-                this.createDOMProperties(selector, variables[i], this.get('selectors'));
-                node.append(selector);
-            }
             this.scrollView.render();
         },
         
