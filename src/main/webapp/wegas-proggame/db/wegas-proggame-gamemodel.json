@@ -1,18 +1,22 @@
 {
     "@class":"GameModel",
-    "name":"MMO",
+    "name":"Programming Game",
     "games":[{
         "@class":"Game",
         "name":"Test-16",
         "teams":[{
             "@class": "Team",
-            "name":"Les autres",
+            "name":"Les rouges",
             "players": [ {
                 "@class": "Player",
-                "name": "Jo",
-                "user": {
-                    "@class": "User"
-                }
+                "name": "Roger"
+            }]
+        }, {
+            "@class": "Team",
+            "name":"Les bleus",
+            "players": [ {
+                "@class": "Player",
+                "name": "Marc"
             }]
         }]
     }],
@@ -24,7 +28,20 @@
             "value":0
         },
         "scope":{
-            "@class":"TeamScope"
+            "@class":"PlayerScope"
+        },
+        "tags":[],
+        "minValue":null,
+        "maxValue":null
+    },{
+        "@class":"NumberDescriptor",
+        "name":"currentLevel",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":2
+        },
+        "scope":{
+            "@class":"PlayerScope"
         },
         "tags":[],
         "minValue":null,
@@ -37,12 +54,12 @@
             "messages":[]
         },
         "scope":{
-            "@class":"TeamScope"
+            "@class":"PlayerScope"
         },
         "tags":[],
         "label":null,
         "description":null
     }],
-    "cssUri":"wegas-mmo/css/wegas-mmo.css",
-    "widgetsUri":"wegas-mmo/db/wegas-mmo-pages.json"
+    "cssUri":"wegas-proggame/css/wegas-proggame.css",
+    "widgetsUri":"wegas-proggame/db/wegas-proggame-pages.json"
 }

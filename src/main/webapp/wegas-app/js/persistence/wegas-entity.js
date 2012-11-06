@@ -234,7 +234,33 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
             return new classDef(o);
+        },
+
+        /**
+         *
+         *  This getter is to be used for any object attribute that references a VariableDescriptor and
+         *  has either an name, id or expr parameter.
+         *
+         */
+        VARIABLEDESCRIPTORGETTER: function ( val, fullName ) {
+            var ds = Y.Wegas.VariableDescriptorFacade;
+            if ( fullName.split( "." )[1] === "evaluated" ) {                   // If evaluated value is required
+
+                if ( val.name ) {                                               // Eval based on the name field
+                    val.evaluated = ds.rest.find( 'name', val.name );
+
+                } else if ( val.expr ) {                                        // if absent evaluate the expr field
+                    val.evaluated = ds.rest.findById(
+                        Y.Wegas.VariableDescriptorFacade.script.scopedEval( val.expr ) );
+
+                } else if ( val.id ) {
+                    val.evaluated = ds.rest.findById( val.id );
+
+                }
+            }
+            return val;
         }
+
     });
     Y.namespace( "Wegas.persistence" ).Editable = Editable;
 

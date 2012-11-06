@@ -194,11 +194,6 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: "string",
                 optional: true
             },
-            cost: {
-                type: "string",
-                value: 1,
-                optional: true
-            },
             defaultInstance: {
                 properties: {
                     '@class': {

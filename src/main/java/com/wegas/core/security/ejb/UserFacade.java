@@ -77,7 +77,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     public User getCurrentUser() {
         final Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated()) {
+        if (subject.isRemembered() || subject.isAuthenticated()) {
             return accountFacade.find((Long) subject.getPrincipal()).getUser();
         } else {
             User newUser = new User(new GuestAccount());                        // return a Guest user

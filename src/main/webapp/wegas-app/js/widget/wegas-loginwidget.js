@@ -141,7 +141,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                             method: "POST",
                             data: this.createAccountForm.getValue()
                         },
-                        callback: {
+                        on: {
                             success: Y.bind( function ( e ) {
                                 this.showMessage( "success", "User created, you can now use it to login", 4000 );
                                 this.set( "mode", "login" );
@@ -175,7 +175,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                 cfg: {
                     method: "POST"
                 },
-                callback: {
+                on: {
                     success: Y.bind( function ( e ) {
                         this.showMessage( "success", "Login successful", 4000 );
                         this.redirect();

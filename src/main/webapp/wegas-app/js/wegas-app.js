@@ -183,10 +183,9 @@ YUI.add('wegas-app', function (Y) {
             currentTeam: {},
             currentPlayer: {
                 setter: function (val) {
-                    var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
-                    if (cPlayer) {
-                        // @fixme
-                        this.set('currentTeam', cPlayer.get("teamId"));              // When current player is updated, we also update current team
+                    var cPlayer = this.dataSources.Game.rest.getPlayerById( val );
+                    if ( cPlayer ) {                                            // @fixme
+                        this.set( 'currentTeam', cPlayer.get( "teamId" ) );     // When current player is updated, we also update current team
                     }
                     return val;
                 }
@@ -201,8 +200,14 @@ YUI.add('wegas-app', function (Y) {
             return now.getHours() + now.getMinutes() + now.getSeconds();
         },
         htmlEntities: function ( str ) {
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
+            return String(str).replace( /&/g, '&amp;' )
+            .replace( /</g, '&lt;' )
+            .replace( />/g, '&gt;' )
+            .replace( /"/g, '&quot;' );
+        },
+        nl2br: function (str, is_xhtml) {
+            var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
+            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
         }
     });
 
