@@ -34,7 +34,7 @@ YUI.add('wegas-pageloader', function (Y) {
             }
             return isALoop;
         },
-        
+
         // *** Lifecycle Methods ***/
         initializer: function () {
             PageLoader.pageLoaderInstances[this.get("id")] = this;              // We keep a references of all loaded PageLoaders
@@ -42,11 +42,13 @@ YUI.add('wegas-pageloader', function (Y) {
 
         bindUI: function () {
             //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response", function(e){
+            var onUpdate = function( e ) {
                 if(this.get("variableDesc") != this.get('pageId')){
                     this.syncUI();
                 }
-            }, this);
+            }
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response", onUpdate, this);
+            Y.Wegas.app.after('currentPlayerChange', onUpdate, this);
         },
 
         syncUI: function () {

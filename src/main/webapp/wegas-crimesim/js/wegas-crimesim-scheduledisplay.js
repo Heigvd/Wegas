@@ -88,6 +88,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 cb.delegate( "click", function (e) {                            // Show the question detail on left label click
                     var questionId = e.target.ancestor( "tr" ).getAttribute( "data-questionid" );
                     this.currentQuestionId = questionId;
+                    this.get( "contentBox").all( ".schedule-leftcolum-selected" ).removeClass( "schedule-leftcolum-selected" );
                     e.target.addClass( "schedule-leftcolum-selected" );
                     this.syncDetailsPanel();
                 }, "td.schedule-leftcolum", this);

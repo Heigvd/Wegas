@@ -71,7 +71,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
          * @method sendRequest
          */
         sendRequest: function ( requestCfg ) {
-            requestCfg.callback = requestCfg.callback || {
+            requestCfg.on = requestCfg.on || {
                 success: this._successHandler,
                 failure: this._failureHandler
             };
@@ -252,7 +252,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
          * by childrn to extend look capacities. Used in Y.Wegas.GameModelDataSourceRest
          * and Y.Wegas.VariableDescriptorDataSourceRest
          */
-        walkEntity: function(entity, callback) {
+        walkEntity: function( entity, callback ) {
             //Y.log("walkEntity(" + entity + ")", 'log', 'Y.Wegas.DataSourceRest');
             return false;
         },
@@ -268,7 +268,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return "/" + data.id;
         },
 
-        post: function (data, parentData, callback) {
+        post: function ( data, parentData, callback ) {
             var request = (parentData) ? "/" + parentData.id + "/" + data["@class"] : "/";
 
             this.sendRequest({
@@ -277,7 +277,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     method: "POST",
                     data: Y.JSON.stringify(data)
                 },
-                callback: callback
+                on: callback
             });
         },
 
@@ -291,7 +291,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     method: "PUT",
                     data: Y.JSON.stringify(data)
                 },
-                callback: callback
+                on: callback
             });
         },
 
@@ -315,7 +315,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
         clone: function ( id, parentData, callbacks ){
             var entity = this.findById(id).clone();
-            this.post(entity, parentData, callbacks);
+            this.post( entity, parentData, callbacks );
         },
 
         /**
@@ -426,7 +426,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                         method: "PUT",
                         data: Y.JSON.stringify(data)
                     },
-                    callback: callback
+                    on: callback
                 });
                 return;
             } else {
@@ -453,7 +453,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     method: "POST",
                     data: Y.JSON.stringify(data)
                 },
-                callback: callback
+                on: callback
             });
         }
     });
@@ -548,7 +548,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                         method: "POST",
                         data: Y.JSON.stringify(entity)
                     },
-                    callback: callback
+                    on: callback
                 });
             } else {
                 GameDataSourceREST.superclass.post.call(this, entity, parentData, callback);
@@ -640,7 +640,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                         method: "PUT",
                         data: Y.JSON.stringify( data )
                     },
-                    callback: callback
+                    on: callback
                 });
                 return;
             } else {
@@ -663,7 +663,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     method: "POST",
                     data: Y.JSON.stringify( data )
                 },
-                callback: callback
+                on: callback
             });
         }
 
@@ -715,7 +715,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
         return path;
     }
 
-    // @fixme hack on yui apis
+    /*
+     * @fixme hack on yui apis
+     */
     Y.DataSource.IO.prototype._defRequestFn = function(e) {
         var uri = this.get("source"),
         io = this.get("io"),

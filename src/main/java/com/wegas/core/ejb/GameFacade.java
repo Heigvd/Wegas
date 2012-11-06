@@ -54,13 +54,15 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param token
      * @return
      */
-    public Game findByToken(String token) throws PersistenceException {
+    public Game findByToken(String token)
+            throws PersistenceException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<Game> game = cq.from(Game.class);
         cq.where(cb.equal(game.get(Game_.token), token));
         Query q = em.createQuery(cq);
-        return (Game) q.getSingleResult();
+        return (Game) q.getResultList().get(0);                                     // If there is more than one game with this token, use the 1st one
+        //return (Game) q.getSingleResult();
     }
 
     /**

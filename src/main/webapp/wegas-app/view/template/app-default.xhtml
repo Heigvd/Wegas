@@ -64,9 +64,6 @@
                     YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
                     YUI_config.groups.ace.comboBase = comboBase;
 
-                    YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
-                    YUI_config.groups.excanvas.comboBase = comboBase;
-
                     YUI_config.groups.esprima.base = base + YUI_config.groups.esprima.root; // Set up esprima path
                     YUI_config.groups.esprima.comboBase = comboBase;
 
@@ -76,8 +73,11 @@
                     YUI_config.groups.diffmatchpatch.base = base + YUI_config.groups.diffmatchpatch.root; // Set up diff_match_patch path
                     YUI_config.groups.diffmatchpatch.comboBase = comboBase;
 
-                        <ui:fragment rendered="#{wegasConfig.assets_local}">
-                        YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+                    //YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
+                    //YUI_config.groups.excanvas.comboBase = comboBase;
+
+                    <ui:fragment rendered="#{wegasConfig.assets_local}">
+                    YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
                     YUI_config.filter = "min";
                     YUI_config.combine = true;
                     YUI_config.root = "/lib/yui3/build/"

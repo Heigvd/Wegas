@@ -299,7 +299,7 @@
                         "periods":"currentPeriod.items[currentPhase.value].descriptorId",
                         "taskList":"tasks",
                         "taskSortBy":"no"
-                    }]  
+                    }]
             },{
                 "type":"PmgSlidePanel",
                 "title":"Business specialist",
@@ -324,7 +324,7 @@
                         "periods":"currentPeriod.items[currentPhase.value].descriptorId",
                         "taskList":"tasks",
                         "taskSortBy":"no"
-                    }]  
+                    }]
             }]
     },{
         "id":6,
@@ -335,7 +335,10 @@
                 "content":"<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
             },{
                 "type": "MCQTabView",
-                "expr": "actions.items[currentPhase.value].descriptorId"
+                "variable": {
+                    "expr": "actions.items[currentPhase.value].descriptorId"
+
+                }
             }
         ]
     },{
@@ -347,7 +350,9 @@
                 "content":"<div class='title'><h2>Questions to be made during this week</h2></div><div class='title'><h2>Details</h2></div>"
             },{
                 "type": "MCQTabView",
-                "expr": "questions.items[currentPhase.value].descriptorId"
+                "variable": {
+                    "expr": "questions.items[currentPhase.value].descriptorId"
+                }
             }
         ]
     },{
@@ -359,7 +364,9 @@
                 "content":"<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Messages</h2></div>"
             },{
                 "type": "InboxDisplay",
-                "variable": "inbox"
+                "variable": {
+                    "name": "inbox"
+                }
             }
         ]
     },{
@@ -371,7 +378,9 @@
                 "content":"<div class='title'><h2>Questions and actions history</h2></div><div class='title'><h2>Details</h2></div>"
             },{
                 "type": "InboxDisplay",
-                "variable": "inbox"
+                "variable": {
+                    "name": "inbox"
+                }
             }
         ]
     }
