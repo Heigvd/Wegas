@@ -12,11 +12,16 @@ package com.wegas.core.jcr.content;
 
 import com.wegas.core.jcr.SessionHolder;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.Calendar;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.jcr.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -148,9 +153,10 @@ public class ContentConnector {
     }
 
     /**
-     * Jackrabbit doesn't handle workspace deletetion
+     * Jackrabbit doesn't handle workspace deletetion, falling back to remove
+     * all undelying nodes
      *
-     * @throws RepositoryException, UnsupportedOperationException
+     * @throws RepositoryException
      */
     public void deleteWorkspace() throws RepositoryException {
         //throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
