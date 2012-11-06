@@ -12,15 +12,15 @@ package com.wegas.core.jcr.content;
 
 import com.wegas.core.jcr.SessionHolder;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.Calendar;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 import javax.jcr.*;
 import javax.xml.parsers.DocumentBuilder;
@@ -30,6 +30,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -100,6 +101,10 @@ public class ContentConnector {
         return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getStream();
     }
 
+    protected byte[] getBytesData(String absolutePath) throws RepositoryException, IOException {
+        return IOUtils.toByteArray(this.getData(absolutePath));
+    }
+
     protected Node setData(String absolutePath, String mimeType, InputStream data) throws RepositoryException {
         Node newNode = this.getNode(absolutePath);
         newNode.setProperty(WFSConfig.WFS_MIME_TYPE, mimeType);
@@ -150,6 +155,43 @@ public class ContentConnector {
 
     protected Long getSize(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getSize();
+    }
+
+    /**
+     * Compress directory and children to ZipOutputStream. Warning: metadatas are not included due to zip limitation
+     *
+     * @param out a ZipOutputStream to write files to
+     * @param path root path to compress
+     * @throws RepositoryException
+     * @throws IOException
+     */
+    public void zipDirectory(ZipOutputStream out, String path) throws RepositoryException, IOException {
+        AbstractContentDescriptor node = DescriptorFactory.getDescriptor(path, this);
+        DirectoryDescriptor root;
+        if (node.isDirectory()) {
+            root = (DirectoryDescriptor) node;
+        } else {
+            return;
+        }
+        List<AbstractContentDescriptor> list = root.list();
+
+        ZipEntry entry;
+        for (Iterator<AbstractContentDescriptor> it = list.iterator(); it.hasNext();) {
+            AbstractContentDescriptor item = it.next();
+            entry = item.getZipEntry();
+            try {
+                out.putNextEntry(entry);
+            } catch (ZipException ex) {
+                logger.warn("error");
+            }
+            if (item.isDirectory()) {
+                zipDirectory(out, item.getFullPath());
+            } else {
+                byte[] write = ((FileDescriptor) item).getBytesData();
+                out.write(write, 0, write.length);
+            }
+        }
+        out.closeEntry();
     }
 
     /**
