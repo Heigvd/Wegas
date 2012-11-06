@@ -113,6 +113,8 @@
     }, {
         "id": 5,
         "type": "InboxDisplay",
-        "variable": "inbox"
+        "variable": {
+            "name": "inbox"
+        }
     }
 ]
