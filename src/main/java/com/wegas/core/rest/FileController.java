@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipOutputStream;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jcr.ItemExistsException;
@@ -252,6 +253,23 @@ public class FileController {
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(new Long(extractGameModelId(gameModelId))).getName() + "_files.xml.gz").build();
+    }
+
+    @GET
+    @Path("exportZIP")
+    public Response exportZIP(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
+        final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
+        StreamingOutput out = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {
+                    connector.zipDirectory(zipOutputStream, "/");
+                } catch (RepositoryException ex) {
+                    Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        return Response.ok(out, "application/zip").header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(new Long(extractGameModelId(gameModelId))).getName() + "_files.zip").build();
     }
 
     @POST

@@ -11,6 +11,7 @@
 package com.wegas.core.jcr.content;
 
 import java.io.Serializable;
+import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -65,6 +66,10 @@ abstract public class AbstractContentDescriptor implements Serializable {
         this.mimeType = mimeType;
     }
 
+    public Boolean isDirectory() {
+        return this.mimeType.equals(DirectoryDescriptor.MIME_TYPE);
+    }
+
     public String getMimeType() {
         return mimeType;
     }
@@ -84,6 +89,15 @@ abstract public class AbstractContentDescriptor implements Serializable {
 
     public String getPath() {
         return path;
+    }
+
+    @XmlTransient
+    public String getFullPath() {
+        String p = fileSystemAbsolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
+        if (this.isDirectory() && !p.endsWith("/")) {
+            p += "/";
+        }
+        return p;
     }
 
     public void setPath(String path) {
@@ -179,6 +193,13 @@ abstract public class AbstractContentDescriptor implements Serializable {
         AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
         parent.sync();
         parent.addChild(this);
+    }
+
+    @XmlTransient
+    protected ZipEntry getZipEntry() {
+        ZipEntry desc = new ZipEntry(this.getFullPath());
+        //desc.setComment(this.description);
+        return desc;
     }
 
     /**
