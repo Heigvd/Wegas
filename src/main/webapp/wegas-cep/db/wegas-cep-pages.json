@@ -219,15 +219,21 @@
     },{
         "id": 4,
         "type": "MCQTabView",
-        "expr": "questions.items[phases.value].descriptorId"
+        "variable": {
+            "expr": "questions.items[phases.value].descriptorId"
+        }
     },{
         "id": 5,
         "type": "MCQTabView",
-        "expr": "actions.items[phases.value].descriptorId"
+        "variable": {
+            "expr": "actions.items[phases.value].descriptorId"
+        }
     },{
         "id": 6,
         "type": "InboxDisplay",
-        "variable": "inbox"
+        "variable": {
+            "name": "inbox"
+        }
     }, {
         "id": 7,
         "type": "ResultsDisplay"

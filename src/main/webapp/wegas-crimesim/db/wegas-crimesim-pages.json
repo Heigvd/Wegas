@@ -130,14 +130,18 @@
     },{
         "id": 3,
         "type": "MCQTabView",
-        "variable": "questions"
+        "variable": {
+            "name": "questions"
+        }
     },{
         "id": 4,
         "type": "ScheduleDisplay"
     },{
         "id": 5,
         "type": "InboxDisplay",
-        "variable": "inbox"
+        "variable": {
+            "name": "inbox"
+        }
     }, {
         "id": 6,
         "type": "ResultsDisplay"
