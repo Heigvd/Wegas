@@ -26,14 +26,13 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient");
-    Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
+    Y.Base._ATTR_CFG.push( "type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient" );
+    Y.Base._ATTR_CFG_HASH = Y.Array.hash( Y.Base._ATTR_CFG );
 
     /**
      *
      */
-    function Editable () {
-    }
+    function Editable () { }
 
     Y.mix( Editable.prototype, {
         /**
@@ -265,32 +264,32 @@ YUI.add('wegas-entity', function (Y) {
     Y.namespace( "Wegas.persistence" ).Editable = Editable;
 
     /**
-         * Entity is used to represent db objects.
-         */
-    Entity = Y.Base.create("Entity", Y.Base, [ Editable ], {
+     * Entity is used to represent db objects.
+     */
+    Entity = Y.Base.create( "Entity", Y.Base, [ Editable ], {
 
-        // *** Lifecycle methods *** //
-        initializer: function(cfg) {
-            Entity.ENTITIES_HASH[this.name] = false;
+        initializer: function () {
+            
         }
 
     }, {
+
         _buildCfg: {
             //statics: ["EDITMENU"],
             custom: {
-                HASH: function (prop, Receiver, Supplier) {
+        //HASH: function (prop, Receiver, Supplier) {
 
-                    Entity.ENTITIES_HASH[Receiver.name] = true
+        //Entity.ENTITIES_HASH[Receiver.name] = true;
 
-                //var c = Supplier.constructor;
-                //while (!Receiver.EDITMENU && c) {
-                //    if (c.EDITMENU) {                                                  // Add to attributes
-                //        Receiver.EDITMENU = c.EDITMENU
-                //    }
-                //    c = c.superclass ? c.superclass.constructor : null;
-                //}
-                }
-            }
+        //var c = Supplier.constructor;
+        //while (!Receiver.EDITMENU && c) {
+        //    if (c.EDITMENU) {                                                  // Add to attributes
+        //        Receiver.EDITMENU = c.EDITMENU
+        //    }
+        //    c = c.superclass ? c.superclass.constructor : null;
+        //}
+        //}
+        }
         },
         ATTRS: {
             initialized: {
@@ -334,18 +333,13 @@ YUI.add('wegas-entity', function (Y) {
         /**
              * Defines methods available in wysiwyge script editor
              */
-        METHODS: { },
-
-
-        /**
-             * Holds a reference to all declared entity classes
-             */
-        ENTITIES_HASH: {}
+        METHODS: { }
     });
     Y.namespace('Wegas.persistence').Entity = Entity;
+
     /**
-         * Page response mapper
-         */
+     * Page response mapper
+     */
     Y.Wegas.persistence.WidgetEntity = Y.Base.create( "WidgetEntity", Entity, [], {
 
         initializer: function ( cfg ) {
@@ -360,8 +354,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-         * ServerResponse mapper
-         */
+     * ServerResponse mapper
+     */
     Y.Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Y.Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
         ATTRS: {
             entities: {
@@ -381,8 +375,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-         * GameModel mapper
-         */
+     * GameModel mapper
+     */
     Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
