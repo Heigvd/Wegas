@@ -194,13 +194,19 @@ YUI().use(function (Y) {
                     },
                     'wegas-inputex-rte': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-rte-min.js',
-                        requires: [ 'wegas-inputex', 'inputex-field', 'yui2-editor', 'panel',
-                        'wegas-fileexplorer', 'wegas-inputex-url', 'wegas-inputex-rtecss' ],
+                        requires: [ 'wegas-inputex', 'inputex-textarea', 'tinymce', 'panel',
+                        'wegas-fileexplorer', 'wegas-inputex-url' ],
                         ix_provides: 'html'
+                    },
+                    'wegas-inputex-yui2rte': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-yui2rte-min.js',
+                        requires: [ 'wegas-inputex', 'inputex-field', 'yui2-editor', 'panel',
+                        'wegas-fileexplorer', 'wegas-inputex-url' ],
+                        ix_provides: 'yui2html'
                     },
                     'wegas-inputex-hashlist': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-hashlist-min.js',
-                        requires: ['inputex-list'],
+                        requires: [ 'inputex-list' ],
                         ix_provides: 'hashlist'
                     },
                     'wegas-inputex-script': {
@@ -542,6 +548,10 @@ YUI().use(function (Y) {
                     },
                     'gauge': {
                         path: "gauge.min.js"
+                    },
+                    'tinymce': {
+                        path: "tiny_mce/tiny_mce.js"
+
                     }
                 }
             },

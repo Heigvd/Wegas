@@ -2,7 +2,7 @@
  * @module inputex-imagecropper
  */
 YUI.add("inputex-imagecropper", function(Y){
-
+   
    var lang    = Y.Lang,
        inputEx = Y.inputEx;
 
@@ -29,7 +29,7 @@ inputEx.ImageCropperField = function(options) {
 };
 
 Y.extend(inputEx.ImageCropperField, inputEx.Field, {
-
+   
    /**
     * Set the default values of the options
     * @method setOptions
@@ -39,7 +39,7 @@ Y.extend(inputEx.ImageCropperField, inputEx.Field, {
       inputEx.ImageCropperField.superclass.setOptions.call(this, options);
       this.options.url   = options.url;
       this.options.ratio = lang.isArray(options.ratio) ? (options.ratio[0] / options.ratio[1]) : null;
-      this.options.padding = options.padding || 10;
+      this.options.padding = options.padding || 10;
       this.options.minSize = lang.isArray(options.minSize) ? options.minSize : [0,0];
    },
 
@@ -174,7 +174,7 @@ Y.extend(inputEx.ImageCropperField, inputEx.Field, {
 
       this.setValue({origin: newOrigin, size: newSize}, false);
    },
-
+   
    /**
     * @method _contrain
     * @private
