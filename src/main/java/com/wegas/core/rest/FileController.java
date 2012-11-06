@@ -12,6 +12,7 @@ package com.wegas.core.rest;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
@@ -19,6 +20,7 @@ import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.DirectoryDescriptor;
 import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.exception.WegasException;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +30,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jcr.ItemExistsException;
 import javax.jcr.LoginException;
@@ -52,6 +57,8 @@ import org.xml.sax.SAXException;
 public class FileController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
+    @EJB
+    private GameModelFacade gmFacade;
     private final String FILENAME_REGEXP = "(\\w|\\.| |-|_)+";
 
     /**
@@ -199,8 +206,8 @@ public class FileController {
     }
 
     @GET
-    @Path("exportXML")
-    @Produces(MediaType.APPLICATION_XML)
+    @Path("exportRawXML")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response exportXML(@PathParam("gameModelId") String gameModelId) throws RepositoryException, IOException {
         final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
         StreamingOutput out = new StreamingOutput() {
@@ -217,21 +224,64 @@ public class FileController {
                 }
             }
         };
-        return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition", "attachment; filename=GM_" + extractGameModelId(gameModelId) + "files.xml").build();
+        return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(new Long(extractGameModelId(gameModelId))).getName() + "_files.xml").build();
+    }
+
+    @GET
+    @Path("exportXML")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response exportGZ(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
+        final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
+        StreamingOutput out = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try {
+                    try {
+                        try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
+                            connector.exportXML(xmlStream);
+                            try (GZIPOutputStream o = new GZIPOutputStream(output)) {
+                                o.write(xmlStream.toByteArray());
+                            }
+                        }
+                    } catch (SAXException ex) {
+                        Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } catch (RepositoryException ex) {
+                    Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(new Long(extractGameModelId(gameModelId))).getName() + "_files.xml.gz").build();
     }
 
     @POST
     @Path("importXML")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public void importXML(@PathParam("gameModelId") String gameModelId, @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) throws RepositoryException, IOException, SAXException, ParserConfigurationException, TransformerException {
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<AbstractContentDescriptor> importXML(@PathParam("gameModelId") String gameModelId,
+            @FormDataParam("file") InputStream file,
+            @FormDataParam("file") FormDataBodyPart details)
+            throws RepositoryException, IOException, SAXException,
+            ParserConfigurationException, TransformerException, WegasException {
         try {
             final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
-            connector.importXML(file);
+            switch (details.getMediaType().getSubtype()) {
+                case "x-gzip":
+                    try (GZIPInputStream in = new GZIPInputStream(file)) {
+                        connector.importXML(in);
+                    }
+                    break;
+                case "xml":
+                    connector.importXML(file);
+                    break;
+                default:
+                    throw new WegasException("Uploaded file mimetype does not match requirements [XML or Gunzip], found:" + details.getMediaType().toString());
+            }
             connector.save();
         } finally {
             file.close();
         }
+        return this.listDirectory(gameModelId, "/");
     }
 
     /**
