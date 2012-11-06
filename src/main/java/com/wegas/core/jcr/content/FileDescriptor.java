@@ -96,10 +96,12 @@ public class FileDescriptor extends AbstractContentDescriptor {
     public void setBase64Data(String data, String mimeType) throws IOException {
         this.setBase64Data(new ByteArrayInputStream(data.getBytes()), mimeType);
     }
+
     @JsonProperty("dataLastModified")
     public Calendar getDataLastModified() {
         return dataLastModified;
     }
+
     @JsonProperty("bytes")
     public Long getBytes() {
         return bytes;
@@ -114,5 +116,17 @@ public class FileDescriptor extends AbstractContentDescriptor {
         this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
         this.bytes = connector.getSize(fileSystemAbsolutePath);
         super.getContentFromRepository();
+    }
+
+    @XmlTransient
+    protected byte[] getBytesData() throws IOException {
+        try {
+            return connector.getBytesData(this.fileSystemAbsolutePath);
+        } catch (PathNotFoundException ex) {
+            logger.debug("Node does not exist or has no content, nothing to return");
+        } catch (RepositoryException ex) {
+            logger.error("Something bad append, Roger!", ex);
+        }
+        return null;
     }
 }
