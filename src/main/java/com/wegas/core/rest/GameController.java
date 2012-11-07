@@ -14,7 +14,6 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
@@ -22,6 +21,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.persistence.NoResultException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -89,6 +90,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @GET
     @Path("/JoinGame/{token : .*}/")
     @Produces(MediaType.APPLICATION_JSON)
+    @TransactionAttribute()
     public Object joinGame(@PathParam("token") String token) throws Exception {
         Game game = null;
         Team team = null;
@@ -96,11 +98,11 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
             team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
             game = team.getGame();
         }
-        catch (Exception e2) {
+        catch (PersistenceException e2) {
             try {
                 game = gameFacade.findByToken(token);                           // We check if there is game with given token
             }
-            catch (Exception e) {
+            catch (PersistenceException e) {
                 throw new Exception("Could not find any game associated with this token.");
             }
         }

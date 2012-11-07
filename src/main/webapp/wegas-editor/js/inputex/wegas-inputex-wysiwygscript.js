@@ -26,10 +26,9 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
          *
          */
         destroy: function () {
-            inputEx.WysiwygScript.superclass.destroy.call( this );
-
             this.form.destroy();
             this.viewSrc.destroy();
+            inputEx.WysiwygScript.superclass.destroy.call( this );
         },
         /**
          *
@@ -38,6 +37,29 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
             inputEx.WysiwygScript.superclass.setOptions.call(this, options);
             this.options.className = options.className ? options.className : 'inputEx-Field inputEx-WysiwigScript';
             this.options.mode = options.mode || "wysiwyg";
+        },
+
+        /**
+         *
+         */
+        getValue: function () {
+
+            if ( this.options.mode === "wysiwyg" ) {
+                return {
+                    '@class': "Script",
+                    language: "JavaScript",
+                    content: this.form.getArray().join(";\n") + ";"
+                }
+            } else {
+                return inputEx.WysiwygScript.superclass.getValue.apply( this, arguments );
+            }
+        },
+        /**
+         *
+         */
+        setValue: function () {
+            return inputEx.WysiwygScript.superclass.setValue.apply( this, arguments );
+            this.syncUI();
         },
 
         /**
@@ -225,6 +247,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
         },
 
         setValue: function ( val ) {
+            // Set value should not ba called directly
             console.log( "VariableDescriptorSelect.setValue", val );
         },
 
@@ -238,8 +261,8 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 }
             }
             return "VariableDescriptorFacade.find(" + this.inputs[ l - 3].getValue() + ")" +
-            "." + this.inputs[ l - 2 ].getValue() +
-            "(" + args.join( ", ") + ")";
+                "." + this.inputs[ l - 2 ].getValue() +
+                "(" + args.join( ", ") + ")";
         },
         getEntityId: function () {
             return this.inputs[ this.inputs.length - 3 ].getValue();
@@ -274,18 +297,18 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 label: null
             }, cMethod ) );
 
-        // Same as above, but using json object format for method definitions
-        //var schemaMap = {
-        //    Entity: {
-        //        type: "array",
-        //        items: cMethod.arguments
-        //    }
-        //}, builder = new Y.inputEx.JsonSchema.Builder({
-        //    'schemaIdentifierMap': schemaMap,
-        //    'defaultOptions':{
-        //        'showMsg':true
-        //    }
-        //}), field  = builder.schemaToInputEx( schemaMap.Entity );
+            // Same as above, but using json object format for method definitions
+            //var schemaMap = {
+            //    Entity: {
+            //        type: "array",
+            //        items: cMethod.arguments
+            //    }
+            //}, builder = new Y.inputEx.JsonSchema.Builder({
+            //    'schemaIdentifierMap': schemaMap,
+            //    'defaultOptions':{
+            //        'showMsg':true
+            //    }
+            //}), field  = builder.schemaToInputEx( schemaMap.Entity );
         },
         /**
          *
@@ -326,7 +349,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
             this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
             ret.push( this.generateSelectConfig( null,                          // Pushes the current entity to the fields stack
-                currentEntity, currentEntity.get( "items" ) ) );
+            currentEntity, currentEntity.get( "items" ) ) );
 
             if ( currentEntity.parentDescriptor ) {                             // Add its hierarchy
                 while ( currentEntity.parentDescriptor ) {
@@ -335,7 +358,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 }
             }
             ret.push( this.generateSelectConfig( currentEntity,                 // And finally the root context (entities that are at the root of the gameModel
-                null, rootEntities ) );
+            null, rootEntities ) );
 
             return ret.reverse();
         },
@@ -367,7 +390,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 for ( i = 0 ; i < items.length ; i++ ) {
                     choices.push({
                         value: items[i].get( "id" ),
-                        label: items[i].getPrivateLabel()
+                        label: items[i].get( "editorLabel" )
                     });
                 }
             }
@@ -523,7 +546,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
 	 */
         setOptions: function(options) {
             var i, results = options.entity ? options.entity.get( "results" ) :
-            Y.Plugin.EditEntityAction.currentEntity.get( "results" );
+                Y.Plugin.EditEntityAction.currentEntity.get( "results" );
             options.choices = [];
 
             for ( i = 0; i < results.length; i = i + 1 ) {
@@ -535,7 +558,7 @@ YUI.add( "wegas-inputex-wysiwygscript", function(Y){
                 }else{
                     options.choices.push({
                         value: results[i].get( "id"  ),
-                        label: results[i].getPrivateLabel()
+                        label: results[i].get( "editorLabel" )
                     });
                 }
 

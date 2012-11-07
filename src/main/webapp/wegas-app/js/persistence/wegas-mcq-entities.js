@@ -118,8 +118,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 }
             }]
         }, {
-            type: "CloneEntityButton"
-        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        },  {
             type: "DeleteEntityButton"
         }],
         /**
@@ -188,11 +192,6 @@ YUI.add('wegas-mcq-entities', function (Y) {
             duration: {
                 value: 1,
                 type: "string",
-                optional: true
-            },
-            cost: {
-                type: "string",
-                value: 1,
                 optional: true
             },
             defaultInstance: {

@@ -60,7 +60,7 @@ abstract public class VariableInstance extends AbstractEntity {
     @Id
     @Column(name = "variableinstance_id")
     @GeneratedValue
-    @JsonView({Views.EditorI.class, Views.Private.class})
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *
@@ -132,6 +132,7 @@ abstract public class VariableInstance extends AbstractEntity {
      *
      * @return
      */
+    @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
         if (this.getScope() != null) {
             return this.getDescriptor().getId();

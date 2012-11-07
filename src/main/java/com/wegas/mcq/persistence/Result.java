@@ -11,12 +11,14 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -34,6 +36,7 @@ public class Result extends AbstractEntity {
      */
     @Id
     @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *
@@ -66,6 +69,7 @@ public class Result extends AbstractEntity {
      *
      */
     @Column(name = "choicedescriptor_id", updatable = false, insertable = false)
+    @JsonView(Views.IndexI.class)
     private Long choiceDescriptorId;
     /**
      * This link is here so the reference is updated on remove.
@@ -189,5 +193,19 @@ public class Result extends AbstractEntity {
      */
     public void setFiles(List<String> files) {
         this.files = files;
+    }
+
+    /**
+     * @return the choiceInstances
+     */
+    public List<ChoiceInstance> getChoiceInstances() {
+        return choiceInstances;
+    }
+
+    /**
+     * @param choiceInstances the choiceInstances to set
+     */
+    public void setChoiceInstances(List<ChoiceInstance> choiceInstances) {
+        this.choiceInstances = choiceInstances;
     }
 }

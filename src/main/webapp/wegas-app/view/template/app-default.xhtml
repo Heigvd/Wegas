@@ -7,7 +7,7 @@
 
     <ui:composition template="page-default.xhtml">
 
-        <ui:define name="title">#{wegasAppBundle.LobbyPage_Title}</ui:define>
+        <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
 
         <ui:define name="page">
             <h:body class="yui3-skin-sam yui-skin-sam wegas-widget-loading">
@@ -64,9 +64,6 @@
                     YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
                     YUI_config.groups.ace.comboBase = comboBase;
 
-                    YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
-                    YUI_config.groups.excanvas.comboBase = comboBase;
-
                     YUI_config.groups.esprima.base = base + YUI_config.groups.esprima.root; // Set up esprima path
                     YUI_config.groups.esprima.comboBase = comboBase;
 
@@ -76,31 +73,15 @@
                     YUI_config.groups.diffmatchpatch.base = base + YUI_config.groups.diffmatchpatch.root; // Set up diff_match_patch path
                     YUI_config.groups.diffmatchpatch.comboBase = comboBase;
 
-                        <ui:fragment rendered="#{wegasConfig.assets_local}">
-                        YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+                    //YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
+                    //YUI_config.groups.excanvas.comboBase = comboBase;
+
+                    <ui:fragment rendered="#{wegasConfig.assets_local}">
+                    YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
                     YUI_config.filter = "min";
                     YUI_config.combine = true;
-                    YUI_config.root = "/lib/yui3/build/"
-
-                    YUI_config.groups.yui2 = {                                          // Set up local version of yui2
-                        base: base + '/lib/yui2in3/build/',
-                        combine: true,
-                        comboBase: comboBase,
-                        root: '/lib/yui2in3/build/',
-                        patterns:  {
-                            'yui2-': {
-                                configFn: function(me) {
-                                    if(/-skin|reset|fonts|grids|base/.test(me.name)) {
-                                        me.type = 'css';
-                                        me.path = me.path.replace(/\.js/, '.css');
-                                        me.path = me.path.replace(/\/yui2-skin/, '/assets/skins/sam/yui2-skin');
-                                    }
-                                }
-                            }
-                        }
-
-                    };
-                        </ui:fragment>
+                    YUI_config.root = "/lib/yui3/build/";
+                    </ui:fragment>
                 </script>
 
                 <ui:insert name="body">

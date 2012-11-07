@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -11,13 +11,18 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
+import java.io.IOException;
 import java.util.List;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
@@ -82,6 +87,28 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
         T oldEntity = this.find(entityId);
         oldEntity.merge(entity);
         return oldEntity;
+    }
+
+    /**
+     *
+     * Duplicate an entity by serialising it using the "Editor" view and
+     * serializing it back.
+     *
+     * @param entityId
+     * @return
+     */
+    @Override
+    public T duplicate(final Long entityId) throws IOException {
+
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
+
+        T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
+
+        String serialized = mapper.writerWithView(Views.Export.class).writeValueAsString(oldEntity);                                 // Serilize the entity
+        T newEntity = (T) mapper.readValue(serialized, AbstractEntity.class);   // and deserialize it
+
+        this.create(newEntity);                                                 // Store it db
+        return newEntity;
     }
 
     /**
@@ -153,8 +180,9 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
             //    entityManager.flush();
             //}
         }
-        catch (javax.persistence.NoResultException e) {                         // NoResultException are caught and wrapped exception
+        catch (NoResultException e) {                                           // NoResultException are caught and wrapped exception
             throw new PersistenceException(e);                                  // so they do not cause transaction rollback
+            //throw e;
         }
 
         return o;

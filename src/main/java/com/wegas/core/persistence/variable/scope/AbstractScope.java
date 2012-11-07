@@ -70,7 +70,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      *
      * @return
      */
-    @JsonView(Views.EditorI.class)
+    @JsonView(Views.Editor.class)
     abstract public Map<Long, VariableInstance> getVariableInstances();
 
     /**
