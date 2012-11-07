@@ -12,7 +12,7 @@
  * @module Y.Wegas
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-app', function (Y) {
+YUI.add('wegas-app', function(Y) {
     "use strict";
 
     /**
@@ -20,7 +20,7 @@ YUI.add('wegas-app', function (Y) {
      * @constructor
      * @param {Object} cfg
      */
-    var App = Y.Base.create("wegas-app", Y.Base, [ ], {
+    var App = Y.Base.create("wegas-app", Y.Base, [], {
 
         // ** Private fields ** //
         /**
@@ -29,25 +29,24 @@ YUI.add('wegas-app', function (Y) {
         dataSources: [],
 
         // ** Lifecycle methods ** //
-        initializer: function () {
+        initializer: function() {
             Y.Wegas.app = this;
             this.injector = new Y.Wegas.Injector({
-                observe:"#maindisplayarea"
+                observe: "#maindisplayarea"
             });
         },
 
 
-        destructor : function () {
-            for (var i = 0; i < this.dataSources.length; i = i + 1) {
+        destructor: function() {
+            for (var i = 0; i < this.dataSources.length; i += 1) {
                 this.dataSources[i].destroy();
             }
         },
 
-        render: function () {
-
-            Y.io.header( "Accept-Language", Y.config.lang);                      // Set the language for all requests
-            this.on( "render", function () {
-                Y.one( "body" ).removeClass( "wegas-widget-loading" );
+        render: function() {
+            Y.io.header("Accept-Language", Y.config.lang);                      // Set the language for all requests
+            this.on("render", function () {
+                Y.one("body").removeClass("wegas-widget-loading");
             });
 
             this.initDataSources();
@@ -58,7 +57,7 @@ YUI.add('wegas-app', function (Y) {
         /**
          * @method initDataSources
          */
-        initDataSources: function () {
+        initDataSources: function() {
             var k, dataSource, dataSources = this.get('dataSources');
 
             // @todo Shall we use browser native parser ?
@@ -71,8 +70,8 @@ YUI.add('wegas-app', function (Y) {
                     dataSources[k].source = this.get("base") + dataSources[k].source;
                     dataSource = new Y.Wegas.DataSource(dataSources[k]);
                     this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = dataSource;
-                    dataSource.once( "response", this.onInitialRequest, this );
-                    if ( Y.Lang.isNumber( dataSource.sendInitialRequest() ) ) { // Send an initial request
+                    dataSource.once("response", this.onInitialRequest, this );
+                    if (Y.Lang.isNumber(dataSource.sendInitialRequest())) { // Send an initial request
                         this.requestCounter += 1;                               // If the request was sent, we update the counter, which is used n the onInitialRequest() callback
                     }
                 }
@@ -91,7 +90,7 @@ YUI.add('wegas-app', function (Y) {
          *  @private
          *  @parameter {Y.Event}
          */
-        onInitialRequest: function ( e ) {
+        onInitialRequest: function(e) {
             this.requestCounter -= 1;
             if (this.requestCounter == 0) {
                 this.renderUI();
@@ -101,29 +100,29 @@ YUI.add('wegas-app', function (Y) {
         /**
          * @method initCSS
          */
-        initCSS: function () {
+        initCSS: function() {
             var i, css = this.get('cssStylesheets'),
             cfg = {
                 timeout : 3000,
                 context: this,
                 on : {
-                    success : function ( id, o ) {
+                    success : function(id, o) {
                         this._customCSSText = o.responseText;
-                        this._customCSSStyleSheet = new Y.StyleSheet( o.responseText );
+                        this._customCSSStyleSheet = new Y.StyleSheet(o.responseText);
                         //Y.log("RAW JSON DATA: " + o.responseText);
                         //this.updateCustomCSS(o.responseText);
                         if (this._customCSSForm) {
-                            this._customCSSForm.setValue( o.responseText );
+                            this._customCSSForm.setValue(o.responseText);
                         }
                     },
-                    failure : function ( id, o ) {
-                        Y.log( "initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
+                    failure : function (id, o) {
+                        Y.log("initCSS(): Page CSS loading async call failed!", 'error', 'Wegas.App');
                     }
                 }
             };
 
-            for ( i = 0; i < css.length; i += 1 ) {
-                Y.io( this.get('base') + css[ i ] + '?id=' + App.genId(), cfg );// Load the page css
+            for (i = 0; i < css.length; i += 1) {
+                Y.io(this.get('base') + css[ i ] + '?id=' + App.genId(), cfg);  // Load the page css
             }
         },
 
@@ -131,20 +130,20 @@ YUI.add('wegas-app', function (Y) {
             Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + App.genId(), {
                 context: this,
                 on: {
-                    success: function (id, o, args) {
+                    success: function(id, o, args) {
                         //Y.log("RedCMS.onWidgetReloadContentReceived():"+  o.responseText, 'log');
                         var cfg;
                         try {
                             cfg = Y.JSON.parse( o.responseText );		// Process the JSON data returned from the server
                         } catch (e) {
-                            alert( "Wegas.App.initUI(): JSON Parse failed!" );
+                            alert("Wegas.App.initUI(): JSON Parse failed!");
                             return;
                         }
 
-                        Y.Wegas.Widget.use(cfg, Y.bind( function ( cfg ) {      // Load the subwidget dependencies
-                            this.widget = Y.Wegas.Widget.create( cfg );         // Render the subwidget
+                        Y.Wegas.Widget.use(cfg, Y.bind(function(cfg) {         // Load the subwidget dependencies
+                            this.widget = Y.Wegas.Widget.create(cfg);         // Render the subwidget
                             this.widget.render();
-                            this.fire( "render" );                              // Fire a render event for some eventual post processing
+                            this.fire("render");                              // Fire a render event for some eventual post processing
                         }, this, cfg));
 
                     //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
@@ -167,7 +166,7 @@ YUI.add('wegas-app', function (Y) {
              * Base url for app
              */
             base: {
-                getter: function () {
+                getter: function() {
                     return Y.config.groups.wegas.base;
                 }
             },
@@ -182,10 +181,10 @@ YUI.add('wegas-app', function (Y) {
             currentGame: {},
             currentTeam: {},
             currentPlayer: {
-                setter: function (val) {
-                    var cPlayer = this.dataSources.Game.rest.getPlayerById( val );
-                    if ( cPlayer ) {                                            // @fixme
-                        this.set( 'currentTeam', cPlayer.get( "teamId" ) );     // When current player is updated, we also update current team
+                setter: function(val) {
+                    var cPlayer = this.dataSources.Game.rest.getPlayerById(val);
+                    if (cPlayer) {                                              // @fixme
+                        this.set('currentTeam', cPlayer.get("teamId"));         // When current player is updated, we also update current team
                     }
                     return val;
                 }
@@ -200,10 +199,10 @@ YUI.add('wegas-app', function (Y) {
             return now.getHours() + now.getMinutes() + now.getSeconds();
         },
         htmlEntities: function ( str ) {
-            return String(str).replace( /&/g, '&amp;' )
-            .replace( /</g, '&lt;' )
-            .replace( />/g, '&gt;' )
-            .replace( /"/g, '&quot;' );
+            return String(str).replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
         },
         nl2br: function (str, is_xhtml) {
             var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
