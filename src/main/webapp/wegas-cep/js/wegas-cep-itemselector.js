@@ -39,7 +39,8 @@ YUI.add('wegas-cep-itemselector', function (Y) {
             for(i=0; i<attrs.length; i++){
                 obj = attrs[i];
                 if(typeof obj === 'object'){
-                    value = (this.getVariableValue(variable, obj['name']) || obj['name']);
+                    value = this.getVariableValue(variable, obj['name'])
+                    value = (value != null)? value : obj['name'];
                     label = (obj['label'] || null);
                     type = (obj['type'] || 'undefine');
                     className = (obj['className'] || null);
@@ -68,13 +69,13 @@ YUI.add('wegas-cep-itemselector', function (Y) {
         getVariableValue:function(variable, varName){
             var i, prop = this.get('searchInProperties'), value = null;
             if(!variable || !varName) return value;
-            if(variable.get(varName)){
+            if(variable.get(varName) != null){
                 value = variable.get(varName);
-            }else if(variable.getInstance().get(varName)){
+            }else if(variable.getInstance().get(varName) != null){
                 value = variable.getInstance().get(varName);
             }else {
                 for(i=0;i<prop.length; i++){
-                    if(variable.getInstance().get(prop[i]) && variable.getInstance().get(prop[i])[varName]){
+                    if(variable.getInstance().get(prop[i]) != null && variable.getInstance().get(prop[i])[varName] != null){
                         value = variable.getInstance().get(prop[i])[varName];
                         break;
                     }
