@@ -71,7 +71,8 @@ YUI.add("wegas-inputex-rte", function (Y){
                     theme_advanced_toolbar_align : "left",
                     theme_advanced_statusbar_location : "none",                 // top, bottom, none
                     theme_advanced_resizing : false,
-
+                    relative_urls : false,
+                    
                     file_browser_callback: function (field_name, url, type, win) {
 
                         if ( !inputEx.RTEField.filePanel ) {
