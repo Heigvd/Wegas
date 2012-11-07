@@ -68,9 +68,9 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             maxVal = variableDescriptor.get("maxValue") - minVal;
             value = (variableDescriptor.getInstance().get("value") - minVal) / maxVal * this.MAXVAL;
             if (!value) {
-                value = 0.1; // @hack @fixme unkown bug, value seams to be treated by gauge as false...
+                value = 0.1;                                                    // @hack @fixme unkown bug, value seams to be treated by gauge as false...
             }
-            this.gauge.set( +value );                                            // set actual value
+            this.gauge.set(value);                                              // set actual value
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").setContent(Math.round(value / this.MAXVAL * 100 ) + "%");
         },

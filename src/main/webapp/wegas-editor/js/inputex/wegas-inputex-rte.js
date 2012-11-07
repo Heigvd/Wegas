@@ -12,7 +12,7 @@
  * @module wegas-script-wysiwyg
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-inputex-rte", function (Y){
+YUI.add("wegas-inputex-rte", function(Y){
 
     var inputEx = Y.inputEx;
 
@@ -23,13 +23,14 @@ YUI.add("wegas-inputex-rte", function (Y){
      * @constructor
      * @param {Object} options
      */
-    inputEx.RTEField = function (options) {
-        inputEx.RTEField.superclass.constructor.call( this,options );
+    inputEx.RTEField = function(options) {
+        inputEx.RTEField.superclass.constructor.call(this,options);
     };
-    Y.extend( inputEx.RTEField, inputEx.Textarea, {
 
-        destroy: function () {
-            inputEx.RTEField.superclass.destroy.call( this );
+    Y.extend(inputEx.RTEField, inputEx.Textarea, {
+
+        destroy: function() {
+            inputEx.RTEField.superclass.destroy.call(this);
         },
 
         /**
@@ -40,14 +41,15 @@ YUI.add("wegas-inputex-rte", function (Y){
             inputEx.RTEField.superclass.setOptions.call(this, options);
 
             this.options.opts = options.opts || {};
+            this.options.typeInvite = null;
         },
 
         /**
 	 * Render the field using the YUI Editor widget
 	 */
         renderComponent: function() {
-            inputEx.RTEField.superclass.renderComponent.call( this );
-            if ( !inputEx.RTEField.init ) {
+            inputEx.RTEField.superclass.renderComponent.call(this);
+            if (!inputEx.RTEField.init) {
                 inputEx.RTEField.init = true;
                 tinyMCE.init({
                     // General options
@@ -72,10 +74,10 @@ YUI.add("wegas-inputex-rte", function (Y){
                     theme_advanced_statusbar_location : "none",                 // top, bottom, none
                     theme_advanced_resizing : false,
                     relative_urls : false,
-                    
-                    file_browser_callback: function (field_name, url, type, win) {
 
-                        if ( !inputEx.RTEField.filePanel ) {
+                    file_browser_callback: function(field_name, url, type, win) {
+
+                        if (!inputEx.RTEField.filePanel) {
                             inputEx.RTEField.filePanel = new Y.Panel({
                                 headerContent: 'Choose a file from library',
                                 bodyContent: '',
@@ -108,7 +110,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                                         win.ImageDialog.showPreviewImage( Y.Plugin.CRDataSource.getFullpath( path ) );
                                     }
                                 }
-                                if ( win.Media ) {                                  // If in an editor window
+                                if (win.Media) {                                  // If in an editor window
                                     win.Media.formToData( "src" );                  // update the data
                                 }
                             });
@@ -168,8 +170,8 @@ YUI.add("wegas-inputex-rte", function (Y){
                 //}
                 });
             }
-            Y.once( "domready" , function () {
-                tinyMCE.execCommand( 'mceAddControl', false, this.el.id );
+            Y.once("domready" , function() {
+                tinyMCE.execCommand('mceAddControl', false, this.el.id);
             }, this );
         },
 
@@ -178,12 +180,12 @@ YUI.add("wegas-inputex-rte", function (Y){
          * @param {String} value The html string
          * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
          */
-        setValue: function ( value ) {
-            inputEx.RTEField.superclass.setValue.apply( this, arguments );
+        setValue: function(value) {
+            inputEx.RTEField.superclass.setValue.apply(this, arguments);
 
-            var tmceI = tinyMCE.get( this.el.id );
-            if ( tmceI ) {
-                tmceI.setContent( value );
+            var tmceI = tinyMCE.get(this.el.id);
+            if (tmceI) {
+                tmceI.setContent(value);
             }
         },
 
@@ -191,7 +193,7 @@ YUI.add("wegas-inputex-rte", function (Y){
          * Get the html string
          * @return {String} the html string
          */
-        getValue: function () {
+        getValue: function() {
             tinyMCE.triggerSave();
             return inputEx.RTEField.superclass.getValue.call( this );
         },
