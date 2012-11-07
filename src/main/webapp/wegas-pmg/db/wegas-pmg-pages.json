@@ -45,13 +45,15 @@
                         "children":[{
                                 "type": "GaugeDisplay",
                                 "label": "Direction",
-                                "variable": "managementApproval",
-                                "dataSource": "VariableDescriptor"
+                                "variable": {
+                                    "name": "managementApproval"
+                                }
                             },{
                                 "type": "GaugeDisplay",
                                 "label": "User",
-                                "variable": "userApproval",
-                                "dataSource": "VariableDescriptor"
+                                "variable": {
+                                    "name": "userApproval"
+                                }
                             }]
                     },{
                         "type":"List",
@@ -60,18 +62,21 @@
                         "children":[{
                                 "type": "GaugeDisplay",
                                 "label": "Fixed costs",
-                                "variable": "fixedCosts",
-                                "dataSource": "VariableDescriptor"
+                                "variable": {
+                                    "name": "fixedCosts"
+                                }
                             },{
                                 "type": "GaugeDisplay",
                                 "label": "Quality",
-                                "variable": "quality",
-                                "dataSource": "VariableDescriptor"
+                                "variable": {
+                                    "name": "quality"
+                                }
                             },{
                                 "type": "GaugeDisplay",
                                 "label": "Delay",
-                                "variable": "delay",
-                                "dataSource": "VariableDescriptor"
+                                "variable": {
+                                    "name": "delay"
+                                }
                             }]
                     },{
                         "cssClass": "pmg-timevariable",

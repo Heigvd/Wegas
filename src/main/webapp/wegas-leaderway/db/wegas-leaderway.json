@@ -140,7 +140,7 @@
         }
     },{
         "@class" : "TriggerDescriptor",
-        "name" : "checkVarriables",
+        "name" : "checkVariables",
         "defaultInstance" : {
             "@class" : "TriggerInstance",
             "currentStateId" : 1
