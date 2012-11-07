@@ -11,7 +11,7 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-entity', function (Y) {
+YUI.add('wegas-entity', function(Y) {
     "use strict";
 
     var IDATTRDEF = {
@@ -32,10 +32,9 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *
      */
-    function Editable () {
-    }
+    function Editable () { }
 
-    Y.mix( Editable.prototype, {
+    Y.mix(Editable.prototype, {
         /**
          * Serialize to a json object. Method used <b>recursively</b> by JSON.stringify
          *
@@ -47,8 +46,8 @@ YUI.add('wegas-entity', function (Y) {
             attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
-                if ( attrCfgs[ k ][ "transient" ] ) {                           // Remove any transient attribute
-                    delete ret[ k ];
+                if (attrCfgs[k]["transient"]) {                           // Remove any transient attribute
+                    delete ret[k];
                 }
             }
             return ret;                                                         // Return a copy of this's fields.
@@ -234,37 +233,63 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
             return new classDef(o);
+        },
+
+        /**
+         *
+         *  This getter is to be used for any object attribute that references a VariableDescriptor and
+         *  has either an name, id or expr parameter.
+         *
+         */
+        VARIABLEDESCRIPTORGETTER: function ( val, fullName ) {
+            var ds = Y.Wegas.VariableDescriptorFacade;
+            if ( fullName.split( "." )[1] === "evaluated" ) {                   // If evaluated value is required
+
+                if ( val.name ) {                                               // Eval based on the name field
+                    val.evaluated = ds.rest.find( 'name', val.name );
+
+                } else if ( val.expr ) {                                        // if absent evaluate the expr field
+                    val.evaluated = ds.rest.findById(
+                        Y.Wegas.VariableDescriptorFacade.script.scopedEval( val.expr ) );
+
+                } else if ( val.id ) {
+                    val.evaluated = ds.rest.findById( val.id );
+
+                }
+            }
+            return val;
         }
+
     });
     Y.namespace( "Wegas.persistence" ).Editable = Editable;
 
     /**
-         * Entity is used to represent db objects.
-         */
-    Entity = Y.Base.create("Entity", Y.Base, [ Editable ], {
+     * Entity is used to represent db objects.
+     */
+    Entity = Y.Base.create( "Entity", Y.Base, [ Editable ], {
 
-        // *** Lifecycle methods *** //
-        initializer: function(cfg) {
-            Entity.ENTITIES_HASH[this.name] = false;
+        initializer: function () {
+
         }
 
     }, {
+
         _buildCfg: {
             //statics: ["EDITMENU"],
             custom: {
-                HASH: function (prop, Receiver, Supplier) {
+        //HASH: function (prop, Receiver, Supplier) {
 
-                    Entity.ENTITIES_HASH[Receiver.name] = true
+        //Entity.ENTITIES_HASH[Receiver.name] = true;
 
-                //var c = Supplier.constructor;
-                //while (!Receiver.EDITMENU && c) {
-                //    if (c.EDITMENU) {                                                  // Add to attributes
-                //        Receiver.EDITMENU = c.EDITMENU
-                //    }
-                //    c = c.superclass ? c.superclass.constructor : null;
-                //}
-                }
-            }
+        //var c = Supplier.constructor;
+        //while (!Receiver.EDITMENU && c) {
+        //    if (c.EDITMENU) {                                                  // Add to attributes
+        //        Receiver.EDITMENU = c.EDITMENU
+        //    }
+        //    c = c.superclass ? c.superclass.constructor : null;
+        //}
+        //}
+        }
         },
         ATTRS: {
             initialized: {
@@ -308,18 +333,13 @@ YUI.add('wegas-entity', function (Y) {
         /**
              * Defines methods available in wysiwyge script editor
              */
-        METHODS: { },
-
-
-        /**
-             * Holds a reference to all declared entity classes
-             */
-        ENTITIES_HASH: {}
+        METHODS: { }
     });
     Y.namespace('Wegas.persistence').Entity = Entity;
+
     /**
-         * Page response mapper
-         */
+     * Page response mapper
+     */
     Y.Wegas.persistence.WidgetEntity = Y.Base.create( "WidgetEntity", Entity, [], {
 
         initializer: function ( cfg ) {
@@ -334,8 +354,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-         * ServerResponse mapper
-         */
+     * ServerResponse mapper
+     */
     Y.Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Y.Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
         ATTRS: {
             entities: {
@@ -355,8 +375,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-         * GameModel mapper
-         */
+     * GameModel mapper
+     */
     Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
@@ -1186,6 +1206,119 @@ YUI.add('wegas-entity', function (Y) {
                         }
                     }
                 }
+            }
+        },
+        METHODS: {
+            addAtConfidence: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setConfidence: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtMoral: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setMoral: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            //methods below are temporary ; only for CEP-Game
+            addAtSalary: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setSalary: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtExperience: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setExperience: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtLeadershipLevel: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setLeadershipLevel: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setActive: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "boolean",
+                    value: false
+                }]
             }
         }
     });

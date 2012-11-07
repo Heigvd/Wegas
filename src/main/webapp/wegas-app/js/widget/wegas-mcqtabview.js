@@ -52,7 +52,7 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
 
         syncUI: function () {
             var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel, tab, cChoices, choiceDescriptor, reply,
-            questions = this.get( "variableDesc" ),
+            questions = this.get( "variable.evaluated" ),
             selectedTab = this.tabView.get( 'selection' ),
             lastSelection = ( selectedTab ) ? selectedTab.get('index') : 0;
 
@@ -151,32 +151,24 @@ YUI.add( 'wegas-mcqtabview', function ( Y ) {
             if (e.newVal && e.newVal.questionInstance.get( "unread" ) ) {       // If the question is currently unread,
                 Y.log("Sending question read update", "info",  "MCQTabView");
                 this.questionInstance = e.newVal.questionInstance;
-                this.timer = Y.later(2000, this, function () {
+                this.timer = Y.later( 2000, this, function () {
                     this.questionInstance.set( "unread" ) = false;
-                    this.dataSource.rest.put(this.questionInstance);
+                    this.dataSource.rest.put( this.questionInstance );
                 });
             }
         }
     }, {
         ATTRS: {
-            variable: {},
-            expr: {},
-            /**
-             * The target variable, returned either based on the variableName attribute,
-             * and if absent by evaluating the expr attribute.
-             */
-            variableDesc: {
-                getter: function () {
-                    if ( this.get( "variable" ) ) {
-                        return this.dataSource.rest.find( 'name', this.get( "variable" ) )
-                    } else {
-                        return this.dataSource.rest.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
-                    }
-                }
+            variable: {
+
+                /**
+                * The target variable, returned either based on the name attribute,
+                * and if absent by evaluating the expr attribute.
+                */
+                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
             }
         }
     });
 
-    Y.namespace('Wegas').MCQTabView = MCQTabView;
+    Y.namespace( 'Wegas' ).MCQTabView = MCQTabView;
 });

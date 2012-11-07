@@ -11,10 +11,7 @@
             "name":"red",
             "players": [ {
                 "@class": "Player",
-                "name": "Jo",
-                "user": {
-                    "@class": "User"
-                }
+                "name": "Jo"
             }]
         }]
     }],
@@ -168,7 +165,7 @@
             "name":"periodPhase3",
             "editorLabel":"period phase 3",
             "minValue":1,
-            "maxValue":10,    
+            "maxValue":10,
             "defaultInstance":{
                 "@class":"NumberInstance",
                 "value":1
@@ -179,7 +176,7 @@
         },{
             "@class":"NumberDescriptor",
             "name":"periodPhase1_4",
-            "editorLabel":"period phase 4", 
+            "editorLabel":"period phase 4",
             "minValue":1,
             "maxValue":1,
             "defaultInstance":{
@@ -253,7 +250,7 @@
                 },
                 "scope": {
                     "@class": "TeamScope"
-                } 
+                }
             }]
         },{
             "@class":"ListDescriptor",
@@ -307,7 +304,7 @@
                 },
                 "scope": {
                     "@class": "TeamScope"
-                } 
+                }
             },{
                 "@class": "ResourceDescriptor",
                 "name":"lucie",
@@ -328,7 +325,7 @@
                 },
                 "scope": {
                     "@class": "TeamScope"
-                } 
+                }
             }]
         }]
     },{

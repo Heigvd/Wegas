@@ -60,10 +60,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     private Long duration = new Long(1);
-    /**
-     *
-     */
-    private Long cost = new Long(1);
 
     /**
      *
@@ -76,8 +72,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.setDescription(other.getDescription());
         this.setImpact(other.getImpact());
         this.setDuration(other.getDuration());
-        this.setCost(other.getCost());
-
         ListUtils.mergeLists(this.getResults(), other.getResults());
     }
 
@@ -171,20 +165,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public void setDuration(Long duration) {
         this.duration = duration;
-    }
-
-    /**
-     * @return the cost
-     */
-    public Long getCost() {
-        return cost;
-    }
-
-    /**
-     * @param cost the cost to set
-     */
-    public void setCost(Long cost) {
-        this.cost = cost;
     }
 
     /**

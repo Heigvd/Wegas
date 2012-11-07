@@ -563,7 +563,7 @@
                         <exclude>lib/ace/**</exclude>
                         <exclude>lib/excanvas/**</exclude>
                         <exclude>lib/jsPlumb/**</exclude>
-                        <exclude>lib/yui2in3/**</exclude>
+                        <exclude>lib/tiny_mce/**</exclude>
                         <exclude>lib/yui3/**</exclude>
                         <exclude>lib/gauge.min.js</exclude>
                     </excludes>

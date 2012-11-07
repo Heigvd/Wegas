@@ -88,7 +88,7 @@
                             }]
                     }, {
                         "type": "Button",
-                        "label": "Analyze results",
+                        "label": "Analyses results",
                         "cssClass": "menu-button",
                         "plugins": [{
                                 "fn": "OpenPageAction",
@@ -130,14 +130,18 @@
     },{
         "id": 3,
         "type": "MCQTabView",
-        "variableName": "questions"
+        "variable": {
+            "name": "questions"
+        }
     },{
         "id": 4,
         "type": "ScheduleDisplay"
     },{
         "id": 5,
         "type": "InboxDisplay",
-        "variable": "inbox"
+        "variable": {
+            "name": "inbox"
+        }
     }, {
         "id": 6,
         "type": "ResultsDisplay"

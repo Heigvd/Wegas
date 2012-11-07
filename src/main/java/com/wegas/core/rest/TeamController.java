@@ -10,7 +10,6 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Team;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

@@ -38,7 +38,10 @@ h3 {
     font-weight: bold;
     color: #000;
 }
-
+/*Page style*/
+.layout, html, .preview-content{
+    background-color:#C1C1C1;
+}
 /* Headers style */
 .header {
     width: 100%;
@@ -228,7 +231,12 @@ h3 {
 .menu .cep-icon-mail {
     background-position-y:-47px;
 }
-
+.menu .cep-icon-employees {
+    background-position-y: -245px;
+}
+.menu .cep-icon-actions {
+    background-position-y: -190px;
+}
 
 /* Overide default tabview styles */
 .yui3-skin-sam  .body .yui3-tabview-list {
@@ -237,11 +245,11 @@ h3 {
     border: none;
     display: inline-block;
     border-right: 1px solid lightgray;
-    width: 39.7%;
+    width: 39.5%;
 }
 .yui3-skin-sam  .body .yui3-tabview-panel {
     display:inline-block;
-    width:60%;
+    width:59.5%;
     float:left;
     overflow:inherit;
 }
@@ -341,6 +349,8 @@ h3 {
 /*selectors*/
 .selectors{
     text-align:center;
+
+    white-space:nowrap;
 }
 
 .selector{
@@ -351,6 +361,14 @@ h3 {
     padding:5px;
     background: rgba(60, 100, 200, 0.1);
     box-shadow: 0px 0px 4px #6D6D6D;
+}
+
+.wegas-cep-itemselector-content .yui3-scrollview{
+    background:none;
+}
+
+.selectors .current{
+    background: rgba(60, 100, 200, 0.3);
 }
 
 .selector:hover{
@@ -383,7 +401,15 @@ h3 {
 
 .informations .nodeformatter-properties{
     margin:10px 0;
-    max-width: 760px
+    max-width: 760px;
+}
+
+.informations .nodeformatter-properties span{
+    display:inline-block;
+}
+
+.informations .label{
+    width:75px;
 }
 
 .informations .nodeformatter-valuebox {
@@ -398,7 +424,7 @@ h3 {
     float:left;
 }
 
-.informations .nodeformatter-valuebox .label{
+.informations .label{
     width:80px;
 }
 

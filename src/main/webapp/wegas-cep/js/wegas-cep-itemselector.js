@@ -11,18 +11,20 @@ YUI.add('wegas-cep-itemselector', function (Y) {
         
         handlers: null,
         currentItem:null,
+        scrollView:null,
         
         createSelector: function(cb, variables){
             var i, node = cb.one('.selectors'), selector
-            node.empty()
+            node.empty();
             for(i=0; i<variables.length; i++){
-                selector = Y.Node.create('<div class="selector" data-name="'+variables[i].get('name')+'"></div>')
+                selector = Y.Node.create('<div class="selector" data-name="'+variables[i].get('name')+'"></div>');
                 if(variables[i] === this.currentItem){
                     selector.addClass('current');
                 }
                 this.createDOMProperties(selector, variables[i], this.get('selectors'));
                 node.append(selector);
             }
+            this.scrollView.render();
         },
         
         createInformations: function(cb){
@@ -37,7 +39,8 @@ YUI.add('wegas-cep-itemselector', function (Y) {
             for(i=0; i<attrs.length; i++){
                 obj = attrs[i];
                 if(typeof obj === 'object'){
-                    value = (this.getVariableValue(variable, obj['name']) || obj['name']);
+                    value = this.getVariableValue(variable, obj['name'])
+                    value = (value != null)? value : obj['name'];
                     label = (obj['label'] || null);
                     type = (obj['type'] || 'undefine');
                     className = (obj['className'] || null);
@@ -66,13 +69,13 @@ YUI.add('wegas-cep-itemselector', function (Y) {
         getVariableValue:function(variable, varName){
             var i, prop = this.get('searchInProperties'), value = null;
             if(!variable || !varName) return value;
-            if(variable.get(varName)){
+            if(variable.get(varName) != null){
                 value = variable.get(varName);
-            }else if(variable.getInstance().get(varName)){
+            }else if(variable.getInstance().get(varName) != null){
                 value = variable.getInstance().get(varName);
             }else {
                 for(i=0;i<prop.length; i++){
-                    if(variable.getInstance().get(prop[i]) && variable.getInstance().get(prop[i])[varName]){
+                    if(variable.getInstance().get(prop[i]) != null && variable.getInstance().get(prop[i])[varName] != null){
                         value = variable.getInstance().get(prop[i])[varName];
                         break;
                     }
@@ -99,6 +102,17 @@ YUI.add('wegas-cep-itemselector', function (Y) {
             if(!this.get('listVariables')) return;
             variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('listVariables'));
             this.currentItem = variables.get('items')[0];
+            this.scrollView = new Y.ScrollView({
+                id: 'scrollview',
+                srcNode: cb.one('.selectors'),
+                width: cb.one('.selectors').offsetwidth,
+                flick: {
+                    minDistance:20,
+                    minVelocity:0.6,
+                    axis: 'x'
+                }
+            });
+
         },
 
         /**
@@ -108,6 +122,7 @@ YUI.add('wegas-cep-itemselector', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
+            
             this.handlers.push(cb.one('.selectors').delegate('click', function (e) {
                 var i, variables, name;
                 if(e.target.ancestors('.selector').item(0)){
@@ -125,6 +140,11 @@ YUI.add('wegas-cep-itemselector', function (Y) {
                 }
                 this.syncUI();
             }, '.selector', this));
+            
+            this.handlers.push(cb.one('.selectors').delegate('click', function (e) {
+                 e.preventDefault();
+            }, '.selector', this));
+          
         },
 
         /**

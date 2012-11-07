@@ -148,3 +148,8 @@ img.inputEx-ListField-delButton {
     position:absolute;
     left:-35px;
 }
+
+/* Tinymce field */
+.defaultSkin table.mceLayout {
+    width: 100% !important;
+}

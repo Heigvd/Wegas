@@ -48,13 +48,17 @@
                                 "view": "box",
                                 "variable": "humanResources",
                                 "cssClass": "fr timecards"
-                            }, {
+                            },{
                                 "type": "GaugeDisplay",
-                                "variable": "customerApproval",
+                                "variable": {
+                                    "name": "customerApproval"
+                                },
                                 "cssClass": "fr"
                             }, {
                                 "type": "GaugeDisplay",
-                                "variable": "managementApproval",
+                                "variable": {
+                                    "name": "managementApproval"
+                                },
                                 "cssClass": "fr"
                             }]
                     }, {
@@ -69,17 +73,6 @@
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 2,
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }]
-                            },{
-                                "type": "Button",
-                                "label": "<span class=\"wegas-icon cep-icon-employees\"></span>Employees",
-                                "cssClass": "menu-button",
-                                "plugins": [{
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "subpageId": 3,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }]
@@ -113,6 +106,17 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": "questions2"
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-employees\"></span>Employees",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 3,
+                                            "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }]
                             }, {
@@ -198,7 +202,7 @@
             },{
                 "type":"valueBox",
                 "name":"moral",
-                "label":"Morale : ",
+                "label":"Moral : ",
                 "maxValue":"100"
             },{
                 "type":"valueBox",
@@ -219,15 +223,21 @@
     },{
         "id": 4,
         "type": "MCQTabView",
-        "expr": "questions.items[phases.value].descriptorId"
+        "variable": {
+            "expr": "questions.items[phases.value].descriptorId"
+        }
     },{
         "id": 5,
         "type": "MCQTabView",
-        "expr": "actions.items[phases.value].descriptorId"
+        "variable": {
+            "expr": "actions.items[phases.value].descriptorId"
+        }
     },{
         "id": 6,
         "type": "InboxDisplay",
-        "variable": "inbox"
+        "variable": {
+            "name": "inbox"
+        }
     }, {
         "id": 7,
         "type": "ResultsDisplay"

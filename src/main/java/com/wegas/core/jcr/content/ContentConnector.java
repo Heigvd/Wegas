@@ -10,23 +10,31 @@
  */
 package com.wegas.core.jcr.content;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import com.wegas.core.jcr.SessionHolder;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipOutputStream;
 import javax.jcr.*;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.ContentHandler;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
 
 /**
  *
@@ -93,6 +101,10 @@ public class ContentConnector {
         return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getStream();
     }
 
+    protected byte[] getBytesData(String absolutePath) throws RepositoryException, IOException {
+        return IOUtils.toByteArray(this.getData(absolutePath));
+    }
+
     protected Node setData(String absolutePath, String mimeType, InputStream data) throws RepositoryException {
         Node newNode = this.getNode(absolutePath);
         newNode.setProperty(WFSConfig.WFS_MIME_TYPE, mimeType);
@@ -146,9 +158,47 @@ public class ContentConnector {
     }
 
     /**
-     * Jackrabbit doesn't handle workspace deletetion
+     * Compress directory and children to ZipOutputStream. Warning: metadatas are not included due to zip limitation
      *
-     * @throws RepositoryException, UnsupportedOperationException
+     * @param out a ZipOutputStream to write files to
+     * @param path root path to compress
+     * @throws RepositoryException
+     * @throws IOException
+     */
+    public void zipDirectory(ZipOutputStream out, String path) throws RepositoryException, IOException {
+        AbstractContentDescriptor node = DescriptorFactory.getDescriptor(path, this);
+        DirectoryDescriptor root;
+        if (node.isDirectory()) {
+            root = (DirectoryDescriptor) node;
+        } else {
+            return;
+        }
+        List<AbstractContentDescriptor> list = root.list();
+
+        ZipEntry entry;
+        for (Iterator<AbstractContentDescriptor> it = list.iterator(); it.hasNext();) {
+            AbstractContentDescriptor item = it.next();
+            entry = item.getZipEntry();
+            try {
+                out.putNextEntry(entry);
+            } catch (ZipException ex) {
+                logger.warn("error");
+            }
+            if (item.isDirectory()) {
+                zipDirectory(out, item.getFullPath());
+            } else {
+                byte[] write = ((FileDescriptor) item).getBytesData();
+                out.write(write, 0, write.length);
+            }
+        }
+        out.closeEntry();
+    }
+
+    /**
+     * Jackrabbit doesn't handle workspace deletetion, falling back to remove
+     * all undelying nodes
+     *
+     * @throws RepositoryException
      */
     public void deleteWorkspace() throws RepositoryException {
         //throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
@@ -195,17 +245,45 @@ public class ContentConnector {
     }
 
     public void exportXML(OutputStream out) throws RepositoryException, IOException, SAXException {
+
+        XMLSerializer handler = new XMLSerializer(out);
         NodeIterator it = this.listChildren("/");
-        OutputFormat format = new OutputFormat("XML", "UTF-8", true);
-        XMLSerializer serializer = new XMLSerializer(out, format);
-        ContentHandler handler = serializer.asContentHandler();
         handler.startDocument();
         handler.startElement("", "", "root", null);
         while (it.hasNext()) {
-            session.exportDocumentView(it.nextNode().getPath(), handler, false, false);
+            session.exportSystemView(it.nextNode().getPath(), handler, false, false);
         }
         handler.endElement("", "", "root");
         handler.endDocument();
+
+    }
+
+    public void importXML(InputStream input)
+            throws IOException, SAXException, ParserConfigurationException,
+            TransformerException, RepositoryException {
+        try {
+            DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
+            bf.setIgnoringElementContentWhitespace(true);
+            DocumentBuilder rootBuilder = bf.newDocumentBuilder();
+            Document root = rootBuilder.parse(input);
+            NodeList list = root.getFirstChild().getChildNodes();
+            this.clearWorkspace();                                              // Remove nodes first
+            for (Integer i = 0; i < list.getLength(); i++) {
+                if (list.item(i).getNodeName().equals("sv:node")) {
+                    Document node = bf.newDocumentBuilder().newDocument();
+                    node.appendChild(node.importNode(list.item(i), true));
+                    DOMSource source = new DOMSource(node);
+                    StringWriter writer = new StringWriter();
+                    StreamResult result = new StreamResult(writer);
+                    TransformerFactory.newInstance().newTransformer().transform(source, result);
+                    try (InputStream nodeAsStream = new ByteArrayInputStream(writer.getBuffer().toString().getBytes())) {
+                        session.getWorkspace().importXML("/", nodeAsStream, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
+                    }
+                }
+            }
+        } finally {
+            input.close();
+        }
     }
 
     /**

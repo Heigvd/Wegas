@@ -1,0 +1,65 @@
+{
+    "@class":"GameModel",
+    "name":"Programming Game",
+    "games":[{
+        "@class":"Game",
+        "name":"Test-16",
+        "teams":[{
+            "@class": "Team",
+            "name":"Les rouges",
+            "players": [ {
+                "@class": "Player",
+                "name": "Roger"
+            }]
+        }, {
+            "@class": "Team",
+            "name":"Les bleus",
+            "players": [ {
+                "@class": "Player",
+                "name": "Marc"
+            }]
+        }]
+    }],
+    "childVariableDescriptors":[{
+        "@class":"NumberDescriptor",
+        "name":"money",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":0
+        },
+        "scope":{
+            "@class":"PlayerScope"
+        },
+        "tags":[],
+        "minValue":null,
+        "maxValue":null
+    },{
+        "@class":"NumberDescriptor",
+        "name":"currentLevel",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":2
+        },
+        "scope":{
+            "@class":"PlayerScope"
+        },
+        "tags":[],
+        "minValue":null,
+        "maxValue":null
+    },{
+        "@class":"InboxDescriptor",
+        "name":"inbox",
+        "defaultInstance":{
+            "@class":"InboxInstance",
+            "messages":[]
+        },
+        "scope":{
+            "@class":"PlayerScope"
+        },
+        "tags":[],
+        "label":null,
+        "description":null
+    }],
+    "cssUri":"wegas-proggame/css/wegas-proggame.css",
+    "widgetsUri":"wegas-proggame/db/wegas-proggame-pages.json"
+}
