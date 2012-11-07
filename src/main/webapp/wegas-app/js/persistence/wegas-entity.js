@@ -11,7 +11,7 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-entity', function (Y) {
+YUI.add('wegas-entity', function(Y) {
     "use strict";
 
     var IDATTRDEF = {
@@ -26,15 +26,15 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push( "type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient" );
-    Y.Base._ATTR_CFG_HASH = Y.Array.hash( Y.Base._ATTR_CFG );
+    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient");
+    Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
     /**
      *
      */
     function Editable () { }
 
-    Y.mix( Editable.prototype, {
+    Y.mix(Editable.prototype, {
         /**
          * Serialize to a json object. Method used <b>recursively</b> by JSON.stringify
          *
@@ -269,7 +269,7 @@ YUI.add('wegas-entity', function (Y) {
     Entity = Y.Base.create( "Entity", Y.Base, [ Editable ], {
 
         initializer: function () {
-            
+
         }
 
     }, {
@@ -1206,6 +1206,119 @@ YUI.add('wegas-entity', function (Y) {
                         }
                     }
                 }
+            }
+        },
+        METHODS: {
+            addAtConfidence: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setConfidence: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtMoral: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setMoral: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            //methods below are temporary ; only for CEP-Game
+            addAtSalary: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setSalary: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtExperience: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setExperience: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtLeadershipLevel: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setLeadershipLevel: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setActive: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "boolean",
+                    value: false
+                }]
             }
         }
     });
