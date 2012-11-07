@@ -11,7 +11,7 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-entity', function (Y) {
+YUI.add('wegas-entity', function(Y) {
     "use strict";
 
     var IDATTRDEF = {
@@ -26,15 +26,15 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push( "type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient" );
-    Y.Base._ATTR_CFG_HASH = Y.Array.hash( Y.Base._ATTR_CFG );
+    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient");
+    Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
     /**
      *
      */
     function Editable () { }
 
-    Y.mix( Editable.prototype, {
+    Y.mix(Editable.prototype, {
         /**
          * Serialize to a json object. Method used <b>recursively</b> by JSON.stringify
          *
@@ -46,8 +46,8 @@ YUI.add('wegas-entity', function (Y) {
             attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
-                if ( attrCfgs[ k ][ "transient" ] ) {                           // Remove any transient attribute
-                    delete ret[ k ];
+                if (attrCfgs[k]["transient"]) {                           // Remove any transient attribute
+                    delete ret[k];
                 }
             }
             return ret;                                                         // Return a copy of this's fields.
@@ -269,7 +269,7 @@ YUI.add('wegas-entity', function (Y) {
     Entity = Y.Base.create( "Entity", Y.Base, [ Editable ], {
 
         initializer: function () {
-            
+
         }
 
     }, {
