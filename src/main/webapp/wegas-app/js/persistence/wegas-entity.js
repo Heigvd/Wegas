@@ -94,7 +94,7 @@ YUI.add('wegas-entity', function(Y) {
             form = form ||  this.constructor.EDITFORM;                          // And if no form is defined we check if there is a default one defined in the entity
 
             if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
-                var schemaMap, attrCfgs = this.getAttrCfgs();
+                attrCfgs = this.getAttrCfgs();
 
                 for (i in attrCfgs) {
                     attrCfgs[i]["default"] = attrCfgs[i].value;                 // Use the value as default (useful form json object serialization)
@@ -110,7 +110,7 @@ YUI.add('wegas-entity', function(Y) {
                     }
                 };
 
-                var builder = new Y.inputEx.JsonSchema.Builder({
+                builder = new Y.inputEx.JsonSchema.Builder({
                     'schemaIdentifierMap': schemaMap,
                     'defaultOptions': {
                         'showMsg': true
