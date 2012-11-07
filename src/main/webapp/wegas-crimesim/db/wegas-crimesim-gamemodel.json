@@ -1,6 +1,5 @@
 {
     "@class":"GameModel",
-    "id":1,
     "name":"CrimeSim",
     "games":[{
         "@class":"Game",
@@ -10,10 +9,7 @@
             "name":"Les autres",
             "players": [ {
                 "@class": "Player",
-                "name": "Jo",
-                "user": {
-                    "@class": "User"
-                }
+                "name": "Jo"
             }]
         }]
     }],

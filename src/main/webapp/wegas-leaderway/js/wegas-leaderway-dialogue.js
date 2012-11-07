@@ -389,6 +389,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * Recreat the chart widget
          */
         syncUI: function () {
+            console.log('-------sync performed--------')
             var cb = this.get(CONTENTBOX);
             if(!this.currentDialogue)return;
             if(!this.isDisplayingAResponse){
@@ -401,10 +402,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         /*
          * Destroy all child widget and all function
          */
-        destroy: function(){
+        destructor: function(){
             var i, cb = this.get(CONTENTBOX);
             cb.all('.menu div').show();
-            if(this.chart != null){this.chart.destroy();}
+            if(this.chart != null){
+                this.chart.destroy();
+            }
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();
             }

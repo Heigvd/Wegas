@@ -14,7 +14,7 @@
         }]
     }],
     "scriptLibrary": {
-        "default": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passPeriod() {var currentTime = phases.descriptor.items.get(phases.value),\ncurrentTimeInstance = currentTime.getInstance(self);\ncurrentTimeInstance.value += 1;\nif (currentTimeInstance.value > currentTime.maxValue) {\nphases.value += 1;\n}\nhumanResources.value = 15;\n } "
+        "default":"importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passPeriod() {var currentTime = phases.descriptor.items.get(phases.value),\ncurrentTimeInstance = currentTime.getInstance(self);\ncurrentTimeInstance.value += 1;\nif (currentTimeInstance.value > currentTime.maxValue) {\nphases.value += 1;\n}\nhumanResources.value = 15;\n } \n\n \n/**\n * Set picture depending of resource's current moral.\n */\nfunction changePicture(){\n    var i, j, valueInst, valueDescr, gm=self.getGameModel(), oldImg, newImg, moral,\n    listResources = VariableDescriptorFacade.findByName(gm, 'employees'),\n    imgSuffixe = ['Triste', 'Neutre', 'Joie'];\n    for(i=0; i<listResources.items.size(); i++){\n        valueDescr = listResources.items.get(i);\n        valueInst = valueDescr.getInstance(self);\n        moral = parseInt(valueInst.getMoral());\n        oldImg = valueInst.getProperty('picture');\n        newImg = null;\n        switch(true){\n        case moral < 40 :\n            for(j=0; j<imgSuffixe.length; j++){\n                if(oldImg.indexOf(imgSuffixe[j]) > -1 ){\n                    newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[0]);\n                    break\n                }\n            }\n            break;\n        case moral < 75 :\n            for(j=0; j<imgSuffixe.length; j++){\n                if(oldImg.indexOf(imgSuffixe[j]) > -1 ){\n                    newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[1]);\n                    break\n                }\n            }\n            break;\n        default :\n             for(j=0; j<imgSuffixe.length; j++){\n                if(oldImg.indexOf(imgSuffixe[j]) > -1 ){\n                    newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[2]);\n                    break\n                }\n            }\n            break;\n        }\n        if(newImg){\n            valueInst.setProperty('picture', newImg);\n        }\n    }\n}"
     },
     "cssUri": "wegas-cep/css/wegas-cep.css",
     "widgetsUri": "wegas-cep/db/wegas-cep-pages.json",
@@ -314,5 +314,165 @@
                 }]
             }]
         }]
+    },{
+        "@class": "ListDescriptor",
+        "name": "employees",
+        "items":[{
+            "@class": "ResourceDescriptor",
+            "name": "Salmero",
+            "description":"Description de Fernand.",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":72,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png",
+                    "surname":"Fernand",
+                    "male":true,
+                    "salary":4000,
+                    "leadershipLevel":2,
+                    "experience":75
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Brossard",
+            "description":"Description de Daniela.",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":45,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png",
+                    "surname":"Daniela",
+                    "male":false,
+                    "salary":3800,
+                    "leadershipLevel":0,
+                    "experience":49
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Vogt",
+            "description":"Description de Jessica.",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":92,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png",
+                    "surname":"Jessica",
+                    "male":false,
+                    "salary":3300,
+                    "leadershipLevel":0,
+                    "experience":35
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Auguste",
+            "description":"Description d'Auguste",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":95,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png",
+                    "surname":"Hector",
+                    "male":true,
+                    "salary":3400,
+                    "leadershipLevel":1,
+                    "experience":87
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },{
+            "@class": "ResourceDescriptor",
+            "name": "Torr",
+            "description":"Description de Lucien.",
+            "defaultInstance":{
+                "@class":"ResourceInstance",
+                "moral":78,
+                "confidence":0,
+                "properties":{
+                    "picture":"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png",
+                    "surname":"Lucien",
+                    "male":true,
+                    "salary":3500,
+                    "leadershipLevel":0,
+                    "experience":59
+
+                },
+                "skillset":{}
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }],
+        "defaultInstance":{
+            "@class": "NumberInstance",
+            "value": 0
+        },
+        "scope": {
+            "@class": "GameModelScope"
+        }
+    },{
+        "@class" : "TriggerDescriptor",
+        "name" : "checkMoral",
+        "defaultInstance" : {
+            "@class" : "TriggerInstance",
+            "currentStateId" : 1
+        },
+        "scope" : {
+            "@class" : "TeamScope"
+        },
+        "states" : {
+            "1" : {
+                "@class" : "State",
+                "transitions" : [ {
+                    "@class" : "Transition",
+                    "triggerCondition" : {
+                        "@class" : "Script",
+                        "content" : "true",
+                        "language" : "JavaScript"
+                    },
+                    "nextStateId" : 2
+                }]
+            },
+            "2" : {
+                "@class" : "State",
+                "onEnterEvent" : {
+                    "@class" : "Script",
+                    "content" : "this.changePicture();",
+                    "language" : "JavaScript"
+                }
+            }
+        },
+        "oneShot" : false,
+        "triggerEvent" : {
+            "@class" : "Script",
+            "content" : "true",
+            "language" : "JavaScript"
+        },
+        "postTriggerEvent" : {
+            "@class" : "Script",
+            "content" : "this.changePicture();",
+            "language" : "JavaScript"
+        }
     }]
 }

@@ -10,7 +10,6 @@
     width:100%;
     /* border-top: 1px solid gray;
      border-bottom:none;*/
-
 }
 .body .wegas-text {
     padding: 5px 10px;
@@ -95,14 +94,16 @@
     padding: 10px 5px;
 }
 .schedule-detail .schedule-icon-close {
-    float: right;
-    margin-top:4px;
-    margin-right:3px;
-    background:white;
-    width:  15px;
+    float: left;
+    margin: 4px 5px;
+    width: 16px;
     height: 15px;
     border: 1px solid gray;
     cursor: pointer;
+    background: white url(/Wegas/wegas-app/images/sprite_icons.png) 2px 3px no-repeat;
+}
+.schedule-detail .schedule-icon-close:hover {
+    background-color: lightgray;
 }
 .schedule-detail h1,
 .schedule-detail h2 {
@@ -158,8 +159,14 @@
     cursor: pointer;
     padding: 4px 10px;
 }
+
 .schedule-table td.schedule-leftcolum:hover {
     background: lightgray;
+}
+.schedule-table td.schedule-leftcolum-selected {
+    cursor: auto;
+    background:#6D6D6D;
+    color:white;
 }
 .schedule-table .schedule-maincolum {
     width:60px;

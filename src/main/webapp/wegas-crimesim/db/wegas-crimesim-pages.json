@@ -88,7 +88,7 @@
                             }]
                     }, {
                         "type": "Button",
-                        "label": "Analyze results",
+                        "label": "Analyses results",
                         "cssClass": "menu-button",
                         "plugins": [{
                                 "fn": "OpenPageAction",
@@ -130,15 +130,29 @@
     },"3":{
         "id": 3,
         "type": "MCQTabView",
+<<<<<<< HEAD
         "variableName": "questions"
     },"4":{
+=======
+        "variable": {
+            "name": "questions"
+        }
+    },{
+>>>>>>> master
         "id": 4,
         "type": "ScheduleDisplay"
     },"5":{
         "id": 5,
         "type": "InboxDisplay",
+<<<<<<< HEAD
         "variable": "inbox"
     }, "6":{
+=======
+        "variable": {
+            "name": "inbox"
+        }
+    }, {
+>>>>>>> master
         "id": 6,
         "type": "ResultsDisplay"
     }

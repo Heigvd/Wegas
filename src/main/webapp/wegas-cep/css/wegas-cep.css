@@ -1,8 +1,8 @@
 /*
  * CEP Styles
- */
- 
- /* Global style override */
+*/
+
+/* Global style override */
 .layout {
     margin: 0;
     padding: 0;
@@ -38,7 +38,10 @@ h3 {
     font-weight: bold;
     color: #000;
 }
-
+/*Page style*/
+.layout, html, .preview-content{
+    background-color:#C1C1C1;
+}
 /* Headers style */
 .header {
     width: 100%;
@@ -197,6 +200,10 @@ h3 {
     padding-top: 3px;
 }
 
+.percent{
+    display:none;
+}
+
 .menu .yui3-button {
     font-size: 10px;
     font-weight: bold;
@@ -224,32 +231,32 @@ h3 {
 .menu .cep-icon-mail {
     background-position-y:-47px;
 }
-
-
-/* TabView Styles */
-.wegas-mcqtabview  .yui3-tabview-content {
-    /*padding-left: 350px;*/
+.menu .cep-icon-employees {
+    background-position-y: -245px;
 }
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-list {
+.menu .cep-icon-actions {
+    background-position-y: -190px;
+}
+
+/* Overide default tabview styles */
+.yui3-skin-sam  .body .yui3-tabview-list {
     display: inline-block;
     float:left;
-    /* margin-left: -350px;*/
     border: none;
     display: inline-block;
     border-right: 1px solid lightgray;
-    width: 39.9%;
+    width: 39.5%;
 }
-
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-panel {
+.yui3-skin-sam  .body .yui3-tabview-panel {
     display:inline-block;
-    width:60%;
+    width:59.5%;
     float:left;
     overflow:inherit;
 }
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-panel  {
+.yui3-skin-sam  .body .yui3-tab-panel  {
     border-left: 1px solid lightgray;
 }
-.wegas-mcqtabview .yui3-tab {
+.yui3-skin-sam  .body .yui3-tab {
     display: block;
     border:none;
     border-bottom:1px solid #DBDBDB;
@@ -258,6 +265,29 @@ h3 {
     width:100%;
     padding:0;
 }
+.yui3-skin-sam .body .yui3-tab a.yui3-tab-label  {
+    background: none;
+    border: none;
+    padding: 6px 0px;
+    width:100%;
+}
+.yui3-skin-sam  .body .yui3-tab a:hover {
+    background: rgba(178, 210, 255, 0.1);
+    box-shadow: 0px 0px 4px #6D6D6D;
+}
+.yui3-skin-sam  .body .yui3-tab-selected {
+    background: rgba(178, 210, 255, 0.5);
+    box-shadow: 0px 0px 4px #6D6D6D;
+}
+.yui3-skin-sam  .body .yui3-tab-selected .yui3-tab-label {
+    color:black;
+}
+
+/** Mcq tab view styles */
+.wegas-mcqtabview {
+    line-height: normal;
+}
+
 .wegas-mcqtabview .pmg-subtitle {
     padding:6px 0;
     font-size: 1.2em;
@@ -274,27 +304,6 @@ h3 {
     float:right;
     padding-right:8px;
 }
-.yui3-skin-sam .wegas-mcqtabview .yui3-tab a.yui3-tab-label  {
-    background: none;
-    border: none;
-    padding: 6px 0px;
-    width:100%;
-}
-.wegas-mcqtabview {
-    line-height: normal;
-}
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tab a:hover {
-    background: rgba(178, 210, 255, 0.1);
-    box-shadow: 0px 0px 4px #6D6D6D;
-}
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected {
-    background: rgba(178, 210, 255, 0.5);
-    box-shadow: 0px 0px 4px #6D6D6D;
-}
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
-    color:black;
-}
-
 .wegas-mcqtabview .title {
     font-weight: bold;
     padding: 7px 5px 2px;
@@ -334,4 +343,130 @@ h3 {
 }
 .wegas-mcqtabview .unread {
     font-weight:bold;
+}
+
+/* --- employees --- */
+/*selectors*/
+.selectors{
+    text-align:center;
+
+    white-space:nowrap;
+}
+
+.selector{
+    display:inline-block;
+    width:100px;
+    text-align: center;
+    margin:10px;
+    padding:5px;
+    background: rgba(60, 100, 200, 0.1);
+    box-shadow: 0px 0px 4px #6D6D6D;
+}
+
+.wegas-cep-itemselector-content .yui3-scrollview{
+    background:none;
+}
+
+.selectors .current{
+    background: rgba(60, 100, 200, 0.3);
+}
+
+.selector:hover{
+    box-shadow: 0px 0px 4px #000000;
+    cursor:pointer;
+}
+
+.selector .nodeformatter-properties .label{
+    display: none;
+}
+
+/*informations*/
+.informations{
+    background: rgba(60, 100, 200, 0.1);
+    box-shadow: 0px 0px 4px #6D6D6D;
+    padding:10px;
+}
+
+.informations .titre{
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.informations .picture{
+    position:absolute;
+    margin-left:785px;
+    background-color: white;
+    border:1px solid #006699;
+}
+
+.informations .nodeformatter-properties{
+    margin:10px 0;
+    max-width: 760px;
+}
+
+.informations .nodeformatter-properties span{
+    display:inline-block;
+}
+
+.informations .label{
+    width:75px;
+}
+
+.informations .nodeformatter-valuebox {
+    clear:both;
+    height:15px;
+    margin:10px 0;
+}
+
+.informations .nodeformatter-valuebox .label,
+.informations .nodeformatter-valuebox .box-units,
+.informations .nodeformatter-valuebox .box-value{
+    float:left;
+}
+
+.informations .label{
+    width:80px;
+}
+
+.informations .nodeformatter-valuebox .box-units{
+    display:block;
+    background: rgba(60, 100, 200, 0.3);
+    width:200px;
+    height:15px;
+    font-size: 1em;
+    border: #006699 solid 1px;
+    overflow: hidden;
+}
+
+.informations .nodeformatter-valuebox .box-unit{
+    display:block;
+    background-color:#6F89A2;
+    background-image:url(/Wegas/wegas-cep/images/gaugeFiller.png);
+    background-repeat: repeat-x;
+    float:left;
+    width:2px;
+    height:15px;
+}
+
+.informations .nodeformatter-valuebox .box-value{
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+.informations .nodeformatter-position{
+    margin:10px 0;
+}
+
+.informations li{
+    color:#6F89A2;
+    margin-left:15px;
+}
+
+.informations .nodeformatter-position .previous{
+    color:black;
+}
+
+.informations .nodeformatter-position .current{
+    list-style-type:circle;
+    color:black;
 }

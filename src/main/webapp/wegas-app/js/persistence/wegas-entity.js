@@ -26,14 +26,13 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient");
-    Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
+    Y.Base._ATTR_CFG.push( "type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient" );
+    Y.Base._ATTR_CFG_HASH = Y.Array.hash( Y.Base._ATTR_CFG );
 
     /**
      *
      */
-    function Editable () {
-    }
+    function Editable () { }
 
     Y.mix( Editable.prototype, {
         /**
@@ -74,7 +73,7 @@ YUI.add('wegas-entity', function (Y) {
             }) : e;
 
         },
-        
+
         /**
          * Create a new Object from this entity
          * may be used by revive
@@ -234,37 +233,63 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
             return new classDef(o);
+        },
+
+        /**
+         *
+         *  This getter is to be used for any object attribute that references a VariableDescriptor and
+         *  has either an name, id or expr parameter.
+         *
+         */
+        VARIABLEDESCRIPTORGETTER: function ( val, fullName ) {
+            var ds = Y.Wegas.VariableDescriptorFacade;
+            if ( fullName.split( "." )[1] === "evaluated" ) {                   // If evaluated value is required
+
+                if ( val.name ) {                                               // Eval based on the name field
+                    val.evaluated = ds.rest.find( 'name', val.name );
+
+                } else if ( val.expr ) {                                        // if absent evaluate the expr field
+                    val.evaluated = ds.rest.findById(
+                        Y.Wegas.VariableDescriptorFacade.script.scopedEval( val.expr ) );
+
+                } else if ( val.id ) {
+                    val.evaluated = ds.rest.findById( val.id );
+
+                }
+            }
+            return val;
         }
+
     });
     Y.namespace( "Wegas.persistence" ).Editable = Editable;
 
     /**
-         * Entity is used to represent db objects.
-         */
-    Entity = Y.Base.create("Entity", Y.Base, [ Editable ], {
+     * Entity is used to represent db objects.
+     */
+    Entity = Y.Base.create( "Entity", Y.Base, [ Editable ], {
 
-        // *** Lifecycle methods *** //
-        initializer: function(cfg) {
-            Entity.ENTITIES_HASH[this.name] = false;
+        initializer: function () {
+            
         }
 
     }, {
+
         _buildCfg: {
             //statics: ["EDITMENU"],
             custom: {
-                HASH: function (prop, Receiver, Supplier) {
+        //HASH: function (prop, Receiver, Supplier) {
 
-                    Entity.ENTITIES_HASH[Receiver.name] = true
+        //Entity.ENTITIES_HASH[Receiver.name] = true;
 
-                //var c = Supplier.constructor;
-                //while (!Receiver.EDITMENU && c) {
-                //    if (c.EDITMENU) {                                                  // Add to attributes
-                //        Receiver.EDITMENU = c.EDITMENU
-                //    }
-                //    c = c.superclass ? c.superclass.constructor : null;
-                //}
-                }
-            }
+        //var c = Supplier.constructor;
+        //while (!Receiver.EDITMENU && c) {
+        //    if (c.EDITMENU) {                                                  // Add to attributes
+        //        Receiver.EDITMENU = c.EDITMENU
+        //    }
+        //    c = c.superclass ? c.superclass.constructor : null;
+        //}
+        //}
+        }
         },
         ATTRS: {
             initialized: {
@@ -286,6 +311,18 @@ YUI.add('wegas-entity', function (Y) {
                 _inputex: {
                     _type: 'hidden'
                 }
+            },
+            "label": {
+                "transient": true,
+                getter: function ( val ) {
+                    return val || this.get( "name" );
+                }
+            },
+            "editorLabel": {
+                "transient": true,
+                getter: function ( val ) {
+                    return val || this.get( "name" );
+                }
             }
         },
 
@@ -296,18 +333,13 @@ YUI.add('wegas-entity', function (Y) {
         /**
              * Defines methods available in wysiwyge script editor
              */
-        METHODS: { },
-
-
-        /**
-             * Holds a reference to all declared entity classes
-             */
-        ENTITIES_HASH: {}
+        METHODS: { }
     });
     Y.namespace('Wegas.persistence').Entity = Entity;
+
     /**
-         * Page response mapper
-         */
+     * Page response mapper
+     */
     Y.Wegas.persistence.WidgetEntity = Y.Base.create( "WidgetEntity", Entity, [], {
 
         initializer: function ( cfg ) {
@@ -322,8 +354,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-         * ServerResponse mapper
-         */
+     * ServerResponse mapper
+     */
     Y.Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Y.Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
         ATTRS: {
             entities: {
@@ -343,8 +375,8 @@ YUI.add('wegas-entity', function (Y) {
     });
 
     /**
-         * GameModel mapper
-         */
+     * GameModel mapper
+     */
     Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
@@ -415,6 +447,12 @@ YUI.add('wegas-entity', function (Y) {
         //    label: "Properties"
         //},
         {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
             type: "DeleteEntityButton"
         }]
     });
@@ -704,28 +742,33 @@ YUI.add('wegas-entity', function (Y) {
         },
 
         getPrivateLabel: function () {
-            return this.get( "editorLabel" ) || this.get( "label" );
+            return this.get( "editorLabel" );
         },
 
         getPublicLabel: function () {
-            return this.get( "label" ) ||  this.get( "editorLabel" );
+            return this.get( "label" );
         }
     }, {
         ATTRS: {
+            label: {
+                type: "string",
+                "transient": false,
+                getter: function ( val ) {
+                    return val || this.get( "name");
+                }
+            },
             editorLabel:{
                 type: "string",
+                optional: true,
+                "transient": false,
                 _inputex:{
-                    label: "Public label"
+                    label: "Editor label"
                 },
                 validator: function ( s ) {
                     return s === null || Y.Lang.isString(s);
-                }
-            },
-            label: {
-                type: "string",
-                optional: true,
-                _inputex:{
-                    label: "Private label"
+                },
+                getter: function ( val ) {
+                    return val || this.get( "label");
                 }
             },
             name: {
@@ -733,7 +776,7 @@ YUI.add('wegas-entity', function (Y) {
                 type: "string",
                 optional: true,
                 _inputex: {
-                    label: "Script Alias"
+                    label: "Script alias"
                 },
                 validator: function ( s ){
                     return s === null || Y.Lang.isString( s );
@@ -775,8 +818,12 @@ YUI.add('wegas-entity', function (Y) {
         },
         EDITMENU: [{
             type: "EditEntityButton"
-        },{
-            type: "CloneEntityButton"
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
         }, {
             type: "DeleteEntityButton"
         }],
@@ -1080,9 +1127,13 @@ YUI.add('wegas-entity', function (Y) {
             type: "AddEntityChildButton",
             label: "Add child",
             childClass: "VariableDescriptor"
-        },{
-            type:"CloneEntityButton"
         }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        },  {
             type: "DeleteEntityButton"
         }]
     });

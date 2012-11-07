@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -11,7 +11,6 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.Collection;
@@ -35,7 +34,6 @@ import org.slf4j.LoggerFactory;
 public class VariableDescriptorController extends AbstractRestController<VariableDescriptorFacade, VariableDescriptor> {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorController.class);
-    ;
     /**
      *
      */

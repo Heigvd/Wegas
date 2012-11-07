@@ -40,13 +40,16 @@ public class Helper {
         try {
             //   context.
             return (T) context.lookup("java:module/" + service.getSimpleName() + "!" + type.getName());
-        } catch (NamingException ex) {
+        }
+        catch (NamingException ex) {
             try {
                 return (T) context.lookup("java:global/classes/" + service.getSimpleName() + "!" + type.getName());
-            } catch (NamingException ex1) {
+            }
+            catch (NamingException ex1) {
                 try {
                     return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
-                } catch (NamingException ex2) {
+                }
+                catch (NamingException ex2) {
                     logger.error("Uanble to retrieve to do jndi lookup on class: {}", type.getSimpleName());
                     throw ex2;
                 }
@@ -77,24 +80,13 @@ public class Helper {
         return lookupBy(type, type);
     }
 
-    /**
-     * Build an instance like Name, adding "_#" at the end if the name is
-     * unavailable
-     *
-     * @param name The initial String the output should look like
-     * @param unavailableNames The name should not be in this List
-     * @return a new name, unique.
-     */
-    public static String buildUniqueName(String name, List<String> unavailableNames) {
-        String newName;
-        Pattern pattern = Pattern.compile("[^\\w]|(^\\d)");                     //Search for special chars or initial digit
+    public static String encodeVariableName(String name) {
 
         StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(name);
         String tmp;
         Boolean first = true;
-        //CamelCase the name except first word (instance like)
-        while (st.hasMoreTokens()) {
+        while (st.hasMoreTokens()) {                                            //CamelCase the name except first word (instance like)
             tmp = st.nextToken();
             if (first) {
                 sb.append(tmp.substring(0, 1).toLowerCase());
@@ -104,23 +96,71 @@ public class Helper {
             }
             sb.append(tmp.substring(1));
             //sb.append(tmp.substring(1).toLowerCase());
+        }
 
-        }
+        Pattern pattern = Pattern.compile("[^\\w]|(^\\d)");                     //Search for special chars or initial digit
         Matcher matcher = pattern.matcher(sb.toString());
-        newName = matcher.replaceAll("_$1");                                    //Replace special chars and initial digit with "_"
-        //Build a unique name, adding _# at the end
-        pattern = Pattern.compile("^(\\w+)_(\\d+)$");
-        matcher = pattern.matcher(newName);
+        return matcher.replaceAll("_$1");                                       //Replace special chars and initial digit with "_"
+    }
+
+    /**
+     * Build an instance like Name, adding "_#" at the end if the name is
+     * unavailable
+     *
+     * @param name The initial String the output should look like
+     * @param unavailableNames The name should not be in this List
+     * @return a new name, unique.
+     */
+    public static String buildUniqueName(String name, List<String> unavailableNames) {
+        String newName = Helper.encodeVariableName(name);
+        String base = Helper.stripNameSuffix(newName);
+
         Integer nb = 1;
-        if (matcher.find()) {
-            tmp = matcher.group(1);
-        } else {
-            tmp = newName;
-        }
         while (unavailableNames.contains(newName)) {
-            newName = tmp + "_" + nb;
-            nb = nb + 1;
+            newName = base + "_" + nb;
+            nb++;
         }
         return newName;
+    }
+
+    /**
+     *
+     * @param name
+     * @return the provided name stripped of its _# suffix.
+     */
+    public static String stripNameSuffix(String name) {
+        Pattern pattern = Pattern.compile("^(\\w+)_(\\d+)$");
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return name;
+        }
+    }
+
+    /**
+     *
+     * @param name
+     * @return the provided name stripped of its (#) suffix.
+     */
+    public static String stripLabelSuffix(String label) {
+        Pattern pattern = Pattern.compile("^(.*)\\((\\d+)\\)$");
+        Matcher matcher = pattern.matcher(label);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return label;
+        }
+    }
+
+    public static int getLabelSuffix(String label) {
+        Pattern pattern = Pattern.compile("^(.*)\\((\\d+)\\)$");
+        Matcher matcher = pattern.matcher(label);
+
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(2));
+        } else {
+            return 0;
+        }
     }
 }

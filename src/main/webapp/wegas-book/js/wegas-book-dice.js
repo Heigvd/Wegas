@@ -66,7 +66,7 @@ YUI.add( "wegas-book-dice", function ( Y ) {
             }, "button", this));
         },
         
-        destroy: function(){
+        destructor: function(){
             var i;
             for (i=0; i<this.handlers.length;i++) {
                 this.handlers[i].detach();

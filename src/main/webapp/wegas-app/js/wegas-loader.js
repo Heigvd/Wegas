@@ -194,13 +194,19 @@ YUI().use(function (Y) {
                     },
                     'wegas-inputex-rte': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-rte-min.js',
-                        requires: [ 'wegas-inputex', 'inputex-field', 'yui2-editor', 'panel',
-                        'wegas-fileexplorer', 'wegas-inputex-url', 'wegas-inputex-rtecss' ],
+                        requires: [ 'wegas-inputex', 'inputex-textarea', 'tinymce', 'panel',
+                        'wegas-fileexplorer', 'wegas-inputex-url' ],
                         ix_provides: 'html'
+                    },
+                    'wegas-inputex-yui2rte': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-yui2rte-min.js',
+                        requires: [ 'wegas-inputex', 'inputex-field', 'yui2-editor', 'panel',
+                        'wegas-fileexplorer', 'wegas-inputex-url' ],
+                        ix_provides: 'yui2html'
                     },
                     'wegas-inputex-hashlist': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-hashlist-min.js',
-                        requires: ['inputex-list'],
+                        requires: [ 'inputex-list' ],
                         ix_provides: 'hashlist'
                     },
                     'wegas-inputex-script': {
@@ -360,8 +366,39 @@ YUI().use(function (Y) {
                     },
 
                     /** Project Management Game **/
-                    'wegas-projectmanagementgame': {
-                        path: 'wegas-projectmanagementgame/js/wegas-projectmanagementgame-min.js'
+                    'wegas-pmg': {
+                        path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
+                        requires:['wegas-pmg-breadcrumb'],
+                        ix_provides: "PmgBreadcrumb"
+                    },
+
+                    'wegas-pmg-tasklist':{
+                        path: 'wegas-pmg/js/wegas-pmg-tasklist.js',
+                        requires:['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
+                        ix_provides: "PmgTasklist"
+                    },
+
+                    'wegas-pmg-gantt':{
+                        path: 'wegas-pmg/js/wegas-pmg-gantt.js',
+                        requires:['wegas-pmg-gantt', 'wegas-pmg-datatable'],
+                        ix_provides: "PmgGantt"
+                    },
+
+                    'wegas-pmg-resourcelist':{
+                        path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
+                        requires:['wegas-pmg-resourcelist', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
+                        ix_provides: "PmgResourcelist"
+                    },
+
+                    'wegas-pmg-datatable':{
+                        path: 'wegas-pmg/js/wegas-pmg-datatable.js',
+                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable'],
+                        ix_provides: "PmgDatatable"
+                    },
+
+                    'wegas-pmg-slidepanel':{
+                        path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
+                        ix_provides: "PmgSlidePanel"
                     },
 
                     /**book CYOA**/
@@ -374,6 +411,18 @@ YUI().use(function (Y) {
                     'wegas-book-dice': {
                         path: 'wegas-book/js/wegas-book-dice.js',
                         ix_provides: "Dice"
+                    },
+
+                    /**CEP**/
+                    'wegas-cep': {
+                        path: 'wegas-cep/js/wegas-cep-itemselector.js',
+                        requires:['wegas-cep-itemselector', 'wegas-cep-nodeformatter'],
+                        ix_provides: "CepItemSelector"
+                    },
+
+                    'wegas-cep-nodeformatter': {
+                        path: 'wegas-cep/js/wegas-cep-nodeformatter.js',
+                        ix_provides: "CepNodeFormatter"
                     },
 
                     /** CrimeSim **/
@@ -422,17 +471,16 @@ YUI().use(function (Y) {
                     },
 
                     /** MMO **/
-                    'wegas-mmo': {
-                        path: 'wegas-mmo/js/wegas-mmo-min.js',
+                    'wegas-proggame-level': {
+                        path: 'wegas-proggame/js/wegas-proggame-level-min.js',
                         requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace'],
-                        ix_provides: 'MMOWidget'
+                        ix_provides: 'ProgGameLevel'
                     }
                 }
             },
 
             /* Ace */
             ace: {
-                //combine: true,
                 base: './lib/ace/',
                 root: '/lib/ace/',
                 modules:  {
@@ -490,24 +538,9 @@ YUI().use(function (Y) {
                 }
             },
 
-            /* ExCanvas */
-            excanvas: {
-                combine: true,
-                async: false,
-                //combine: false,
-                base: "./lib/excanvas/",
-                root: "/excanvas/",
-                modules:  {
-                    'excanvas': {
-                        path: 'excanvas.compiled.js'
-                    }
-                }
-            },
-
             /* Esprima */
             esprima: {
                 async: false,
-                //combine: false,
                 base: "./lib/",
                 root: "/lib/",
                 modules:  {
@@ -519,12 +552,17 @@ YUI().use(function (Y) {
                     },
                     'gauge': {
                         path: "gauge.min.js"
+                    },
+                    'tinymce': {
+                        path: "tiny_mce/tiny_mce.js"
+
                     }
                 }
             },
+
+            /* DiffMatchPatch */
             diffmatchpatch:{
                 async: false,
-                combine:false,
                 base:"./lib/diffmatchpatch/",
                 root:"/lib/diffmatchpatch/",
                 modules: {
@@ -533,6 +571,21 @@ YUI().use(function (Y) {
                     }
                 }
             }
+
+
+            /* ExCanvas */
+            //excanvas: {
+            //    combine: true,
+            //    async: false,
+            //    //combine: false,
+            //    base: "./lib/excanvas/",
+            //    root: "/excanvas/",
+            //    modules:  {
+            //        'excanvas': {
+            //            path: 'excanvas.compiled.js'
+            //        }
+            //    }
+            //},
         }
     };
 
@@ -571,7 +624,7 @@ YUI().use(function (Y) {
 
     loadModules(YUI_config.groups.wegas);
     loadModules(YUI_config.groups.ace);
-    loadModules(YUI_config.groups.excanvas);
     loadModules(YUI_config.groups.esprima);
     loadModules(YUI_config.groups.jsplumb);
+    //loadModules(YUI_config.groups.excanvas);
 });

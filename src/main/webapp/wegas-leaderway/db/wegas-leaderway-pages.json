@@ -33,10 +33,6 @@
                         "variable": "budget",
                         "dataSource": "VariableDescriptor"
                     },{
-                        "type": "LangSelector",
-                        "cssClass":"langselector",
-                        "items":["fr","en"]
-                    },{
                         "type": "VariableDisplay",
                         "cssClass":"indicators-gauge",
                         "label": "Motivation générale",
@@ -160,7 +156,9 @@
         "id":5,
         "label":"Inbox",
         "type":"InboxDisplay",
-        "variable":"inbox",
+        "variable": {
+            "name": "inbox"
+        }
         "cssClass":"leaderway-inbox",
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"

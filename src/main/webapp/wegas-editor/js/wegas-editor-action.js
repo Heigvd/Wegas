@@ -335,6 +335,26 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.namespace("Plugin").AddEntityChildAction = AddEntityChildAction;
 
     /**
+     *  @class DuplicateEntityAction
+     *  @module Wegas
+     *  @constructor
+     */
+    var DuplicateEntityAction = function () {
+        DuplicateEntityAction.superclass.constructor.apply( this, arguments );
+    };
+
+    Y.extend( DuplicateEntityAction, EntityAction, {
+        execute: function() {
+            this.get( "dataSource" ).rest.duplicateObject( this.get( "entity" ) );
+        }
+    }, {
+        NS: "DuplicateEntityAction",
+        NAME: "DuplicateEntityAction"
+    });
+
+    Y.namespace( "Plugin" ).DuplicateEntityAction = DuplicateEntityAction;
+
+    /**
      *  @class DeleteEntityAction
      *  @module Wegas
      *  @constructor
@@ -356,7 +376,7 @@ YUI.add('wegas-editor-action', function (Y) {
         }
     });
 
-    Y.namespace("Plugin").DeleteEntityAction = DeleteEntityAction;
+    Y.namespace( "Plugin" ).DeleteEntityAction = DeleteEntityAction;
 
     /**
      *  @class EditFSMAction
@@ -626,9 +646,9 @@ YUI.add('wegas-editor-action', function (Y) {
     /**
      * Shortcut to create a Button with an OpenTabAction plugin
      */
-    Y.Wegas.OpenTabButton = Y.Base.create("button", Y.Wegas.Button, [], {
-        initializer: function (cfg) {
-            this.plug(OpenTabAction, cfg);
+    Y.Wegas.OpenTabButton = Y.Base.create( "button", Y.Wegas.Button, [], {
+        initializer: function ( cfg ) {
+            this.plug( OpenTabAction, cfg );
         }
     });
     /**

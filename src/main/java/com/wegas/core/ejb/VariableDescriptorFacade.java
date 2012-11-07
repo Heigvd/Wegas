@@ -10,19 +10,22 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
@@ -45,21 +48,109 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
     /**
      *
+     * @param variableDescriptor
+     */
+    @Override
+    public void create(VariableDescriptor variableDescriptor) {
+        throw new RuntimeException("Unable to call create on Variable descriptor. Use create(gameModelId, variableDescriptor) instead.");
+    }
+
+    /**
+     *
+     * @param parentGameModel
+     * @param variableDescriptor
+     */
+    public void create(GameModel parentGameModel, VariableDescriptor variableDescriptor) {
+        List<String> usedNames = this.getUsedNames(parentGameModel.getId());
+
+        //Fill name with editor Label if it is empty
+        if (variableDescriptor.getName().isEmpty() || variableDescriptor.getName() == null) {
+            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getLabel(), usedNames));
+        }
+
+        if (usedNames.contains(variableDescriptor.getName())) {                 //build a unique name
+            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getName(), usedNames));
+        }
+        parentGameModel.addVariableDescriptor(variableDescriptor);
+    }
+
+    /**
+     *
      * @param gameModelId
      * @param variableDescriptor
      */
     public void create(Long gameModelId, VariableDescriptor variableDescriptor) {
-        List<String> usedNames = this.getUsedNames(gameModelId);
-        //Fill name with editor Label if it is empty
-        if (variableDescriptor.getName().isEmpty() || variableDescriptor.getName() == null) {
-            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getEditorLabel(), usedNames));
+        this.create(this.gameModelFacade.find(gameModelId), variableDescriptor);
+    }
+
+    /**
+     *
+     * @param entityId
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public VariableDescriptor duplicate(final Long entityId) throws IOException {
+
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
+
+        VariableDescriptor oldEntity = this.find(entityId);                     // Retrieve the entity to duplicate
+
+        String serialized = mapper.writerWithView(Views.Export.class).
+                writeValueAsString(oldEntity);                                  // Serialize the entity
+        VariableDescriptor newEntity =
+                mapper.readValue(serialized, VariableDescriptor.class);         // and deserialize it
+
+        if (newEntity.getLabel() != null) {
+            String newLabel = this.findAvailableLabel(oldEntity.getGameModel(),
+                    newEntity.getLabel());                                          // Look up for an available label
+            newEntity.setLabel(newLabel);
+            if (newEntity.getEditorLabel() != null) {                               // Use with the same suffix for the editor label as the one used for the label
+                newEntity.setEditorLabel(
+                        Helper.stripLabelSuffix(newEntity.getEditorLabel())
+                        + "(" + Helper.getLabelSuffix(newLabel) + ")");
+            }
         }
-        //build a unique name
-        if (usedNames.contains(variableDescriptor.getName())) {
-            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getName(), usedNames));
+
+        this.create(oldEntity.getGameModel(), newEntity);                       // Store the newly created entity in db
+
+        try {                                                                   // If the duplicated var is in a List
+            ListDescriptor parentVar = this.findParentListDescriptor(oldEntity);// Add the entity to this list
+            parentVar.addItem(newEntity);
+            return parentVar;
         }
-        this.gameModelFacade.find(gameModelId).addVariableDescriptor(variableDescriptor);
-        //super.create(variableDescriptor);
+        catch (NoResultException e) {
+            return newEntity;                                                   // Otherwise return it directly
+        }
+    }
+
+    public String findAvailableLabel(GameModel gameModel, String baseLabel) {
+        int suff = 1;
+        String base = Helper.stripLabelSuffix(baseLabel);
+        String newLabel = baseLabel;
+        while (true) {
+            try {
+                this.findByLabel(gameModel, newLabel);
+            }
+            catch (NoResultException e) {
+                return newLabel;
+            }
+            catch (NonUniqueResultException e) {
+            }
+            newLabel = base + "(" + suff + ")";
+            suff++;
+        }
+    }
+
+    /**
+     *
+     * @param item
+     * @return
+     */
+    public ListDescriptor findParentListDescriptor(VariableDescriptor item) {
+        Query findListDescriptorByChildId = em.createNamedQuery("findListDescriptorByChildId");
+        findListDescriptorByChildId.setParameter("itemId", item.getId());
+        return (ListDescriptor) findListDescriptorByChildId.getSingleResult();
     }
 
     /**
@@ -78,6 +169,23 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         cq.where(cb.and(
                 cb.equal(variableDescriptor.get("gameModel"), gameModel),
                 cb.equal(variableDescriptor.get("name"), name)));
+        Query q = em.createQuery(cq);
+        return (VariableDescriptor) q.getSingleResult();
+    }
+
+    /**
+     *
+     * @param gameModel
+     * @param label
+     * @return
+     */
+    public VariableDescriptor findByLabel(GameModel gameModel, String label) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery();
+        Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
+        cq.where(cb.and(
+                cb.equal(variableDescriptor.get("gameModel"), gameModel),
+                cb.equal(variableDescriptor.get("label"), label)));
         Query q = em.createQuery(cq);
         return (VariableDescriptor) q.getSingleResult();
     }

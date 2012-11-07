@@ -19,31 +19,57 @@ YUI.add('wegas-pageloader', function (Y) {
 
     PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
 
+        // *** Private Methods ***/
+        isLoadingALoop: function(pageId) {                                      //Page loader mustn't load the page who contain himself.
+            var k, isALoop = false;
+            for (k in PageLoader.pageLoaderInstances) {
+                if (PageLoader.pageLoaderInstances[k].get('id')===this.get('id')) { //don't check pageId of current instance and contained childrens
+                    break;
+                }
+                if (pageId == PageLoader.pageLoaderInstances[k].get('pageId')
+                    || pageId == PageLoader.pageLoaderInstances[k].get('variableDesc')) {
+                    isALoop = true;
+                    Y.log('Attempt to load the container of this PageLoader instance is aborted.', 'warn', 'Wegas.PageLoader');
+                }
+            }
+            return isALoop;
+        },
+
         // *** Lifecycle Methods ***/
         initializer: function () {
             PageLoader.pageLoaderInstances[this.get("id")] = this;              // We keep a references of all loaded PageLoaders
         },
 
         bindUI: function () {
+            //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
             Y.Wegas.PageFacade.rest.after("pageUpdated", function(e){
-                if(e.page && e.page["@pageId"] == this.get("pageId")){
+                if (e.page && e.page["@pageId"] == this.get("pageId")) {
                     this.syncUI();
                 }
             }, this);
-        //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
+            var onUpdate = function(e) {
+                if (this.get("variableDesc") != this.get('pageId')) {
+                    this.syncUI();
+                }
+            }
+            if (this.get("variableDesc")) {
+                Y.Wegas.app.dataSources.VariableDescriptor.after("response", onUpdate, this);
+                Y.Wegas.app.after('currentPlayerChange', onUpdate, this);
+            }
+
         },
 
         syncUI: function () {
-            if( this.get("pageId")){
-                this.set( "pageId", this.get( "pageId" ) );
-            }else{
-                this.set( "pageId", this.get("variableDesc"));
+            if (this.get("variableDesc")) {
+                this.set("pageId", this.get("variableDesc"));
+            } else {
+                this.set("pageId", this.get("pageId"));
             }
         }
     }, {
         ATTRS : {
-            variableName:{},
-            id:{
+            variableName: {},
+            id: {
                 "transient":false
             },
             children: {
@@ -51,7 +77,7 @@ YUI.add('wegas-pageloader', function (Y) {
             },
             pageId: {
                 setter: function (val) {
-                    if (!val) {
+                    if (!val || this.isLoadingALoop(val)) {
                         return val;
                     }
 
@@ -71,7 +97,7 @@ YUI.add('wegas-pageloader', function (Y) {
                         this.get(CONTENTBOX).empty();
                     }
                     this.hideOverlay();
-                    if(widgetCfg == null){
+                    if (widgetCfg == null) {
                         this.showOverlay();
                     }
                     widgetCfg = widgetCfg || {
@@ -95,28 +121,25 @@ YUI.add('wegas-pageloader', function (Y) {
 
             variableDesc:{
                 "transient": true,
-                getter: function () {
+                getter: function() {
                     var variable;
-
-                    if ( !this.get("variableName") ) {
+                    if(!this.get('variableName')){
                         return null;
                     }
-
-                    variable = Y.Wegas.VariableDescriptorFacade.rest.find( 'name', this.get("variableName") );
-                    if(!variable || !variable.getInstance().get("value")){
+                    variable = Y.Wegas.VariableDescriptorFacade.rest.find('name', this.get("variableName"));
+                    if(!variable || !variable.getInstance().get("value")) {
                         return null;
-                    }else{
-                        return variable.getInstance().get("value");
                     }
+                    return +variable.getInstance().get("value");
                 }
             },
             widget: {
-                "transient":true
+                "transient": true
             }
         },
 
         pageLoaderInstances: {},
-        find: function (id) {
+        find: function(id) {
             return PageLoader.pageLoaderInstances[id];
         }
     });

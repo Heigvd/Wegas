@@ -235,9 +235,13 @@ Y.add("wegas-statemachine-entities", function(Y){
             plugins: [{
                 fn: "EditFSMAction"
             }]
-        },{
-            type: "CloneEntityButton"
-        },{
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
             type: "DeleteEntityButton"
         }]
     });
@@ -415,7 +419,7 @@ Y.add("wegas-statemachine-entities", function(Y){
                                     'Managed-Mode':'true'
                                 }
                             },
-                            callback: callbacks
+                            on: callbacks
                         });
                     }catch(e){
                         //TODO : that

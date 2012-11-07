@@ -70,7 +70,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 if (this.tokenField.validate()) {
                     Y.Wegas.GameFacade.rest.sendRequest({
                         request: "/JoinGame/" + this.tokenField.getValue(),
-                        callback: {
+                        on: {
                             success: Y.bind( function ( e ) {
                                 if ( e.response.entity                          // If the returned value is a Team enity
                                     instanceof Y.Wegas.persistence.Team) {
@@ -135,7 +135,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
         sendJoinTeamRequest: function ( teamId ) {
             Y.Wegas.GameFacade.rest.sendRequest({
                 request: "/JoinTeam/" + teamId,
-                callback: {
+                on: {
                     success: Y.bind( function ( e ) {
 
                         this.showMessage( "success", "Game joined, it has been added to your games", 10000);
