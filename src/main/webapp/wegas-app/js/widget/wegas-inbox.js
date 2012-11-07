@@ -1,3 +1,13 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -30,15 +40,15 @@ YUI.add('wegas-inbox', function (Y) {
             this.tabView.after("selectionChange", this.onTabSelected, this)
 
             this.handlers.respone =
-                this.dataSource.after("response", this.syncUI, this);
+            this.dataSource.after("response", this.syncUI, this);
             this.handlers.playerChange =
-                Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
 
         syncUI: function () {
             var i, msg, tab, from,
-            inboxVariable = this.dataSource.rest.find('name', this.get('variable')).getInstance(),
-            messages = inboxVariable.get("messages"),
+            inboxVariable = this.get( 'variable.evaluated' ).getInstance(),
+            messages = inboxVariable.get( "messages" ),
             selectedIndex = 0,
             tabs = [];
 
@@ -112,7 +122,13 @@ YUI.add('wegas-inbox', function (Y) {
 
     }, {
         ATTRS : {
-            variable: {}
+            /**
+             * The target variable, returned either based on the name attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variable: {
+                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+            }
         }
     });
 

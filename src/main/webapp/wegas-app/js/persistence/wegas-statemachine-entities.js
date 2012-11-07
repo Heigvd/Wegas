@@ -419,7 +419,7 @@ Y.add("wegas-statemachine-entities", function(Y){
                                     'Managed-Mode':'true'
                                 }
                             },
-                            callback: callbacks
+                            on: callbacks
                         });
                     }catch(e){
                         //TODO : that
