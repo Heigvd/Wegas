@@ -12,18 +12,19 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-gaugedisplay', function (Y) {
+YUI.add('wegas-gaugedisplay', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', GaugeDisplay;
 
-    GaugeDisplay = Y.Base.create( "wegas-gauge", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    GaugeDisplay = Y.Base.create("wegas-gauge", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
 
         CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas height="50px" width="100px"></canvas><center class="label"></center><center class="percent"></center></div>',
         MAXVAL: 200,
 
         // ** Lifecycle Methods ** //
-        renderUI: function () {
+
+        renderUI: function() {
             var opts = {
                 lines: 12,                                                      // The number of lines to draw
                 angle: 0.15,                                                    // The length of each line
@@ -39,54 +40,50 @@ YUI.add('wegas-gaugedisplay', function (Y) {
                 strokeColor: '#FFFFFF',
                 generateGradient: true
             };
-            this.gauge = new Gauge( this.get( "contentBox" ).one( "canvas" ).getDOMNode() );// create the  gauge!
+            this.gauge = new Gauge(this.get("contentBox").one("canvas" ).getDOMNode());// create the  gauge!
             this.gauge.setOptions( opts );
-            this.gauge.maxValue = this.MAXVAL;                                          // set max gauge value
+            this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
+            //this.gauge.set(10);
         },
 
-        bindUI: function () {
+        bindUI: function() {
             this.handlers = [];
             this.handlers.push(
-                Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this ) );
+                Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(
-                Y.Wegas.app.after('currentPlayerChange', this.syncUI, this ) );
+                Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
         },
 
-        syncUI: function () {
+        syncUI: function() {
             var maxVal, minVal, value, label,
-            variableDescriptor = this.get("dataSource").rest.find( "name", this.get( "variable" ) );
+            variableDescriptor = this.get("variable.evaluated");
 
             if (!variableDescriptor) {
                 return;
             }
 
-            minVal = variableDescriptor.get( "minValue" );
-            maxVal = variableDescriptor.get( "maxValue" ) - minVal;
-            value = (variableDescriptor.getInstance().get( "value" ) - minVal)/maxVal*this.MAXVAL;
-            
-            label = this.get( "label" ) || variableDescriptor.getPublicLabel();
-
-            this.gauge.set( value );                                       // set actual value
-            this.get( CONTENTBOX ).one( ".label" ).setContent( label );
-            this.get( CONTENTBOX ).one( ".percent" ).setContent( Math.round(value/this.MAXVAL*100) +"%" );
+            label = this.get("label") || variableDescriptor.getPublicLabel();
+            minVal = variableDescriptor.get("minValue");
+            maxVal = variableDescriptor.get("maxValue") - minVal;
+            value = (variableDescriptor.getInstance().get("value") - minVal) / maxVal * this.MAXVAL;
+            if (!value) {
+                value = 0.1; // @hack @fixme unkown bug, value seams to be treated by gauge as false...
+            }
+            this.gauge.set( +value );                                            // set actual value
+            this.get(CONTENTBOX).one(".label").setContent(label);
+            this.get(CONTENTBOX).one(".percent").setContent(Math.round(value / this.MAXVAL * 100 ) + "%");
         },
 
         destructor: function () {
-            for ( var i = 0; i < this.handler.length; i = i + 1 ) {
+            for (var i = 0; i < this.handler.length; i = i + 1) {
                 this.handlers[i].detach();
             }
         }
     }, {
         ATTRS : {
             variable: {
-                type: "string"
-            },
-            dataSource: {
-                "transient": true,
-                getter: function () {
-                    return Y.Wegas.VariableDescriptorFacade;
-                }
+                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
             },
             label : {
                 type: "string",
