@@ -30,7 +30,7 @@ YUI.add('wegas-cep-nodeformatter', function (Y) {
         
         makeNodeValueBox: function(value, maxVal, label, className){
             var i, acc = [], node = new Y.Node.create('<div class="nodeformatter-valuebox"></div>');
-            value = (value || 'undefine');
+            value = (value != null ? value : 'undefine');
             maxVal = (maxVal || 'undefine');
             label = (label || 'undefine');
             if(className) node.addClass(className);

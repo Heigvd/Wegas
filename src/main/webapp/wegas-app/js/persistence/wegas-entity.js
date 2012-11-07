@@ -1207,6 +1207,119 @@ YUI.add('wegas-entity', function (Y) {
                     }
                 }
             }
+        },
+        METHODS: {
+            addAtConfidence: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setConfidence: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtMoral: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setMoral: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            //methods below are temporary ; only for CEP-Game
+            addAtSalary: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setSalary: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtExperience: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setExperience: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            addAtLeadershipLevel: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setLeadershipLevel: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            setActive: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "boolean",
+                    value: false
+                }]
+            }
         }
     });
 
