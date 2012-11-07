@@ -46,8 +46,8 @@ YUI.add('wegas-entity', function(Y) {
             attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
-                if ( attrCfgs[ k ] && attrCfgs[ k ][ "transient" ] ) {                           // Remove any transient attribute
-                    delete ret[ k ];
+                if (attrCfgs[k] && attrCfgs[k]["transient"]) {                           // Remove any transient attribute
+                    delete ret[k];
                 }
             }
             return ret;                                                         // Return a copy of this's fields.
@@ -61,13 +61,13 @@ YUI.add('wegas-entity', function(Y) {
          * @param {Array} mask or {String}* a list of params
          * @return {Object} a filtered out clone
          */
-        toObject: function(mask){
-            var e = JSON.parse( JSON.stringify( this  ) );
-            mask = Y.Lang.isArray( mask ) ? mask : Array.prototype.slice.call( arguments );
-            return mask.length > 0 ? Y.clone( e, true, function( value, key, output, input){
-                if( mask.indexOf ( key ) != -1) {
+        toObject: function(mask) {
+            var e = JSON.parse(JSON.stringify(this));
+            mask = Y.Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
+            return mask.length > 0 ? Y.clone(e, true, function(value, key, output, input) {
+                if (mask.indexOf(key) != -1) {
                     return false;
-                }else{
+                } else {
                     return true;
                 }
             }) : e;
@@ -80,13 +80,13 @@ YUI.add('wegas-entity', function(Y) {
          * @method clone
          * @return {Object} a clone
          */
-        clone: function (){
+        clone: function() {
             return this.toObject(["id","variableInstances"]);
         },
         /**
          * Returns the form configuration associated to this object, to be used a an inputex object.
          */
-        getFormCfg: function () {
+        getFormCfg: function() {
             var i, form, schemaMap, attrCfgs, builder;
             // forms = Y.Wegas.app.get('editorForms'),                          // Select first server defined forms, based on the @class or the type attribute
             // form = forms[this.get('@class')] || forms[this.get("type")]
@@ -99,7 +99,7 @@ YUI.add('wegas-entity', function(Y) {
                 for (i in attrCfgs) {
                     attrCfgs[i]["default"] = attrCfgs[i].value;                 // Use the value as default (useful form json object serialization)
 
-                    if ( attrCfgs[i]["transient"] ) {
+                    if (attrCfgs[i]["transient"]) {
                         delete attrCfgs[i];
                     }
                 }
@@ -112,8 +112,8 @@ YUI.add('wegas-entity', function(Y) {
 
                 builder = new Y.inputEx.JsonSchema.Builder({
                     'schemaIdentifierMap': schemaMap,
-                    'defaultOptions':{
-                        'showMsg':true
+                    'defaultOptions': {
+                        'showMsg': true
                     }
                 });
                 form = builder.schemaToInputEx(schemaMap.Entity);
@@ -124,40 +124,41 @@ YUI.add('wegas-entity', function(Y) {
         /**
          * Returns the edition menu associated to this object, to be used a an inputex object.
          */
-        getMenuCfg: function ( data ) {
+        getMenuCfg: function (data) {
             var menus = Y.Wegas.app.get('editorMenus'),
             //    staticMenus =
             menu;
 
-            if ( menus ) {
-                menu =  menus[ this.get( '@class' ) ] || menus[ this.get( "type" ) ];  // Select first server defined forms, based on the @class or the type attribute
+            if (menus) {
+                menu =  menus[ this.get('@class')] || menus[this.get("type")];  // Select first server defined forms, based on the @class or the type attribute
             }
             menu = menu || this.getStatic("EDITMENU")[0] || [];                 // And if no form is defined we return the default one defined in the entity
 
 
-            function mixMenuCfg ( elts, data ) {
+            function mixMenuCfg (elts, data) {
                 var i, j;
-                for ( i = 0; i < elts.length; i += 1 ) {
-                    elts[i].data = Y.mix( {}, data );// Attach self and the provided datasource to the menu items, to allow them to know which entity to update
+                for (i = 0; i < elts.length; i += 1) {
+                    elts[i].data = Y.mix({}, data);// Attach self and the provided datasource to the menu items, to allow them to know which entity to update
 
-                    if ( elts[i].plugins ) {
-                        for ( j = 0; j < elts[i].plugins.length; j = j + 1 ) {
-                            if (elts[i].plugins[j].cfg && elts[i].plugins[j].cfg.children)
+                    if (elts[i].plugins) {
+                        for (j = 0; j < elts[i].plugins.length; j = j + 1) {
+                            if (elts[i].plugins[j].cfg && elts[i].plugins[j].cfg.children) {
                                 mixMenuCfg( elts[i].plugins[j].cfg.children, data );
+                            }
                         }
                     }
                 }
 
             }
 
-            mixMenuCfg( menu, data );
+            mixMenuCfg(menu, data);
             return menu;
         },
 
         /**
              * Returns the edition menu associated to this object, to be used a an wysiwyg editor.
              */
-        getMethodCfgs: function ( data ) {
+        getMethodCfgs: function(data) {
             var menu = this.getStatic("METHODS")[0] || {};
             return menu;
         },
@@ -181,15 +182,15 @@ YUI.add('wegas-entity', function(Y) {
             return ret;
         }
     });
-    Y.mix( Editable, {
+    Y.mix(Editable, {
 
         /**
              *  This method takes a parsed json object and instantiate them based
              *  on their @class attribute. Target class are found in namespace
              *  Y.Wegas.Data.
              */
-        revive: function ( data ) {
-            var walk = function (o,key) {
+        revive: function(data) {
+            var walk = function(o,key) {
                 var k,v,value = o[key];
                 if (value && typeof value === "object" ) {
                     for (k in value) {
@@ -202,9 +203,9 @@ YUI.add('wegas-entity', function(Y) {
                             }
                         }
                     }
-                    if ( !Y.Lang.isArray( value ) &&
-                        ( !Y.Lang.isUndefined( value[ "@class" ] ) || !Y.Lang.isUndefined( value[ "type" ] ) )) {
-                        return Y.Wegas.persistence.Editable.readObject( value );
+                    if (!Y.Lang.isArray(value) &&
+                        (!Y.Lang.isUndefined(value["@class"]) || !Y.Lang.isUndefined(value["type"]))) {
+                        return Y.Wegas.persistence.Editable.readObject(value);
                     }
                 }
                 return value;                                                   // If no value was returned before, return raw original object
@@ -218,17 +219,17 @@ YUI.add('wegas-entity', function(Y) {
         readObject: function (o) {
             var classDef = Y.Wegas.persistence.Entity;
 
-            if ( o["@class"] ) {
-                classDef = Y.Wegas.persistence[ o[ "@class" ] ] || Y.Wegas.persistence.Entity;
+            if (o["@class"]) {
+                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.Entity;
 
-            } else if ( o[ "type" ] ) {
-                classDef = Y.Wegas.persistence[ o[ "type" ] ] || Y.Wegas.persistence.WidgetEntity;
+            } else if (o["type"]) {
+                classDef = Y.Wegas.persistence[o["type"]] || Y.Wegas.persistence.WidgetEntity;
 
             } else {
-                if ( o[ "@class" ] && o[ "@class" ].indexOf( "Descriptor" ) !== -1) {// @Hack so VariableDescriptors are instantiated even if they dont have a mapping
+                if (o["@class"] && o["@class"].indexOf("Descriptor") !== -1) {  // @Hack so VariableDescriptors are instantiated even if they dont have a mapping
                     classDef = Y.Wegas.persistence.VariableDescriptor;
                 }
-                if ( o[ "@class" ] && o[ "@class" ].indexOf( "Instance" ) !== -1) {// @Hack so VariableInstances are instantiated even if they dont have a mapping
+                if (o["@class"] && o["@class"].indexOf("Instance") !== -1) {    // @Hack so VariableInstances are instantiated even if they dont have a mapping
                     classDef = Y.Wegas.persistence.VariableInstance;
                 }
             }
@@ -241,19 +242,19 @@ YUI.add('wegas-entity', function(Y) {
          *  has either an name, id or expr parameter.
          *
          */
-        VARIABLEDESCRIPTORGETTER: function ( val, fullName ) {
+        VARIABLEDESCRIPTORGETTER: function(val, fullName) {
             var ds = Y.Wegas.VariableDescriptorFacade;
-            if ( fullName.split( "." )[1] === "evaluated" ) {                   // If evaluated value is required
+            if (fullName.split(".")[1] === "evaluated") {                   // If evaluated value is required
 
-                if ( val.name ) {                                               // Eval based on the name field
+                if (val.name) {                                               // Eval based on the name field
                     val.evaluated = ds.rest.find( 'name', val.name );
 
-                } else if ( val.expr ) {                                        // if absent evaluate the expr field
+                } else if (val.expr) {                                        // if absent evaluate the expr field
                     val.evaluated = ds.rest.findById(
                         Y.Wegas.VariableDescriptorFacade.script.scopedEval( val.expr ) );
 
-                } else if ( val.id ) {
-                    val.evaluated = ds.rest.findById( val.id );
+                } else if (val.i) {
+                    val.evaluated = ds.rest.findById(val.id);
 
                 }
             }
@@ -261,12 +262,12 @@ YUI.add('wegas-entity', function(Y) {
         }
 
     });
-    Y.namespace( "Wegas.persistence" ).Editable = Editable;
+    Y.namespace("Wegas.persistence").Editable = Editable;
 
     /**
      * Entity is used to represent db objects.
      */
-    Entity = Y.Base.create( "Entity", Y.Base, [ Editable ], {
+    Entity = Y.Base.create("Entity", Y.Base, [Editable], {
 
         initializer: function () {
 
@@ -300,7 +301,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             id: Y.mix(IDATTRDEF, {
                 writeOnce: "initOnly",
-                setter: function ( val ) {
+                setter: function(val) {
                     return val * 1;
                 }
             }),
@@ -314,14 +315,14 @@ YUI.add('wegas-entity', function(Y) {
             },
             "label": {
                 "transient": true,
-                getter: function ( val ) {
-                    return val || this.get( "name" );
+                getter: function (val) {
+                    return val || this.get("name");
                 }
             },
             "editorLabel": {
                 "transient": true,
-                getter: function ( val ) {
-                    return val || this.get( "name" );
+                getter: function (val) {
+                    return val || this.get("name");
                 }
             }
         },
@@ -340,10 +341,10 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * Page response mapper
      */
-    Y.Wegas.persistence.WidgetEntity = Y.Base.create( "WidgetEntity", Entity, [], {
+    Y.Wegas.persistence.WidgetEntity = Y.Base.create("WidgetEntity", Entity, [], {
 
-        initializer: function ( cfg ) {
-            Y.Wegas.persistence.WidgetEntity.superclass.initializer.apply( this, arguments );
+        initializer: function (cfg) {
+            Y.Wegas.persistence.WidgetEntity.superclass.initializer.apply(this, arguments);
             this.__cfg = cfg;
         },
 
@@ -392,14 +393,14 @@ YUI.add('wegas-entity', function(Y) {
             widgetsUri: {
                 type: "string",
                 choices: [{
-                    value:"wegas-leaderway/db/wegas-leaderway-pages.json",
-                    label:"Leaderway"
+                    value: "wegas-leaderway/db/wegas-leaderway-pages.json",
+                    label: "Leaderway"
                 }, {
-                    value:"wegas-crimesim/db/wegas-crimesim-pages.json",
-                    label:"Crimesim"
+                    value: "wegas-crimesim/db/wegas-crimesim-pages.json",
+                    label: "Crimesim"
                 }, {
-                    value:"wegas-mmo/db/wegas-leaderway-mmo.json",
-                    label:"Programming Game"
+                    value: "wegas-mmo/db/wegas-leaderway-mmo.json",
+                    label: "Programming Game"
                 }],
                 _inputex: {
                     label: "Layout"
@@ -530,7 +531,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
          * Player mapper
          */
-    Y.Wegas.persistence.Player = Y.Base.create( "Player", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.Player = Y.Base.create("Player", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: "string"
@@ -548,17 +549,17 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * User mapper
      */
-    Y.Wegas.persistence.User = Y.Base.create( "User", Y.Wegas.persistence.Entity, [], {
+    Y.Wegas.persistence.User = Y.Base.create("User", Y.Wegas.persistence.Entity, [], {
         getMainAccount: function () {
-            return this.get( "accounts" )[0];
+            return this.get("accounts")[0];
         }
     }, {
         ATTRS: {
             name: {
                 type: "string",
                 "transient": true,
-                getter: function ( val ) {
-                    if ( this.getMainAccount() ) {
+                getter: function (val) {
+                    if (this.getMainAccount()) {
                         return this.getMainAccount().getPublicName();
                     }
                     return val;
@@ -576,7 +577,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * Role mapper
      */
-    Y.Wegas.persistence.Role = Y.Base.create( "Role", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.Role = Y.Base.create("Role", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: "string"
@@ -610,14 +611,14 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * JpaAccount mapper
      */
-    Y.Wegas.persistence.JpaAccount = Y.Base.create( "JpaAccount", Y.Wegas.persistence.Entity, [], {
+    Y.Wegas.persistence.JpaAccount = Y.Base.create("JpaAccount", Y.Wegas.persistence.Entity, [], {
 
         getPublicName: function () {
-            if ( this.get( "firstname" ) ) {
-                return this.get( "firstname" ) + " " + this.get( "lastname" );
+            if ( this.get("firstname") ) {
+                return this.get("firstname") + " " + this.get("lastname");
 
             } else {
-                return this.get( "email" ) + " " + this.get( "lastname" );
+                return this.get("email") + " " + this.get("lastname");
             }
         }
 
@@ -736,25 +737,25 @@ YUI.add('wegas-entity', function(Y) {
      * VariableDescriptor mapper
      */
     Y.Wegas.persistence.VariableDescriptor = Y.Base.create("VariableDescriptor", Y.Wegas.persistence.Entity, [], {
-        getInstance: function ( playerId ) {
+        getInstance: function(playerId) {
             playerId = playerId || Y.Wegas.app.get('currentPlayer');
             return this.get("scope").getInstance( playerId );
         },
 
         getPrivateLabel: function () {
-            return this.get( "editorLabel" );
+            return this.get("editorLabel");
         },
 
         getPublicLabel: function () {
-            return this.get( "label" );
+            return this.get("label");
         }
     }, {
         ATTRS: {
             label: {
                 type: "string",
                 "transient": false,
-                getter: function ( val ) {
-                    return val || this.get( "name");
+                getter: function(val) {
+                    return val || this.get("name");
                 }
             },
             editorLabel:{
@@ -764,10 +765,10 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex:{
                     label: "Editor label"
                 },
-                validator: function ( s ) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 },
-                getter: function ( val ) {
+                getter: function(val) {
                     return val || this.get( "label");
                 }
             },
@@ -778,15 +779,15 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     label: "Script alias"
                 },
-                validator: function ( s ){
-                    return s === null || Y.Lang.isString( s );
+                validator: function(s) {
+                    return s === null || Y.Lang.isString(s);
                 }
             },
             scope: {
-                valueFn: function(){
+                valueFn: function() {
                     return new Y.Wegas.persistence.TeamScope();                 // Should the default scope be set server or client side?
                 },
-                validator:function(o){
+                validator: function(o) {
                     return o instanceof Y.Wegas.persistence.Scope;
                 },
                 type: "object",
@@ -810,8 +811,8 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             defaultInstance: {
-                value:null,
-                validator: function(o){
+                value: null,
+                validator: function(o) {
                     return o instanceof Y.Wegas.persistence.VariableInstance;
                 }
             }
@@ -841,16 +842,16 @@ YUI.add('wegas-entity', function(Y) {
          * Scope mapper
          */
     Y.Wegas.persistence.Scope = Y.Base.create("Scope", Y.Wegas.persistence.Entity, [], {
-        getInstance: function (){
+        getInstance: function() {
             console.error("SHOULD BE OVERRIDDEN")
         }
     }, {
         ATTRS: {
             variableInstances: {
                 "transient": true,
-                getter: function( val ) {
-                    if ( !val ) {
-                        return this.get( "privateInstances" );
+                getter: function(val) {
+                    if (!val) {
+                        return this.get("privateInstances");
                     }
                     return val;
                 }
@@ -864,12 +865,12 @@ YUI.add('wegas-entity', function(Y) {
          * GameModelScope mapper
          */
     Y.Wegas.persistence.GameModelScope = Y.Base.create("GameModelScope", Y.Wegas.persistence.Scope, [], {
-        getInstance: function () {
+        getInstance: function() {
             return this.get("variableInstances")[0];
         }
     },{
         ATTRS:{
-            "@class":{
+            "@class": {
                 value:"GameModelScope"
             }
         }
@@ -878,13 +879,13 @@ YUI.add('wegas-entity', function(Y) {
          * GameScope mapper
          */
     Y.Wegas.persistence.GameScope = Y.Base.create("GameScope", Y.Wegas.persistence.Scope, [], {
-        getInstance: function (){
+        getInstance: function() {
             return this.get("variableInstances")[0];
         }
     },{
         ATTRS:{
-            "@class":{
-                value:"GameScope"
+            "@class": {
+                value: "GameScope"
             }
         }
     });
@@ -893,13 +894,13 @@ YUI.add('wegas-entity', function(Y) {
          * TeamScope mapper
          */
     Y.Wegas.persistence.TeamScope = Y.Base.create("TeamScope", Y.Wegas.persistence.Scope, [], {
-        getInstance: function ( playerId ) {
-            return this.get("variableInstances")[ Y.Wegas.app.get('currentTeam') ];
+        getInstance: function(playerId) {
+            return this.get("variableInstances")[Y.Wegas.app.get('currentTeam')];
         }
     },{
         ATTRS:{
-            "@class":{
-                value:"TeamScope"
+            "@class": {
+                value: "TeamScope"
             }
         }
     });
@@ -908,13 +909,13 @@ YUI.add('wegas-entity', function(Y) {
          * PlayerScope mapper
          */
     Y.Wegas.persistence.PlayerScope = Y.Base.create("PlayerScope", Y.Wegas.persistence.Scope, [], {
-        getInstance: function ( playerId ) {
+        getInstance: function (playerId) {
             return this.get("variableInstances")[playerId];
         }
     },{
-        ATTRS:{
-            "@class":{
-                value:"PlayerScope"
+        ATTRS: {
+            "@class": {
+                value: "PlayerScope"
             }
         }
     });
@@ -940,15 +941,15 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {}, {
         ATTRS: {
-            "@class":{
-                value:"StringDescriptor"
+            "@class": {
+                value: "StringDescriptor"
             },
             defaultInstance: {
                 properties: {
                     "@class": {
                         type: "string",
                         _inputex: {
-                            value:'StringInstance',
+                            value: 'StringInstance',
                             _type: 'hidden'
                         }
                     },
@@ -969,8 +970,8 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.StringInstance = Y.Base.create("StringInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
         ATTRS:{
-            "@class":{
-                value:"StringInstance"
+            "@class": {
+                value: "StringInstance"
             },
             value: {
                 type: "string"
@@ -982,21 +983,21 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.NumberDescriptor = Y.Base.create("NumberDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS: {
-            "@class":{
-                value:"NumberDescriptor"
+            "@class": {
+                value: "NumberDescriptor"
             },
             minValue: {
                 type: "string",
                 optional: true,
                 _inputex: {
-                    label:'Minimum'
+                    label: 'Minimum'
                 }
             },
             maxValue: {
                 type: "string",
                 optional: true,
                 _inputex: {
-                    label:'Maximum'
+                    label: 'Maximum'
                 }
             },
             defaultInstance: {
@@ -1004,7 +1005,7 @@ YUI.add('wegas-entity', function(Y) {
                     "@class": {
                         type: "string",
                         _inputex: {
-                            value:'NumberInstance',
+                            value: 'NumberInstance',
                             _type: 'hidden'
                         }
                     },
@@ -1054,7 +1055,7 @@ YUI.add('wegas-entity', function(Y) {
     Y.Wegas.persistence.NumberInstance = Y.Base.create("NumberInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
         ATTRS:{
             "@class":{
-                value:"NumberInstance"
+                value: "NumberInstance"
             },
             value: {
                 type: "string",
@@ -1071,10 +1072,10 @@ YUI.add('wegas-entity', function(Y) {
         /**
         * Extend clone to add transient childs
         */
-        clone:function(){
+        clone:function() {
             var object = Y.Wegas.persistence.Editable.prototype.clone.call(this), i;
             object.items = [];
-            for(i in this.get("items")){
+            for(i in this.get("items")) {
                 object.items.push(this.get("items")[i].clone());
             }
             return object;
@@ -1082,8 +1083,8 @@ YUI.add('wegas-entity', function(Y) {
 
     }, {
         ATTRS: {
-            "@class":{
-                value:"ListDescriptor"
+            "@class": {
+                value: "ListDescriptor"
             },
             items: {
                 type: "array",
@@ -1092,7 +1093,7 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     _type: "hidden"
                 },
-                setter: function ( val ) {
+                setter: function(val) {
                     for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
                         val[i].parentDescriptor = this;
                     }
@@ -1104,8 +1105,8 @@ YUI.add('wegas-entity', function(Y) {
                  */
             currentItem: {
                 "transient": true,
-                getter: function () {
-                    return this.get( "items" )[ this.getInstance().get( "value" ) ];
+                getter: function() {
+                    return this.get("items")[this.getInstance().get("value")];
                 }
             },
             defaultInstance: {
@@ -1113,7 +1114,7 @@ YUI.add('wegas-entity', function(Y) {
                     "@class": {
                         type: "string",
                         _inputex: {
-                            value:'ListInstance',
+                            value: 'ListInstance',
                             _type: "hidden"
                         }
                     },
@@ -1121,7 +1122,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             }
         },
-        EDITMENU: [ {
+        EDITMENU: [{
             type: "EditEntityButton"
         }, {
             type: "AddEntityChildButton",
@@ -1142,8 +1143,8 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.ListInstance = Y.Base.create("ListInstance", Y.Wegas.persistence.VariableInstance, [], {},{
         ATTRS:{
-            "@class":{
-                value:"ListInstance"
+            "@class": {
+                value: "ListInstance"
             }
         }
     });
@@ -1153,8 +1154,8 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS: {
-            "@class":{
-                value:"ResourceDescriptor"
+            "@class": {
+                value: "ResourceDescriptor"
             },
             description: {
                 type: "string",
@@ -1166,7 +1167,7 @@ YUI.add('wegas-entity', function(Y) {
                         type: "string",
                         _inputex: {
                             _type: 'hidden',
-                            value:'ResourceInstance'
+                            value: 'ResourceInstance'
                         }
                     },
                     id: IDATTRDEF,
@@ -1328,8 +1329,8 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.ResourceInstance = Y.Base.create("ResourceInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS:{
-            "@class":{
-                value:"ResourceInstance"
+            "@class": {
+                value: "ResourceInstance"
             },
             active: {
                 type: "boolean"
@@ -1371,8 +1372,8 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
         ATTRS:{
-            "@class":{
-                value:"TaskDescriptor"
+            "@class": {
+                value: "TaskDescriptor"
             },
             defaultInstance: {
                 properties: {
@@ -1380,7 +1381,7 @@ YUI.add('wegas-entity', function(Y) {
                         type: 'string',
                         _inputex: {
                             _type: 'hidden',
-                            value:'TaskInstance'
+                            value: 'TaskInstance'
                         }
                     },
                     id: IDATTRDEF,
@@ -1420,8 +1421,8 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.TaskInstance = Y.Base.create("TaskInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS:{
-            "@class":{
-                value:"TaskInstance"
+            "@class": {
+                value: "TaskInstance"
             },
             active: {
                 type: 'boolean'
@@ -1449,8 +1450,8 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.Assignment = Y.Base.create("Assignment", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS:{
-            "@class":{
-                value:"TaskInstance"
+            "@class": {
+                value: "TaskInstance"
             },
             taskDescriptorId: {
                 type: 'string'
@@ -1458,10 +1459,10 @@ YUI.add('wegas-entity', function(Y) {
         }
     });
 
-    Y.Wegas.persistence.InboxDescriptor = Y.Base.create( "", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+    Y.Wegas.persistence.InboxDescriptor = Y.Base.create("", Y.Wegas.persistence.VariableDescriptor, [], {}, {
         ATTRS:{
-            "@class":{
-                value:"InboxDescriptor"
+            "@class": {
+                value: "InboxDescriptor"
             },
             defaultInstance: {
                 properties: {
@@ -1469,7 +1470,7 @@ YUI.add('wegas-entity', function(Y) {
                         type: 'InboxInstance',
                         _inputex: {
                             _type: 'hidden',
-                            value:'TaskInstance'
+                            value: 'TaskInstance'
                         }
                     },
                     id: IDATTRDEF
@@ -1504,8 +1505,8 @@ YUI.add('wegas-entity', function(Y) {
          */
     Y.Wegas.persistence.InboxInstance = Y.Base.create( "InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS: {
-            "@class":{
-                value:"InboxInstance",
+            "@class": {
+                value: "InboxInstance",
                 _inputex: {
                     disabled: true,
                     label: "Nothing to edit"
@@ -1522,10 +1523,10 @@ YUI.add('wegas-entity', function(Y) {
     /**
          * Message mapper
          */
-    Y.Wegas.persistence.Message = Y.Base.create("Message", Y.Wegas.persistence.Entity, [], { }, {
+    Y.Wegas.persistence.Message = Y.Base.create("Message", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
-            "@class":{
-                value:"Message"
+            "@class": {
+                value: "Message"
             },
             subject: {},
             body: {},
@@ -1540,44 +1541,44 @@ YUI.add('wegas-entity', function(Y) {
     /**
          * Script mapper
          */
-    Y.Wegas.persistence.Script = Y.Base.create( "Script", Y.Wegas.persistence.Entity, [], {
-        initializer: function(){
+    Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
+        initializer: function() {
             this.publish("evaluated");
             this._inProgress = false;
             this._result = null;
         },
-        isValid: function () {
+        isValid: function() {
         // @todo : FX a greffer :)
         },
         /*
          * evaluated event contains response. true or false. False if script error.
          */
-        localEval: function(){
+        localEval: function() {
             if(Y.Wegas.VariableDescriptorFacade.script.scopedEval){
-                if(this._result){
+                if (this._result) {
                     this.fire("evaluated", this._result);
                     return;
                 }
-                if(!this._eHandler){
+                if (!this._eHandler) {
                     this._eHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id){
 
-                        if(this._yuid != id){
+                        if (this._yuid != id) {
                             return;
                         }
                         e.halt(true);
-                        if(o === true){
+                        if (o === true) {
                             this._result = true;
-                        }else{
+                        } else {
                             this._result = false
                         }
                         this._inProgress = false;
                         this.fire("evaluated",this._result);
                     }, this);
                 }
-                if(!this._fHandler){
+                if (!this._fHandler) {
                     this._fHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:failure", function(e, o, id){
 
-                        if(this._yuid != id){
+                        if (this._yuid != id) {
                             return;
                         }
                         e.halt(true);
@@ -1587,47 +1588,47 @@ YUI.add('wegas-entity', function(Y) {
                     }, this);
                 }
 
-                if(!this._inProgress){
+                if (!this._inProgress) {
                     this._inProgress = true;
                     Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"), this._yuid);
-                }else{
+                } else {
                     console.log("evaluation in progress");
                 }
             }
         },
-        isEmpty: function () {
+        isEmpty: function() {
             return (this.content == null || this.content == "");
         },
-        destructor: function(){
+        destructor: function() {
             this._fHandler.detach();
             this._eHandler.detach();
         }
     }, {
         ATTRS: {
             id: {
-                value:undefined,                                                // An Embeddable has no ID !!! Forcing it
-                readOnly:true,
+                value: undefined,                                                // An Embeddable has no ID !!! Forcing it
+                readOnly: true,
                 "transient": true
             },
-            "@class":{
-                value:"Script",
+            "@class": {
+                value: "Script",
                 type: "string"
             },
             language: {
                 value: "JavaScript",
                 type: "string",
                 choices: [{
-                    value:"JavaScript"
+                    value: "JavaScript"
                 }],
                 _inputex: {
                     //type:"select",
-                    _type:"hidden"
+                    _type: "hidden"
                 }
             },
             content: {
                 type: "string",
                 format: "text",
-                setter: function(v){
+                setter: function(v) {
                     this._result = null;
                     return v;
                 }
