@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-gaugedisplay', function(Y) {
+YUI.add('wegas-gaugedisplay', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', GaugeDisplay;
@@ -24,7 +24,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
 
         // ** Lifecycle Methods ** //
 
-        renderUI: function() {
+        renderUI: function () {
             var opts = {
                 lines: 12,                                                      // The number of lines to draw
                 angle: 0.15,                                                    // The length of each line
@@ -32,7 +32,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 pointer: {
                     length: 0.5,                                                // The radius of the inner circle
                     strokeWidth: 0.035,                                         // The rotation offset
-                    color: '#000000'                                            // Fill color
+                    color: '#000000',
+                    angle: 0.15                                            // Fill color
                 },
                 colorStart: '#0981A9',                                          // Colors
                 colorStop: '#000000',
@@ -40,14 +41,14 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 strokeColor: '#FFFFFF',
                 generateGradient: true
             };
-            this.gauge = new Gauge(this.get("contentBox").one("canvas").getDOMNode());// create the  gauge!
-            this.gauge.setOptions( opts );
+            this.gauge = new Gauge(this.get("contentBox").one("canvas").getDOMNode());// create the  gauge!conso
+            this.gauge.setOptions(opts);
             this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
             //this.gauge.set(10);
         },
 
-        bindUI: function() {
+        bindUI: function () {
             this.handlers = [];
             this.handlers.push(
                 Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
@@ -55,10 +56,9 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
         },
 
-        syncUI: function() {
+        syncUI: function () {
             var maxVal, minVal, value, label,
             variableDescriptor = this.get("variable.evaluated");
-
             if (!variableDescriptor) {
                 return;
             }
@@ -70,13 +70,15 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             if (!value) {
                 value = 0.1;                                                    // @hack @fixme unkown bug, value seams to be treated by gauge as false...
             }
+
             this.gauge.set(value);                                              // set actual value
             this.get(CONTENTBOX).one(".label").setContent(label);
-            this.get(CONTENTBOX).one(".percent").setContent(Math.round(value / this.MAXVAL * 100 ) + "%");
+            this.get(CONTENTBOX).one(".percent").setContent(Math.round(value / this.MAXVAL * 100) + "%");
         },
 
         destructor: function () {
-            for (var i = 0; i < this.handler.length; i = i + 1) {
+            var i;
+            for (i = 0; i < this.handler.length; i = i + 1) {
                 this.handlers[i].detach();
             }
         }

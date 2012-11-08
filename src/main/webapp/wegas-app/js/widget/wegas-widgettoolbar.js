@@ -74,8 +74,8 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             if ( !( widget instanceof Y.Widget )) {
                 widget = Y.Wegas.Widget.create( widget );
             }
-            widget.render( this.get("header"));
-            widget.addTarget( this.get("host"));
+            widget.render(this.get("header"));
+            widget.addTarget(this.get("host"));
             return widget;
         }
 

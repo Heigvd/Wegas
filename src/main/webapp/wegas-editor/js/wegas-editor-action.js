@@ -96,7 +96,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(EditEntityAction, EntityAction, {
         execute: function() {
-            EditEntityAction.showUpdateForm( this.get("entity"), this.get("dataSource"));
+            EditEntityAction.showUpdateForm(this.get("entity"), this.get("dataSource"));
         }
     }, {
         /**
@@ -261,7 +261,7 @@ YUI.add('wegas-editor-action', function (Y) {
                     });
                     EditEntityAction.showEditForm( newEntity , Y.bind( function ( newVal ) {
                         newEntity.setAttrs( newVal);
-                        entity.get( this.get("attributeKey")).push( newEntity );
+                        entity.get(this.get("attributeKey")).push( newEntity );
 
                         dataSource.rest.put( entity.toObject(), {
                             success: function () {
@@ -279,7 +279,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
                 case "delete":
                     if ( confirm("Are your sure your want to delete this item ?")) {
-                        var targetArray = parentEntity.get( this.get("attributeKey"));
+                        var targetArray = parentEntity.get(this.get("attributeKey"));
                         Y.Array.find( targetArray, function ( e, i, a ) {
                             if ( e.get("id") == entity.get("id")) {
                                 a.splice( i, 1 );
@@ -340,12 +340,12 @@ YUI.add('wegas-editor-action', function (Y) {
      *  @constructor
      */
     var DuplicateEntityAction = function () {
-        DuplicateEntityAction.superclass.constructor.apply( this, arguments );
+        DuplicateEntityAction.superclass.constructor.apply(this, arguments );
     };
 
     Y.extend( DuplicateEntityAction, EntityAction, {
         execute: function() {
-            this.get("dataSource").rest.duplicateObject( this.get("entity"));
+            this.get("dataSource").rest.duplicateObject(this.get("entity"));
         }
     }, {
         NS: "DuplicateEntityAction",
@@ -371,7 +371,7 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.extend(DeleteEntityAction, EntityAction, {
         execute: function() {
             if (confirm("Are your sure your want to delete this item ?")) {
-                this.get("dataSource").rest.deleteObject( this.get("entity"));
+                this.get("dataSource").rest.deleteObject(this.get("entity"));
             }
         }
     });
@@ -402,7 +402,7 @@ YUI.add('wegas-editor-action', function (Y) {
                     }]
                 }, Y.bind(function (entity, widget) {
                     widget.set("entity", entity);
-                }, this, this.get("entity")) );
+                }, this, this.get("entity")));
         }
     });
 
@@ -448,7 +448,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(OpenTabAction, Action, {
         execute: function () {
-            Y.Wegas.TabView.findTabAndLoadWidget( this.get("host").get("label"),
+            Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                 this.get("tabSelector"), {}, this.get("subpage"));
         }
     }, {
@@ -488,7 +488,7 @@ YUI.add('wegas-editor-action', function (Y) {
                 params = "gameId=" + entity.get("id");
             }
             this.set("url",  this.get("editorUrl") + params );
-            OpenGameAction.superclass.execute.call( this );
+            OpenGameAction.superclass.execute.call(this );
         }
     }, {
         ATTRS: {
@@ -572,7 +572,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
         },
         _onSuccess: function( e){
-            console.log("Clone successfull");
+            Y.log("Clone successfull");
         },
         _clone: function(entity, parent){
             if(parent && parent.toObject){

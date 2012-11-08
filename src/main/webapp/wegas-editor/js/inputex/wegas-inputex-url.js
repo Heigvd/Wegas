@@ -61,7 +61,7 @@ YUI.add("wegas-inputex-url",function(Y){
                 on: {
                     click: Y.bind(this.showFileExplorer, this)
                 }
-            }).render( this.fieldContainer );
+            }).render(this.fieldContainer );
         },
 
         showFileExplorer: function () {
@@ -77,7 +77,7 @@ YUI.add("wegas-inputex-url",function(Y){
                     centered: true
                 });
 
-                this.fileExplorer = new Y.Wegas.FileExplorer().render( this.filepanel.getStdModNode( Y.WidgetStdMod.BODY ));
+                this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode( Y.WidgetStdMod.BODY ));
 
                 this.fileExplorer.on("*:fileSelected", function (e, path) {
                     e.stopImmediatePropagation();

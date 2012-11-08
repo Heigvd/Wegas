@@ -126,7 +126,7 @@ YUI.add('wegas-loginwidget', function (Y) {
 
             this.loginButton.on("click", function ( e ) {                      // join a game based on a token
 
-                if ( this.get("mode") == "login") {
+                if (this.get("mode") == "login") {
                     if ( !this.loginForm.validate()) return;
 
                     var value = this.loginForm.getValue();
@@ -160,7 +160,7 @@ YUI.add('wegas-loginwidget', function (Y) {
         },
 
         toggleMode: function () {
-            if ( this.get("mode") === "login") {
+            if (this.get("mode") === "login") {
                 this.set("mode", "createaccount")
             } else {
                 this.set("mode", "login");

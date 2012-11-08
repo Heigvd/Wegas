@@ -58,7 +58,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                         allowHTML: true
                     }]
                 });
-                this.datatable.render( this.get( CONTENTBOX ));
+                this.datatable.render(this.get( CONTENTBOX ));
             },
 
             bindUI: function () {
@@ -80,10 +80,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
             },
 
             syncUI: function () {
-                while ( this.datatable.getRow( 0 )) {
+                while (this.datatable.getRow( 0 )) {
                     this.datatable.removeRow( 0 );
                 }
-                this.datatable.addRows( this.genData())
+                this.datatable.addRows(this.genData())
             },
 
             genData: function () {

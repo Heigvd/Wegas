@@ -79,7 +79,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     question = Y.Wegas.VariableDescriptorFacade.rest.findById( questionId );
 
                     this.menu.removeAll();                                      // Populate the menu
-                    this.menu.add( this.genMenuItems( question, startTime ));
+                    this.menu.add(this.genMenuItems( question, startTime ));
                     this.menu.attachTo( e.target );                             // Display the menu button next to the arrow
                 }, ".schedule-available .icon", this);
 
@@ -112,7 +112,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
              */
             syncUI: function () {
                 this.syncSchedule();
-                if ( this.currentQuestionId ) {
+                if (this.currentQuestionId ) {
                     this.syncDetailsPanel();
                 }
                 this.hideOverlay();
@@ -229,7 +229,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                         if ( replies[j] ) {
                             acc.push('<div ' +
                                 ' class="icon wegas-tooltip-trigger" title="',  // Tooltip
-                                escape( this.renderDetails( replies[j] )), '"',
+                                escape(this.renderDetails( replies[j] )), '"',
                                 ' data-replyid="', replies[j].get("id"), '">',  names[j],
                                 '<div class="close-icon"></div></div>');
                         } else {
@@ -281,21 +281,21 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
             },
             syncDetailsPanel: function () {
                 var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
-                question = Y.Wegas.VariableDescriptorFacade.rest.findById( this.currentQuestionId ),
+                question = Y.Wegas.VariableDescriptorFacade.rest.findById(this.currentQuestionId ),
                 questionInstance = question.getInstance(),
                 data = [];
 
                 cb.one("h1").setContent( question.get("label") || question.get("name") || "undefined");
                 cb.one(".content").setContent( question.get("description") || "<em>No description</em>");
 
-                while ( this.datatable.getRow( 0 )) {
+                while (this.datatable.getRow( 0 )) {
                     this.datatable.removeRow( 0 );
                 }
 
                 for (i = 0; i < questionInstance.get("replies").length; i += 1) {
                     reply = questionInstance.get("replies")[i];
                     replyData = Y.mix( reply.getAttrs(), reply.get("result").getAttrs()),
-                    status = reply.getStatus( this.currentTime );
+                    status = reply.getStatus(this.currentTime );
 
                     if (status === 1) {
                         replyData.answer = "analysis in progress";
@@ -328,7 +328,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
             },
             renderDetails: function ( reply ) {
                 var choiceDescriptor = reply.getChoiceDescriptor(),
-                status = reply.getStatus( this.currentTime ),
+                status = reply.getStatus(this.currentTime ),
                 ret = ['<div class="schedule-detail-reply"><h3>Period ',
                 reply.get("startTime") + 1 , ': ', choiceDescriptor.get("name") || "undefined",
                 '</h3><div class="content">'];

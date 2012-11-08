@@ -614,7 +614,7 @@ YUI.add('wegas-entity', function(Y) {
     Y.Wegas.persistence.JpaAccount = Y.Base.create("JpaAccount", Y.Wegas.persistence.Entity, [], {
 
         getPublicName: function () {
-            if ( this.get("firstname")) {
+            if (this.get("firstname")) {
                 return this.get("firstname") + " " + this.get("lastname");
 
             } else {
@@ -1592,7 +1592,7 @@ YUI.add('wegas-entity', function(Y) {
                     this._inProgress = true;
                     Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"), this._yuid);
                 } else {
-                    console.log("evaluation in progress");
+                    Y.log("evaluation in progress");
                 }
             }
         },

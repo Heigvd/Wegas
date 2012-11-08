@@ -30,7 +30,7 @@ YUI.add('wegas-pageeditor', function (Y) {
     } ),
 
     PageEditor = function () {
-        PageEditor.superclass.constructor.apply( this, arguments );
+        PageEditor.superclass.constructor.apply(this, arguments );
     };
 
 
@@ -75,7 +75,7 @@ YUI.add('wegas-pageeditor', function (Y) {
                     label: "Edit",
                     on: {
                         click: Y.bind( function () {                            // Display the edit form
-                            Y.Plugin.EditEntityAction.showEditForm( this.targetWidget, Y.bind( function ( val ) {
+                            Y.Plugin.EditEntityAction.showEditForm(this.targetWidget, Y.bind( function ( val ) {
                                 Y.Plugin.EditEntityAction.hideEditFormOverlay();
                                 this.targetWidget.setAttrs( val );
                                 this.targetWidget.syncUI();
@@ -137,7 +137,7 @@ YUI.add('wegas-pageeditor', function (Y) {
 
             this.overlayWidget = widget;
 
-            targetNode.prepend( this.highlightOverlay.get( BOUNDINGBOX ));
+            targetNode.prepend(this.highlightOverlay.get( BOUNDINGBOX ));
             this.highlightOverlay.get( CONTENTBOX ).setStyle("height", targetNode.getHeight());
             this.highlightOverlay.get( CONTENTBOX ).setStyle("width", targetNode.getWidth());
             this.highlightOverlay.align(targetNode, ["tl", "tl"]);
@@ -156,14 +156,14 @@ YUI.add('wegas-pageeditor', function (Y) {
     Y.namespace('Plugin').PageEditor = PageEditor;
 
     Y.Node.prototype.getWidth = function () {
-        return parseInt( this.getComputedStyle('width'))
-        + parseInt( this.getComputedStyle('margin-left')) + parseInt( this.getComputedStyle('margin-right'))
-        + parseInt( this.getComputedStyle('padding-left')) + parseInt( this.getComputedStyle('padding-right'));
+        return parseInt(this.getComputedStyle('width'))
+        + parseInt(this.getComputedStyle('margin-left')) + parseInt(this.getComputedStyle('margin-right'))
+        + parseInt(this.getComputedStyle('padding-left')) + parseInt(this.getComputedStyle('padding-right'));
     }
     Y.Node.prototype.getHeight = function () {
-        return parseInt( this.getComputedStyle('height'))
-        + parseInt( this.getComputedStyle('margin-top')) + parseInt( this.getComputedStyle('margin-bottom'))
-        + parseInt( this.getComputedStyle('padding-top')) + parseInt( this.getComputedStyle('padding-bottom'));
+        return parseInt(this.getComputedStyle('height'))
+        + parseInt(this.getComputedStyle('margin-top')) + parseInt(this.getComputedStyle('margin-bottom'))
+        + parseInt(this.getComputedStyle('padding-top')) + parseInt(this.getComputedStyle('padding-bottom'));
     }
 });
 

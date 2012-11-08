@@ -24,7 +24,7 @@ YUI.add("wegas-inputex-rte", function (Y){
         destroy: function () {
             this.editor.destroy();
 
-            inputEx.RTEField.superclass.destroy.call( this );
+            inputEx.RTEField.superclass.destroy.call(this );
         },
 
         /**
@@ -316,7 +316,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                     var value = null;
                     switch ( e.win.name ){
                         case 'insertimage':
-                            if ( this.editor.currentElement[0] && this.editor.currentElement[0].src.indexOf("blankimage.png") == -1 ) {
+                            if (this.editor.currentElement[0] && this.editor.currentElement[0].src.indexOf("blankimage.png") == -1 ) {
                                 value = this.editor.currentElement[0].src;
                             }
                             if ( !this._insertimageRendered ){                  // if the newly inserted window is the image manager, we catch and modify
@@ -344,7 +344,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                             this.imageUrlField.setValue( value, false );
                             break;
                         case 'createlink':
-                            if ( this.editor.currentElement[0] ) {
+                            if (this.editor.currentElement[0] ) {
                                 value = this.editor.currentElement[0].href;
                             }
                             if ( !this._createlinkRendered ){
@@ -416,7 +416,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                         this.toolbar.set('disabled', true);
                         this.toolbar.getButtonByValue('editcode').set('disabled', false);
                         this.toolbar.selectButton('editcode');
-                        if ( this.dompath ) {
+                        if (this.dompath ) {
                             this.dompath.innerHTML = 'Editing HTML Code';
                         }
                         this.hide();
@@ -558,7 +558,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                     this.value = value;
                     this.editor.on('editorContentLoaded', function ( v ) {  /* @modified */
                         if ( !this.loaded ) {
-                            this.editor.setEditorHTML( this.value );
+                            this.editor.setEditorHTML(this.value );
                             this.loaded = true;
                         }
                     }, value, this);
@@ -580,7 +580,7 @@ YUI.add("wegas-inputex-rte", function (Y){
         getValue: function () {
             try {
                 if (this.editor.state == "on") {                                // If source code is displayed, we return this value
-                    this.editor.setEditorHTML( this.editor.get('element').value );
+                    this.editor.setEditorHTML(this.editor.get('element').value );
                 }
 
                 if (this.editor.currentWindow) {                                // trigger HTML cleaning (strip MS word or internal junk)

@@ -26,7 +26,7 @@ YUI.add('wegas-editor-buttons', function ( Y ) {
     var SelectPlayerButton= Y.Base.create("button", Y.Wegas.Button, [], {
 
         bindUI: function () {
-            SelectPlayerButton.superclass.bindUI.apply( this, arguments );
+            SelectPlayerButton.superclass.bindUI.apply(this, arguments );
             this.plug(Y.Plugin.WidgetMenu);
 
             this.menu.on("button:click", function ( e ) {
@@ -38,7 +38,7 @@ YUI.add('wegas-editor-buttons', function ( Y ) {
         },
 
         syncUI: function() {
-            SelectPlayerButton.superclass.bindUI.apply( this, arguments );
+            SelectPlayerButton.superclass.bindUI.apply(this, arguments );
             var j, k, cTeam, menuItems = [],
             cGame = Y.Wegas.GameFacade.rest.getCurrentGame(),
             cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer();
@@ -84,14 +84,14 @@ YUI.add('wegas-editor-buttons', function ( Y ) {
     var SelectGameButton= Y.Base.create("button", Y.Wegas.Button, [], {
 
         bindUI: function () {
-            SelectGameButton.superclass.bindUI.apply( this, arguments );
+            SelectGameButton.superclass.bindUI.apply(this, arguments );
             this.plug(Y.Plugin.WidgetMenu);
 
             Y.Wegas.GameIndexFacade.after("response", this.syncUI, this );
         },
 
         syncUI: function() {
-            SelectGameButton.superclass.syncUI.apply( this, arguments );
+            SelectGameButton.superclass.syncUI.apply(this, arguments );
 
             var j, k, menuItems = [],
             cGame = Y.Wegas.GameFacade.rest.getCurrentGame(),

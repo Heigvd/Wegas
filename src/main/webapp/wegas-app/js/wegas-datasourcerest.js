@@ -91,7 +91,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
          */
         beforeResponse: function (e) {
             var evt, i,
-            response = Y.Wegas.persistence.Editable.revive(e.response.results);// Transform javascript object litterals to Y.Wegas.persistence.Entity's
+                response = Y.Wegas.persistence.Editable.revive(e.response.results);// Transform javascript object litterals to Y.Wegas.persistence.Entity's
 
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
 
@@ -137,18 +137,18 @@ YUI.add('wegas-datasourcerest', function (Y) {
             var ret = null;
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.DataSourceRest");
             switch (method) {
-                case "DELETE":
-                    ret = this.find("id", entity, function (entity, needle, index, stack) {
-                        stack.splice(index, 1);
-                        return true;
-                    });
-                    break;
-                default:
-                    ret = this.find("id", entity, function (entity, needle) {
-                        entity.setAttrs(needle.getAttrs());
-                        return true;
-                    });
-                    break;
+            case "DELETE":
+                ret = this.find("id", entity, function (entity, needle, index, stack) {
+                    stack.splice(index, 1);
+                    return true;
+                });
+                break;
+            default:
+                ret = this.find("id", entity, function (entity, needle) {
+                    entity.setAttrs(needle.getAttrs());
+                    return true;
+                });
+                break;
             }
             if (ret === null) {
                 this.addToCache(entity);
