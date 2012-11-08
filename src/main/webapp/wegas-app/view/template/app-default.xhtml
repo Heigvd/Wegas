@@ -12,23 +12,6 @@
         <ui:define name="page">
             <h:body class="yui3-skin-sam yui-skin-sam wegas-widget-loading">
 
-                <!-- Proxino error tracking -->
-                <!--<script type="text/javascript" src="https://www.proxino.com/p.js"></script>
-                <script type="text/javascript">
-                    Proxino.key = "yv9rIk-i4Jh7htO2KYDBhw";
-                    Proxino.track_errors();
-                    //Proxino.log("Hello World!");
-                </script>-->
-
-                <!-- Errorception error tracking -->
-                <!--<script>
-                    var _errs=["509a6af366e7b72724008580"];(function(a,b){a.onerror=function(){_errs.push(arguments)};
-                        var d=function(){var a=b.createElement("script"),c=b.getElementsByTagName("script")[0];
-                            a.src="//d15qhc0lu1ghnk.cloudfront.net/beacon.js";a.async=!0;
-                            c.parentNode.insertBefore(a,c)};a.addEventListener?a.addEventListener("load",d,!1):
-                            a.attachEvent("onload",d)})(window,document);
-                </script>-->
-
                 <!-- YUI Base -->
                 <ui:fragment rendered="#{!wegasConfig.assets_local}">
                     <!-- CDN -->
@@ -57,11 +40,14 @@
                     YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.insertBefore = 'customstyles';
                     YUI_config.debug = true;
-                    YUI_config.throwFail = true;
+                    YUI_config.throwFail = true;                                // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function(msg, e, src) {
-                        Y.log( msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", src || 'Wegas.App' );
-                        throw msg;
-                        return true;
+                        //console.log("ERRORFN", msg, e, src);
+                        //Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
+                        //jslogger.log({error: {msg: msg, e: e, src: src}});  //
+                        //_gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
+                        //throw msg;
+                        return false;                                           // Returning true from this function will stop the Error from being thrown.
                     };
                     //YUI_config.gallery = 'gallery-2011.02.18-23-10';
                     //YUI_config.filter = 'raw';                                        // Allows to select normal or minified version of dependencies
