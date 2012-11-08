@@ -158,7 +158,7 @@
         "type":"InboxDisplay",
         "variable": {
             "name": "inbox"
-        }
+        },
         "cssClass":"leaderway-inbox",
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
