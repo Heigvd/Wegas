@@ -145,7 +145,7 @@ YUI.add('wegas-tabview', function ( Y ) {
 
         // *** Lifecycle Methods *** //
         initializer: function(cfg) {
-            Tab.superclass.initializer.apply( this, arguments );
+            Tab.superclass.initializer.apply(this, arguments );
             TabView.tabs[ cfg.id ] = this;
             this._witems = [];
 
@@ -153,16 +153,16 @@ YUI.add('wegas-tabview', function ( Y ) {
         },
 
         renderUI: function () {
-            Tab.superclass.renderUI.apply( this, arguments );
+            Tab.superclass.renderUI.apply(this, arguments );
         },
 
         syncUI: function () {
-            Tab.superclass.syncUI.apply( this, arguments );
+            Tab.superclass.syncUI.apply(this, arguments );
         },
 
         destructor: function () {
             delete TabView.tabs[ this.get("id") ];
-            Tab.superclass.destructor.apply( this, arguments );
+            Tab.superclass.destructor.apply(this, arguments );
         },
 
         // *** Private Methods *** //
@@ -214,7 +214,7 @@ YUI.add('wegas-tabview', function ( Y ) {
     * Removable plugin for tabview
     */
     var Removeable = function () {
-        Removeable.superclass.constructor.apply( this, arguments);
+        Removeable.superclass.constructor.apply(this, arguments);
     };
 
     Y.extend( Removeable, Y.Plugin.Base, {

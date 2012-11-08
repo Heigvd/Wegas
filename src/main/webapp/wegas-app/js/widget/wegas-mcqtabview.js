@@ -153,7 +153,7 @@ YUI.add('wegas-mcqtabview', function ( Y ) {
                 this.questionInstance = e.newVal.questionInstance;
                 this.timer = Y.later( 2000, this, function () {
                     this.questionInstance.set("unread") = false;
-                    this.dataSource.rest.put( this.questionInstance );
+                    this.dataSource.rest.put(this.questionInstance );
                 });
             }
         }

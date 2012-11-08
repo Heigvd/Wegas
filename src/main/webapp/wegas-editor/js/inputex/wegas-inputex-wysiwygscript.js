@@ -28,7 +28,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
         destroy: function () {
             this.form.destroy();
             this.viewSrc.destroy();
-            inputEx.WysiwygScript.superclass.destroy.call( this );
+            inputEx.WysiwygScript.superclass.destroy.call(this );
         },
         /**
          *
@@ -44,21 +44,21 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
          */
         getValue: function () {
 
-            if ( this.options.mode === "wysiwyg") {
+            if (this.options.mode === "wysiwyg") {
                 return {
                     '@class': "Script",
                     language: "JavaScript",
                     content: this.form.getArray().join(";\n") + ";"
                 }
             } else {
-                return inputEx.WysiwygScript.superclass.getValue.apply( this, arguments );
+                return inputEx.WysiwygScript.superclass.getValue.apply(this, arguments );
             }
         },
         /**
          *
          */
         setValue: function () {
-            return inputEx.WysiwygScript.superclass.setValue.apply( this, arguments );
+            return inputEx.WysiwygScript.superclass.setValue.apply(this, arguments );
             this.syncUI();
         },
 
@@ -93,16 +93,16 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>"
             });
             this.viewSrc.after("click", function () {
-                if ( this.viewSrc.get("disabled")) {
+                if (this.viewSrc.get("disabled")) {
                     return;
                 }
                 this.updateTextareaValue();
-                this.setMode( ( this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
+                this.setMode( (this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
             }, this );
-            this.viewSrc.render( this.fieldContainer );
+            this.viewSrc.render(this.fieldContainer );
 
-            var container = new Y.Node( this.fieldContainer );
-            container.prepend( this.viewSrc.get("boundingBox"));
+            var container = new Y.Node(this.fieldContainer );
+            container.prepend(this.viewSrc.get("boundingBox"));
             container.append("<em class=\"msg\"></em>");
 
             this.on("updated", this.syncUI, this );                            // Whenever the value is updated, we synchronize the UI
@@ -114,17 +114,17 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
          *
          */
         syncUI: function () {
-            var i, tree = window.esprima.parse( this.el.value, {                // Generate the form
+            var i, tree = window.esprima.parse(this.el.value, {                // Generate the form
                 raw: true
             }),
-            container = new Y.Node( this.fieldContainer ),
+            container = new Y.Node(this.fieldContainer ),
             fields = [];
 
             container.one(".msg").setContent("");
 
             for (i = 0; i < tree.body.length; i = i + 1) {
                 try {
-                    fields.push( this.generateExpression( tree.body[i].expression ));
+                    fields.push(this.generateExpression( tree.body[i].expression ));
                 } catch( e ) {
                     //Y.error("Error evaluating line: " +
                     //    window.escodegen.generate(tree.body[i].expression, {
@@ -137,7 +137,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
                 }
             }
 
-            if ( this.form ) {
+            if (this.form ) {
                 this.form.destroy();
             }
 
@@ -152,12 +152,12 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
 
             this.form.on("updated", this.updateTextareaValue, this );
 
-            this.setMode( this.options.mode );
+            this.setMode(this.options.mode );
             this.viewSrc.set("disabled", false );
         },
 
         updateTextareaValue: function () {
-            if ( this.options.mode === "wysiwyg") {
+            if (this.options.mode === "wysiwyg") {
                 this.el.value =  this.form.getArray().join(";\n") + ";";
             }
         },
@@ -212,7 +212,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
     Y.inputEx.Group.prototype.getArray = function () {
         var i, ret = [];
         for ( i = 0; i < this.inputs.length; i =  i + 1 ) {
-            ret.push( this.inputs[i].getValue());
+            ret.push(this.inputs[i].getValue());
         }
         return ret;
     }
@@ -242,13 +242,13 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
         },
 
         render: function () {
-            VariableDescriptorSelect.superclass.render.call( this );
+            VariableDescriptorSelect.superclass.render.call(this );
             this.syncUI();
         },
 
         setValue: function ( val ) {
             // Set value should not ba called directly
-            console.log("VariableDescriptorSelect.setValue", val );
+            //Y.log("VariableDescriptorSelect.setValue", val );
         },
 
         getValue: function () {
@@ -256,7 +256,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
             args = this.inputs[ l - 1 ].getValue();
 
             for ( i = 0; i < args.length; i = i + 1 ) {
-                if ( this.currentMethod.arguments[i].scriptType === "string") {
+                if (this.currentMethod.arguments[i].scriptType === "string") {
                     args[i] = '"' + args[i] + '"';
                 }
             }
@@ -268,12 +268,12 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
             return this.inputs[ this.inputs.length - 3 ].getValue();
         },
         getEntity: function () {
-            return Y.Wegas.VariableDescriptorFacade.rest.findById( this.getEntityId());
+            return Y.Wegas.VariableDescriptorFacade.rest.findById(this.getEntityId());
         },
 
         syncUI: function () {
             this.empty();
-            this.addField( this.generateField());                              // Generates method and object selection
+            this.addField(this.generateField());                              // Generates method and object selection
 
             var i, args, methods  = this.currentEntity.getMethodCfgs(),
             cMethod = methods[ this.options.method ];
@@ -332,7 +332,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
         },
 
         empty: function () {
-            while ( this.inputs.length > 0 ) {
+            while (this.inputs.length > 0 ) {
                 this.inputs.pop().destroy();
             }
         },
@@ -348,16 +348,16 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
 
             this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
-            ret.push( this.generateSelectConfig( null,                          // Pushes the current entity to the fields stack
-            currentEntity, currentEntity.get("items")) );
+            ret.push(this.generateSelectConfig( null,                          // Pushes the current entity to the fields stack
+            currentEntity, currentEntity.get("items")));
 
             if ( currentEntity.parentDescriptor ) {                             // Add its hierarchy
                 while ( currentEntity.parentDescriptor ) {
-                    ret.push( this.generateSelectConfig ( currentEntity, currentEntity.parentDescriptor, currentEntity.parentDescriptor.get("items")) );
+                    ret.push(this.generateSelectConfig ( currentEntity, currentEntity.parentDescriptor, currentEntity.parentDescriptor.get("items")));
                     currentEntity = currentEntity.parentDescriptor;
                 }
             }
-            ret.push( this.generateSelectConfig( currentEntity,                 // And finally the root context (entities that are at the root of the gameModel
+            ret.push(this.generateSelectConfig( currentEntity,                 // And finally the root context (entities that are at the root of the gameModel
             null, rootEntities ));
 
             return ret.reverse();
@@ -449,10 +449,10 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
     var ListField = function(options) {
         ListField.superclass.constructor.call(this, options);
 
-        var parentNode = new Y.Node( this.divEl.parentNode ) ;
-        //parentNode.insert( this.addButton.get("boundingBox").remove(), 1 );
-        this.addButton.render( this.divEl.parentNode );
-        parentNode.prepend( this.addButton.get("boundingBox"));
+        var parentNode = new Y.Node(this.divEl.parentNode ) ;
+        //parentNode.insert(this.addButton.get("boundingBox").remove(), 1 );
+        this.addButton.render(this.divEl.parentNode );
+        parentNode.prepend(this.addButton.get("boundingBox"));
     };
     Y.extend( ListField, inputEx.Group, {
 
@@ -469,7 +469,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
 	 * Render the addButton
 	 */
         render: function() {
-            ListField.superclass.render.call( this );
+            ListField.superclass.render.call(this );
 
             this.addButton = new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-add\"></span>"
@@ -480,19 +480,19 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
          *
          */
         destroy: function () {
-            ListField.superclass.destroy.call( this );
+            ListField.superclass.destroy.call(this );
             this.addButton.destroy();
         },
         /**
 	 * Handle the click event on the add button
 	 */
         initEvents: function() {
-            ListField.superclass.initEvents.call( this );
+            ListField.superclass.initEvents.call(this );
 
         },
 
         renderField: function( fieldOptions ) {
-            var fieldInstance = ListField.superclass.renderField.call( this, fieldOptions ),
+            var fieldInstance = ListField.superclass.renderField.call(this, fieldOptions ),
             removebutton = new Y.Wegas.Button({
                 label: '<span class="wegas-icon wegas-icon-remove"></span>'
             });
@@ -505,7 +505,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
         },
 
         onRemove: function ( e ) {
-            var i = Y.Array.indexOf( this.inputs, e.target.targetField ),
+            var i = Y.Array.indexOf(this.inputs, e.target.targetField ),
             d = this.inputs[i];
             d.destroy();
             this.inputs.splice( i, 1 );

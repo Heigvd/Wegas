@@ -420,7 +420,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Y.Wegas.persistence.Result = Y.Base.create("Result", Y.Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            return Y.Wegas.VariableDescriptorFacade.rest.findById( this.get("choiceDescriptorId"));
+            return Y.Wegas.VariableDescriptorFacade.rest.findById(this.get("choiceDescriptorId"));
         }
     }, {
         ATTRS: {
@@ -511,7 +511,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Y.Wegas.persistence.Reply = Y.Base.create("Reply", Y.Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            if ( this.get("result")) {
+            if (this.get("result")) {
                 return this.get("result").getChoiceDescriptor();
             }
         },

@@ -319,7 +319,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     Y.Plugin.EditEntityAction.showEditForm(file, Y.bind(this.editContent, this, node));
                     break;
                 case 'delete':
-                    if ( this.isProcessing(node)) {
+                    if (this.isProcessing(node)) {
                         console.log("Current node processing, please wait ...");
                     } else {
                         path = "delete" + node.path;
@@ -518,7 +518,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         openFile: function (e, path){
-            window.open( this.getFullPath( path ));
+            window.open(this.getFullPath( path ));
         },
 
         getFullPath: function ( relativePath ) {
@@ -585,7 +585,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
             },
             renderUI: function (){
                 try{
-                    this.get("fileexplorer").toolbar.add( this.overallProgress );
+                    this.get("fileexplorer").toolbar.add(this.overallProgress );
                     this._set(CONTENT_BOX, this.get("fileexplorer").toolbar.get("panel").getDOMNode());
                 }catch(e){                                                      //FALLBACK, no toolbar
                     this.get(BOUNDING_BOX).insertBefore("<span>Uploader</span>", this.get(CONTENT_BOX));

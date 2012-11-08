@@ -32,7 +32,7 @@ YUI.add('wegas-layout', function (Y) {
         },
 
         bindUI: function () {
-            Y.on("windowresize", Y.bind( this.syncUI, this ));                // Sync the layout whenever the windows is resized
+            Y.on("windowresize", Y.bind(this.syncUI, this ));                // Sync the layout whenever the windows is resized
             //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
             Y.on('domready', this.syncUI, this);
         },

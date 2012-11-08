@@ -37,7 +37,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 variableDescriptor = variableDescriptor.get("currentItem");   // display it with the current list and the current element
             }
 
-            this.get( CONTENTBOX ).setHTML( this.genMarkup( variableDescriptor ));  // Display the variable
+            this.get( CONTENTBOX ).setHTML(this.genMarkup( variableDescriptor ));  // Display the variable
 
         },
 
@@ -47,7 +47,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
             value = variableDescriptor.getInstance().get("value"),
             label = this.get("label") || variableDescriptor.getPublicLabel();
 
-            switch ( this.get('view')) {
+            switch (this.get('view')) {
                 case 'text':
                     return '<span class="wegas-label wegas-variabledisplay-text-label">' + label + '</span>'
                     +' <span class="wegas-value wegas-variabledisplay-text-value">'+ value+'</span>';
@@ -105,11 +105,11 @@ YUI.add('wegas-variabledisplay', function (Y) {
              */
             variableDesc: {
                 getter: function () {
-                    if ( this.get("variable")) {
+                    if (this.get("variable")) {
                         return this.get("dataSource").rest.find('name', this.get("variable"));
                     } else {
                         return this.get("dataSource").rest.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get("expr")) );
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("expr")));
                     }
                 }
             },
@@ -159,7 +159,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
             value = variableDescriptor.getInstance().get("value");
             label = this.get("label") || variableDescriptor.getPublicLabel();
 
-            switch ( this.get('view')) {
+            switch (this.get('view')) {
                 case 'text':
                     this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-text-label">' + label + '</span>'
                         +' <span class="wegas-variabledisplay-text-value">'+ value+'</span>');
@@ -212,11 +212,11 @@ YUI.add('wegas-variabledisplay', function (Y) {
              */
             variableDesc: {
                 getter: function () {
-                    if ( this.get("variable")) {
+                    if (this.get("variable")) {
                         return this.get("dataSource").rest.find('name', this.get("variable"))
                     } else {
                         return this.get("dataSource").rest.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get("expr")) );
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("expr")));
                     }
                 }
             },

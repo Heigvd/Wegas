@@ -387,7 +387,7 @@ YUI().use(function (Y) {
 
                     'wegas-pmg-datatable': {
                         path: 'wegas-pmg/js/wegas-pmg-datatable.js',
-                        requires: ['wegas-pmg-datatable', 'datatable', 'datatable-mutable'],
+                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],
                         ix_provides: "PmgDatatable"
                     },
 
@@ -546,7 +546,7 @@ YUI().use(function (Y) {
                         path: 'escodegen/escodegen-min.js'
                     },
                     'gauge': {
-                        path: "gauge.min.js"
+                        path: "gauge-min.js"
                     },
                     'tinymce': {
                         path: "tiny_mce/tiny_mce.js"

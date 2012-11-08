@@ -195,7 +195,7 @@ YUI.add("wegas-inputex-rte", function(Y){
          */
         getValue: function() {
             tinyMCE.triggerSave();
-            return inputEx.RTEField.superclass.getValue.call( this );
+            return inputEx.RTEField.superclass.getValue.call(this );
         },
 
         /**

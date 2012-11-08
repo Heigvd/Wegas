@@ -22,7 +22,7 @@ YUI.add('wegas-imageloader', function (Y) {
      * @constructor
      */
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder,
-    ImgageLoader = function() {
+    ImgageLoader = function () {
         Y.Wegas.ImgageLoader.superclass.constructor.apply(this, arguments);
     };
 
@@ -33,7 +33,7 @@ YUI.add('wegas-imageloader', function (Y) {
     };
 
     Y.extend(ImgageLoader, Y.ImgLoadImgObj, {
-        _getImgEl: function() {
+        _getImgEl: function () {
 
             return this.get("target");
 
@@ -42,21 +42,21 @@ YUI.add('wegas-imageloader', function (Y) {
             }
             return this._imgEl;
         },
-        fetch: function(withinY) {
+        fetch: function (withinY) {
             if (this._fetched) {
                 return true;
             }
 
-            var el = this._getImgEl(),
-            yPos;
-            if (! el) {
+            var yPos, el = this._getImgEl();
+
+            if (!el) {
                 return false;
             }
 
             if (withinY) {
                 // need a distance check
                 yPos = this._getYPos();
-                if (! yPos || yPos > withinY) {
+                if (!yPos || yPos > withinY) {
                     return false;
                 }
                 Y.log('Image with id "' + this.get('domId') + '" is within distance of the fold. Fetching image.', 'info', 'imageloader');
@@ -70,18 +70,14 @@ YUI.add('wegas-imageloader', function (Y) {
                 if (this.get('isPng') && Y.UA.ie && Y.UA.ie <= 6) {
                     // png for which to apply AlphaImageLoader
                     el.setStyle('filter', 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src="' + this.get('bgUrl') + '", sizingMethod="' + this.get('sizingMethod') + '", enabled="' + this.get('enabled') + '")');
+                } else {
+                    el.setStyle('backgroundImage', "url('" + this.get('bgUrl') + "')");// regular bg image
                 }
-                else {
-                    // regular bg image
-                    el.setStyle('backgroundImage', "url('" + this.get('bgUrl') + "')");
-                }
-            }
-            else if (this.get('srcUrl') !== null) {
-                this.loadImage( el, "src");
+            } else if (this.get('srcUrl') !== null) {
+                this.loadImage(el, "src");
             }
 
-            // apply attributes
-            if (this.get('setVisible')) {
+            if (this.get('setVisible')) {                                       // apply attributes
                 el.setStyle('visibility', 'visible');
             }
             if (this.get('width')) {
@@ -96,21 +92,21 @@ YUI.add('wegas-imageloader', function (Y) {
             return true;
         },
 
-        loadImage: function ( el, attr ) {
+        loadImage: function (el, attr) {
 
             // Method 1, using BlobBuilder & XMLHttpRequest
-            if ( XMLHttpRequest &&  BlobBuilder ) {
+            if (XMLHttpRequest &&  BlobBuilder) {
                 var request = new XMLHttpRequest();
-                request.onload= Y.bind( function ( loadEvt ) {
-                    if ( loadEvt.target.status === 200 ) {
-                        var blob, bb = new BlobBuilder (),
-                        reader = new FileReader ();
+                request.onload = Y.bind(function (loadEvt) {
+                    if (loadEvt.target.status === 200) {
+                        var blob, bb = new BlobBuilder(),
+                        reader = new FileReader();
 
-                        bb.append ( loadEvt.target.response );                  // Note: not request.responseText
-                        blob = bb.getBlob ( loadEvt.target.getResponseHeader("Content-Type"));
+                        bb.append(loadEvt.target.response);                     // Note: not request.responseText
+                        blob = bb.getBlob(loadEvt.target.getResponseHeader("Content-Type"));
 
-                        reader.onload = Y.bind( function ( e ) {
-                            el.setAttribute(attr, e.target.result );
+                        reader.onload = Y.bind(function (e) {
+                            el.setAttribute(attr, e.target.result);
                             this.fire("load", {
                                 meta: {
                                     contentType: loadEvt.target.getResponseHeader("Content-Type"),
@@ -118,26 +114,26 @@ YUI.add('wegas-imageloader', function (Y) {
                                 }
                             });
                         }, this);
-                        reader.readAsDataURL (blob);
+                        reader.readAsDataURL(blob);
                     }
-                }, this );
-                request.open ("GET", this.get('srcUrl'), true);
+                }, this);
+                request.open("GET", this.get('srcUrl'), true);
                 request.responseType = "arraybuffer";
-                request.send (null);
+                request.send(null);
                 return;
             }
 
             // Method 2, using overrideMimeType
-            if ( GM_xmlhttpRequest ) {
-                GM_xmlhttpRequest ( {
-                    method:         'GET',
-                    url:            this.get('srcUrl'),
-                    onload:         function (respDetails) {
-                        var binResp     = customBase64Encode (respDetails.responseText);
-                        el.setAttribute( attr, 'data:image/png;base64,' + binResp );
+            if (GM_xmlhttpRequest) {
+                GM_xmlhttpRequest({
+                    method: 'GET',
+                    url: this.get('srcUrl'),
+                    onload: function (respDetails) {
+                        var binResp = customBase64Encode(respDetails.responseText);
+                        el.setAttribute(attr, 'data:image/png;base64,' + binResp);
                     },
                     overrideMimeType: 'text/plain; charset=x-user-defined'
-                } );
+                });
                 return;
             }
 
@@ -153,7 +149,7 @@ YUI.add('wegas-imageloader', function (Y) {
 
     Y.namespace("Wegas").ImgageLoader = ImgageLoader;
 
-    function customBase64Encode (inputStr) {
+    function customBase64Encode(inputStr) {
         var
         bbLen               = 3,
         enCharLen           = 4,

@@ -25,7 +25,7 @@ YUI.add('wegas-inbox', function (Y) {
         dataSource: null,
 
         // *** Lifecycle Methods *** //
-        initializer: function() {
+        initializer: function () {
             this.dataSource = Y.Wegas.app.dataSources.VariableDescriptor;
         },
 
@@ -37,12 +37,10 @@ YUI.add('wegas-inbox', function (Y) {
         bindUI: function () {
             this.handlers = {};
 
-            this.tabView.after("selectionChange", this.onTabSelected, this)
+            this.tabView.after("selectionChange", this.onTabSelected, this);
 
-            this.handlers.respone =
-            this.dataSource.after("response", this.syncUI, this);
-            this.handlers.playerChange =
-            Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handlers.respone = this.dataSource.after("response", this.syncUI, this);
+            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
 
         syncUI: function () {
@@ -67,7 +65,7 @@ YUI.add('wegas-inbox', function (Y) {
                 tab.msg = msg;
                 tabs.push(tab);
 
-                if (this.msg && msg.id == this.msg.id) {
+                if (this.msg && msg.id === this.msg.id) {
                     selectedIndex = i;
                 }
             }
@@ -86,7 +84,8 @@ YUI.add('wegas-inbox', function (Y) {
 
         destructor: function () {
             this.tabView.destroy();
-            for (var i in this.handlers) {
+            var i;
+            for (i in this.handlers) {
                 this.handlers[i].detach();
             }
         },

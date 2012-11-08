@@ -32,7 +32,7 @@ YUI.add('wegas-tooltip', function (Y) {
     Y.extend(TooltipPlg, Y.Plugin.Base, {
         initializer: function () {
             var tt = Tooltip.getInstance();
-            tt.addTriggerNode( this.get("host").get("boundingBox"),
+            tt.addTriggerNode(this.get("host").get("boundingBox"),
                 this.get("content"));
         }
     }, {
@@ -172,12 +172,12 @@ YUI.add('wegas-tooltip', function (Y) {
          */
         _uiSetNodes : function(nodes) {
             if (this._triggerNodes) {
-                this._triggerNodes.removeClass( this.getClassName("trigger"));
+                this._triggerNodes.removeClass(this.getClassName("trigger"));
             }
 
             if (nodes) {
                 this._triggerNodes = nodes;
-                this._triggerNodes.addClass( this.getClassName("trigger"));
+                this._triggerNodes.addClass(this.getClassName("trigger"));
             }
         },
 
