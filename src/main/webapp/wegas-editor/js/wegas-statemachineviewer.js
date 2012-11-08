@@ -93,7 +93,7 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 var transitions;
                 transitions = e.getParameter("transition").source.get("entity").get("transitions");
                 for(var i in transitions){
-                    if(transitions[i] === e.getParameter("transition").get("entity") ){
+                    if(transitions[i] === e.getParameter("transition").get("entity")){
                         transitions.splice(i,1);
                     }
                 }

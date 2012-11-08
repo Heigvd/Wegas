@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add( "wegas-button", function ( Y ) {
+YUI.add("wegas-button", function ( Y ) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -37,7 +37,7 @@ YUI.add( "wegas-button", function ( Y ) {
      *  @class Y.Wegas.Button
      *
      */
-    Button = Y.Base.create( "button", Y.Button, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    Button = Y.Base.create("button", Y.Button, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
@@ -47,20 +47,20 @@ YUI.add( "wegas-button", function ( Y ) {
             //this.constructor.CSS_PREFIX = "yui3-button";                      // Revert changes done by Y.Wegas.Widget so styling will work
             this._cssPrefix = "yui3-button";
 
-            if ( this.get( "cssClass" ) ) {
-                this.get( CONTENTBOX ).addClass( this.get( "cssClass" ) );
+            if ( this.get("cssClass")) {
+                this.get( CONTENTBOX ).addClass( this.get("cssClass"));
             }
 
-            if ( this.get( "tooltip" ) ) {
+            if ( this.get("tooltip")) {
                 this.plug( Y.Plugin.Tooltip, {
-                    content: this.get( "tooltip" )
+                    content: this.get("tooltip")
                 } );
             }
         },
 
         renderUI: function () {
             Button.superclass.renderUI.apply( this, arguments );
-            this.get( BOUNDINGBOX ).addClass( "wegas-button" );
+            this.get( BOUNDINGBOX ).addClass("wegas-button");
         }
     }, {
         ATTRS: {
@@ -102,11 +102,11 @@ YUI.add( "wegas-button", function ( Y ) {
              */
             variableDesc: {
                 getter: function () {
-                    if ( this.get( "variable" ) ) {
-                        return Y.Wegas.VariableDescriptorFacade.rest.find( 'name', this.get( "variable" ) )
+                    if ( this.get("variable")) {
+                        return Y.Wegas.VariableDescriptorFacade.rest.find('name', this.get("variable"))
                     } else {
                         return Y.Wegas.VariableDescriptorFacade.rest.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get("expr")) );
                     }
                 }
             }
@@ -195,18 +195,18 @@ YUI.add( "wegas-button", function ( Y ) {
         syncUI: function () {
             Y.Wegas.LoginButton.superclass.syncUI.apply( this, arguments );
 
-            var cUser = Y.Wegas.app.get( "currentUser" ),
+            var cUser = Y.Wegas.app.get("currentUser"),
             cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer(),
             cTeam = Y.Wegas.GameFacade.rest.getCurrentTeam(),
             name = cUser.name || "undefined";
 
             if (cPlayer) {
-                name = cPlayer.get( "name" );
+                name = cPlayer.get("name");
             }
             if (cTeam) {
-                name = cTeam.get( "name" ) + " : " + name;
+                name = cTeam.get("name") + " : " + name;
             }
-            this.set( "label", name );
+            this.set("label", name );
         }
     }, {
         ATTRS : {

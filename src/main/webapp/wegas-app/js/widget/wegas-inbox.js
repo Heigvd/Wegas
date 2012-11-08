@@ -47,8 +47,8 @@ YUI.add('wegas-inbox', function (Y) {
 
         syncUI: function () {
             var i, msg, tab, from,
-            inboxVariable = this.get( 'variable.evaluated' ).getInstance(),
-            messages = inboxVariable.get( "messages" ),
+            inboxVariable = this.get('variable.evaluated').getInstance(),
+            messages = inboxVariable.get("messages"),
             selectedIndex = 0,
             tabs = [];
 

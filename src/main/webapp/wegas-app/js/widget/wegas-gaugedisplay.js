@@ -40,7 +40,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 strokeColor: '#FFFFFF',
                 generateGradient: true
             };
-            this.gauge = new Gauge(this.get("contentBox").one("canvas" ).getDOMNode());// create the  gauge!
+            this.gauge = new Gauge(this.get("contentBox").one("canvas").getDOMNode());// create the  gauge!
             this.gauge.setOptions( opts );
             this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)

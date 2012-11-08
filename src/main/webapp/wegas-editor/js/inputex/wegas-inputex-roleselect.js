@@ -37,12 +37,12 @@ YUI.add("wegas-inputex-roleselect",function(Y){
             this.options.choices = [];
             for ( var i = 0; i < Y.Wegas.RoleFacade.data.length; i = i + 1 ) {
                 this.options.choices.push({
-                    value: Y.Wegas.RoleFacade.data[i].get( "id" ),
-                    label: Y.Wegas.RoleFacade.data[i].get( "name" )
+                    value: Y.Wegas.RoleFacade.data[i].get("id"),
+                    label: Y.Wegas.RoleFacade.data[i].get("name")
                 });
             }
         }
     });
 
-    inputEx.registerType( "roleselect", inputEx.Wegas.RoleSelect );             // Register this class as "wegasurl" type
+    inputEx.registerType("roleselect", inputEx.Wegas.RoleSelect );             // Register this class as "wegasurl" type
 });

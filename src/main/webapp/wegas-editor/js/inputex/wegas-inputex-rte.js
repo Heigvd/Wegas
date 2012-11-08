@@ -89,9 +89,9 @@ YUI.add("wegas-inputex-rte", function(Y){
                                 centered: true
                             });
 
-                            inputEx.RTEField.filePanel.explorer = new Y.Wegas.FileExplorer().render( inputEx.RTEField.filePanel.getStdModNode( Y.WidgetStdMod.BODY ) );
+                            inputEx.RTEField.filePanel.explorer = new Y.Wegas.FileExplorer().render( inputEx.RTEField.filePanel.getStdModNode( Y.WidgetStdMod.BODY ));
 
-                            inputEx.RTEField.filePanel.explorer.on( "*:fileSelected", function ( e, path ) {
+                            inputEx.RTEField.filePanel.explorer.on("*:fileSelected", function ( e, path ) {
                                 e.stopImmediatePropagation();
                                 e.preventDefault();
                                 inputEx.RTEField.filePanel.hide();
@@ -107,11 +107,11 @@ YUI.add("wegas-inputex-rte", function(Y){
                                     }
 
                                     if (win.ImageDialog.showPreviewImage) {         // ... and preview if necessary
-                                        win.ImageDialog.showPreviewImage( Y.Plugin.CRDataSource.getFullpath( path ) );
+                                        win.ImageDialog.showPreviewImage( Y.Plugin.CRDataSource.getFullpath( path ));
                                     }
                                 }
                                 if (win.Media) {                                  // If in an editor window
-                                    win.Media.formToData( "src" );                  // update the data
+                                    win.Media.formToData("src");                  // update the data
                                 }
                             });
                         }
@@ -205,6 +205,6 @@ YUI.add("wegas-inputex-rte", function(Y){
     });
 
 
-    inputEx.registerType( "html", inputEx.RTEField, []);                        // Register this class as "html" type
+    inputEx.registerType("html", inputEx.RTEField, []);                        // Register this class as "html" type
 
 });

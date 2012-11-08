@@ -150,9 +150,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Y.Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Y.Wegas.persistence.VariableInstance, [], {
         getRepliesByStartTime: function ( startTime ) {
-            var i, ret = [], replies = this.get( "replies" );
+            var i, ret = [], replies = this.get("replies");
             for (i = 0; i < replies.length; i = i + 1 ) {
-                if ( replies[i].get( "startTime" ) === startTime ) {
+                if ( replies[i].get("startTime") === startTime ) {
                     ret.push( replies[i] );
                 }
             }
@@ -298,7 +298,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
     /**
      * ChoiceDescriptor mapper
      */
-    Y.Wegas.persistence.SingleResultChoiceDescriptor = Y.Base.create( "SingleResultChoiceDescriptor", Y.Wegas.persistence.ChoiceDescriptor, [], { }, {
+    Y.Wegas.persistence.SingleResultChoiceDescriptor = Y.Base.create("SingleResultChoiceDescriptor", Y.Wegas.persistence.ChoiceDescriptor, [], { }, {
         ATTRS:{
             "@class":{
                 value:"SingleResultChoiceDescriptor"
@@ -420,7 +420,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Y.Wegas.persistence.Result = Y.Base.create("Result", Y.Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            return Y.Wegas.VariableDescriptorFacade.rest.findById( this.get( "choiceDescriptorId" ) );
+            return Y.Wegas.VariableDescriptorFacade.rest.findById( this.get("choiceDescriptorId"));
         }
     }, {
         ATTRS: {
@@ -511,8 +511,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Y.Wegas.persistence.Reply = Y.Base.create("Reply", Y.Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            if ( this.get( "result" ) ) {
-                return this.get( "result" ).getChoiceDescriptor();
+            if ( this.get("result")) {
+                return this.get("result").getChoiceDescriptor();
             }
         },
         /**

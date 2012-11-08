@@ -50,12 +50,12 @@ YUI.add('wegas-inputex', function(Y) {
 
             if(cfg.fields) {
                 Y.Array.each(cfg.fields, function(field) {
-                    modules = modules.concat( walk(field) );
+                    modules = modules.concat( walk(field));
                 }, this);
             }
             if(cfg.availableFields) {
                 Y.Array.each(cfg.availableFields, function(field) {
-                    modules = modules.concat( walk(field) );
+                    modules = modules.concat( walk(field));
                 }, this);
             }
 

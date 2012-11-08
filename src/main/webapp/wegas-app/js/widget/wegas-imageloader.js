@@ -77,7 +77,7 @@ YUI.add('wegas-imageloader', function (Y) {
                 }
             }
             else if (this.get('srcUrl') !== null) {
-                this.loadImage( el, "src" );
+                this.loadImage( el, "src");
             }
 
             // apply attributes
@@ -107,11 +107,11 @@ YUI.add('wegas-imageloader', function (Y) {
                         reader = new FileReader ();
 
                         bb.append ( loadEvt.target.response );                  // Note: not request.responseText
-                        blob = bb.getBlob ( loadEvt.target.getResponseHeader("Content-Type") );
+                        blob = bb.getBlob ( loadEvt.target.getResponseHeader("Content-Type"));
 
                         reader.onload = Y.bind( function ( e ) {
                             el.setAttribute(attr, e.target.result );
-                            this.fire( "load", {
+                            this.fire("load", {
                                 meta: {
                                     contentType: loadEvt.target.getResponseHeader("Content-Type"),
                                     description: loadEvt.target.getResponseHeader("Description")
@@ -142,9 +142,9 @@ YUI.add('wegas-imageloader', function (Y) {
             }
 
             // Method 3 (fallback), set img src
-            el.setAttribute(attr, this.get('srcUrl') );
-            el.once( "load", function ( e ) {
-                this.fire( "load", {
+            el.setAttribute(attr, this.get('srcUrl'));
+            el.once("load", function ( e ) {
+                this.fire("load", {
                     meta: {}
                 });
             }, this);
