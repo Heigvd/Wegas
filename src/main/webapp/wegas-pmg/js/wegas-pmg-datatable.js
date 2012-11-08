@@ -32,7 +32,7 @@ YUI.add( "wegas-pmg-datatable", function ( Y ) {
                 variableDesc = variables.get('items')[i];
                 variableInst = variableDesc.getInstance();
                 oneRowDatas = {};
-                oneRowDatas["_name"] = variableDesc.get("name"); 
+                oneRowDatas["_name"] = variableDesc.get("name");
                 for (j = 0; j< ct.length; j++) {
                     if(variableDesc.get(cv[j])){
                         data = variableDesc.get(cv[j]);
@@ -66,18 +66,18 @@ YUI.add( "wegas-pmg-datatable", function ( Y ) {
                 {
                     key:ct[i],
                     label:ct[i],
-                    sortable:true
+                    sortable:false
                 }
             );
             }
-            this.datatable = new Y.DataTable({
+            this.datatable = new Y.Treeble({
                 columns: columnTitles
             });
-            if(this.get("defaultSort") && this.get("defaultSort").indexOf(this.get("columnValues") > -1)){
-                this.datatable.sort(this.get("defaultSort"));
-            } else{
-                this.datatable.sort(this.get("columnTitles")[0]);
-            }
+//            if(this.get("defaultSort") && this.get("defaultSort").indexOf(this.get("columnValues") > -1)){
+//                this.datatable.sort(this.get("defaultSort"));
+//            } else{
+//                this.datatable.sort(this.get("columnTitles")[0]);
+//            }
         },
         
         renderUI: function(){
