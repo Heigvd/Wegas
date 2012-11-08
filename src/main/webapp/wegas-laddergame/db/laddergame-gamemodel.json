@@ -1,102 +1,110 @@
 {
     "actions": {
-	
     },
     "states": {
-	"A1": {
-	    name: "A04B - Ing. R&D, monteur et commercial : enjeux",
-	    condition: "phase == 1",
-	    text: "Vous effectuez une s√©ance de brainstorming avec un ing√©nieur R&D, un monteur et un responsable commercial afin de mieux d√©terminer les enjeux du projet.\n\nBudget temps: 3",
-	    replies: [
-		{
-		    name: "1. Avant rencontre membre",
-		    condition: "",
-		    action: "timeCards -= 3;\nclientSupport+=4;",
-		    text: "dddd"
-		},
-		{
-		    name: "9. Si d√©j√© effectu√©",
-		    condition: "Visit√© Enjeux[1]",
-		    action: "timeCards -= 1;",
-		    text: ""
-		}
-	    ],
-	    position: [150, 300]
-	},
-	"A2" : {
-	    name: "A04B - Rencontrer direction",
-	    text: "",
-	    replies: [
-		{
-		    name: "1. Avant rencontre membre - sans identification enjeux",
-		    condition: "Pas visit√© le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET Pas visit√© le Choix[A04B - Rencontrer un membre de la direction]",
-		    action: "timeCards -= 3;\ndirection-=3;",
-		    text: ""
-		},
-		{
-		    name: "1.1 Apr√®s enjeux, sans rencontre membre",
-		    condition: "Visit√© le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET Pas visit√© le Choix[A04B - Rencontrer un membre de la direction]",
-		    action: "timeCards -= 3;\ndirection+=5;",
-		    text: ""
-		},
-		{
-		    name: "2. Apr√®s rencontre membre, sans enjeux",
-		    condition: "Pas visit√© le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET Visit√© le Choix[A04B - Rencontrer un membre de la direction] ET Premi√®re visite",
-		    action: "timeCards -= 3;",
-		    text: ""
-		},
-		{
-		    name: "2.2 Apr√®s rencontre membre, sans enjeux, 2√®me fois",
-		    condition: "Pas visit√© le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET Pas visit√© le Choix[A04B - Rencontrer un membre de la direction] ET Pas la premi√®re visite",
-		    action: "timeCards -= 3;\ndirection-=5;",
-		    text: ""
-		},
-		{
-		    name: "3. Apr√®s rencontre membre, avec enjeux",
-		    condition: "Visit√© le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET Visit√© le Choix[A04B - Rencontrer un membre de la direction]",
-		    action: "timeCards -= 3;\ndirection += 9;",
-		    text: ""
-		},
-		{
-		    name: "9. Si rencontre d√©j√† effectu√©e",
-		    condition: "Visit√© MembreDirection[1] OU MembreDirection[2] OU MembreDirection[3]",
-		    action: "timeCards -= 3;\ndirection -= 3;",
-		    text: ""
-		}
-	    ],
-	    "position": [50, 50]
-	},
-	"A3" : {
-	    "name": "A04B - Rencontrer un membre de la direction",
-	    "text": "",
-	    "replies": [
-		{
-		    name: "1. Rencontrer avant  enjeux",
-		    condition: "",
-		    action: "timeCards -= 1;\ndirection-=3;",
-		    text: ""
-		},
-		{
-		    name: "2. Rencontrer apr√®s  enjeux ",
-		    condition: "Visit√© le Enjeux[1]",
-		    action: "timeCards -= 1;\ndirection+=2;",
-		    text: ""
-		},
-		{
-		    name: "3. Rencontrer apr√®s rencontre direction",
-		    condition: "Visit√© le Direction[*]",
-		    action: "timeCards -= 1;\ndirection+=4;",
-		    text: ""
-		},
-		{
-		    name: "9. Si nouvelle rencontre apr√®s enjeux",
-		    condition: "Visit√© Direction[*]",
-		    action: "timeCards -= 1;\ndirection += 2;",
-		    text: ""
-		}
-	    ],
-	    "position": [50, 50]
-	}
+        "A1": {
+            "name": "A04B - Ing. R&D, monteur et commercial : enjeux",
+            "condition": "phase == 1",
+            "text": "Vous effectuez une sÈance de brainstorming avec un ingÈnieur R&D, un monteur et un responsable commercial afin de mieux dÈterminer les enjeux du projet.\n\nBudget temps: 3",
+            "replies": [
+                {
+                    "name": "1. Avant rencontre membre",
+                    "condition": "",
+                    "action": "timeCards -= 3;\nclientSupport+=4;",
+                    "text": "dddd"
+                },
+                {
+                    "name": "9. Si dÈj‡ effectuÈ",
+                    "condition": "VisitÈ Enjeux[1]",
+                    "action": "timeCards -= 1;",
+                    "text": ""
+                }
+            ],
+            "position": [
+                150, 300
+            ]
+        },
+        "A2": {
+            "name": "A04B - Rencontrer direction",
+            "text": "",
+            "replies": [
+                {
+                    "name": "1. Avant rencontre membre - sans identification enjeux",
+                    "condition": "Pas visitÈ le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET Pas visitÈ le Choix[A04B - Rencontrer un membre de la direction]",
+                    "action": "timeCards -= 3;\ndirection-=3;",
+                    "text": ""
+                },
+                {
+                    "name": "1.1 AprËs enjeux, sans rencontre membre",
+                    "condition": "VisitÈ le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET Pas visitÈ le Choix[A04B - Rencontrer un membre de la direction]",
+                    "action": "timeCards -= 3;\ndirection+=5;",
+                    "text": ""
+                },
+                {
+                    "name": "2. AprËs rencontre membre, sans enjeux",
+                    "condition": "Pas visitÈ le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET VisitÈ le Choix[A04B - Rencontrer un membre de la direction] ET PremiËre visite",
+                    "action": "timeCards -= 3;",
+                    "text": ""
+                },
+                {
+                    "name": "2.2 AprËs rencontre membre, sans enjeux, 2Ëme fois",
+                    "condition": "Pas visitÈ le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET Pas visitÈ le Choix[A04B - Rencontrer un membre de la direction] ET Pas la premiËre visite",
+                    "action": "timeCards -= 3;\ndirection-=5;",
+                    "text": ""
+                },
+                {
+                    "name": "3. AprËs rencontre membre, avec enjeux",
+                    "condition": "VisitÈ le Choix[A04B - Ing. R&D, monteur et commercial : enjeux] ET VisitÈ le Choix[A04B - Rencontrer un membre de la direction]",
+                    "action": "timeCards -= 3;\ndirection += 9;",
+                    "text": ""
+                },
+                {
+                    "name": "9. Si rencontre dÈj√† effectuÈe",
+                    "condition": "VisitÈ MembreDirection[1] OU MembreDirection[2] OU MembreDirection[3]",
+                    "action": "timeCards -= 3;\ndirection -= 3;",
+                    "text": ""
+                }
+            ],
+            "position": [
+                50,
+                50
+            ]
+        },
+        "A3": {
+            "name": "A04B - Rencontrer un membre de la direction",
+            "text": "",
+            "replies": [
+                {
+                    "name": "1. Rencontrer avant  enjeux",
+                    "condition": "",
+                    "action": "timeCards -= 1;\ndirection-=3;",
+                    "text": ""
+                },
+                {
+                    "name": "2. Rencontrer aprËs  enjeux ",
+                    "condition": "VisitÈ le Enjeux[1]",
+                    "action": "timeCards -= 1;\ndirection+=2;",
+                    "text": ""
+                },
+                {
+                    "name": "3. Rencontrer aprËs rencontre direction",
+                    "condition": "VisitÈ le Direction[*]",
+                    "action": "timeCards -= 1;\ndirection+=4;",
+                    "text": ""
+                },
+                {
+                    "name": "9. Si nouvelle rencontre aprËs enjeux",
+                    "condition": "VisitÈ Direction[*]",
+                    "action": "timeCards -= 1;\ndirection += 2;",
+                    "text": ""
+                }
+            ],
+            "position": [
+                50,
+                50
+            ]
+        }
     },
-    transition: {}
+    "transition": {
+    }
 }
