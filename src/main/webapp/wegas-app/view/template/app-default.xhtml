@@ -31,7 +31,7 @@
                 <script type="text/javascript">
 
                     var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                    comboBase = base + '/rest/combo?';
+                            comboBase = base + '/rest/combo?';
 
                     // Set up some YUI3 default parameters. Will be use for every call to
                     // the YUI(cfg) function. Can be overridden by the cfg parameter.
@@ -81,31 +81,32 @@
 
                     //YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
                     //YUI_config.groups.excanvas.comboBase = comboBase;
-
-                        <ui:fragment rendered="#{wegasConfig.assets_local}">
-                        YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
-                    YUI_config.filter = "min";
-                    YUI_config.combine = true;
-                    YUI_config.root = "/lib/yui3/build/";
-                        </ui:fragment>
                 </script>
+                <!-- local assets -->
+                <ui:fragment rendered="#{wegasConfig.assets_local}">
+                    <script>
+                        YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+                        YUI_config.filter = "min";
+                        YUI_config.combine = true;
+                        YUI_config.root = "/lib/yui3/build/";
+                    </script>
+                </ui:fragment>
 
                 <ui:insert name="body">
                     <script type="text/javascript">
                         var Y = YUI({
                             //filter: 'raw'
                             //filters: { event: 'debug' }
-                        }).use( 'wegas-app', function ( Y ) {
+                        }).use('wegas-app', function(Y) {
                             var cfg = {
                                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
-                                debug : true,
+                                debug: true,
                                 currentGameModel: #{gameController.currentGameModel.id},
                                 currentGame: #{gameController.currentGame.id},
                                 currentTeam: #{gameController.currentPlayer.team.id},
                                 currentPlayer: #{gameController.currentPlayer.id},
                                 currentUser: #{requestController.getCurrentUser().toJson()},
-                                cssStylesheets: [ "#{gameController.currentGameModel.cssUri}" ],
-
+                                cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
                                 /**
                                  * This field is used to override Entities edition menus.
                                  * Use the target class name as the key.
@@ -119,7 +120,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                        // resultFields: ["name", "id", "@class", "errors"]
+                                                                // resultFields: ["name", "id", "@class", "errors"]
                                                     }
                                                 }
                                             }, {
@@ -135,7 +136,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                        // resultFields: ["name", "id", "@class", "errors"]
+                                                                // resultFields: ["name", "id", "@class", "errors"]
                                                     }
                                                 }
                                             }, {
@@ -152,7 +153,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                        //resultFields: ["name", "id", "@class"]
+                                                                //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
                                             }, {
@@ -173,20 +174,20 @@
                                                 }
                                             }, {
                                                 fn: "VariableDescriptorDataSourceREST"
-                                            },{
+                                            }, {
                                                 fn: "ScriptEval"
                                             }
                                         ]
                                     },
                                     "File": {
-                                        source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
+                                        source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/",
                                         plugins: [
                                             {
                                                 fn: "DataSourceJSONSchema",
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                        //resultFields: ["name", "id", "@class"]
+                                                                //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
                                             }
@@ -198,7 +199,6 @@
                                  * Use the target class name as the key.
                                  */
                                 editorMenus: {},
-
                                 /**
                                  * This field is used to override Entities edition forms.
                                  * Use the target class name as the key.
