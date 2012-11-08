@@ -116,7 +116,7 @@ YUI.add('wegas-app', function(Y) {
                         }
                     },
                     failure : function(id, o) {
-                        Y.error( "initCSS(): Page CSS loading async call failed!", null, "Y.Wegas.App");
+                        Y.error( "initCSS(): Page CSS loading async call failed!", new Error("Loading failed"), "Y.Wegas.App");
                     }
                 }
             };
