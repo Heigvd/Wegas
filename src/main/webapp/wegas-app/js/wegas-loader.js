@@ -388,7 +388,7 @@ YUI().use(function (Y) {
 
                     'wegas-pmg-datatable':{
                         path: 'wegas-pmg/js/wegas-pmg-datatable.js',
-                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable'],
+                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],
                         ix_provides: "PmgDatatable"
                     },
 
