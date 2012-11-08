@@ -18,14 +18,14 @@ YUI.add('wegas-form', function (Y) {
     var CONTENTBOX = 'contentBox',
     FormWidget;
 
-    FormWidget = Y.Base.create( "wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    FormWidget = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         // ** Private Fields ** //
 
         // ** Lifecycle Methods ** //
         initializer: function () {
             this.plug( Y.Plugin.WidgetToolbar );
-            this.publish( "submit", {
+            this.publish("submit", {
                 emitFacade: true
             });
         },
@@ -37,23 +37,23 @@ YUI.add('wegas-form', function (Y) {
         // ** Private Methods ** //
 
         renderToolbar: function () {
-            var toolbarNode = this.toolbar.get( 'header' );
+            var toolbarNode = this.toolbar.get('header');
 
             this.saveButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
                 on: {
                     click: Y.bind( function () {
-                        var form = this.get( "form" ),
+                        var form = this.get("form"),
                         val = form.getValue();
 
-                        if ( !form.validate() ) {
+                        if ( !form.validate()) {
                             return;
                         }
-                        form.fire( "afterValidation");
+                        form.fire("afterValidation");
                         if (val.valueselector) {
                             val = val.valueselector;
                         }
-                        this.fire( "submit", {
+                        this.fire("submit", {
                             value: val
                         });
                     }, this)
@@ -64,18 +64,18 @@ YUI.add('wegas-form', function (Y) {
                 label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Cancel",
                 on: {
                     click: Y.bind(function () {
-                        this.fire( "cancel" );
+                        this.fire("cancel");
                     }, this)
                 }
             } ).render(toolbarNode);
         },
         setForm: function (values, formCfg) {
-            this.set( "values", values);
-            this.set( "formCfg", formCfg)
+            this.set("values", values);
+            this.set("formCfg", formCfg)
         },
 
         destroyForm: function () {
-            this.set( "form", null );
+            this.set("form", null );
         }
 
     }, {
@@ -85,7 +85,7 @@ YUI.add('wegas-form', function (Y) {
             },
             form: {
                 setter: function ( val ) {
-                    if ( this.get( "form" ) ) {                                 // If there is alread a form instantiated, we destroy it
+                    if ( this.get("form")) {                                 // If there is alread a form instantiated, we destroy it
                         this.get("form").destroy();
                     }
                     return val;

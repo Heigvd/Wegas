@@ -33,15 +33,15 @@ YUI.add('wegas-widgettoolbar', function (Y) {
         // *** Lifecycle methods *** //
 
         initializer: function () {
-            //            var host = this.get( "host" );
-            //            this.afterHostEvent( "render", function () {
+            //            var host = this.get("host");
+            //            this.afterHostEvent("render", function () {
             //
             //                }, this);
             this.render();
         },
 
         destructor: function (){
-            var i, children = this.get( "children" );
+            var i, children = this.get("children");
             for ( i = 0; i < children.length; i = i + 1 ){
                 children[i].destroy();
             }
@@ -50,11 +50,11 @@ YUI.add('wegas-widgettoolbar', function (Y) {
 
         // *** Private methods *** //
         render: function () {
-            var host = this.get( "host" ),
+            var host = this.get("host"),
             bb = host.get('boundingBox'),
             children = this.get("children");
 
-            bb.append( '<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
+            bb.append('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
             host.get('contentBox').setStyles({
                 position: "absolute",
                 bottom: "26px",
@@ -71,11 +71,11 @@ YUI.add('wegas-widgettoolbar', function (Y) {
         },
 
         add: function( widget ) {
-            if ( !( widget instanceof Y.Widget ) ) {
+            if ( !( widget instanceof Y.Widget )) {
                 widget = Y.Wegas.Widget.create( widget );
             }
-            widget.render( this.get( "header" ) );
-            widget.addTarget( this.get( "host" ) );
+            widget.render( this.get("header"));
+            widget.addTarget( this.get("host"));
             return widget;
         }
 
@@ -88,20 +88,20 @@ YUI.add('wegas-widgettoolbar', function (Y) {
                 lazyAdd: false,
                 value: false,
                 getter : function () {
-                    return this.get( "host" ).get('boundingBox').one(".wegas-toolbar-header");
+                    return this.get("host").get('boundingBox').one(".wegas-toolbar-header");
                 }
             },
             panel: {
                 lazyAdd: false,
                 value: false,
                 getter : function () {
-                    return this.get( "host" ).get('boundingBox').one(".wegas-toolbar-panel");
+                    return this.get("host").get('boundingBox').one(".wegas-toolbar-panel");
                 }
             }
         }
     });
 
-    Y.namespace( 'Plugin' ).WidgetToolbar = WidgetToolbar;
+    Y.namespace('Plugin').WidgetToolbar = WidgetToolbar;
 });
 
 

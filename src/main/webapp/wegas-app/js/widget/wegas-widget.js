@@ -41,16 +41,16 @@ YUI.add("wegas-widget", function (Y) {
             },
             duration: 0.2
         });
-        anim.on( "end", this.remove, this, true );
+        anim.on("end", this.remove, this, true );
         anim.run();
     };
 
     function Widget () {
-        this.after( "render", function () {
+        this.after("render", function () {
             var bb = this.get( BOUNDING_BOX );
-            bb.addClass( "wegas-widget" );
-            if ( this.get( "cssClass" ) ) {
-                bb.addClass( this.get( "cssClass" ) );
+            bb.addClass("wegas-widget");
+            if ( this.get("cssClass")) {
+                bb.addClass( this.get("cssClass"));
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
@@ -61,11 +61,11 @@ YUI.add("wegas-widget", function (Y) {
     Y.mix( Widget.prototype, {
 
         showOverlay: function(){
-            this.get( BOUNDING_BOX ).prepend( "<div class='wegas-widget-loading'></div>" );
+            this.get( BOUNDING_BOX ).prepend("<div class='wegas-widget-loading'></div>");
         },
 
         hideOverlay: function(){
-            var overlayNode = this.get( BOUNDING_BOX ).all( ".wegas-widget-loading" );
+            var overlayNode = this.get( BOUNDING_BOX ).all(".wegas-widget-loading");
             if ( overlayNode ) {
                 overlayNode.remove( true );
             }
@@ -81,7 +81,7 @@ YUI.add("wegas-widget", function (Y) {
 
         showMessage: function ( level, txt, timeout ) {
             var msgNode = this.getMessageNode(),
-            message = Y.Node.create( "<div class='" + ( LEVEL[level] ? LEVEL[level] : "" ) + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
+            message = Y.Node.create("<div class='" + ( LEVEL[level] ? LEVEL[level] : "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
             if ( level === "success" && !timeout ) {                            // @hack successful messages disapear automatically
                 if(this.toolbar instanceof Y.Plugin.WidgetToolbar){
                     this.setStatusMessage(txt);
@@ -92,7 +92,7 @@ YUI.add("wegas-widget", function (Y) {
             }
             msgNode.append(message);
 
-            message.closeHandler = message.one(".close").once( "click", destroySelf, message );
+            message.closeHandler = message.one(".close").once("click", destroySelf, message );
 
             if ( timeout ) {
                 message.timeout = Y.later( timeout, message, destroySelf);
@@ -100,10 +100,10 @@ YUI.add("wegas-widget", function (Y) {
         },
 
         getMessageNode: function () {
-            var msgNode = this.get( BOUNDING_BOX ).one( ".wegas-systemmessage" );
+            var msgNode = this.get( BOUNDING_BOX ).one(".wegas-systemmessage");
             if ( !msgNode ) {
-                this.get( BOUNDING_BOX ).append( "<div class='wegas-systemmessage'></div>" );
-                return this.get( BOUNDING_BOX ).one( ".wegas-systemmessage" );
+                this.get( BOUNDING_BOX ).append("<div class='wegas-systemmessage'></div>");
+                return this.get( BOUNDING_BOX ).one(".wegas-systemmessage");
             }
             return msgNode;
         },
@@ -261,7 +261,7 @@ YUI.add("wegas-widget", function (Y) {
             for ( i = 0; i < props.length; i = i + 1) {
                 if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParent widgets)
                     Y.Array.each(cfg[props[i]], function(field) {
-                        modules = modules.concat( this.getModulesFromDefinition(field) );
+                        modules = modules.concat( this.getModulesFromDefinition(field));
                     }, this);
                 }
             }

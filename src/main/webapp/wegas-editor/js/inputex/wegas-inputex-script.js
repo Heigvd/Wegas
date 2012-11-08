@@ -1,7 +1,7 @@
 /**
  * @module inputex-Script
  */
-YUI.add( "wegas-inputex-script", function(Y){
+YUI.add("wegas-inputex-script", function(Y){
 
     var inputEx = Y.inputEx;
 

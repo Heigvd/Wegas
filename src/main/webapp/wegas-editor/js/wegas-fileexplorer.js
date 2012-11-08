@@ -111,7 +111,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         bindUI: function () {
-            this.tooltip.on( "triggerEnter" , function ( e ) {                  // The tooltip content is set on the fly based on the node
+            this.tooltip.on("triggerEnter" , function ( e ) {                  // The tooltip content is set on the fly based on the node
                 var leaf = Y.Widget.getByNode( e.node ), ret = "";
                 if(!leaf.data){
                     return;
@@ -319,7 +319,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
                     Y.Plugin.EditEntityAction.showEditForm(file, Y.bind(this.editContent, this, node));
                     break;
                 case 'delete':
-                    if ( this.isProcessing(node) ) {
+                    if ( this.isProcessing(node)) {
                         console.log("Current node processing, please wait ...");
                     } else {
                         path = "delete" + node.path;
@@ -518,7 +518,7 @@ YUI.add('wegas-fileexplorer', function (Y) {
         },
 
         openFile: function (e, path){
-            window.open( this.getFullPath( path ) );
+            window.open( this.getFullPath( path ));
         },
 
         getFullPath: function ( relativePath ) {

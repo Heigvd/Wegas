@@ -44,12 +44,12 @@ YUI().use(function (Y) {
                         requires: ['plugin', 'json', 'array-extras', 'io-base',
                         "datasource-io", "datasource-jsonschema", "datasource-cache"]
                     },
-                    'wegas-scripteval':{
-                        path:'wegas-app/js/wegas-scripteval-min.js',
-                        requires:['plugin']
+                    'wegas-scripteval': {
+                        path: 'wegas-app/js/wegas-scripteval-min.js',
+                        requires: ['plugin']
                     },
-                    'wegas-injector':{
-                        path:'wegas-app/js/widget/wegas-injector-min.js'
+                    'wegas-injector': {
+                        path: 'wegas-app/js/widget/wegas-injector-min.js'
                     },
 
                     /** Persistence **/
@@ -65,7 +65,7 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
                         requires: [ 'wegas-entity' ]
                     },
-                    'wegas-content-entities':{
+                    'wegas-content-entities': {
                         path: 'wegas-app/js/persistence/wegas-content-entities.js',
                         requires: [ 'wegas-entity' ]
                     },
@@ -168,15 +168,15 @@ YUI().use(function (Y) {
                         ix_provides: "JoinGameWidget"
                     },
                     'wegas-imageloader': {
-                        path:'wegas-app/js/widget/wegas-imageloader.js',
+                        path: 'wegas-app/js/widget/wegas-imageloader.js',
                         requires: [ 'io-base', 'imageloader' ]
                     },
-                    'wegas-gallerycss':{
-                        path:'wegas-app/css/wegas-gallery.css',
-                        type:'css'
+                    'wegas-gallerycss': {
+                        path: 'wegas-app/css/wegas-gallery.css',
+                        type: 'css'
                     },
                     'wegas-gallery': {
-                        path:'wegas-app/js/widget/wegas-gallery-min.js',
+                        path: 'wegas-app/js/widget/wegas-gallery-min.js',
                         requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
                         'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
                         ix_provides: "WegasGallery"
@@ -252,7 +252,7 @@ YUI().use(function (Y) {
                         path: 'wegas-app/css/wegas-widgettoolbar.css',
                         type: "css"
                     },
-                    'treeview':{
+                    'treeview': {
                         path: 'wegas-editor/js/treeview-min.js',
                         requires: [ 'widget', 'widget-parent', 'widget-child', 'treeviewcss' ]
                     },
@@ -264,8 +264,7 @@ YUI().use(function (Y) {
                     /** Editor **/
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
-                        requires: [
-                        'wegas-app', 'wegas-widgetmenu', 'wegas-widgettoolbar',
+                        requires: ['wegas-app', 'wegas-widgetmenu', 'wegas-widgettoolbar',
                         "wegas-editor-buttons", 'wegas-editor-action',
                         'wegas-form', 'wegas-pageeditor'/*,
                         'wegas-editorcss'*/                                    // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
@@ -315,13 +314,13 @@ YUI().use(function (Y) {
                         requires: [ 'datatable', 'datatable-sort' ],
                         ix_provides: 'DataTable'
                     },
-                    'wegas-menucss':{
+                    'wegas-menucss': {
                         path: 'wegas-app/css/wegas-menu.css',
-                        type:'css'
+                        type: 'css'
                     },
                     'wegas-menu': {
-                        path:'wegas-app/js/widget/wegas-menu-min.js',
-                        requires:['button', 'wegas-menucss'],
+                        path: 'wegas-app/js/widget/wegas-menu-min.js',
+                        requires: ['button', 'wegas-menucss'],
                         ix_provides: 'WegasMenu'
                     },
                     'wegas-scriptlibrary': {
@@ -329,9 +328,9 @@ YUI().use(function (Y) {
                         requires: [ 'ace-javascript', 'button', 'wegas-inputex-ace', 'inputex-select' ],
                         ix_provides: 'ScriptLibrary'
                     },
-                    'wegas-fileexplorercss':{
+                    'wegas-fileexplorercss': {
                         path: 'wegas-editor/css/wegas-fileexplorer.css',
-                        type:'css'
+                        type: 'css'
                     },
                     'wegas-fileexplorer': {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
@@ -364,35 +363,35 @@ YUI().use(function (Y) {
                     /** Project Management Game **/
                     'wegas-pmg': {
                         path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
-                        requires:['wegas-pmg-breadcrumb'],
+                        requires: ['wegas-pmg-breadcrumb'],
                         ix_provides: "PmgBreadcrumb"
                     },
 
-                    'wegas-pmg-tasklist':{
+                    'wegas-pmg-tasklist': {
                         path: 'wegas-pmg/js/wegas-pmg-tasklist.js',
-                        requires:['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
+                        requires: ['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
                         ix_provides: "PmgTasklist"
                     },
 
-                    'wegas-pmg-gantt':{
+                    'wegas-pmg-gantt': {
                         path: 'wegas-pmg/js/wegas-pmg-gantt.js',
-                        requires:['wegas-pmg-gantt', 'wegas-pmg-datatable'],
+                        requires: ['wegas-pmg-gantt', 'wegas-pmg-datatable'],
                         ix_provides: "PmgGantt"
                     },
 
-                    'wegas-pmg-resourcelist':{
+                    'wegas-pmg-resourcelist': {
                         path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
-                        requires:['wegas-pmg-resourcelist', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
+                        requires: ['wegas-pmg-resourcelist', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
                         ix_provides: "PmgResourcelist"
                     },
 
-                    'wegas-pmg-datatable':{
+                    'wegas-pmg-datatable': {
                         path: 'wegas-pmg/js/wegas-pmg-datatable.js',
-                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable'],
+                        requires: ['wegas-pmg-datatable', 'datatable', 'datatable-mutable'],
                         ix_provides: "PmgDatatable"
                     },
 
-                    'wegas-pmg-slidepanel':{
+                    'wegas-pmg-slidepanel': {
                         path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
                         ix_provides: "PmgSlidePanel"
                     },
@@ -400,7 +399,7 @@ YUI().use(function (Y) {
                     /**book CYOA**/
                     'wegas-book': {
                         path: 'wegas-book/js/wegas-book-fight.js',
-                        requires:['wegas-book-fight', 'wegas-book-dice'],
+                        requires: ['wegas-book-fight', 'wegas-book-dice'],
                         ix_provides: "Fight"
                     },
 
@@ -412,7 +411,7 @@ YUI().use(function (Y) {
                     /**CEP**/
                     'wegas-cep': {
                         path: 'wegas-cep/js/wegas-cep-itemselector.js',
-                        requires:['wegas-cep-itemselector', 'wegas-cep-nodeformatter'],
+                        requires: ['wegas-cep-itemselector', 'wegas-cep-nodeformatter'],
                         ix_provides: "CepItemSelector"
                     },
 
@@ -436,7 +435,7 @@ YUI().use(function (Y) {
                     /**Leaderway**/
                     'wegas-leaderway': {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
-                        requires:['wegas-leaderway-folder', 'wegas-leaderway-tasklist',
+                        requires: ['wegas-leaderway-folder', 'wegas-leaderway-tasklist',
                         'wegas-leaderway-score', 'wegas-leaderway-dialogue']/*,
                         ix_provides: "HRList"*/
                     },
@@ -457,7 +456,7 @@ YUI().use(function (Y) {
                     },
                     'wegas-leaderway-dialogue': {
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
-                        requires:['charts', 'charts-legend'],
+                        requires: ['charts', 'charts-legend'],
                         ix_provides: "Dialogue"
                     },
                     "wegas-leaderway-translator": {
@@ -525,7 +524,7 @@ YUI().use(function (Y) {
                         requires: ['jsplumb']
                     },
                     'jsplumb-yui-all': {
-                        path:'yui.jsPlumb-1.3.15-all-min.js',
+                        path: 'yui.jsPlumb-1.3.15-all-min.js',
                         requires: ["node", "dd", "anim"/*, "node-event-simulate"*/]
                     },
                     'jsbezier': {
@@ -557,13 +556,13 @@ YUI().use(function (Y) {
             },
 
             /* DiffMatchPatch */
-            diffmatchpatch:{
+            diffmatchpatch: {
                 async: false,
-                base:"./lib/diffmatchpatch/",
-                root:"/lib/diffmatchpatch/",
+                base: "./lib/diffmatchpatch/",
+                root: "/lib/diffmatchpatch/",
                 modules: {
-                    'diff_match_patch':{
-                        path:"diff_match_patch.js"
+                    'diff_match_patch': {
+                        path: "diff_match_patch.js"
                     }
                 }
             }

@@ -32,8 +32,8 @@ YUI.add('wegas-tooltip', function (Y) {
     Y.extend(TooltipPlg, Y.Plugin.Base, {
         initializer: function () {
             var tt = Tooltip.getInstance();
-            tt.addTriggerNode( this.get( "host" ).get( "boundingBox" ),
-                this.get( "content" ));
+            tt.addTriggerNode( this.get("host").get("boundingBox"),
+                this.get("content"));
         }
     }, {
         ATTRS: {
@@ -136,8 +136,8 @@ YUI.add('wegas-tooltip', function (Y) {
                         contentBox.appendChild(content.item(i));
                     }
                 } else if (Lang.isString(content)) {
-                    contentBox.set( "innerHTML", content );
-                    contentBox.all( "img" ).once ( "load", function() {
+                    contentBox.set("innerHTML", content );
+                    contentBox.all("img").once ("load", function() {
                         this.constrain();
                     }, this );
                 }
@@ -145,8 +145,8 @@ YUI.add('wegas-tooltip', function (Y) {
         },
 
         addTriggerNode: function ( node, content ) {
-            this.get( "content" )[node.get("id")] = content;
-            this.get( "triggerNodes" ).push ( node );
+            this.get("content")[node.get("id")] = content;
+            this.get("triggerNodes").push ( node );
             this.syncUI();
         },
 
@@ -172,12 +172,12 @@ YUI.add('wegas-tooltip', function (Y) {
          */
         _uiSetNodes : function(nodes) {
             if (this._triggerNodes) {
-                this._triggerNodes.removeClass( this.getClassName( "trigger" ) );
+                this._triggerNodes.removeClass( this.getClassName("trigger"));
             }
 
             if (nodes) {
                 this._triggerNodes = nodes;
-                this._triggerNodes.addClass( this.getClassName( "trigger" ) );
+                this._triggerNodes.addClass( this.getClassName("trigger"));
             }
         },
 
@@ -192,7 +192,7 @@ YUI.add('wegas-tooltip', function (Y) {
                 eventHandles.delegate.detach();
                 eventHandles.delegate = null;
             }
-            eventHandles.delegate = Y.delegate("mouseenter", Y.bind(this._onNodeMouseEnter, this), this.get("delegate"), this.get( "delegateSelect" ));
+            eventHandles.delegate = Y.delegate("mouseenter", Y.bind(this._onNodeMouseEnter, this), this.get("delegate"), this.get("delegateSelect"));
         },
 
         /*
@@ -314,7 +314,7 @@ YUI.add('wegas-tooltip', function (Y) {
         _setTriggerContent : function(node) {
             var content = this.get("content");
             if (content && !(content instanceof Node || Lang.isString(content))) {
-                content = content[node.get("id")] || unescape( node.getAttribute("title") ) ;
+                content = content[node.get("id")] || unescape( node.getAttribute("title")) ;
             }
             this.setTriggerContent(content);
         },
@@ -516,7 +516,7 @@ YUI.add('wegas-tooltip', function (Y) {
                 value: null,
                 getter: function ( val ) {
 
-                    return val || ( "." + this.getClassName( "trigger" ) );
+                    return val || ("." + this.getClassName("trigger"));
                 }
             }
         }

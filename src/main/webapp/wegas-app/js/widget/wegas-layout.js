@@ -32,9 +32,9 @@ YUI.add('wegas-layout', function (Y) {
         },
 
         bindUI: function () {
-            Y.on( "windowresize", Y.bind( this.syncUI, this ) );                // Sync the layout whenever the windows is resized
+            Y.on("windowresize", Y.bind( this.syncUI, this ));                // Sync the layout whenever the windows is resized
             //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
-            Y.on( 'domready', this.syncUI, this);
+            Y.on('domready', this.syncUI, this);
         },
 
         syncUI: function () {
@@ -73,8 +73,8 @@ YUI.add('wegas-layout', function (Y) {
                 easing: 'easeIn',
                 duration: 0.6
             });
-            anim.on( 'tween', this.syncCenterNode, this );
-            //anim.on( 'end', this.syncCenterNode, this );
+            anim.on('tween', this.syncCenterNode, this );
+            //anim.on('end', this.syncCenterNode, this );
             anim.run();
         },
 
@@ -82,7 +82,7 @@ YUI.add('wegas-layout', function (Y) {
             var anim,
             target = this.getPositionNode( position );
 
-            if ( target.getStyle( "width" ) === "0px" ) {                       // Only display if hidden
+            if ( target.getStyle("width") === "0px") {                       // Only display if hidden
                 anim = new Y.Anim({
                     node: this.getPositionNode( position ),
                     to: {
@@ -91,8 +91,8 @@ YUI.add('wegas-layout', function (Y) {
                     easing: 'easeOut',
                     duration: 0.6
                 });
-                anim.on( 'tween', this.syncCenterNode, this );
-                //anim.on( 'end ', this.syncCenterNode, this );
+                anim.on('tween', this.syncCenterNode, this );
+                //anim.on('end ', this.syncCenterNode, this );
                 anim.run();
             }
         },
@@ -124,11 +124,11 @@ YUI.add('wegas-layout', function (Y) {
 
                 for ( i = 0; i < positionCfg.children.length; i = i + 1) {      // ender the children
                     cWidget = Y.Wegas.Widget.create( positionCfg.children[ i ] );
-                    // cWidget.after( "render", this.syncUI, this );
+                    // cWidget.after("render", this.syncUI, this );
                     cWidget.render( target );
                 }
             } else {
-                target.setStyle( "width", "0" );
+                target.setStyle("width", "0");
             }
         },
 
@@ -137,8 +137,8 @@ YUI.add('wegas-layout', function (Y) {
          */
         syncCenterNode: function () {
             var bodyNode = this.getStdModNode("body"),
-            leftNode = bodyNode.one( ".wegas-layout-left" ),
-            rightNode = bodyNode.one( ".wegas-layout-right" );
+            leftNode = bodyNode.one(".wegas-layout-left"),
+            rightNode = bodyNode.one(".wegas-layout-right");
 
             leftNode.setStyles( {
                 right: "auto",

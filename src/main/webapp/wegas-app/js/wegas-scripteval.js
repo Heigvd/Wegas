@@ -80,7 +80,7 @@ YUI.add('wegas-scripteval', function (Y) {
             if(!this.upToDate){                                                 //Only compute if new value
                 this.buildContext();
             }
-            return ( new Function( "with(this) { return " + script +";}" ) ).call( this.context );
+            return ( new Function("with(this) { return " + script +";}")).call( this.context );
         },
 
         buildContext: function(){

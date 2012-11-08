@@ -67,7 +67,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                 dompath: false,
                 animate: true,
                 filterWord: true,                                               // get rid of the MS word junk (but is unfortunately too restrictive
-                extracss: 'p {margin:0} .wegas-media {font-size:100px; height: 120px; width: 200px; display:inline-block; border: 1px solid gray; background-color: #f2f2f2; background-image: url( ' + Y.Wegas.app.get( "base" ) + 'wegas-editor/images/wegas-icon-video.png ); background-position: 45% 45%; background-repeat: no-repeat; } .wegas-media * {display: none; }',
+                extracss: 'p {margin:0} .wegas-media {font-size:100px; height: 120px; width: 200px; display:inline-block; border: 1px solid gray; background-color: #f2f2f2; background-image: url(' + Y.Wegas.app.get("base") + 'wegas-editor/images/wegas-icon-video.png ); background-position: 45% 45%; background-repeat: no-repeat; } .wegas-media * {display: none; }',
                 toolbar: {
                     collapse: false,
                     titlebar: '',
@@ -312,7 +312,7 @@ YUI.add("wegas-inputex-rte", function (Y){
              * Plugin to add support for image and links from Wegas file library.
              */
             this.editor.addListener('toolbarLoaded', function(e,o) {
-                this.editor.subscribe( 'afterOpenWindow', function( e ) {       // afterOpenWindow or windowRender
+                this.editor.subscribe('afterOpenWindow', function( e ) {       // afterOpenWindow or windowRender
                     var value = null;
                     switch ( e.win.name ){
                         case 'insertimage':
@@ -323,16 +323,16 @@ YUI.add("wegas-inputex-rte", function (Y){
                                 var targetNode = new Y.Node( e.win.body );
                                 this.fileInputNode = targetNode.one('input');
 
-                                targetNode.one( "label" ).setStyle( 'display', 'none' );
-                                targetNode.prepend( "<div></div>" );
+                                targetNode.one("label").setStyle('display', 'none');
+                                targetNode.prepend("<div></div>");
 
                                 this.imageUrlField = new inputEx.Wegas.UrlField({
-                                    parentEl: targetNode.one( "div" ),
+                                    parentEl: targetNode.one("div"),
                                     label: "Url",
                                     typeInvite: "Enter a link or choose a file from the library"
                                 });
 
-                                this.imageUrlField.on( "updated", function ( val ) {
+                                this.imageUrlField.on("updated", function ( val ) {
                                     val = Y.Plugin.CRDataSource.getFullpath( val );
                                     this.fileInputNode.set('value', val);
                                     this.fileInputNode.focus();											//HACK we simulate the blur event to trigger the editor's image update
@@ -350,16 +350,16 @@ YUI.add("wegas-inputex-rte", function (Y){
                             if ( !this._createlinkRendered ){
                                 var targetNode = new Y.Node( e.win.body );
                                 this.inputNode = targetNode.one('input');
-                                targetNode.one( "label" ).setStyle( 'display', 'none' );
-                                targetNode.prepend( "<div></div>" );
+                                targetNode.one("label").setStyle('display', 'none');
+                                targetNode.prepend("<div></div>");
 
                                 this.linkUrlField = new inputEx.Wegas.UrlField({
-                                    parentEl: targetNode.one( "div" ),
+                                    parentEl: targetNode.one("div"),
                                     label: "Url",
                                     typeInvite: "Enter a link or choose a file from the library"
                                 });
 
-                                this.linkUrlField.on( "updated", function ( val ) {
+                                this.linkUrlField.on("updated", function ( val ) {
                                     val = Y.Plugin.CRDataSource.getFullpath( val );
                                     this.inputNode.set('value', val);
                                     this.inputNode.focus();											//HACK we simulate the blur event to trigger the editor's image update
@@ -454,8 +454,8 @@ YUI.add("wegas-inputex-rte", function (Y){
 
                 el.setAttribute('data-url',  val );
                 el.innerHTML = inputEx.RTEField.urlToEmbed( val );
-                //el.setHTML( "mm" );
-                // el.setAttribute( "data-videourl", val );
+                //el.setHTML("mm");
+                // el.setAttribute("data-videourl", val );
                 this.editor.nodeChange();
             }, _handleMediaWindow = function() {
                 var el = this._getSelectedElement(),
@@ -464,11 +464,11 @@ YUI.add("wegas-inputex-rte", function (Y){
                     width: '415px'
                 });
                 win.setHeader('Edit video');
-                that.videoUrlField.setValue( node.getAttribute( "data-url" ) );
+                that.videoUrlField.setValue( node.getAttribute("data-url"));
 
                 this.openWindow( win );
 
-                this.on( 'afterOpenWindow', function() {
+                this.on('afterOpenWindow', function() {
                     this.get('panel').syncIframe();
                 }, this, true );
 
@@ -527,13 +527,13 @@ YUI.add("wegas-inputex-rte", function (Y){
                     label: "Url",
                     typeInvite: "Enter a youtube link or choose a file in the library"
                 });
-                this.videoUrlField.on( "updated", function ( val ) {
-                    body.one( ".preview" ).setContent( inputEx.RTEField.urlToEmbed( val, 388 ) );
+                this.videoUrlField.on("updated", function ( val ) {
+                    body.one(".preview").setContent( inputEx.RTEField.urlToEmbed( val, 388 ));
                 //this.moveWindow();
                 //this.get('panel').syncIframe();
                 }, this );
 
-                body.append( 'Preview <br /><div class="preview"></div>' );
+                body.append('Preview <br /><div class="preview"></div>');
                 this.editor._windows.insertmedia = {
                     body: body.getDOMNode()
                 };
@@ -556,7 +556,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                     //this.el.value = value;                                    // put value in textarea : will be processed by this.editor._setInitialContent (clean html, etc...)
                     this.loaded = false;
                     this.value = value;
-                    this.editor.on( 'editorContentLoaded', function ( v ) {  /* @modified */
+                    this.editor.on('editorContentLoaded', function ( v ) {  /* @modified */
                         if ( !this.loaded ) {
                             this.editor.setEditorHTML( this.value );
                             this.loaded = true;
@@ -597,7 +597,7 @@ YUI.add("wegas-inputex-rte", function (Y){
             width = width || 388;
             height = height || 250;
 
-            if ( /\.youtube\..*v=/i.test( url ) ) {                             // Youtube video
+            if ( /\.youtube\..*v=/i.test( url )) {                             // Youtube video
                 var id = /v=[^&]*&/.exec( url )[0].substr( 2 );
                 return '<object type="application/x-shockwave-flash" style="width:' + width +'px; height:' + height + 'px;" data="http://www.youtube.com/v/' + id + '?version=3">' +
                 '<param name="movie" value="http://www.youtube.com/v/' + id + '?version=3" />' +
@@ -605,7 +605,7 @@ YUI.add("wegas-inputex-rte", function (Y){
                 '<param name="allowscriptaccess" value="always" />' +
                 '</object>';
 
-            } else if ( /^\/.*\.mp4/i.test( url ) ) {                           // Self-hosted mp4 videos
+            } else if ( /^\/.*\.mp4/i.test( url )) {                           // Self-hosted mp4 videos
                 var vidUrl = Y.Plugin.CRDataSource.getFullpath( url );
                 return '<video height="' + height + '" width="' + width + '" controls>' +
                 '<source src="' + vidUrl + '" type="video/mp4" />' +
