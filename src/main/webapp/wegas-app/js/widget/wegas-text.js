@@ -11,7 +11,7 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-text", function ( Y ) {
+YUI.add("wegas-text", function (Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Text;
@@ -25,8 +25,8 @@ YUI.add("wegas-text", function ( Y ) {
             content: {
                 type: "string",
                 format: "html",
-                setter: function ( val ) {
-                    this.get( CONTENTBOX ).setContent( val );
+                setter: function (val) {
+                    this.get(CONTENTBOX).setContent(val);
                     return val;
                 }
             }

@@ -32,8 +32,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
                 pointer: {
                     length: 0.5,                                                // The radius of the inner circle
                     strokeWidth: 0.035,                                         // The rotation offset
-                    color: '#000000',
-                    angle: 0.15                                            // Fill color
+                    color: '#000000'                                            // Fill color
                 },
                 colorStart: '#0981A9',                                          // Colors
                 colorStop: '#000000',
@@ -45,15 +44,12 @@ YUI.add('wegas-gaugedisplay', function (Y) {
             this.gauge.setOptions(opts);
             this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
-            //this.gauge.set(10);
         },
 
         bindUI: function () {
             this.handlers = [];
-            this.handlers.push(
-                Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
-            this.handlers.push(
-                Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
+            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
+            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
         },
 
         syncUI: function () {
