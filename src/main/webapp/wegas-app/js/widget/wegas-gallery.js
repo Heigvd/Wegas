@@ -321,7 +321,7 @@ YUI.add("wegas-gallery", function(Y){
                     this.get(CONTENT_BOX).empty();
                     this.images = {};
                     for(var i in o){
-                        if ( Y.Lang.isString( o[i] ) ) {
+                        if ( Y.Lang.isString( o[i] )) {
                             o[i] = {                                            // If the arguent is a string, treat it as an url
                                 srcUrl: o[i]
                             }
@@ -374,10 +374,10 @@ YUI.add("wegas-gallery", function(Y){
             img = Y.Node.create("<img />");
             imgLoader = new Y.Wegas.ImgageLoader({
                 target: img,
-                srcUrl: Y.Plugin.CRDataSource.getFullpath( this.get("gallery")[i].srcUrl )
+                srcUrl: Y.Plugin.CRDataSource.getFullpath(this.get("gallery")[i].srcUrl )
             });
             imgLoader.fetch();
-            imgLoader.once( "load", function ( e ) {
+            imgLoader.once("load", function ( e ) {
                 if ( e.meta.description ) {
                     this.get(CONTENT_BOX).all("li").item(i).appendChild("<div class='gallery-text'>" + e.meta.description + "</div>");
                 }

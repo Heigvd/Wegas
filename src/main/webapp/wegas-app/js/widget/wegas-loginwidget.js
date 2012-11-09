@@ -24,7 +24,7 @@ YUI.add('wegas-loginwidget', function (Y) {
      *  @class Y.Wegas.JoinGameWidget
      *
      */
-    LoginWidget = Y.Base.create( "wegas-loginwidget", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
+    LoginWidget = Y.Base.create("wegas-loginwidget", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
 
         // *** Private fields *** //
         defaultRedirect: "wegas-app/view/lobby.html",
@@ -33,15 +33,15 @@ YUI.add('wegas-loginwidget', function (Y) {
 
         renderUI: function () {
             var cb = this.get(CONTENTBOX),
-            cUser = Y.Wegas.app.get( "currentUser" );
+            cUser = Y.Wegas.app.get("currentUser");
 
-            if ( cUser.accounts[0][ "@class"] != "GuestAccount" ) {
-                this.showMessage( "success", "You are already logged in.", 4000 );
+            if (cUser.accounts[0]["@class"] !== "GuestAccount") {
+                this.showMessage("success", "You are already logged in.", 4000);
                 this.redirect();
             }
 
             this.loginForm = new Y.inputEx.Group({
-                fields:[{
+                fields: [{
                     name: "email",
                     label: "Email",
                     required: true,
@@ -63,38 +63,38 @@ YUI.add('wegas-loginwidget', function (Y) {
 
             var newEntity = new Y.Wegas.persistence.JpaAccount(),
             formCfg = newEntity.getFormCfg();
-            this.createAccountForm = Y.inputEx( formCfg );
+            this.createAccountForm = Y.inputEx(formCfg);
 
             formCfg.parentEl = cb;
             this.createAccountForm = new Y.inputEx.Group({
                 parentEl: cb,
-                fields:[{
+                fields: [{
                     name: "id",
                     type: "hidden"
-                },{
-                    name:"@class",
+                }, {
+                    name: "@class",
                     required: true,
                     type: "hidden",
                     value: "JpaAccount"
-                },{
+                }, {
                     label: "First name",
                     name: "firstname",
                     required: true,
                     type: "string",
                     showMsg: true
-                },{
+                }, {
                     label: "Last name",
                     name: "lastname",
-                    required:true,
+                    required: true,
                     type: "string",
                     showMsg: true
-                },{
+                }, {
                     label: "Email",
                     name: "email",
                     required: true,
                     type: "email",
                     showMsg: true
-                },{
+                }, {
                     label: "Password",
                     name: "password",
                     strengthIndicator: true,
@@ -103,7 +103,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                     required: true,
                     type: "password",
                     showMsg: true
-                },{
+                }, {
                     label: "Password (confirm)",
                     name: "passwordConfirm",
                     showMsg: true,
@@ -114,26 +114,30 @@ YUI.add('wegas-loginwidget', function (Y) {
             });
 
             this.loginButton = new Y.Button();
-            this.loginButton.render( cb );
+            this.loginButton.render(cb);
 
-            cb.append( '&nbsp;or <a class="alt-link" href="#"></a>');
+            cb.append('&nbsp;or <a class="alt-link" href="#"></a>');
         },
 
         bindUI: function () {
-            var cb = this.get( CONTENTBOX );
+            var cb = this.get(CONTENTBOX);
 
-            cb.one( ".alt-link" ).on( "click", this.toggleMode, this );
+            cb.one(".alt-link").on("click", this.toggleMode, this);
 
-            this.loginButton.on( "click", function ( e ) {                      // join a game based on a token
+            this.loginButton.on("click", function (e) {                      // join a game based on a token
 
-                if ( this.get( "mode" ) == "login" ) {
-                    if ( !this.loginForm.validate() ) return;
+                if (this.get("mode") === "login") {
+                    if (!this.loginForm.validate()) {
+                        return;
+                    }
 
                     var value = this.loginForm.getValue();
-                    this.doLogin( value.email, value.password, value.remember );
+                    this.doLogin(value.email, value.password, value.remember);
 
                 } else {
-                    if ( !this.createAccountForm.validate() ) return;
+                    if (!this.createAccountForm.validate()) {
+                        return;
+                    }
 
                     Y.Wegas.UserFacade.rest.sendRequest({
                         request: "/Signup/",
@@ -142,12 +146,12 @@ YUI.add('wegas-loginwidget', function (Y) {
                             data: this.createAccountForm.getValue()
                         },
                         on: {
-                            success: Y.bind( function ( e ) {
-                                this.showMessage( "success", "User created, you can now use it to login", 4000 );
-                                this.set( "mode", "login" );
-                            }, this ),
-                            failure: Y.bind( function ( e ) {
-                                this.showMessage( "error", e.response.results.message || "Error creating user", 4000 );
+                            success: Y.bind(function (e) {
+                                this.showMessage("success", "User created, you can now use it to login", 4000);
+                                this.set("mode", "login");
+                            }, this),
+                            failure: Y.bind(function (e) {
+                                this.showMessage("error", e.response.results.message || "Error creating user", 4000);
                             }, this)
                         }
                     });
@@ -156,18 +160,18 @@ YUI.add('wegas-loginwidget', function (Y) {
         },
 
         syncUI: function () {
-            this.set( "mode", this.get( "mode" ) );
+            this.set("mode", this.get("mode"));
         },
 
         toggleMode: function () {
-            if ( this.get( "mode" ) === "login") {
-                this.set( "mode", "createaccount")
+            if (this.get("mode") === "login") {
+                this.set("mode", "createaccount");
             } else {
-                this.set( "mode", "login" );
+                this.set("mode", "login");
             }
         },
 
-        doLogin: function ( email, password, remember ) {
+        doLogin: function (email, password, remember) {
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/Authenticate/?email=" + email
                 + "&password=" + password
@@ -176,13 +180,13 @@ YUI.add('wegas-loginwidget', function (Y) {
                     method: "POST"
                 },
                 on: {
-                    success: Y.bind( function ( e ) {
-                        this.showMessage( "success", "Login successful", 4000 );
+                    success: Y.bind(function (e) {
+                        this.showMessage("success", "Login successful", 4000);
                         this.redirect();
                         return;
-                    }, this ),
-                    failure: Y.bind( function ( e ) {
-                        this.showMessage( "error", e.response.results.message || "Email/password combination not found", 4000 );
+                    }, this),
+                    failure: Y.bind(function (e) {
+                        this.showMessage("error", e.response.results.message || "Email/password combination not found", 4000);
                     }, this)
                 }
             });
@@ -193,22 +197,22 @@ YUI.add('wegas-loginwidget', function (Y) {
         },
 
         getRedirect: function () {
-            return this.getQueryParameter( "redirect" ) ||
-            ( Y.Wegas.app.get( "base" ) + this.defaultRedirect );
+            return this.getQueryParameter("redirect") ||
+            (Y.Wegas.app.get("base") + this.defaultRedirect);
         },
 
         /**
          * Returns a parameter from the GET parameters.
          */
-        getQueryParameter: function ( name ) {
-            var query = window.location.search.substring( 1 ),
-            vars = query.split( "&" ),
+        getQueryParameter: function (name) {
+            var query = window.location.search.substring(1),
+            vars = query.split("&"),
             i, pair;
 
-            for ( i = 0; i < vars.length; i = i + 1 ) {
-                pair = vars[i].split( "=" );
-                if ( pair[0] === name ) {
-                    return decodeURIComponent( pair[1] );
+            for (i = 0; i < vars.length; i = i + 1) {
+                pair = vars[i].split("=");
+                if (pair[0] === name) {
+                    return decodeURIComponent(pair[1]);
                 }
             }
             return null;
@@ -218,21 +222,21 @@ YUI.add('wegas-loginwidget', function (Y) {
         ATTRS: {
             mode: {
                 value: "login",
-                setter: function ( val ) {
+                setter: function (val) {
                     var cb = this.get(CONTENTBOX);
 
-                    if ( val == "login" ) {
+                    if (val === "login") {
                         //this.loginForm.clear();
                         this.loginForm.show();
                         this.createAccountForm.hide();
-                        this.loginButton.set( "label", "Login" );
-                        cb.one( ".alt-link" ).setContent( "create a new user" );
+                        this.loginButton.set("label", "Login");
+                        cb.one(".alt-link").setContent("create a new user");
                     } else {
                         this.loginForm.hide();
                         this.createAccountForm.show();
                         //this.createAccountForm.clear();
-                        this.loginButton.set( "label", "Submit" );
-                        cb.one( ".alt-link" ).setContent( "login with existing account" );
+                        this.loginButton.set("label", "Submit");
+                        cb.one(".alt-link").setContent("login with existing account");
                     }
                 }
             }

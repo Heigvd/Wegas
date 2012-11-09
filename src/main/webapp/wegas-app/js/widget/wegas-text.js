@@ -11,27 +11,27 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add( "wegas-text", function ( Y ) {
+YUI.add("wegas-text", function (Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Text;
 
-    Text = Y.Base.create( "wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    Text = Y.Base.create("wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
         syncUI: function () {
-            this.set( "content", this.get( "content" ) );
+            this.set("content", this.get("content"));
         }
     }, {
         ATTRS : {
             content: {
                 type: "string",
                 format: "html",
-                setter: function ( val ) {
-                    this.get( CONTENTBOX ).setContent( val );
+                setter: function (val) {
+                    this.get(CONTENTBOX).setContent(val);
                     return val;
                 }
             }
         }
     });
 
-    Y.namespace( "Wegas" ).Text = Text;
+    Y.namespace("Wegas").Text = Text;
 });

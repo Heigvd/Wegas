@@ -17,7 +17,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
 
     var CONTENTBOX = 'contentBox', VariableDisplay;
 
-    VariableDisplay = Y.Base.create( "wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
 
         // ** Lifecycle Methods ** //
 
@@ -27,27 +27,27 @@ YUI.add('wegas-variabledisplay', function (Y) {
         },
 
         syncUI: function () {
-            var variableDescriptor = this.get( "variableDesc" );
+            var variableDescriptor = this.get("variableDesc");
 
             if ( !variableDescriptor ) {
                 return;
             }
 
             if ( variableDescriptor instanceof Y.Wegas.persistence.ListDescriptor ) {   // If the widget is a list,
-                variableDescriptor = variableDescriptor.get( "currentItem" );   // display it with the current list and the current element
+                variableDescriptor = variableDescriptor.get("currentItem");   // display it with the current list and the current element
             }
 
-            this.get( CONTENTBOX ).setHTML( this.genMarkup( variableDescriptor ) );  // Display the variable
+            this.get( CONTENTBOX ).setHTML(this.genMarkup( variableDescriptor ));  // Display the variable
 
         },
 
         genMarkup: function ( variableDescriptor ) {
-            var acc, i, maxVal = variableDescriptor.get( "maxValue" ),
-            minVal = variableDescriptor.get( "minValue" ),
-            value = variableDescriptor.getInstance().get( "value" ),
-            label = this.get( "label" ) || variableDescriptor.getPublicLabel();
+            var acc, i, maxVal = variableDescriptor.get("maxValue"),
+            minVal = variableDescriptor.get("minValue"),
+            value = variableDescriptor.getInstance().get("value"),
+            label = this.get("label") || variableDescriptor.getPublicLabel();
 
-            switch ( this.get( 'view' ) ) {
+            switch (this.get('view')) {
                 case 'text':
                     return '<span class="wegas-label wegas-variabledisplay-text-label">' + label + '</span>'
                     +' <span class="wegas-value wegas-variabledisplay-text-value">'+ value+'</span>';
@@ -105,11 +105,11 @@ YUI.add('wegas-variabledisplay', function (Y) {
              */
             variableDesc: {
                 getter: function () {
-                    if ( this.get( "variable" ) ) {
-                        return this.get("dataSource").rest.find( 'name', this.get( "variable" ) );
+                    if (this.get("variable")) {
+                        return this.get("dataSource").rest.find('name', this.get("variable"));
                     } else {
                         return this.get("dataSource").rest.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("expr")));
                     }
                 }
             },
@@ -142,24 +142,24 @@ YUI.add('wegas-variabledisplay', function (Y) {
         }
     });
 
-    var ListDisplay = Y.Base.create( "wegas-listdisplay", VariableDisplay, [], {
+    var ListDisplay = Y.Base.create("wegas-listdisplay", VariableDisplay, [], {
 
         // ** Lifecycle Methods ** //
 
         syncUI: function () {
             var acc, angle_pourcent, maxVal, minVal, ctx, i, value_x, value_y, angle_value, value, label,
-            variableDescriptor = this.get( "variableDesc" );
+            variableDescriptor = this.get("variableDesc");
 
             if (!variableDescriptor) {
                 return;
             }
 
-            maxVal = variableDescriptor.get( "maxValue" );
-            minVal = variableDescriptor.get( "minValue" );
-            value = variableDescriptor.getInstance().get( "value" );
-            label = this.get( "label" ) || variableDescriptor.getPublicLabel();
+            maxVal = variableDescriptor.get("maxValue");
+            minVal = variableDescriptor.get("minValue");
+            value = variableDescriptor.getInstance().get("value");
+            label = this.get("label") || variableDescriptor.getPublicLabel();
 
-            switch ( this.get( 'view' ) ) {
+            switch (this.get('view')) {
                 case 'text':
                     this.get(CONTENTBOX).setContent('<span class="wegas-variabledisplay-text-label">' + label + '</span>'
                         +' <span class="wegas-variabledisplay-text-value">'+ value+'</span>');
@@ -212,11 +212,11 @@ YUI.add('wegas-variabledisplay', function (Y) {
              */
             variableDesc: {
                 getter: function () {
-                    if ( this.get( "variable" ) ) {
-                        return this.get("dataSource").rest.find( 'name', this.get( "variable" ) )
+                    if (this.get("variable")) {
+                        return this.get("dataSource").rest.find('name', this.get("variable"))
                     } else {
                         return this.get("dataSource").rest.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval( this.get( "expr" ) ) );
+                            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("expr")));
                     }
                 }
             },

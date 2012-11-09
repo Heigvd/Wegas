@@ -24,13 +24,13 @@ YUI.add("wegas-widget", function (Y) {
         "info": "info",
         "success": "success"
     },
-    destroySelf = function(){
+    destroySelf = function () {
 
-        if ( !this._node ) {
+        if (!this._node) {
             return;                                                             // The node has already been destroyed
         }
 
-        if(this.timeout){
+        if (this.timeout) {
             this.timeout.cancel();
         }
         this.closeHandler.detach();
@@ -41,16 +41,16 @@ YUI.add("wegas-widget", function (Y) {
             },
             duration: 0.2
         });
-        anim.on( "end", this.remove, this, true );
+        anim.on("end", this.remove, this, true);
         anim.run();
     };
 
-    function Widget () {
-        this.after( "render", function () {
-            var bb = this.get( BOUNDING_BOX );
-            bb.addClass( "wegas-widget" );
-            if ( this.get( "cssClass" ) ) {
-                bb.addClass( this.get( "cssClass" ) );
+    function Widget() {
+        this.after("render", function () {
+            var bb = this.get(BOUNDING_BOX);
+            bb.addClass("wegas-widget");
+            if (this.get("cssClass")) {
+                bb.addClass(this.get("cssClass"));
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
@@ -58,79 +58,79 @@ YUI.add("wegas-widget", function (Y) {
         this._cssPrefix = this.constructor.CSS_PREFIX;
     }
 
-    Y.mix( Widget.prototype, {
+    Y.mix(Widget.prototype, {
 
-        showOverlay: function(){
-            this.get( BOUNDING_BOX ).prepend( "<div class='wegas-widget-loading'></div>" );
+        showOverlay: function () {
+            this.get(BOUNDING_BOX).prepend("<div class='wegas-widget-loading'></div>");
         },
 
-        hideOverlay: function(){
-            var overlayNode = this.get( BOUNDING_BOX ).all( ".wegas-widget-loading" );
-            if ( overlayNode ) {
-                overlayNode.remove( true );
+        hideOverlay: function () {
+            var overlayNode = this.get(BOUNDING_BOX).all(".wegas-widget-loading");
+            if (overlayNode) {
+                overlayNode.remove(true);
             }
         },
 
         emptyMessage: function () {						// Form msgs logic
             var msgNode = this.get(BOUNDING_BOX).one(".wegas-systemmessage");
-            if ( !msgNode ) {
+            if (!msgNode) {
                 return;
             }
             msgNode.empty();
         },
 
-        showMessage: function ( level, txt, timeout ) {
+        showMessage: function (level, txt, timeout) {
             var msgNode = this.getMessageNode(),
-            message = Y.Node.create( "<div class='" + ( LEVEL[level] ? LEVEL[level] : "" ) + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
-            if ( level === "success" && !timeout ) {                            // @hack successful messages disapear automatically
-                if(this.toolbar instanceof Y.Plugin.WidgetToolbar){
+            message = Y.Node.create("<div class='" + ((LEVEL[level]) ? LEVEL[level] : "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
+            if (level === "success" && !timeout) {                              // @hack successful messages disapear automatically
+                if (this.toolbar instanceof Y.Plugin.WidgetToolbar) {
                     this.setStatusMessage(txt);
                     return;
-                }else{
+                } else {
                     timeout = 800;
                 }
             }
             msgNode.append(message);
 
-            message.closeHandler = message.one(".close").once( "click", destroySelf, message );
+            message.closeHandler = message.one(".close").once("click", destroySelf, message);
 
-            if ( timeout ) {
-                message.timeout = Y.later( timeout, message, destroySelf);
+            if (timeout) {
+                message.timeout = Y.later(timeout, message, destroySelf);
             }
         },
 
         getMessageNode: function () {
-            var msgNode = this.get( BOUNDING_BOX ).one( ".wegas-systemmessage" );
-            if ( !msgNode ) {
-                this.get( BOUNDING_BOX ).append( "<div class='wegas-systemmessage'></div>" );
-                return this.get( BOUNDING_BOX ).one( ".wegas-systemmessage" );
+            var msgNode = this.get(BOUNDING_BOX).one(".wegas-systemmessage");
+            if (!msgNode) {
+                this.get(BOUNDING_BOX).append("<div class='wegas-systemmessage'></div>");
+                return this.get(BOUNDING_BOX).one(".wegas-systemmessage");
             }
             return msgNode;
         },
-        setStatusMessage: function(txt){
+        setStatusMessage: function (txt) {
             var statusNode = this._getStatusNode();
-            if(statusNode === null){
+            if (statusNode === null) {
                 return false;
             }
             statusNode.setContent(txt);
             return true;
         },
-        _getStatusNode: function(){
+        _getStatusNode: function () {
             var statusNode;
-            if(!(this.toolbar instanceof Y.Plugin.WidgetToolbar)){
+            if (!(this.toolbar instanceof Y.Plugin.WidgetToolbar)) {
                 return null;
             }
             statusNode = this.toolbar.get("header").one(".wegas-status-message");
-            if(!statusNode){
+            if (!statusNode) {
                 statusNode = new Y.Node.create("<span class='wegas-status-message'></span>");
                 this.toolbar.get("header").append(statusNode);
             }
             return statusNode;
         }
 
-    } );
+    });
 
-    Y.mix( Widget, {
+    Y.mix(Widget, {
 
         /**
          *  Defines edition menu to be used in editor
@@ -229,7 +229,7 @@ YUI.add("wegas-widget", function (Y) {
         * @static
         * @param {String} type String type of the field
         */
-        getClass: function( type ) {
+        getClass: function (type) {
         // @todo
         },
 
@@ -239,7 +239,7 @@ YUI.add("wegas-widget", function (Y) {
         * @param {Wegas.Widget} Widget Class
         * @return {String} returns the Wegas type string or <code>null</code>
         */
-        getType: function( FieldClass ) {
+        getType: function (FieldClass) {
         // @todo
         },
 
@@ -247,7 +247,7 @@ YUI.add("wegas-widget", function (Y) {
         /**
         * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
         */
-        getRawModulesFromDefinition: function(cfg) {
+        getRawModulesFromDefinition: function (cfg) {
 
             var i, props, type = cfg.type || "text",
             module = YUI_config.groups.wegas.modulesByType[type],
@@ -258,16 +258,16 @@ YUI.add("wegas-widget", function (Y) {
             }
 
             props = [ "children" ];
-            for ( i = 0; i < props.length; i = i + 1) {
+            for (i = 0; i < props.length; i = i + 1) {
                 if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParent widgets)
-                    Y.Array.each(cfg[props[i]], function(field) {
-                        modules = modules.concat( this.getModulesFromDefinition(field) );
+                    Y.Array.each(cfg[props[i]], function (field) {
+                        modules = modules.concat(this.getModulesFromDefinition(field));
                     }, this);
                 }
             }
 
             props = ["left", "right", "center", "top", "bottom"];               // Get definitions from children (for Y.Wegas.Layout widgets)
-            for ( i = 0; i < props.length; i = i + 1) {
+            for (i = 0; i < props.length; i = i + 1) {
                 if (cfg[props[i]]) {
                     modules = modules.concat(this.getModulesFromDefinition(cfg[props[i]]));
                 }
@@ -278,17 +278,17 @@ YUI.add("wegas-widget", function (Y) {
         /**
          * Return unique modules definitions
          */
-        getModulesFromDefinition: function(cfg) {
+        getModulesFromDefinition: function (cfg) {
             var modules = Y.Wegas.Widget.getRawModulesFromDefinition(cfg);
             return Y.Object.keys(Y.Array.hash(modules));
         },
         /**
          * Load the modules from an Wegas widget definition
          */
-        use: function(cfg, cb) {
+        use: function (cfg, cb) {
             var modules = Y.Wegas.Widget.getModulesFromDefinition(cfg);
             modules.push(cb);
-            Y.use.apply( Y, modules);
+            Y.use.apply(Y, modules);
         }
     });
 
@@ -327,7 +327,7 @@ YUI.add("wegas-widget", function (Y) {
      * @hack Override so plugin host accepts string definition of classes and
      * look it up in the Y.Wegas.* package.
      */
-    var newPlug = Y.DataSource.IO.prototype.plug = function(Plugin, config) {
+    var newPlug = Y.DataSource.IO.prototype.plug = function (Plugin, config) {
         var i, ln, ns;
 
         if (Lang.isArray(Plugin)) {
