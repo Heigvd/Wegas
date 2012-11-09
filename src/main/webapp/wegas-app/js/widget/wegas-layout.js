@@ -32,7 +32,7 @@ YUI.add('wegas-layout', function (Y) {
         },
 
         bindUI: function () {
-            Y.on("windowresize", Y.bind(this.syncUI, this ));                // Sync the layout whenever the windows is resized
+            Y.on("windowresize", Y.bind(this.syncUI, this));                // Sync the layout whenever the windows is resized
             //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
             Y.on('domready', this.syncUI, this);
         },
@@ -44,7 +44,7 @@ YUI.add('wegas-layout', function (Y) {
 
         // ** Private Methods ** //
 
-        getPositionNode: function ( position ) {
+        getPositionNode: function (position) {
             var target;
             if (position === "top") {
                 target = this.getStdModNode("header");
@@ -52,59 +52,59 @@ YUI.add('wegas-layout', function (Y) {
             } else if (position === "bottom") {
                 target = this.getStdModNode("footer");
 
-            } else if (position == "left") {
+            } else if (position === "left") {
                 target = this.getStdModNode("body").one(".wegas-layout-left");
 
-            } else if (position == "center") {
+            } else if (position === "center") {
                 target = this.getStdModNode("body").one(".wegas-layout-center");
 
-            } else if (position == "right") {
+            } else if (position === "right") {
                 target = this.getStdModNode("body").one(".wegas-layout-right");
             }
             return target;
         },
 
-        hidePosition: function ( position ) {
+        hidePosition: function (position) {
             var anim = new Y.Anim({
-                node: this.getPositionNode( position ),
+                node: this.getPositionNode(position),
                 to: {
                     width: "0px"
                 },
                 easing: 'easeIn',
                 duration: 0.6
             });
-            anim.on('tween', this.syncCenterNode, this );
+            anim.on('tween', this.syncCenterNode, this);
             //anim.on('end', this.syncCenterNode, this );
             anim.run();
         },
 
-        showPosition: function ( position ) {
+        showPosition: function (position) {
             var anim,
-            target = this.getPositionNode( position );
+            target = this.getPositionNode(position);
 
-            if ( target.getStyle("width") === "0px") {                       // Only display if hidden
+            if (target.getStyle("width") === "0px") {                       // Only display if hidden
                 anim = new Y.Anim({
-                    node: this.getPositionNode( position ),
+                    node: this.getPositionNode(position),
                     to: {
                         width: "350px"
                     },
                     easing: 'easeOut',
                     duration: 0.6
                 });
-                anim.on('tween', this.syncCenterNode, this );
+                anim.on('tween', this.syncCenterNode, this);
                 //anim.on('end ', this.syncCenterNode, this );
                 anim.run();
             }
         },
 
-        renderPosition: function ( position ) {
+        renderPosition: function (position) {
             var i, cWidget,
-            target = this.getPositionNode( position ),
-            positionCfg = this.get( position );
+            target = this.getPositionNode(position),
+            positionCfg = this.get(position);
 
 
-            if ( positionCfg ) {                                                // If there is a provided configuration
-                if (position == "left") {
+            if (positionCfg) {                                                  // If there is a provided configuration
+                if (position === "left") {
                     this.leftResize = new Y.Resize({
                         node: target,
                         handles: 'r'
@@ -112,20 +112,20 @@ YUI.add('wegas-layout', function (Y) {
                     this.leftResize.on("resize", this.syncCenterNode, this);
 
 
-                } else if (position == "right") {
+                } else if (position === "right") {
                     this.rightResize = new Y.Resize({
                         node: target,
                         handles: 'l'
                     });
                     this.rightResize.on("resize", this.syncCenterNode, this);
 
-                    target.setStyle("width", 0 );
+                    target.setStyle("width", 0);
                 }
 
-                for ( i = 0; i < positionCfg.children.length; i = i + 1) {      // ender the children
-                    cWidget = Y.Wegas.Widget.create( positionCfg.children[ i ] );
+                for (i = 0; i < positionCfg.children.length; i = i + 1) {      // ender the children
+                    cWidget = Y.Wegas.Widget.create(positionCfg.children[i]);
                     // cWidget.after("render", this.syncUI, this );
-                    cWidget.render( target );
+                    cWidget.render(target);
                 }
             } else {
                 target.setStyle("width", "0");
@@ -140,7 +140,7 @@ YUI.add('wegas-layout', function (Y) {
             leftNode = bodyNode.one(".wegas-layout-left"),
             rightNode = bodyNode.one(".wegas-layout-right");
 
-            leftNode.setStyles( {
+            leftNode.setStyles({
                 right: "auto",
                 left: "0px"
             });
@@ -148,7 +148,7 @@ YUI.add('wegas-layout', function (Y) {
                 "left": leftNode.getStyle("width"),
                 "right": rightNode.getStyle("width")
             });
-            rightNode.setStyles( {
+            rightNode.setStyles({
                 right: "0px",
                 left: "auto"
             });
@@ -158,14 +158,14 @@ YUI.add('wegas-layout', function (Y) {
         /**
          * Override yui implementation to prevent section's content sync.
          */
-        _syncUIStdMod : function() {
+        _syncUIStdMod : function () {
             this._uiSetFillHeight(this.get("fillHeight"));
         },
 
         /**
          * Override yui implementation to use custom templates.
          */
-        _getStdModTemplate : function(section) {
+        _getStdModTemplate : function (section) {
             return Y.Node.create(Layout.TEMPLATES[section], this._stdModNode.get("ownerDocument"));
         }
 
@@ -178,15 +178,15 @@ YUI.add('wegas-layout', function (Y) {
             center: {},
             /* Reset default value to force display by default */
             headerContent: {
-                value:""
+                value: ""
             },
             /* Reset default value to force display by default */
             footerContent: {
-                value:""
+                value: ""
             },
             /* Reset default value to force display by default */
             bodyContent: {
-                value:''
+                value: ''
             },
             height: {
                 value: "100%"
