@@ -22,27 +22,27 @@ YUI.add("wegas-inputex-roleselect",function(Y){
     Y.extend(inputEx.Wegas.RoleSelect, inputEx.SelectField, {
 
         setValue: function ( val, sendUpdatedEvent ) {
-            inputEx.Wegas.RoleSelect.superclass.setValue.call( this, val.id, sendUpdatedEvent );
+            inputEx.Wegas.RoleSelect.superclass.setValue.call(this, val.id, sendUpdatedEvent );
         },
         getValue: function ( ) {
             return {
                 "@class": "Role",
                 name: "",
                 description: "",
-                id: inputEx.Wegas.RoleSelect.superclass.getValue.call( this )
+                id: inputEx.Wegas.RoleSelect.superclass.getValue.call(this )
             }
         },
         setOptions: function (options) {
-            inputEx.Wegas.RoleSelect.superclass.setOptions.call( this, options );
+            inputEx.Wegas.RoleSelect.superclass.setOptions.call(this, options );
             this.options.choices = [];
             for ( var i = 0; i < Y.Wegas.RoleFacade.data.length; i = i + 1 ) {
                 this.options.choices.push({
-                    value: Y.Wegas.RoleFacade.data[i].get( "id" ),
-                    label: Y.Wegas.RoleFacade.data[i].get( "name" )
+                    value: Y.Wegas.RoleFacade.data[i].get("id"),
+                    label: Y.Wegas.RoleFacade.data[i].get("name")
                 });
             }
         }
     });
 
-    inputEx.registerType( "roleselect", inputEx.Wegas.RoleSelect );             // Register this class as "wegasurl" type
+    inputEx.registerType("roleselect", inputEx.Wegas.RoleSelect );             // Register this class as "wegasurl" type
 });

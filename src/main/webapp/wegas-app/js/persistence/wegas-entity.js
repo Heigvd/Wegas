@@ -192,7 +192,7 @@ YUI.add('wegas-entity', function(Y) {
         revive: function(data) {
             var walk = function(o,key) {
                 var k,v,value = o[key];
-                if (value && typeof value === "object" ) {
+                if (value && typeof value === "object") {
                     for (k in value) {
                         if (value.hasOwnProperty(k)) {
                             v = walk(value, k);
@@ -247,11 +247,11 @@ YUI.add('wegas-entity', function(Y) {
             if (fullName.split(".")[1] === "evaluated") {                   // If evaluated value is required
 
                 if (val.name) {                                               // Eval based on the name field
-                    val.evaluated = ds.rest.find( 'name', val.name );
+                    val.evaluated = ds.rest.find('name', val.name );
 
                 } else if (val.expr) {                                        // if absent evaluate the expr field
                     val.evaluated = ds.rest.findById(
-                        Y.Wegas.VariableDescriptorFacade.script.scopedEval( val.expr ) );
+                        Y.Wegas.VariableDescriptorFacade.script.scopedEval( val.expr ));
 
                 } else if (val.i) {
                     val.evaluated = ds.rest.findById(val.id);
@@ -614,7 +614,7 @@ YUI.add('wegas-entity', function(Y) {
     Y.Wegas.persistence.JpaAccount = Y.Base.create("JpaAccount", Y.Wegas.persistence.Entity, [], {
 
         getPublicName: function () {
-            if ( this.get("firstname") ) {
+            if (this.get("firstname")) {
                 return this.get("firstname") + " " + this.get("lastname");
 
             } else {
@@ -769,7 +769,7 @@ YUI.add('wegas-entity', function(Y) {
                     return s === null || Y.Lang.isString(s);
                 },
                 getter: function(val) {
-                    return val || this.get( "label");
+                    return val || this.get("label");
                 }
             },
             name: {
@@ -1503,7 +1503,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
          * InboxInstance mapper
          */
-    Y.Wegas.persistence.InboxInstance = Y.Base.create( "InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
+    Y.Wegas.persistence.InboxInstance = Y.Base.create("InboxInstance", Y.Wegas.persistence.VariableInstance, [], { }, {
         ATTRS: {
             "@class": {
                 value: "InboxInstance",
@@ -1592,7 +1592,7 @@ YUI.add('wegas-entity', function(Y) {
                     this._inProgress = true;
                     Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"), this._yuid);
                 } else {
-                    console.log("evaluation in progress");
+                    Y.log("evaluation in progress");
                 }
             }
         },

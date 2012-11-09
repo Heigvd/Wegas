@@ -34,10 +34,10 @@ YUI.add('wegas-inputex', function(Y) {
      *  @hack So we can easily change classs on inputex fields
      */
     Y.inputEx.Field.prototype.addClassName = function ( className ) {
-        Y.one( this.divEl ).addClass( className );
+        Y.one(this.divEl ).addClass( className );
     };
     Y.inputEx.Field.prototype.removeClassName = function ( className ) {
-        Y.one( this.divEl ).removeClass( className );
+        Y.one(this.divEl ).removeClass( className );
     };
 
     /**
@@ -50,12 +50,12 @@ YUI.add('wegas-inputex', function(Y) {
 
             if(cfg.fields) {
                 Y.Array.each(cfg.fields, function(field) {
-                    modules = modules.concat( walk(field) );
+                    modules = modules.concat( walk(field));
                 }, this);
             }
             if(cfg.availableFields) {
                 Y.Array.each(cfg.availableFields, function(field) {
-                    modules = modules.concat( walk(field) );
+                    modules = modules.concat( walk(field));
                 }, this);
             }
 

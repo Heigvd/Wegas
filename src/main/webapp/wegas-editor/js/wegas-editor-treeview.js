@@ -28,7 +28,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
         renderUI: function () {
             this.treeView = new Y.TreeView();
-            this.treeView.render( this.get( CONTENTBOX ) );
+            this.treeView.render(this.get( CONTENTBOX ));
             this.menu = new Y.Wegas.Menu();
         },
 
@@ -96,7 +96,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
             if (domTarget.hasClass( "wegas-treeview-editmenubutton")) {       // If user clicked on the edit button
                 this.menu.attachTo( domTarget );                                // Display the edit button next to it
             } else {                                                            // Otherwise the user clicked on the node
-                this.menu.item( 0 ).fire( "click" );                            // Excute the actions associated to the first item of the menu
+                this.menu.item( 0 ).fire("click");                            // Excute the actions associated to the first item of the menu
             }
         },
 
@@ -269,7 +269,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'GameModel':
-                                text = 'Game model: ' + el.get( "name" );
+                                text = 'Game model: ' + el.get("name");
                                 ret.push({
                                     label: text,
                                     selected: selected,
@@ -484,7 +484,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
             dataSelector: {},
             dataSource: {
                 setter: function ( val ) {
-                    if ( Y.Lang.isString( val ) ) {
+                    if ( Y.Lang.isString( val )) {
                         val = Y.Wegas.app.dataSources[val];
                     }
                     return val;
@@ -494,11 +494,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
     });
 
 
-    Y.namespace( 'Wegas' ).EditorTreeView = EditorTreeView;
+    Y.namespace('Wegas').EditorTreeView = EditorTreeView;
 
     var VariableDescriptorTreeview = Y.Base.create("wegas-editor-variabledescriptortreeview", Y.Wegas.EditorTreeView, [], {
         bindUI: function () {
-            VariableDescriptorTreeview.superclass.bindUI.call( this );
+            VariableDescriptorTreeview.superclass.bindUI.call(this );
 
         //            this.sortable = new Y.Sortable({
         //                container: this.get( "contentBox"),
@@ -508,7 +508,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
         }
     });
 
-    Y.namespace( 'Wegas' ).VariableDescriptorTreeview = VariableDescriptorTreeview;
+    Y.namespace('Wegas').VariableDescriptorTreeview = VariableDescriptorTreeview;
 
     var LobbyTreeView = Y.Base.create("wegas-editor-treeview", Y.Wegas.EditorTreeView, [], {
 
@@ -519,7 +519,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 if (elements.hasOwnProperty(i)) {
                     el = elements[i];
 
-                    switch ( el.get( '@class' )) {
+                    switch ( el.get('@class')) {
                         case 'Game':
                             ret.push({
                                 label: el.get("name"),
@@ -537,7 +537,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
         }
     });
 
-    Y.namespace( 'Wegas' ).LobbyTreeView = LobbyTreeView;
+    Y.namespace('Wegas').LobbyTreeView = LobbyTreeView;
 
 
 });

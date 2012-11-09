@@ -189,7 +189,7 @@ YUI.add('treeview', function (Y) {
             for (var event in this.eventInstances) {
                 this.eventInstances[event].detach();
             }
-            if(this.get("rightWidget") ){
+            if(this.get("rightWidget")){
                 this.get("rightWidget").destroy();
             }
 
