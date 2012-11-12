@@ -17,7 +17,9 @@
                         "type": "VariableDisplay",
                         "label": "Money",
                         "view": "text",
-                        "variable": "money"
+                        "variable": {
+                            "name": "money"
+                        }
                     }, {
                         "type": "Button",
                         "label": "Battle!",

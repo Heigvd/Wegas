@@ -81,7 +81,7 @@ YUI.add("wegas-widget", function (Y) {
 
         showMessage: function (level, txt, timeout) {
             var msgNode = this.getMessageNode(),
-            message = Y.Node.create("<div class='" + ((LEVEL[level]) ? LEVEL[level] : "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
+            message = Y.Node.create("<div class='" + (LEVEL[level] || "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
             if (level === "success" && !timeout) {                              // @hack successful messages disapear automatically
                 if (this.toolbar instanceof Y.Plugin.WidgetToolbar) {
                     this.setStatusMessage(txt);

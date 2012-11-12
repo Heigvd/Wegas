@@ -21,14 +21,16 @@
                                         "type": "VariableDisplay",
                                         "label": "Phase",
                                         "view": "title",
-                                        "variable": "phases",
-                                        "dataSource": "VariableDescriptor"
+                                        "variable": {
+                                            "name": "phases"
+                                        }
                                     }, {
                                         "type": "VariableDisplay",
                                         "label": "Period",
                                         "view": "valuebox",
-                                        "variable": "phases",
-                                        "dataSource": "VariableDescriptor"
+                                        "variable": {
+                                            "name": "phases"
+                                        }
                                     }]
                             },{
                                 "type": "Button",
