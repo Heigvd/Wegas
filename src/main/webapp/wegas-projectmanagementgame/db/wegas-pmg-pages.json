@@ -13,39 +13,45 @@
                         "type": "VariableDisplay",
                         "label": "Direction",
                         "view": "gauge",
-                        "variable": "managementApproval",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "managementApproval"
+                        }
                     },{
                         "type": "VariableDisplay",
                         "label": "User",
                         "view": "gauge",
-                        "variable": "userApproval",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "userApproval"
+                        }
                     },{
                         "type": "VariableDisplay",
                         "label": "Fixed costs",
                         "view": "gauge",
-                        "variable": "fixedCosts",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "fixedCosts"
+                        }
                     },{
                         "type": "VariableDisplay",
                         "label": "Quality",
                         "view": "gauge",
-                        "variable": "quality",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "quality"
+                        }
                     },{
                         "type": "VariableDisplay",
                         "label": "Delay",
                         "view": "gauge",
-                        "variable": "delay",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "delay"
+                        }
                     },{
                         "cssClass": "pmg-timevariable",
                         "type": "VariableDisplay",
                         "label": "Available time",
-                        "variable": "timeCards",
                         "view": "box",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "timeCards"
+                        }
                     }]
             },
             {

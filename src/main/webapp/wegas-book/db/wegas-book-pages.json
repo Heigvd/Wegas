@@ -11,14 +11,16 @@
                         "type": "VariableDisplay",
                         "label": "Combat skills",
                         "view": "text",
-                        "variable": "combatSkill",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "combatSkill"
+                        }
                     }, {
                         "type": "VariableDisplay",
                         "label": "Stamina",
                         "view": "text",
-                        "variable": "stamina",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "stamina"
+                        }
                     }
                 ]}, {
                 "label":"pageLoader",

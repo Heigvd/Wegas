@@ -56,7 +56,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * Initialization Code: Sets up privately used state
          * properties, and publishes the events Tooltip introduces
          */
-        initializer : function(config) {
+        initializer : function (config) {
 
             // Currently bound trigger node information
             this._currTrigger = {
@@ -86,10 +86,10 @@ YUI.add('wegas-tooltip', function (Y) {
             // with the default behavior defined in the _defTriggerEnterFn method
             this.publish("triggerEnter", {
                 defaultFn: this._defTriggerEnterFn,
-                preventable:true
+                preventable: true
             });
             this.publish("triggerLeave", {
-                preventable:false
+                preventable: false
             });
         },
 
@@ -97,7 +97,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * Destruction Code: Clears event handles, timers,
          * and current trigger information
          */
-        destructor : function() {
+        destructor : function () {
             this._clearCurrentTrigger();
             this._clearTimers();
             this._clearHandles();
@@ -107,7 +107,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * bindUI is used to bind attribute change and dom event
          * listeners
          */
-        bindUI : function() {
+        bindUI : function () {
             this.after("delegateChange", this._afterSetDelegate);
             this.after("nodesChange", this._afterSetNodes);
 
@@ -118,7 +118,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * syncUI is used to update the rendered DOM, based on the current
          * Tooltip state
          */
-        syncUI : function() {
+        syncUI : function () {
             this._uiSetNodes(this.get("triggerNodes"));
         },
 
@@ -126,27 +126,27 @@ YUI.add('wegas-tooltip', function (Y) {
          * Public method, which can be used by triggerEvent event listeners
          * to set the content of the tooltip for the current trigger node
          */
-        setTriggerContent : function(content) {
-            var contentBox = this.get("contentBox");
+        setTriggerContent : function (content) {
+            var i, contentBox = this.get("contentBox");
             contentBox.set("innerHTML", "");
 
             if (content) {
                 if (content instanceof Node) {
-                    for (var i = 0, l = content.size(); i < l; ++i) {
+                    for (i = 0; i < content.size(); ++i) {
                         contentBox.appendChild(content.item(i));
                     }
                 } else if (Lang.isString(content)) {
-                    contentBox.set("innerHTML", content );
-                    contentBox.all("img").once ("load", function() {
+                    contentBox.set("innerHTML", content);
+                    contentBox.all("img").once("load", function () {
                         this.constrain();
-                    }, this );
+                    }, this);
                 }
             }
         },
 
-        addTriggerNode: function ( node, content ) {
+        addTriggerNode: function (node, content) {
             this.get("content")[node.get("id")] = content;
-            this.get("triggerNodes").push ( node );
+            this.get("triggerNodes").push(node);
             this.syncUI();
         },
 
@@ -154,7 +154,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * Default attribute change listener for
          * the triggerNodes attribute
          */
-        _afterSetNodes : function(e) {
+        _afterSetNodes : function (e) {
             this._uiSetNodes(e.newVal);
         },
 
@@ -162,7 +162,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * Default attribute change listener for
          * the delegate attribute
          */
-        _afterSetDelegate : function(e) {
+        _afterSetDelegate : function (e) {
             this._bindDelegate(e.newVal);
         },
 
@@ -170,7 +170,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * Updates the rendered DOM to reflect the
          * set of trigger nodes passed in
          */
-        _uiSetNodes : function(nodes) {
+        _uiSetNodes : function (nodes) {
             if (this._triggerNodes) {
                 this._triggerNodes.removeClass(this.getClassName("trigger"));
             }
@@ -185,7 +185,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * Attaches the default mouseover DOM listener to the
          * current delegate node
          */
-        _bindDelegate : function() {
+        _bindDelegate : function () {
             var eventHandles = this._eventHandles;
 
             if (eventHandles.delegate) {
@@ -201,7 +201,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * Delegates to the _enterTrigger method,
          * if the mouseover enters a trigger node.
          */
-        _onNodeMouseEnter : function(e) {
+        _onNodeMouseEnter : function (e) {
             var node = e.currentTarget;
             if (node && (!this._currTrigger.node || !node.compareTo(this._currTrigger.node))) {
                 this._enterTrigger(node, e.pageX, e.pageY);
@@ -214,14 +214,14 @@ YUI.add('wegas-tooltip', function (Y) {
          * Delegates to _leaveTrigger if the mouse
          * leaves the current trigger node
          */
-        _onNodeMouseLeave : function(e) {
+        _onNodeMouseLeave : function (e) {
             this._leaveTrigger(e.currentTarget);
         },
 
         /*
          * Default mouse move DOM event listener
          */
-        _onNodeMouseMove : function(e) {
+        _onNodeMouseMove: function (e) {
             this._overTrigger(e.pageX, e.pageY);
         },
 
@@ -231,13 +231,13 @@ YUI.add('wegas-tooltip', function (Y) {
          * event which can be prevented by listeners to
          * show the tooltip from being displayed.
          */
-        _enterTrigger : function(node, x, y) {
+        _enterTrigger: function (node, x, y) {
             this._clearCurrentTrigger();
             this._setCurrentTrigger(node, x, y);
             this.fire("triggerEnter", {
-                node:node,
-                pageX:x,
-                pageY:y
+                node: node,
+                pageX: x,
+                pageY: y
             });
         },
 
@@ -246,7 +246,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * which will setup the timer to display the tooltip,
          * if the default handler has not been prevented.
          */
-        _defTriggerEnterFn : function(e) {
+        _defTriggerEnterFn: function (e) {
             var node = e.node;
             if (!this.get("disabled")) {
                 this._clearTimers();
@@ -260,7 +260,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * the current trigger node. Fires the triggerLeave
          * event and sets up the hide timer
          */
-        _leaveTrigger : function(node) {
+        _leaveTrigger: function (node) {
             this.fire("triggerLeave");
 
             this._clearCurrentTrigger();
@@ -274,7 +274,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * on the trigger node. Stores the current mouse
          * x, y positions
          */
-        _overTrigger : function(x, y) {
+        _overTrigger: function (x, y) {
             this._currTrigger.mouseX = x;
             this._currTrigger.mouseY = y;
         },
@@ -283,11 +283,10 @@ YUI.add('wegas-tooltip', function (Y) {
          * Shows the tooltip, after moving it to the current mouse
          * position.
          */
-        _showTooltip : function(node) {
-            var x = this._currTrigger.mouseX;
-            var y = this._currTrigger.mouseY;
+        _showTooltip: function (node) {
+            var x = this._currTrigger.mouseX, y = this._currTrigger.mouseY;
 
-            this.move( x + Tooltip.OFFSET_X, y + Tooltip.OFFSET_Y );
+            this.move(x + Tooltip.OFFSET_X, y + Tooltip.OFFSET_Y);
 
             this.show();
             this._clearTimers();
@@ -298,7 +297,7 @@ YUI.add('wegas-tooltip', function (Y) {
         /*
          * Hides the tooltip, after clearing existing timers.
          */
-        _hideTooltip : function() {
+        _hideTooltip: function () {
             this._clearTimers();
             this.hide();
         },
@@ -311,10 +310,10 @@ YUI.add('wegas-tooltip', function (Y) {
          * b). From the content lookup map if it is set, or
          * c). From the title attribute if set.
          */
-        _setTriggerContent : function(node) {
+        _setTriggerContent: function (node) {
             var content = this.get("content");
             if (content && !(content instanceof Node || Lang.isString(content))) {
-                content = content[node.get("id")] || unescape( node.getAttribute("title")) ;
+                content = content[node.get("id")] || unescape(node.getAttribute("title"));
             }
             this.setTriggerContent(content);
         },
@@ -324,7 +323,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * out the title attribute if set and setting up mousemove/out
          * listeners.
          */
-        _setCurrentTrigger : function(node, x, y) {
+        _setCurrentTrigger : function (node, x, y) {
 
             var currTrigger = this._currTrigger,
             triggerHandles = this._eventHandles.trigger;
@@ -348,7 +347,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * the title attribute on the trigger node,
          * if it was originally set.
          */
-        _clearCurrentTrigger : function() {
+        _clearCurrentTrigger: function () {
 
             var currTrigger = this._currTrigger,
             triggerHandles = this._eventHandles.trigger;
@@ -372,7 +371,7 @@ YUI.add('wegas-tooltip', function (Y) {
         /*
          * Cancel any existing show/hide timers
          */
-        _clearTimers : function() {
+        _clearTimers: function () {
             var timers = this._timers;
             if (timers.hide) {
                 timers.hide.cancel();
@@ -387,7 +386,7 @@ YUI.add('wegas-tooltip', function (Y) {
         /*
          * Detach any stored event handles
          */
-        _clearHandles : function() {
+        _clearHandles: function () {
             var eventHandles = this._eventHandles;
 
             if (eventHandles.delegate) {
@@ -404,10 +403,10 @@ YUI.add('wegas-tooltip', function (Y) {
 
         // STATIC METHODS/PROPERTIES
 
-        OFFSET_X : 15,
-        OFFSET_Y : 15,
-        OFFSCREEN_X : OX,
-        OFFSCREEN_Y : OY,
+        OFFSET_X: 15,
+        OFFSET_Y: 15,
+        OFFSCREEN_X: OX,
+        OFFSCREEN_Y: OY,
 
         CSS_PREFIX: "wegas-tooltip",
 
@@ -435,7 +434,7 @@ YUI.add('wegas-tooltip', function (Y) {
                 value: false
             },
 
-            zIndex:{
+            zIndex: {
                 value: 26
             },
             /*
@@ -453,7 +452,7 @@ YUI.add('wegas-tooltip', function (Y) {
              */
             triggerNodes : {
                 value: null,
-                setter: function(val) {
+                setter: function (val) {
                     if (val && Lang.isString(val)) {
                         val = Node.all(val);
                     }
@@ -468,7 +467,7 @@ YUI.add('wegas-tooltip', function (Y) {
              */
             delegate : {
                 value: null,
-                setter: function(val) {
+                setter: function (val) {
                     return Y.one(val) || Y.one("document");
                 }
             },
@@ -478,7 +477,7 @@ YUI.add('wegas-tooltip', function (Y) {
              * to display the tooltip
              */
             showDelay : {
-                value:250
+                value: 250
             },
 
             /*
@@ -486,7 +485,7 @@ YUI.add('wegas-tooltip', function (Y) {
              * to hide the tooltip
              */
             hideDelay : {
-                value:10
+                value: 10
             },
 
             /*
@@ -495,14 +494,14 @@ YUI.add('wegas-tooltip', function (Y) {
              * trigger node
              */
             autoHideDelay : {
-                value:2000
+                value: 2000
             },
 
             /*
              * Override the default visibility set by the widget base class
              */
             visible : {
-                value:false
+                value: false
             },
 
             /*
@@ -510,11 +509,11 @@ YUI.add('wegas-tooltip', function (Y) {
              * to position the tooltip offscreen
              */
             xy: {
-                value:[OX, OY]
+                value: [OX, OY]
             },
             delegateSelect: {
                 value: null,
-                getter: function ( val ) {
+                getter: function (val) {
 
                     return val || ("." + this.getClassName("trigger"));
                 }
