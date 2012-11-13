@@ -52,10 +52,8 @@ YUI.add('wegas-pageloader', function (Y) {
             Y.Wegas.app.after('currentPlayerChange', onUpdate, this);
         },
         syncUI: function () {
-
+            var val = this.get("variable.evaluated");
             if (this.get("variable")) {
-
-                var val = this.get("variable.evaluated");
                 if (val && val.getInstance().get('value')) {
                     this.set("pageId", val.getInstance().get('value'));
                 }

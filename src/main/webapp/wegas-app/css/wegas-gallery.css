@@ -6,27 +6,28 @@
 }
 .wegas-gallery img{
     display: inline-block;
+    background-color: white;
     transition: max-height 0.5s, max-width 0.5s;
     -o-transition: max-height 0.5s, max-width 0.5s;
     -ms-transition: max-height 0.5s, max-width 0.5s;
     -moz-transition: max-height 0.5s, max-width 0.5s;
-    -webkit-transition: max-height 0.5s, max-width 0.5s, -webkit-transform 0.3s 0.25s;
+    -webkit-transition: max-height 0.5s, max-width 0.5s, -webkit-transform 0.3s 0.25s, left 0.5s, right 0.5s;
 }
 .wegas-gallery li{
     vertical-align: top;
     text-align: center;
     padding: 10px 15px;
-    display:inline-block;
-    /*START zone sensible ...*/
-    -webkit-perspective: 2000;
+    display: inline-block;
+    /*START Rotate ...*/
+    /*-webkit-perspective: 2000;
 }
 .wegas-gallery .gallery-selected + li > img{
     -webkit-transform: rotateY(-60deg);
 }
 .wegas-gallery .gallery-before-selected > img{
-    -webkit-transform: rotateY(60deg);
+    -webkit-transform: rotateY(60deg);*/
 }
-/*END zone sensible*/
+/*END Rotate*/
 .wegas-gallery li.img-loading img{
     visibility:hidden;
 }
@@ -39,36 +40,37 @@
 .wegas-gallery .gallery-selected img{
     box-shadow: 0 0 25px black;
 }
-.wegas-gallery .gallery-selected + li.img-loading{
-    background: url(../images/loading.gif) no-repeat 10% 50%;
-}
 .wegas-gallery .gallery-selected .gallery-text{
     display: block;
 }
-.wegas-gallery .gallery-selected + li{
-    text-align: left;
+.wegas-gallery .gallery-selected + li > img{
+    box-shadow: 0 0 12px black;
 }
-.wegas-gallery .gallery-before-selected{
-    text-align: right;
-
+.wegas-gallery .gallery-before-selected > img{
+    box-shadow: 0 0 12px black;
 }
 .yui3-scrollview .gallery-mask{
     height: 100%;
     position:absolute;
     min-width: 30px;
     color:white;
+    cursor: pointer;
+    box-shadow: 0px 0px 15px black;
     text-shadow:1px 1px 3px whitesmoke;
     top:0;
-    background-color: transparent;
+    background-color: rgba(10, 10, 10, 0.2);
     z-index:2;
 }
 
 .yui3-scrollview .gallery-mask > div{
     display:none;
-    margin: 30px 10px;
+    width: 64px;
+    height: 64px;
+    position: absolute;
+    font-size: 26pt;
+    font-weight: bold;
     cursor: pointer;
-    padding: 5px;
-    background-color: rgba(110, 110, 110, 0.4);
+    top: 30%;
 }
 .gallery-mask:hover>div{
     display:inline-block;
@@ -80,10 +82,12 @@
     right:0;
 }
 .gallery-mask-left > div{
-    float: right;
+    left: 10px;
+    background: url(../images/previous.png);
 }
 .gallery-mask-right > div{
-    float: left;
+    right: 10px;
+    background: url(../images/next.png);
 }
 .gallery-text{
     font-weight: bold;

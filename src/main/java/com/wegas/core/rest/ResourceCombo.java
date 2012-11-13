@@ -59,7 +59,7 @@ public class ResourceCombo {
     public Response index(@Context Request req) throws IOException {
         final Set<String> files = this.uriInfo.getQueryParameters().keySet();
 
-        final String mediaType = ( files.iterator().next().endsWith("css") ) // Select the content-type based on the first file extension
+        final String mediaType = (files.iterator().next().endsWith("css")) // Select the content-type based on the first file extension
                 ? "text/css"
                 : "text/javascript";
 
@@ -84,19 +84,16 @@ public class ResourceCombo {
             try {
                 InputStream fis = (InputStream) servletContext.getResource(fileName).getContent();
                 String content = new Scanner(fis).useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
-
                 if (mediaType.equals("text/css")) {                             // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
-                    content = content.replace("url(",
-                            "url(" + servletContext.getContextPath() + dir);
+                    content = content.replaceAll("url\\(([^:\\)]+\\))", /* Regexp to avoid rewriting protocol guess they contain ':' (http: data:) */
+                            "url(" + servletContext.getContextPath() + dir + "$1");
                 }
 
                 combinedJavaScript.append(content);
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 logger.error("Resource not found : {}", fileName);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 logger.error("Error reading file: {}", fileName);
             }
         }
