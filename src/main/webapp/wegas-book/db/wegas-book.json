@@ -2,7 +2,7 @@
     "@class": "GameModel",
     "name": "Book",
     "cssUri":"wegas-book/css/wegas-book.css",
-    "widgetsUri":"wegas-book/db/wegas-book-pages.json",
+    "widgetsUri":"wegas-book/db/wegas-book-pages.json#",
     "games": [{
         "@class": "Game",
         "name": "First game",

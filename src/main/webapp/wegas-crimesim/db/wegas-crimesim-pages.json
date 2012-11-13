@@ -1,72 +1,82 @@
-{"1":{
+{
+    "1": {
         "id": 1,
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout wegas-crimesim",
-        "children": [{
+        "children": [
+            {
                 "label": "Indicators",
                 "type": "List",
                 "cssClass": "header",
                 "direction": "horizontal",
-                "children": [{
+                "children": [
+                    {
                         "type": "Text",
                         "content": "Crimesim",
                         "cssClass": "wegas-crimesim-title"
-                    },{
+                    }, {
                         "type": "VariableDisplay",
                         "label": "Period",
                         "view": "valuebox",
                         "variable": {
                             "name": "period"
                         }
-                    },{
+                    }, {
                         "type": "Button",
                         "label": "Next period",
                         "view": "button",
                         "tooltip": "Advance to next period",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
                                     "onClick": "period.value += 1;\nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\nqdf.setCurrentTime(evidences.descriptor, self, period.value);\nhumanResources.value = 15;\n"
                                 }
-                            }]
-                    },{
+                            }
+                        ]
+                    }, {
                         "type": "VariableDisplay",
                         "label": "Costs",
                         "view": "text",
                         "variable": {
                             "name": "cost"
                         }
-                    },{
+                    }, {
                         "type": "VariableDisplay",
                         "label": "Human resources",
                         "variable": {
                             "name": "humanResources"
                         },
                         "view": "box"
-                    }]
+                    }
+                ]
             }, {
-                "id":"menu",
+                "id": "menu",
                 "label": "Menu",
                 "type": "List",
                 "cssClass": "menu",
                 "direction": "horizontal",
-                "children": [{
+                "children": [
+                    {
                         "type": "Button",
                         "label": "Accueil",
                         "cssClass": "menu-button",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 2,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            }]
-                    },{
+                            }
+                        ]
+                    }, {
                         "type": "Button",
                         "label": "Questions",
                         "cssClass": "menu-button",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 3,
@@ -77,85 +87,89 @@
                                 "cfg": {
                                     "variable": "questions"
                                 }
-                            }]
+                            }
+                        ]
                     }, {
                         "type": "Button",
                         "label": "Pièces",
                         "cssClass": "menu-button",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 4,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            }]
+                            }
+                        ]
                     }, {
                         "type": "Button",
                         "label": "Analyses results",
                         "cssClass": "menu-button",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 6,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            }]
-                    },{
+                            }
+                        ]
+                    }, {
                         "type": "Button",
                         "label": "Mails",
                         "cssClass": "menu-button",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 5,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            },{
+                            }, {
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": "inbox"
                                 }
-                            }]
-                    },{
+                            }
+                        ]
+                    }, {
                         "type": "LoginButton",
                         "cssClass": "menu-loginbutton"
-                    }]
+                    }
+                ]
             }, {
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
                 "pageId": 2
-            }]
-    },"2":{
+            }
+        ]
+    },
+    "2": {
         "id": 2,
         "type": "Text",
         "content": "Welcome to CrimeSim."
-    },"3":{
+    },
+    "3": {
         "id": 3,
         "type": "MCQTabView",
-<<<<<<< HEAD
-        "variableName": "questions"
-    },"4":{
-=======
         "variable": {
             "name": "questions"
         }
-    },{
->>>>>>> master
+    },
+    "4": {
         "id": 4,
         "type": "ScheduleDisplay"
-    },"5":{
+    },
+    "5": {
         "id": 5,
         "type": "InboxDisplay",
-<<<<<<< HEAD
-        "variable": "inbox"
-    }, "6":{
-=======
         "variable": {
             "name": "inbox"
         }
-    }, {
->>>>>>> master
+    },
+    "6": {
         "id": 6,
         "type": "ResultsDisplay"
     }
