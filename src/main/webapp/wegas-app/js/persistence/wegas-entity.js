@@ -244,7 +244,7 @@ YUI.add('wegas-entity', function(Y) {
          */
         VARIABLEDESCRIPTORGETTER: function(val, fullName) {
             var ds = Y.Wegas.VariableDescriptorFacade;
-            if (fullName.split(".")[1] === "evaluated") {                   // If evaluated value is required
+            if (fullName.split(".")[1] === "evaluated" && val) {                   // If evaluated value is required
 
                 if (val.name) {                                               // Eval based on the name field
                     val.evaluated = ds.rest.find('name', val.name );
