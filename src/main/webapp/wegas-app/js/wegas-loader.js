@@ -178,7 +178,7 @@ YUI().use(function (Y) {
                     'wegas-gallery': {
                         path: 'wegas-app/js/widget/wegas-gallery-min.js',
                         requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
-                        'scrollview-paginator', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
+                        'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
                         ix_provides: "WegasGallery"
                     },
 
@@ -367,11 +367,17 @@ YUI().use(function (Y) {
                         ix_provides: "PmgBreadcrumb"
                     },
 
-                    'wegas-pmg-tasklist': {
+                    'wegas-pmg-tasklist': { //Using simple taskList
                         path: 'wegas-pmg/js/wegas-pmg-tasklist.js',
                         requires: ['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
                         ix_provides: "PmgTasklist"
                     },
+                
+//                    'wegas-pmg-treebletasklist': { //Using Treeble
+//                        path: 'wegas-pmg/js/wegas-pmg-treebletasklist.js',
+//                        requires: ['wegas-pmg-treebletasklist', 'wegas-pmg-datatable'],
+//                        ix_provides: "PmgTreebleTasklist" 
+//                    },
 
                     'wegas-pmg-gantt': {
                         path: 'wegas-pmg/js/wegas-pmg-gantt.js',
@@ -387,7 +393,8 @@ YUI().use(function (Y) {
 
                     'wegas-pmg-datatable': {
                         path: 'wegas-pmg/js/wegas-pmg-datatable.js',
-                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],
+                        /*requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],*/ //Using Treeble
+                        requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable'], //Using simple datatable
                         ix_provides: "PmgDatatable"
                     },
 
