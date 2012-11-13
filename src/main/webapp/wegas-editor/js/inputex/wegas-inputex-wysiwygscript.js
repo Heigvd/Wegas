@@ -257,7 +257,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y){
 
             for ( i = 0; i < args.length; i = i + 1 ) {
                 if (this.currentMethod.arguments[i].scriptType === "string") {
-                    args[i] = '"' + args[i] + '"';
+                    args[i] = '"' + args[i].replace('"', '\\"') + '"';
                 }
             }
             return "VariableDescriptorFacade.find(" + this.inputs[ l - 3].getValue() + ")" +
