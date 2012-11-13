@@ -17,7 +17,7 @@
                         "label": "Period",
                         "view": "valuebox",
                         "variable": {
-                            "name": ""
+                            "name": "period"
                         }
                     },{
                         "type": "Button",
