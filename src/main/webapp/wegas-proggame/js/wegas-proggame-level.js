@@ -51,8 +51,8 @@ YUI.add('wegas-proggame-level', function (Y) {
         renderUI: function () {
             var cb = this.get( CONTENTBOX );
 
-            cb.one( ".ai" ).append( Y.Wegas.App.nl2br( this.get( "ai" ) ) );
-            cb.one( ".topcenter h1" ).setHTML( this.get( "label" ) );
+            cb.one( ".ai" ).append( Y.Wegas.App.nl2br(this.get( "ai" )) );
+            cb.one( ".topcenter h1" ).setHTML(this.get( "label" ));
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one( ".code" ),
@@ -63,13 +63,13 @@ YUI.add('wegas-proggame-level', function (Y) {
                 value: "move();fire();"
             });
 
-            this.display = new ProgGameDisplay( this.toObject() );
-            this.display.render( cb.one( ".terrain" ) );
+            this.display = new ProgGameDisplay(this.toObject());
+            this.display.render( cb.one( ".terrain" ));
 
             this.runButton = new Y.Wegas.Button( {
                 label: "RUN SCRIPT"
             } );
-            this.runButton.render( cb.one( ".buttons" ) );
+            this.runButton.render( cb.one( ".buttons" ));
 
         },
         bindUI: function () {
@@ -80,7 +80,7 @@ YUI.add('wegas-proggame-level', function (Y) {
 
             this.runButton.on( "click" , function () {
 
-                this.display.set( "objects", this.get( "objects" ) );         // Reset the display to default
+                this.display.set( "objects", this.get( "objects" ));         // Reset the display to default
                 this.display.syncUI();
                 this.get( CONTENTBOX ).one( ".debugger" ).setHTML( "<h1>Debugger</h1>" );
                 this.runButton.set( "label", "RUNNING..." );
@@ -90,7 +90,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                     request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     cfg: {
                         method: "POST",
-                        data: "var ret = [], objects = " + Y.JSON.stringify( this.get( "objects" ) )
+                        data: "var ret = [], objects = " + Y.JSON.stringify(this.get( "objects" ))
                         + ",cObject,"
                         + "winingCondition=function(){return "+this.get( "winningCondition" ) +";};"
                         + "for (var i =0;i<2;i++) {"
@@ -105,7 +105,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                         + "JSON.stringify(ret)"
                     },
                     on: {
-                        success: Y.bind( this.onServerReply, this ),
+                        success: Y.bind(this.onServerReply, this ),
                         failure: Y.bind( function () {
                             this.runButton.set( "label", "RUN SCRIPT" );
                             this.runButton.set( "disabled", false );
@@ -137,7 +137,7 @@ YUI.add('wegas-proggame-level', function (Y) {
         },
 
         consumeServerCommand: function () {
-            if ( this.commandsStack.length > 0 ) {
+            if (this.commandsStack.length > 0 ) {
                 var command = this.commandsStack.shift();
 
                 this.display.execute( command );
@@ -274,7 +274,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                 acc.push( "</tr>" );
             }
             acc.push( "</table>" );
-            cb.append( acc.join( "" ) );
+            cb.append( acc.join( "" ));
         },
 
         syncUI: function () {
@@ -285,7 +285,7 @@ YUI.add('wegas-proggame-level', function (Y) {
 
             for ( i = 0; i < objs.length; i = i + 1) {
                 var node = Y.Node.create( '<div class="' + objs[i].id + ' dir-' + objs[i].direction + '"></div>');
-                node.setXY( [ objs[i].x * GRIDSIZE , ( this.get( "gridH" ) - objs[i].y - 1 ) * GRIDSIZE ]);
+                node.setXY( [ objs[i].x * GRIDSIZE , (this.get( "gridH" ) - objs[i].y - 1 ) * GRIDSIZE ]);
                 playerLayer.append( node );
             }
 

@@ -61,7 +61,7 @@ YUI.add('wegas-menu', function (Y) {
         itemCreator: function (item) {
             //TODO: Tooltip
             var node = Y.Node.create("<li><div>" + (item.cssClass ? "<span class='menu-icon "+ item.cssClass +"'></span>" : "") + "<span>"+(item.label ? item.label : "")+"</span></div></li>"),
-            divNode = node.one( "div" );
+            divNode = node.one("div");
             node.item = item;
             node.addClass(this.getClassName("itemlist", this.get("horizontal") ? "horizontal" : "vertical"));
             if(item.tooltip){

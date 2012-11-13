@@ -17,7 +17,7 @@ YUI.add('wegas-console', function (Y) {
             this.plug( Y.Plugin.WidgetToolbar );
 
             var cb = this.get(CONTENTBOX),
-            el = this.toolbar.get( 'header' );
+            el = this.toolbar.get('header');
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb,

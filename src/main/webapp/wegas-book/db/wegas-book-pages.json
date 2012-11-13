@@ -4,52 +4,56 @@
         "type": "List",
         "cssClass": "layout",
         "children": [{
-                "type":"List",
+                "type": "List",
                 "direction": "horizontal",
-                "cssClass":"menu",
-                "children":[{
+                "cssClass": "menu",
+                "children": [{
                         "type": "VariableDisplay",
                         "label": "Combat skills",
                         "view": "text",
-                        "variable": "combatSkill",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "combatSkill"
+                        }
                     }, {
                         "type": "VariableDisplay",
                         "label": "Stamina",
                         "view": "text",
-                        "variable": "stamina",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "stamina"
+                        }
                     }
                 ]}, {
-                "label":"pageLoader",
+                "label": "pageLoader",
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
-                "variableName": "currentPage"
+                "variable": {
+                    "name": "currentPage"
+                }
             }]
-    },{
-        "id":2,
-        "label":"Page 1",
-        "cssClass":"book-page",
-        "type":"List",
-        "children":[{
+    }, {
+        "id": 2,
+        "label": "Page 1",
+        "cssClass": "book-page",
+        "type": "List",
+        "children": [{
                 "type": "Text",
-                "content":"Bienvenue, ceci est la première page de ce tutoriel. La page (élément général existant sur chaque 'interface' du jeu) contient un titre ainsi que la valeure de vigueur (stamina) et de combat (combat skill) de notre héros. Cette page est constituée également d'une sous-page (inteface changeante du jeu) contenant un widget 'list' qui contient un widget 'text' (ce texte) ainsi qu'un widget 'button' (le bouton ci-dessous). Cliquez sur ce dernier pour aller à la sous-page suivante."
-            },{
-                "type":"List",
-                "label":"Choices",
-                "cssClass":"book-choice",
-                "children":[{
+                "content": "Bienvenue, ceci est la première page de ce tutoriel. La page (élément général existant sur chaque 'interface' du jeu) contient un titre ainsi que la valeure de vigueur (stamina) et de combat (combat skill) de notre héros. Cette page est constituée également d'une sous-page (inteface changeante du jeu) contenant un widget 'list' qui contient un widget 'text' (ce texte) ainsi qu'un widget 'button' (le bouton ci-dessous). Cliquez sur ce dernier pour aller à la sous-page suivante."
+            }, {
+                "type": "List",
+                "label": "Choices",
+                "cssClass": "book-choice",
+                "children": [{
                         "type": "Button",
                         "cssClass": "book-bouton",
-                        "tooltip":"Aller à la page 2",
-                        "label":"Suivant",
+                        "tooltip": "Aller à la page 2",
+                        "label": "Suivant",
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
                                     "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 3;"
                                 }
-                            },{
+                            }, {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 3,
@@ -59,35 +63,35 @@
                     }]
             }
         ]
-    },{
-        "id":3,
-        "label":"Page 2",
-        "cssClass":"book-page",
-        "type":"List",
-        "children":[{
+    }, {
+        "id": 3,
+        "label": "Page 2",
+        "cssClass": "book-page",
+        "type": "List",
+        "children": [{
                 "type": "Text",
-                "content":"Cette deuxième sous-page contient un widget 'fight' créer exclusivement pour les scénarios de ce jeu. Cliquez sur combattre pour réduire la vigueur (stamina) de l'adversaire à 0"
-            },{
+                "content": "Cette deuxième sous-page contient un widget 'fight' créer exclusivement pour les scénarios de ce jeu. Cliquez sur combattre pour réduire la vigueur (stamina) de l'adversaire à 0"
+            }, {
                 "type": "Fight",
-                "name" : "Loup",
+                "name": "Loup",
                 "staminaLabel": "Vigueur : ",
                 "stamina": 8,
-                "combatSkillLabel" : "Talent de combat : ",
-                "combatSkill" : 7,
-                "success":[{
-                        "type":"Text",
-                        "content":"Victoire ! Vous pouvez passer à la page suivante."
-                    },{
+                "combatSkillLabel": "Talent de combat : ",
+                "combatSkill": 7,
+                "success": [{
+                        "type": "Text",
+                        "content": "Victoire ! Vous pouvez passer à la page suivante."
+                    }, {
                         "type": "Button",
                         "cssClass": "book-bouton",
-                        "tooltip":"Aller à la page 3",
-                        "label":"Continuer",
+                        "tooltip": "Aller à la page 3",
+                        "label": "Continuer",
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
                                     "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 4;"
                                 }
-                            },{
+                            }, {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 4,
@@ -95,25 +99,25 @@
                                 }
                             }]
                     }],
-                "failure":[{
-                        "type":"Text",
-                        "content":"Perdu ! Vous feriez mieux de fuire le temps de regagner de la vie."
-                    },{
+                "failure": [{
+                        "type": "Text",
+                        "content": "Perdu ! Vous feriez mieux de fuire le temps de regagner de la vie."
+                    }, {
                         "type": "Button",
                         "cssClass": "book-bouton",
-                        "tooltip":"Aller à la page 3",
-                        "label":"Fuire !",
+                        "tooltip": "Aller à la page 3",
+                        "label": "Fuire !",
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
                                     "onClick": "importPackage(com.wegas.core.script);\nstamina.value += 10;"
                                 }
-                            },{
+                            }, {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
                                     "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 4;"
                                 }
-                            },{
+                            }, {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 4,
@@ -121,20 +125,20 @@
                                 }
                             }]
                     }],
-                "alternative":[{
-                        "type":"Text",
-                        "content":"Si ce combat vous semble trop dangereux, prenez donc la fuite."
-                    },{
+                "alternative": [{
+                        "type": "Text",
+                        "content": "Si ce combat vous semble trop dangereux, prenez donc la fuite."
+                    }, {
                         "type": "Button",
                         "cssClass": "book-bouton",
-                        "tooltip":"Aller à la page 1",
-                        "label":"Fuire !",
+                        "tooltip": "Aller à la page 1",
+                        "label": "Fuire !",
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
                                     "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 2;"
                                 }
-                            },{
+                            }, {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 2,
@@ -144,14 +148,14 @@
                     }]
             }
         ]
-    },{
-        "id":4,
-        "label":"Page 3",
-        "cssClass":"book-page",
-        "type":"List",
-        "children":[{
+    }, {
+        "id": 4,
+        "label": "Page 3",
+        "cssClass": "book-page",
+        "type": "List",
+        "children": [{
                 "type": "Text",
-                "content":"Créez maintenant vos propres sous-pages et widgets afin de créer un nouveau jeu !"
+                "content": "Créez maintenant vos propres sous-pages et widgets afin de créer un nouveau jeu !"
             }
         ]
     }

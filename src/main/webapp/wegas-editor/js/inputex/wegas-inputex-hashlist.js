@@ -37,7 +37,7 @@ YUI.add("wegas-inputex-hashlist", function(Y){
         setValue: function(v) {
             var val = [];
             for(var key in v) {
-                if( v.hasOwnProperty(key) ) {
+                if( v.hasOwnProperty(key)) {
                     val.push(v[key]);
                 }
             }

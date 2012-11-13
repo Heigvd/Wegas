@@ -12,12 +12,12 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add( 'wegas-tabview', function ( Y ) {
+YUI.add('wegas-tabview', function ( Y ) {
     "use strict";
 
     var TabView, Tab;
 
-    TabView = Y.Base.create( "tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
+    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
 
         initializer: function () {
             TabView.superclass.initializer.apply(this, arguments);
@@ -28,8 +28,8 @@ YUI.add( 'wegas-tabview', function ( Y ) {
 
             // @fixme we notify the editor for any change, so widget can be updated
             // this should be done through wiget-parent, widget-child event bubbling
-            this.after( "selectionChange", function () {
-                Y.Wegas.app.fire( "layout:resize" );
+            this.after("selectionChange", function () {
+                Y.Wegas.app.fire("layout:resize");
             });
         }
     }, {
@@ -73,7 +73,7 @@ YUI.add( 'wegas-tabview', function ( Y ) {
             } else {                                                            // Otherwise,
                 tab.setAttrs(tabCfg);                                           // update the tab config
                 if (fn) {
-                    fn( tab.item(0) );                                          // and trigger the callback
+                    fn( tab.item(0));                                          // and trigger the callback
                 }
             }
             tab.set("selected", 2);
@@ -152,16 +152,16 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         },
 
         renderUI: function () {
-            Tab.superclass.renderUI.apply( this, arguments );
+            Tab.superclass.renderUI.apply(this, arguments );
         },
 
         syncUI: function () {
-            Tab.superclass.syncUI.apply( this, arguments );
+            Tab.superclass.syncUI.apply(this, arguments );
         },
 
         destructor: function () {
-            delete TabView.tabs[ this.get( "id" ) ];
-            Tab.superclass.destructor.apply( this, arguments );
+            delete TabView.tabs[ this.get("id") ];
+            Tab.superclass.destructor.apply(this, arguments );
         },
 
         // *** Private Methods *** //
@@ -206,14 +206,14 @@ YUI.add( 'wegas-tabview', function ( Y ) {
             }
         }
     });
-    Y.namespace( 'Wegas' ).Tab = Tab;
+    Y.namespace('Wegas').Tab = Tab;
 
 
     /**
     * Removable plugin for tabview
     */
     var Removeable = function () {
-        Removeable.superclass.constructor.apply( this, arguments);
+        Removeable.superclass.constructor.apply(this, arguments);
     };
 
     Y.extend( Removeable, Y.Plugin.Base, {
@@ -221,12 +221,12 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
 
         initializer: function( config ) {
-            var tab = this.get( 'host' ),
-            //cb = tab.get( "parent" ).get( "contentBox"),
-            bb = tab.get( "boundingBox" );
+            var tab = this.get('host'),
+            //cb = tab.get("parent").get("contentBox"),
+            bb = tab.get("boundingBox");
 
-            bb.addClass( 'yui3-tabview-removeable' );
-            bb.delegate( 'click', this.onRemoveClick, '.yui3-tab-remove', this );
+            bb.addClass('yui3-tabview-removeable');
+            bb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this );
             bb.append(this.REMOVE_TEMPLATE);
 
         // Tab events bubble to TabView
@@ -234,20 +234,20 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         //var tabview = this.get('host'),
         //cb = tabview.get('contentBox');
         //
-        //cb.addClass( 'yui3-tabview-removeable' );
-        //cb.delegate( 'click', this.onRemoveClick, '.yui3-tab-remove', this );
+        //cb.addClass('yui3-tabview-removeable');
+        //cb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this );
         //
         //// Tab events bubble to TabView
         //tabview.after('tab:render', this.afterTabRender, this);
         },
 
         //afterTabRender: function(e) {
-        //    e.target.get( 'boundingBox' ).append(this.REMOVE_TEMPLATE);           // boundingBox is the Tab's LI
+        //    e.target.get('boundingBox').append(this.REMOVE_TEMPLATE);           // boundingBox is the Tab's LI
         //},
 
         onRemoveClick: function( e ) {
             e.stopPropagation();
-            var host = this.get( "host" );
+            var host = this.get("host");
 
             host.remove();
         //var tab = Y.Widget.getByNode( e.target );
@@ -258,5 +258,5 @@ YUI.add( 'wegas-tabview', function ( Y ) {
         NAME:"removeableTabs"
     });
 
-    Y.namespace( "Plugin" ).Removeable = Removeable;
+    Y.namespace("Plugin").Removeable = Removeable;
 });
