@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.restl.exception;
+package com.wegas.core.rest.exception;
 
 import com.wegas.core.ejb.RequestManagerFacade;
 import com.wegas.exception.WegasException;
