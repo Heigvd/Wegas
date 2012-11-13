@@ -14,7 +14,7 @@ import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.restl.exception.ExceptionWrapper;
+import com.wegas.core.rest.exception.ExceptionWrapper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;

@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2012
  */
-package com.wegas.core.restl.exception;
+package com.wegas.core.rest.exception;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
