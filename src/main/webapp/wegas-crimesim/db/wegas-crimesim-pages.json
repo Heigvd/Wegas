@@ -16,8 +16,9 @@
                         "type": "VariableDisplay",
                         "label": "Period",
                         "view": "valuebox",
-                        "variable": "period",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "period"
+                        }
                     },{
                         "type": "Button",
                         "label": "Next period",
@@ -33,14 +34,16 @@
                         "type": "VariableDisplay",
                         "label": "Costs",
                         "view": "text",
-                        "variable": "cost",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "cost"
+                        }
                     },{
                         "type": "VariableDisplay",
                         "label": "Human resources",
-                        "variable": "humanResources",
-                        "view": "box",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "humanResources"
+                        },
+                        "view": "box"
                     }]
             }, {
                 "id":"menu",

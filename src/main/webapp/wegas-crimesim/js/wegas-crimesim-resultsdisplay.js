@@ -58,7 +58,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                         allowHTML: true
                     }]
                 });
-                this.datatable.render( this.get( CONTENTBOX ) );
+                this.datatable.render(this.get( CONTENTBOX ));
             },
 
             bindUI: function () {
@@ -80,10 +80,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
             },
 
             syncUI: function () {
-                while ( this.datatable.getRow( 0 ) ) {
+                while (this.datatable.getRow( 0 )) {
                     this.datatable.removeRow( 0 );
                 }
-                this.datatable.addRows( this.genData() )
+                this.datatable.addRows(this.genData())
             },
 
             genData: function () {
@@ -93,17 +93,17 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                 responsesByStartTime = {},
                 period = Y.Wegas.VariableDescriptorFacade.rest.find('name', "period"),
                 periodInstance = period.getInstance(),
-                currentTime = periodInstance.get( "value" ) - period.get( "minValue" );
+                currentTime = periodInstance.get("value") - period.get("minValue");
 
                 for ( i = 0; i < questions.length; i = i + 1 ) {
                     questionInstance = questions[i].getInstance();
                     for ( j = 0; j < questionInstance.get("replies").length; j = j + 1 ) {
                         reply = questionInstance.get("replies")[j];
-                        replyData = Y.mix( reply.getAttrs(), reply.get( "result" ).getAttrs() );
+                        replyData = Y.mix( reply.getAttrs(), reply.get("result").getAttrs());
                         status = reply.getStatus( currentTime);
 
-                        replyData.evidence = questions[i].get( "name" );
-                        replyData.analyis = reply.getChoiceDescriptor().get( "name" );
+                        replyData.evidence = questions[i].get("name");
+                        replyData.analyis = reply.getChoiceDescriptor().get("name");
 
                         replyData.startTime += 1;
 
@@ -127,10 +127,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                             }
                         }
 
-                        if (!responsesByStartTime[reply.get( "startTime" )]) {
-                            responsesByStartTime[reply.get( "startTime" )] = [];
+                        if (!responsesByStartTime[reply.get("startTime")]) {
+                            responsesByStartTime[reply.get("startTime")] = [];
                         }
-                        responsesByStartTime[reply.get( "startTime" )].push( replyData );
+                        responsesByStartTime[reply.get("startTime")].push( replyData );
                     }
                 }
                 for ( i in responsesByStartTime ) {

@@ -39,12 +39,12 @@ YUI.add('wegas-inputex-ace', function(Y) {
 	 * Render the field using the YUI Editor widget
 	 */
         renderComponent: function () {
-            this.el = Y.Node.create( '<div style="">'
-                + ( this.options.value ? this.options.value : "" ) + '</div>' );
+            this.el = Y.Node.create('<div style="">'
+                + (this.options.value ? this.options.value : "") + '</div>');
             this.fieldContainer.appendChild(this.el.getDOMNode());
             //this.fieldContainer.style[ "position" ] = "relative";
 
-            this.editor = ace.edit( this.el.getDOMNode() );
+            this.editor = ace.edit(this.el.getDOMNode());
             this.editor.setHighlightActiveLine(false);
             this.editor.renderer.setHScrollBarAlwaysVisible(false);
             this.session = this.editor.getSession();
@@ -52,11 +52,11 @@ YUI.add('wegas-inputex-ace', function(Y) {
             var Mode = require("ace/mode/" + this.options.language).Mode;
             this.session.setMode(new Mode());
 
-            Y.Wegas.app.after( "layout:resize", function() {
-                Y.once( 'domready', this.resize, this );
+            Y.Wegas.app.after("layout:resize", function() {
+                Y.once('domready', this.resize, this );
             }, this.editor );
 
-            Y.after( 'windowresize', Y.bind( this.editor.resize, this.editor ));
+            Y.after('windowresize', Y.bind(this.editor.resize, this.editor ));
 
         //this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {
         //    var i, token,

@@ -9,7 +9,7 @@
  * Copyright (C) 2012
  */
 
-YUI.add( "wegas-injector", function ( Y ) {
+YUI.add("wegas-injector", function ( Y ) {
     "use strict";
     var Injector,
     parser = function(element){

@@ -54,16 +54,17 @@ h3 {
     height: 100px;
     margin: 0 auto;
     padding: 0 10px;
-    background: url(../../wegas-cep/images/templatemo_site_title_bg.jpg) center top no-repeat;overflow: hidden;
+    background: url(../../wegas-cep/images/templatemo_site_title_bg.jpg) center top no-repeat;
+    overflow: hidden;
 }
 .header .variables {
     height: 71px;
 }
 .variables .cep-title {
-    background: url(../../wegas-cep/images/ceplogo3.gif) left top no-repeat;
+    background: url(../../wegas-cep/images/ceplogo-75.png) left top no-repeat;
     width: 81px;
     height: 100px;
-    background-size: 75px;
+   /*background-size: 75px;*/
     margin-top: 29px;
 }
 
@@ -220,22 +221,22 @@ h3 {
     background-image: url(../../wegas-cep/images/cep-icons.png);
 }
 .menu .cep-icon-questions {
-    background-position-y:-86px;
+    background-position:0 -86px;
 }
 .menu .cep-icon-home {
-    background-position-y:-157px;
+    background-position:0 -157px;
 }
 .menu .cep-icon-history {
-    background-position-y:-121px;
+    background-position:0 -121px;
 }
 .menu .cep-icon-mail {
-    background-position-y:-47px;
+    background-position:0 -47px;
 }
 .menu .cep-icon-employees {
-    background-position-y: -245px;
+    background-position:0 -245px;
 }
 .menu .cep-icon-actions {
-    background-position-y: -190px;
+    background-position:0 -190px;
 }
 
 /* Overide default tabview styles */

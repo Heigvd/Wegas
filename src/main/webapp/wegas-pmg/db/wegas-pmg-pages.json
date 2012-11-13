@@ -25,8 +25,9 @@
                                 "cssClass": "pmg-period",
                                 "label": "Periods",
                                 "view": "valuebox",
-                                "expr": "currentPeriod.items[currentPhase.value].descriptorId",
-                                "dataSource": "VariableDescriptor"
+                                "variable": {
+                                    "expr": "currentPeriod.items[currentPhase.value].descriptorId"
+                                }
                             },{
                                 "type": "Button",
                                 "label": ">",
@@ -82,9 +83,10 @@
                         "cssClass": "pmg-timevariable",
                         "type": "VariableDisplay",
                         "label": "Available time: ",
-                        "variable": "timeCards",
-                        "view": "box",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "timeCards"
+                        },
+                        "view": "box"
                     }]
             },{
                 "type":"List",

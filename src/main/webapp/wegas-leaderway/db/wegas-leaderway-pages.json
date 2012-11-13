@@ -13,8 +13,9 @@
                         "label": "Semaine N° : ",
                         "cssClass":"indicators-fraction",
                         "view": "fraction",
-                        "variable": "week",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "week"
+                        }
                     },{
                         "type": "Button",
                         "label": ">",
@@ -30,31 +31,35 @@
                         "label": "Budget : ",
                         "cssClass":"indicators-text",
                         "view": "text",
-                        "variable": "budget",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "budget"
+                        }
                     },{
                         "type": "VariableDisplay",
                         "cssClass":"indicators-gauge",
                         "label": "Motivation générale",
-                        "variable": "teamMotivation",
-                        "view": "box",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "teamMotivation"
+                        },
+                        "view": "box"
                     },
                     {
                         "type": "VariableDisplay",
                         "cssClass":"indicators-gauge",
                         "label": "Satisfaction client",
-                        "variable": "clientsSatisfaction",
-                        "view": "box",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "clientsSatisfaction"
+                        },
+                        "view": "box"
                     },
                     {
                         "type": "VariableDisplay",
                         "cssClass":"indicators-block",
                         "label": "Action restante",
-                        "variable": "actions",
-                        "view": "box",
-                        "dataSource": "VariableDescriptor"
+                        "variable": {
+                            "name": "actions"
+                        },
+                        "view": "box"
                     }]
             },
             {
@@ -158,7 +163,7 @@
         "type":"InboxDisplay",
         "variable": {
             "name": "inbox"
-        }
+        },
         "cssClass":"leaderway-inbox",
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"

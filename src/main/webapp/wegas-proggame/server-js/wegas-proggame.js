@@ -1,5 +1,5 @@
 function sendCommand( cfg ) {
-    if ( !checkGameOver() ) {
+    if ( !checkGameOver()) {
         ret.push( cfg );
     }
 }
@@ -76,7 +76,7 @@ function checkCollision( sourceId, x, y ) {
 }
 
 function checkWinningCondition() {
-    if ( winingCondition() ) {
+    if ( winingCondition()) {
         return true;
     }
     return false;
@@ -84,7 +84,7 @@ function checkWinningCondition() {
 var gameOverSent = false;
 function checkGameOver() {
     if ( gameOverSent ) return true;
-    if ( checkWinningCondition() ) {
+    if ( checkWinningCondition()) {
         gameOverSent = true;
         sendCommand( {type: "log", text: "You won!" } );
         sendCommand( {type: "gameWon" } );

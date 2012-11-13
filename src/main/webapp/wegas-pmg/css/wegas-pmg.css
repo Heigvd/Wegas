@@ -473,6 +473,11 @@ h2{
     padding-bottom: 10px;
 }
 
+/*-------------------------------task-page------------------------------------*/
+.task-page .yui3-datatable-col-treeblenub{
+    width:20px;
+}
+
 /*----------------------task-page & gantt-page--------------------------------*/
 .task-page .yui3-datatable-col-No,
 .gantt-page .yui3-datatable-col-No{

@@ -36,7 +36,7 @@ public class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
     final private ResourceBundle resourceBundle = ResourceBundle.getBundle("wegas");
-    final private String DIR = resourceBundle.getString("jcr.repository.home");
+    final private String DIR = System.getProperty("user.dir") + "/" + resourceBundle.getString("jcr.repository.home");
     private static JackrabbitRepository repo;
     private JackrabbitRepositoryFactory rf;
 
@@ -48,9 +48,9 @@ public class JackrabbitConnector {
         prop.setProperty("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
         try {
             repo = (JackrabbitRepository) rf.getRepository(prop);
-            logger.debug("Jackrabbit setup done in {}/{}", System.getProperty("user.dir"), DIR);
+            logger.info("Jackrabbit will read setup from {}", DIR);
         } catch (RepositoryException ex) {
-            logger.error("Check your repository setup {}/{}", System.getProperty("user.dir"), DIR);
+            logger.error("Check your repository setup {}", DIR);
         }
         //Enable GC on startup
         //this.runGC();
