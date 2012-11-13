@@ -92,8 +92,8 @@ YUI.add( "wegas-pmg-resourcelist", function ( Y ) {
         
         onMenuClick:function(e){
             var data = e.target.get("data");
-            console.log('to do...')
-            console.log(e.target.get("data"), data.resource.get('name'), data.task.get('name'));
+            //console.log('to do...')
+            //console.log(e.target.get("data"), data.resource.get('name'), data.task.get('name'));
         },
         
         taskToCell: function(){     

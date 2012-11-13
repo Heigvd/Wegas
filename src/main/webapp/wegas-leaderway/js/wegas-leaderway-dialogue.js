@@ -198,7 +198,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 try{
                     splittedText.push(eval(texts.substring(0, texts.indexOf('&code'))));
                 } catch(e){
-                    console.log("unable to eval script");
+                    Y.log('unable to eval script', 'warn', 'wegas.leaderway.dialogue');
                 }
                 texts = texts.substring(texts.indexOf('&code')+5);
                 splittedText.push(texts);
@@ -235,7 +235,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                             eval(content.functionAfterTransition);
                         }
                         catch(e){
-                            console.log('unable to execute function : '+content.functionAfterTransition)
+                            Y.log('unable to execute function : '+content.functionAfterTransition, 'warn', 'wegas.leaderway.dialogue');
                         }
                     }
                 });
@@ -389,7 +389,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * Recreat the chart widget
          */
         syncUI: function () {
-            console.log('-------sync performed--------')
             var cb = this.get(CONTENTBOX);
             if(!this.currentDialogue)return;
             if(!this.isDisplayingAResponse){

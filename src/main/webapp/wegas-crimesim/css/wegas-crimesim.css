@@ -5,15 +5,16 @@
     font-size: 9pt;
 }
 .header {
-    height:50px;
+    height:55px;
     background:lightsteelblue;
     width:100%;
     /* border-top: 1px solid gray;
      border-bottom:none;*/
 }
-.body .wegas-text {
+.body .wegas-text, .layout .button {
     padding: 5px 10px;
 }
+
 .wegas-crimesim-title {
     display: inline-block;
     vertical-align: top;
@@ -53,15 +54,29 @@
     background:lightgray;
     border-top: 1px solid gray;
 }
-.menu-button {
+.menu .menu-button {
     padding: 5px 10px;
     cursor: pointer;
     border-right: 1px solid gray;
 }
-.menu-button:hover {
+.menu .menu-button:hover {
     background:gray;
 }
-.wegas-login {
+
+.unread-count .value{
+    background-image: url(/Wegas/wegas-crimesim/images/unread-count.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    color:white;
+    padding:7px;
+    margin-left:2px;
+}
+
+.unread-count .bracket{
+    display:none;
+}
+
+.menu .wegas-login {
     padding:5px;
     float:right  !important;
     cursor: pointer;
