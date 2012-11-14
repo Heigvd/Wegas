@@ -141,6 +141,22 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     type: "hidden",
                     value: "self"
                 }]
+            },
+            isReplied: {
+                label: "has been replied",
+                returns: "boolean",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
+            },
+            isActive: {
+                label: "is active",
+                returns: "boolean",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
             }
         }
     });
@@ -287,6 +303,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 }]
             },
             desactivate: {
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
+            },
+            isActive: {
+                label: "is active",
+                returns: "boolean",
                 arguments: [{
                     type: "hidden",
                     value: "self"
