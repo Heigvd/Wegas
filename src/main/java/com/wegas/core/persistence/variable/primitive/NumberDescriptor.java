@@ -92,4 +92,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         NumberInstance instance = this.getInstance(p);
         instance.setValue(instance.getValue() + value);
     }
+    public double getValue(Player p) {
+        return this.getInstance(p).getValue();
+    }
 }

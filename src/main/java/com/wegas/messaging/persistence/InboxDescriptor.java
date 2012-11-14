@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -67,5 +67,9 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     public void sendMessage(Player p, String from, String subject, String body) {
         this.getInstance(p).sendMessage(from, subject, body);
+    }
+
+    public Boolean isEmpty(Player p) {
+        return this.getInstance(p).getMessages().isEmpty();
     }
 }
