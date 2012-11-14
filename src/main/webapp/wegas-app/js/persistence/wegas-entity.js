@@ -1549,7 +1549,7 @@ YUI.add('wegas-entity', function(Y) {
                 if (!this._eHandler) {
                     this._eHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id) {
 
-                        if (+this._yuid !== +id) {
+                        if (this._yuid !== id) {
                             return;
                         }
                         e.halt(true);
@@ -1565,7 +1565,7 @@ YUI.add('wegas-entity', function(Y) {
                 if (!this._fHandler) {
                     this._fHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:failure", function(e, o, id) {
 
-                        if (+this._yuid !== +id) {
+                        if (this._yuid !== id) {
                             return;
                         }
                         e.halt(true);
