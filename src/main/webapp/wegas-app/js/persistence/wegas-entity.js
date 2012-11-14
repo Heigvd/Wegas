@@ -1046,6 +1046,14 @@ YUI.add('wegas-entity', function(Y) {
                     type: "string",
                     value: 1
                 }]
+            },
+            getValue: {
+                label: "value",
+                returns: "number",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
             }
         }
     });
@@ -1497,7 +1505,16 @@ YUI.add('wegas-entity', function(Y) {
                     label: "Content",
                     scriptType: "string"
                 }]
+            },
+            isEmpty: {
+                label: "is empty",
+                returns: "boolean",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
             }
+
         }
     });
     /**
