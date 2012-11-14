@@ -40,8 +40,27 @@ public class Pages implements Serializable {
         this.connector = new PageConnector();
     }
 
+    public Map<Integer, String> getIndex() throws RepositoryException {
+        if (!this.connector.exist(this.gameModelName)) {
+            return null;
+        }
+        NodeIterator it = this.connector.listChildren(this.gameModelName);
+        Map<Integer, String> ret = new HashMap<>();
+        Node n;
+        String name;
+        while (it.hasNext()) {
+            name = "";
+            n = (Node) it.next();
+            if (n.hasProperty("pageName")) {
+                name = n.getProperty("pageName").getString();
+            }
+            ret.put(new Integer(n.getName()), name);
+        }
+        return ret;
+    }
+
     public Map<Integer, JsonNode> getPages() throws RepositoryException {
-        if(!this.connector.exist(this.gameModelName)){
+        if (!this.connector.exist(this.gameModelName)) {
             return null;
         }
         NodeIterator it = this.connector.listChildren(this.gameModelName);
@@ -87,6 +106,17 @@ public class Pages implements Serializable {
     public void store(Page page) throws RepositoryException {
         Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
         n.setProperty("content", page.getContent().toString());
+        if (page.getName() != null) {
+            n.setProperty("pageName", page.getName());
+        }
+        this.connector.save();
+    }
+
+    public void setMeta(Page page) throws RepositoryException {
+        Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
+        if (page.getName() != null) {
+            n.setProperty("pageName", page.getName());
+        }
         this.connector.save();
     }
 

@@ -126,6 +126,15 @@ YUI.add("wegas-widget", function (Y) {
                 this.toolbar.get("header").append(statusNode);
             }
             return statusNode;
+        },
+        //Get Class From plugin name. Hopefully a unique name ...
+        _getPluginFromName: function(name){
+            for(var i in Y.Plugin){
+                if(Y.Plugin[i].NAME == name){
+                    return "" + i;
+                }
+            }
+            return undefined;
         }
 
     });
@@ -142,8 +151,28 @@ YUI.add("wegas-widget", function (Y) {
         //}],
 
         ATTRS: {
+            "@pageId":{
+                type:"string",
+                optional:true,
+                value: undefined,
+                format: "number",
+                _inputex:{
+                    _type:"hidden",
+                    value:undefined
+                },
+                validator: function (s){
+                    return (s === undefined || (Y.Lang.isString(s) && s.lenght > 0) || Y.Lang.isNumber(s));
+                }
+            },
             cssClass: {
-                "transient": true
+                type:"string",
+                optional:true
+            },
+            type:{
+                type:"string",
+                _inputex:{
+                    _type:"uneditable"
+                }
             },
             initialized: {
                 "transient": true
@@ -204,6 +233,47 @@ YUI.add("wegas-widget", function (Y) {
             },
             root: {
                 "transient": true
+            },
+            plugins:{                                                           //For serialization purpose, get plugin configs
+                getter: function(){
+                    var i,p = [], attrs;
+                    for (i in this._plugins){
+                        attrs = this[this._plugins[i].NS].getAttrs();
+                        delete attrs.host;
+                        p.push({
+                            "fn": this._getPluginFromName(this._plugins[i].NAME),   //TODO: find an other referencing way
+                            "cfg": this.toObject.call(attrs, "destroyed", "initialized")
+                        });
+                    }
+                    return (p.length > 0 ? p : undefined);
+                },
+
+                optional:true,
+                type: "array",
+                items: {
+                    type: "object",
+                    properties:{
+                        "fn":{
+                            type:"string",
+                            _inputex:{
+                                label:"Name",
+                                _type:"select",
+                                choices:(function(){
+                                    var plug=[];for(var i in Y.Plugin){plug.push(i)}
+                                    return plug;
+                                })()
+                            }
+                        },
+                        "cfg":{
+                            type:"object",
+                            properties:{}
+                        }
+                    }
+                },
+                _inputex: {
+                    useButtons: true
+                }
+
             }
         },
         create: function (config) {

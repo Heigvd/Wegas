@@ -42,7 +42,7 @@ YUI().use(function (Y) {
                     'wegas-datasourcerest': {
                         path: 'wegas-app/js/wegas-datasourcerest-min.js',
                         requires: ['plugin', 'json', 'array-extras', 'io-base',
-                        "datasource-io", "datasource-jsonschema", "datasource-cache"]
+                        "datasource-io", "datasource-jsonschema", "datasource-cache", 'diff_match_patch']
                     },
                     'wegas-scripteval': {
                         path: 'wegas-app/js/wegas-scripteval-min.js',
@@ -291,8 +291,7 @@ YUI().use(function (Y) {
                         ix_provides: 'SelectPlayerButton'
                     },
                     'wegas-pageeditor': {
-                        path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        requires: ['diff_match_patch']
+                        path: 'wegas-editor/js/wegas-pageeditor-min.js'
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -358,6 +357,11 @@ YUI().use(function (Y) {
                         path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
                         requires: [ 'tabview' ],
                         ix_provides: "MCQTabView"
+                    },
+                    'wegas-editor-page':{
+                        path:'wegas-editor/js/wegas-editor-page-min.js',
+                        requires: [ 'wegas-datasourcerest' ],
+                        ix_provides: "PageEditor"
                     },
 
                     /** Project Management Game **/

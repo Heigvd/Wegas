@@ -112,9 +112,10 @@
                     }, {
                         "type": "OpenTabButton",
                         "label": "Pages",
+                        "tabSelector": "#leftTabView",
                         "subpage": {
-                            "type": "EditorTreeView",
-                            "dataSource": "Page"
+                            "type": "PageEditor",
+                            "pageLoader": "previewPageLoader"
                         }
                     }]
                 }
@@ -147,6 +148,7 @@
         "animate": true,
         "children": [{
             "type": "TabView",
+            "id": "leftTabView",
             "children": [{
                 "type": "Tab",
                 "label": "Variables",
@@ -192,6 +194,7 @@
                 "label": "Preview",
                 "children": [{
                     "type": "PageLoader",
+                    "id": "previewPageLoader",
                     "pageId": 1,
                     "cssClass":"preview-content",
                     "plugins": [{
