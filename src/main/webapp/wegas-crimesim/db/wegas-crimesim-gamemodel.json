@@ -359,5 +359,5 @@
         "default": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passWeek() {\n period.value += 1; \nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\n qdf.setCurrentTime(evidences.descriptor, self, period.value); \nhumanResources.value = 15;\n } "
     },
     "cssUri":"wegas-crimesim/css/wegas-crimesim.css",
-    "widgetsUri":"wegas-crimesim/db/wegas-crimesim-pages.json"
+    "widgetsUri":"wegas-crimesim/db/wegas-crimesim-pages.json#"
 }

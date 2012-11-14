@@ -2,7 +2,7 @@
     "@class": "GameModel",
     "name": "Leaderway",
     "cssUri": "wegas-leaderway/css/wegas-leaderway.css",
-    "widgetsUri": "wegas-leaderway/db/wegas-leaderway-pages.json",
+    "widgetsUri": "wegas-leaderway/db/wegas-leaderway-pages.json#",
     "games":[{
         "@class":"Game",
         "name":"Test-16",

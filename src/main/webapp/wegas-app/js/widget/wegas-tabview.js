@@ -23,7 +23,6 @@ YUI.add('wegas-tabview', function ( Y ) {
             TabView.superclass.initializer.apply(this, arguments);
         //this.plug( Removeable );
         },
-
         bindUI: function () {
             TabView.superclass.bindUI.apply(this, arguments);
 
@@ -145,8 +144,8 @@ YUI.add('wegas-tabview', function ( Y ) {
 
         // *** Lifecycle Methods *** //
         initializer: function(cfg) {
-            Tab.superclass.initializer.apply(this, arguments );
-            TabView.tabs[ cfg.id ] = this;
+            Tab.superclass.initializer.apply( this, arguments );
+            TabView.tabs[ cfg.id || cfg.label ] = this;
             this._witems = [];
 
         //this.plug( Closable );

@@ -35,6 +35,7 @@ public class Page implements Serializable {
     private static ObjectMapper mapper = new ObjectMapper();
     private Integer id;
     private JsonNode content;
+    private String name;
 
     public Page(Integer id, String content) throws IOException {
         this.id = id;
@@ -44,6 +45,9 @@ public class Page implements Serializable {
     public Page(Integer id, JsonNode content) {
         this.id = id;
         this.content = content;
+    }
+
+    public Page() {
     }
 
     public Integer getId() {
@@ -58,12 +62,22 @@ public class Page implements Serializable {
         return content;
     }
 
+    @JsonIgnore
     public void setContent(JsonNode content) {
         this.content = content;
     }
 
+    @JsonIgnore
     public void setContent(String content) throws IOException {
         this.content = mapper.readTree(content);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void patch(String patch) throws IOException {

@@ -1,14 +1,17 @@
-[{
+{
+    "1": {
         "id": 1,
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout",
-        "children": [{
+        "children": [
+            {
                 "label": "Menu",
                 "type": "List",
                 "cssClass": "menu",
                 "direction": "horizontal",
-                "children": [{
+                "children": [
+                    {
                         "label": "Indicators",
                         "type": "Text",
                         "content": "Programming Game",
@@ -24,53 +27,62 @@
                         "type": "Button",
                         "label": "Battle!",
                         "cssClass": "menu-button",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 2,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            }]
+                            }
+                        ]
                     }, {
                         "type": "Button",
                         "label": "Mails",
                         "cssClass": "menu-button",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 5,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            },{
+                            }, {
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": "inbox"
                                 }
-                            }]
-                    },{
+                            }
+                        ]
+                    }, {
                         "type": "Button",
                         "label": "History",
                         "disabled": true,
                         "cssClass": "menu-button",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 3,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            }]
+                            }
+                        ]
                     }, {
                         "type": "LoginButton",
                         "cssClass": "menu-loginbutton"
-                    }]
+                    }
+                ]
             }, {
                 "type": "PageLoader",
                 "id": "maindisplayarea",
                 "cssClass": "body",
                 "variableName": "currentLevel",
-                "label":"pageLoader"
-            }]
-    }, {
+                "label": "pageLoader"
+            }
+        ]
+    },
+    "2": {
         "id": 2,
         "label": "Level 1 - First moves",
         "type": "ProgGameLevel",
@@ -78,7 +90,8 @@
         "winningCondition": "objects[1].life===0",
         "onWin": "currentLevel.value=3;money.value+=500;",
         "cssClass": "wegas-proggame-level",
-        "objects": [{
+        "objects": [
+            {
                 "id": "player",
                 "direction": 2,
                 "x": 0,
@@ -90,8 +103,10 @@
                 "x": 7,
                 "y": 3,
                 "life": 100
-            }]
-    }, {
+            }
+        ]
+    },
+    "3": {
         "id": 3,
         "label": "Level 2 - First moves",
         "type": "ProgGameLevel",
@@ -99,7 +114,8 @@
         "winningCondition": "objects[1].life===0",
         "onWin": "currentLevel.value=3",
         "cssClass": "wegas-proggame-level",
-        "objects": [{
+        "objects": [
+            {
                 "id": "player",
                 "direction": 2,
                 "x": 0,
@@ -111,12 +127,14 @@
                 "x": 7,
                 "y": 3,
                 "life": 100
-            }]
-    }, {
+            }
+        ]
+    },
+    "5": {
         "id": 5,
         "type": "InboxDisplay",
         "variable": {
             "name": "inbox"
         }
     }
-]
+}

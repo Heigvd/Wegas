@@ -61,5 +61,5 @@
         "description":null
     }],
     "cssUri":"wegas-proggame/css/wegas-proggame.css",
-    "widgetsUri":"wegas-proggame/db/wegas-proggame-pages.json"
+    "widgetsUri":"wegas-proggame/db/wegas-proggame-pages.json#"
 }
