@@ -64,6 +64,10 @@ YUI.add("wegas-button", function (Y) {
         }
     }, {
         ATTRS: {
+            disabled: {
+                "transient": false,
+                "type": "boolean"
+            },
             label: {
                 type: "string"
             },
@@ -87,11 +91,7 @@ YUI.add("wegas-button", function (Y) {
      *
      * @class Y.Wegas.UnreadCount
      */
-    var UnreadCount = function () {
-        UnreadCount.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.extend(UnreadCount, Y.Plugin.Base, {
+    var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.persistence.Editable], {
 
         initializer: function () {
             this.vdHandler =                                                    // If data changes, refresh
@@ -130,7 +130,9 @@ YUI.add("wegas-button", function (Y) {
                 for (i = 0; i < descriptor.get("items").length; i = i + 1) {
                     instance = descriptor.get("items")[i].getInstance();
                     //count += instance.get("unread") ? 1 : 0;
-                    count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
+                    if (instance.get("replies")) {
+                        count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
+                    }
                 }
             }
 
@@ -203,11 +205,17 @@ YUI.add("wegas-button", function (Y) {
         }
     }, {
         ATTRS : {
-            classTxt: {
-                value: 'LoginButton'
+            label: {
+                "transient": true
             },
             type: {
                 value: "LoginButton"
+            },
+            plugins: {
+                "transient": true,
+                getter: function() {
+                    return [];
+                }
             }
         }
     });

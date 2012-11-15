@@ -177,7 +177,9 @@
                                     {
                                         "fn": "UnreadCount",
                                         "cfg": {
-                                            "expr": "actions.items[currentPhase.value].descriptorId"
+                                            "variable": {
+                                                    "expr": "actions.items[currentPhase.value].descriptorId"
+                                                }
                                         }
                                     }, {
                                         "fn": "OpenPageAction",
@@ -195,7 +197,9 @@
                                     {
                                         "fn": "UnreadCount",
                                         "cfg": {
-                                            "expr": "questions.items[currentPhase.value].descriptorId"
+                                            "variable": {
+                                                "expr": "questions.items[currentPhase.value].descriptorId"
+                                            }
                                         }
                                     }, {
                                         "fn": "OpenPageAction",
@@ -213,7 +217,9 @@
                                     {
                                         "fn": "UnreadCount",
                                         "cfg": {
-                                            "variable": "inbox"
+                                            "variable": {
+                                                "name": "inbox"
+                                            }
                                         }
                                     }, {
                                         "fn": "OpenPageAction",
@@ -254,9 +260,9 @@
                     }, {
                         "label": "pageLoader",
                         "type": "PageLoader",
-                        "id": "maindisplayarea",
+                        "pageLoaderId": "maindisplayarea",
                         "cssClass": "body",
-                        "pageId": 2
+                        "defaultPageId": 2
                     }
                 ]
             }
