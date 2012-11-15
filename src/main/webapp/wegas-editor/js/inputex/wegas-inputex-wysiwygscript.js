@@ -77,6 +77,11 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             });
             this.viewSrc.after("click", function () {
                 if (!this.viewSrc.get("disabled")) {
+                    if (this.options.mode === "wysiwyg") {                      // If current mode is wysiwyg
+                        this.updateTextarea();                                  // update textatea content
+                    } else {
+                        this.updateExpressionList();
+                    }
                     this.setMode((this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
                 }
             }, this);
@@ -88,6 +93,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
 
             this.on("updated", this.updateExpressionList, this);                // Whenever the value is updated, we synchronize the UI
 
+            this.updateExpressionList();
             this.setMode(this.options.mode);
         },
 
@@ -97,15 +103,10 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
         setMode: function (mode) {
             var wysiwygmode = (mode === "wysiwyg");
 
-            if (mode !== this.options.mode && this.options.mode === "wysiwyg") { // If current mode is wysiwyg
-                this.updateTextarea();                                          // update textatea content
-            } else {
-                this.updateExpressionList();
-            }
-
+            this.options.mode = mode;
+            this.viewSrc.set("selected", wysiwygmode ? 0 : 1);
             this.wrapEl.style["display"] = (wysiwygmode) ? "none" : "block";
 
-            this.viewSrc.set("selected", wysiwygmode ? 0 : 1);
             this.exprList.addButton.set("disabled", !wysiwygmode);
 
             if (wysiwygmode) {
@@ -114,7 +115,6 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                 this.exprList.hide();
             }
 
-            this.options.mode = mode;
         },
 
         /**
@@ -195,7 +195,8 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                     //    useButtons: true,
                     //    addType: "variabledescriptorcondition"
                     //}]
-                    return this.generateExpression(expression.left).concat(this.generateExpression(expression.right));;
+                    return this.generateExpression(expression.left).concat(this.generateExpression(expression.right));
+                    ;
 
                 case "CallExpression":
                     switch (expression.callee.object.type) {

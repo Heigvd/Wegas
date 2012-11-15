@@ -9,10 +9,11 @@
  */
 
 /**
- * @module wegas-script-wysiwyg
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-inputex-rte", function(Y){
+YUI.add("wegas-inputex-rte", function (Y) {
+    "use strict";
 
     var inputEx = Y.inputEx;
 
@@ -23,13 +24,13 @@ YUI.add("wegas-inputex-rte", function(Y){
      * @constructor
      * @param {Object} options
      */
-    inputEx.RTEField = function(options) {
-        inputEx.RTEField.superclass.constructor.call(this,options);
+    inputEx.RTEField = function (options) {
+        inputEx.RTEField.superclass.constructor.call(this, options);
     };
 
     Y.extend(inputEx.RTEField, inputEx.Textarea, {
 
-        destroy: function() {
+        destroy: function () {
             inputEx.RTEField.superclass.destroy.call(this);
         },
 
@@ -37,7 +38,7 @@ YUI.add("wegas-inputex-rte", function(Y){
          * Set the default values of the options
          * @param {Object} options Options object as passed to the constructor
          */
-        setOptions: function(options) {
+        setOptions: function (options) {
             inputEx.RTEField.superclass.setOptions.call(this, options);
 
             this.options.opts = options.opts || {};
@@ -47,7 +48,7 @@ YUI.add("wegas-inputex-rte", function(Y){
         /**
 	 * Render the field using the YUI Editor widget
 	 */
-        renderComponent: function() {
+        renderComponent: function () {
             inputEx.RTEField.superclass.renderComponent.call(this);
             if (!inputEx.RTEField.init) {
                 inputEx.RTEField.init = true;
@@ -75,7 +76,7 @@ YUI.add("wegas-inputex-rte", function(Y){
                     theme_advanced_resizing : false,
                     relative_urls : false,
 
-                    file_browser_callback: function(field_name, url, type, win) {
+                    file_browser_callback: function (field_name, url, type, win) {
 
                         if (!inputEx.RTEField.filePanel) {
                             inputEx.RTEField.filePanel = new Y.Panel({
@@ -89,25 +90,25 @@ YUI.add("wegas-inputex-rte", function(Y){
                                 centered: true
                             });
 
-                            inputEx.RTEField.filePanel.explorer = new Y.Wegas.FileExplorer().render( inputEx.RTEField.filePanel.getStdModNode( Y.WidgetStdMod.BODY ));
+                            inputEx.RTEField.filePanel.explorer = new Y.Wegas.FileExplorer().render(inputEx.RTEField.filePanel.getStdModNode(Y.WidgetStdMod.BODY));
 
-                            inputEx.RTEField.filePanel.explorer.on("*:fileSelected", function ( e, path ) {
+                            inputEx.RTEField.filePanel.explorer.on("*:fileSelected", function (e, path) {
                                 e.stopImmediatePropagation();
                                 e.preventDefault();
                                 inputEx.RTEField.filePanel.hide();
 
                                 var win = inputEx.RTEField.filePanel.win,
-                                field_name = inputEx.RTEField.filePanel,
-                                targetInput = win.document.getElementById( field_name );
-                                targetInput.value = Y.Plugin.CRDataSource.getFullpath( path );  // update the input field
+                                field_name = inputEx.RTEField.filePanel.field_name,
+                                targetInput = win.document.getElementById(field_name);
+                                targetInput.value = Y.Plugin.CRDataSource.getFullpath(path);  // update the input field
 
-                                if (typeof(win.ImageDialog) != "undefined") {       // are we an image browser
+                                if (typeof (win.ImageDialog) !== "undefined") {       // are we an image browser
                                     if (win.ImageDialog.getImageData) {             // we are, so update image dimensions...
                                         win.ImageDialog.getImageData();
                                     }
 
                                     if (win.ImageDialog.showPreviewImage) {         // ... and preview if necessary
-                                        win.ImageDialog.showPreviewImage( Y.Plugin.CRDataSource.getFullpath( path ));
+                                        win.ImageDialog.showPreviewImage(Y.Plugin.CRDataSource.getFullpath(path));
                                     }
                                 }
                                 if (win.Media) {                                  // If in an editor window
@@ -170,9 +171,9 @@ YUI.add("wegas-inputex-rte", function(Y){
                 //}
                 });
             }
-            Y.once("domready" , function() {
+            Y.once("domready", function () {
                 tinyMCE.execCommand('mceAddControl', false, this.el.id);
-            }, this );
+            }, this);
         },
 
         /**
@@ -180,7 +181,7 @@ YUI.add("wegas-inputex-rte", function(Y){
          * @param {String} value The html string
          * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
          */
-        setValue: function(value) {
+        setValue: function (value) {
             inputEx.RTEField.superclass.setValue.apply(this, arguments);
 
             var tmceI = tinyMCE.get(this.el.id);
@@ -193,9 +194,9 @@ YUI.add("wegas-inputex-rte", function(Y){
          * Get the html string
          * @return {String} the html string
          */
-        getValue: function() {
+        getValue: function () {
             tinyMCE.triggerSave();
-            return inputEx.RTEField.superclass.getValue.call(this );
+            return inputEx.RTEField.superclass.getValue.call(this);
         },
 
         /**
