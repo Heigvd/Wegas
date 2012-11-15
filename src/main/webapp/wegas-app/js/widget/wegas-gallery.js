@@ -22,8 +22,9 @@ YUI.add("wegas-gallery", function(Y) {
      * fullScreen : {Boolean} toggles fullScreen<br/>
      * lightGallery : {Boolean} An instance which will read DOM for "light-picture" or "light-gallery" classes<br/>
      * <br/>
-     * light-picture class nodes : "href" attribute (url) , "title" attribute (description)<br/>
-     * light-gallery class nodes : child nodes with "href" attribute (url), "title" attribute (description)
+     * *light-picture class nodes : "href"|"src" attribute (url) , "title" attribute (description). <br/>
+     *  Create a gallery with all elements with the same data-gallery attribute <br/>
+     * *light-gallery class nodes : child nodes with "href"|"src" attribute (url), "title" attribute (description)
      */
     WegasGallery = Y.Base.create("wegas-gallery", Y.Widget, [Y.Wegas.Widget], {
         CONTENT_TEMPLATE: "<ul></ul>",
@@ -229,9 +230,9 @@ YUI.add("wegas-gallery", function(Y) {
                     e.halt(true);
                     children = e.target.get("children");
                     children.each(function() {
-                        if (this.getAttribute("href")) {
+                        if (this.getAttribute("href") || this.getAttribute("src")) {
                             gallery.push({
-                                srcUrl: this.getAttribute("href"),
+                                srcUrl: this.getAttribute("href") || this.getAttribute("src"),
                                 description: this.getAttribute("title")
                             });
                         }
@@ -241,13 +242,29 @@ YUI.add("wegas-gallery", function(Y) {
 
                 }, '.light-gallery', this));
                 this.eventInstances.push(Y.one("body").delegate("click", function(e) {
+                    var gallery = [], index;
                     e.halt(true);
-
-                    this.set("fullScreen", true);
-                    this.set("gallery", [{
-                            srcUrl: e.target.getAttribute("href"),
-                            description: e.target.getAttribute("title")
-                        }]);
+                    if (e.target.getAttribute("href") || e.target.getAttribute("src")) {
+                        this.set("fullScreen", true);
+                        if (e.target.hasAttribute("data-gallery")) {            /* group same data-gallery together */
+                            Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
+                                if (item === e.target) {
+                                    index = i;
+                                }
+                                gallery.push({
+                                    srcUrl: item.getAttribute("href") || item.getAttribute("src"),
+                                    description: item.getAttribute("title")
+                                });
+                            });
+                            this.set("gallery", gallery);
+                            this.scrollView.pages.scrollToIndex(index);
+                        } else {
+                            this.set("gallery", [{
+                                    srcUrl: e.target.getAttribute("href") || e.target.getAttribute("src"),
+                                    description: e.target.getAttribute("title")
+                                }]);
+                        }
+                    }
                 }, '.light-picture', this));
             }
         },

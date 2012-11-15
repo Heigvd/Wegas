@@ -100,7 +100,7 @@
     padding: 3px;
     position:absolute;
     bottom:0;
-    background-color:transparent;
+    background-color: rgba(10, 10, 10, 0.2);
 }
 .gallery-toggle{
     cursor:pointer;
