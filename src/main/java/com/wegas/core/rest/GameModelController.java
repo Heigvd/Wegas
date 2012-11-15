@@ -56,7 +56,7 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
     public GameModel update(Long entityId, GameModel entity) {
 
         Subject s = SecurityUtils.getSubject();
-        s.checkPermission("GameModel:Edit:" + entityId);
+        s.checkPermission("GameModel:Edit:gm" + entityId);
 
         return super.update(entityId, entity);
     }

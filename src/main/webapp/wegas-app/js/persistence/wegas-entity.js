@@ -214,10 +214,10 @@ YUI.add('wegas-entity', function(Y) {
             }, '');
         },
         readObject: function(o) {
-            var classDef = Y.Wegas.persistence.Entity;
+            var classDef = Y.Wegas.persistence.DefaultEntity;
 
             if (o["@class"]) {
-                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.Entity;
+                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity;
 
             } else if (o["type"]) {
                 classDef = Y.Wegas.persistence[o["type"]] || Y.Wegas.persistence.WidgetEntity;
@@ -331,6 +331,15 @@ YUI.add('wegas-entity', function(Y) {
     });
     Y.namespace('Wegas.persistence').Entity = Entity;
 
+    Y.Wegas.persistence.DefaultEntity = Y.Base.create("DefaultEntity", Entity, [], {
+        initializer: function (cfg) {
+            this.set("val", cfg);
+        }
+    }, {
+        ATTRS: {
+            val: {}
+        }
+    });
     /**
      * Page response mapper
      */
