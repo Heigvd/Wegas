@@ -17,7 +17,7 @@ YUI.add('wegas-pageloader', function(Y) {
 
     var CONTENTBOX = 'contentBox', PageLoader;
 
-    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget], {
+    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
         // *** Private Methods ***/
         isLoadingALoop: function(pageId) {                                     //Page loader mustn't load the page who contain himself.
             var k, isALoop = false;
@@ -26,7 +26,7 @@ YUI.add('wegas-pageloader', function(Y) {
                     break;
                 }
                 if (pageId === PageLoader.pageLoaderInstances[k].get('pageId')
-                        || pageId === PageLoader.pageLoaderInstances[k].get('variable.evaluated')) {
+                    || pageId === PageLoader.pageLoaderInstances[k].get('variable.evaluated')) {
                     isALoop = true;
                     Y.log("Attempt to load the PageLoader of this PageLoader's instance is aborted.", 'warn', 'Wegas.PageLoader');
                 }
@@ -35,7 +35,7 @@ YUI.add('wegas-pageloader', function(Y) {
         },
         // *** Lifecycle Methods ***/
         initializer: function() {
-            PageLoader.pageLoaderInstances[this.get("id")] = this;              // We keep a references of all loaded PageLoaders
+            PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded PageLoaders
             this.currentPageId = null;
             if (this.get("defaultPageId")) {
                 this.set("pageId", this.get("defaultPageId"));
@@ -45,11 +45,12 @@ YUI.add('wegas-pageloader', function(Y) {
             //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
             Y.Wegas.PageFacade.rest.after("pageUpdated", function(e) {
                 if (e.page && (+e.page["@pageId"] === +this.get("pageId"))) {
+                    this.currentPageId = null; // @hack force update
                     this.syncUI();
                 }
             }, this);
             var onUpdate = function(e) {
-                if (+this.get("variableDesc") !== +this.get('pageId')) {
+                if (+this.get("variable.evaluated") !== +this.get('pageId')) {
                     this.syncUI();
                 }
             };
@@ -59,16 +60,15 @@ YUI.add('wegas-pageloader', function(Y) {
         },
         syncUI: function() {
             var val = this.get("variable.evaluated");
-            if (this.get("variable")) {
-                if (val && val.getInstance().get('value')) {
-                    this.set("pageId", val.getInstance().get('value'));
-                }
-            } else {
+            if (val && val.getInstance().get('value')) {                        // If there is a variable to refresh
+                this.set("pageId", val.getInstance().get('value'));
+            } else {                                                            // Otherwise use pageId (in case the setter has not been called yet)
                 this.set("pageId", this.get("pageId"));
             }
         }
     }, {
         ATTRS: {
+            pageLoaderId: {},
             defaultPageId: {
                 type: "string"
             },
@@ -76,23 +76,17 @@ YUI.add('wegas-pageloader', function(Y) {
                 type: "string",
                 "transient": true,
                 setter: function(val) {
-                    if (!val) {// If the widget is currently being loaded, escape
-                        return val;
-                    }
-                    if (val === this.currentPageId || this.isLoadingALoop(val)) {// If the widget is currently being loaded, escape
+                    if (!val || val === this.currentPageId || this.isLoadingALoop(val)) {// If the widget is currently being loaded, escape
                         return val;
                     }
                     var widgetCfg = Y.Wegas.PageFacade.rest.getPage(val),
-                            oldWidget = this.get("widget");
+                    oldWidget = this.get("widget");
                     if (!widgetCfg) {
                         return val;
                     }
                     this.currentPageId = val;
-                    if (oldWidget) {
-                        if (oldWidget.get("id") === val) {                      // If the widget is the same as the one currently loaded, exit
-                            return val;
-                        }
-                        oldWidget.destroy();                                    // @fixme we should remove the widget instead of destroying it
+                    if (this.get("widget")) {
+                        this.get("widget").destroy();                           // @fixme we should remove the widget instead of destroying it
                     }
                     this.get(CONTENTBOX).empty();
                     this.showOverlay();
@@ -109,27 +103,21 @@ YUI.add('wegas-pageloader', function(Y) {
                     return val;
                 }
             },
+            /**
+             * The target variable, returned either based on the name attribute,
+             * and if absent by evaluating the expr attribute.
+             */
             variable: {
-                /**
-                 * The target variable, returned either based on the name attribute,
-                 * and if absent by evaluating the expr attribute.
-                 */
                 getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
-//                getter: function (val, fullName) {
-//                    var val = Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER(val, fullName);
-//                    if(val && val.evaluated && val.evaluated.getInstance().get('value')){
-//                        val.pageId = val.evaluated.getInstance().get('value');
-//                    }
-//                    return val;
-//                }
-
             },
             widget: {
                 "transient": true
             }
         },
+
         pageLoaderInstances: [],
-        find: function(id) {
+
+        find: function (id) {
             return PageLoader.pageLoaderInstances[id];
         }
     });

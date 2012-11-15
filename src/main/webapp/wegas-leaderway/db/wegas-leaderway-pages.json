@@ -133,7 +133,7 @@
             },
             {
                 "type": "PageLoader",
-                "id": "maindisplayarea",
+                "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
                 "pageId": 2
             }]
