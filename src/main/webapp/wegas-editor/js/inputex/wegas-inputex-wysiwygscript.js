@@ -154,17 +154,17 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                 this.exprList.destroy();
             }
             if (this.options.expects === "condition") {
-                for (i = 0; i< fields.length; i += 1) {
+                for (i = 0; i < fields.length; i += 1) {
                     fields[i].type = "variabledescriptorcondition";
                 }
             }
             this.exprList = Y.inputEx({                                         // Render the expression as a Y.inputEx.Wegas.ListField
-                type:"inputlist",
+                type: "inputlist",
                 fields: fields,
                 useButtons: true,
                 parentEl: this.fieldContainer,
                 addType: (this.options.expects === "condition") ? "variabledescriptorcondition" : "variabledescriptorsetter"
-            })
+            });
             this.exprList.addButton.get("boundingBox").setStyle("display", "inline-block");
 
         // this.setMode(this.options.mode);
@@ -196,7 +196,6 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                     //    addType: "variabledescriptorcondition"
                     //}]
                     return this.generateExpression(expression.left).concat(this.generateExpression(expression.right));
-                    ;
 
                 case "CallExpression":
                     switch (expression.callee.object.type) {
@@ -235,7 +234,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
         }
     });
 
-    inputEx.registerType('script', inputEx.WysiwygScript);                             // Register this class as "script" type
+    inputEx.registerType('script', inputEx.WysiwygScript);                      // Register this class as "script" type
 
     /**
      *  Adds a method that retrieves the value of each input in the group
@@ -717,18 +716,10 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             options.choices = [];
 
             for (i = 0; i < results.length; i = i + 1) {
-                //if (!(results[i] instanceof Y.Wegas.persistence.Entity)) {        //Object is not an entity
-                //    options.choices.push({                                      //TODO : result should be an entity
-                //        value: results[i]["id"],
-                //        label: results[i]["name"]
-                //    });
-                //} else {
                 options.choices.push({
                     value: results[i].get("id"),
                     label: results[i].get("editorLabel")
                 });
-            //}
-
             }
 
             EntityArrayFieldSelect.superclass.setOptions.call(this, options);
@@ -736,6 +727,5 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
         }
     });
 
-    inputEx.registerType("entityarrayfieldselect", EntityArrayFieldSelect);    // Register this class as "list" type
-
+    inputEx.registerType("entityarrayfieldselect", EntityArrayFieldSelect);     // Register this class as "list" type
 });

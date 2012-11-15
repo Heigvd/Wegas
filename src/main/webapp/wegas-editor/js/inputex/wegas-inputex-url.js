@@ -1,7 +1,19 @@
-/**
- * @module inputex-url
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
  */
-YUI.add("wegas-inputex-url",function(Y){
+
+/**
+ * @fileoverview
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+YUI.add("wegas-inputex-url", function (Y) {
+    "use strict";
 
     var inputEx = Y.inputEx;
 
@@ -15,8 +27,8 @@ YUI.add("wegas-inputex-url",function(Y){
      *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for https)</li>
      * </ul>
      */
-    Y.namespace("inputEx.Wegas").UrlField = function(options) {
-        inputEx.Wegas.UrlField.superclass.constructor.call(this,options);
+    Y.namespace("inputEx.Wegas").UrlField = function (options) {
+        inputEx.Wegas.UrlField.superclass.constructor.call(this, options);
     };
 
     Y.extend(inputEx.Wegas.UrlField, inputEx.StringField, {
@@ -27,7 +39,7 @@ YUI.add("wegas-inputex-url",function(Y){
          * Adds the invalid Url message
          * @param {Object} options Options object as passed to the constructor
          */
-        setOptions: function(options) {
+        setOptions: function (options) {
             inputEx.Wegas.UrlField.superclass.setOptions.call(this, options);
 
         //            this.options.className = options.className ? options.className : "inputEx-Field inputEx-UrlField";
@@ -51,7 +63,7 @@ YUI.add("wegas-inputex-url",function(Y){
         /**
          * Adds a img tag before the field to display the favicon
          */
-        render: function() {
+        render: function () {
             inputEx.Wegas.UrlField.superclass.render.call(this);
 
             this.fieldContainer.classList.add("inputEx-wegas-UrlField");
@@ -61,11 +73,11 @@ YUI.add("wegas-inputex-url",function(Y){
                 on: {
                     click: Y.bind(this.showFileExplorer, this)
                 }
-            }).render(this.fieldContainer );
+            }).render(this.fieldContainer);
         },
 
         showFileExplorer: function () {
-            if ( !this.filepanel ) {
+            if (!this.filepanel) {
                 this.filepanel = new Y.Panel({
                     headerContent: 'Choose a file from library',
                     bodyContent: '',
@@ -77,7 +89,7 @@ YUI.add("wegas-inputex-url",function(Y){
                     centered: true
                 });
 
-                this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode( Y.WidgetStdMod.BODY ));
+                this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode(Y.WidgetStdMod.BODY));
 
                 this.fileExplorer.on("*:fileSelected", function (e, path) {
                     e.stopImmediatePropagation();
@@ -90,5 +102,5 @@ YUI.add("wegas-inputex-url",function(Y){
         }
     });
 
-    inputEx.registerType("wegasurl", inputEx.Wegas.UrlField );                 // Register this class as "wegasurl" type
+    inputEx.registerType("wegasurl", inputEx.Wegas.UrlField);                   // Register this class as "wegasurl" type
 });
