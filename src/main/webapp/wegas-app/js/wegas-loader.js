@@ -231,6 +231,11 @@ YUI().use(function (Y) {
                         requires: [ 'inputex-field', 'ace' ],
                         ix_provides: 'wegasurl'
                     },
+                    'wegas-inputex-permissionselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-permissionselect-min.js',
+                        requires: [ 'inputex-select', 'inputex-list', 'inputex-field', "wegas-widget", "inputex-checkbox", "wegas-inputex-roleselect"],
+                        ix_provides: 'Test2'
+                    },
                     'wegas-inputex-roleselect': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-roleselect-min.js',
                         requires: [ 'inputex-select' ],

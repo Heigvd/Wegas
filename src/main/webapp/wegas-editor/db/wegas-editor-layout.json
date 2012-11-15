@@ -193,6 +193,12 @@
                 "type": "Tab",
                 "label": "Preview",
                 "children": [{
+                    "type": "Test2"
+                }]
+            },{
+                "type": "Tab",
+                "label": "Preview",
+                "children": [{
                     "type": "PageLoader",
                     "id": "previewPageLoader",
                     "pageId": 1,

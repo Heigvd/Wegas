@@ -14,6 +14,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.User;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
@@ -106,5 +108,12 @@ public class UserController extends AbstractRestController<UserFacade, User> {
         account.setLastname(lastname);
         account.setEmail(email);
         this.signup(account);                                                   // and forward
+    }
+    
+    @GET
+    @Path("GameModelPermissions/{entityId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Map> findPermissionByGameModelId(@PathParam("entityId") Long gameModelId){
+        return this.userFacade.findPermissionByGameModelId(gameModelId);
     }
 }
