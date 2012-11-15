@@ -337,7 +337,8 @@ Y.add("wegas-statemachine-entities", function(Y) {
             triggerEvent: {
                 _inputex: {
                     _type: 'script',
-                    label: 'Condition'
+                    label: 'Condition',
+                    expects: "condition"
                 }
             },
             postTriggerEvent: {

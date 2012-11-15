@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-other.ch/
@@ -60,12 +60,21 @@ public class QuestionDescriptor extends ListDescriptor {
     }
 // *** Sugar for scripts *** //
 
+    public void setActive(Player p, boolean value) {
+        ( (QuestionInstance) this.getInstance(p) ).setActive(value);
+    }
+
+    public Boolean isActive(Player p) {
+        QuestionInstance instance = (QuestionInstance) this.getInstance(p);
+        return instance.getActive();
+    }
+
     /**
      *
      * @param p
      */
     public void activate(Player p) {
-        ( (QuestionInstance) this.getInstance(p) ).activate();
+        this.setActive(p, true);
     }
 
     /**
@@ -73,7 +82,7 @@ public class QuestionDescriptor extends ListDescriptor {
      * @param p
      */
     public void desactivate(Player p) {
-        ( (QuestionInstance) this.getInstance(p) ).desactivate();
+        this.setActive(p, false);
     }
 
     /**
@@ -116,5 +125,10 @@ public class QuestionDescriptor extends ListDescriptor {
      */
     public void setPictures(List<String> pictures) {
         this.pictures = pictures;
+    }
+
+    public Boolean isReplied(Player p) {
+        QuestionInstance instance = (QuestionInstance) this.getInstance(p);
+        return !instance.getReplies().isEmpty();
     }
 }
