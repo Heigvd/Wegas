@@ -79,8 +79,8 @@ YUI.add('wegas-pageloader', function(Y) {
                     if (!val || val === this.currentPageId || this.isLoadingALoop(val)) {// If the widget is currently being loaded, escape
                         return val;
                     }
-                    var widgetCfg = Y.Wegas.PageFacade.rest.getPage(val),
-                    oldWidget = this.get("widget");
+                    var widgetCfg = Y.Wegas.PageFacade.rest.getPage(val);
+                    
                     if (!widgetCfg) {
                         return val;
                     }

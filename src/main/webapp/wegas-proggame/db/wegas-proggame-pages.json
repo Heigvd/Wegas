@@ -50,7 +50,9 @@
                             }, {
                                 "fn": "UnreadCount",
                                 "cfg": {
-                                    "variable": "inbox"
+                                    "variable": {
+                                        "name": "inbox"
+                                    }
                                 }
                             }
                         ]
@@ -77,8 +79,9 @@
                 "type": "PageLoader",
                 "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
-                "variableName": "currentLevel",
-                "label": "pageLoader"
+                "variable": {
+                    "name": "currentLevel"
+                }
             }
         ]
     },

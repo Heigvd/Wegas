@@ -238,15 +238,17 @@ YUI.add("wegas-widget", function (Y) {
             root: {
                 "transient": true
             },
+            multiple: {
+                "transient": true
+            },
             plugins: {                                                          //For serialization purpose, get plugin configs
                 getter: function() {
-                    var i, p = [], attrs;
+                    var i, p = [], plg;
                     for (i in this._plugins) {
-                        attrs = this[this._plugins[i].NS].getAttrs();
-                        delete attrs.host;
+                        plg = this[this._plugins[i].NS];
                         p.push({
                             "fn": this._getPluginFromName(this._plugins[i].NAME),   //TODO: find an other referencing way
-                            "cfg": this.toObject.call(attrs, "destroyed", "initialized")
+                            "cfg": plg.toObject()
                         });
                     }
                     return (p.length > 0 ? p : undefined);

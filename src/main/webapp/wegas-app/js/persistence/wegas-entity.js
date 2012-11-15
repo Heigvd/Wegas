@@ -240,7 +240,7 @@ YUI.add('wegas-entity', function (Y) {
          */
         VARIABLEDESCRIPTORGETTER: function (val, fullName) {
             var ds = Y.Wegas.VariableDescriptorFacade;
-            if (fullName.split(".")[1] === "evaluated" && val) {                // If evaluated value is required
+            if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
 
                 if (val.name) {                                                 // Eval based on the name field
                     val.evaluated = ds.rest.find('name', val.name);
@@ -253,7 +253,7 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
 
-            if (fullName.indexOf(".") < 0) {                                    // If the getter requires the full object (e.g. serialisation)
+            if (val && fullName.indexOf(".") < 0) {                             // If the getter requires the full object (e.g. serialisation)
                 delete val.evaluated;                                           // Remove the ref to the evaluated descriptor
             }
 

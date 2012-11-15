@@ -194,8 +194,8 @@
                 "label": "Preview",
                 "children": [{
                     "type": "PageLoader",
-                    "id": "previewPageLoader",
-                    "pageId": 1,
+                    "pageLoaderId": "previewPageLoader",
+                    "defaultPageId": 1,
                     "cssClass":"preview-content",
                     "plugins": [{
                         "fn": "WidgetToolbar",
