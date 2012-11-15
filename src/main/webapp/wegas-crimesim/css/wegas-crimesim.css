@@ -395,3 +395,15 @@
 .wegas-crimesim .yui3-datatable-header {
     border-left: 1px solid gray;
 }
+
+.wegas-crimesim .treeble-value p{
+    display:inline;
+}
+
+.wegas-crimesim .yui3-datatable-table .yui3-datatable-data td{
+    text-align: left;
+}
+
+.wegas-crimesim .hidden{
+    display:none;
+}
