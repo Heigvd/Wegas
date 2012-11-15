@@ -128,9 +128,10 @@ YUI.add("wegas-widget", function (Y) {
             return statusNode;
         },
         //Get Class From plugin name. Hopefully a unique name ...
-        _getPluginFromName: function(name){
-            for(var i in Y.Plugin){
-                if(Y.Plugin[i].NAME == name){
+        _getPluginFromName: function(name) {
+            var i;
+            for (i in Y.Plugin) {
+                if (Y.Plugin[i].NAME === name) {
                     return "" + i;
                 }
             }
@@ -151,28 +152,28 @@ YUI.add("wegas-widget", function (Y) {
         //}],
 
         ATTRS: {
-            "@pageId":{
-                type:"string",
-                optional:true,
+            "@pageId": {
+                type: "string",
+                optional: true,
                 value: undefined,
                 format: "number",
-                _inputex:{
-                    _type:"hidden",
-                    value:undefined
+                _inputex: {
+                    _type: "hidden",
+                    value: undefined
                 },
-                validator: function (s){
+                validator: function (s) {
                     return (s === undefined || (Y.Lang.isString(s) && s.lenght > 0) || Y.Lang.isNumber(s));
                 }
             },
-            cssClass: {
-                type:"string",
-                optional:true
-            },
-            type:{
-                type:"string",
-                _inputex:{
-                    _type:"uneditable"
+            type: {
+                type: "string",
+                _inputex: {
+                    _type: "hidden"
                 }
+            },
+            cssClass: {
+                type: "string",
+                optional: true
             },
             initialized: {
                 "transient": true
@@ -190,6 +191,9 @@ YUI.add("wegas-widget", function (Y) {
                 "transient": true
             },
             contentBox: {
+                "transient": true
+            },
+            selection: {
                 "transient": true
             },
             tabIndex: {
@@ -234,10 +238,10 @@ YUI.add("wegas-widget", function (Y) {
             root: {
                 "transient": true
             },
-            plugins:{                                                           //For serialization purpose, get plugin configs
-                getter: function(){
-                    var i,p = [], attrs;
-                    for (i in this._plugins){
+            plugins: {                                                          //For serialization purpose, get plugin configs
+                getter: function() {
+                    var i, p = [], attrs;
+                    for (i in this._plugins) {
                         attrs = this[this._plugins[i].NS].getAttrs();
                         delete attrs.host;
                         p.push({
@@ -248,25 +252,28 @@ YUI.add("wegas-widget", function (Y) {
                     return (p.length > 0 ? p : undefined);
                 },
 
-                optional:true,
+                optional: true,
                 type: "array",
                 items: {
                     type: "object",
-                    properties:{
-                        "fn":{
-                            type:"string",
-                            _inputex:{
-                                label:"Name",
-                                _type:"select",
-                                choices:(function(){
-                                    var plug=[];for(var i in Y.Plugin){plug.push(i)}
+                    properties: {
+                        "fn": {
+                            type: "string",
+                            _inputex: {
+                                label: "Name",
+                                _type: "select",
+                                choices: (function() {
+                                    var i, plug = [];
+                                    for (i in Y.Plugin) {
+                                        plug.push(i);
+                                    }
                                     return plug;
                                 })()
                             }
                         },
-                        "cfg":{
-                            type:"object",
-                            properties:{}
+                        "cfg": {
+                            type: "object",
+                            properties: {}
                         }
                     }
                 },
@@ -401,7 +408,7 @@ YUI.add("wegas-widget", function (Y) {
         var i, ln, ns;
 
         if (Lang.isArray(Plugin)) {
-            for (i = 0, ln = Plugin.length; i < ln; i++) {
+            for (i = 0, ln = Plugin.length; i < ln; i += 1) {
                 this.plug(Plugin[i]);
             }
         } else {

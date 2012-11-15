@@ -75,7 +75,7 @@
                 ]
             }, {
                 "type": "PageLoader",
-                "id": "maindisplayarea",
+                "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
                 "variableName": "currentLevel",
                 "label": "pageLoader"

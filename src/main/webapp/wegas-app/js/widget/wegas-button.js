@@ -91,35 +91,15 @@ YUI.add("wegas-button", function (Y) {
         UnreadCount.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(UnreadCount, {
-        NS: "button",
-        NAME: "UnreadCount",
-        ATTRS: {
-            variable: {},
-            expr: {},
-            /**
-             * The target variable, returned either based on the variableName attribute,
-             * and if absent by evaluating the expr attribute.
-             */
-            variableDesc: {
-                getter: function () {
-                    if (this.get("variable")) {
-                        return Y.Wegas.VariableDescriptorFacade.rest.find('name', this.get("variable"));
-                    } else {
-                        return Y.Wegas.VariableDescriptorFacade.rest.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("expr")));
-                    }
-                }
-            }
-        }
-    });
-
     Y.extend(UnreadCount, Y.Plugin.Base, {
 
         initializer: function () {
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response",        // If data changes, refresh
-                this.syncUI, this);
+            this.vdHandler =                                                    // If data changes, refresh
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
             this.afterHostEvent("render", this.syncUI, this);
+        },
+        destructor: function () {
+            this.vdHandler.detach();
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),
@@ -140,7 +120,7 @@ YUI.add("wegas-button", function (Y) {
 
         getUnreadCount:  function () {
             var i, instance, messages, count = 0,
-            descriptor = this.get('variableDesc');
+            descriptor = this.get('variable.evaluated');
 
             if (!descriptor) {
                 return 0;
@@ -162,6 +142,18 @@ YUI.add("wegas-button", function (Y) {
             }
 
             return count;
+        }
+    }, {
+        NS: "button",
+        NAME: "UnreadCount",
+        ATTRS: {
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variable: {
+                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+            }
         }
     });
     Y.namespace('Plugin').UnreadCount = UnreadCount;

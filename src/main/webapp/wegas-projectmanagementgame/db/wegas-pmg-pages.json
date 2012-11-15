@@ -88,7 +88,7 @@
                 "cssClass": "pmg-body",
                 "children": [{
                         "type": "PageLoader",
-                        "id": "pmg-maindisplayarea",
+                        "pageLoaderId": "pmg-maindisplayarea",
                         "cssClass": "pmg-maindisplayarea"
                     }, {
                         "type": "List",

@@ -405,7 +405,7 @@ YUI().use(function(Y) {
                     /**CEP**/
                     'wegas-cep': {
                         path: 'wegas-cep/js/wegas-cep-itemselector.js',
-                        requires: ['wegas-cep-itemselector', 'wegas-cep-nodeformatter'],
+                        requires: ['wegas-cep-itemselector', 'wegas-cep-nodeformatter', 'scrollview'],
                         ix_provides: "CepItemSelector"
                     },
                     'wegas-cep-nodeformatter': {
