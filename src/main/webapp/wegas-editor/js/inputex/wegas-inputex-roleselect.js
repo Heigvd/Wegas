@@ -1,7 +1,19 @@
-/**
- * @module inputex-url
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
  */
-YUI.add("wegas-inputex-roleselect",function(Y){
+
+/**
+ * @fileoverview
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+YUI.add("wegas-inputex-roleselect", function (Y) {
+    "use strict";
 
     var inputEx = Y.inputEx;
 
@@ -15,27 +27,28 @@ YUI.add("wegas-inputex-roleselect",function(Y){
      *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for https)</li>
      * </ul>
      */
-    Y.namespace("inputEx.Wegas").RoleSelect = function(options) {
-        inputEx.Wegas.RoleSelect.superclass.constructor.call(this,options);
+    Y.namespace("inputEx.Wegas").RoleSelect = function (options) {
+        inputEx.Wegas.RoleSelect.superclass.constructor.call(this, options);
     };
 
     Y.extend(inputEx.Wegas.RoleSelect, inputEx.SelectField, {
 
-        setValue: function ( val, sendUpdatedEvent ) {
-            inputEx.Wegas.RoleSelect.superclass.setValue.call(this, val.id, sendUpdatedEvent );
+        setValue: function (val, sendUpdatedEvent) {
+            inputEx.Wegas.RoleSelect.superclass.setValue.call(this, val.id, sendUpdatedEvent);
         },
-        getValue: function ( ) {
+        getValue: function () {
             return {
                 "@class": "Role",
                 name: "",
                 description: "",
-                id: inputEx.Wegas.RoleSelect.superclass.getValue.call(this )
-            }
+                id: inputEx.Wegas.RoleSelect.superclass.getValue.call(this)
+            };
         },
         setOptions: function (options) {
-            inputEx.Wegas.RoleSelect.superclass.setOptions.call(this, options );
+            var i;
+            inputEx.Wegas.RoleSelect.superclass.setOptions.call(this, options);
             this.options.choices = [];
-            for ( var i = 0; i < Y.Wegas.RoleFacade.data.length; i = i + 1 ) {
+            for (i = 0; i < Y.Wegas.RoleFacade.data.length; i = i + 1) {
                 this.options.choices.push({
                     value: Y.Wegas.RoleFacade.data[i].get("id"),
                     label: Y.Wegas.RoleFacade.data[i].get("name")
@@ -44,5 +57,5 @@ YUI.add("wegas-inputex-roleselect",function(Y){
         }
     });
 
-    inputEx.registerType("roleselect", inputEx.Wegas.RoleSelect );             // Register this class as "wegasurl" type
+    inputEx.registerType("roleselect", inputEx.Wegas.RoleSelect);               // Register this class as "wegasurl" type
 });

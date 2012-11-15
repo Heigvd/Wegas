@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -79,7 +79,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * When a choice is created, we automatically add a result by default
      */
     @PrePersist
-    public void prePersist() {
+    public void prePersist2() {
         if (this.getResults().isEmpty()) {
             this.addResult(new Result("defaultResult"));                        // When a choice is created, we automatically add a result by default
         }
@@ -179,5 +179,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public void setResults(List<Result> results) {
         this.results = results;
+    }
+
+    public Boolean isActive(Player p) {
+        return this.isActive(p);
     }
 }
