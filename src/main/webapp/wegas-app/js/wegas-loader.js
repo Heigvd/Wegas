@@ -48,7 +48,8 @@ YUI().use(function(Y) {
                         requires: ['plugin']
                     },
                     'wegas-injector': {
-                        path: 'wegas-app/js/widget/wegas-injector-min.js'
+                        path: 'wegas-app/js/widget/wegas-injector-min.js',
+                        ix_provides: "Injector"
                     },
                     /** Persistence **/
                     'wegas-entity': {
@@ -414,7 +415,7 @@ YUI().use(function(Y) {
                     /** CrimeSim **/
                     'wegas-crimesim-scheduledisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',
-                        requires: ['wegas-widget', 'wegas-widgetmenu', 'datatable'],
+                        requires: ['wegas-widget', 'wegas-widgetmenu', 'datatable', 'wegas-gallery'],
                         ix_provides: "ScheduleDisplay"
                     },
                     'wegas-crimesim-resultsdisplay': {
