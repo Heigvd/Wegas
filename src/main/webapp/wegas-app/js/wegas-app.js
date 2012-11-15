@@ -38,9 +38,6 @@ YUI.add('wegas-app', function (Y) {
          */
         initializer: function () {
             Y.Wegas.app = this;
-            this.injector = new Y.Wegas.Injector({
-                observe: "#maindisplayarea"
-            });
             /**
              * @memberOf Y.Wegas.App#
              * @name render
