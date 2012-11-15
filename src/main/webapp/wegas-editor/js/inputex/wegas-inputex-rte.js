@@ -102,17 +102,17 @@ YUI.add("wegas-inputex-rte", function (Y) {
                                 targetInput = win.document.getElementById(field_name);
                                 targetInput.value = Y.Plugin.CRDataSource.getFullpath(path);  // update the input field
 
-                                if (typeof (win.ImageDialog) !== "undefined") {       // are we an image browser
-                                    if (win.ImageDialog.getImageData) {             // we are, so update image dimensions...
+                                if (typeof (win.ImageDialog) !== "undefined") { // are we an image browser
+                                    if (win.ImageDialog.getImageData) {         // we are, so update image dimensions...
                                         win.ImageDialog.getImageData();
                                     }
 
-                                    if (win.ImageDialog.showPreviewImage) {         // ... and preview if necessary
+                                    if (win.ImageDialog.showPreviewImage) {     // ... and preview if necessary
                                         win.ImageDialog.showPreviewImage(Y.Plugin.CRDataSource.getFullpath(path));
                                     }
                                 }
-                                if (win.Media) {                                  // If in an editor window
-                                    win.Media.formToData("src");                  // update the data
+                                if (win.Media) {                                // If in an editor window
+                                    win.Media.formToData("src");                // update the data
                                 }
                             });
                         }
