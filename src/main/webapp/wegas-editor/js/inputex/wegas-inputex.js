@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-inputex', function(Y) {
+YUI.add('wegas-inputex', function (Y) {
     "use strict";
 
     var inputEx = Y.inputEx,
@@ -22,45 +22,45 @@ YUI.add('wegas-inputex', function(Y) {
      *  @hack Set up inputex providers for Wegas,
      *  so inputex will use our own widgets when using f = Y.inpuex(cfg)
      */
-    YUI_config.groups.inputex.modulesByType.html = "wegas-inputex-rte";         //
+    YUI_config.groups.inputex.modulesByType.html = "wegas-inputex-rte";
     YUI_config.groups.inputex.modulesByType.hashlist = "wegas-inputex-hashlist";
     YUI_config.groups.inputex.modulesByType.ace = "wegas-inputex-ace";
     YUI_config.groups.inputex.modulesByType.wegasurl = "wegas-inputex-url";
     YUI_config.groups.inputex.modulesByType.script = "wegas-inputex-wysiwygscript";
-    YUI_config.groups.inputex.modulesByType.entityarrayfieldselect = "wegas-inputex-wysiwygscript"
-    YUI_config.groups.inputex.modulesByType.roleselect = "wegas-inputex-roleselect"
+    YUI_config.groups.inputex.modulesByType.entityarrayfieldselect = "wegas-inputex-wysiwygscript";
+    YUI_config.groups.inputex.modulesByType.roleselect = "wegas-inputex-roleselect";
 
     /**
      *  @hack So we can easily change classs on inputex fields
      */
-    Y.inputEx.Field.prototype.addClassName = function ( className ) {
-        Y.one(this.divEl ).addClass( className );
+    Y.inputEx.Field.prototype.addClassName = function (className) {
+        Y.one(this.divEl).addClass(className);
     };
-    Y.inputEx.Field.prototype.removeClassName = function ( className ) {
-        Y.one(this.divEl ).removeClass( className );
+    Y.inputEx.Field.prototype.removeClassName = function (className) {
+        Y.one(this.divEl).removeClass(className);
     };
 
     /**
      * @hack Let inputex also get requirement from selectfields, lists
      */
-    Y.inputEx.getRawModulesFromDefinition = function(inputexDef) {
+    Y.inputEx.getRawModulesFromDefinition = function (inputexDef) {
         function walk(cfg) {                                                    // recursive for group,forms,list,combine, etc...
             var type = cfg.type || 'string',
             modules = [YUI_config.groups.inputex.modulesByType[type]];
 
-            if(cfg.fields) {
-                Y.Array.each(cfg.fields, function(field) {
-                    modules = modules.concat( walk(field));
+            if (cfg.fields) {
+                Y.Array.each(cfg.fields, function (field) {
+                    modules = modules.concat(walk(field));
                 }, this);
             }
-            if(cfg.availableFields) {
-                Y.Array.each(cfg.availableFields, function(field) {
-                    modules = modules.concat( walk(field));
+            if (cfg.availableFields) {
+                Y.Array.each(cfg.availableFields, function (field) {
+                    modules = modules.concat(walk(field));
                 }, this);
             }
 
             if (cfg.elementType) {
-                modules = modules.concat( walk(cfg.elementType)  );
+                modules = modules.concat(walk(cfg.elementType));
             }
             return modules;
         // TODO: list elementType
@@ -68,7 +68,7 @@ YUI.add('wegas-inputex', function(Y) {
         }
         var ret =  walk(inputexDef);
         return ret;
-    }
+    };
 
     /*
      * @hack prevents KeyValueField to return the selector field
@@ -94,7 +94,7 @@ YUI.add('wegas-inputex', function(Y) {
         this.options.maxLength = options.maxLength;
         this.options.minLength = options.minLength;
         this.options.typeInvite = options.typeInvite;
-        if (!this.options.required && this.options.typeInvite === undefined) { // !!!MODIFIED!!!
+        if (!this.options.required && this.options.typeInvite === undefined) {  // !!!MODIFIED!!!
             this.options.typeInvite = "optional";
         }
         this.options.readonly = options.readonly;

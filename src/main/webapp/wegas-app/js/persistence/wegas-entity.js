@@ -45,7 +45,7 @@ YUI.add('wegas-entity', function(Y) {
          */
         toJSON: function() {
             var k, ret = this.getAttrs(),
-                    attrCfgs = this.getAttrCfgs();
+            attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
                 if (attrCfgs[k] && attrCfgs[k]["transient"]) {                           // Remove any transient attribute
@@ -126,8 +126,8 @@ YUI.add('wegas-entity', function(Y) {
          */
         getMenuCfg: function(data) {
             var menus = Y.Wegas.app.get('editorMenus'),
-                    //    staticMenus =
-                    menu;
+            //    staticMenus =
+            menu;
 
             if (menus) {
                 menu = menus[ this.get('@class')] || menus[this.get("type")];  // Select first server defined forms, based on the @class or the type attribute
@@ -194,14 +194,14 @@ YUI.add('wegas-entity', function(Y) {
                         if (value.hasOwnProperty(k)) {
                             v = walk(value, k);
                             if (v === undefined) {
-                                //delete value[k];
+                            //delete value[k];
                             } else {
                                 value[k] = v;
                             }
                         }
                     }
                     if (!Y.Lang.isArray(value) &&
-                            (!Y.Lang.isUndefined(value["@class"]) || !Y.Lang.isUndefined(value["type"]))) {
+                        (!Y.Lang.isUndefined(value["@class"]) || !Y.Lang.isUndefined(value["type"]))) {
                         return Y.Wegas.persistence.Editable.readObject(value);
                     }
                 }
@@ -247,7 +247,7 @@ YUI.add('wegas-entity', function(Y) {
 
                 } else if (val.expr) {                                        // if absent evaluate the expr field
                     val.evaluated = ds.rest.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
+                        Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
 
                 } else if (val.i) {
                     val.evaluated = ds.rest.findById(val.id);
@@ -272,19 +272,19 @@ YUI.add('wegas-entity', function(Y) {
         _buildCfg: {
             //statics: ["EDITMENU"],
             custom: {
-                //HASH: function (prop, Receiver, Supplier) {
+        //HASH: function (prop, Receiver, Supplier) {
 
-                //Entity.ENTITIES_HASH[Receiver.name] = true;
+        //Entity.ENTITIES_HASH[Receiver.name] = true;
 
-                //var c = Supplier.constructor;
-                //while (!Receiver.EDITMENU && c) {
-                //    if (c.EDITMENU) {                                                  // Add to attributes
-                //        Receiver.EDITMENU = c.EDITMENU
-                //    }
-                //    c = c.superclass ? c.superclass.constructor : null;
-                //}
-                //}
-            }
+        //var c = Supplier.constructor;
+        //while (!Receiver.EDITMENU && c) {
+        //    if (c.EDITMENU) {                                                  // Add to attributes
+        //        Receiver.EDITMENU = c.EDITMENU
+        //    }
+        //    c = c.superclass ? c.superclass.constructor : null;
+        //}
+        //}
+        }
         },
         ATTRS: {
             initialized: {
@@ -393,15 +393,15 @@ YUI.add('wegas-entity', function(Y) {
             widgetsUri: {
                 type: "string",
                 choices: [{
-                        value: "wegas-leaderway/db/wegas-leaderway-pages.json",
-                        label: "Leaderway"
-                    }, {
-                        value: "wegas-crimesim/db/wegas-crimesim-pages.json",
-                        label: "Crimesim"
-                    }, {
-                        value: "wegas-mmo/db/wegas-leaderway-mmo.json",
-                        label: "Programming Game"
-                    }],
+                    value: "wegas-leaderway/db/wegas-leaderway-pages.json",
+                    label: "Leaderway"
+                }, {
+                    value: "wegas-crimesim/db/wegas-crimesim-pages.json",
+                    label: "Crimesim"
+                }, {
+                    value: "wegas-mmo/db/wegas-leaderway-mmo.json",
+                    label: "Programming Game"
+                }],
                 _inputex: {
                     label: "Layout"
                 }
@@ -420,42 +420,42 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "Button",
-                label: "Explore",
-                plugins: [{
-                        fn: "LoadTreeviewNodeAction",
-                        cfg: {
-                            tabId: "gamesTreeViewTab"
-                        }
-                    }, {
-                        fn: "EditEntityAction"
-                    }]
-            },
-            //{
-            //    type: "Button",
-            //    label: "Open in editor",
-            //    plugins: [{
-            //        fn: "OpenGameAction"
-            //    }]
-            //},
-            //    {
-            //    type: "AddEntityChildButton",
-            //    label: "Add game",
-            //    childClass: "Game"
-            //},
-            //{
-            //    type: "EditEntityButton",
-            //    label: "Properties"
-            //},
-            {
-                type: "Button",
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
+            type: "Button",
+            label: "Explore",
+            plugins: [{
+                fn: "LoadTreeviewNodeAction",
+                cfg: {
+                    tabId: "gamesTreeViewTab"
+                }
             }, {
-                type: "DeleteEntityButton"
+                fn: "EditEntityAction"
             }]
+        },
+        //{
+        //    type: "Button",
+        //    label: "Open in editor",
+        //    plugins: [{
+        //        fn: "OpenGameAction"
+        //    }]
+        //},
+        //    {
+        //    type: "AddEntityChildButton",
+        //    label: "Add game",
+        //    childClass: "Game"
+        //},
+        //{
+        //    type: "EditEntityButton",
+        //    label: "Properties"
+        //},
+        {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -478,15 +478,15 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "AddEntityChildButton",
-                label: "Add team",
-                childClass: "Team"
-            }, {
-                type: "EditEntityButton",
-                label: "Properties"
-            }, {
-                type: "DeleteEntityButton"
-            }]
+            type: "AddEntityChildButton",
+            label: "Add team",
+            childClass: "Team"
+        }, {
+            type: "EditEntityButton",
+            label: "Properties"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -512,20 +512,20 @@ YUI.add('wegas-entity', function(Y) {
             gameId: IDATTRDEF
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Properties"
-            }, {
-                type: "Button",
-                label: "Add player",
-                plugins: [{
-                        fn: "AddEntityChildAction",
-                        cfg: {
-                            childClass: "Player"
-                        }
-                    }]
-            }, {
-                type: "DeleteEntityButton"
+            type: "EditEntityButton",
+            label: "Properties"
+        }, {
+            type: "Button",
+            label: "Add player",
+            plugins: [{
+                fn: "AddEntityChildAction",
+                cfg: {
+                    childClass: "Player"
+                }
             }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -539,11 +539,11 @@ YUI.add('wegas-entity', function(Y) {
             teamId: IDATTRDEF
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Properties"
-            }, {
-                type: "DeleteEntityButton"
-            }]
+            type: "EditEntityButton",
+            label: "Properties"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -602,11 +602,11 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Edit group"
-            }, {
-                type: "DeleteEntityButton"
-            }]
+            type: "EditEntityButton",
+            label: "Edit group"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
     /**
      * JpaAccount mapper
@@ -681,15 +681,15 @@ YUI.add('wegas-entity', function(Y) {
                 items: {
                     type: "string",
                     choices: [{
-                            value: 1,
-                            label: 'Administrator'
-                        }, {
-                            value: 4,
-                            label: 'Scenarist'
-                        }, {
-                            value: 5,
-                            label: 'Animator'
-                        }],
+                        value: 1,
+                        label: 'Administrator'
+                    }, {
+                        value: 4,
+                        label: 'Scenarist'
+                    }, {
+                        value: 5,
+                        label: 'Animator'
+                    }],
                     _inputex: {
                         label: "",
                         _type: "roleselect"
@@ -701,35 +701,35 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Edit user"
-            }, {
-                type: "Button",
-                disabled: true,
-                label: "Permissions"
-            }
-            //        , {
-            //            type: "DeleteEntityButton"
-            //        }
+            type: "EditEntityButton",
+            label: "Edit user"
+        }, {
+            type: "Button",
+            disabled: true,
+            label: "Permissions"
+        }
+        //        , {
+        //            type: "DeleteEntityButton"
+        //        }
         ]
-                //EDITFORM : [{
-                //    name: 'name',
-                //    label:'Name',
-                //    required: true
-                //}, {
-                //    name: 'password',
-                //    type: 'password',
-                //    label: 'New password',
-                //    showMsg: true,
-                //    id: 'firstPassword',
-                //    strengthIndicator: true,
-                //    capsLockWarning: true
-                //}, {
-                //    type: 'password',
-                //    label: 'Confirmation',
-                //    showMsg: true,
-                //    confirm: 'firstPassword'
-                //}]
+    //EDITFORM : [{
+    //    name: 'name',
+    //    label:'Name',
+    //    required: true
+    //}, {
+    //    name: 'password',
+    //    type: 'password',
+    //    label: 'New password',
+    //    showMsg: true,
+    //    id: 'firstPassword',
+    //    strengthIndicator: true,
+    //    capsLockWarning: true
+    //}, {
+    //    type: 'password',
+    //    label: 'Confirmation',
+    //    showMsg: true,
+    //    confirm: 'firstPassword'
+    //}]
     });
 
     /**
@@ -792,15 +792,15 @@ YUI.add('wegas-entity', function(Y) {
                     "@class": {
                         type: "string",
                         choices: [{
-                                value: "TeamScope",
-                                label: 'different for each team'
-                            }, {
-                                value: "PlayerScope",
-                                label: 'different for each user'
-                            }, {
-                                value: "GameModelScope",
-                                label: 'the same for everybody'
-                            }],
+                            value: "TeamScope",
+                            label: 'different for each team'
+                        }, {
+                            value: "PlayerScope",
+                            label: 'different for each user'
+                        }, {
+                            value: "GameModelScope",
+                            label: 'the same for everybody'
+                        }],
                         _inputex: {
                             label: 'Variable is'
                         }
@@ -815,16 +815,16 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: "Button",
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }],
+            type: "EditEntityButton"
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "DeleteEntityButton"
+        }],
         EDITFORM: {
             name: 'valueselector',
             label: 'Variable is',
@@ -930,8 +930,8 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
-            }]
+            type: "EditEntityButton"
+        }]
     });
     /**
      * StringDescriptor mapper
@@ -1024,24 +1024,32 @@ YUI.add('wegas-entity', function(Y) {
         METHODS: {
             add: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             setValue: {
                 label: "set",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
+            },
+            getValue: {
+                label: "value",
+                returns: "number",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
             }
         }
     });
@@ -1119,20 +1127,20 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: "AddEntityChildButton",
-                label: "Add child",
-                childClass: "VariableDescriptor"
-            }, {
-                type: "Button",
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
+            type: "EditEntityButton"
+        }, {
+            type: "AddEntityChildButton",
+            label: "Add child",
+            childClass: "VariableDescriptor"
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
             }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
     /*
      * ListInstance mapper
@@ -1208,114 +1216,114 @@ YUI.add('wegas-entity', function(Y) {
         METHODS: {
             addAtConfidence: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             setConfidence: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             addAtMoral: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             setMoral: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             //methods below are temporary ; only for CEP-Game
             addAtSalary: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             setSalary: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             addAtExperience: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             setExperience: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             addAtLeadershipLevel: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             setLeadershipLevel: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "string",
+                    value: 1
+                }]
             },
             setActive: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    },
-                    {
-                        type: "boolean",
-                        value: false
-                    }]
+                    type: "hidden",
+                    value: "self"
+                },
+                {
+                    type: "boolean",
+                    value: false
+                }]
             }
         }
     });
@@ -1478,22 +1486,31 @@ YUI.add('wegas-entity', function(Y) {
                 label: "send message",
                 className: "wegas-method-sendmessage",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        label: "from",
-                        scriptType: "string"
-                    }, {
-                        type: "string",
-                        label: "title",
-                        scriptType: "string"
-                    }, {
-                        type: "text",
-                        label: "Content",
-                        scriptType: "string"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    label: "from",
+                    scriptType: "string"
+                }, {
+                    type: "string",
+                    label: "title",
+                    scriptType: "string"
+                }, {
+                    type: "text",
+                    label: "Content",
+                    scriptType: "string"
+                }]
+            },
+            isEmpty: {
+                label: "is empty",
+                returns: "boolean",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
             }
+
         }
     });
     /**
@@ -1544,7 +1561,7 @@ YUI.add('wegas-entity', function(Y) {
             this._result = null;
         },
         isValid: function() {
-            // @todo : FX a greffer :)
+        // @todo : FX a greffer :)
         },
         /*
          * evaluated event contains response. true or false. False if script error.
@@ -1558,7 +1575,7 @@ YUI.add('wegas-entity', function(Y) {
                 if (!this._eHandler) {
                     this._eHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id) {
 
-                        if (+this._yuid !== +id) {
+                        if (this._yuid !== id) {
                             return;
                         }
                         e.halt(true);
@@ -1574,7 +1591,7 @@ YUI.add('wegas-entity', function(Y) {
                 if (!this._fHandler) {
                     this._fHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:failure", function(e, o, id) {
 
-                        if (+this._yuid !== +id) {
+                        if (this._yuid !== id) {
                             return;
                         }
                         e.halt(true);
@@ -1614,8 +1631,8 @@ YUI.add('wegas-entity', function(Y) {
                 value: "JavaScript",
                 type: "string",
                 choices: [{
-                        value: "JavaScript"
-                    }],
+                    value: "JavaScript"
+                }],
                 _inputex: {
                     //type:"select",
                     _type: "hidden"
@@ -1638,25 +1655,25 @@ YUI.add('wegas-entity', function(Y) {
      * we can use other object's existing declaration.
      */
     Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields = [
-        Y.mix({
-            name: 'NumberDescriptor',
-            label: 'a number'
-        }, new Y.Wegas.persistence.NumberDescriptor().getFormCfg()),
-        Y.mix({
-            name: 'StringDescriptor',
-            label: 'a string'
-        }, new Y.Wegas.persistence.StringDescriptor().getFormCfg()),
-        Y.mix({
-            name: 'ListDescriptor',
-            label: 'a list'
-        }, new Y.Wegas.persistence.ListDescriptor().getFormCfg()),
-        Y.mix({
-            name: 'ResourceDescriptor',
-            label: 'a resource'
-        }, new Y.Wegas.persistence.ResourceDescriptor().getFormCfg()),
-        Y.mix({
-            name: 'TaskDescriptor',
-            label: 'a task'
-        }, new Y.Wegas.persistence.TaskDescriptor().getFormCfg())
+    Y.mix({
+        name: 'NumberDescriptor',
+        label: 'a number'
+    }, new Y.Wegas.persistence.NumberDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'StringDescriptor',
+        label: 'a string'
+    }, new Y.Wegas.persistence.StringDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'ListDescriptor',
+        label: 'a list'
+    }, new Y.Wegas.persistence.ListDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'ResourceDescriptor',
+        label: 'a resource'
+    }, new Y.Wegas.persistence.ResourceDescriptor().getFormCfg()),
+    Y.mix({
+        name: 'TaskDescriptor',
+        label: 'a task'
+    }, new Y.Wegas.persistence.TaskDescriptor().getFormCfg())
     ];
 });
