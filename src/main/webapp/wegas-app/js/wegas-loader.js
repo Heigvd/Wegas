@@ -415,14 +415,21 @@ YUI().use(function(Y) {
                     /** CrimeSim **/
                     'wegas-crimesim-scheduledisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',
-                        requires: ['wegas-widget', 'wegas-widgetmenu', 'datatable', 'wegas-gallery'],
+                        requires: ['wegas-widget', 'wegas-widgetmenu', 'wegas-crimesim-treeble' ],
                         ix_provides: "ScheduleDisplay"
                     },
                     'wegas-crimesim-resultsdisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-resultsdisplay-min.js',
-                        requires: ['wegas-widget', 'datatable'],
+                        requires: ['wegas-widget', 'wegas-crimesim-treeble' ],
                         ix_provides: "ResultsDisplay"
                     },
+                
+                    'wegas-crimesim-treeble': {
+                        path: 'wegas-crimesim/js/wegas-crimesim-treeble.js',
+                        requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble'],
+                        ix_provides: "CrimeSimTreeble"
+                    },
+
                     /**Leaderway**/
                     'wegas-leaderway': {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
