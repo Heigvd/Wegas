@@ -325,6 +325,13 @@ YUI.add("wegas-widget", function (Y) {
                     }, this);
                 }
             }
+            if (cfg.plugins) {                                            // Get definitions from children (for Y.WidgetParent widgets)
+                Y.Array.each(cfg.plugins, function (field) {
+                    field.cfg = field.cfg || {};
+                    field.cfg.type = field.fn;
+                    modules = modules.concat(this.getModulesFromDefinition(field.cfg));
+                }, this);
+            }
 
             props = ["left", "right", "center", "top", "bottom"];               // Get definitions from children (for Y.Wegas.Layout widgets)
             for (i = 0; i < props.length; i = i + 1) {

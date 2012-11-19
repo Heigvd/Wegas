@@ -22,7 +22,7 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Console",
-                        "subpage": {
+                        "children": {
                             "type": "Console",
                             "class": "wegas-console",
                             "plugins": [{
@@ -46,7 +46,7 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Users",
-                        "subpage": {
+                        "children": {
                             "type": "EditorTreeView",
                             "dataSource": "User",
                             "plugins": [{
@@ -64,7 +64,7 @@
                     }, {
                         "type": "OpenTabButton",
                         "label": "Groups",
-                        "subpage": {
+                        "children": {
                             "type": "EditorTreeView",
                             "dataSource": "Role",
                             "plugins": [{
@@ -90,14 +90,14 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Styles",
-                        "subpage": {
+                        "children": {
                             "type": "CSSEditor",
                             "class": "wegas-csseditor"
                         }
                     },{
                         "type": "OpenTabButton",
                         "label": "Files",
-                        "subpage": {
+                        "children": {
                             "type": "FileExplorer",
                             "plugins": [{
                                 "fn": "WidgetToolbar"
@@ -106,15 +106,15 @@
                     },{
                         "type": "OpenTabButton",
                         "label": "Scripts",
-                        "subpage": {
+                        "children": {
                             "type": "ScriptLibrary"
                         }
                     }, {
                         "type": "OpenTabButton",
                         "label": "Pages",
                         "tabSelector": "#leftTabView",
-                        "subpage": {
-                            "type": "PageEditor",
+                        "children": {
+                            "type": "PageTreeview",
                             "pageLoader": "previewPageLoader"
                         }
                     }]
@@ -129,7 +129,7 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Players",
-                        "subpage": {
+                        "children": {
                             "type": "EditorTreeView",
                             "dataSource": "Game"
                         }

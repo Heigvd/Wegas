@@ -16,7 +16,7 @@ YUI.add("wegas-text", function (Y) {
 
     var CONTENTBOX = "contentBox", Text;
 
-    Text = Y.Base.create("wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    Text = Y.Base.create("wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
         syncUI: function () {
             this.set("content", this.get("content"));
         }

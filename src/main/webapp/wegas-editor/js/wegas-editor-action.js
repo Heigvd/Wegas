@@ -51,7 +51,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(NewEntityAction, EntityAction, {
         execute: function () {
-            EditEntityAction.showAddForm( Y.Wegas.persistence.Editable.revive({
+            EditEntityAction.showAddForm( Y.Wegas.Editable.revive({
                 "@class": this.get("targetClass")
             }), null, Y.Wegas.app.dataSources[ this.get("dataSource") ] );
         }
@@ -242,7 +242,7 @@ YUI.add('wegas-editor-action', function (Y) {
                     break;
 
                 case "post":
-                    var newEntity = Y.Wegas.persistence.Editable.revive({
+                    var newEntity = Y.Wegas.Editable.revive({
                         "@class": this.get("targetClass")
                     });
                     EditEntityAction.showEditForm( newEntity , Y.bind( function ( newVal ) {
@@ -309,7 +309,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend( AddEntityChildAction, EntityAction, {
         execute: function() {
-            EditEntityAction.showAddForm( Y.Wegas.persistence.Editable.revive( {// Display the add form
+            EditEntityAction.showAddForm( Y.Wegas.Editable.revive( {// Display the add form
                 "@class": this.get("childClass")
             }), this.get("entity"), this.get("dataSource"));
         }
@@ -426,7 +426,7 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.extend(OpenTabAction, Action, {
         execute: function () {
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
-                this.get("tabSelector"), {}, this.get("subpage"));
+                this.get("tabSelector"), {}, this.get("children"));
         }
     }, {
         NS: "wegas",
@@ -435,7 +435,7 @@ YUI.add('wegas-editor-action', function (Y) {
             tabSelector: {
                 value: '#centerTabView'
             },
-            subpage: {}
+            children: {}
         }
     });
 

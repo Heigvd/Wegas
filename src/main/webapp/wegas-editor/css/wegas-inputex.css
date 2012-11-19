@@ -118,33 +118,38 @@ div.inputEx-fieldWrapper {
 .inputEx-WysiwigScript .inputEx-ListField .wegas-removebutton {
     left: -32px;
 }
+/* Original inputex listfield styles */
+img.inputEx-ListField-delButton {
+    margin-left: -20px;
+    margin-top: 2px;
+    position: absolute; /* to allow click events */
+    z-index: 5;
+}
+
 /* List field style */
 .inputEx-ListField {
     position: relative;
 }
-.yui3-skin-sam .inputEx-ListField .yui3-button {
-    background: none;
-    border: none;
-    box-shadow: none;
-    margin: -2px 5px 0;
-    background-color: transparent;
-    padding:0;
-}
 .inputEx-ListField > fieldset > div {
     position:relative;
 }
-.inputEx-ListField .wegas-addbutton {
+.yui3-skin-sam .inputEx-ListField .wegas-addbutton,
+.yui3-skin-sam .inputEx-ListField .wegas-removebutton {
+    background: none;
+    border: none;
+    box-shadow: none;
+    margin: -2px 0 0;
+    background-color: transparent;
+    padding:0;
     position: absolute;
     top: 0;
-    left: -3px;
-    margin: -2px 0 0;
     z-index: 10; /* to allow click events */
 }
+.inputEx-ListField .wegas-addbutton {
+    left: -3px;
+}
 .inputEx-ListField .wegas-removebutton {
-    position: absolute;
-    top: 0;
     left: -120px;
-    margin: -2px 0 0;
 }
 
 /* Tinymce field */

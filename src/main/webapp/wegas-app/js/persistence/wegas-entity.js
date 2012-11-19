@@ -202,7 +202,7 @@ YUI.add('wegas-entity', function (Y) {
                     }
                     if (!Y.Lang.isArray(value) &&
                         (!Y.Lang.isUndefined(value["@class"]) || !Y.Lang.isUndefined(value.type))) {
-                        return Y.Wegas.persistence.Editable.readObject(value);
+                        return Y.Wegas.Editable.readObject(value);
                     }
                 }
                 return value;                                                   // If no value was returned before, return raw original object
@@ -261,7 +261,7 @@ YUI.add('wegas-entity', function (Y) {
         }
 
     });
-    Y.namespace("Wegas.persistence").Editable = Editable;
+    Y.namespace("Wegas").Editable = Editable;
 
     /**
      * Entity is used to represent db objects.
@@ -817,13 +817,14 @@ YUI.add('wegas-entity', function (Y) {
             }]
         }, {
             type: "DeleteEntityButton"
-        }],
-        EDITFORM: {
-            name: 'valueselector',
-            label: 'Variable is',
-            type: 'keyvalue',
-            availableFields: []
-        }
+        }]
+//,
+//        EDITFORM: {
+//            name: 'valueselector',
+//            label: 'Variable is',
+//            type: 'keyvalue',
+//            availableFields: []
+//        }
     });
 
 
@@ -1068,7 +1069,7 @@ YUI.add('wegas-entity', function (Y) {
          * Extend clone to add transient childs
          */
         clone: function () {
-            var object = Y.Wegas.persistence.Editable.prototype.clone.call(this), i;
+            var object = Y.Wegas.Editable.prototype.clone.call(this), i;
             object.items = [];
             for (i in this.get("items")) {
                 object.items.push(this.get("items")[i].clone());
@@ -1635,7 +1636,7 @@ YUI.add('wegas-entity', function (Y) {
      * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORM values here, so
      * we can use other object's existing declaration.
      */
-    Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields = [
+   /* Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields = [
     Y.mix({
         name: 'NumberDescriptor',
         label: 'a number'
@@ -1656,5 +1657,5 @@ YUI.add('wegas-entity', function (Y) {
         name: 'TaskDescriptor',
         label: 'a task'
     }, new Y.Wegas.persistence.TaskDescriptor().getFormCfg())
-    ];
+    ];*/
 });

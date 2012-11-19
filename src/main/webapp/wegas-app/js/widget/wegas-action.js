@@ -35,10 +35,10 @@ YUI.add('wegas-action', function (Y) {
 
     Y.namespace("Wegas").Plugin = Plugin;
 
-    var Action = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.persistence.Editable], {
+    var Action = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
 
         initializer: function () {
-            this.afterHostEvent(this.get("targetEvent"), function () {
+            this.onHostEvent(this.get("targetEvent"), function () {
                 this.setAttrs(this.get("host").get("data"));                    // Pass the action data from the host to the plug
                 this.execute();
             }, this);

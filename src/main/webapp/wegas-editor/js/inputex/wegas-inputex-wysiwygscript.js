@@ -107,8 +107,6 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             this.viewSrc.set("selected", wysiwygmode ? 0 : 1);
             this.wrapEl.style["display"] = (wysiwygmode) ? "none" : "block";
 
-            this.exprList.addButton.set("disabled", !wysiwygmode);
-
             if (wysiwygmode) {
                 this.exprList.show();
             } else {
@@ -165,9 +163,10 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                 parentEl: this.fieldContainer,
                 addType: (this.options.expects === "condition") ? "variabledescriptorcondition" : "variabledescriptorsetter"
             });
-            this.exprList.addButton.get("boundingBox").setStyle("display", "inline-block");
 
-        // this.setMode(this.options.mode);
+            if (this.options.mode !== "wysiwyg") {
+                this.exprList.hide();
+            }
         },
 
         /**

@@ -23,7 +23,7 @@ YUI.add('wegas-proggame-level', function (Y) {
      *  terrain display.
      *
      */
-    ProgGameLevel = Y.Base.create( "wegas-proggame-level", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    ProgGameLevel = Y.Base.create( "wegas-proggame-level", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
 
         // *** Fields *** //
         CONTENT_TEMPLATE: '<div class="yui3-g">'

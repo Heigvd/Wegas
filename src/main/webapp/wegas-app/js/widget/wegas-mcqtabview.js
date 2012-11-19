@@ -18,7 +18,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
     var CONTENTBOX = 'contentBox',
     MCQTabView;
 
-    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
 
         // *** Private fields *** //
         tabView: null,
@@ -166,7 +166,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
                 * The target variable, returned either based on the name attribute,
                 * and if absent by evaluating the expr attribute.
                 */
-                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
             }
         }
     });

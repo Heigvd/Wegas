@@ -29,17 +29,21 @@ YUI.add('wegas-widgetmenu', function (Y) {
         // *** Lifecycle methods *** //
         initializer: function () {
             this.afterHostEvent("render", function () {
-                var cb = this.get("host").get("contentBox");
-                cb.delegate(this.get("event"), function (e) {
+                var bb = this.get("host").get("boundingBox");
+                bb.delegate(this.get("event"), function (e) {
                     var menu = this.getMenu();                                  // Get a menu instance
 
                     menu.attachTo(e.target);                                    // Attach it to the target node
-                    e.halt();                                                   // Prevent event from bubbling
+                    e.halt(true);                                               // Prevent event from bubbling
                     this.fire("menuOpen");                                      // Notify the parent the menu has been opened
                 }, this.get("selector"), this);
             });
         },
-
+        show: function () {
+            var menu = this.getMenu();                                          // Get a menu instance
+            menu.attachTo(
+                this.get("host").get("boundingBox").one(this.get("selector"))); // Attach it to the target node
+        },
         /*on: function () {
             var menu = this.getMenu();                                          // Get a menu instance
             menu.on.apply(menu, arguments);

@@ -19,7 +19,7 @@ YUI.add('wegas-list', function (Y) {
     CONTENTBOX = 'contentBox',
     List;
 
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild,  Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild,  Y.Wegas.Widget, Y.Wegas.Editable], {
 
 
         // ** Lifecycle Methods ** //
@@ -38,7 +38,7 @@ YUI.add('wegas-list', function (Y) {
         },
         //Children serialization
         toObject: function () {
-            var i, s = Y.Wegas.persistence.Editable.prototype.toObject.call(this),
+            var i, s = Y.Wegas.Editable.prototype.toObject.call(this),
             children = [];
             for (i = 0; i < this.size(); i = i + 1) {
                 children.push(this.item(i).toObject());

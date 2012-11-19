@@ -18,7 +18,7 @@ YUI.add('wegas-inbox', function (Y) {
     var CONTENTBOX = 'contentBox',
     InboxDisplay;
 
-    InboxDisplay = Y.Base.create("wegas-inbox", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    InboxDisplay = Y.Base.create("wegas-inbox", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
 
         // *** Private Fields *** //
         tabView: null,
@@ -126,7 +126,7 @@ YUI.add('wegas-inbox', function (Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
             }
         }
     });
