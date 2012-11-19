@@ -48,34 +48,19 @@ div.inputEx-fieldWrapper {
     width: 100%;
 }
 /* Set up fluid layout for inputex fields */
-.wegas-form div.inputEx-CombineField,
-.wegas-form .inputEx-fieldWrapper {
+.wegas-form-content >div >fieldset >div {
     padding-left:135px;
     margin-right: 7px;
     white-space: nowrap;
     position: relative;
 }
+.wegas-form-content >div >fieldset >div div.inputEx-label,
 .wegas-form div.inputEx-CombineField > div.inputEx-label,
 .wegas-form div.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-135px;
     width: 129px;
 }
-/* And cancel it for nested fields */
-.wegas-form .inputEx-fieldWrapper .inputEx-fieldWrapper {
-    padding-left: 0;
-    margin-bottom: 0;
-}
-.wegas-form div.inputEx-ListField-subFieldEl {
-    margin-left: 0px;
-}
-.wegas-form div.inputEx-CombineField .inputEx-fieldWrapper  {
-    padding-left:0;
-}
-
-.wegas-form .yui3-button {
-
-}
-.wegas-form .inputEx-ListField >span {
+.wegas-form .inputEx-ListField > span {
     display: none;
 }
 /* Wegas Url Field styles */
@@ -90,13 +75,6 @@ div.inputEx-fieldWrapper {
     margin-top: -4px;
 }
 
-/* The "add"" button */
-img.inputEx-ListField-delButton {
-    margin-left: -20px;
-    margin-top: 2px;
-    position: absolute; /* to allow click events */
-    z-index: 5;
-}
 
 /* wegas-inputex-ace styles */
 .ace_editor {
@@ -122,12 +100,6 @@ img.inputEx-ListField-delButton {
 .inputEx-WysiwigScript div.inputEx-CombineField {
     padding:0;
 }
-.inputEx-WysiwigScript .inputEx-ListField .yui3-button {
-    background: none;
-    border: none;
-    box-shadow: none;
-    margin: -2px 5px 0;
-}
 .inputEx-WysiwigScript .wegas-method-sendmessage {
     padding: 26px 0px 0px 135px;
 }
@@ -140,13 +112,39 @@ img.inputEx-ListField-delButton {
     width: 400px;
 }
 
+.inputEx-WysiwigScript .inputEx-ListField .wegas-addbutton {
+    left: -50px;
+}
+.inputEx-WysiwigScript .inputEx-ListField .wegas-removebutton {
+    left: -32px;
+}
 /* List field style */
 .inputEx-ListField {
     position: relative;
 }
-.inputEx-ListField > fieldset > div > button {
-    position:absolute;
-    left:-35px;
+.yui3-skin-sam .inputEx-ListField .yui3-button {
+    background: none;
+    border: none;
+    box-shadow: none;
+    margin: -2px 5px 0;
+    background-color: transparent;
+    padding:0;
+}
+.inputEx-ListField > fieldset > div {
+    position:relative;
+}
+.inputEx-ListField .wegas-addbutton {
+    position: absolute;
+    top: 0;
+    left: -3px;
+    margin: -2px 0 0;
+    z-index: 10; /* to allow click events */
+}
+.inputEx-ListField .wegas-removebutton {
+    position: absolute;
+    top: 0;
+    left: -120px;
+    margin: -2px 0 0;
 }
 
 /* Tinymce field */

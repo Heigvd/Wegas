@@ -21,8 +21,8 @@ YUI.add('wegas-pageeditor', function(Y) {
      *  @constructor
      */
     var BOUNDINGBOX = "boundingBox",
-            CONTENTBOX = "contentBox",
-            Alignable = Y.Base.create("wegas-pageeditor-overlay", Y.Widget, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack], {
+    CONTENTBOX = "contentBox",
+    Alignable = Y.Base.create("wegas-pageeditor-overlay", Y.Widget, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack], {
         CONTENT_TEMPLATE: '<div><span class="wegas-icon wegas-icon-edit"></span><div>'
     }, {
         CSS_PREFIX: "wegas-pageeditor-overlay"
@@ -46,9 +46,9 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.designButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Edit page",
                     on: {
-                        click: Y.bind(function(e) {
+                        click: Y.bind(function (e) {
                             this.get("host").get(BOUNDINGBOX)
-                                    .toggleClass("wegas-pageeditor-designmode", e.target.get("pressed"));
+                            .toggleClass("wegas-pageeditor-designmode", e.target.get("pressed"));
                             if (e.target.get("pressed")) {
                                 this.bind();
                             } else {
@@ -59,35 +59,35 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }).render(el);
             }
 
-            this.highlightOverlay = new Alignable({// Init the highlighting overlay
-                zIndex: 1,
+            this.highlightOverlay = new Alignable({                             // Init the highlighting overlay
+                zIndex: 23,
                 render: true,
                 visible: false
             });
 
             this.highlightOverlay.plug(Y.Plugin.WidgetMenu, {
                 children: [{
-                        type: "Button",
-                        label: "Edit",
-                        on: {
-                            click: Y.bind(function() {                            // Display the edit form
-                                Y.Plugin.EditEntityAction.showEditForm(this.targetWidget, Y.bind(function(targetWidget, val, e, f) {
-                                    Y.Plugin.EditEntityAction.hideEditFormOverlay();
-                                    targetWidget.setAttrs(val);
-                                    targetWidget.syncUI();
-                                    Y.Wegas.PageFacade.rest.patch(targetWidget.get("root").toObject());
-                                }, this, this.targetWidget));
-                            }, this)
-                        }
-                    }, {
-                        type: "Button",
-                        label: "Delete",
-                        on: {
-                            click: Y.bind(function() {
-                                this.targetWidget.destroy();
-                            }, this)
-                        }
-                    }],
+                    type: "Button",
+                    label: "Edit",
+                    on: {
+                        click: Y.bind(function () {                             // Display the edit form
+                            Y.Plugin.EditEntityAction.showEditForm(this.targetWidget, Y.bind(function(targetWidget, val, e, f) {
+                                Y.Plugin.EditEntityAction.hideEditFormOverlay();
+                                targetWidget.setAttrs(val);
+                                targetWidget.syncUI();
+                                Y.Wegas.PageFacade.rest.patch(targetWidget.get("root").toObject());
+                            }, this, this.targetWidget));
+                        }, this)
+                    }
+                }, {
+                    type: "Button",
+                    label: "Delete",
+                    on: {
+                        click: Y.bind(function() {
+                            this.targetWidget.destroy();
+                        }, this)
+                    }
+                }],
                 selector: ".wegas-icon"
             });
 
@@ -118,8 +118,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             }, '.yui3-widget', this));
         },
         detach: function() {
-            for (var i = 0; i < this.handlers.length; i = i + 1) {
-                this.handlers[ i ].detach();
+            var i;
+            for (i = 0; i < this.handlers.length; i = i + 1) {
+                this.handlers[i].detach();
             }
         },
         showOverlay: function(widget) {
@@ -151,13 +152,13 @@ YUI.add('wegas-pageeditor', function(Y) {
 
     Y.Node.prototype.getWidth = function() {
         return parseInt(this.getComputedStyle('width'))
-                + parseInt(this.getComputedStyle('margin-left')) + parseInt(this.getComputedStyle('margin-right'))
-                + parseInt(this.getComputedStyle('padding-left')) + parseInt(this.getComputedStyle('padding-right'));
+        //        + parseInt(this.getComputedStyle('margin-left')) + parseInt(this.getComputedStyle('margin-right'))
+        + parseInt(this.getComputedStyle('padding-left')) + parseInt(this.getComputedStyle('padding-right'));
     };
     Y.Node.prototype.getHeight = function() {
         return parseInt(this.getComputedStyle('height'))
-                + parseInt(this.getComputedStyle('margin-top')) + parseInt(this.getComputedStyle('margin-bottom'))
-                + parseInt(this.getComputedStyle('padding-top')) + parseInt(this.getComputedStyle('padding-bottom'));
+        //      + parseInt(this.getComputedStyle('margin-top')) + parseInt(this.getComputedStyle('margin-bottom'))
+        + parseInt(this.getComputedStyle('padding-top')) + parseInt(this.getComputedStyle('padding-bottom'));
     };
 });
 

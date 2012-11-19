@@ -126,8 +126,18 @@ YUI.add('wegas-action', function (Y) {
         NS: "OpenPageAction",
         NAME: "OpenPageAction",
         ATTRS: {
-            subpageId: {},
-            targetPageLoaderId: {}
+            subpageId: {
+                type:"string",
+                _inputex: {
+                    label: "Page to display"
+                }
+            },
+            targetPageLoaderId: {
+                type:"string",
+                _inputex: {
+                    label: "Target page loader"
+                }
+            }
         }
     });
 
@@ -148,11 +158,7 @@ YUI.add('wegas-action', function (Y) {
                 request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
-                        "@class": "Script",
-                        "language": "JavaScript",
-                        "content": this.get("onClick")
-                    })
+                    data: Y.JSON.stringify(this.get("onClick"))
                 }
             });
         }
@@ -160,7 +166,11 @@ YUI.add('wegas-action', function (Y) {
         NS: "ExecuteScriptAction",
         NAME: "ExecuteScriptAction",
         ATTRS: {
-            onClick: {}
+            onClick: {
+                _inputex: {
+                    _type: "script"
+                }
+            }
         }
     });
 

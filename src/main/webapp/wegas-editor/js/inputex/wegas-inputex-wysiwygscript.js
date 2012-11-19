@@ -159,7 +159,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                 }
             }
             this.exprList = Y.inputEx({                                         // Render the expression as a Y.inputEx.Wegas.ListField
-                type: "inputlist",
+                type: "listfield",
                 fields: fields,
                 useButtons: true,
                 parentEl: this.fieldContainer,
@@ -235,19 +235,6 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
     });
 
     inputEx.registerType('script', inputEx.WysiwygScript);                      // Register this class as "script" type
-
-    /**
-     *  Adds a method that retrieves the value of each input in the group
-     *  (unlike Y.inputEx.Group.getValue() that returns an object based on
-     *  inputs names):
-     */
-    Y.inputEx.Group.prototype.getArray = function () {
-        var i, ret = [];
-        for (i = 0; i < this.inputs.length; i =  i + 1) {
-            ret.push(this.inputs[i].getValue());
-        }
-        return ret;
-    };
 
     /**
      * @class VariableDescriptorSelect
@@ -603,97 +590,6 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
     });
 
     inputEx.registerType("variabledescriptorcondition", VariableDescriptorCondition, {});
-
-
-    /**
-     * @class ListField
-     * @constructor
-     * @extends inputEx.Group
-     * @param {Object} options InputEx definition object
-     */
-    var ListField = function (options) {
-        ListField.superclass.constructor.call(this, options);
-
-        var parentNode = new Y.Node(this.divEl.parentNode);
-        //parentNode.insert(this.addButton.get("boundingBox").remove(), 1);
-        this.addButton.render(this.divEl.parentNode);
-        parentNode.prepend(this.addButton.get("boundingBox"));
-    };
-    Y.extend(ListField, inputEx.Group, {
-
-        /**
-	 * Set the ListField classname
-	 * @param {Object} options Options object as passed to the constructor
-	 */
-        setOptions: function (options) {
-            ListField.superclass.setOptions.call(this, options);
-            this.options.className = options.className || 'inputEx-Field inputEx-ListField';
-            this.options.addType = options.addType || "variabledescriptorsetter";
-        },
-
-        /**
-	 * Render the addButton
-	 */
-        render: function () {
-            ListField.superclass.render.call(this);
-
-            this.addButton = new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-add\"></span>"
-            });
-            this.addButton.on("click", this.onAdd, this);
-        },
-        /**
-         *
-         */
-        destroy: function () {
-            ListField.superclass.destroy.call(this);
-            this.addButton.destroy();
-        },
-        /**
-	 * Handle the click event on the add button
-	 */
-        initEvents: function () {
-            ListField.superclass.initEvents.call(this);
-
-        },
-
-        renderField: function (fieldOptions) {
-            var fieldInstance = ListField.superclass.renderField.call(this, fieldOptions),
-            removebutton = new Y.Wegas.Button({
-                label: '<span class="wegas-icon wegas-icon-remove"></span>'
-            });
-
-            removebutton.targetField = fieldInstance;
-            removebutton.render(fieldInstance.divEl);
-            removebutton.on("click", this.onRemove, this);
-
-            return fieldInstance;
-        },
-
-        onRemove: function (e) {
-            var i = Y.Array.indexOf(this.inputs, e.target.targetField),
-            d = this.inputs[i];
-            d.destroy();
-            this.inputs.splice(i, 1);
-            this.fireUpdatedEvt();
-        },
-
-        onAdd: function (e) {
-            this.addField({
-                type: this.options.addType
-            });
-            this.fireUpdatedEvt();
-        },
-
-        /**
-         * Override to disable
-         */
-        runInteractions: function () { }
-
-    });
-
-    inputEx.registerType("inputlist", ListField);
-
 
     /**
      * @class EntityArrayFieldSelect

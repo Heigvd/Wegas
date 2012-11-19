@@ -199,6 +199,11 @@ YUI().use(function(Y) {
                             'wegas-fileexplorer', 'wegas-inputex-url'],
                         ix_provides: 'yui2html'
                     },
+                    'wegas-inputex-list': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-list-min.js',
+                        requires: ['inputex-group'],
+                        ix_provides: 'listfield'
+                    },
                     'wegas-inputex-hashlist': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-hashlist-min.js',
                         requires: ['inputex-list'],
@@ -211,9 +216,9 @@ YUI().use(function(Y) {
                     },
                     'wegas-inputex-wysiwygscript': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
-                        requires: ['wegas-inputex-script', 'wegas-button', 'wegas-inputex',
-                            'inputex', 'inputex-hidden', 'inputex-jsonschema', 'inputex-select',
-                            'esprima' /*, 'escodegen'*/],
+                        requires: ['wegas-inputex', 'wegas-inputex-script', 'wegas-inputex-list',
+                            'wegas-button', 'inputex', 'inputex-hidden', 'inputex-jsonschema',
+                            'inputex-select', 'esprima' /*, 'escodegen'*/],
                         ix_provides: 'script'
                     },
                     'wegas-inputex-url': {
@@ -423,7 +428,7 @@ YUI().use(function(Y) {
                         requires: ['wegas-widget', 'wegas-crimesim-treeble' ],
                         ix_provides: "ResultsDisplay"
                     },
-                
+
                     'wegas-crimesim-treeble': {
                         path: 'wegas-crimesim/js/wegas-crimesim-treeble.js',
                         requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble'],

@@ -14,7 +14,7 @@
 
 YUI.add('wegas-tooltip', function (Y) {
     "use strict";
-    
+
     /**
      *  @class NewEntityAction
      *  @module Wegas
@@ -32,7 +32,10 @@ YUI.add('wegas-tooltip', function (Y) {
         ATTRS: {
             content: {
                 type: "string",
-                format: "html"
+                format: "html",
+                _inputex: {
+                    label: "Tooltip content"
+                }
             }
         }
     });

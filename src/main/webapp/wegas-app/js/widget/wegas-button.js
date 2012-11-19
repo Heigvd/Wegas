@@ -64,10 +64,6 @@ YUI.add("wegas-button", function (Y) {
         }
     }, {
         ATTRS: {
-            disabled: {
-                "transient": false,
-                "type": "boolean"
-            },
             label: {
                 type: "string"
             },
@@ -76,11 +72,34 @@ YUI.add("wegas-button", function (Y) {
                 optional: true,
                 "transient": true
             },
+            disabled: {
+                "transient": false,
+                "type": "boolean"
+            },
             data: {
                 "transient": true
             },
             cssClass: {
                 value : null
+            },
+            plugins: {
+                "transient": false,
+                _inputex: {
+                    _type: "editablelist",
+                    items: [{
+                        type: "Button",
+                        label: "Tooltip",
+                        data: "Tooltip"
+                    }, {
+                        type: "Button",
+                        label: "Impact",
+                        data: "ExecuteScriptAction"
+                    }, {
+                        type: "Button",
+                        label: "Open page",
+                        data: "OpenPageAction"
+                    }]
+                }
             }
         }
     });

@@ -30,12 +30,9 @@ YUI.add('wegas-editor-action', function (Y) {
         EntityAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(EntityAction, {
-        NS: "entityaction",
-        NAME: "EntityAction"
-    });
-
     Y.extend(EntityAction, Action, {}, {
+        NS: "entityaction",
+        NAME: "EntityAction",
         ATTRS: {
             entity: {},
             dataSource: {}
@@ -52,11 +49,6 @@ YUI.add('wegas-editor-action', function (Y) {
         NewEntityAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(NewEntityAction, {
-        NS: "wegas",
-        NAME: "NewEntityAction"
-    });
-
     Y.extend(NewEntityAction, EntityAction, {
         execute: function () {
             EditEntityAction.showAddForm( Y.Wegas.persistence.Editable.revive({
@@ -64,6 +56,8 @@ YUI.add('wegas-editor-action', function (Y) {
             }), null, Y.Wegas.app.dataSources[ this.get("dataSource") ] );
         }
     }, {
+        NS: "wegas",
+        NAME: "NewEntityAction",
         ATTRS: {
             targetClass: { },
             dataSource: {
@@ -89,16 +83,13 @@ YUI.add('wegas-editor-action', function (Y) {
         EditEntityAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(EditEntityAction, {
-        NS: "editentity",
-        NAME: "EditEntityAction"
-    });
-
     Y.extend(EditEntityAction, EntityAction, {
         execute: function() {
             EditEntityAction.showUpdateForm(this.get("entity"), this.get("dataSource"));
         }
     }, {
+        NS: "editentity",
+        NAME: "EditEntityAction",
         /**
          *
          */
@@ -225,11 +216,6 @@ YUI.add('wegas-editor-action', function (Y) {
         EditEntityArrayFieldAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(EditEntityArrayFieldAction, {
-        NS: "editentitarrayfieldaction",
-        NAME: "EditEntityArrayFieldAction"
-    });
-
     Y.extend(EditEntityArrayFieldAction, EntityAction, {
         execute: function () {
             var entity = this.get("entity"),
@@ -295,6 +281,8 @@ YUI.add('wegas-editor-action', function (Y) {
             };
         }
     }, {
+        NS: "editentitarrayfieldaction",
+        NAME: "EditEntityArrayFieldAction",
         ATTRS: {
             /**
              * Can be put, post or delete
@@ -363,17 +351,15 @@ YUI.add('wegas-editor-action', function (Y) {
         DeleteEntityAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(DeleteEntityAction, {
-        NS: "wegas",
-        NAME: "DeleteEntityAction"
-    });
-
     Y.extend(DeleteEntityAction, EntityAction, {
         execute: function() {
             if (confirm("Are your sure your want to delete this item ?")) {
                 this.get("dataSource").rest.deleteObject(this.get("entity"));
             }
         }
+    }, {
+        NS: "wegas",
+        NAME: "DeleteEntityAction"
     });
 
     Y.namespace("Plugin").DeleteEntityAction = DeleteEntityAction;
@@ -387,11 +373,6 @@ YUI.add('wegas-editor-action', function (Y) {
         EditFSMAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(EditFSMAction, {
-        NS: "wegas",
-        NAME: "EditFSMAction"
-    });
-
     Y.extend(EditFSMAction, EntityAction, {
         execute: function() {
             Y.Wegas.TabView.findTabAndLoadWidget("State machine editor",        // Load and display the editor in a new tab
@@ -404,6 +385,9 @@ YUI.add('wegas-editor-action', function (Y) {
                     widget.set("entity", entity);
                 }, this, this.get("entity")));
         }
+    }, {
+        NS: "wegas",
+        NAME: "EditFSMAction"
     });
 
     Y.namespace("Plugin").EditFSMAction = EditFSMAction;
@@ -417,17 +401,15 @@ YUI.add('wegas-editor-action', function (Y) {
         ResetAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(ResetAction, {
-        NS: "wegas",
-        NAME: "ResetAction"
-    });
-
     Y.extend(ResetAction, Action, {
         execute: function () {
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                 request: '/reset'
             });
         }
+    }, {
+        NS: "wegas",
+        NAME: "ResetAction"
     });
 
     Y.namespace("Plugin").ResetAction = ResetAction;
@@ -441,17 +423,14 @@ YUI.add('wegas-editor-action', function (Y) {
         OpenTabAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(OpenTabAction, {
-        NS: "wegas",
-        NAME: "OpenTabAction"
-    });
-
     Y.extend(OpenTabAction, Action, {
         execute: function () {
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                 this.get("tabSelector"), {}, this.get("subpage"));
         }
     }, {
+        NS: "wegas",
+        NAME: "OpenTabAction",
         ATTRS: {
             tabSelector: {
                 value: '#centerTabView'
@@ -471,11 +450,6 @@ YUI.add('wegas-editor-action', function (Y) {
         OpenGameAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(OpenGameAction, {
-        NS: "wegas",
-        NAME: "OpenGameAction"
-    });
-
     Y.extend(OpenGameAction, Y.Plugin.OpenUrlAction, {
         execute: function () {
             var params, entity = this.get("entity");
@@ -491,6 +465,8 @@ YUI.add('wegas-editor-action', function (Y) {
             OpenGameAction.superclass.execute.call(this );
         }
     }, {
+        NS: "wegas",
+        NAME: "OpenGameAction",
         ATTRS: {
             entity: {},
             editorUrl: {
@@ -509,11 +485,6 @@ YUI.add('wegas-editor-action', function (Y) {
     var LoadTreeviewNodeAction = function () {
         LoadTreeviewNodeAction.superclass.constructor.apply(this, arguments);
     };
-
-    Y.mix(LoadTreeviewNodeAction, {
-        NS: "wegas",
-        NAME: "LoadTreeviewNodeAction"
-    });
 
     Y.extend(LoadTreeviewNodeAction, Action, {
 
@@ -541,6 +512,8 @@ YUI.add('wegas-editor-action', function (Y) {
             });
         }
     }, {
+        NS: "wegas",
+        NAME: "LoadTreeviewNodeAction",
         ATTRS: {
             entity: {},
             tabId: {},
@@ -554,17 +527,13 @@ YUI.add('wegas-editor-action', function (Y) {
 
     /**
      *  @class CloneEntityAction
+     *  @deprecated
      *  @module Wegas
      *  @constructor
      */
     var CloneEntityAction = function () {
         CloneEntityAction.superclass.constructor.apply(this, arguments);
     };
-
-    Y.mix(CloneEntityAction, {
-        NS: "wegas",
-        NAME: "CloneEntityAction"
-    });
 
     Y.extend(CloneEntityAction, EntityAction, {
         execute: function() {
@@ -583,12 +552,15 @@ YUI.add('wegas-editor-action', function (Y) {
             });
         }
     }, {
+        NS: "wegas",
+        NAME: "CloneEntityAction",
         ATTRS:{
             childs:{}
         }
     });
 
     Y.namespace("Plugin").CloneEntityAction = CloneEntityAction;
+
     // *** Buttons *** //
     /**
      * Shortcut to create a Button with an NewEntityAction plugin

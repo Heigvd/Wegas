@@ -173,7 +173,10 @@ YUI.add("wegas-widget", function (Y) {
             },
             cssClass: {
                 type: "string",
-                optional: true
+                optional: true,
+                _inputex: {
+                    label: "CSS class"
+                }
             },
             initialized: {
                 "transient": true
@@ -253,36 +256,14 @@ YUI.add("wegas-widget", function (Y) {
                     }
                     return (p.length > 0 ? p : undefined);
                 },
-
                 optional: true,
                 type: "array",
-                items: {
-                    type: "object",
-                    properties: {
-                        "fn": {
-                            type: "string",
-                            _inputex: {
-                                label: "Name",
-                                _type: "select",
-                                choices: (function() {
-                                    var i, plug = [];
-                                    for (i in Y.Plugin) {
-                                        plug.push(i);
-                                    }
-                                    return plug;
-                                })()
-                            }
-                        },
-                        "cfg": {
-                            type: "object",
-                            properties: {}
-                        }
-                    }
-                },
+                "transient": true,
                 _inputex: {
-                    useButtons: true
+                    useButtons: true,
+                    _type: "editablelist",
+                    label: "Plugins"
                 }
-
             }
         },
         create: function (config) {
