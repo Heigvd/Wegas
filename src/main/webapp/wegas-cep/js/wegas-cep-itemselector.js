@@ -7,7 +7,7 @@ YUI.add('wegas-cep-itemselector', function (Y) {
 
     var CONTENTBOX = 'contentBox', ItemSelector;
 
-    ItemSelector = Y.Base.create("wegas-cep-itemselector", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable, Y.Wegas.CepNodeFormatter], {
+    ItemSelector = Y.Base.create("wegas-cep-itemselector", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable, Y.Wegas.CepNodeFormatter], {
         
         handlers: null,
         currentItem:null,

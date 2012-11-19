@@ -17,7 +17,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
 
     var CONTENTBOX = 'contentBox', VariableDisplay;
 
-    VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
 
         // ** Lifecycle Methods ** //
         initializer: function () {
@@ -111,7 +111,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
             },
             label : {
                 type: "string",
@@ -205,7 +205,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
             },
             label : {
                 type: "string",

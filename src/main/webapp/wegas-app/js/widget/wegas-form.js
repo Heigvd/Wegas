@@ -107,4 +107,63 @@ YUI.add('wegas-form', function (Y) {
     });
 
     Y.namespace("Wegas").FormWidget = FormWidget;
+   
+    var inputEx = Y.inputEx,
+    lang = Y.Lang;
+
+    /**
+     *  @hack So we can easily change classs on inputex fields
+     */
+    Y.inputEx.Field.prototype.addClassName = function (className) {
+        Y.one(this.divEl).addClass(className);
+    };
+    Y.inputEx.Field.prototype.removeClassName = function (className) {
+        Y.one(this.divEl).removeClass(className);
+    };
+    /*
+     * @hack Automatically add the "optional" message when necessary
+     */
+    Y.inputEx.StringField.prototype.setOptions = function (options) {
+        Y.inputEx.StringField.superclass.setOptions.call(this, options);
+
+        this.options.regexp = options.regexp;
+        this.options.size = options.size;
+        this.options.maxLength = options.maxLength;
+        this.options.minLength = options.minLength;
+        this.options.typeInvite = options.typeInvite;
+        if (!this.options.required && this.options.typeInvite === undefined) {  // !!!MODIFIED!!!
+            this.options.typeInvite = "optional";
+        }
+        this.options.readonly = options.readonly;
+        this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
+        inputEx.browserAutocomplete :
+        (options.autocomplete === false || options.autocomplete === "off") ? false : true;
+        this.options.trim = (options.trim === true) ? true : false;
+    };
+    /**
+     * @hack Let inputex also get requirement from selectfields, lists
+     */
+    Y.inputEx.getRawModulesFromDefinition= function(inputexDef) {
+
+        var type = inputexDef.type || 'string',
+        module = YUI_config.groups.inputex.modulesByType[type],
+        modules = [module || type],
+        //set fields if they exist
+        fields = inputexDef.fields
+        //else see if we have elementType for lists - if neither then we end up with null
+        || inputexDef.availableFields || [];
+
+        if (inputexDef.elementType) {
+            fields.push(inputexDef.elementType);
+        }
+
+        // recursive for group,forms,list,combine, etc...
+        Y.Array.each(fields, function(field) {
+            modules = modules.concat( this.getModulesFromDefinition(field) );
+        }, this);
+
+        // TODO: inplaceedit  editorField
+
+        return modules;
+    };
 });

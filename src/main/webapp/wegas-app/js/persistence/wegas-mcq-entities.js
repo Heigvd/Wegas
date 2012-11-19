@@ -578,15 +578,5 @@ YUI.add('wegas-mcq-entities', function (Y) {
             }
         }
     });
-
-    /**
-     * @hack Add the QuestionDescriptor to the default list of variablie descriptor availables for creation
-     */
-    Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields.push(
-        Y.mix({
-            name: 'QuestionDescriptor',
-            label: 'a question'
-        }, new Y.Wegas.persistence.QuestionDescriptor().getFormCfg()));
-
 });
 

@@ -16,7 +16,7 @@ YUI.add( "wegas-pmg-breadcrumb", function ( Y ) {
 
     var CONTENTBOX = "contentBox", Breadcrumb;
 
-    Breadcrumb = Y.Base.create( "wegas-pmg-breadcrumb", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    Breadcrumb = Y.Base.create( "wegas-pmg-breadcrumb", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
         
         handlers:null,
         
