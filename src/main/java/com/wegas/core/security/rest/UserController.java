@@ -12,6 +12,7 @@ package com.wegas.core.security.rest;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.sql.SQLException;
 import java.util.List;
@@ -115,5 +116,14 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Map> findPermissionByGameModelId(@PathParam("entityId") Long gameModelId){
         return this.userFacade.findPermissionByGameModelId(gameModelId);
+    }
+    
+    @POST
+    @Path("DeletePermission/{roleId : [1-9][0-9]*}/{permission}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public boolean deletePermissionByGameModelIdAndPermissions(@PathParam("roleId") Long roleId,
+    @PathParam("permission") String permission){
+        return this.userFacade.deletePermissionByGameModelIdAndPermissions(roleId, permission);
     }
 }
