@@ -16,11 +16,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.persistence.GuestAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -139,6 +135,20 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
         
         return allRoles;
+    }
+    
+    public boolean deletePermissionByGameModelIdAndPermissions(Long roleId, String permission){
+        String permissionToRemove = null;
+        System.out.println("before delete");
+     
+        Role r = roleFacade.find(roleId);
+        for (String p: r.getPermissions()) {
+            if (p.equals(permission)) {
+                permissionToRemove = p;    
+            }
+        } 
+        
+        return r.getPermissions().remove(permissionToRemove);
     }
     
     /**
