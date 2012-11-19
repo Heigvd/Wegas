@@ -139,23 +139,29 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     
     public boolean deletePermissionByGameModelIdAndPermissions(Long roleId, String permission){
         String permissionToRemove = null;
-        System.out.println("before delete");
-     
         Role r = roleFacade.find(roleId);
         for (String p: r.getPermissions()) {
             if (p.equals(permission)) {
                 permissionToRemove = p;    
             }
         } 
-        
         return r.getPermissions().remove(permissionToRemove);
     }
     
-    /**
-     * @fixme
-     * @return 
-     */
-    public EntityManager getPublicEntityManager() {
-        return this.getEntityManager();
+    public boolean addPermissionByGameModelIdAndPermissions(Long roleId, String permission){
+        boolean added = false;
+        boolean exist = false;
+        Role r = roleFacade.find(roleId);
+        for (String p: r.getPermissions()) {
+            if (p.equals(permission)) {
+                exist = true;    
+            }
+        }
+        
+        if (!exist){
+            added = r.getPermissions().add(permission);
+        }
+  
+        return added;
     }
 }

@@ -126,4 +126,13 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @PathParam("permission") String permission){
         return this.userFacade.deletePermissionByGameModelIdAndPermissions(roleId, permission);
     }
+    
+    @POST
+    @Path("AddPermission/{roleId : [1-9][0-9]*}/{permission}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public boolean addPermissionByGameModelIdAndPermissions(@PathParam("roleId") Long roleId,
+    @PathParam("permission") String permission){
+        return this.userFacade.addPermissionByGameModelIdAndPermissions(roleId, permission);
+    }
 }
