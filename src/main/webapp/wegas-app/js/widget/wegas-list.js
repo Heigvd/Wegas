@@ -19,7 +19,7 @@ YUI.add('wegas-list', function (Y) {
     CONTENTBOX = 'contentBox',
     List;
 
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild,  Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild,  Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
 
 
         // ** Lifecycle Methods ** //
@@ -40,8 +40,8 @@ YUI.add('wegas-list', function (Y) {
         toObject: function () {
             var i, s = Y.Wegas.persistence.Editable.prototype.toObject.call(this),
             children = [];
-            for ( i = 0; i< this.size(); i = i + 1 ) {
-                children.push( this.item( i ).toObject() );
+            for (i = 0; i < this.size(); i = i + 1) {
+                children.push(this.item(i).toObject());
             }
             s.children = children;
             return s;
@@ -51,14 +51,14 @@ YUI.add('wegas-list', function (Y) {
             defaultChildType: {
                 value: "Text"
             },
-            children:{
+            children: {
             },
             direction: {
                 value: 'vertical'
             },
-            multiple:{
-                "transient":true
-            },
+            multiple: {
+                "transient": true
+            }
 
             /**
              * Prevent widgetchild selection to be propagated through the hierarchy

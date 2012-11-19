@@ -31,7 +31,11 @@
                 {
                     "fn": "ExecuteScriptAction",
                     "cfg": {
-                        "onClick": "period.value += 1;\nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\nqdf.setCurrentTime(evidences.descriptor, self, period.value);\nhumanResources.value = 15;\n"
+                        "onClick": {
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "period.value += 1;\nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\nqdf.setCurrentTime(evidences.descriptor, self, period.value);\nhumanResources.value = 15;\n"
+                        }
                     }
                 }
                 ]

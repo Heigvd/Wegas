@@ -40,7 +40,11 @@
                                     {
                                         "fn": "ExecuteScriptAction",
                                         "cfg": {
-                                            "onClick": "//todo"
+                                            "onClick": {
+                                                "@class": "Script",
+                                                "language": "JavaScript",
+                                                "content": "//todo"
+                                            }
                                         }
                                     }
                                 ]

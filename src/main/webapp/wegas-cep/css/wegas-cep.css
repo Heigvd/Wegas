@@ -49,7 +49,7 @@ h3 {
     margin: 0 auto;
     background: url(../../wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) top repeat-x;
 }
-.header > div {
+.header > .wegas-list-content {
     width: 960px;
     height: 100px;
     margin: 0 auto;
@@ -64,7 +64,7 @@ h3 {
     background: url(../../wegas-cep/images/ceplogo-75.png) left top no-repeat;
     width: 81px;
     height: 100px;
-   /*background-size: 75px;*/
+    /*background-size: 75px;*/
     margin-top: 29px;
 }
 
@@ -215,7 +215,7 @@ h3 {
 .menu .yui3-button-selected {
     background-color: #6D6D6D;
 }
-.menu .yui3-button .wegas-icon {
+.menu > div > .yui3-button > .wegas-icon {
     width: 20px;
     margin: -4px 4px 0 0;
     background-image: url(../../wegas-cep/images/cep-icons.png);
