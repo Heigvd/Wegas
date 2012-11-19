@@ -164,4 +164,13 @@ public class UserFacade extends AbstractFacadeImpl<User> {
   
         return added;
     }
+    
+    public boolean deleteAllRolePermissions(Long roleId){
+        ArrayList<String> currentPermissions = new ArrayList<>();
+        Role r = roleFacade.find(roleId);
+        for (String p: r.getPermissions()) {
+            currentPermissions.add(p);
+        }
+        return r.getPermissions().removeAll(currentPermissions);
+    }
 }
