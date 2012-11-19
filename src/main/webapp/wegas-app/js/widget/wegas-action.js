@@ -15,19 +15,31 @@
 YUI.add('wegas-action', function (Y) {
     "use strict";
 
-    var Action = function () {
-        Action.superclass.constructor.apply(this, arguments);
-    };
+    function Plugin() {}
 
-    Y.mix(Action, {
-        NS: "wegas",
-        NAME: "Action"
+    Y.mix(Plugin.prototype, {});
+
+    Y.mix(Plugin, {
+        ATTRS: {
+            host: {
+                "transient": true
+            },
+            initialized: {
+                "transient": true
+            },
+            destroyed: {
+                "transient": true
+            }
+        }
     });
 
-    Y.extend(Action, Y.Plugin.Base, {
+    Y.namespace("Wegas").Plugin = Plugin;
+
+    var Action = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.persistence.Editable], {
+
         initializer: function () {
             this.afterHostEvent(this.get("targetEvent"), function () {
-                this.setAttrs(this.get("host").get("data"));                       // Pass the action data from the host to the plug
+                this.setAttrs(this.get("host").get("data"));                    // Pass the action data from the host to the plug
                 this.execute();
             }, this);
         },
@@ -35,6 +47,8 @@ YUI.add('wegas-action', function (Y) {
             Y.error("Y.Plugin.Action.execute() is abstract, should be overriddent");
         }
     }, {
+        NS: "wegas",
+        NAME: "Action",
         ATTRS: {
             targetEvent: {
                 value: "click"
@@ -128,11 +142,6 @@ YUI.add('wegas-action', function (Y) {
         ExecuteScriptAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(ExecuteScriptAction, {
-        NS: "ExecuteScriptAction",
-        NAME: "ExecuteScriptAction"
-    });
-
     Y.extend(ExecuteScriptAction, Action, {
         execute: function () {
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
@@ -148,6 +157,8 @@ YUI.add('wegas-action', function (Y) {
             });
         }
     }, {
+        NS: "ExecuteScriptAction",
+        NAME: "ExecuteScriptAction",
         ATTRS: {
             onClick: {}
         }

@@ -98,7 +98,9 @@
                         "plugins": [{
                                 "fn": "UnreadCount",
                                 "cfg": {
-                                    "variable": "inbox"
+                                    "variable": {
+                                        "name":"inbox"
+                                    }
                                 }
                             },{
                                 "fn": "OpenPageAction",
@@ -133,9 +135,9 @@
             },
             {
                 "type": "PageLoader",
-                "id": "maindisplayarea",
+                "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
-                "pageId": 2
+                "defaultPageId": 2
             }]
     },
     "2":{

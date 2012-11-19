@@ -30,7 +30,7 @@ YUI.add('wegas-datatable', function(Y) {
 	},
 	bindUI: function() {
             return;
-            
+
 	    var that = this;
 	    this._dataSource.after("response", function (e) {			// Listen for datasource updates
 		this._table.set('recordset', e.data);
@@ -59,9 +59,6 @@ YUI.add('wegas-datatable', function(Y) {
 	}
     }, {
 	ATTRS : {
-	    classTxt: {
-		value: 'DataTable'
-	    },
 	    type: {
 		value: "DataTable"
 	    },
