@@ -410,7 +410,7 @@ YUI().use(function(Y) {
                     /**CEP**/
                     'wegas-cep': {
                         path: 'wegas-cep/js/wegas-cep-itemselector.js',
-                        requires: ['wegas-cep-itemselector', 'wegas-cep-nodeformatter'],
+                        requires: ['wegas-cep-itemselector', 'wegas-cep-nodeformatter', 'scrollview'],
                         ix_provides: "CepItemSelector"
                     },
                     'wegas-cep-nodeformatter': {
@@ -420,14 +420,21 @@ YUI().use(function(Y) {
                     /** CrimeSim **/
                     'wegas-crimesim-scheduledisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',
-                        requires: ['wegas-widget', 'wegas-widgetmenu', 'datatable', 'wegas-gallery'],
+                        requires: ['wegas-widget', 'wegas-widgetmenu', 'wegas-crimesim-treeble' ],
                         ix_provides: "ScheduleDisplay"
                     },
                     'wegas-crimesim-resultsdisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-resultsdisplay-min.js',
-                        requires: ['wegas-widget', 'datatable'],
+                        requires: ['wegas-widget', 'wegas-crimesim-treeble' ],
                         ix_provides: "ResultsDisplay"
                     },
+                
+                    'wegas-crimesim-treeble': {
+                        path: 'wegas-crimesim/js/wegas-crimesim-treeble.js',
+                        requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble'],
+                        ix_provides: "CrimeSimTreeble"
+                    },
+
                     /**Leaderway**/
                     'wegas-leaderway': {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',

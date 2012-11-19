@@ -29,7 +29,7 @@
             }, {
                 "label": "pageLoader",
                 "type": "PageLoader",
-                "id": "maindisplayarea",
+                "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
                 "variable": {
                     "name": "currentPage"
