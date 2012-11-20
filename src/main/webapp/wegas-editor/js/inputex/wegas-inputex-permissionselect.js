@@ -22,16 +22,16 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         setOptions: function (options) {
             inputEx.Wegas.PermissionSelect.superclass.setOptions.call(this, options );
             this.options.permissions = options.permissionsChoices;
-            this.options.roles = options.roles
+            this.options.roles = options.roles;
+            this.options.targetEntityId = options.targetEntityId;
         },
         
         renderComponent: function (){
             this.roleSelect = new Y.inputEx.Wegas.RoleSelect({
                 parentEl: this.fieldContainer
             });
-            
+
             this.roleSelect.on("updated", this.checkboxValue, this);
-            
             
             this.permissionsCheckBoxes = [];
             Y.Array.forEach(this.options.permissions, function (item, i){
@@ -42,11 +42,22 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                     value: false,
                     parentEl: this.fieldContainer
                 });
-                box.on("updated", function(){
-                    if (this.getValue()){
-                        console.log("Appel fonction add");
+                
+                box.on("updated", function(e, field){
+                    if (field.getValue()){
+                        Y.Wegas.UserFacade.rest.sendRequest({    
+                            request: "/AddPermission/" + this.roleSelect.getValue().id + "/" + field.options.name +":" + this.options.targetEntityId,
+                            cfg: {
+                                method: "POST"
+                            }
+                        });
                     } else {
-                        console.log("Appel fonction delete");
+                        Y.Wegas.UserFacade.rest.sendRequest({    
+                            request: "/DeletePermission/" + this.roleSelect.getValue().id + "/" + field.options.name +":gm151",
+                            cfg: {
+                                method: "POST"
+                            }
+                        });
                     }
                 }, this);
                 this.permissionsCheckBoxes.push(box)
@@ -64,7 +75,7 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         },
         checkboxValue: function () {
             Y.Array.forEach(this.permissionsCheckBoxes, function(box, i){
-                box.setValue(false);
+                box.setValue(false, false);
             });
             if (!this.value) {
                 return;
@@ -98,9 +109,9 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
     Text2 = Y.Base.create("wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
         renderUI: function () {
             this.get("contentBox").setHTML("test");
-            
+            var gmId = 151;
             Y.Wegas.UserFacade.rest.sendRequest({    
-                request: "/GameModelPermissions/151",
+                request: "/GameModelPermissions/" + gmId,
                 cfg: {
                     method: "GET"
                 },
@@ -113,7 +124,7 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                             acc.push(role.get("val"));
                         }, this);
                         
-                        this.permsField = new Y.inputEx.ListField({
+                        this.permsField = new PermissionList({
                             //listLabel: 'Websites',
                             elementType: {
                                 type: 'permissionsselect',
@@ -126,12 +137,14 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                                 },{
                                     name: "GameModel:Create"
                                 }],
+                                targetEntityId: "gm" + gmId,
                                 roles: acc
                             },                    
                             useButtons: true,
                             value: acc,                 
                             parentEl: this.get(CONTENTBOX).getDOMNode()
                         });
+                        
                     }, this),
                     failure: function (id, result) {
                     }
@@ -141,4 +154,59 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
     });
 
     Y.namespace("Wegas").Test2 = Text2;
+    
+    
+    /**
+     * @fixme @hack override to had event
+     */
+    
+    var PermissionList = function(options) {
+        PermissionList.superclass.constructor.call(this,options);
+    };
+    
+    Y.extend(PermissionList, inputEx.ListField,  {
+      
+        onDelete: function(e) {
+	      
+            e.halt();
+	   
+            // Prevent removing a field if already at minItems
+            if( Y.Lang.isNumber(this.options.minItems) && this.subFields.length <= this.options.minItems ) {
+                return;
+            }
+	      
+            // Get the wrapping div element
+            var elementDiv = e.target._node.parentNode;
+	   
+            // Get the index of the subField
+            var index = -1;
+	   
+            var subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
+            for(var i = 0 ; i < this.subFields.length ; i++) {
+                if(this.subFields[i].getEl() == subFieldEl) {
+                    Y.Wegas.UserFacade.rest.sendRequest({    
+                        request: "/DeleteAllRolePermissions/" + this.subFields[i].roleSelect.getValue().id,
+                        cfg: {
+                            method: "POST"
+                        }
+                    });
+                    index = i;
+                    break;
+                }
+            }
+	      
+            // Remove it
+            if(index != -1) {
+                this.removeElement(index);
+            }
+		
+            // Note: not very efficient
+            this.resetAllNames();      
+	
+            // Fire the updated event
+            this.fireUpdatedEvt();
+        }
+    });
+    
+    inputEx.registerType("permissionslist", PermissionList );             // Register this class as "wegasurl" type
 });
