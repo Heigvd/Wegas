@@ -40,7 +40,7 @@ public class TeamScope extends AbstractScope {
      * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
      * "variableinstance_id", referencedColumnName = "variableinstance_id"))
      */
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @XmlTransient
     @JsonIgnore

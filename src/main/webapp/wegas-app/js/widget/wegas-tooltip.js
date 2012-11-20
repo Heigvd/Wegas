@@ -14,13 +14,13 @@
 
 YUI.add('wegas-tooltip', function (Y) {
     "use strict";
-    
+
     /**
      *  @class NewEntityAction
      *  @module Wegas
      *  @constructor
      */
-    var TooltipPlg = Y.Base.create("wegas-tooltipplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.persistence.Editable], {
+    var TooltipPlg = Y.Base.create("wegas-tooltipplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function () {
             var tt = Tooltip.getInstance();
             tt.addTriggerNode(this.get("host").get("boundingBox"),
@@ -32,7 +32,10 @@ YUI.add('wegas-tooltip', function (Y) {
         ATTRS: {
             content: {
                 type: "string",
-                format: "html"
+                format: "html",
+                _inputex: {
+                    label: "Tooltip content"
+                }
             }
         }
     });

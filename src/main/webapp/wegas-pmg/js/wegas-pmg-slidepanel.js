@@ -16,7 +16,7 @@ YUI.add( "wegas-pmg-slidepanel", function ( Y ) {
 
     var CONTENTBOX = "contentBox", SlidePanel;
 
-    SlidePanel = Y.Base.create( "wegas-pmg-slidepanel", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    SlidePanel = Y.Base.create( "wegas-pmg-slidepanel", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         
         handlers:null,
         list:null,

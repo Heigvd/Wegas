@@ -16,7 +16,7 @@ YUI.add( "wegas-book-fight", function ( Y ) {
     
     var CONTENTBOX = "contentBox", Fight;
     
-    Fight = Y.Base.create( "wegas-book-fight", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    Fight = Y.Base.create( "wegas-book-fight", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
         
         handlers: new Array(),
         dice:null,

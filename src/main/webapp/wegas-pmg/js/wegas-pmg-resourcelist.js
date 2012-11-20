@@ -16,7 +16,7 @@ YUI.add( "wegas-pmg-resourcelist", function ( Y ) {
 
     var CONTENTBOX = "contentBox", ResourceList;
 
-    ResourceList = Y.Base.create( "wegas-pmg-resourcelist", Y.Wegas.PmgGantt, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    ResourceList = Y.Base.create( "wegas-pmg-resourcelist", Y.Wegas.PmgGantt, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         
         handlers:null,
         menu:null,

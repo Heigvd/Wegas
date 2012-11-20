@@ -16,7 +16,7 @@ YUI.add( "wegas-pmg-gantt", function ( Y ) {
 
     var CONTENTBOX = "contentBox", Gantt;
 
-    Gantt = Y.Base.create( "wegas-pmg-gantt", Y.Wegas.PmgDatatable, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    Gantt = Y.Base.create( "wegas-pmg-gantt", Y.Wegas.PmgDatatable, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         
         handlers:null,
         schedule:null,

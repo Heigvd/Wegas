@@ -22,7 +22,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
      *  The results display class.
      */
     ResultsDisplay = Y.Base.create("wegas-crimesim-resultsdisplay", Y.Widget,
-            [Y.Wegas.Widget, Y.WidgetChild], {
+            [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
         // *** Fields *** /
         menu: null,
         handlers: null,

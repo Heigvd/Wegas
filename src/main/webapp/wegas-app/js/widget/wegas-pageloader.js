@@ -17,7 +17,7 @@ YUI.add('wegas-pageloader', function(Y) {
 
     var CONTENTBOX = 'contentBox', PageLoader;
 
-    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable], {
         // *** Private Methods ***/
         isLoadingALoop: function(pageId) {                                     //Page loader mustn't load the page who contain himself.
             var k, isALoop = false;
@@ -68,9 +68,17 @@ YUI.add('wegas-pageloader', function(Y) {
         }
     }, {
         ATTRS: {
-            pageLoaderId: {},
+            pageLoaderId: {
+                type: "string",
+                _inputex: {
+                    label: "Pageloader id"
+                }
+            },
             defaultPageId: {
-                type: "string"
+                type: "string",
+                _inputex: {
+                    label: "Default page"
+                }
             },
             pageId: {
                 type: "string",
@@ -80,7 +88,7 @@ YUI.add('wegas-pageloader', function(Y) {
                         return val;
                     }
                     var widgetCfg = Y.Wegas.PageFacade.rest.getPage(val);
-                    
+
                     if (!widgetCfg) {
                         return val;
                     }
@@ -108,7 +116,7 @@ YUI.add('wegas-pageloader', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
             },
             widget: {
                 "transient": true

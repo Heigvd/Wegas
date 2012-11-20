@@ -17,7 +17,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <francois-xavier.aeberhard@red-agent.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Embeddable
 @XmlType(name = "")

@@ -7,7 +7,7 @@ YUI.add('wegas-cep-nodeformatter', function (Y) {
 
     var CONTENTBOX = 'contentBox', NodeFormatter;
 
-    NodeFormatter = Y.Base.create("wegas-cep-nodeformatter", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    NodeFormatter = Y.Base.create("wegas-cep-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
 
         makeNodeText: function (value, label, className) {
             var node = Y.Node.create('<div class="nodeformatter-properties"></div>');

@@ -55,5 +55,5 @@ YUI.add('wegas-editor-page', function(Y){
         }
     });
 
-    Y.namespace("Wegas").PageEditor = PageEditor;
+    Y.namespace("Wegas").PageTreeview = PageEditor;
 });

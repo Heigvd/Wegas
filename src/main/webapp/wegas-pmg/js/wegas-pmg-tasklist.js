@@ -16,7 +16,7 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
 
     var CONTENTBOX = "contentBox", Tasklist;
 
-    Tasklist = Y.Base.create("wegas-pmg-tasklist", Y.Wegas.PmgDatatable, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    Tasklist = Y.Base.create("wegas-pmg-tasklist", Y.Wegas.PmgDatatable, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
 
         //*** Private Methods ***/

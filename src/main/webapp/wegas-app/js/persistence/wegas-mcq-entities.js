@@ -87,13 +87,11 @@ YUI.add('wegas-mcq-entities', function (Y) {
         }, {
             type: "Button",
             label: "Add",
-
             plugins: [{
                 "fn": "WidgetMenu",
                 "cfg": {
                     "menuCfg": {
-                        points: [ "tl", "tr" ],
-                        width: "200px"
+                        points: [ "tl", "tr" ]
                     },
                     "event": "mouseenter",
                     "children": [{
@@ -102,7 +100,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         plugins: [{
                             fn: "AddEntityChildAction",
                             cfg: {
-                                childClass: "SingleResultChoiceDescriptor"
+                                targetClass: "SingleResultChoiceDescriptor"
                             }
                         }]
                     }, {
@@ -111,7 +109,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         plugins: [{
                             fn: "AddEntityChildAction",
                             cfg: {
-                                childClass: "ChoiceDescriptor"
+                                targetClass: "ChoiceDescriptor"
                             }
                         }]
                     }]
@@ -578,15 +576,5 @@ YUI.add('wegas-mcq-entities', function (Y) {
             }
         }
     });
-
-    /**
-     * @hack Add the QuestionDescriptor to the default list of variablie descriptor availables for creation
-     */
-    Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields.push(
-        Y.mix({
-            name: 'QuestionDescriptor',
-            label: 'a question'
-        }, new Y.Wegas.persistence.QuestionDescriptor().getFormCfg()));
-
 });
 

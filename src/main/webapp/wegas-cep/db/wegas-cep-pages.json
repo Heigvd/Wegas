@@ -41,7 +41,11 @@
                     "plugins": [{
                         "fn": "ExecuteScriptAction",
                         "cfg": {
-                            "onClick": "passPeriod();"
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "passPeriod();"
+                            }
                         }
                     }],
                     "cssClass": "fl"

@@ -17,7 +17,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
 
     var CONTENTBOX = 'contentBox', GaugeDisplay;
 
-    GaugeDisplay = Y.Base.create("wegas-gauge", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    GaugeDisplay = Y.Base.create("wegas-gauge", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
 
         CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas height="50px" width="100px"></canvas><center class="label"></center><center class="percent"></center></div>',
         MAXVAL: 200,
@@ -74,14 +74,14 @@ YUI.add('wegas-gaugedisplay', function (Y) {
 
         destructor: function () {
             var i;
-            for (i = 0; i < this.handler.length; i = i + 1) {
+            for (i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         }
     }, {
         ATTRS : {
             variable: {
-                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
             },
             label : {
                 type: "string",

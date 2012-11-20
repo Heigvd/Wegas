@@ -37,7 +37,7 @@ YUI.add("wegas-button", function (Y) {
      *  @class Y.Wegas.Button
      *
      */
-    Button = Y.Base.create("button", Y.Button, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable ], {
+    Button = Y.Base.create("button", Y.Button, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
@@ -64,10 +64,6 @@ YUI.add("wegas-button", function (Y) {
         }
     }, {
         ATTRS: {
-            disabled: {
-                "transient": false,
-                "type": "boolean"
-            },
             label: {
                 type: "string"
             },
@@ -76,11 +72,34 @@ YUI.add("wegas-button", function (Y) {
                 optional: true,
                 "transient": true
             },
+            disabled: {
+                "transient": false,
+                "type": "boolean"
+            },
             data: {
                 "transient": true
             },
             cssClass: {
                 value : null
+            },
+            plugins: {
+                "transient": false,
+                _inputex: {
+                    _type: "editablelist",
+                    items: [{
+                        type: "Button",
+                        label: "Tooltip",
+                        data: "Tooltip"
+                    }, {
+                        type: "Button",
+                        label: "Impact",
+                        data: "ExecuteScriptAction"
+                    }, {
+                        type: "Button",
+                        label: "Open page",
+                        data: "OpenPageAction"
+                    }]
+                }
             }
         }
     });
@@ -91,7 +110,7 @@ YUI.add("wegas-button", function (Y) {
      *
      * @class Y.Wegas.UnreadCount
      */
-    var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.persistence.Editable], {
+    var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
 
         initializer: function () {
             this.vdHandler =                                                    // If data changes, refresh
@@ -154,7 +173,7 @@ YUI.add("wegas-button", function (Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.persistence.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
             }
         }
     });

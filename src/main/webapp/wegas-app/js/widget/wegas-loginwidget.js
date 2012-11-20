@@ -61,11 +61,6 @@ YUI.add('wegas-loginwidget', function (Y) {
                 parentEl: cb
             });
 
-            var newEntity = new Y.Wegas.persistence.JpaAccount(),
-            formCfg = newEntity.getFormCfg();
-            this.createAccountForm = Y.inputEx(formCfg);
-
-            formCfg.parentEl = cb;
             this.createAccountForm = new Y.inputEx.Group({
                 parentEl: cb,
                 fields: [{
