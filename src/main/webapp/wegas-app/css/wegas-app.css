@@ -135,10 +135,10 @@ input[type="submit"], input[type="reset"] {
     z-index: 100;
     position: absolute;
     font-size: 11px;
+    min-width: 12em;
 }
 .yui3-menu-hidden {
     display:none;
-
 }
 .yui3-menu .wegas-text {
     font-size: 11px;
@@ -156,6 +156,7 @@ input[type="submit"], input[type="reset"] {
     width:100%;
     background: none;
     text-align: left;
+    display: block;
 }
 
 .yui3-menu  .yui3-button-hover, .yui3-menu  .yui3-button:hover {

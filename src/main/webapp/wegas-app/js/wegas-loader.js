@@ -147,7 +147,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-form': {
                         path: 'wegas-app/js/widget/wegas-form-min.js',
-                        requires: ['wegas-widget', 'inputex-string'],
+                        requires: ['wegas-widget', 'wegas-inputex', 'inputex-string'],
                         ix_provides: "FormWidget"
                     },
                     'wegas-loginwidget': {
@@ -158,12 +158,13 @@ YUI().use(function(Y) {
                     },
                     'wegas-joingamewidget': {
                         path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
-                        requires: ['wegas-widget', "wegas-inputex", 'wegas-button',  'wegas-editor-action', 'inputex-select', 'inputex-string'],
+                        requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
+                            'wegas-editor-action', 'inputex-select', 'inputex-string'],
                         ix_provides: "JoinGameWidget"
                     },
                     'wegas-imageloader': {
                         path: 'wegas-app/js/widget/wegas-imageloader.js',
-                        requires: ['io-base'/*, 'imageloader'*/]
+                        requires: ['io-base', 'imageloader']
                     },
                     'wegas-gallerycss': {
                         path: 'wegas-app/css/wegas-gallery.css',
@@ -178,9 +179,9 @@ YUI().use(function(Y) {
                     /** Inputex Fields **/
                     'wegas-inputex': {
                         path: 'wegas-editor/css/wegas-inputex.css',
-                        type: 'css'
+                        type: 'css',
                         //path: 'wegas-editor/js/inputex/wegas-inputex-min.js',
-                        //requires: ['wegas-inputexcss']
+                        requires: ['inputex'/*, 'wegas-inputexcss'*/]
                     },
                     'wegas-inputexcss': {
                         path: 'wegas-editor/css/wegas-inputex.css',
@@ -216,7 +217,7 @@ YUI().use(function(Y) {
                     'wegas-inputex-wysiwygscript': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
                         requires: ['wegas-inputex', 'wegas-inputex-script', 'wegas-inputex-list',
-                        'wegas-button', 'inputex-hidden', 'inputex-jsonschema',
+                        'wegas-button', 'inputex-hidden', 'inputex-jsonschema', 'inputex-combine',
                         'inputex-select', 'esprima' /*, 'escodegen'*/],
                         ix_provides: ['script',"entityarrayfieldselect"]
                     },
@@ -273,7 +274,7 @@ YUI().use(function(Y) {
                     /** Editor's Widgets **/
                     'wegas-editor-action': {
                         path: 'wegas-editor/js/wegas-editor-action-min.js',
-                        requires: ['wegas-action', 'wegas-inputex', 'inputex-jsonschema', 'wegas-form'],
+                        requires: ['wegas-action', 'inputex-jsonschema', 'wegas-form'],
                         ix_provides: ['NewEntityAction', 'EditEntityAction', "NewEntityButton"]
                     },
                     'wegas-logger': {
@@ -384,7 +385,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-pmg-resourcelist': {
                         path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
-                        requires: ['wegas-pmg-resourcelist', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
+                        requires: ['wegas-widgetmenu', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
                         ix_provides: "PmgResourcelist"
                     },
                     'wegas-pmg-datatable': {
@@ -420,7 +421,7 @@ YUI().use(function(Y) {
                     /** CrimeSim **/
                     'wegas-crimesim-scheduledisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',
-                        requires: ['wegas-widget', 'wegas-widgetmenu', 'wegas-crimesim-treeble' ],
+                        requires: ['wegas-widget', 'wegas-widgetmenu', 'wegas-crimesim-treeble', 'wegas-gallery'],
                         ix_provides: "ScheduleDisplay"
                     },
                     'wegas-crimesim-resultsdisplay': {

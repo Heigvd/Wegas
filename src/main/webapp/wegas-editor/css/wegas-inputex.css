@@ -36,7 +36,7 @@ div.inputEx-fieldWrapper {
 .wegas-form div.inputEx-Field {
     float:none;
 }
-.wegas-form .inputEx-Group,
+/*.wegas-form .inputEx-Group,*/
 .wegas-form input[type=text],
 .wegas-form select,
 .wegas-form textarea {

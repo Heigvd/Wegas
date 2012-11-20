@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <francois-xavier.aeberhard@red-agent.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
 @LocalBean
