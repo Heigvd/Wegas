@@ -557,17 +557,4 @@ Y.add("wegas-statemachine-entities", function(Y) {
         }
     });
 
-    /**
-     * @hack
-     */
-    Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields.push(
-            Y.mix({
-        name: 'TriggerDescriptor',
-        label: 'a trigger'
-    }, new Y.Wegas.persistence.TriggerDescriptor().getFormCfg()),
-            Y.mix({
-        name: 'DialogueDescriptor',
-        label: 'a dialogue'
-    }, new Y.Wegas.persistence.DialogueDescriptor().getFormCfg()));
-
 });

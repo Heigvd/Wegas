@@ -60,7 +60,11 @@
                             {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
-                                    "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 3;"
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "importPackage(com.wegas.core.script);\ncurrentPage.value = 3;"
+                                    }
                                 }
                             }, {
                                 "fn": "OpenPageAction",
@@ -104,7 +108,11 @@
                             {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
-                                    "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 4;"
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "importPackage(com.wegas.core.script);\ncurrentPage.value = 4;"
+                                    }
                                 }
                             }, {
                                 "fn": "OpenPageAction",
@@ -129,12 +137,20 @@
                             {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
-                                    "onClick": "importPackage(com.wegas.core.script);\nstamina.value += 10;"
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "importPackage(com.wegas.core.script);\nstamina.value += 10;"
+                                    }
                                 }
                             }, {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
-                                    "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 4;"
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "importPackage(com.wegas.core.script);\ncurrentPage.value = 4;"
+                                    }
                                 }
                             }, {
                                 "fn": "OpenPageAction",
@@ -159,7 +175,11 @@
                             {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
-                                    "onClick": "importPackage(com.wegas.core.script);\ncurrentPage.value = 2;"
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "importPackage(com.wegas.core.script);\ncurrentPage.value = 2;"
+                                    }
                                 }
                             }, {
                                 "fn": "OpenPageAction",

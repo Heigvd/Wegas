@@ -202,7 +202,7 @@ YUI.add('wegas-entity', function (Y) {
                     }
                     if (!Y.Lang.isArray(value) &&
                         (!Y.Lang.isUndefined(value["@class"]) || !Y.Lang.isUndefined(value.type))) {
-                        return Y.Wegas.persistence.Editable.readObject(value);
+                        return Y.Wegas.Editable.readObject(value);
                     }
                 }
                 return value;                                                   // If no value was returned before, return raw original object
@@ -263,7 +263,7 @@ YUI.add('wegas-entity', function (Y) {
         }
 
     });
-    Y.namespace("Wegas.persistence").Editable = Editable;
+    Y.namespace("Wegas").Editable = Editable;
 
     /**
      * Entity is used to represent db objects.
@@ -444,22 +444,22 @@ YUI.add('wegas-entity', function (Y) {
         }, {
             type: "DeleteEntityButton"
         }]
-        //{
-        //    type: "Button",
-        //    label: "Open in editor",
-        //    plugins: [{
-        //        fn: "OpenGameAction"
-        //    }]
-        //},
-        //    {
-        //    type: "AddEntityChildButton",
-        //    label: "Add game",
-        //    childClass: "Game"
-        //},
-        //{
-        //    type: "EditEntityButton",
-        //    label: "Properties"
-        //},
+    //{
+    //    type: "Button",
+    //    label: "Open in editor",
+    //    plugins: [{
+    //        fn: "OpenGameAction"
+    //    }]
+    //},
+    //    {
+    //    type: "AddEntityChildButton",
+    //    label: "Add game",
+    //    childClass: "Game"
+    //},
+    //{
+    //    type: "EditEntityButton",
+    //    label: "Properties"
+    //},
     });
 
     /**
@@ -484,7 +484,7 @@ YUI.add('wegas-entity', function (Y) {
         EDITMENU: [{
             type: "AddEntityChildButton",
             label: "Add team",
-            childClass: "Team"
+            targetClass: "Team"
         }, {
             type: "EditEntityButton",
             label: "Properties"
@@ -524,7 +524,7 @@ YUI.add('wegas-entity', function (Y) {
             plugins: [{
                 fn: "AddEntityChildAction",
                 cfg: {
-                    childClass: "Player"
+                    targetClass: "Player"
                 }
             }]
         }, {
@@ -828,15 +828,8 @@ YUI.add('wegas-entity', function (Y) {
             }]
         }, {
             type: "DeleteEntityButton"
-        }],
-        EDITFORM: {
-            name: 'valueselector',
-            label: 'Variable is',
-            type: 'keyvalue',
-            availableFields: []
-        }
+        }]
     });
-
 
 
     /**
@@ -1079,7 +1072,7 @@ YUI.add('wegas-entity', function (Y) {
          * Extend clone to add transient childs
          */
         clone: function () {
-            var object = Y.Wegas.persistence.Editable.prototype.clone.call(this), i;
+            var object = Y.Wegas.Editable.prototype.clone.call(this), i;
             object.items = [];
             for (i in this.get("items")) {
                 object.items.push(this.get("items")[i].clone());
@@ -1113,7 +1106,11 @@ YUI.add('wegas-entity', function (Y) {
             currentItem: {
                 "transient": true,
                 getter: function () {
-                    return this.get("items")[this.getInstance().get("value")];
+                    if (this.get("items").length > 0) {
+                        return this.get("items")[this.getInstance().get("value")];
+                    } else {
+                        return null;
+                    }
                 }
             },
             defaultInstance: {
@@ -1132,9 +1129,50 @@ YUI.add('wegas-entity', function (Y) {
         EDITMENU: [{
             type: "EditEntityButton"
         }, {
-            type: "AddEntityChildButton",
-            label: "Add child",
-            childClass: "VariableDescriptor"
+            type: "Button",
+            label: "Add",
+            plugins: [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "menuCfg": {
+                        points: [ "tl", "tr" ]
+                    },
+                    "event": "mouseenter",
+                    "children": [{
+                        "type": "AddEntityChildButton",
+                        "label": "Number",
+                        "targetClass": "NumberDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "String",
+                        "targetClass": "StringDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "List",
+                        "targetClass": "ListDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Question",
+                        "targetClass": "QuestionDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Trigger",
+                        "targetClass": "TriggerDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Resource (Leaderway, CEP Game)",
+                        "targetClass": "ResourceDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Dialogue (Leaderway)",
+                        "targetClass": "DialogueDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Task (Leaderway)",
+                        "targetClass": "TaskDescriptor"
+                    }]
+                }
+            }]
         }, {
             type: "Button",
             label: "Duplicate",
@@ -1640,32 +1678,4 @@ YUI.add('wegas-entity', function (Y) {
             }
         }
     });
-
-
-    /*
-     * We set the Y.Wegas.persistence.VariableDescriptor.EDITFORM values here, so
-     * we can use other object's existing declaration.
-     */
-    Y.Wegas.persistence.VariableDescriptor.EDITFORM.availableFields = [
-    Y.mix({
-        name: 'NumberDescriptor',
-        label: 'a number'
-    }, new Y.Wegas.persistence.NumberDescriptor().getFormCfg()),
-    Y.mix({
-        name: 'StringDescriptor',
-        label: 'a string'
-    }, new Y.Wegas.persistence.StringDescriptor().getFormCfg()),
-    Y.mix({
-        name: 'ListDescriptor',
-        label: 'a list'
-    }, new Y.Wegas.persistence.ListDescriptor().getFormCfg()),
-    Y.mix({
-        name: 'ResourceDescriptor',
-        label: 'a resource'
-    }, new Y.Wegas.persistence.ResourceDescriptor().getFormCfg()),
-    Y.mix({
-        name: 'TaskDescriptor',
-        label: 'a task'
-    }, new Y.Wegas.persistence.TaskDescriptor().getFormCfg())
-    ];
 });

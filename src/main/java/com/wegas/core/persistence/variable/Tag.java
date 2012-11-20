@@ -1,7 +1,7 @@
 /*
- * Wegas.
+ * Wegas
  *
- * http://www.albasim.com/wegas/  *
+ * http://www.albasim.com/wegas/
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
  * Media Engineering :: Information Technology Managment :: Comem
  *
@@ -9,9 +9,11 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.persistence.game.GameModel;
 import java.io.Serializable;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;

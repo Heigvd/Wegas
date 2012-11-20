@@ -45,7 +45,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 parentEl: cb,
                 label: "Select a new you want to join"
             });
-            this.teamsField.addClassName("inputEx-hidden");
+            this.teamsField.hide();
             this.joinTeamButton = new Y.Button({
                 label: "Join team",
                 visible: false
@@ -57,7 +57,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 parentEl: cb,
                 label: "OR Create a new team:"
             });
-            this.createTeamField.addClassName("inputEx-hidden");
+            this.createTeamField.hide();
             this.createButton = new Y.Button({
                 label: "Create team",
                 visible: false
@@ -114,11 +114,11 @@ YUI.add('wegas-joingamewidget', function (Y) {
             //this.msg.empty();
 
             this.joinGameButton.hide();
-            this.tokenField.addClassName("inputEx-hidden");
+            this.tokenField.hide();
             this.joinTeamButton.show();
-            this.teamsField.removeClassName("inputEx-hidden");
+            this.teamsField.show()
             this.createButton.show();
-            this.createTeamField.removeClassName("inputEx-hidden");
+            this.createTeamField.show();
 
             this.currentGame = Y.Wegas.GameFacade.rest.getCache()[0];
 
@@ -144,11 +144,11 @@ YUI.add('wegas-joingamewidget', function (Y) {
                         Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
 
                         this.createButton.hide();
-                        this.createTeamField.addClassName("inputEx-hidden");
+                        this.createTeamField.hide();
                         this.joinTeamButton.hide();
-                        this.teamsField.addClassName("inputEx-hidden");
+                        this.teamsField.hide();
                         this.joinGameButton.hide();
-                        this.tokenField.addClassName("inputEx-hidden");
+                        this.tokenField.hide();
                     }, this),
                     failure: Y.bind(function (e) {
                         this.showMessage("error", "Error joinging team");

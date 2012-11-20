@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -15,11 +15,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.exception.WegasException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -39,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <francois-xavier.aeberhard@red-agent.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
 @LocalBean
@@ -102,7 +98,8 @@ public class ScriptFacade {
         ScriptEngine engine;
         try {
             engine = mgr.getEngineByName(scripts.get(0).getLanguage());
-        } catch (NullPointerException ex) {
+        }
+        catch (NullPointerException ex) {
             logger.error("Wrong language ?", ex.getMessage(), ex.getStackTrace());
             return null;
         }
@@ -113,9 +110,11 @@ public class ScriptFacade {
         try {
             engineInvocationEvent.fire(
                     new EngineInvocationEvent(requestManager.getPlayer(), engine)); // Fires the engine invocation event, to allow extensions
-        } catch (ObserverException ex) {
+        }
+        catch (ObserverException ex) {
             throw (WegasException) ex.getCause();
-        } finally {                                                             //Try finishing evaluation
+        }
+        finally {                                                             //Try finishing evaluation
             for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
                 engine.put(arg.getKey(), arg.getValue());
             }
@@ -126,14 +125,16 @@ public class ScriptFacade {
             for (Script s : scripts) {                                              // Evaluate each script
                 try {
                     script += s.getContent() + ";";
-                } catch (NullPointerException ex) {
+                }
+                catch (NullPointerException ex) {
                     //script does not exist
                 }
                 //result = engine.eval(s.getContent());
             }
             try {
                 result = engine.eval(script);
-            } catch (ScriptException ex) {
+            }
+            catch (ScriptException ex) {
                 logger.warn("{} in\n{}", ex.getMessage(), script);
                 throw new ScriptException(ex.getMessage(), script, ex.getLineNumber());
             }
@@ -152,22 +153,27 @@ public class ScriptFacade {
      */
     public void onEngineInstantiation(@Observes ScriptFacade.EngineInvocationEvent evt) throws ScriptException, WegasException {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
-        evt.getEngine().eval("importPackage(com.wegas.core.script)");           // Inject factory object
+
         List<String> errorVariable = new ArrayList<>();
-        for (Entry<String, String> arg : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) {        // Inject the arguments
+
+        for (Entry<String, String> arg :
+                evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the arguments
             try {
                 evt.getEngine().eval(arg.getValue());
-            } catch (ScriptException ex) {
+            }
+            catch (ScriptException ex) {
                 logger.warn("{} in\n{}", ex.getMessage(), arg.getValue());
                 throw new ScriptException(ex.getMessage(), arg.getValue(), ex.getLineNumber());
             }
         }
 
-        for (VariableDescriptor vd : evt.getPlayer().getGameModel().getVariableDescriptors()) { // We inject the variable instances in the script
+        for (VariableDescriptor vd :
+                evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());
             try {
                 evt.getEngine().put(vd.getName(), vi);
-            } catch (IllegalArgumentException ex) {
+            }
+            catch (IllegalArgumentException ex) {
                 errorVariable.add(vd.getEditorLabel());
 
             }
