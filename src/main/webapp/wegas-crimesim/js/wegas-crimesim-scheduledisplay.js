@@ -21,7 +21,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
     /**
      *  The schedule display class.
      */
-    ScheduleDisplay = Y.Base.create("wegas-crimesim-scheduledisplay", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
+    ScheduleDisplay = Y.Base.create("wegas-crimesim-scheduledisplay", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
         CONTENT_TEMPLATE: '<div><div class="schedule-questions"></div>'
                 + '<div class="schedule-detail"><div class="schedule-icon-close"></div><h1></h1><div class="content"></div>'
                 + '<div class="schedule-gallery"></div><h2>Anaylses</h2><div class="schedule-analysis"></div>'
@@ -271,7 +271,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     label: "Files",
                     emptyCellValue: "no files"
                 }]
-                this.datatable = new Y.Wegas.CrimeSimTreeble({
+            this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
                 isTreeble: true,
                 node: node
