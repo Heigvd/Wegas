@@ -174,7 +174,7 @@ public class ScriptFacade {
                 evt.getEngine().put(vd.getName(), vi);
             }
             catch (IllegalArgumentException ex) {
-                errorVariable.add(vd.getEditorLabel());
+                errorVariable.add(vd.getLabel());
 
             }
         }
@@ -187,7 +187,8 @@ public class ScriptFacade {
                     allVars.append(",");
                 }
             }
-            throw new WegasException("Missing name for Variable [" + allVars.toString() + "]");
+            logger.error("Missing name for Variable label [" + allVars.toString() + "]");
+            //throw new WegasException("Missing name for Variable label [" + allVars.toString() + "]");
         }
     }
 
