@@ -12,7 +12,6 @@ package com.wegas.core.security.rest;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.sql.SQLException;
 import java.util.List;
