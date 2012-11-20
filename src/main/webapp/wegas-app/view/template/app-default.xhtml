@@ -31,7 +31,7 @@
                 <script type="text/javascript">
 
                     var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                            comboBase = base + '/rest/combo?';
+                    comboBase = base + '/rest/combo?';
 
                     // Set up some YUI3 default parameters. Will be use for every call to
                     // the YUI(cfg) function. Can be overridden by the cfg parameter.
@@ -50,19 +50,19 @@
                         return false;                                           // Returning true from this function will stop the Error from being thrown.
                     };
                     //YUI_config.gallery = 'gallery-2011.02.18-23-10';
-                    //YUI_config.filter = 'raw';                                        // Allows to select normal or minified version of dependencies
-                    //YUI_config.filters = { event: 'debug' };                          // Like filter, but can be set for each module
+                    //YUI_config.filter = 'raw';                                // Allows to select normal or minified version of dependencies
+                    //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
                     //YUI_config.loadOptional = true;
                     //YUI_config.timeout = 10000;
                     //YUI_config.logExclude = { event : true };
                     //YUI_config.logInclude = { event : true };
 
-                    YUI_config.groups.wegas.base = base + "/";                          // Set up wegas path
+                    YUI_config.groups.wegas.base = base + "/";                  // Set up wegas path
                     YUI_config.groups.wegas.comboBase = comboBase;
                     YUI_config.groups.wegas.combine = false;
                     YUI_config.groups.wegas.filter = "raw";
 
-                    YUI_config.groups.inputex.base = base + '/lib/inputex/src/';	// Set up inputex path
+                    YUI_config.groups.inputex.base = base + '/lib/inputex/src/';// Set up inputex path
                     YUI_config.groups.inputex.comboBase = comboBase;
                     YUI_config.groups.inputex.root = "/lib/inputex/src/";
                     YUI_config.groups.inputex.combine = false;
@@ -70,17 +70,13 @@
                     YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;     // Set up ace path
                     YUI_config.groups.ace.comboBase = comboBase;
 
-                    YUI_config.groups.esprima.base = base + YUI_config.groups.esprima.root; // Set up esprima path
-                    YUI_config.groups.esprima.comboBase = comboBase;
-
-                    YUI_config.groups.jsplumb.base = base + YUI_config.groups.jsplumb.root; // Set up jsplumb path
+                    YUI_config.groups.jsplumb.base =
+                        base + YUI_config.groups.jsplumb.root;                  // Set up jsplumb path
                     YUI_config.groups.jsplumb.comboBase = comboBase;
 
-                    YUI_config.groups.diffmatchpatch.base = base + YUI_config.groups.diffmatchpatch.root; // Set up diff_match_patch path
-                    YUI_config.groups.diffmatchpatch.comboBase = comboBase;
-
-                    //YUI_config.groups.excanvas.base = base + YUI_config.groups.excanvas.root;// Set up excanvas path
-                    //YUI_config.groups.excanvas.comboBase = comboBase;
+                    YUI_config.groups.libraries.base =
+                        base + YUI_config.groups.libraries.root;                // Set up libraries path
+                    YUI_config.groups.libraries.comboBase = comboBase;
                 </script>
                 <!-- local assets -->
                 <ui:fragment rendered="#{wegasConfig.assets_local}">
@@ -120,7 +116,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                                // resultFields: ["name", "id", "@class", "errors"]
+                                                        // resultFields: ["name", "id", "@class", "errors"]
                                                     }
                                                 }
                                             }, {
@@ -136,7 +132,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                                // resultFields: ["name", "id", "@class", "errors"]
+                                                        // resultFields: ["name", "id", "@class", "errors"]
                                                     }
                                                 }
                                             }, {
@@ -153,7 +149,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                                //resultFields: ["name", "id", "@class"]
+                                                        //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
                                             }, {
@@ -187,7 +183,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                                //resultFields: ["name", "id", "@class"]
+                                                        //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
                                             }
