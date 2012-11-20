@@ -40,7 +40,7 @@ YUI().use(function(Y) {
                     'wegas-datasourcerest': {
                         path: 'wegas-app/js/wegas-datasourcerest-min.js',
                         requires: ['plugin', 'json', 'array-extras', 'io-base',
-                        "datasource-io", "datasource-jsonschema", "datasource-cache", 'diff_match_patch']
+                        "datasource-io", "datasource-jsonschema", "datasource-cache"]
                     },
                     'wegas-scripteval': {
                         path: 'wegas-app/js/wegas-scripteval-min.js',
@@ -289,7 +289,8 @@ YUI().use(function(Y) {
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        ix_provides: 'PageEditor'
+                        ix_provides: 'PageEditor',
+                        requires: ['diff_match_patch']
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -480,6 +481,7 @@ YUI().use(function(Y) {
             ace: {
                 base: './lib/ace/',
                 root: '/lib/ace/',
+                combine: true,
                 modules: {
                     'ace': {
                         path: 'src/ace.js'
@@ -533,9 +535,10 @@ YUI().use(function(Y) {
                     }
                 }
             },
-            /* Esprima */
-            esprima: {
+            /* Other libraries */
+            libraries: {
                 async: false,
+                combine: true,
                 base: "./lib/",
                 root: "/lib/",
                 modules: {
@@ -550,36 +553,15 @@ YUI().use(function(Y) {
                     },
                     'tinymce': {
                         path: "tiny_mce/tiny_mce.js"
-
-                    }
-                }
-            },
-            /* DiffMatchPatch */
-            diffmatchpatch: {
-                async: false,
-                base: "./lib/diffmatchpatch/",
-                root: "/lib/diffmatchpatch/",
-                modules: {
+                    },
                     'diff_match_patch': {
-                        path: "diff_match_patch.js"
+                        path: "diffmatchpatch/diff_match_patch.js"
+                    },
+                    'excanvas': {
+                        path: 'excanvas/excanvas.compiled.js'
                     }
                 }
             }
-
-
-        /* ExCanvas */
-        //excanvas: {
-        //    combine: true,
-        //    async: false,
-        //    //combine: false,
-        //    base: "./lib/excanvas/",
-        //    root: "/excanvas/",
-        //    modules:  {
-        //        'excanvas': {
-        //            path: 'excanvas.compiled.js'
-        //        }
-        //    }
-        //},
         }
     };
 
@@ -620,7 +602,6 @@ YUI().use(function(Y) {
 
     loadModules(YUI_config.groups.wegas);
     loadModules(YUI_config.groups.ace);
-    loadModules(YUI_config.groups.esprima);
+    loadModules(YUI_config.groups.libraries);
     loadModules(YUI_config.groups.jsplumb);
-//loadModules(YUI_config.groups.excanvas);
 });
