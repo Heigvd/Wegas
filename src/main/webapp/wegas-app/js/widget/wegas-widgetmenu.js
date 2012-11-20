@@ -201,9 +201,6 @@ YUI.add('wegas-widgetmenu', function (Y) {
             zIndex:{
                 value: 25
             },
-            width: {
-                value: "12em"
-            },
             render: {
                 value: true
             },

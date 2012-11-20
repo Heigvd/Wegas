@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -53,7 +53,7 @@ public class GameModel extends NamedEntity {
     /**
      *
      */
-    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     @XmlTransient
     private List<VariableDescriptor> variableDescriptors;
     /**
@@ -61,7 +61,7 @@ public class GameModel extends NamedEntity {
      * hierarchy (other VariableDescriptor can be placed inside of a
      * ListDescriptor's items List).
      */
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "rootgamemodel_id")
     @JsonView(Views.Export.class)
     //@JsonManagedReference
@@ -69,7 +69,7 @@ public class GameModel extends NamedEntity {
     /**
      *
      */
-    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     //@JsonView(Views.EditorI.class)
     @JsonIgnore
