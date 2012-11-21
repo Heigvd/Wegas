@@ -59,7 +59,7 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>lib/diffmatchpatch/**</exclude>
+                        <!--<exclude>lib/diffmatchpatch/**</exclude>--><!-- Just to be sure to have a -min.js file -->
                         <exclude>lib/ace/**</exclude>
                         <exclude>lib/excanvas/**</exclude>
                         <exclude>lib/jsPlumb/**</exclude>
