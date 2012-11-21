@@ -281,13 +281,14 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                 if (!this.options.returnsFilter                                 // Apply filter on the method return type
                     || this.options.returnsFilter.indexOf(methods[i].returns || "void") >= 0) {
 
+
                     methods[i].value = i;
                     methods[i].label =  methods[i].label || i;
                     ret.push(methods[i]);
-                /* ret.push({
-                        label: methods[i].label || i,
-                        value: i
-                    });*/
+
+                    if (i === this.options.method) {
+                        this.options.methodCfg = methods[i];
+                    }
                 }
             }
             return ret;
@@ -411,7 +412,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                 null, this.currentEntity.get("items")));
 
             var i, args, methods  = this.getMethods(this.currentEntity),
-            cMethod = methods[this.options.method];
+            cMethod = this.options.methodCfg;
 
             if (!cMethod && Y.Object.values(methods).length > 0) {
                 cMethod = Y.Object.values(methods)[0];                          // By default select the first method available
@@ -549,8 +550,8 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             var methods  = this.getMethods(this.currentEntity),
             cMethod = methods[this.options.method];
 
-            if (!cMethod && Y.Object.values(methods).length > 0) {
-                cMethod = Y.Object.values(methods)[0];                          // By default select the first method available
+            if (!cMethod && methods.length > 0) {
+                cMethod = methods[0];                                           // By default select the first method available
             }
 
             if (cMethod && cMethod.returns === "number") {

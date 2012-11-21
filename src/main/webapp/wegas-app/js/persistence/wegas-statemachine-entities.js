@@ -25,11 +25,11 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 type: "uneditable",
                 _inputex: {
                     label: "Transition History"
-                            //                    ,
-                            //                    elementType:{
-                            //                        type:"number",
-                            //                        readonly:true
-                            //                    }
+                //                    ,
+                //                    elementType:{
+                //                        type:"number",
+                //                        readonly:true
+                //                    }
                 }
             }
         }
@@ -46,11 +46,11 @@ Y.add("wegas-statemachine-entities", function(Y) {
          * @return {Transition|null} the transition if it exists
          */
         getTransitionById: function(id) {
-            var states = this.get("states"),
-                    trs;
-            for (var i in states) {
-                trs = states[i].get("transitions")
-                for (var t in trs) {
+            var i, t, states = this.get("states"),
+            trs;
+            for (i in states) {
+                trs = states[i].get("transitions");
+                for (t in trs) {
                     if (+trs[t].get("id") === +id) {
                         return trs[t];
                     }
@@ -64,12 +64,12 @@ Y.add("wegas-statemachine-entities", function(Y) {
          *  @return {Array} An array containing alternatively state/transition.
          */
         getFullHistory: function() {
-            var transitionHistory = this.getInstance().get("transitionHistory"),
-                    fullHistory = [],
-                    tmpTransition = null;
+            var i, transitionHistory = this.getInstance().get("transitionHistory"),
+            fullHistory = [],
+            tmpTransition = null;
             //TODO :Currently assuming it begins with initialState. May be wrong?
             fullHistory.push(this.getState(this.getInitialStateId()));
-            for (var i = 0; i < transitionHistory.length; i += 1) {
+            for (i = 0; i < transitionHistory.length; i += 1) {
                 tmpTransition = this.getTransitionById(transitionHistory[i]);
                 fullHistory.push(tmpTransition);
                 fullHistory.push(this.getState(tmpTransition.get("nextStateId")));
@@ -230,19 +230,19 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                plugins: [{
-                        fn: "EditFSMAction"
-                    }]
-            }, {
-                type: "Button",
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
+            type: "EditEntityButton",
+            plugins: [{
+                fn: "EditFSMAction"
             }]
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /*
@@ -253,7 +253,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
         initializer: function() {
         }
 
-        // *** Private methods *** //
+    // *** Private methods *** //
     }, {
         ATTRS: {
             "@class": {
@@ -356,11 +356,17 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
+            type: "EditEntityButton"
 
-            }, {
-                type: "DeleteEntityButton"
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
             }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /*
@@ -405,8 +411,8 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 }
                 if (transition.get("triggerCondition") === null || transition.get("triggerCondition").isEmpty()) {
                     request = "/StateMachine/" + this.get("id")
-                            + "/Player/" + Y.Wegas.app.get("currentPlayer")
-                            + "/Do/" + transition.get("id");
+                    + "/Player/" + Y.Wegas.app.get("currentPlayer")
+                    + "/Do/" + transition.get("id");
                     try {
                         Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                             request: request,
@@ -420,7 +426,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
                             on: callbacks
                         });
                     } catch (e) {
-                        //TODO : that
+                    //TODO : that
                     }
                     return true;
                 }
@@ -446,10 +452,10 @@ Y.add("wegas-statemachine-entities", function(Y) {
          */
         getTriggerURL: function(id) {
             return Y.Wegas.app.get("base") + "rest/GameMode/" +
-                    Y.Wegas.app.get("currentGame")
-                    + "/VariableDescriptor/StateMachine/" + id
-                    + "/Player/" + Y.Wegas.app.get("currentPlayer")
-                    + "/Do/" + this.get("id");
+            Y.Wegas.app.get("currentGame")
+            + "/VariableDescriptor/StateMachine/" + id
+            + "/Player/" + Y.Wegas.app.get("currentPlayer")
+            + "/Do/" + this.get("id");
         }
     }, {
         ATTRS: {
@@ -478,7 +484,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
          */
         getAvailableActions: function() {
             var i, transitions = this.get("transitions"),
-                    ctrlObj = {};
+            ctrlObj = {};
             ctrlObj.availableActions = [];
             ctrlObj.toEval = 0;
             ctrlObj.evaluatedCount = 0;

@@ -61,7 +61,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
             }
             questions = questions.get("items");
 
-            this.tabView.removeAll();
+            this.tabView.removeAll();                                           // Empty the tabview
 
             for (i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
@@ -124,6 +124,13 @@ YUI.add('wegas-mcqtabview', function (Y) {
                     tab.questionInstance = cQuestionInstance;
                     this.tabView.add(tab);
                 }
+            }
+
+            if (this.tabView.isEmpty()) {
+                this.tabView.add(new Y.Tab({
+                    label: "",
+                    content: "<center><i><br /><br /><br />No questions available yet.</i></center>"
+                }));
             }
 
             this.tabView.selectChild(lastSelection);

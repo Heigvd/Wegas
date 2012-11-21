@@ -182,6 +182,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     public Boolean isActive(Player p) {
-        return this.isActive(p);
+        return this.getInstance(p).getActive();
     }
 }
