@@ -77,6 +77,9 @@ public class StateMachineRunner implements Serializable {
         //Put that in the SM Facade
         ArrayList<Script> impacts = new ArrayList<>();
         for (StateMachineInstance stateMachine : stateMachines) {
+            if (!stateMachine.getEnabled()) {
+                continue;
+            }
             List<Transition> transitions = stateMachine.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
                 Boolean validTransition = false;

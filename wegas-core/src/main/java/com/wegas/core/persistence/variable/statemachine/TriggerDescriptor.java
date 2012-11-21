@@ -14,8 +14,10 @@ import com.wegas.core.persistence.game.Script;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -65,6 +67,17 @@ public class TriggerDescriptor extends StateMachineDescriptor {
 
     public Script getTriggerEvent() {
         return triggerEvent;
+    }
+
+    /**
+     * Override to make this function transient
+     *
+     * @see StateMachineDescriptor#getStates
+     */
+    @Override
+    @XmlTransient
+    public Map<Long, State> getStates() {
+        return super.getStates();
     }
 
     /**

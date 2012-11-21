@@ -19,17 +19,24 @@ Y.add("wegas-statemachine-entities", function(Y) {
                     label: "Current state id"
                 }
             },
+            enabled: {
+                type: 'boolean',
+                value: true,
+                _inputex: {
+                    label: 'Enabled'
+                }
+            },
             transitionHistory: {
                 value: [],
                 writeOnce: "initOnly",
                 type: "uneditable",
                 _inputex: {
                     label: "Transition History"
-                //                    ,
-                //                    elementType:{
-                //                        type:"number",
-                //                        readonly:true
-                //                    }
+                            //                    ,
+                            //                    elementType:{
+                            //                        type:"number",
+                            //                        readonly:true
+                            //                    }
                 }
             }
         }
@@ -42,12 +49,12 @@ Y.add("wegas-statemachine-entities", function(Y) {
         // *** Lifecycle methods *** //
         /**
          * Find a transition by it's id
-         * @param The queried transition's id
+         * @param {Integer} id The queried transition's id
          * @return {Transition|null} the transition if it exists
          */
         getTransitionById: function(id) {
             var i, t, states = this.get("states"),
-            trs;
+                    trs;
             for (i in states) {
                 trs = states[i].get("transitions");
                 for (t in trs) {
@@ -65,8 +72,8 @@ Y.add("wegas-statemachine-entities", function(Y) {
          */
         getFullHistory: function() {
             var i, transitionHistory = this.getInstance().get("transitionHistory"),
-            fullHistory = [],
-            tmpTransition = null;
+                    fullHistory = [],
+                    tmpTransition = null;
             //TODO :Currently assuming it begins with initialState. May be wrong?
             fullHistory.push(this.getState(this.getInitialStateId()));
             for (i = 0; i < transitionHistory.length; i += 1) {
@@ -123,6 +130,12 @@ Y.add("wegas-statemachine-entities", function(Y) {
                         _inputex: {
                             label: 'Initial state id',
                             value: 1
+                        }
+                    },
+                    enabled: {
+                        type: 'boolean',
+                        _inputex: {
+                            label: 'Enabled'
                         }
                     }
                 }
@@ -230,19 +243,19 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITMENU: [{
-            type: "EditEntityButton",
-            plugins: [{
-                fn: "EditFSMAction"
+                type: "EditEntityButton",
+                plugins: [{
+                        fn: "EditFSMAction"
+                    }]
+            }, {
+                type: "Button",
+                label: "Duplicate",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
             }]
-        }, {
-            type: "Button",
-            label: "Duplicate",
-            plugins: [{
-                fn: "DuplicateEntityAction"
-            }]
-        }, {
-            type: "DeleteEntityButton"
-        }]
     });
 
     /*
@@ -253,7 +266,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
         initializer: function() {
         }
 
-    // *** Private methods *** //
+        // *** Private methods *** //
     }, {
         ATTRS: {
             "@class": {
@@ -331,6 +344,12 @@ Y.add("wegas-statemachine-entities", function(Y) {
                             label: 'Initial state id',
                             _type: 'hidden'
                         }
+                    },
+                    enabled: {
+                        type: 'boolean',
+                        _inputex: {
+                            label: 'Enabled'
+                        }
                     }
                 }
             },
@@ -353,20 +372,23 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 _inputex: {
                     label: 'Only once'
                 }
+            },
+            states: {
+                "transient": true
             }
         },
         EDITMENU: [{
-            type: "EditEntityButton"
+                type: "EditEntityButton"
 
-        }, {
-            type: "Button",
-            label: "Duplicate",
-            plugins: [{
-                fn: "DuplicateEntityAction"
+            }, {
+                type: "Button",
+                label: "Duplicate",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
             }]
-        }, {
-            type: "DeleteEntityButton"
-        }]
     });
 
     /*
@@ -411,8 +433,8 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 }
                 if (transition.get("triggerCondition") === null || transition.get("triggerCondition").isEmpty()) {
                     request = "/StateMachine/" + this.get("id")
-                    + "/Player/" + Y.Wegas.app.get("currentPlayer")
-                    + "/Do/" + transition.get("id");
+                            + "/Player/" + Y.Wegas.app.get("currentPlayer")
+                            + "/Do/" + transition.get("id");
                     try {
                         Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                             request: request,
@@ -426,7 +448,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
                             on: callbacks
                         });
                     } catch (e) {
-                    //TODO : that
+                        //TODO : that
                     }
                     return true;
                 }
@@ -452,10 +474,10 @@ Y.add("wegas-statemachine-entities", function(Y) {
          */
         getTriggerURL: function(id) {
             return Y.Wegas.app.get("base") + "rest/GameMode/" +
-            Y.Wegas.app.get("currentGame")
-            + "/VariableDescriptor/StateMachine/" + id
-            + "/Player/" + Y.Wegas.app.get("currentPlayer")
-            + "/Do/" + this.get("id");
+                    Y.Wegas.app.get("currentGame")
+                    + "/VariableDescriptor/StateMachine/" + id
+                    + "/Player/" + Y.Wegas.app.get("currentPlayer")
+                    + "/Do/" + this.get("id");
         }
     }, {
         ATTRS: {
@@ -484,7 +506,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
          */
         getAvailableActions: function() {
             var i, transitions = this.get("transitions"),
-            ctrlObj = {};
+                    ctrlObj = {};
             ctrlObj.availableActions = [];
             ctrlObj.toEval = 0;
             ctrlObj.evaluatedCount = 0;
