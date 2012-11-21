@@ -66,11 +66,6 @@ YUI.add('wegas-action', function (Y) {
         OpenUrlAction.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(OpenUrlAction, {
-        NS: "openurlaction",
-        NAME: "OpenUrlAction"
-    });
-
     Y.extend(OpenUrlAction, Action, {
         execute: function () {
             var targetUrl  = Y.Wegas.app.get("base") + this.get("url");
@@ -82,6 +77,8 @@ YUI.add('wegas-action', function (Y) {
             }
         }
     }, {
+        NS: "openurlaction",
+        NAME: "OpenUrlAction",
         ATTRS: {
             url: { },
             /**

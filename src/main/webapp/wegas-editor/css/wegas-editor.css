@@ -12,29 +12,9 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
 
-/* Default form styles */
+/* Override default browser styles */
 body {
     overflow: hidden;
-}
-select {
-    margin: 0;
-}
-
-/* YUI3 Button Widget styles redefinition */
-.yui3-skin-sam .yui3-button {
-    vertical-align: top;
-    padding: .1em 0.6em .1em;
-    min-height: 24px;
-    background-color:white;
-}
-.yui3-skin-sam .yui3-button-primary, .yui3-skin-sam .yui3-button-selected {
-    background-color: #6D6D6D;
-}
-.yui3-skin-sam .yui3-button > * {
-    vertical-align: top;
-}
-.yui3-skin-sam .yui3-button .wegas-icon {
-    margin: -2px 2px 0 0;
 }
 
 /* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
@@ -49,24 +29,10 @@ select {
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .yui3-widget {
     position: relative;
 }
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .yui3-widget {
-    /*    position: absolute;
-        bottom: 0px;
-        overflow: auto;
-        padding:0;
-        left:0px;
-        right:0px;
-        top: 57px;*/
-}
 
 /* Wegas small icons */
 .yui3-skin-sam .wegas-icon {
-    display: inline-block;
-    height: 18px;
-    width: 18px;
-    overflow: hidden;
     background-image: url(../images/wegas-editor-sprite.png);
-    background-repeat: no-repeat;
 }
 .yui3-skin-sam .wegas-icon-reset {
     background-position: 0px -300px;
@@ -384,4 +350,3 @@ select {
     float: right;
     padding: 3px;
 }
-

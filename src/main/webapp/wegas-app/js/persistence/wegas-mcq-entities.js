@@ -203,10 +203,15 @@ YUI.add('wegas-mcq-entities', function (Y) {
             "@class":{
                 value:"ChoiceDescriptor"
             },
-            duration: {
-                value: 1,
-                type: "string",
-                optional: true
+            description: {
+                type: 'string',
+                format: "html",
+                optional: true,
+                _inputex: {
+                    opts: {
+                        height: '50px'
+                    }
+                }
             },
             defaultInstance: {
                 properties: {
@@ -235,14 +240,18 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }
                 }
             },
-            description: {
-                type: 'string',
-                format: "html",
+            duration: {
+                value: 1,
+                type: "string",
                 optional: true,
                 _inputex: {
-                    opts: {
-                        height: '50px'
-                    }
+                    description: "Available for crimesim evidences"
+                }
+            },
+            cost: {
+                type: "string",
+                _inputex: {
+                    description: "Available for crimesim evidences"
                 }
             },
             //feedback: {
