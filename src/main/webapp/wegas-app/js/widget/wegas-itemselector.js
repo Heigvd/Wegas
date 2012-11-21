@@ -22,17 +22,21 @@ YUI.add('wegas-itemselector', function (Y) {
             var i, variables, cb = this.get(CONTENTBOX);
             cb.append('<div class="selectors"></div>');
             cb.append('<div class="informations"></div>');
-            if (!this.get('listVariables'))
+            if (!this.get('listVariables')) {
                 return;
+            }
             variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('listVariables'));
+            if(!variables || !variables.get('items')){
+                return;
+            }
             for (i = 0; i < variables.get('items').length; i++) {
                 if (variables.get('items')[i].getInstance().get('active') == null || variables.get('items')[i].getInstance().get('active') == true) {
-                         this.currentItem = variables.get('items')[i];
-                         break;
+                    this.currentItem = variables.get('items')[i];
+                    break;
                 }
             }
             this.scrollView = new Y.ScrollView({
-                id: 'scrollview',
+                id: 'itemselector-scrollview',
                 srcNode: cb.one('.selectors'),
                 width: cb.one('.selectors').offsetwidth,
                 flick: {
@@ -41,7 +45,6 @@ YUI.add('wegas-itemselector', function (Y) {
                     axis: 'x'
                 }
             });
-
         },
         /**
          * Bind some function at nodes of this widget
@@ -50,7 +53,6 @@ YUI.add('wegas-itemselector', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-
             this.handlers.push(cb.one('.selectors').delegate('click', function (e) {
                 var i, variables, name;
                 if (e.target.ancestors('.selector').item(0)) {
