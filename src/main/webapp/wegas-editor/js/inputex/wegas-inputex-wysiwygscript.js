@@ -15,7 +15,10 @@
 YUI.add("wegas-inputex-wysiwygscript", function (Y) {
     "use strict";
 
-    var inputEx = Y.inputEx;
+    var inputEx = Y.inputEx,
+    escapeJSString = function(str) {
+        return str.replace('"', '\\"');
+    };
 
     inputEx.WysiwygScript = function (options) {
         inputEx.WysiwygScript.superclass.constructor.call(this, options);
@@ -463,7 +466,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             }
             for (i = 0; i < args.length; i = i + 1) {
                 if (this.currentMethod.arguments[i].scriptType === "string") {
-                    args[i] = '"' + args[i].replace('"', '\\"') + '"';
+                    args[i] = '"' + escapeJSString(args[i]) + '"';
                 }
             }
             return "VariableDescriptorFacade.find(" + this.inputs[l - this.argsOffset - 2].getValue() + ")" +
