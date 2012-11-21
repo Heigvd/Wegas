@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.ejb.Helper;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import java.util.ArrayList;
@@ -87,6 +88,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> {
     @XmlTransient
     public void addItem(VariableDescriptor item) {
         this.items.add(item);
+        if((item.getEditorLabel() == null || item.getEditorLabel().isEmpty()) && item.getLabel() != null){
+            item.setEditorLabel(item.getLabel());
+        }
         item.setGameModel(this.getGameModel());
     }
 

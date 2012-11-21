@@ -287,8 +287,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @PrePersist
     @PreUpdate
     public void prePersist() {
-        if (this.name == null && this.label != null) {
-            this.name = Helper.encodeVariableName(this.label);
+        if ((this.editorLabel == null || !this.editorLabel.isEmpty()) && this.label != null) {
+            this.editorLabel = this.label;
         }
     }
 }

@@ -53,7 +53,7 @@ public class ListDescriptorController extends AbstractRestController<VariableDes
             usedNames.add(iterator.next().getName());
         }
         if (entity.getName().isEmpty() || entity.getName() == null) {
-            entity.setName(Helper.buildUniqueName(entity.getEditorLabel(), usedNames));
+            entity.setName(Helper.buildUniqueName(entity.getLabel(), usedNames));
         }
         //build a unique name
         if (usedNames.contains(entity.getName())) {

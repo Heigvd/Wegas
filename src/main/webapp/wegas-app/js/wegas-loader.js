@@ -163,7 +163,7 @@ YUI().use(function(Y) {
                         ix_provides: "JoinGameWidget"
                     },
                     'wegas-imageloader': {
-                        path: 'wegas-app/js/widget/wegas-imageloader.js',
+                        path: 'wegas-app/js/widget/wegas-imageloader-min.js',
                         requires: ['io-base', 'imageloader']
                     },
                     'wegas-gallerycss': {
@@ -175,6 +175,15 @@ YUI().use(function(Y) {
                         requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
                         'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
                         ix_provides: "WegasGallery"
+                    },
+                    'wegas-itemselector': {
+                        path: 'wegas-app/js/widget/wegas-itemselector-min.js',
+                        requires: ['wegas-nodeformatter', 'scrollview'],
+                        ix_provides: "ItemSelector"
+                    },
+                    'wegas-nodeformatter': {
+                        path: 'wegas-app/js/widget/wegas-nodeformatter-min.js',
+                        ix_provides: "NodeFormatter"
                     },
                     /** Inputex Fields **/
                     'wegas-inputex': {
@@ -411,13 +420,7 @@ YUI().use(function(Y) {
                     },
                     /**CEP**/
                     'wegas-cep': {
-                        path: 'wegas-cep/js/wegas-cep-itemselector.js',
-                        requires: ['wegas-cep-itemselector', 'wegas-cep-nodeformatter', 'scrollview'],
-                        ix_provides: "CepItemSelector"
-                    },
-                    'wegas-cep-nodeformatter': {
-                        path: 'wegas-cep/js/wegas-cep-nodeformatter.js',
-                        ix_provides: "CepNodeFormatter"
+                        requires: ['wegas-nodeformatter', 'wegas-itemselector']
                     },
                     /** CrimeSim **/
                     'wegas-crimesim-scheduledisplay': {
@@ -446,8 +449,8 @@ YUI().use(function(Y) {
                     },
                     'wegas-leaderway-folder': {
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
-                        requires: ['wegas-leaderway-translator'],
-                        ix_provides: "Folder"
+                        requires: ['wegas-itemselector'],
+                        ix_provides: "LWFolder"
                     },
                     'wegas-leaderway-tasklist': {
                         path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
