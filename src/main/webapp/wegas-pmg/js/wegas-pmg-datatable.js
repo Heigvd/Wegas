@@ -16,7 +16,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
 
     var CONTENTBOX = "contentBox", Datatable;
 
-    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
         handlers: null,
         datatable: null,
         data: null,
@@ -71,7 +71,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
                 );
             }
 //            this.datatable = new Y.Treeble({                                  //Using Treeble (comment also the sorting methode belove)
-              this.datatable = new Y.DataTable({                                //Using simple database
+              this.datatable = new Y.Datatable({                                //Using simple database
                 columns: columnTitles
             });
             if (this.get("defaultSort") && this.get("defaultSort").indexOf(this.get("columnValues") > -1)) { //Add columns sorting possibilities

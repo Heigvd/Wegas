@@ -2,13 +2,12 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
-YUI.add('wegas-cep-nodeformatter', function (Y) {
+YUI.add('wegas-nodeformatter', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', NodeFormatter;
 
-    NodeFormatter = Y.Base.create("wegas-cep-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
-
+    NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
         makeNodeText: function (value, label, className) {
             var node = Y.Node.create('<div class="nodeformatter-properties"></div>');
             value = (value != null ? value : 'undefine');
@@ -21,21 +20,20 @@ YUI.add('wegas-cep-nodeformatter', function (Y) {
             node.append('<span class="value">' + value + '</span>');
             return node;
         },
-
         makeNodeImage: function (attrs, className) {
-            var k, node = new Y.Node.create('<img class="nodeformatter-img"></img>');
+            var k, node = new Y.Node.create('<div class="nodeformatter-img"></div>');
+            node.append('<img></img>');
             if (className) {
-                node.addClass(className);
+                node.one('img').addClass(className);
             }
             if (typeof attrs !== 'object') {
                 return node;
             }
             for (k in attrs) {
-                node.set(k, attrs[k]);
+                node.one('img').set(k, attrs[k]);
             }
             return node;
         },
-
         makeNodeValueBox: function (value, maxVal, label, className) {
             var i, acc = [], node = new Y.Node.create('<div class="nodeformatter-valuebox"></div>');
             value = (value != null ? value : 'undefine');
@@ -52,10 +50,9 @@ YUI.add('wegas-cep-nodeformatter', function (Y) {
             node.append('<span class="box-value">(' + value + '<span class="box-valueMax">/' + maxVal + '</span>)</span>');
             return node;
         },
-
         makeNodePosition: function (html, selector, value, invert, className) {
             var node = new Y.Node.create('<div class="nodeformatter-position"></div>');
-            value = (typeof value === 'number' || value == 0) ? value : -1;
+            value = (typeof value === 'number') ? value : -1;
             invert = (invert == 'true') ? true : false;
             if (className) {
                 node.addClass(className);
@@ -75,8 +72,8 @@ YUI.add('wegas-cep-nodeformatter', function (Y) {
         }
 
     }, {
-        ATTRS : { }
+        ATTRS: {}
     });
 
-    Y.namespace('Wegas').CepNodeFormatter = NodeFormatter;
+    Y.namespace('Wegas').NodeFormatter = NodeFormatter;
 });

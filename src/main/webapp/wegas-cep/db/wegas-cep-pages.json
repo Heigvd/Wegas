@@ -198,11 +198,10 @@
     },
     "3": {
         "id": 3,
-        "type": "CepItemSelector",
+        "type": "ItemSelector",
         "listVariables": "employees",
         "searchInProperties": [
-        "properties",
-        "skillset"
+        "properties"
         ],
         "selectors": [
         {

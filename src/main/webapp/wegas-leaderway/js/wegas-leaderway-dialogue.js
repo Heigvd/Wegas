@@ -4,19 +4,84 @@
 
 YUI.add('wegas-leaderway-dialogue', function (Y) {
     "use strict";
-
     var CONTENTBOX = 'contentBox', Dialogue;
-
     Dialogue = Y.Base.create("wegas-dialogue", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         chart: null,
-        seriesName: new Array(),
-        seriesValue: new Array(),
-        handlers: new Array(),
+        seriesName: null,
+        seriesValue: null,
+        handlers: null,
+        timers: null,
         currentDialogue: null,
         resourceDescriptor: null,
         isDisplayingAResponse: false,
         availableActions: null,
         state: null,
+        /***Lifecycle methode***/
+        initializer: function () {
+            this.seriesName = [];
+            this.seriesValue = [];
+            this.handlers = {};
+            this.timers = [];
+        },
+        /**
+         * Render the widget.
+         * Hide node corresponding to the ATTRS "toHide"
+         */
+        renderUI: function () {
+            var cb = this.get(CONTENTBOX);
+            cb.setContent(
+                    '<div class="pictures">\n\
+                    <div class="backgroundLayer" style="absolute"></div>\n\
+                    <div class="questionLayer" style="absolute"></div>\n\
+                    <div class="answerLayer" style="absolute"></div>\n\
+                 </div>\n\
+                 <div style="width: 250px; height: 200px;" class="chart"></div>\n\
+                 <div class="speaker-name"></div>\n\
+                 <div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
+                    );
+        },
+        /**
+         * Bind some function at nodes of this widget
+         */
+        bindUI: function () {
+            var cb = this.get(CONTENTBOX);
+            this.handlers.variableResponse = Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
+            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handlers.dialogueResponse = cb.one('.dialogue .response').delegate('click', function (e) {
+                var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
+                dialogue.doTransition(this.availableActions[parseInt(e.currentTarget._node.attributes[0].nodeValue)]);
+            }, '.responseElements li', this);
+        },
+        /**
+         * Synchronise the content of this widget.
+         * Recreat the chart widget
+         */
+        syncUI: function () {
+            var cb = this.get(CONTENTBOX);
+            if (!this.currentDialogue)
+                return;
+            if (!this.isDisplayingAResponse) {
+                this.clear(cb);
+                this.createChart(this.resourceDescriptor);
+                this.readStateMachine(cb);
+            }
+        },
+        /*
+         * Destroy all child widget and all function
+         */
+        destructor: function () {
+            var k, cb = this.get(CONTENTBOX);
+            if (this.chart != null) {
+                this.chart.destroy();
+            }
+            for (k in this.handlers) {
+                this.handlers[k].detach();
+            }
+            for (k = 0; k < this.timers.length; k += 1) {
+                this.timers[k].cancel();
+            }
+        },
+        /***Particular Methode***/
         /**
          *Create tooltips for the chart's values
          */
@@ -29,7 +94,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 return msg;
             }
         },
-        /***Particular Methode***/
         /**
          * Clear each node created in the renderUI function
          * Delete the chart too.
@@ -70,7 +134,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                     resourceInstance.get('moralHistory'),
                     resourceInstance.get('confidenceHistory'),
             ];
-
             this.chart = new Y.Chart({
                 type: 'combospline',
                 seriesCollection: seriesCollection,
@@ -133,7 +196,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          *@param String cb, the widget's contentbox.
          */
         readStateMachine: function (cb) {
-            //Read state
+//Read state
             var dialogue;
             if (!this.currentDialogue) {
                 return;
@@ -177,13 +240,13 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 dialogue.doTransition(this.availableActions[0]);
                 return;
             }
-            //Change widget (exit dialogue)
+//Change widget (exit dialogue)
             content = JSON.parse(rawContent);
             if (content.subPageId && content.targetPageLoaderId) {
                 this.displayWidget(dialogue, content);
                 return;
             }
-            //Preparing texte
+//Preparing texte
             texts = content.texts[Math.floor(Math.random() * content.texts.length)];
             //while(texts.indexOf('&code') != -1){ don't do this !!! out of memory exception.
             if (texts.indexOf('&code') != -1) {
@@ -211,7 +274,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.pictures .backgroundLayer').show();
             cb.one('.pictures .questionLayer').show();
             //Display text
-            setTimeout(Y.bind(this.displayText, this, cb, splittedText), 400);
+            this.timers.push(Y.later(400, this, Y.bind(this.displayText, this, cb, splittedText)));
         },
         /**
          * Destroy this widget and open a newer corresponding to the subPageId at place defined by the targetPageLoaderId.
@@ -234,8 +297,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                     }
                 });
                 dialogue.doTransition(this.availableActions[0]);
-                if (this.get('toHide'))
-                    Y.all(this.get('toHide')).show();
                 targetPageLoader.set("pageId", content.subPageId);
             }
         },
@@ -282,7 +343,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.dialogue .talk p').insert(textParts[0] + ' &thinsp;');
             textParts.shift();
             if (textParts.length > 0) {
-                setTimeout(Y.bind(this.displayText, this, cb, textParts), 70);
+                this.timers.push(Y.later(70, this, Y.bind(this.displayText, this, cb, textParts)));
             }
             else {
                 cb.one('.pictures .questionLayer').hide();
@@ -344,63 +405,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             this.resourceDescriptor = resourceDescriptor;
             this.setCurrentDialogue(resourceDescriptor.getInstance().get('properties').dialogue);
         },
-        /***Lifecycle methode***/
-        /**
-         * Render the widget.
-         * Hide node corresponding to the ATTRS "toHide"
-         */
-        renderUI: function () {
-            var cb = this.get(CONTENTBOX);
-            cb.setContent(
-                    '<div class="pictures">\n\
-                    <div class="backgroundLayer" style="absolute"></div>\n\
-                    <div class="questionLayer" style="absolute"></div>\n\
-                    <div class="answerLayer" style="absolute"></div>\n\
-                 </div>\n\
-                 <div style="width: 250px; height: 200px;" class="chart"></div>\n\
-                 <div class="speaker-name"></div>\n\
-                 <div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
-                    );
-        },
-        /**
-         * Bind some function at nodes of this widget
-         */
-        bindUI: function () {
-            var cb = this.get(CONTENTBOX);
-            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
-            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-            this.handlers.push(cb.one('.dialogue .response').delegate('click', function (e) {
-                var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
-                dialogue.doTransition(this.availableActions[parseInt(e.currentTarget._node.attributes[0].nodeValue)]);
-            }, '.responseElements li', this));
-        },
-        /**
-         * Synchronise the content of this widget.
-         * Recreat the chart widget
-         */
-        syncUI: function () {
-            var cb = this.get(CONTENTBOX);
-            if (!this.currentDialogue)
-                return;
-            if (!this.isDisplayingAResponse) {
-                this.clear(cb);
-                this.createChart(this.resourceDescriptor);
-                this.readStateMachine(cb);
-            }
-        },
-        /*
-         * Destroy all child widget and all function
-         */
-        destructor: function () {
-            var i, cb = this.get(CONTENTBOX);
-            cb.all('.menu div').show();
-            if (this.chart != null) {
-                this.chart.destroy();
-            }
-            for (i = 0; i < this.handlers.length; i++) {
-                this.handlers[i].detach();
-            }
-        },
         // *** hack Methods *** //
         /**
          * if current week > max value of week value, then
@@ -439,6 +443,5 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
         }
     });
-
     Y.namespace('Wegas').Dialogue = Dialogue;
 });

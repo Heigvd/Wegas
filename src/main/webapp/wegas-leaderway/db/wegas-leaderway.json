@@ -206,7 +206,7 @@
                     "totalExperienceGained":0,
                     "learningCoefficient":0.7,
                     "dialogue":"dialogueFernand",
-                    "leadershipLevelIsHidden":false,
+                    "hiddenVariables":"",
                     "hiddenSkillsets":"Modélisation des traitements;Développement logiciel",
                     "wishIsKnow":false,
                     "hateIsKnow":false,
@@ -248,7 +248,7 @@
                     "totalExperienceGained":0,
                     "learningCoefficient":1.2,
                     "dialogue":"dialogueDaniela",
-                    "leadershipLevelIsHidden":false,
+                    "hiddenVariables":"",
                     "hiddenSkillsets":"Négociation;Modélisation des traitements",
                     "wishIsKnow":false,
                     "hateIsKnow":false,
@@ -290,7 +290,7 @@
                     "totalExperienceGained":0,
                     "learningCoefficient":1,
                     "dialogue":"dialogueJessica",
-                    "leadershipLevelIsHidden":false,
+                    "hiddenVariables":"",
                     "hiddenSkillsets":"Négociation;Design graphique",
                     "wishIsKnow":false,
                     "hateIsKnow":false,
@@ -332,7 +332,7 @@
                     "totalExperienceGained":0,
                     "learningCoefficient":1.2,
                     "dialogue":"dialogueHector",
-                    "leadershipLevelIsHidden":false,
+                    "hiddenVariables":"",
                     "hiddenSkillsets":"Langages Web;Négociation",
                     "wishIsKnow":false,
                     "hateIsKnow":false,
@@ -374,7 +374,7 @@
                     "totalExperienceGained":0,
                     "learningCoefficient":1,
                     "dialogue":"dialogueLucien",
-                    "leadershipLevelIsHidden":false,
+                    "hiddenVariables":"",
                     "hiddenSkillsets":"Développement logiciel;Design graphique;Langages Web",
                     "wishIsKnow":false,
                     "hateIsKnow":false,
@@ -1571,7 +1571,7 @@
             },
             "19" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[0])\"\n}",
+                "text" : "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0])\"\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
@@ -2462,7 +2462,7 @@
             },
             "19" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[1])\"\n}",
+                "text" : "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1])\"\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
@@ -3353,7 +3353,7 @@
             },
             "19" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[2])\"\n}",
+                "text" : "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2])\"\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
@@ -4244,7 +4244,7 @@
             },
             "19" : {
                 "@class" : "DialogueState",
-                "text" : "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').get('items')[3])\"\n}",
+                "text" : "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3])\"\n}",
                 "transitions" : [{
                     "@class" : "DialogueTransition",
                     "actionText" : "-",
