@@ -124,13 +124,13 @@ YUI.add('wegas-action', function (Y) {
         NAME: "OpenPageAction",
         ATTRS: {
             subpageId: {
-                type:"string",
+                type: "string",
                 _inputex: {
                     label: "Page to display"
                 }
             },
             targetPageLoaderId: {
-                type:"string",
+                type: "string",
                 _inputex: {
                     label: "Target page loader"
                 }
