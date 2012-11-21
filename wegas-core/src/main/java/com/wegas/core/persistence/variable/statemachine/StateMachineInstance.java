@@ -37,7 +37,8 @@ public class StateMachineInstance extends VariableInstance implements Serializab
 
     @Column(name = "currentstate_id")
     private Long currentStateId;
-    @ElementCollection
+    private Boolean enabled = true;
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "transitionHistory")
     @Column(name = "transitionId")
     private List<Long> transitionHistory = new ArrayList<>();
@@ -64,6 +65,14 @@ public class StateMachineInstance extends VariableInstance implements Serializab
         this.currentStateId = currentStateId;
     }
 
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public List<Long> getTransitionHistory() {
         return transitionHistory;
     }
@@ -71,7 +80,6 @@ public class StateMachineInstance extends VariableInstance implements Serializab
 //    public void setTransitionHistory(List<Long> transitionHistory) {
 //        this.transitionHistory = transitionHistory;
 //    }
-
     public void transitionHistoryAdd(Long id) {
         this.transitionHistory.add(id);
     }
@@ -79,6 +87,7 @@ public class StateMachineInstance extends VariableInstance implements Serializab
     @Override
     public void merge(AbstractEntity a) {
         this.currentStateId = ((StateMachineInstance) a).getCurrentStateId();
+        this.enabled = ((StateMachineInstance) a).getEnabled();
         this.transitionHistory = ((StateMachineInstance) a).getTransitionHistory();
     }
 
