@@ -196,7 +196,6 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             var j, cb = this.get(CONTENTBOX);
             cb.all('.informations>div, .selectors>div').each(function (node, i) {
                 for (j = 0; j < this.varToHide.length; j += 1) {
-                    console.log(node.getAttribute('data-name'), this.varToHide[j]);
                     if (node.getAttribute('data-name') == this.varToHide[j]) {
                         node.remove();
                         break;
