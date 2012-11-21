@@ -24,6 +24,7 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
             this.options.permissions = options.permissionsChoices;
             this.options.roles = options.roles;
             this.options.targetEntityId = options.targetEntityId;
+            this.value = {};
         },
         
         renderComponent: function (){
@@ -31,7 +32,17 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                 parentEl: this.fieldContainer
             });
 
-            this.roleSelect.on("updated", this.checkboxValue, this);
+            this.roleSelect.on("updated", function (val) {
+                
+                if (this.value.id !== val.id) {
+                    Y.Wegas.UserFacade.rest.deleteAllRolePermissions(this.value.id, this.options.targetEntityId);
+                }
+                 
+                this.value.id = val.id;
+                this.value.permissions = [];
+                this.checkboxValue();
+                this.fireUpdatedEvt();
+            }, this);
             
             this.permissionsCheckBoxes = [];
             Y.Array.forEach(this.options.permissions, function (item, i){
@@ -58,7 +69,8 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                                 method: "POST"
                             }
                         });
-                    }
+                    }                    
+                    this.fireUpdatedEvt();
                 }, this);
                 this.permissionsCheckBoxes.push(box)
             }, this);
@@ -66,10 +78,12 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
             this.checkboxValue();
         },
         getValue: function () {
+            this.value.id = this.roleSelect.getValue().id;
             return this.value;
         },
         setValue: function (val, sendUpdatedEvent) {
             inputEx.Wegas.PermissionSelect.superclass.setValue.call(this, val, sendUpdatedEvent);
+            this.roleSelect.setValue(val, false);
             this.value = val;           
             this.checkboxValue();
         },
@@ -77,11 +91,9 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
             Y.Array.forEach(this.permissionsCheckBoxes, function(box, i){
                 box.setValue(false, false);
             });
-            if (!this.value) {
-                return;
-            }
-            this.roleSelect.setValue(this.getValue(), false);
-            
+
+            //this.roleSelect.setValue(this.getValue(), false);
+            console.log(this.getValue());
             Y.Array.forEach(this.getValue().permissions, function(perm, i) {
                 var splitedPermissions = perm.split(":");
                 Y.Array.forEach(this.permissionsCheckBoxes, function(box, i) {
@@ -144,12 +156,26 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                             value: acc,                 
                             parentEl: this.get(CONTENTBOX).getDOMNode()
                         });
-                        
+                        this.permsField.on("updated", this.sync, this);
                     }, this),
                     failure: function (id, result) {
                     }
                 }
             });            
+        },
+        sync: function(){
+            var list = this.permsField.getRoleIds();
+            
+            Y.Array.forEach(this.permsField.subFields, function(eachSubfield, i) {
+                Y.Array.forEach(eachSubfield.roleSelect.choicesList, function(role, i) {
+                    if (eachSubfield.roleSelect.getValue().id === role.value 
+                        || list.indexOf( role.value) === -1){
+                        eachSubfield.roleSelect.showChoice(role); 
+                    } else {
+                        eachSubfield.roleSelect.hideChoice(role);   
+                    }
+                }, this);
+            }, this);
         }
     });
 
@@ -165,46 +191,45 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
     };
     
     Y.extend(PermissionList, inputEx.ListField,  {
-      
-        onDelete: function(e) {
-	      
-            e.halt();
-	   
-            // Prevent removing a field if already at minItems
-            if( Y.Lang.isNumber(this.options.minItems) && this.subFields.length <= this.options.minItems ) {
-                return;
+        
+        getRoleIds: function () {
+            var list = [];
+            Y.Array.forEach(this.subFields, function(field) {
+                var roleWithPermission = field.getValue();
+                list.push(roleWithPermission.id);
+            }, this);
+            return list;
+        },
+        
+       
+        onAddButton: function() {
+            PermissionList.superclass.onAddButton.apply(this, arguments);
+            
+            var newField = this.subFields[this.subFields.length - 1],
+            filter = this.getRoleIds(), 
+            i= 0;
+            
+            while (filter.indexOf(newField.getValue().id) > -1 
+                && i < newField.roleSelect.choicesList.length) {
+                newField.setValue({
+                    id:  newField.roleSelect.choicesList[i].value
+                });
+                i++;
             }
-	      
-            // Get the wrapping div element
+        },
+
+        onDelete: function(e) {  
             var elementDiv = e.target._node.parentNode;
-	   
-            // Get the index of the subField
-            var index = -1;
-	   
+
             var subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
             for(var i = 0 ; i < this.subFields.length ; i++) {
-                if(this.subFields[i].getEl() == subFieldEl) {
-                    Y.Wegas.UserFacade.rest.sendRequest({    
-                        request: "/DeleteAllRolePermissions/" + this.subFields[i].roleSelect.getValue().id,
-                        cfg: {
-                            method: "POST"
-                        }
-                    });
-                    index = i;
+                if(this.subFields[i].getEl() == subFieldEl) {                    
+                    Y.Wegas.UserFacade.rest.deleteAllRolePermissions(this.subFields[i].roleSelect.getValue().id, this.subFields[i].options.targetEntityId);          
                     break;
                 }
             }
-	      
-            // Remove it
-            if(index != -1) {
-                this.removeElement(index);
-            }
-		
-            // Note: not very efficient
-            this.resetAllNames();      
-	
-            // Fire the updated event
-            this.fireUpdatedEvt();
+            
+            PermissionList.superclass.onDelete.apply(this, arguments);
         }
     });
     

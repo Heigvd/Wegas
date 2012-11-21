@@ -633,8 +633,16 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 },
                 on: callback
             });
+        },
+        deleteAllRolePermissions: function(roleId, entityId) {
+            this.sendRequest({    
+                request: "/DeleteAllRolePermissions/" + roleId
+                + "/" + entityId,
+                cfg: {
+                    method: "POST"
+                }
+            });
         }
-
     }, {
         NS: "rest",
         NAME: "UserDataSourceREST"
