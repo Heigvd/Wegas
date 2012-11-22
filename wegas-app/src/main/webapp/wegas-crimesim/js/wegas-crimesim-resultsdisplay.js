@@ -28,7 +28,6 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         handlers: null,
         gallery: null,
         datatable: null,
-        currentQuestionId: null,
         // *** Lifecycle Methods *** //
         initializer: function () {
             this.menu = new Y.Wegas.Menu();
@@ -61,6 +60,9 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         },
         renderDetailsPanel: function (node) {
             var columns = [{
+                    key: "choiceDescriptorId",
+                    className: "hidden"
+                },{
                     sortable: true,
                     key: "startTime",
                     //className: 'hidden',
@@ -107,6 +109,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
                     reply = questionInstance.get("replies")[j];
                     replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
+                    replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
                     status = reply.getStatus(currentTime);
 
                     replyData.evidence = questions[i].get("name");

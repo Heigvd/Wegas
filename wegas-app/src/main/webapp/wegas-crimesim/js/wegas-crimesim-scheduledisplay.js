@@ -253,6 +253,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
         },
         renderDetailsPanel: function (node) {
             var columns = [{
+                    key: "choiceDescriptorId"
+                },{
                     sortable: true,
                     key: "startTime",
                     //className: 'hidden',
@@ -272,12 +274,12 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     label: "Files",
                     allowHTML: true,
                     emptyCellValue: "no files"
-                }]
+                }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
                 isTreeble: true,
                 node: node
-            })
+            });
             this.datatable.render(this.get(CONTENTBOX).one(".schedule-analysis"));
         },
         syncDetailsPanel: function () {
@@ -296,9 +298,10 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
 
             for (i = 0; i < questionInstance.get("replies").length; i += 1) {
                 reply = questionInstance.get("replies")[i];
-                replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs()),
+                replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
+                replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
                 status = reply.getStatus(this.currentTime);
-
+                
                 if (status === 1) {
                     replyData.answer = "analysis in progress";
                 } else if (status === 2) {
@@ -308,7 +311,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     for (k = 0; k < replyData.files.length; k = k + 1) {
                         replyData.fileLinks += '<a target="_blank" href="' +
                         Y.Plugin.CRDataSource.getFullpath(replyData.files[k]) + '">' +
-                        Y.Plugin.CRDataSource.getFilename(replyData.files[k]) + '</a><br />'
+                        Y.Plugin.CRDataSource.getFilename(replyData.files[k]) + '</a><br />';
                     }
                     if (!replyData.fileLinks) {
                         delete replyData.fileLinks;
@@ -318,7 +321,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 replyData.startTime = replyData.startTime + 1;
                 this.data.push(replyData);
             }
-            this.datatable.syncUI(this.data)
+            this.datatable.syncUI(this.data);
 
             cb.one(".schedule-detail").setStyles({
                 position: 'display',
