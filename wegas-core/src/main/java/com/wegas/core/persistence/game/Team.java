@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -69,9 +69,9 @@ public class Team extends AbstractEntity {
      */
     @ManyToOne
     @NotNull
+    @JoinColumn(name = "parentgame_id")
     @XmlTransient
     //@XmlInverseReference(mappedBy = "teams")
-    @JoinColumn(name = "parentgame_id")
     @JsonBackReference(value = "game-team")
     private Game game;
 

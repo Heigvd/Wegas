@@ -69,5 +69,17 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
+    <action>
+            <actionName>CUSTOM-Run -exploded -skipTests</actionName>
+            <displayName>Run -exploded -skipTests</displayName>
+            <goals>
+                <goal>prepare-package</goal>
+                <goal>war:exploded</goal>
+            </goals>
+            <properties>
+                <netbeans.deploy>true</netbeans.deploy>
+                <skipTests>true</skipTests>
+            </properties>
+        </action>
 
 </actions>
