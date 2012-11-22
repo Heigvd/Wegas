@@ -109,7 +109,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                         failure: Y.bind( function () {
                             this.runButton.set( "label", "RUN SCRIPT" );
                             this.runButton.set( "disabled", false );
-                            alert( "Your script contians an error." );
+                            alert( "Your script contains an error." );
                         }, this )
                     }
 
@@ -198,11 +198,9 @@ YUI.add('wegas-proggame-level', function (Y) {
                 case "fire":
                     var object = this.findObjectByType( command.object ),
                     p = Y.Node.create( '<div class="missile"></div>' ),     // Create a missile
-                    source = cb.one( "." + object.id ),                               // Retrieve the source node (the object which fired)
+                    source = cb.one( "." + object.id ),                     // Retrieve the source node (the object which fired)
                     to = source.getXY();
-                    cb.one( ".object-layer" ).append( p );
-                    /// from = [ ]
-
+                    
                     switch ( object.direction ) {
                         case 1:
                             to[1] -= GRIDSIZE * 3;
@@ -228,6 +226,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                         },
                         duration: 0.5
                     });
+                    cb.one( ".object-layer" ).append( p );
                     anim.run();
                     break;
 
@@ -266,9 +265,9 @@ YUI.add('wegas-proggame-level', function (Y) {
             cb = this.get( "contentBox" ),
             acc = [ "<table>" ];
 
-            for ( i = this.get( "gridH" ) - 1 ; i >= 0 ; i = i - 1 ) {          // Render table elements
+            for ( i = this.get( "gridH" ) - 1 ; i >= 0 ; i -= 1 ) {          // Render table elements
                 acc.push( "<tr>" );
-                for ( j = 0; j < this.get( "gridW" ); j = j + 1 ) {
+                for ( j = 0; j < this.get( "gridW" ); j += 1 ) {
                     acc.push( "<td></td>" );
                 }
                 acc.push( "</tr>" );
