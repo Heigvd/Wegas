@@ -22,7 +22,7 @@ function move() {
     }
     sendMoveCommand();
 }
-function rotateLeft() {
+function rotateRight() {
     var object = findObject( cObject );
     object.direction++;
     if (object.direction > 4 ) object.direction = 1;

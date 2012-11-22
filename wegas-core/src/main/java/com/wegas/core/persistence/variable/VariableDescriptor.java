@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,7 +9,6 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.ejb.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
@@ -137,9 +136,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public void merge(AbstractEntity a) {
         super.merge(a);
         VariableDescriptor other = (VariableDescriptor) a;
-        this.defaultInstance.merge(other.getDefaultInstance());
         this.setLabel(other.getLabel());
         this.setEditorLabel(other.getEditorLabel());
+        this.defaultInstance.merge(other.getDefaultInstance());
         //this.scope.merge(vd.getScope());
     }
 

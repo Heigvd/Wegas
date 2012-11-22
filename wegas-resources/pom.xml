@@ -74,5 +74,5 @@
     <properties>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
     </properties>
-    <name>Wegas-resources</name>
+    <name>wegas-resources</name>
 </project>

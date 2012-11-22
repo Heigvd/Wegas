@@ -28,7 +28,6 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         handlers: null,
         gallery: null,
         datatable: null,
-        currentQuestionId: null,
         // *** Lifecycle Methods *** //
         initializer: function () {
             this.menu = new Y.Wegas.Menu();
@@ -44,6 +43,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+
+            this.handlers.response = // If data changes, refresh
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response",
+                this.syncUI, this);
         },
         destructor: function () {
             this.datatable.destroy();
@@ -57,6 +60,9 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         },
         renderDetailsPanel: function (node) {
             var columns = [{
+                    key: "choiceDescriptorId",
+                    className: "hidden"
+                },{
                     sortable: true,
                     key: "startTime",
                     //className: 'hidden',
@@ -72,10 +78,12 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                     label: "Analyse"
                 }, {
                     key: "answer",
-                    label: "Result"
+                    label: "Result",
+                    allowHTML: true
                 }, {
                     sortable: true,
                     key: "fileLinks",
+                    allowHTML: true,
                     label: "Files",
                     emptyCellValue: "no files"
                 }]
@@ -101,6 +109,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
                     reply = questionInstance.get("replies")[j];
                     replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
+                    replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
                     status = reply.getStatus(currentTime);
 
                     replyData.evidence = questions[i].get("name");

@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,8 +9,10 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.ejb.exception.ConstraintViolationException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.exception.WegasException;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
@@ -42,6 +44,20 @@ public class NumberInstance extends VariableInstance {
      * @param value the value to set
      */
     public void setValue(double value) {
+        try {
+            if (this.getDescriptor() instanceof NumberDescriptor) {             // @fixme (Occurs when numberinstance are used for list descriptors)
+
+                NumberDescriptor desc = (NumberDescriptor) this.getDescriptor();
+                if (( ( desc.getMaxValue() != null && value > desc.getMaxValue().doubleValue() )
+                        || ( desc.getMinValue() != null && value < desc.getMinValue().doubleValue() ) )) {
+                    throw new ConstraintViolationException(desc.getLabel() + " is out of bound.");
+                }
+            }
+        }
+        catch (NullPointerException e) {
+            // @fixme (occurs when instance is a defaultInstance)
+        }
+
         this.val = value;
     }
 
