@@ -253,7 +253,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
         },
         renderDetailsPanel: function (node) {
             var columns = [{
-                    key: "choiceDescriptorId"
+                    key: "choiceDescriptorId",
+                    className: "hidden"
                 },{
                     sortable: true,
                     key: "startTime",
