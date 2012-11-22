@@ -46,8 +46,8 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
             this.datatable.render(this.get(CONTENTBOX));
         },
         bindUI: function () {
-            if(this.dataSource){
-                this.handlers.openRow = this.dataSource.on('toggled', this.mergeColumns, this);   
+            if (this.dataSource) {
+                this.handlers.openRow = this.dataSource.on('toggled', this.mergeColumns, this);
             }
         },
         syncUI: function (data) {
@@ -139,12 +139,14 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                 return null;
             }
             //get data of the Treeble Datatable and add "kiddies" with description of the question
-            questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences");
+            questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items")[0].get("items");
             for (i = 0; i < data.length; i += 1) {
-                description = questions.get('items')[i].get('description');
-                kiddies = [{}]
-                kiddies[0][this.descriptionColumn] = description;
-                data[i].kiddies = kiddies;
+               // if (questions && questions.get('items') && questions.get('items')[i]) {
+                    description = questions[i].get('description');
+                    kiddies = [{}];
+                    kiddies[0][this.descriptionColumn] = description;
+                    data[i].kiddies = kiddies;
+                //}
             }
             return data;
         },
