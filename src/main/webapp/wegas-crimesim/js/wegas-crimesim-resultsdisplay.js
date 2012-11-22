@@ -44,6 +44,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+
+            this.handlers.response = // If data changes, refresh
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response",
+                this.syncUI, this);
         },
         destructor: function () {
             this.datatable.destroy();
@@ -72,10 +76,12 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                     label: "Analyse"
                 }, {
                     key: "answer",
-                    label: "Result"
+                    label: "Result",
+                    allowHTML: true
                 }, {
                     sortable: true,
                     key: "fileLinks",
+                    allowHTML: true,
                     label: "Files",
                     emptyCellValue: "no files"
                 }]

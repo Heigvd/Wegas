@@ -27,7 +27,8 @@
                             "children": [{
                                 "type": "NewEntityButton",
                                 "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
-                                "targetClass": "GameModel"
+                                "targetClass": "GameModel",
+                                "dataSource": "GameModel"
                             }]
                         }
                     }]
@@ -54,6 +55,7 @@
                                 "type": "NewEntityButton",
                                 "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
                                 "targetClass": "Game",
+                                "dataSource": "Game",
                                 "disabled": true
                             }]
                         }

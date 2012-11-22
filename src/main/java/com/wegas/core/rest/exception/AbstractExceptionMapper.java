@@ -10,6 +10,7 @@
 package com.wegas.core.rest.exception;
 
 import com.wegas.core.ejb.RequestManagerFacade;
+import com.wegas.core.ejb.exception.ConstraintViolationException;
 import com.wegas.exception.WegasException;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -17,8 +18,6 @@ import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.slf4j.Logger;
@@ -59,9 +58,14 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof javax.script.ScriptException) {
             logger.error(exception.getLocalizedMessage());
             javax.script.ScriptException scriptException = (javax.script.ScriptException) exception;
-            return Response.status(
-                    Response.Status.BAD_REQUEST).entity(
-                    new ExceptionWrapper("400", scriptException.getClass(), scriptException.getLocalizedMessage())).build();
+
+            if (scriptException.getCause() instanceof ConstraintViolationException) {
+                return processException(scriptException.getCause());
+            } else {
+                return Response.status(
+                        Response.Status.BAD_REQUEST).entity(
+                        new ExceptionWrapper("400", scriptException.getClass(), scriptException.getLocalizedMessage())).build();
+            }
 
         } else if (exception instanceof SQLException) {
             logger.error(exception.getLocalizedMessage());
@@ -77,13 +81,13 @@ public abstract class AbstractExceptionMapper {
                     Response.Status.BAD_REQUEST).entity(
                     new ExceptionWrapper("400", wegasException.getClass(), wegasException.getLocalizedMessage())).build();
 
-        } else if (exception instanceof ConstraintViolationException) {
-            ConstraintViolationException constraintViolationException = (ConstraintViolationException) exception;
+        } else if (exception instanceof javax.validation.ConstraintViolationException) {
+            javax.validation.ConstraintViolationException constraintViolationException = (javax.validation.ConstraintViolationException) exception;
 
             String msg = RequestManagerFacade.lookup().getBundle("com.wegas.app.errors").getString("constraint"); //internationalised error (sample)
             Iterator it = constraintViolationException.getConstraintViolations().iterator();
             while (it.hasNext()) {
-                ConstraintViolation violation = (ConstraintViolation) it.next();
+                javax.validation.ConstraintViolation violation = (javax.validation.ConstraintViolation) it.next();
                 msg += "\n" + violation.getLeafBean() + ":" + violation.getRootBean() + violation.getPropertyPath();
             }
             logger.error(msg);

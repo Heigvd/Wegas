@@ -264,11 +264,13 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                     label: "Analyse"
                 }, {
                     key: "answer",
-                    label: "Result"
+                    label: "Result",
+                    allowHTML: true
                 }, {
                     sortable: true,
                     key: "fileLinks",
                     label: "Files",
+                    allowHTML: true,
                     emptyCellValue: "no files"
                 }]
             this.datatable = new Y.Wegas.CrimeSimTreeble({

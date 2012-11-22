@@ -114,15 +114,15 @@ public class ScriptFacade {
         catch (ObserverException ex) {
             throw (WegasException) ex.getCause();
         }
-        finally {                                                             //Try finishing evaluation
-            for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
+        finally {                                                               //Try finishing evaluation
+            for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
                 engine.put(arg.getKey(), arg.getValue());
             }
 
             // @fixme test the most performant version
 
             String script = "";
-            for (Script s : scripts) {                                              // Evaluate each script
+            for (Script s : scripts) {                                          // Evaluate each script
                 try {
                     script += s.getContent() + ";";
                 }
@@ -139,7 +139,7 @@ public class ScriptFacade {
                 throw new ScriptException(ex.getMessage(), script, ex.getLineNumber());
             }
 
-            em.flush();                                                             // Commit the transaction
+            em.flush();                                                         // Commit the transaction
             requestManager.commit();
         }
         return result;
@@ -157,12 +157,12 @@ public class ScriptFacade {
         List<String> errorVariable = new ArrayList<>();
 
         for (Entry<String, String> arg :
-                evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the arguments
+                evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
             try {
                 evt.getEngine().eval(arg.getValue());
             }
             catch (ScriptException ex) {
-                logger.warn("{} in\n{}", ex.getMessage(), arg.getValue());
+                logger.warn("Error injecting script library: {} in\n{}", ex.getMessage(), arg.getValue());
                 throw new ScriptException(ex.getMessage(), arg.getValue(), ex.getLineNumber());
             }
         }

@@ -42,10 +42,10 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      */
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
         NumberDescriptor other = (NumberDescriptor) a;
         this.setMinValue(other.getMinValue());
         this.setMaxValue(other.getMaxValue());
+        super.merge(a);
     }
 
     /**
