@@ -52,7 +52,7 @@
         <war.plugin.version>2.3</war.plugin.version>
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
         <build.optimize>false</build.optimize>
-        <resources.local>false</resources.local>
+        <resources.local>true</resources.local>
 
         <skipTests>false</skipTests>
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
@@ -63,12 +63,7 @@
             <id>release-profile</id>
             <properties>
                 <build.optimize>true</build.optimize>
-            </properties>
-        </profile>
-        <profile>
-            <id>light-profile</id>
-            <properties>
-                <resources.local>true</resources.local>
+                <resources.local>false</resources.local>
             </properties>
         </profile>
     </profiles>
