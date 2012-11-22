@@ -5,9 +5,7 @@
             Update 1, statemachine "enable", remove "cost" on choiceDescriptor
         </comment>
         <addColumn tableName="fsminstance">
-            <column name="enabled" type="bool"/>
+            <column name="enabled" type="bool" defaultValue="1" />
         </addColumn>
-        <dropNotNullConstraint columnDataType="int8" columnName="parentgame_id" tableName="team"/>
-        <dropColumn columnName="cost" tableName="mcqchoicedescriptor"/>
     </changeSet>
 </databaseChangeLog>
