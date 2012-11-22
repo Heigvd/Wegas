@@ -245,15 +245,19 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: "string",
                 optional: true,
                 _inputex: {
-                    description: "Available for crimesim evidences"
+                    description: "Only for crimesim evidences"
                 }
             },
-            cost: {
+            
+            /*cost: {
                 type: "string",
+                optional: true,
+                value: 0,
                 _inputex: {
-                    description: "Available for crimesim evidences"
+                    description: "Only for crimesim evidences"
                 }
-            },
+            },*/
+
             //feedback: {
             //    type: 'string',
             //    format: "html",
@@ -289,6 +293,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     method: "post",
                     attributeKey: "results"
                 }
+            }]
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
             }]
         }, {
             type: "DeleteEntityButton"
@@ -428,6 +438,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
         },
         EDITMENU: [{
             type: "EditEntityButton"
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
         }, {
             type: "DeleteEntityButton"
         }],

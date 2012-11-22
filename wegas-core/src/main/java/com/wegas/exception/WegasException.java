@@ -1,6 +1,5 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -10,11 +9,14 @@
  */
 package com.wegas.exception;
 
+import javax.ejb.ApplicationException;
+
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class WegasException extends Exception {
+@ApplicationException(rollback=false)
+public class WegasException extends RuntimeException {
 
     public WegasException() {
     }
@@ -26,5 +28,5 @@ public class WegasException extends Exception {
     public WegasException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }

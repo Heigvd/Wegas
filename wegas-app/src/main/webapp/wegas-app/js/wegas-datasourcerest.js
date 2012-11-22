@@ -762,7 +762,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 },
                 callback: {
                     success: Y.bind(function(e) {
-                        delete this.getCache(e.data.getResponseHeader("Page"));
+                        delete this.get("host").data[e.data.getResponseHeader("Page")];
                     }, this)
                 }
             });

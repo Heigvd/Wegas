@@ -73,7 +73,8 @@
                                     "children": [{
                                         "type": "NewEntityButton",
                                         "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                        "targetClass": "Role"
+                                        "targetClass": "Role",
+                                        "dataSource": "Role"
                                     }]
                                 }
                             }]

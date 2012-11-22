@@ -30,7 +30,7 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         + '<div class="yui3-u left">'
         + '<div class="inventory"><h1>Inventory</h1><i><center style="padding-top:40px;">empty</center></i></div>'
-        + '<div class="api"><h1>Api</h1>move()<br />rotateLeft()<br />rotateRight()<br />fire()<br /></div>'
+        + '<div class="api"><h1>Api</h1></div>'
         + '</div>'
 
         + '<div class="yui3-u right">'
@@ -54,6 +54,8 @@ YUI.add('wegas-proggame-level', function (Y) {
             cb.one( ".ai" ).append( Y.Wegas.App.nl2br(this.get( "ai" )) );
             cb.one( ".topcenter h1" ).setHTML(this.get( "label" ));
 
+            cb.one(".api").append(this.get("api")+"*");
+
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one( ".code" ),
                 name: 'text',
@@ -73,14 +75,14 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         },
         bindUI: function () {
-            Y.Wegas.app.VariableDescriptorFacade.after( "response",       // If data changes, refresh
+            Y.Wegas.app.VariableDescriptorFacade.after( "response",             // If data changes, refresh
                 this.syncUI, this);
 
             Y.Wegas.app.after( 'currentPlayerChange', this.syncUI, this);       // If current user changes, refresh (editor only)
 
             this.runButton.on( "click" , function () {
 
-                this.display.set( "objects", this.get( "objects" ));         // Reset the display to default
+                this.display.set( "objects", this.get( "objects" ));            // Reset the display to default
                 this.display.syncUI();
                 this.get( CONTENTBOX ).one( ".debugger" ).setHTML( "<h1>Debugger</h1>" );
                 this.runButton.set( "label", "RUNNING..." );
@@ -109,7 +111,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                         failure: Y.bind( function () {
                             this.runButton.set( "label", "RUN SCRIPT" );
                             this.runButton.set( "disabled", false );
-                            alert( "Your script contians an error." );
+                            alert( "Your script contains an error." );
                         }, this )
                     }
 
@@ -168,11 +170,37 @@ YUI.add('wegas-proggame-level', function (Y) {
 
     }, {
         ATTRS : {
-            objects: {},
-            ai: {},
-            winningCondition: {},
-            onWin: {},
-            label: {}
+            label: {
+                type: "string"
+            },
+            objects: {
+                _inputex: {
+                    _type: "object"
+                }
+            },
+            api: {
+                value: []
+            },
+            ai: {
+                type: "string",
+                format: "text"
+//                _inputex: {
+//                    _type: "ace"
+//                }
+            },
+            winningCondition: {
+                type: "string",
+                format: "text"
+//                _inputex: {
+//                    _type: "ace"
+//                }
+            },
+            onWin: {
+                type: "string",
+                _inputex: {
+                    _type: "ace"
+                }
+            }
         }
     });
 
@@ -198,11 +226,9 @@ YUI.add('wegas-proggame-level', function (Y) {
                 case "fire":
                     var object = this.findObjectByType( command.object ),
                     p = Y.Node.create( '<div class="missile"></div>' ),     // Create a missile
-                    source = cb.one( "." + object.id ),                               // Retrieve the source node (the object which fired)
+                    source = cb.one( "." + object.id ),                     // Retrieve the source node (the object which fired)
                     to = source.getXY();
-                    cb.one( ".object-layer" ).append( p );
-                    /// from = [ ]
-
+                    
                     switch ( object.direction ) {
                         case 1:
                             to[1] -= GRIDSIZE * 3;
@@ -228,6 +254,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                         },
                         duration: 0.5
                     });
+                    cb.one( ".object-layer" ).append( p );
                     anim.run();
                     break;
 
@@ -266,9 +293,9 @@ YUI.add('wegas-proggame-level', function (Y) {
             cb = this.get( "contentBox" ),
             acc = [ "<table>" ];
 
-            for ( i = this.get( "gridH" ) - 1 ; i >= 0 ; i = i - 1 ) {          // Render table elements
+            for ( i = this.get( "gridH" ) - 1 ; i >= 0 ; i -= 1 ) {          // Render table elements
                 acc.push( "<tr>" );
-                for ( j = 0; j < this.get( "gridW" ); j = j + 1 ) {
+                for ( j = 0; j < this.get( "gridW" ); j += 1 ) {
                     acc.push( "<td></td>" );
                 }
                 acc.push( "</tr>" );
