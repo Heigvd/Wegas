@@ -87,7 +87,7 @@
                     <artifactId>maven-war-plugin</artifactId>
                     <version>${war.plugin.version}</version>
                     <configuration>
-                        <packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>
+                        <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                         <warName>Wegas</warName>
 
@@ -98,11 +98,12 @@
                                 <artifactId>wegas-resources</artifactId>
                                 <type>war</type>
                                 <includes>
-                                    <include>lib/**/*-min.js</include>
+                                    <include>lib/**</include>
+<!--                                    <include>lib/**/*-min.js</include>
                                     <include>lib/**/*_*.js</include>
                                     <include>lib/**/*.css</include>
                                     <include>lib/**/*.gif</include>
-                                    <include>lib/**/*.png</include>
+                                    <include>lib/**/*.png</include>-->
                                 </includes>
 <!--                                <excludes>
                                     <exclude>lib/yui3/**</exclude>
