@@ -41,12 +41,11 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         }
     });
-
     /*
      * FSMDescriptor Entity
      */
     Y.Wegas.persistence.FSMDescriptor = Y.Base.create("FSMDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
-        // *** Lifecycle methods *** //
+// *** Lifecycle methods *** //
         /**
          * Find a transition by it's id
          * @param {Integer} id The queried transition's id
@@ -82,7 +81,6 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 fullHistory.push(this.getState(tmpTransition.get("nextStateId")));
             }
             return fullHistory;
-
         },
         // *** Private methods *** //
         getCurrentState: function() {
@@ -255,18 +253,39 @@ Y.add("wegas-statemachine-entities", function(Y) {
                     }]
             }, {
                 type: "DeleteEntityButton"
-            }]
+            }],
+        METHODS: {
+            enable: {
+                arguments: [{
+                        type: "hidden",
+                        value: "self"
+                    }]
+            },
+            disable: {
+                arguments: [{
+                        type: "hidden",
+                        value: "self"
+                    }]
+            },
+            isEnabled: {
+                label: "is enabled",
+                arguments: [{
+                        type: "hidden",
+                        value: "self"
+                    }],
+                returns: "boolean"
+            }
+        }
     });
-
     /*
      * State Entity
      */
     Y.Wegas.persistence.State = Y.Base.create("State", Y.Wegas.persistence.Entity, [], {
-        // *** Lifecycle methods *** //
+// *** Lifecycle methods *** //
         initializer: function() {
         }
 
-        // *** Private methods *** //
+// *** Private methods *** //
     }, {
         ATTRS: {
             "@class": {
@@ -291,7 +310,6 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         }
     });
-
     /*
      * TransitionDescriptor Entity
      */
@@ -311,8 +329,6 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         }
     });
-
-
     /**************************/
     /******** TRIGGER *********/
     /**************************/
@@ -390,7 +406,6 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 type: "DeleteEntityButton"
             }]
     });
-
     /*
      * TriggerInstance Entity
      */
@@ -409,7 +424,6 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         }
     });
-
     /**********************************/
     /******** DIALOGUE ENTITY *********/
     /**********************************/
@@ -448,7 +462,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
                             on: callbacks
                         });
                     } catch (e) {
-                        //TODO : that
+//TODO : that
                     }
                     return true;
                 }
@@ -492,7 +506,6 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         }
     });
-
     /**
      * DialogueState Entity
      */
@@ -529,7 +542,6 @@ Y.add("wegas-statemachine-entities", function(Y) {
                         }, this, [ctrlObj, transitions[i]]);
                         ctrlObj.toEval += 1;
                         transitions[i].get("triggerCondition").localEval();
-
                     }
                 }
             }
@@ -584,5 +596,4 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         }
     });
-
 });
