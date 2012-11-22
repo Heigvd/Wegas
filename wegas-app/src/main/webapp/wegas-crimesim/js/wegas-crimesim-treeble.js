@@ -134,19 +134,19 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
             }, this);
         },
         getTreebleDatas: function () {
-            var i, data = this.data.slice(0), questions, description, kiddies;
+            var i, j, data = this.data.slice(0), reply,
+                    description, kiddies;
             if (!data) {
                 return null;
             }
-            //get data of the Treeble Datatable and add "kiddies" with description of the question
-            questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items")[0].get("items");
             for (i = 0; i < data.length; i += 1) {
-               // if (questions && questions.get('items') && questions.get('items')[i]) {
-                    description = questions[i].get('description');
+                reply = Y.Wegas.VariableDescriptorFacade.rest.findById(data[i].choiceDescriptorId);
+                if (reply && reply.get('description')) {
+                    description = reply.get('description');
                     kiddies = [{}];
                     kiddies[0][this.descriptionColumn] = description;
                     data[i].kiddies = kiddies;
-                //}
+                }
             }
             return data;
         },
