@@ -386,7 +386,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             widgetsUri: {
                 type: "string",
-                choices: [{
+               /* choices: [{
                     value: "wegas-leaderway/db/wegas-leaderway-pages.json",
                     label: "Leaderway"
                 }, {
@@ -395,7 +395,7 @@ YUI.add('wegas-entity', function (Y) {
                 }, {
                     value: "wegas-mmo/db/wegas-leaderway-mmo.json",
                     label: "Programming Game"
-                }],
+                }],*/
                 _inputex: {
                     label: "Layout"
                 }

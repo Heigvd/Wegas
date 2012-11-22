@@ -484,7 +484,7 @@ YUI().use(function(Y) {
             ace: {
                 base: './lib/ace/',
                 root: '/lib/ace/',
-                combine: true,
+                combine: false,
                 modules: {
                     'ace': {
                         path: 'src/ace.js'

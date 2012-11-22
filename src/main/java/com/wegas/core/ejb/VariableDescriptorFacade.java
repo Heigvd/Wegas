@@ -17,6 +17,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -74,6 +75,27 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         parentGameModel.addVariableDescriptor(variableDescriptor);
     }
 
+    public ListDescriptor createChild(Long variableDescriptorId, VariableDescriptor entity) {
+        return this.createChild((ListDescriptor) this.find(variableDescriptorId), entity);
+    }
+
+    public ListDescriptor createChild(ListDescriptor listDescriptor, VariableDescriptor entity) {
+        Iterator<VariableDescriptor> iterator = listDescriptor.getItems().iterator();
+        List<String> usedNames = new ArrayList<>();
+        while (iterator.hasNext()) {
+            usedNames.add(iterator.next().getName());
+        }
+        if (entity.getName().isEmpty() || entity.getName() == null) {
+            entity.setName(Helper.buildUniqueName(entity.getLabel(), usedNames));
+        }
+        //build a unique name
+        if (usedNames.contains(entity.getName())) {
+            entity.setName(Helper.buildUniqueName(entity.getName(), usedNames));
+        }
+        listDescriptor.addItem(entity);
+        return listDescriptor;
+    }
+
     /**
      *
      * @param gameModelId
@@ -112,14 +134,14 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
             }
         }
 
-        this.create(oldEntity.getGameModel(), newEntity);                       // Store the newly created entity in db
 
         try {                                                                   // If the duplicated var is in a List
             ListDescriptor parentVar = this.findParentListDescriptor(oldEntity);// Add the entity to this list
-            parentVar.addItem(newEntity);
+            this.createChild(parentVar, newEntity);
             return parentVar;
         }
         catch (NoResultException e) {
+            this.create(oldEntity.getGameModel(), newEntity);                   // Store the newly created entity in db
             return newEntity;                                                   // Otherwise return it directly
         }
     }

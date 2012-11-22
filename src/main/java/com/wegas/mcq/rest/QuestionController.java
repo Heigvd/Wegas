@@ -57,8 +57,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws ScriptException, WegasException {
 
-        Reply reply =
-                questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
+        Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
         //Reply reply =
         //    questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), new Long(0));
 
