@@ -329,10 +329,32 @@ body {
 .wegas-pageeditor-designmode .wegas-widget {
     box-shadow: 0px 0px 3px black inset;
 }
+.wegas-pageeditor-designmode .wegas-widget::before{
+    font-style: normal;
+    padding-top: 0px !important;
+    margin: 0px !important;
+    font-size: 8pt;
+    width: 100% !important;
+    text-align: center;
+    line-height: normal;
+    letter-spacing: normal;
+    font-weight: normal;
+    text-shadow: none;
+    font-variant: small-caps;
+    font-family: sans-serif;
+    color: orangered;
+    background-color: rgba(0,0,0,0.6);
+    box-shadow: 2px 2px 5px black;
+    content: "[Edit me] ";
+}
 .wegas-pageeditor-overlay-hidden {
     display: none;
 }
 .wegas-pageeditor-overlay {
+    font-size: 14pt;
+    font-weight: bold;
+    color: white;
+    text-align: center;
     position: absolute;
     pointer-events: none;
 }
