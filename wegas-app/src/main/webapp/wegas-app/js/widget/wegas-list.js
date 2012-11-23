@@ -49,12 +49,16 @@ YUI.add('wegas-list', function (Y) {
     }, {
         ATTRS : {
             defaultChildType: {
-                value: "Text"
+                value: "Text",
+                "transient": true
             },
             children: {
+                "transient": true
             },
             direction: {
-                value: 'vertical'
+                value: 'vertical',
+                type: "string",
+                choices: [{value:'vertical'},{value: 'horizontal'}]
             },
             multiple: {
                 "transient": true
