@@ -179,15 +179,20 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             Y.log("generateExpression(" + expression.type + ")");
             switch (expression.type) {
 
+                case "Identifier":
+                    return expression.value;
+
                 case "Literal":
-                    // @fixme GOTCHA catch for the true hack in condition
-                    return [];
+                    return expression.raw;
+
+                case "UnaryExpression":
+                    return expression.operator + this.generateExpression(expression.argument);
 
                 case "BinaryExpression":
                     var vdSelect = this.generateExpression(expression.left)[0], args = [];
                     vdSelect.type = "variabledescriptorcondition";
                     vdSelect.operator = expression.operator;
-                    vdSelect.rightValue = expression.right.raw;
+                    vdSelect.rightValue = this.generateExpression(expression.right);
                     return [vdSelect];
 
                 case "LogicalExpression":
@@ -218,8 +223,8 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                             var vdSelect = this.generateExpression(expression.callee.object), args = [];
 
                             Y.Array.each(expression.arguments, function (i) {
-                                args.push(i.value || i.name);
-                            });
+                                args.push(this.generateExpression(i));
+                            }, this);
                             Y.mix(vdSelect, {
                                 //type: "variabledescriptormethodselect",
                                 //object: this.generateExpression(expression.callee.object),
@@ -288,7 +293,6 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                     methods[i].value = i;
                     methods[i].label =  methods[i].label || i;
                     ret.push(methods[i]);
-
                     if (i === this.options.method) {
                         this.options.methodCfg = methods[i];
                     }
@@ -334,6 +338,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             if (Y.Lang.isNumber(fieldValue)) {                                  // value is an number, it is the new current entity's id'
                 this.entityId = fieldValue;
                 this.options.method = null;
+                this.options.methodCfg = null;
                 this.options.arguments = null;
                 this.syncUI();
             } else if (Y.Lang.isString(fieldValue)) {                           // The id is a string, it's the new current mehtod
