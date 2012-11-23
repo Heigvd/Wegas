@@ -14,7 +14,8 @@
         <actionName>CUSTOM-Run -skip-test</actionName>
         <displayName>Run -skip-test</displayName>
         <goals>
-            <goal>package</goal>
+            <goal>prepare-package</goal>
+            <goal>war:exploded</goal>
         </goals>
         <properties>
             <skipTests>true</skipTests>
