@@ -635,7 +635,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             });
         },
         deleteAllRolePermissions: function(roleId, entityId) {
-            this.sendRequest({    
+            this.sendRequest({
                 request: "/DeleteAllRolePermissions/" + roleId
                 + "/" + entityId,
                 cfg: {

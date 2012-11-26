@@ -219,7 +219,7 @@ YUI.add('wegas-entity', function (Y) {
 
 
             if (o["@class"]) {
-                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity;
+                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.Entity;
 
             } else if (o.type) {
                 classDef = Y.Wegas.persistence[o.type] || Y.Wegas.persistence.WidgetEntity;
