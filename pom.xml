@@ -53,8 +53,7 @@
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
         <build.optimize>false</build.optimize>
         <resources.local>true</resources.local>
-
-        <skipTests>false</skipTests>
+        <skipTests>true</skipTests>
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
     </properties>

@@ -17,7 +17,10 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
 
     var inputEx = Y.inputEx,
     escapeJSString = function(str) {
-        return str.replace('"', '\\"');
+        return str.replace('"', '\\"').replace("\n", "\\n");
+    },
+    unesacapeJSString = function(str) {
+        return str.replace('\\"', '"');
     };
 
     inputEx.WysiwygScript = function (options) {
@@ -108,7 +111,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
 
             this.options.mode = mode;
             this.viewSrc.set("selected", wysiwygmode ? 0 : 1);
-            this.wrapEl.style["display"] = (wysiwygmode) ? "none" : "block";
+            this.wrapEl.style.display = (wysiwygmode) ? "none" : "block";
 
             if (wysiwygmode) {
                 this.exprList.show();
@@ -179,63 +182,64 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             Y.log("generateExpression(" + expression.type + ")");
             switch (expression.type) {
 
+            case "Identifier":
+                return expression.name;
+
+            case "Literal":
+                return expression.value;
+                //return unesacapeJSString(expression.raw);
+
+            case "UnaryExpression":
+                return expression.operator + this.generateExpression(expression.argument);
+
+            case "BinaryExpression":
+                var vdSelect = this.generateExpression(expression.left)[0], args = [];
+                vdSelect.type = "variabledescriptorcondition";
+                vdSelect.operator = expression.operator;
+                vdSelect.rightValue = this.generateExpression(expression.right);
+                return [vdSelect];
+
+            case "LogicalExpression":
+                //return [{
+                //    type: "inputlist",
+                //    fields: this.generateExpression(expression.left).concat(this.generateExpression(expression.right),
+                //    useButtons: true,
+                //    addType: "variabledescriptorcondition"
+                //}]
+                return this.generateExpression(expression.left).concat(this.generateExpression(expression.right));
+
+            case "CallExpression":
+                switch (expression.callee.object.type) {
                 case "Identifier":
-                    return expression.value;
-
-                case "Literal":
-                    return expression.raw;
-
-                case "UnaryExpression":
-                    return expression.operator + this.generateExpression(expression.argument);
-
-                case "BinaryExpression":
-                    var vdSelect = this.generateExpression(expression.left)[0], args = [];
-                    vdSelect.type = "variabledescriptorcondition";
-                    vdSelect.operator = expression.operator;
-                    vdSelect.rightValue = this.generateExpression(expression.right);
-                    return [vdSelect];
-
-                case "LogicalExpression":
-                    //return [{
-                    //    type: "inputlist",
-                    //    fields: this.generateExpression(expression.left).concat(this.generateExpression(expression.right),
-                    //    useButtons: true,
-                    //    addType: "variabledescriptorcondition"
-                    //}]
-                    return this.generateExpression(expression.left).concat(this.generateExpression(expression.right));
-
-                case "CallExpression":
-                    switch (expression.callee.object.type) {
-                        case "Identifier":
-                            switch (expression.callee.object.name) {
-                                case "VariableDescriptorFacade":
-                                    return {
-                                        type: "variabledescriptorsetter",
-                                        value: expression.arguments[0].value
-                                    };
-                            }
-                            break;
-                        default:
-                            //return new MethodSelect({
-                            //    object: this.generateExpression(expression.callee.object),
-                            //    name: expression.callee.property.value,
-                            //    arguments: expression.callee.arguments
-                            var vdSelect = this.generateExpression(expression.callee.object), args = [];
-
-                            Y.Array.each(expression.arguments, function (i) {
-                                args.push(this.generateExpression(i));
-                            }, this);
-                            Y.mix(vdSelect, {
-                                //type: "variabledescriptormethodselect",
-                                //object: this.generateExpression(expression.callee.object),
-                                //fields: [],
-                                method: expression.callee.property.name,
-                                arguments: args
-
-                            });
-                            return [vdSelect];
+                    switch (expression.callee.object.name) {
+                        case "VariableDescriptorFacade":
+                            return {
+                                type: "variabledescriptorsetter",
+                                value: expression.arguments[0].value
+                            };
                     }
                     break;
+                default:
+                    //return new MethodSelect({
+                    //    object: this.generateExpression(expression.callee.object),
+                    //    name: expression.callee.property.value,
+                    //    arguments: expression.callee.arguments
+                    var vdSelect = this.generateExpression(expression.callee.object), args = [];
+
+                    Y.Array.each(expression.arguments, function (i) {
+                        args.push(this.generateExpression(i));
+                    }, this);
+                    Y.mix(vdSelect, {
+                        //type: "variabledescriptormethodselect",
+                        //object: this.generateExpression(expression.callee.object),
+                        //fields: [],
+                        method: expression.callee.property.name,
+                        arguments: args
+
+                    });
+                    return [vdSelect];
+                }
+                break;
             }
             throw new Error("Unable to parse expression.");
         }
@@ -388,7 +392,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             var i, choices = [];
 
             if (items) {
-                for (i = 0; i < items.length; i++) {
+                for (i = 0; i < items.length; i += 1) {
                     choices.push({
                         value: items[i].get("id"),
                         label: items[i].get("editorLabel")
@@ -475,8 +479,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                 }
             }
             return "VariableDescriptorFacade.find(" + this.inputs[l - this.argsOffset - 2].getValue() + ")" +
-            "." + method +
-            "(" + args.join(", ") + ")";
+            "." + method + "(" + args.join(", ") + ")";
         },
         /**
          * Generate choices for a given entity: add it's methods and then pass up to parent class
@@ -539,7 +542,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             this.options.rightValue = options.rightValue || 0;
         },
 
-        getValue: function() {
+        getValue: function () {
             var value = VariableDescriptorCondition.superclass.getValue.call(this);
 
             if (this.argsOffset > 1) {
@@ -572,16 +575,16 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
                         choices: [{
                             value: "===",
                             label: "equals"
-                        },{
+                        }, {
                             value: ">",
                             label: "is greater than"
-                        },{
+                        }, {
                             value: "<",
                             label: "is smaller than"
-                        },{
+                        }, {
                             value: ">=",
                             label: "is greater or equal to"
-                        },{
+                        }, {
                             value: "<=",
                             label: "is smaller or equal to"
                         }]

@@ -67,7 +67,7 @@
                                     <include>lib/**/*.png</include>
                                 </includes>
                                 <excludes>
-                                    <exclude>lib/yui3/**</exclude>
+                                    <!--<exclude>lib/yui3/**</exclude>-->
                                 </excludes>
                             </overlay>
                         </overlays>
