@@ -232,6 +232,12 @@
                 "type": "Tab",
                 "label": "Preview",
                 "children": [{
+                    "type": "Test2"
+                }]
+            },{
+                "type": "Tab",
+                "label": "Preview",
+                "children": [{
                     "type": "PageLoader",
                     "pageLoaderId": "previewPageLoader",
                     "defaultPageId": 1,

@@ -79,6 +79,7 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         },
         getValue: function () {
             this.value.id = this.roleSelect.getValue().id;
+            console.log(this.roleSelect.getValue());
             return this.value;
         },
         setValue: function (val, sendUpdatedEvent) {
@@ -195,6 +196,7 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         getRoleIds: function () {
             var list = [];
             Y.Array.forEach(this.subFields, function(field) {
+                console.log(field.getValue());
                 var roleWithPermission = field.getValue();
                 list.push(roleWithPermission.id);
             }, this);
