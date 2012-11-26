@@ -551,6 +551,9 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
             return value;
         },
 
+        /**
+         * Overrid to prevent
+         */
         onChange: function (fieldValue, fieldInstance) {
             VariableDescriptorCondition.superclass.onChange.apply(this, arguments);
         },
