@@ -1,0 +1,298 @@
+{"1":{
+        "id": 1,
+        "label": "Main layout",
+        "type": "List",
+        "cssClass": "layout",
+        "children": [{
+                "label": "indicateurs",
+                "type": "List",
+                "cssClass": "leaderway-indicators",
+                "direction": "horizontal",
+                "children": [{
+                        "type": "VariableDisplay",
+                        "label": "Semaine N° : ",
+                        "cssClass":"indicators-fraction",
+                        "view": "fraction",
+                        "variable": {
+                            "name": "week"
+                        }
+                    },{
+                        "type": "Button",
+                        "label": ">",
+                        "tooltip":"Semaine suivante",
+                        "plugins": [{
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "onClick": "importPackage(com.wegas.core.script);\nthis.finishCurrentWeek()\n"
+                                }
+                            }]
+                    },{
+                        "type": "VariableDisplay",
+                        "label": "Budget : ",
+                        "cssClass":"indicators-text",
+                        "view": "text",
+                        "variable": {
+                            "name": "budget"
+                        }
+                    },{
+                        "type": "VariableDisplay",
+                        "cssClass":"indicators-gauge",
+                        "label": "Motivation générale",
+                        "variable": {
+                            "name": "teamMotivation"
+                        },
+                        "view": "box"
+                    },
+                    {
+                        "type": "VariableDisplay",
+                        "cssClass":"indicators-gauge",
+                        "label": "Satisfaction client",
+                        "variable": {
+                            "name": "clientsSatisfaction"
+                        },
+                        "view": "box"
+                    },
+                    {
+                        "type": "VariableDisplay",
+                        "cssClass":"indicators-block",
+                        "label": "Action restante",
+                        "variable": {
+                            "name": "actions"
+                        },
+                        "view": "box"
+                    }]
+            },
+            {
+                "label": "Menu",
+                "type": "List",
+                "cssClass": "leaderway-menu",
+                "direction": "horizontal",
+                "children": [
+                    {
+                        "type": "Button",
+                        "cssClass": "menu-folder",
+                        "tooltip":"Dossiers des membres",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 2,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    }, {
+                        "type": "Button",
+                        "cssClass": "menu-tasklist",
+                        "tooltip":"Liste des mandats",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 4,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },
+                    {
+                        "type": "Button",
+                        "cssClass": "menu-email",
+                        "tooltip":"Réception e-mail",
+                        "plugins": [{
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": "inbox"
+                                }
+                            },{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 5,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },
+                    {
+                        "type": "Button",
+                        "cssClass": "menu-score",
+                        "tooltip":"Score des entreprises",
+                        "plugins": [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 6,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }]
+                    },
+                    {
+                        "type": "LoginButton",
+                        "cssClass": "menu-loginbutton",
+                        "tooltip": "Logout"
+                    }]
+            },
+            {
+                "type": "Text",
+                "cssClass": "leaderway-feedback",
+                "content": "<p></p>"
+            },
+            {
+                "type": "PageLoader",
+                "pageLoaderId": "maindisplayarea",
+                "cssClass": "body",
+                "defaultPageId": 2
+            }]
+    },
+    "2":{
+        "id":2,
+        "label":"Folder",
+        "type":"LWFolder",
+        "cssClass":"leaderway-folder",
+        "listVariables": "resources",
+        "searchInProperties": [
+            "properties",
+            "skillset"
+        ],
+        "selectors": [
+            {
+                "type": "image",
+                "name": "picture",
+                "height": "35",
+                "width": "35"
+            }, {
+                "name": "surname"
+            }
+        ],
+        "informations": [
+            {
+                "name": "Information personnelles : ",
+                "className": "titre"
+            }, {
+                "type": "image",
+                "name": "picture",
+                "height": "150",
+                "width": "150",
+                "className": "picture"
+            }, {
+                "name": "name",
+                "label": "Nom : "
+            }, {
+                "name": "surname",
+                "label": "Prénom : "
+            }, {
+                "name": "salary",
+                "label": "Salaire : "
+            }, {
+                "name": "Occupation : ",
+                "className": "titre"
+            }, {
+                "name": "<div></div>",
+                "className": "occupation"
+            }, {
+                "name": "Description : ",
+                "className": "titre"
+            }, {
+                "name": "description"
+            }, {
+                "name": "Niveau de Leadership : ",
+                "className": "titre"
+            }, {
+                "type": "position",
+                "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 5 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 4 : Elle a conscience de l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 3 : Elle sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li><li>Niveau 2 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 1 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li></ul>",
+                "selector": "li",
+                "name": "leadershipLevel",
+                "invert": "true"
+            }, {
+                "name": "Conditions : ",
+                "className": "titre"
+            }, {
+                "type": "valueBox",
+                "name": "moral",
+                "label": "Moral : ",
+                "maxValue": "100"
+            }, {
+                "type": "valueBox",
+                "name": "confidence",
+                "label": "Confiance : ",
+                "maxValue": "100"
+            }, {
+                "name": "Compétences : ",
+                "className": "titre"
+            }, {
+                "type": "valueBox",
+                "name": "Négociation",
+                "label": "Négociation : ",
+                "maxValue": "100"
+            }, {
+                "type": "valueBox",
+                "name": "Développement de base de données",
+                "label": "Développement de base de données : ",
+                "maxValue": "100"
+            }, {
+                "type": "valueBox",
+                "name": "Développement logiciel",
+                "label": "Développement logiciel : ",
+                "maxValue": "100"
+            }, {
+                "type": "valueBox",
+                "name": "Modélisation des traitements",
+                "label": "Modélisation des traitements : ",
+                "maxValue": "100"
+            }, {
+                "type": "valueBox",
+                "name": "Langages Web",
+                "label": "Langages Web : ",
+                "maxValue": "100"
+            }, {
+                "type": "valueBox",
+                "name": "Design graphique",
+                "label": "Design graphique : ",
+                "maxValue": "100"
+            }
+        ],
+        "hiddenVariables": [
+            "hiddenVariables",
+            "hiddenSkillsets"
+        ],
+        "hiddenVariablesSeparator": ";",
+        "folderPageId": "2",
+        "taskListPageId": "4",
+        "dialoguePageId": "7",
+        "targetPageLoaderId": "maindisplayarea"
+    },
+   "4": {
+        "id":4,
+        "label":"TaskList",
+        "type":"TaskList",
+        "cssClass":"leaderway-tasklist",
+        "pickingMode":"true",
+        "targetPageLoaderId": "maindisplayarea",
+        "dialoguePageId": "7"
+    },
+    "5":{
+        "id":5,
+        "label":"Inbox",
+        "type":"InboxDisplay",
+        "variable": {
+            "name": "inbox"
+        },
+        "cssClass":"leaderway-inbox",
+        "dialoguePageId": "7",
+        "targetPageLoaderId": "maindisplayarea"
+    },
+    "6":{
+        "id":6,
+        "label":"Score",
+        "type":"Score",
+        "title":"Top 5 des meilleurs entreprises actuelles",
+        "cssClass":"leaderway-score",
+        "maxRows":5,
+        "dialoguePageId": "7",
+        "targetPageLoaderId": "maindisplayarea"
+    },
+    "7":{
+        "id":7,
+        "label":"Dialogue",
+        "type":"Dialogue",
+        "cssClass":"leaderway-dialogue",
+        "toHide":".leaderway-menu",
+        "taskListPageId":"6",
+        "dialoguePageId": "7",
+        "targetPageLoaderId": "maindisplayarea"
+    }
+}
