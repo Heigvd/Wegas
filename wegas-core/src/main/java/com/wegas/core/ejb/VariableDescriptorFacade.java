@@ -58,6 +58,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
     /**
      *
+     * @fixme Remove the patterne that getUsedNames, for get available name
+     *
      * @param parentGameModel
      * @param variableDescriptor
      */
@@ -79,6 +81,14 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         return this.createChild((ListDescriptor) this.find(variableDescriptorId), entity);
     }
 
+    /**
+     *
+     * @fixme Remove the patterne that getUsedNames, for get available name
+     *
+     * @param listDescriptor
+     * @param entity
+     * @return
+     */
     public ListDescriptor createChild(ListDescriptor listDescriptor, VariableDescriptor entity) {
         Iterator<VariableDescriptor> iterator = listDescriptor.getItems().iterator();
         List<String> usedNames = new ArrayList<>();
@@ -139,8 +149,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
             ListDescriptor parentVar = this.findParentListDescriptor(oldEntity);// Add the entity to this list
             this.createChild(parentVar, newEntity);
             return parentVar;
-        }
-        catch (NoResultException e) {
+        } catch (NoResultException e) {
             this.create(oldEntity.getGameModel(), newEntity);                   // Store the newly created entity in db
             return newEntity;                                                   // Otherwise return it directly
         }
@@ -153,11 +162,9 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         while (true) {
             try {
                 this.findByLabel(gameModel, newLabel);
-            }
-            catch (NoResultException e) {
+            } catch (NoResultException e) {
                 return newLabel;
-            }
-            catch (NonUniqueResultException e) {
+            } catch (NonUniqueResultException e) {
             }
             newLabel = base + "(" + suff + ")";
             suff++;
@@ -262,6 +269,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     /**
      * Search for all used names for the given gamemodel.
      *
+     * @deprecated
      * @param gameModelId the gamemodel id
      * @return a list of used strings
      */

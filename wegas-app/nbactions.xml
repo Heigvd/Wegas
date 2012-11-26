@@ -3,9 +3,10 @@
 
     <action>
         <actionName>run</actionName>
-        <preAction>build-with-dependencies</preAction>
+<!--        <preAction>build-with-dependencies</preAction>-->
         <goals>
-            <goal>package</goal>
+            <goal>prepare-package</goal>
+            <goal>war:exploded</goal>
         </goals>
         <properties>
             <netbeans.deploy>true</netbeans.deploy>
@@ -84,5 +85,4 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
-
 </actions>
