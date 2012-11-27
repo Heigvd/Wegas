@@ -12,28 +12,26 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-loginwidget', function (Y) {
+YUI.add('wegas-loginwidget', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-    BOUNDINGBOX = 'boundingBox',
-    LoginWidget;
+            BOUNDINGBOX = 'boundingBox',
+            LoginWidget;
 
     /**
      *
      *  @class Y.Wegas.JoinGameWidget
      *
      */
-    LoginWidget = Y.Base.create("wegas-loginwidget", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
-
+    LoginWidget = Y.Base.create("wegas-loginwidget", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         // *** Private fields *** //
         defaultRedirect: "wegas-app/view/lobby.html",
-
         // *** Lifecycle Methods *** //
 
-        renderUI: function () {
+        renderUI: function() {
             var cb = this.get(CONTENTBOX),
-            cUser = Y.Wegas.app.get("currentUser");
+                    cUser = Y.Wegas.app.get("currentUser");
 
             if (cUser.accounts[0]["@class"] !== "GuestAccount") {
                 this.showMessage("success", "You are already logged in.", 4000);
@@ -42,70 +40,70 @@ YUI.add('wegas-loginwidget', function (Y) {
 
             this.loginForm = new Y.inputEx.Group({
                 fields: [{
-                    name: "email",
-                    label: "Email",
-                    required: true,
-                    type: "email"
-                }, {
-                    name: "password",
-                    label: "Password",
-                    required: true,
-                    type: "password",
-                    capsLockWarning: true
-                }, {
-                    label: "",
-                    type: "boolean",
-                    name: "remember",
-                    rightLabel: "&nbsp;Remember me"
-                }],
+                        name: "email",
+                        label: "Email",
+                        required: true,
+                        type: "email"
+                    }, {
+                        name: "password",
+                        label: "Password",
+                        required: true,
+                        type: "password",
+                        capsLockWarning: true
+                    }, {
+                        label: "",
+                        type: "boolean",
+                        name: "remember",
+                        rightLabel: "&nbsp;Remember me"
+                    }],
                 parentEl: cb
             });
 
             this.createAccountForm = new Y.inputEx.Group({
                 parentEl: cb,
                 fields: [{
-                    name: "id",
-                    type: "hidden"
-                }, {
-                    name: "@class",
-                    required: true,
-                    type: "hidden",
-                    value: "JpaAccount"
-                }, {
-                    label: "First name",
-                    name: "firstname",
-                    required: true,
-                    type: "string",
-                    showMsg: true
-                }, {
-                    label: "Last name",
-                    name: "lastname",
-                    required: true,
-                    type: "string",
-                    showMsg: true
-                }, {
-                    label: "Email",
-                    name: "email",
-                    required: true,
-                    type: "email",
-                    showMsg: true
-                }, {
-                    label: "Password",
-                    name: "password",
-                    strengthIndicator: true,
-                    capsLockWarning: true,
-                    id: "password",
-                    required: true,
-                    type: "password",
-                    showMsg: true
-                }, {
-                    label: "Password (confirm)",
-                    name: "passwordConfirm",
-                    showMsg: true,
-                    required: true,
-                    confirm: "password",
-                    type: "password"
-                }]
+                        name: "id",
+                        type: "hidden"
+                    }, {
+                        name: "@class",
+                        required: true,
+                        type: "hidden",
+                        value: "JpaAccount"
+                    }, {
+                        label: "First name",
+                        name: "firstname",
+                        required: true,
+                        type: "string",
+                        showMsg: true
+                    }, {
+                        label: "Last name",
+                        name: "lastname",
+                        required: true,
+                        type: "string",
+                        showMsg: true
+                    }, {
+                        label: "Email",
+                        name: "email",
+                        required: true,
+                        type: "email",
+                        showMsg: true
+                    }, {
+                        label: "Password",
+                        name: "password",
+                        strengthIndicator: true,
+                        capsLockWarning: true,
+                        id: "password",
+                        required: true,
+                        type: "password",
+                        showMsg: true
+                    }, {
+                        label: "Password (confirm)",
+                        name: "passwordConfirm",
+                        showMsg: true,
+                        required: true,
+                        confirm: "password",
+                        type: "password"
+                    }]
             });
 
             this.loginButton = new Y.Button();
@@ -113,13 +111,16 @@ YUI.add('wegas-loginwidget', function (Y) {
 
             cb.append('&nbsp;or <a class="alt-link" href="#"></a>');
         },
-
-        bindUI: function () {
+        bindUI: function() {
             var cb = this.get(CONTENTBOX);
 
             cb.one(".alt-link").on("click", this.toggleMode, this);
-
-            this.loginButton.on("click", function (e) {                      // join a game based on a token
+            this.on("keypress", function(e) {
+                if (e.domEvent.which === 13) {                                  /* 13: Enter */
+                    this.loginButton.fire("click");
+                }
+            });
+            this.loginButton.on("click", function(e) {                      // join a game based on a token
 
                 if (this.get("mode") === "login") {
                     if (!this.loginForm.validate()) {
@@ -141,11 +142,11 @@ YUI.add('wegas-loginwidget', function (Y) {
                             data: this.createAccountForm.getValue()
                         },
                         on: {
-                            success: Y.bind(function (e) {
+                            success: Y.bind(function(e) {
                                 this.showMessage("success", "User created, you can now use it to login", 4000);
                                 this.set("mode", "login");
                             }, this),
-                            failure: Y.bind(function (e) {
+                            failure: Y.bind(function(e) {
                                 this.showMessage("error", e.response.results.message || "Error creating user", 4000);
                             }, this)
                         }
@@ -153,56 +154,50 @@ YUI.add('wegas-loginwidget', function (Y) {
                 }
             }, this);
         },
-
-        syncUI: function () {
+        syncUI: function() {
             this.set("mode", this.get("mode"));
         },
-
-        toggleMode: function () {
+        toggleMode: function() {
             if (this.get("mode") === "login") {
                 this.set("mode", "createaccount");
             } else {
                 this.set("mode", "login");
             }
         },
-
-        doLogin: function (email, password, remember) {
+        doLogin: function(email, password, remember) {
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/Authenticate/?email=" + email
-                + "&password=" + password
-                + "&remember=" + remember,
+                        + "&password=" + password
+                        + "&remember=" + remember,
                 cfg: {
                     method: "POST"
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         this.showMessage("success", "Login successful", 4000);
                         this.redirect();
                         return;
                     }, this),
-                    failure: Y.bind(function (e) {
+                    failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Email/password combination not found", 4000);
                     }, this)
                 }
             });
         },
-
-        redirect: function () {
+        redirect: function() {
             window.location = this.getRedirect();
         },
-
-        getRedirect: function () {
+        getRedirect: function() {
             return this.getQueryParameter("redirect") ||
-            (Y.Wegas.app.get("base") + this.defaultRedirect);
+                    (Y.Wegas.app.get("base") + this.defaultRedirect);
         },
-
         /**
          * Returns a parameter from the GET parameters.
          */
-        getQueryParameter: function (name) {
+        getQueryParameter: function(name) {
             var query = window.location.search.substring(1),
-            vars = query.split("&"),
-            i, pair;
+                    vars = query.split("&"),
+                    i, pair;
 
             for (i = 0; i < vars.length; i = i + 1) {
                 pair = vars[i].split("=");
@@ -217,7 +212,7 @@ YUI.add('wegas-loginwidget', function (Y) {
         ATTRS: {
             mode: {
                 value: "login",
-                setter: function (val) {
+                setter: function(val) {
                     var cb = this.get(CONTENTBOX);
 
                     if (val === "login") {
