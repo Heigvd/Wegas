@@ -37,7 +37,7 @@ YUI.add('wegas-editor-page', function(Y) {
                 this.dataSource.post({"type": "List"});
             });
             this.tw.on("treenode:click", function(e) {
-                var node = e.node, widget;
+                var node = e.node;
                 if (!node.get("data")) {
                     return;
                 }
@@ -45,8 +45,42 @@ YUI.add('wegas-editor-page', function(Y) {
                     this.get("pageLoader").set("pageId", node.get("data")["page"]);
                 }
             }, this);
+            this.tw.on("treenode:nodeExpanded", function(e) {
+                var node = e.node;
+                if (!node.get("data")) {
+                    return;
+                }
+                if (node.get("data")["page"]) {
+                    this.get("pageLoader").set("pageId", node.get("data")["page"]);
+                }
+            }, this);
+            this.tw.get(CONTENT_BOX).delegate("mouseenter", function(e) {
+                var node = Y.Widget.getByNode(e.target);
+                e.halt(true);
+                if (node.get("data.widget")) {
+                    if (this.get("pageLoader").pageeditor) {
+                        this.get("pageLoader").pageeditor.showOverlay(node.get("data.widget"));
+                    } else {
+                        node.get("data.widget").get(BOUNDING_BOX).addClass("wegas-focused-widget");
+                    }
+                }
+            }, ".content-header", this);
+            this.tw.get(CONTENT_BOX).delegate("mouseleave", function(e) {
+                var node = Y.Widget.getByNode(e.target);
+                e.halt(true);
+                if (node.get("data.widget")) {
+                    if (this.get("pageLoader").pageeditor) {
+                        this.get("pageLoader").pageeditor.hideOverlay();
+                    } else {
+                        node.get("data.widget").get(BOUNDING_BOX).removeClass("wegas-focused-widget");
+                    }
+                }
+            }, ".content-header", this);
+
+
             this.dataSource.after("pageUpdated", this.syncUI, this);
             this.get("pageLoader").after("pageIdChange", this.syncUI, this);
+            this.get("pageLoader").get("widget").after("*:destroy", this.syncUI, this);
         },
         buildWidgetTree: function(node) {
             var widget = this.get("pageLoader").get("widget");
@@ -56,7 +90,8 @@ YUI.add('wegas-editor-page', function(Y) {
             node.expand(false);
         },
         buildSubTree: function(node, widget) {
-            var treeNode;
+            var treeNode, button = new Y.Button({label: "edit"});
+
             if (widget instanceof Y.Wegas.List) {
                 treeNode = new Y.TreeNode({
                     label: "List",
@@ -64,7 +99,7 @@ YUI.add('wegas-editor-page', function(Y) {
                         widget: widget
                     }
                 });
-                node.add(treeNode);
+
                 widget.each(function(item, index) {
                     this.buildSubTree(treeNode, item);
                 }, this);
@@ -72,13 +107,51 @@ YUI.add('wegas-editor-page', function(Y) {
 //                    this.buildSubTree(treeNode, widget["children"][i]);
 //                }
             } else {
-                node.add(new Y.TreeLeaf({
+                treeNode = new Y.TreeLeaf({
                     label: "Widget: " + widget.constructor.NAME,
                     data: {
                         widget: widget
                     }
-                }));
+                });
             }
+            button.plug(Y.Plugin.WidgetMenu, {
+                children: [{
+                        type: "Button",
+                        label: "Edit",
+                        on: {
+                            click: Y.bind(function() {                             // Display the edit form
+                                Y.Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(targetWidget, val, e, f) {
+                                    Y.Plugin.EditEntityAction.hideEditFormOverlay();
+                                    targetWidget.setAttrs(val);
+                                    targetWidget.syncUI();
+                                    Y.Wegas.PageFacade.rest.patch(targetWidget.get("root").toObject());
+                                }, this, widget));
+                            }, this)
+                        }
+                    }, {
+                        type: "Button",
+                        label: "Delete",
+                        on: {
+                            click: Y.bind(function() {
+                                var root = widget.get("root");
+                                /* dont delete root ! */
+                                if (root !== widget) {
+                                    widget.destroy();
+                                    this.destroy();
+                                } else if (widget.item(0)) {
+                                    widget.removeAll();
+                                    this.removeAll();
+                                }
+                                Y.Wegas.PageFacade.rest.patch(root.toObject());
+
+                            }, treeNode, widget)
+                        }
+                    }],
+                event: "click"
+            });
+
+            treeNode.set("rightWidget", button);
+            node.add(treeNode);
         },
         buildIndex: function(index) {
             var i, page = this.get("pageLoader").get("pageId"),
@@ -109,6 +182,7 @@ YUI.add('wegas-editor-page', function(Y) {
             this.tw.destroy();
         }
     }, {
+        CSS_PREFIX: "wegas-page-editor",
         ATTRS: {
             pageLoader: {
                 value: "previewPageLoader",
