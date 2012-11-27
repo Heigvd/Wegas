@@ -28,7 +28,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
 
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
         sendInitialRequest: function() {
-            if (this.get("initialRequest") !== undefined) {                 // Use this condition so we allow empty strin e.g. ""
+            if (this.get("initialRequest") !== undefined) {                     // Use this condition so we allow empty strin e.g. ""
                 var sender = this.rest || this;
                 return sender.sendRequest({
                     request: this.get("initialRequest")
@@ -61,8 +61,8 @@ YUI.add('wegas-datasourcerest', function(Y) {
         initializer: function() {
             this.get('host').data = [];
 
-            this.doBefore("_defResponseFn", this.beforeResponse, this);       // When the host receives some result, we parse the result
-            this.afterHostEvent("sourceChange", this.clearCache, this);       // When the source changes, we clear the cache
+            this.doBefore("_defResponseFn", this.beforeResponse, this);         // When the host receives some result, we parse the result
+            this.afterHostEvent("sourceChange", this.clearCache, this);         // When the source changes, we clear the cache
         },
         /**
          * Server requests methods
@@ -89,7 +89,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
          */
         beforeResponse: function(e) {
             var evt, i,
-            response = Y.Wegas.Editable.revive(e.response.results);// Transform javascript object litterals to Y.Wegas.persistence.Entity's
+            response = Y.Wegas.Editable.revive(e.response.results);             // Transform javascript object litterals to Y.Wegas.persistence.Entity's
 
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
 
@@ -105,7 +105,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     this.updateCache(e.cfg.method, response[i]);
                 }
             } else {
-                for (i = 0; i < response.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
+                for (i = 0; i < response.get("entities").length; i += 1) {      // Update the cache with the Entites in the reply body
                     e.response.entity = response.get("entities")[i];
                     if (Lang.isObject(e.response.entity)) {
                         this.updateCache(e.cfg.method, e.response.entity);
