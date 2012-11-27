@@ -53,20 +53,238 @@
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
         <build.optimize>false</build.optimize>
         <resources.local>true</resources.local>
-
-        <skipTests>false</skipTests>
+        <skipTests>true</skipTests>
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
     </properties>
+
     <profiles>
         <profile>
             <id>release-profile</id>
             <properties>
-                <build.optimize>true</build.optimize>
+                <build.optimize>false</build.optimize>
                 <resources.local>false</resources.local>
             </properties>
         </profile>
     </profiles>
+
+    <dependencies>
+
+
+        <dependency>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+            <type>jar</type>
+            <version>1.1.1</version>
+           <!-- <scope>provided</scope>-->
+        </dependency>
+
+        <dependency>
+            <artifactId>commons-lang</artifactId>
+            <groupId>commons-lang</groupId>
+            <type>jar</type>
+            <version>2.2</version>
+        </dependency>
+
+        <!-- slf4j -->
+        <dependency>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+            <type>jar</type>
+            <version>1.6.4</version>
+        </dependency>
+
+        <!-- logback (slf4j implementation) -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.2</version>
+            <!--<scope>runtime</scope>-->
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler-plugin-version}</version>
+                <configuration>
+                    <optimize>${build.optimize}</optimize>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <compilerArguments>
+                        <endorseddirs>${endorsed.dir}</endorseddirs>
+                    </compilerArguments>
+                    <showDeprecation>true</showDeprecation>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- Dependencies management -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+
+            <!-- Site -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <outputDirectory>site</outputDirectory>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <version>2.4</version>
+                            <configuration>
+                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                            </configuration>
+                            <reports>
+                                <report>summary</report>
+                                <report>dependencies</report>
+                                <report>project-team</report>
+                                <report>mailing-list</report>
+                                <report>cim</report>
+                                <report>issue-tracking</report>
+                                <report>license</report>
+                                <report>scm</report>
+                            </reports>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <version>2.7</version>
+                        </plugin>
+
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jxr-plugin</artifactId>
+                            <version>2.3</version>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>jdepend-maven-plugin</artifactId>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>findbugs-maven-plugin</artifactId>
+                            <configuration>
+                                <threshold>Normal</threshold>
+                                <effort>Min</effort>
+                            </configuration>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>cobertura-maven-plugin</artifactId>
+                            <version>2.5.1</version>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <version>2.9.1</version>
+                            <configuration>
+                                <configLocation>config/sun_checks.xml</configLocation>
+                            </configuration>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-report-plugin</artifactId>
+                            <version>2.5</version>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-pmd-plugin</artifactId>
+                            <version>2.7.1</version>
+                            <configuration>
+                                <rulesets>  http://pmd.sourceforge.net/rules/index.html
+                                    <ruleset>/rulesets/braces.xml</ruleset>
+                                    <ruleset>/rulesets/basic.xml</ruleset>
+                                    <ruleset>/rulesets/optimizations.xml</ruleset>
+                                    <ruleset>/rulesets/imports.xml</ruleset>
+                                    <ruleset>/rulesets/j2ee.xml</ruleset>
+                                    <ruleset>/rulesets/unusedcode.xml</ruleset>
+                                    <ruleset>/rulesets/codesize.xml</ruleset>
+                                    <ruleset>/rulesets/naming.xml</ruleset>
+                                </rulesets>
+                                <targetJdk>${jdk.version}</targetJdk>
+                            </configuration>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jxr-plugin</artifactId>
+                            <version>2.3</version>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>nl.windgazer</groupId>
+                            <artifactId>jsdoctk-plugin</artifactId>
+                            <version>2.3.2</version>
+                            <configuration>
+                                <template>jsdoc</template> <!-- Alternatives are not pre-installed for version 2.x-->
+                                <directory>site/jsdoc</directory>
+                                <recurse>5</recurse>
+                                <ext>js</ext>
+                                <allfunctions>true</allfunctions>
+                                <Allfunctions>false</Allfunctions>
+                                <privateOption>true</privateOption>
+                                <!-- If you're using the maven default setup this alternative is sometimes required
+                                to make the plugin work: ${basedir}/src/main/webapp/ -->
+                                <srcDir>${basedir}/src/main/webapp</srcDir>
+                                <exclude><!-- Since jsdoctk 2.3.2 -->
+                                    <param>lib</param><!--Multiple param entries allowed-->
+                                </exclude>
+                            </configuration>
+                        </plugin>
+
+                        <!-- Code complexity -->
+                        <!-- @fixme removed because it is not compatible w/ java 1.7 -->
+                        <!--<plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>javancss-maven-plugin</artifactId>
+                            <version>2.0-beta-2</version>
+                            <configuration>
+                                <includes>
+                                    <include>*.java</include>
+                                </includes>
+                                <linkXRef>false</linkXRef>
+                            </configuration>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>javancss</groupId>
+                                    <artifactId>javancss</artifactId>
+                                    <version>29.50</version>
+                                    <scope>compile</scope>
+                                </dependency>
+                            </dependencies>
+                        </plugin>-->
+
+                        <!--<plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jxr-plugin</artifactId>
+                            <version>2.3</version>
+                        </plugin>-->
+
+                    </reportPlugins>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <repositories>
         <repository>
             <id>maven2-repository.dev.java.net</id>
