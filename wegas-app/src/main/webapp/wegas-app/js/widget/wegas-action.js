@@ -29,6 +29,13 @@ YUI.add('wegas-action', function (Y) {
             },
             destroyed: {
                 "transient": true
+            },
+            /* Shortcur */
+            data: {
+                readonly: true,
+                getter: function() {
+                    return this.get("host").get("data");
+                }
             }
         }
     });

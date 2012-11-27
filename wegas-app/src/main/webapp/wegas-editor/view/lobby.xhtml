@@ -52,6 +52,38 @@
                                     }
                                 ]
                             },
+                            "User": {
+                                source: "rest/User",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                            }
+                                        }
+                                    }, {
+                                        fn: "UserDataSourceREST"
+                                    }
+                                ]
+                            },
+                            "Role": {
+                                source: "rest/Role",
+                                initialRequest: "",
+                                plugins: [
+                                    {
+                                        fn: "DataSourceJSONSchema",
+                                        cfg: {
+                                            schema: {
+                                                resultListLocator: "."
+                                            }
+                                        }
+                                    }, {
+                                        fn: "DataSourceREST"
+                                    }
+                                ]
+                            }
                         }
                     };
 
