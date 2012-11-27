@@ -44,6 +44,8 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                 this.fireUpdatedEvt();
             }, this);
             
+            var logDiv = Y.Node.create("<div></div>").addClass("permissionList");
+            this.fieldContainer.div = this.fieldContainer.appendChild(logDiv.getDOMNode());
             this.permissionsCheckBoxes = [];
             Y.Array.forEach(this.options.permissions, function (item, i){
                 var splitedPermissions = item.name.split(":");
@@ -51,7 +53,8 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                     rightLabel: splitedPermissions[1],
                     name: splitedPermissions[0]+":"+splitedPermissions[1],
                     value: false,
-                    parentEl: this.fieldContainer
+                    parentEl: this.fieldContainer.div,
+                    className: "eachPermissions"
                 });
                 
                 box.on("updated", function(e, field){
@@ -79,7 +82,6 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         },
         getValue: function () {
             this.value.id = this.roleSelect.getValue().id;
-            console.log(this.roleSelect.getValue());
             return this.value;
         },
         setValue: function (val, sendUpdatedEvent) {
@@ -94,7 +96,6 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
             });
 
             //this.roleSelect.setValue(this.getValue(), false);
-            console.log(this.getValue());
             Y.Array.forEach(this.getValue().permissions, function(perm, i) {
                 var splitedPermissions = perm.split(":");
                 Y.Array.forEach(this.permissionsCheckBoxes, function(box, i) {
@@ -121,7 +122,14 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
 
     Text2 = Y.Base.create("wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
         renderUI: function () {
-            this.get("contentBox").setHTML("test");
+            
+            this.plug(Y.Plugin.WidgetToolbar);
+            
+            //var b = this.toolbar.add({type: "Button", label: "New"});
+            //b.on("click", function () {
+            //    console.log("mm");
+            //});  
+            
             var gmId = 151;
             Y.Wegas.UserFacade.rest.sendRequest({    
                 request: "/GameModelPermissions/" + gmId,
@@ -151,13 +159,17 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                                     name: "GameModel:Create"
                                 }],
                                 targetEntityId: "gm" + gmId,
-                                roles: acc
+                                roles: acc,
+                                className: "role-permissions"
                             },                    
                             useButtons: true,
                             value: acc,                 
-                            parentEl: this.get(CONTENTBOX).getDOMNode()
+                            parentEl: this.get(CONTENTBOX).getDOMNode(),
+                            className: "roleBox"
                         });
                         this.permsField.on("updated", this.sync, this);
+                        
+//                        this.get(CONTENTBOX).one(".roleBox img").hide();
                     }, this),
                     failure: function (id, result) {
                     }
@@ -178,6 +190,10 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                 }, this);
             }, this);
         }
+    }, {
+        ATTRS: {
+            data: {}
+        }
     });
 
     Y.namespace("Wegas").Test2 = Text2;
@@ -196,7 +212,6 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         getRoleIds: function () {
             var list = [];
             Y.Array.forEach(this.subFields, function(field) {
-                console.log(field.getValue());
                 var roleWithPermission = field.getValue();
                 list.push(roleWithPermission.id);
             }, this);

@@ -395,7 +395,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             widgetsUri: {
                 type: "string",
-               /* choices: [{
+                /* choices: [{
                     value: "wegas-leaderway/db/wegas-leaderway-pages.json",
                     label: "Leaderway"
                 }, {
@@ -438,6 +438,18 @@ YUI.add('wegas-entity', function (Y) {
             label: "Duplicate",
             plugins: [{
                 fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "Button",
+            label: "Share",
+            plugins: [{
+                fn: "OpenTabAction",
+                cfg: {
+                    children: {
+                        type: "Test2"
+                    },
+                    tabSelector: '#rightTabView'
+                }
             }]
         }, {
             type: "DeleteEntityButton"
