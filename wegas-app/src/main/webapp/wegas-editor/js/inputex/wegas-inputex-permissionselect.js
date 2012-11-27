@@ -28,6 +28,8 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         },
         
         renderComponent: function (){
+            this.fireUpdatedEvt();
+            
             this.roleSelect = new Y.inputEx.Wegas.RoleSelect({
                 parentEl: this.fieldContainer
             });
@@ -118,9 +120,9 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
 
 
 
-    var CONTENTBOX = "contentBox", Text2;
+    var CONTENTBOX = "contentBox", RolePermissionList;
 
-    Text2 = Y.Base.create("wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
+    RolePermissionList = Y.Base.create("wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
         renderUI: function () {
             
             this.plug(Y.Plugin.WidgetToolbar);
@@ -196,7 +198,7 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         }
     });
 
-    Y.namespace("Wegas").Test2 = Text2;
+    Y.namespace("Wegas").RolePermissionList = RolePermissionList;
     
     
     /**

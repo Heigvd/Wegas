@@ -446,7 +446,7 @@ YUI.add('wegas-entity', function (Y) {
                 fn: "OpenTabAction",
                 cfg: {
                     children: {
-                        type: "Test2"
+                        type: "RolePermissionList"
                     },
                     tabSelector: '#rightTabView'
                 }
