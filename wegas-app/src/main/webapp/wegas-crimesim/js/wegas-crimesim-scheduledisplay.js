@@ -21,7 +21,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
     /**
      *  The schedule display class.
      */
-    ScheduleDisplay = Y.Base.create("wegas-crimesim-scheduledisplay", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
+    ScheduleDisplay = Y.Base.create("wegas-crimesim-scheduledisplay", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: '<div><div class="schedule-questions"></div>'
         + '<div class="schedule-detail"><div class="schedule-icon-close"></div><h1></h1><div class="content"></div>'
         + '<div class="schedule-gallery"></div><h2>Anaylses</h2><div class="schedule-analysis"></div>'
@@ -302,7 +302,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
                 replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
                 status = reply.getStatus(this.currentTime);
-                
+
                 if (status === 1) {
                     replyData.answer = "analysis in progress";
                 } else if (status === 2) {

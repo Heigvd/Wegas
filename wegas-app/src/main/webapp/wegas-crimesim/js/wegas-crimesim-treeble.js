@@ -17,7 +17,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
 
     var CONTENTBOX = 'contentBox', Treeble;
 
-    Treeble = Y.Base.create("wegas-crimesim-treeble", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
+    Treeble = Y.Base.create("wegas-crimesim-treeble", Y.Widget, [], {
         // *** Fields *** /
         datatable: null,
         root: null,
@@ -96,7 +96,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                 resultFields: resultFields
             };
 
-            //Create the schema plugin for the datasource's root 
+            //Create the schema plugin for the datasource's root
             schema_plugin_config = {
                 fn: Y.Plugin.DataSourceArraySchema,
                 cfg: {
@@ -104,7 +104,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                 }
             };
 
-            //Create the config object for the datasource's root 
+            //Create the config object for the datasource's root
             treeble_config = {
                 generateRequest: function () {
                 },
@@ -165,7 +165,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                     isAfterCol = false;
             this.get(CONTENTBOX).all('tr').each(function (row, i) {
                 if (row.get('className').indexOf('treeble-depth-') > -1) {           //is a treeble row
-                    if (row.get('className').indexOf('treeble-depth-0') <= -1) {     //and isn't a firste-level treeble row 
+                    if (row.get('className').indexOf('treeble-depth-0') <= -1) {     //and isn't a firste-level treeble row
                         if (row.get('className').indexOf(colName) <= -1) {           //and if the column exist
                             row.one('.' + colName).setAttribute('colspan', nbCols);  //add colspan value
                             row.all('td').each(function (cell, i) {                  //hide overflowed columns
@@ -182,6 +182,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
             });
         }
     }, {
+    CSS_PREFIX: "wegas-crimesim-treeble",
         ATTRS: {
             columns: {
                 validator: Y.Lang.isArray
@@ -202,7 +203,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
         }
     });
 
-    //Below : Hack because current verion of TreebleDataSource isn't on YUI (this is the worked version from Guithub). 
+    //Below : Hack because current verion of TreebleDataSource isn't on YUI (this is the worked version from Guithub).
     Y.TreebleDataSource.prototype.toggle = function (path, request, completion) {
         var searchOpen = function (
                 /* array */list,
