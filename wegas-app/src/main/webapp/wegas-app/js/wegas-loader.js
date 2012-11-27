@@ -138,7 +138,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-inbox': {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
-                        requires: ["tabview", "wegas-inboxcss"],
+                        requires: ["tabview", 'wegas-tabviewcss', "wegas-inboxcss"],
                         ix_provides: 'InboxDisplay'
                     },
                     'wegas-inboxcss': {
@@ -159,7 +159,7 @@ YUI().use(function(Y) {
                     'wegas-joingamewidget': {
                         path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
                         requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
-                            'wegas-editor-action', 'inputex-select', 'inputex-string'],
+                        'wegas-editor-action', 'inputex-select', 'inputex-string'],
                         ix_provides: "JoinGameWidget"
                     },
                     'wegas-imageloader': {
@@ -173,7 +173,8 @@ YUI().use(function(Y) {
                     'wegas-gallery': {
                         path: 'wegas-app/js/widget/wegas-gallery-min.js',
                         requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
-                        'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss', 'stylesheet', 'event-resize'],
+                        'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss',
+                        'stylesheet', 'event-resize'],
                         ix_provides: "WegasGallery"
                     },
                     'wegas-itemselector': {
@@ -363,7 +364,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-mcqtabview': {
                         path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
-                        requires: ['tabview'],
+                        requires: ['tabview', 'wegas-tabviewcss'],
                         ix_provides: "MCQTabView"
                     },
                     'wegas-editor-page': {
