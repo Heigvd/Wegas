@@ -14,7 +14,7 @@
 
 /* Override default browser styles */
 body {
-    overflow: hidden;
+    overflow: hidden;b
 }
 
 /* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
@@ -290,39 +290,23 @@ body {
 }
 
 /* Editor layout styles */
-.wegas-layout-top > div {
+.yui3-skin-sam .wegas-layout-top > div {
     display: inline-block;
     vertical-align: top;
 }
-.wegas-layout-top .yui3-button {
+.yui3-skin-sam .wegas-layout-top .yui3-button {
     border: none;
     font-weight: bold;
     font-size: 11px;
     line-height: 1.9em;
     color: #6E6E6E;
     box-shadow: none;
-    background: url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
     padding: 3px 20px 3px 10px;
+    background: url(../../wegas-app/images/wegas-submenuindicator.png) right center no-repeat;
     margin-top: 12px;
 }
-.wegas-layout-top .wegas-login {
+.yui3-skin-sam .wegas-layout-top .wegas-login {
     float:right  !important;
-}
-.wegas-layout-top .yui3-button-hover, .wegas-layout-top .yui3-button:hover {
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000',endColorstr='#26000000',GradientType=0),
-        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
-    background: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15))),
-        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
-    background: -webkit-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
-    background: -moz-linear-gradient(top, transparent,rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15)),
-        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
-    background: -ms-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
-    background: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15)),
-        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
-    background: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(http://yui.yahooapis.com/2.9.0/build/menu/assets/skins/sam/menubaritem_submenuindicator.png) right center no-repeat;
 }
 
 /* Pageeditor Plugin styles */
