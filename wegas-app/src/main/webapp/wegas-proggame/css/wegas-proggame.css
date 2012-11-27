@@ -197,3 +197,7 @@
     position:absolute;
     background: url(/Wegas/wegas-proggame/images/8ball.png) 8px 8px no-repeat;
 }
+
+#cr-stage{
+    border: 1px solid orange;
+}
