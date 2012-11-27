@@ -34,7 +34,7 @@ YUI.add('wegas-editor-page', function(Y) {
         },
         bindUI: function() {
             this.on("*:newPage", function(e) {
-                this.dataSource.post({"type": "List"});
+                this.dataSource.post({});
             });
             this.tw.on("treenode:click", function(e) {
                 var node = e.node;
@@ -80,7 +80,7 @@ YUI.add('wegas-editor-page', function(Y) {
 
             this.dataSource.after("pageUpdated", this.syncUI, this);
             this.get("pageLoader").after("pageIdChange", this.syncUI, this);
-            this.get("pageLoader").get("widget").after("*:destroy", this.syncUI, this);
+            //this.get("pageLoader").get("widget").after("*:destroy", this.syncUI, this);
         },
         buildWidgetTree: function(node) {
             var widget = this.get("pageLoader").get("widget");
@@ -138,7 +138,7 @@ YUI.add('wegas-editor-page', function(Y) {
                                 if (root !== widget) {
                                     widget.destroy();
                                     this.destroy();
-                                } else if (widget.item(0)) {
+                                } else if (widget.item && widget.item(0)) {
                                     widget.removeAll();
                                     this.removeAll();
                                 }
