@@ -251,7 +251,12 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/widget/wegas-widgetmenu-min.js',
                         requires: ['plugin', 'yui-later', 'event-mouseenter', 'event-outside',
                         'widget', 'widget-parent', 'widget-child', 'widget-stack',
-                        'widget-position', 'widget-position-align', 'widget-position-constrain']
+                        'widget-position', 'widget-position-align', 'widget-position-constrain',
+                        'wegas-widgetmenucss']
+                    },
+                    'wegas-widgetmenucss': {
+                        path: 'wegas-app/css/wegas-widgetmenu.css',
+                        type: "css"
                     },
                     'wegas-widgettoolbar': {
                         path: 'wegas-app/js/widget/wegas-widgettoolbar-min.js',
