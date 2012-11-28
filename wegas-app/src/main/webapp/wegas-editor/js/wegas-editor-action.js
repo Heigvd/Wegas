@@ -442,7 +442,7 @@ YUI.add('wegas-editor-action', function (Y) {
     });
 
     Y.namespace("Plugin").OpenTabAction = OpenTabAction;
-
+    
     /**
      *  @class OpenGameAction
      *  @module Wegas

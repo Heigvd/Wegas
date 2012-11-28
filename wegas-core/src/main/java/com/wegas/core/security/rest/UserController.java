@@ -110,13 +110,24 @@ public class UserController extends AbstractRestController<UserFacade, User> {
         this.signup(account);                                                   // and forward
     }
     
+    /**
+     * Get all GameModel permissions by GameModel id
+     * @param gameModelId
+     * @return 
+     */
     @GET
-    @Path("GameModelPermissions/{entityId : [1-9][0-9]*}")
+    @Path("GameModelPermissions/{gameModelId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Map> findPermissionByGameModelId(@PathParam("entityId") Long gameModelId){
+    public List<Map> findPermissionByGameModelId(@PathParam("gameModelId") String gameModelId){
         return this.userFacade.findPermissionByGameModelId(gameModelId);
     }
     
+    /**
+     * Delete permission by role and permission
+     * @param roleId
+     * @param permission
+     * @return 
+     */
     @POST
     @Path("DeletePermission/{roleId : [1-9][0-9]*}/{permission}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -126,6 +137,12 @@ public class UserController extends AbstractRestController<UserFacade, User> {
         return this.userFacade.deletePermissionByGameModelIdAndPermissions(roleId, permission);
     }
     
+    /**
+     * Create role_permissions
+     * @param roleId
+     * @param permission
+     * @return 
+     */
     @POST
     @Path("AddPermission/{roleId : [1-9][0-9]*}/{permission}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -135,6 +152,12 @@ public class UserController extends AbstractRestController<UserFacade, User> {
         return this.userFacade.addPermissionByGameModelIdAndPermissions(roleId, permission);
     }
     
+    /**
+     * Delete all permission from a role in a Game or GameModel
+     * @param roleId
+     * @param gameModelId
+     * @return 
+     */
     @POST
     @Path("DeleteAllRolePermissions/{roleId : [1-9][0-9]*}/{gameModelId}")
     @Consumes(MediaType.APPLICATION_JSON)

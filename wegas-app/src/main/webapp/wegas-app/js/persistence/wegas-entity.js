@@ -446,7 +446,16 @@ YUI.add('wegas-entity', function (Y) {
                 fn: "OpenTabAction",
                 cfg: {
                     children: {
-                        type: "RolePermissionList"
+                        type: "RolePermissionList",
+                        permsList: [{
+                            name: "GameModel:Add"
+                        },{
+                            name: "GameModel:Edit"
+                        },{
+                            name: "GameModel:Delete"
+                        },{
+                            name: "GameModel:Create"
+                        },]
                     },
                     tabSelector: '#rightTabView'
                 }
@@ -498,6 +507,27 @@ YUI.add('wegas-entity', function (Y) {
         }, {
             type: "EditEntityButton",
             label: "Properties"
+        },{
+            type: "Button",
+            label: "Share",
+            plugins: [{
+                fn: "OpenTabAction",
+                cfg: {
+                    children: {
+                        type: "RolePermissionList",
+                        permsList: [{
+                            name: "Game:Add"
+                        },{
+                            name: "Game:Edit"
+                        },{
+                            name: "Game:Delete"
+                        },{
+                            name: "Game:Create"
+                        }]
+                    },
+                    tabSelector: '#rightTabView'
+                }
+            }]
         }, {
             type: "DeleteEntityButton"
         }]

@@ -69,7 +69,7 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                         });
                     } else {
                         Y.Wegas.UserFacade.rest.sendRequest({    
-                            request: "/DeletePermission/" + this.roleSelect.getValue().id + "/" + field.options.name +":gm151",
+                            request: "/DeletePermission/" + this.roleSelect.getValue().id + "/" + field.options.name +":" + this.options.targetEntityId,
                             cfg: {
                                 method: "POST"
                             }
@@ -77,7 +77,7 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                     }                    
                     this.fireUpdatedEvt();
                 }, this);
-                this.permissionsCheckBoxes.push(box)
+                this.permissionsCheckBoxes.push(box);
             }, this);
             
             this.checkboxValue();
@@ -123,18 +123,34 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
     var CONTENTBOX = "contentBox", RolePermissionList;
 
     RolePermissionList = Y.Base.create("wegas-text", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget ], {
+        
         renderUI: function () {
+            this.plug(Y.Plugin.WidgetToolbar); 
+            this.bNew = this.toolbar.add({
+                type: "Button", 
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>New"
+            });
+        },
+        
+        bindUI: function () {
+            this.bNew.on('click', function(e) {
+                this.permsField.onAddButton(e);
+            }, this);
+        },
+         
+        syncUI: function () {
+            if (this.permsField) {
+                this.permsField.destroy();                
+            }
             
-            this.plug(Y.Plugin.WidgetToolbar);
-            
-            //var b = this.toolbar.add({type: "Button", label: "New"});
-            //b.on("click", function () {
-            //    console.log("mm");
-            //});  
-            
-            var gmId = 151;
+            var gmId = this.get("data").entity.get("id");
+            if (this.get("data").entity instanceof Y.Wegas.persistence.GameModel) {
+                this.targetEntityId = "gm" + gmId;
+            }else{
+                this.targetEntityId = "g" + gmId;
+            }
             Y.Wegas.UserFacade.rest.sendRequest({    
-                request: "/GameModelPermissions/" + gmId,
+                request: "/GameModelPermissions/" + this.targetEntityId,
                 cfg: {
                     method: "GET"
                 },
@@ -151,16 +167,8 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                             //listLabel: 'Websites',
                             elementType: {
                                 type: 'permissionsselect',
-                                permissionsChoices: [{
-                                    name: "GameModel:Add"
-                                },{
-                                    name: "GameModel:Edit"
-                                },{
-                                    name: "GameModel:Delete"
-                                },{
-                                    name: "GameModel:Create"
-                                }],
-                                targetEntityId: "gm" + gmId,
+                                permissionsChoices: this.get("permsList"),
+                                targetEntityId: this.targetEntityId,
                                 roles: acc,
                                 className: "role-permissions"
                             },                    
@@ -170,13 +178,13 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                             className: "roleBox"
                         });
                         this.permsField.on("updated", this.sync, this);
-                        
-//                        this.get(CONTENTBOX).one(".roleBox img").hide();
+                   
+                        this.get(CONTENTBOX).one(".roleBox img").hide();
                     }, this),
                     failure: function (id, result) {
                     }
                 }
-            });            
+            });  
         },
         sync: function(){
             var list = this.permsField.getRoleIds();
@@ -194,6 +202,9 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         }
     }, {
         ATTRS: {
+            permsList: {
+                value: []  
+            },
             data: {}
         }
     });
@@ -223,7 +234,6 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
        
         onAddButton: function() {
             PermissionList.superclass.onAddButton.apply(this, arguments);
-            
             var newField = this.subFields[this.subFields.length - 1],
             filter = this.getRoleIds(), 
             i= 0;

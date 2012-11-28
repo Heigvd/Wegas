@@ -72,6 +72,8 @@ YUI.add('wegas-tabview', function ( Y ) {
                 tab.load(widgetCfg, fn);                                        // and load the widget in it.
             } else {                                                            // Otherwise,
                 tab.setAttrs(tabCfg);                                           // update the tab config
+                tab.item(0).setAttrs(widgetCfg);                                // @fixme what is the widget is of a different class ?
+                tab.item(0).syncUI();                                           // force sync
                 if (fn) {
                     fn( tab.item(0));                                          // and trigger the callback
                 }
