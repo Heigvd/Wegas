@@ -305,6 +305,10 @@ body {
     background: url(../../wegas-app/images/wegas-submenuindicator.png) right center no-repeat;
     margin-top: 12px;
 }
+
+.yui3-skin-sam .wegas-layout-top .yui3-button .wegas-widgetmenu-submenuindicator {
+    display:none;
+}
 .yui3-skin-sam .wegas-layout-top .wegas-login {
     float:right  !important;
 }
