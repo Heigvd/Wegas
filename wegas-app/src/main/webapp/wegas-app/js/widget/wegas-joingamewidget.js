@@ -16,7 +16,6 @@ YUI.add('wegas-joingamewidget', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-    BOUNDINGBOX = 'boundingBox',
     JoinGameWidget;
 
     /**
@@ -116,7 +115,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.joinGameButton.hide();
             this.tokenField.hide();
             this.joinTeamButton.show();
-            this.teamsField.show()
+            this.teamsField.show();
             this.createButton.show();
             this.createTeamField.show();
 
