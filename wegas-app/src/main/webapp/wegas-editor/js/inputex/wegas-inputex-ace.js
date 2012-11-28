@@ -54,8 +54,8 @@ YUI.add('wegas-inputex-ace', function (Y) {
             this.session.setMode(new Mode());
 
             Y.Wegas.app.after("layout:resize", function () {
-                Y.once('domready', this.resize, this );
-            }, this.editor );
+                Y.once('domready', this.resize, this);
+            }, this.editor);
 
             Y.after('windowresize', Y.bind(this.editor.resize, this.editor));
 

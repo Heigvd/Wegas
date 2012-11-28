@@ -12,11 +12,10 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-logger', function(Y) {
-    "use strict"
-    var CONTENTBOX = 'contentBox',
+YUI.add('wegas-logger', function (Y) {
+    "use strict";
 
-    Logger = Y.Base.create("wegas-logger", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    var Logger = Y.Base.create("wegas-logger", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         console: null,
 
@@ -25,7 +24,7 @@ YUI.add('wegas-logger', function(Y) {
 
             var node = Y.Node.create('<div style="height:50px"></div>');
 
-            this.get(CONTENTBOX).appendChild(node);
+            this.get('contentBox').appendChild(node);
 
             this.console = new Y.Console({
                 logSource: Y.Global,

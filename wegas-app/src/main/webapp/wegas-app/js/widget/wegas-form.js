@@ -15,8 +15,7 @@
 YUI.add('wegas-form', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
-    FormWidget;
+    var CONTENTBOX = 'contentBox', FormWidget;
 
     FormWidget = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
@@ -107,7 +106,7 @@ YUI.add('wegas-form', function (Y) {
     });
 
     Y.namespace("Wegas").FormWidget = FormWidget;
-   
+
     var inputEx = Y.inputEx,
     lang = Y.Lang;
 
@@ -143,7 +142,7 @@ YUI.add('wegas-form', function (Y) {
     /**
      * @hack Let inputex also get requirement from selectfields, lists
      */
-    Y.inputEx.getRawModulesFromDefinition= function(inputexDef) {
+    Y.inputEx.getRawModulesFromDefinition = function (inputexDef) {
 
         var type = inputexDef.type || 'string',
         module = YUI_config.groups.inputex.modulesByType[type],
@@ -158,8 +157,8 @@ YUI.add('wegas-form', function (Y) {
         }
 
         // recursive for group,forms,list,combine, etc...
-        Y.Array.each(fields, function(field) {
-            modules = modules.concat( this.getModulesFromDefinition(field) );
+        Y.Array.each(fields, function (field) {
+            modules = modules.concat(this.getModulesFromDefinition(field));
         }, this);
 
         // TODO: inplaceedit  editorField
