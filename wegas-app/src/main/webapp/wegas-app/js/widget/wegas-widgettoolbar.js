@@ -40,9 +40,9 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             this.render();
         },
 
-        destructor: function (){
+        destructor: function () {
             var i, children = this.get("children");
-            for ( i = 0; i < children.length; i = i + 1 ){
+            for (i = 0; i < children.length; i = i + 1) {
                 children[i].destroy();
             }
         },
@@ -50,7 +50,7 @@ YUI.add('wegas-widgettoolbar', function (Y) {
 
         // *** Private methods *** //
         render: function () {
-            var host = this.get("host"),
+            var i, host = this.get("host"),
             bb = host.get('boundingBox'),
             children = this.get("children");
 
@@ -59,20 +59,20 @@ YUI.add('wegas-widgettoolbar', function (Y) {
                 position: "absolute",
                 bottom: "26px",
                 overflow: "auto",
-                padding:"0",
-                left:"0px",
-                right:"0px",
+                padding: "0",
+                left: "0px",
+                right: "0px",
                 top: "31px"
             });
 
-            for (var i = 0; i < children.length; i = i + 1) {
-                children[i] = this.add( children[ i ] );
+            for (i = 0; i < children.length; i = i + 1) {
+                children[i] = this.add(children[i]);
             }
         },
 
-        add: function( widget ) {
-            if ( !( widget instanceof Y.Widget )) {
-                widget = Y.Wegas.Widget.create( widget );
+        add: function (widget) {
+            if (!(widget instanceof Y.Widget)) {
+                widget = Y.Wegas.Widget.create(widget);
             }
             widget.render(this.get("header"));
             widget.addTarget(this.get("host"));

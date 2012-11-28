@@ -9,7 +9,21 @@
         <ui:define name="title">#{gameController.currentGameModel.name}</ui:define>
 
         <ui:define name="head">
-            <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" />
+            <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" /><style type="text/css">
+                .yui3-skin-sam .yui3-button.wegas-title,
+                .yui3-skin-sam .yui3-button.wegas-title:hover  {
+                    font-weight: 900;
+                    font-size: 22px;
+                    line-height: 1.3em;
+                    color: #6E6E6E;
+                    background: url(../../wegas-app/images/wegas-logoicon-30.png) no-repeat,
+                        url(../../wegas-app/images/wegas-submenuindicator.png) right center no-repeat;
+                    padding: 0px 25px 0 36px;
+                    margin: 8px 6px 6px 10px;
+                    height: 30px;
+                    text-shadow: 1px 0 1px lightgray, 0 1px 1px lightgray;
+                }
+            </style>
         </ui:define>
 
         <ui:define name="body">

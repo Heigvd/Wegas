@@ -34,8 +34,22 @@ YUI.add('wegas-editor-action', function (Y) {
         NS: "entityaction",
         NAME: "EntityAction",
         ATTRS: {
-            entity: {},
-            dataSource: {}
+            entity: {
+                getter: function (val) {
+                    if (val === "currentGameModel") {
+                        return Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
+                    }
+                    return val;
+                }
+            },
+            dataSource: {
+                getter: function (val) {
+                    if (Y.Lang.isString(val)) {
+                        return Y.Wegas[val];
+                    }
+                    return val;
+                }
+            }
         }
     });
     Y.namespace("Plugin").EntityAction = EntityAction;
