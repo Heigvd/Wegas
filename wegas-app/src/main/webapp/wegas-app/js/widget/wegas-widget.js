@@ -56,9 +56,19 @@ YUI.add("wegas-widget", function (Y) {
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
         || this.constructor.NAME.toLowerCase();                                 // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
+
+        this.publish("exception", {
+            emitFacade: true
+        });
     }
 
     Y.mix(Widget.prototype, {
+
+        defaultExceptionHandler: function (e) {
+            this.fire("exception", {
+                response: e.response
+            });
+        },
 
         showOverlay: function () {
             this.get(BOUNDING_BOX).prepend("<div class='wegas-widget-loading'></div>");
@@ -91,7 +101,6 @@ YUI.add("wegas-widget", function (Y) {
                 }
             }
             msgNode.append(message);
-
             message.closeHandler = message.one(".close").once("click", destroySelf, message);
 
             if (timeout) {

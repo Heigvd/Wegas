@@ -43,7 +43,7 @@ public abstract class AbstractExceptionMapper {
             return processException(exception.getCause());
 
         } else if (exception instanceof EJBException) {
-            return processException(( (EJBException) exception ).getCausedByException());
+            return processException(((EJBException) exception).getCausedByException());
 
         } else if (exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK) {
             return processException(exception.getCause());
@@ -62,24 +62,22 @@ public abstract class AbstractExceptionMapper {
             if (scriptException.getCause() instanceof ConstraintViolationException) {
                 return processException(scriptException.getCause());
             } else {
-                return Response.status(
-                        Response.Status.BAD_REQUEST).entity(
-                        new ExceptionWrapper("400", scriptException.getClass(), scriptException.getLocalizedMessage())).build();
+                return Response.status(Response.Status.BAD_REQUEST).
+                        entity(new ExceptionWrapper("400", scriptException.getClass(), scriptException.getLocalizedMessage())).
+                        build();
             }
 
         } else if (exception instanceof SQLException) {
             logger.error(exception.getLocalizedMessage());
             SQLException sqlException = (SQLException) exception;
-            return Response.status(
-                    Response.Status.BAD_REQUEST).entity(
-                    new ExceptionWrapper("400", sqlException.getClass(), sqlException.getLocalizedMessage())).build();
+            return Response.status(Response.Status.BAD_REQUEST).
+                    entity(new ExceptionWrapper("400", sqlException.getClass(), sqlException.getLocalizedMessage())).build();
 
         } else if (exception instanceof WegasException) {
             logger.error(exception.getLocalizedMessage());
             WegasException wegasException = (WegasException) exception;
-            return Response.status(
-                    Response.Status.BAD_REQUEST).entity(
-                    new ExceptionWrapper("400", wegasException.getClass(), wegasException.getLocalizedMessage())).build();
+            return Response.status(Response.Status.BAD_REQUEST).
+                    entity(new ExceptionWrapper("400", wegasException.getClass(), wegasException.getLocalizedMessage())).build();
 
         } else if (exception instanceof javax.validation.ConstraintViolationException) {
             javax.validation.ConstraintViolationException constraintViolationException = (javax.validation.ConstraintViolationException) exception;
@@ -92,15 +90,13 @@ public abstract class AbstractExceptionMapper {
             }
             logger.error(msg);
             // constraintViolationException.getMessage()
-            return Response.status(
-                    Response.Status.BAD_REQUEST).entity(
-                    new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
+            return Response.status(Response.Status.BAD_REQUEST).
+                    entity(new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
 
         } else {
             logger.error(RequestManagerFacade.lookup().getBundle("com.wegas.app.errors").getString("unexpected"), exception); //internationalised error (sample)
-            return Response.status(
-                    Response.Status.BAD_REQUEST).entity(
-                    new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
+            return Response.status(Response.Status.BAD_REQUEST).
+                    entity(new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
         }
     }
 }
