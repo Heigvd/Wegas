@@ -54,71 +54,23 @@
 }
 
 /* Proxy styles */
-.yui3-skin-sam .wegas-widgetmenu-hassubmenu {
-    background: url(../images/wegas-submenuindicator.png) right center no-repeat;
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu,
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button {
+    position: relative;
     padding-right: 20px;
 }
-
-.yui3-skin-sam .wegas-widgetmenu-hassubmenu.wegas-widgetmenu-hassubmenuright {
-    background: url(../images/wegas-submenuindicator-right.png) right center no-repeat;
-}
-.yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenu {
-    padding-right: 20px;
-    background: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent)),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu .wegas-widgetmenu-submenuindicator {
+    display: block;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 13px;
+    height: 8px;
+    margin-top: 9px;
+    background: url(../images/wegas-submenuindicator.png) left center no-repeat;
 }
 
-.yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenu:hover {
-    background: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15))),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: -webkit-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: -moz-linear-gradient(top, transparent,rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: -ms-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-    background: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator.png) right center no-repeat;
-}
-.yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenuright {
-    padding-right: 20px;
-    background: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent)),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-}
-
-.yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenuright:hover {
-    background: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15))),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: -webkit-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: -moz-linear-gradient(top, transparent,rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: -ms-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
-    background: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15)),
-        url(..//images/wegas-submenuindicator-right.png) right center no-repeat;
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu.wegas-widgetmenu-hassubmenuright .wegas-widgetmenu-submenuindicator {
+    margin-top: 8px;
+    background: url(../images/wegas-submenuindicator-right.png) left center no-repeat;
 }

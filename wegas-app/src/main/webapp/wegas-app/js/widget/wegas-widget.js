@@ -16,7 +16,6 @@ YUI.add("wegas-widget", function (Y) {
     "use strict";
 
     var Lang = Y.Lang,
-    CONTENTBOX = "contentBox",
     BOUNDING_BOX = "boundingBox",
     LEVEL = {
         "warn": "warn",
