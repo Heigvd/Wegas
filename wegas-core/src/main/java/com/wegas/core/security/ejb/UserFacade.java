@@ -112,10 +112,15 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
     
-    public List<Map> findPermissionByGameModelId(Long id) {
+    /**
+     * Get all GameModel permissions by GameModel id
+     * @param id
+     * @return 
+     */
+    public List<Map> findPermissionByGameModelId(String id) {
         
         Query findByToken = em.createNamedQuery("findPermissionByGameModelId");
-        findByToken.setParameter("gameId", "%:gm" + id + "%");
+        findByToken.setParameter("gameId", "%:" + id + "%");
         List<Role> res = (List<Role>) findByToken.getResultList();
         List<Map> allRoles = new ArrayList<>();
         for (Role unRole : res){
@@ -137,6 +142,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return allRoles;
     }
     
+    /**
+     * Delete permission by role and permission
+     * @param roleId
+     * @param permission
+     * @return 
+     */
     public boolean deletePermissionByGameModelIdAndPermissions(Long roleId, String permission){
         String permissionToRemove = null;
         Role r = roleFacade.find(roleId);
@@ -148,6 +159,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return r.getPermissions().remove(permissionToRemove);
     }
     
+    /**
+     * Create role_permissions
+     * @param roleId
+     * @param permission
+     * @return 
+     */
     public boolean addPermissionByGameModelIdAndPermissions(Long roleId, String permission){
         boolean added = false;
         boolean exist = false;
@@ -165,6 +182,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return added;
     }
     
+    /**
+     * Delete all permission from a role in a Game or GameModel
+     * @param roleId
+     * @param gameModelId
+     * @return 
+     */
     public boolean deleteAllRolePermissions(Long roleId, String gameModelId){
         ArrayList<String> currentPermissions = new ArrayList<>();
         Role r = roleFacade.find(roleId);
