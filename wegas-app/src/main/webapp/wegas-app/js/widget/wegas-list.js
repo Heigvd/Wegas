@@ -58,7 +58,7 @@ YUI.add('wegas-list', function (Y) {
             direction: {
                 value: 'vertical',
                 type: "string",
-                choices: [{value:'vertical'},{value: 'horizontal'}]
+                choices: [{value: 'vertical'}, {value: 'horizontal'}]
             },
             multiple: {
                 "transient": true
