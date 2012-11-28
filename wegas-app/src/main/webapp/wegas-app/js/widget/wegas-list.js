@@ -36,10 +36,10 @@ YUI.add('wegas-list', function (Y) {
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
         },
+        
         //Children serialization
         toObject: function () {
-            var i, s = Y.Wegas.Editable.prototype.toObject.call(this),
-            children = [];
+            var i, s = Y.Wegas.Editable.prototype.toObject.call(this), children = [];
             for (i = 0; i < this.size(); i = i + 1) {
                 children.push(this.item(i).toObject());
             }

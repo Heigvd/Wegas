@@ -137,8 +137,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         if (r == null) {
             try {
                 r = choice.getResults().get(0);
-            }
-            catch (ArrayIndexOutOfBoundsException ex) {
+            } catch (ArrayIndexOutOfBoundsException ex) {
                 throw new WegasException("No result found for choice \"" + choice.getEditorLabel() + "\"", ex);
             }
         }
@@ -163,12 +162,10 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @throws ScriptException
      */
     public void validateReply(Player player, Reply reply) throws ScriptException, WegasException {
-        HashMap<String, AbstractEntity> arguments = new HashMap<String, AbstractEntity>();
         ChoiceDescriptor choiceDescriptor = reply.getResult().getChoiceDescriptor();
-        //choiceInstance = reply.getResult().getChoiceDescriptor().getInstance(player);
-
         reply.setResult(this.getCurrentResult(player, choiceDescriptor));       // Refresh the current result
 
+        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Eval impacts
         arguments.put("selectedReply", reply);
         arguments.put("selectedChoice", choiceDescriptor.getInstance(player));
         arguments.put("selectedQuestion", reply.getQuestionInstance());
