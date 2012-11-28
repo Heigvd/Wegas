@@ -77,7 +77,8 @@ YUI.add('wegas-pageloader', function(Y) {
             defaultPageId: {
                 type: "string",
                 _inputex: {
-                    label: "Default page"
+                    label: "Default page",
+                    _type: "pageselect"
                 }
             },
             pageId: {

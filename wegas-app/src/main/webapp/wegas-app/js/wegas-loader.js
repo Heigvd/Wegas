@@ -251,6 +251,11 @@ YUI().use(function(Y) {
                         requires: ['inputex-select'],
                         ix_provides: 'roleselect'
                     },
+                    'wegas-inputex-pageselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-pageselect-min.js',
+                        requires: ['inputex-select'],
+                        ix_provides: 'pageselect'
+                    },
                     /** Common Widgets **/
                     'wegas-widgetmenu': {
                         path: 'wegas-app/js/widget/wegas-widgetmenu-min.js',
