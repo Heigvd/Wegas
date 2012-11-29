@@ -45,14 +45,14 @@ YUI.add('wegas-pageloader', function(Y) {
             Y.Wegas.app.after('currentPlayerChange', onUpdate, this);
 
             this.on("*:exception", function(e) {
-                var test, msg = e.response.results.message;
+                var test;
 
                 e.halt(true);
 
-                if (test = msg.match(/ConstraintViolationException: (.*) is out of bound/)) {
+                if (test = e.message.match(/ConstraintViolationException: (.*) is out of bound/)) {
                     this.showMessage("error", "Insufficient " + test[1] + ".");
                 } else {
-                    this.showMessage("error", msg);
+                    this.showMessage("error", e.message);
                 }
 
 
