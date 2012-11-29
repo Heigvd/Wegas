@@ -198,6 +198,7 @@ public class Result extends AbstractEntity {
     /**
      * @return the choiceInstances
      */
+    @XmlTransient
     public List<ChoiceInstance> getChoiceInstances() {
         return choiceInstances;
     }
