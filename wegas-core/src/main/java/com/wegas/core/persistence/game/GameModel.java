@@ -72,7 +72,7 @@ public class GameModel extends NamedEntity {
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
-    //@JsonView(Views.EditorI.class)
+    //@JsonView(Views.ExportI.class)
     @JsonIgnore
     private List<Game> games = new ArrayList<>();
     /**
@@ -84,7 +84,7 @@ public class GameModel extends NamedEntity {
      */
     @ElementCollection(fetch = FetchType.LAZY)
     @Column(length = 10485760)
-    @JsonView({Views.EditorI.class, Views.Export.class})
+    @JsonView({Views.EditorI.class})
     //@Lob
     //@Column(columnDefinition = "BLOB NOT NULL")
     private Map<String, String> scriptLibrary = new HashMap<>();

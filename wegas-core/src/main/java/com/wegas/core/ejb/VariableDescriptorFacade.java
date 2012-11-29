@@ -27,6 +27,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -36,6 +38,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 @LocalBean
 public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescriptor> {
 
+    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacade.class);
     /**
      *
      */
@@ -130,6 +133,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
         String serialized = mapper.writerWithView(Views.Export.class).
                 writeValueAsString(oldEntity);                                  // Serialize the entity
+
+
         VariableDescriptor newEntity =
                 mapper.readValue(serialized, VariableDescriptor.class);         // and deserialize it
 
