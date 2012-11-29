@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -40,6 +40,9 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      */
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
+    /**
+     *
+     */
     @Inject
     private RequestManager requestManager;
 
@@ -73,12 +76,12 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      * @throws ScriptException
      */
     @GET
-    @Path("/CancelReply/{replyId : [1-9][0-9]*}")
+    @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public QuestionInstance cancelReply(
-            @PathParam("gameModelId") Long gameModelId,
+            @PathParam("playerId") Long playerId,
             @PathParam("replyId") Long replyId) throws ScriptException {
-        Reply reply = questionDescriptorFacade.cancelReply(replyId);
+        Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
         return reply.getQuestionInstance();
     }
 

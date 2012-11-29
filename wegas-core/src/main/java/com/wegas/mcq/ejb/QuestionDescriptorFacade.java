@@ -15,8 +15,7 @@ import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.ListDescriptor;
-import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.exception.WegasException;
 import com.wegas.mcq.persistence.*;
 import java.util.HashMap;
@@ -47,11 +46,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      *
      */
     @EJB
-    private ReplyFacade replyFacade;
-    /**
-     *
-     */
-    @EJB
     private ScriptFacade scriptManager;
     /**
      *
@@ -64,36 +58,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     public QuestionDescriptorFacade() {
         super(ChoiceDescriptor.class);
-    }
-
-    /**
-     *
-     * @param questionList
-     * @param player
-     * @param time
-     * @throws ScriptException
-     */
-    public void setCurrentTime(ListDescriptor questionList, Player player, Long time) throws ScriptException, WegasException {
-        for (VariableDescriptor question : questionList.getItems()) {
-            this.setCurrentTime((QuestionDescriptor) question, player, time);
-        }
-    }
-
-    /**
-     *
-     * @param question
-     * @param player
-     * @param time
-     * @throws ScriptException
-     */
-    public void setCurrentTime(QuestionDescriptor question, Player player, Long time) throws ScriptException, WegasException {
-        QuestionInstance questionInstance = (QuestionInstance) question.getInstance(player);
-        for (Reply reply : questionInstance.getReplies()) {
-            //logger.warn(reply.getStartTime()+"*"+reply.getChoiceDescriptor().getDuration()+"*"+time);
-            if (reply.getStartTime() + reply.getResult().getChoiceDescriptor().getDuration() + 1 == time) {
-                this.validateReply(player, reply);
-            }
-        }
     }
 
     /**
@@ -114,6 +78,17 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         reply.setStartTime(startTime);
         reply.setResult(this.getCurrentResult(player, choice));
         questionInstance.addReply(reply);
+
+
+        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
+        arguments.put("selectedReply", reply);
+        try {
+            scriptManager.eval(player,
+                    new Script("eventManager.fire(\"replySelect\", {reply: selectedReply});"),
+                    arguments);
+        } catch (ScriptException e) {
+            // GOTCHA no eventManager is instantiated
+        }
 
         em.flush();
         em.refresh(reply);
@@ -149,9 +124,21 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param replyId
      * @return
      */
-    public Reply cancelReply(Long replyId) {
-        Reply reply = replyFacade.find(replyId);
-        replyFacade.remove(reply);
+    public Reply cancelReply(Long playerId, Long replyId) {
+
+        Reply reply = em.find(Reply.class, replyId);
+        em.remove(reply);
+
+        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
+        arguments.put("selectedReply", reply);
+        try {
+            scriptManager.eval(playerFacade.find(playerId),
+                    new Script("eventManager.fire(\"replyCancel\", {reply: selectedReply});"),
+                    arguments);
+        } catch (ScriptException e) {
+            // GOTCHA no eventManager is instantiated
+        }
+
         return reply;
     }
 
@@ -171,6 +158,13 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         arguments.put("selectedQuestion", reply.getQuestionInstance());
         scriptManager.eval(player, reply.getResult().getImpact(), arguments);
         scriptManager.eval(player, reply.getResult().getChoiceDescriptor().getImpact(), arguments);
+        try {                                                                   // Throw a global event
+            scriptManager.eval(player,
+                    new Script("eventManager.fire(\"replyValidate\", {reply: selectedReply, choice:selectedChoice, question:selectedQuestion});"),
+                    arguments);
+        } catch (ScriptException e) {
+            // GOTCHA no eventManager is instantiated
+        }
     }
 
     /**
@@ -180,7 +174,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @throws ScriptException
      */
     public void validateReply(Player player, Long replyVariableInstanceId) throws ScriptException, WegasException {
-        this.validateReply(player, this.replyFacade.find(replyVariableInstanceId));
+        this.validateReply(player, em.find(Reply.class, replyVariableInstanceId));
     }
 
     /**

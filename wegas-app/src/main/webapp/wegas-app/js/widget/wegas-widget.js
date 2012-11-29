@@ -24,7 +24,6 @@ YUI.add("wegas-widget", function (Y) {
         "success": "success"
     },
     destroySelf = function () {
-
         if (!this._node) {
             return;                                                             // The node has already been destroyed
         }
@@ -64,9 +63,7 @@ YUI.add("wegas-widget", function (Y) {
     Y.mix(Widget.prototype, {
 
         defaultExceptionHandler: function (e) {
-            this.fire("exception", {
-                response: e.response
-            });
+            this.fire("exception", e.response.results);
         },
 
         showOverlay: function () {
@@ -275,8 +272,7 @@ YUI.add("wegas-widget", function (Y) {
             }
         },
         create: function (config) {
-            var type = config.childType || config.type,
-            child, Fn;
+            var child, Fn, type = config.childType || config.type;
 
             if (type) {
                 Fn = Lang.isString(type) ? Y.Wegas[type] || Y[type] : type;

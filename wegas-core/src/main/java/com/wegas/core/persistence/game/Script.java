@@ -37,6 +37,10 @@ public class Script implements Serializable {
     public Script() {
     }
 
+    public Script(String content) {
+        this.content = content;
+    }
+
     public Script(String language, String content) {
         this.lang = language;
         this.content = content;
