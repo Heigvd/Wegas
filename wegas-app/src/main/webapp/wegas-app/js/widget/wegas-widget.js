@@ -16,7 +16,6 @@ YUI.add("wegas-widget", function (Y) {
     "use strict";
 
     var Lang = Y.Lang,
-    CONTENTBOX = "contentBox",
     BOUNDING_BOX = "boundingBox",
     LEVEL = {
         "warn": "warn",
@@ -25,7 +24,6 @@ YUI.add("wegas-widget", function (Y) {
         "success": "success"
     },
     destroySelf = function () {
-
         if (!this._node) {
             return;                                                             // The node has already been destroyed
         }
@@ -56,9 +54,17 @@ YUI.add("wegas-widget", function (Y) {
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
         || this.constructor.NAME.toLowerCase();                                 // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
+
+        this.publish("exception", {
+            emitFacade: true
+        });
     }
 
     Y.mix(Widget.prototype, {
+
+        defaultExceptionHandler: function (e) {
+            this.fire("exception", e.response.results);
+        },
 
         showOverlay: function () {
             this.get(BOUNDING_BOX).prepend("<div class='wegas-widget-loading'></div>");
@@ -91,7 +97,6 @@ YUI.add("wegas-widget", function (Y) {
                 }
             }
             msgNode.append(message);
-
             message.closeHandler = message.one(".close").once("click", destroySelf, message);
 
             if (timeout) {
@@ -128,7 +133,7 @@ YUI.add("wegas-widget", function (Y) {
             return statusNode;
         },
         //Get Class From plugin name. Hopefully a unique name ...
-        _getPluginFromName: function(name) {
+        _getPluginFromName: function (name) {
             var i;
             for (i in Y.Plugin) {
                 if (Y.Plugin[i].NAME === name) {
@@ -245,7 +250,7 @@ YUI.add("wegas-widget", function (Y) {
                 "transient": true
             },
             plugins: {                                                          //For serialization purpose, get plugin configs
-                getter: function() {
+                getter: function () {
                     var i, p = [], plg;
                     for (i in this._plugins) {
                         plg = this[this._plugins[i].NS];
@@ -267,8 +272,7 @@ YUI.add("wegas-widget", function (Y) {
             }
         },
         create: function (config) {
-            var type = config.childType || config.type,
-            child, Fn;
+            var child, Fn, type = config.childType || config.type;
 
             if (type) {
                 Fn = Lang.isString(type) ? Y.Wegas[type] || Y[type] : type;

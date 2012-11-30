@@ -15,7 +15,7 @@ import javax.ejb.ApplicationException;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@ApplicationException
+@ApplicationException(rollback=true)
 public class ConstraintViolationException extends RuntimeException {
 
     public ConstraintViolationException() {

@@ -6,9 +6,41 @@
         "scroll": null,
         "zIndex": 2,
         "children": [{
-            "type": "Text",
+            "type": "Button",
             "content": "",
-            "cssClass": "wegas-title"
+            "cssClass": "wegas-title",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": [{
+                        "type": "Button",
+                        "label": "Properties",
+                        "plugins": [{
+                            "fn": "EditEntityAction",
+                            "cfg": {
+                                "entity": "currentGameModel",
+                                "dataSource": "GameModelFacade"
+                            }
+                        }]
+                    }, {
+                        "type": "Button",
+                        "label": "Duplicate",
+                        "plugins": [{
+                            "fn": "DuplicateEntityAction",
+                            "cfg": {
+                                "entity": "currentGameModel",
+                                "dataSource": "GameModelFacade"
+                            }
+                        }]
+                    }, {
+                        "type": "DeleteEntityButton",
+                        "cfg": {
+                            "entity": "currentGameModel",
+                            "dataSource": "GameModelFacade"
+                        }
+                    }]
+                }
+            }]
         }, {
             "type": "SelectGameButton"
         }, {
@@ -257,7 +289,10 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
-            "children": []
+            "children": [],
+            "plugins": [{
+                "fn": "LayoutToggleTab"
+            }]
         }]
     }
 }

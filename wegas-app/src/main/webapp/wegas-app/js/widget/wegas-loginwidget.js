@@ -192,8 +192,7 @@ YUI.add('wegas-loginwidget', function (Y) {
         },
 
         getRedirect: function () {
-            return this.getQueryParameter("redirect") ||
-            (Y.Wegas.app.get("base") + this.defaultRedirect);
+            return this.getQueryParameter("redirect") || (Y.Wegas.app.get("base") + this.defaultRedirect);
         },
 
         /**

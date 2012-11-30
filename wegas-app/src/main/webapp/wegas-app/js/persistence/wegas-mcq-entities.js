@@ -25,15 +25,15 @@ YUI.add('wegas-mcq-entities', function (Y) {
     /**
      * QuestionDescriptor mapper
      */
-    Y.Wegas.persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", Y.Wegas.persistence.ListDescriptor, [], {
-        getRepliesByStartTime: function ( startTime ) {
-            return this.getInstance().getRepliesByStartTime( startTime );
+    Y.namespace("Wegas.persistence").QuestionDescriptor = Y.Base.create("QuestionDescriptor", Y.Wegas.persistence.ListDescriptor, [], {
+        getRepliesByStartTime: function (startTime) {
+            return this.getInstance().getRepliesByStartTime(startTime);
         }
     }, {
-        ATTRS:{
-            "@class":{
+        ATTRS: {
+            "@class": {
                 type: "string",
-                value:"QuestionDescriptor"
+                value: "QuestionDescriptor"
             },
             allowMultipleReplies: {
                 value: false,
@@ -67,11 +67,11 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 optional: true
             },
             pictures: {
-                optional:true,
+                optional: true,
                 type: "array",
                 items: {
                     type: "string",
-                    optional:true,
+                    optional: true,
                     _inputex: {
                         _type: "wegasurl",
                         label: ""
@@ -91,7 +91,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 "fn": "WidgetMenu",
                 "cfg": {
                     "menuCfg": {
-                        points: [ "tl", "tr" ]
+                        points: ["tl", "tr"]
                     },
                     "event": "mouseenter",
                     "children": [{
@@ -163,19 +163,19 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * QuestionInstance mapper
      */
     Y.Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Y.Wegas.persistence.VariableInstance, [], {
-        getRepliesByStartTime: function ( startTime ) {
+        getRepliesByStartTime: function (startTime) {
             var i, ret = [], replies = this.get("replies");
-            for (i = 0; i < replies.length; i = i + 1 ) {
-                if ( replies[i].get("startTime") === startTime ) {
-                    ret.push( replies[i] );
+            for (i = 0; i < replies.length; i = i + 1) {
+                if (replies[i].get("startTime") === startTime) {
+                    ret.push(replies[i]);
                 }
             }
             return ret;
         }
     }, {
         ATTRS: {
-            "@class":{
-                value:"QuestionInstance"
+            "@class": {
+                value: "QuestionInstance"
             },
             active: {
                 value: true,
@@ -199,9 +199,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * ChoiceDescriptor mapper
      */
     Y.Wegas.persistence.ChoiceDescriptor = Y.Base.create("ChoiceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], { }, {
-        ATTRS:{
-            "@class":{
-                value:"ChoiceDescriptor"
+        ATTRS: {
+            "@class": {
+                value: "ChoiceDescriptor"
             },
             description: {
                 type: 'string',
@@ -219,14 +219,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         type: "string",
                         _inputex: {
                             _type: 'hidden',
-                            value:'ChoiceInstance'
+                            value: 'ChoiceInstance'
                         }
                     },
                     id: IDATTRDEF,
                     active: {
                         type: "boolean",
                         _inputex: {
-                            label:'Active by default',
+                            label: 'Active by default',
                             value: true
                         }
                     },
@@ -248,31 +248,15 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     description: "Only for crimesim evidences"
                 }
             },
-            
-            /*cost: {
+            cost: {
                 type: "string",
                 optional: true,
                 value: 0,
                 _inputex: {
+                    label: "Human resource consumption",
                     description: "Only for crimesim evidences"
                 }
-            },*/
-
-            //feedback: {
-            //    type: 'string',
-            //    format: "html",
-            //    _inputex: {
-            //        opts: {
-            //            height: '50px'
-            //        }
-            //    }
-            //},
-            //impact: {
-            //    _inputex: {
-            //        _type: "script"
-            //    },
-            //    optional: true
-            //},
+            },
             results: {
                 type: "array",
                 value: [],
@@ -280,10 +264,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     _type: 'hidden'
                 }
             }
+        //impact: {
+        //    _inputex: {
+        //        _type: "script"
+        //    },
+        //    optional: true
+        //},
         },
         EDITMENU: [{
             type: "EditEntityButton"
-        },{
+        }, {
             type: "Button",
             label: "Add result",
             plugins: [{
@@ -340,9 +330,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * ChoiceDescriptor mapper
      */
     Y.Wegas.persistence.SingleResultChoiceDescriptor = Y.Base.create("SingleResultChoiceDescriptor", Y.Wegas.persistence.ChoiceDescriptor, [], { }, {
-        ATTRS:{
-            "@class":{
-                value:"SingleResultChoiceDescriptor"
+        ATTRS: {
+            "@class": {
+                value: "SingleResultChoiceDescriptor"
             },
             defaultInstance: {
                 properties: {
@@ -350,14 +340,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         type: "string",
                         _inputex: {
                             _type: 'hidden',
-                            value:'ChoiceInstance'
+                            value: 'ChoiceInstance'
                         }
                     },
                     id: IDATTRDEF,
                     active: {
                         type: "boolean",
                         _inputex: {
-                            label:'Active by default',
+                            label: 'Active by default',
                             value: true
                         }
                     },
@@ -377,7 +367,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 }],
                 items: {
                     type: "object",
-                    optional:true,
+                    optional: true,
                     properties: {
                         id: IDATTRDEF,
                         "@class": {
@@ -416,7 +406,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             type: "array",
                             items: {
                                 type: "string",
-                                optional:true,
+                                optional: true,
                                 _inputex: {
                                     _type: "wegasurl",
                                     label: ""
@@ -471,8 +461,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
         }
     }, {
         ATTRS: {
-            "@class":{
-                value:"Result"
+            "@class": {
+                value: "Result"
             },
             name: {
                 type: "string"
@@ -498,7 +488,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: "array",
                 items: {
                     type: "string",
-                    optional:true,
+                    optional: true,
                     _inputex: {
                         _type: "wegasurl",
                         label: ""
@@ -530,29 +520,27 @@ YUI.add('wegas-mcq-entities', function (Y) {
     /**
      * MCQ ChoiceInstance mapper
      */
-    Y.Wegas.persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", Y.Wegas.persistence.VariableInstance, [], {
-
-        }, {
-            ATTRS: {
-                "@class":{
-                    value:"ChoiceInstance"
-                },
-                active: {
-                    value: true,
-                    type: "boolean"
-                },
-                unread: {
-                    value: true,
-                    type: "boolean"
-                },
-                currentResultId: {
-                    type: "string",
-                    _inputex: {
-                        _type: "hidden"
-                    }
+    Y.Wegas.persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "ChoiceInstance"
+            },
+            active: {
+                value: true,
+                type: "boolean"
+            },
+            unread: {
+                value: true,
+                type: "boolean"
+            },
+            currentResultId: {
+                type: "string",
+                _inputex: {
+                    _type: "hidden"
                 }
             }
-        });
+        }
+    });
     /**
      * MCQ Reply mapper
      */
@@ -565,7 +553,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
         /**
          *  @return 0 if is finished, 1 if ongoing and 2 if planified
          */
-        getStatus: function ( time ) {
+        getStatus: function (time) {
             var choiceDescriptor = this.getChoiceDescriptor();
 
             if ((this.get("startTime") + choiceDescriptor.get("duration")) <= time) {
@@ -578,8 +566,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
         }
     }, {
         ATTRS: {
-            "@class":{
-                value:"Reply"
+            "@class": {
+                value: "Reply"
             },
             choiceDescriptorId: {
                 type: "string",
@@ -590,7 +578,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             startTime: {
                 type: "string",
-                setter: function ( val ) {
+                setter: function (val) {
                     return val * 1;
                 }
             },

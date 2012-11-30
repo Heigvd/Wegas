@@ -29,7 +29,9 @@ YUI.add('wegas-widgetmenu', function (Y) {
         // *** Lifecycle methods *** //
         initializer: function () {
             this.afterHostEvent("render", function () {
-                var bb = this.get("host").get("boundingBox");
+                var bb = this.get("host").get("boundingBox"),
+                aClass = "";
+
                 bb.delegate(this.get("event"), function (e) {
                     var menu = this.getMenu();                                  // Get a menu instance
 
@@ -37,6 +39,14 @@ YUI.add('wegas-widgetmenu', function (Y) {
                     e.halt(true);                                               // Prevent event from bubbling
                     this.fire("menuOpen");                                      // Notify the parent the menu has been opened
                 }, this.get("selector"), this);
+
+
+                bb.append('<span class="wegas-widgetmenu-submenuindicator"></span>');      // Add submenu indicator
+                bb.addClass("wegas-widgetmenu-hassubmenu");
+                //bb.all(this.get("selector")).addClass("wegas-widgetmenu-hassubmenu");
+                if (this.get("menuCfg.points") && this.get("menuCfg.points")[0].indexOf("b") < 0) {
+                    bb.addClass("wegas-widgetmenu-hassubmenuright");
+                }
             });
         },
         show: function () {
@@ -129,7 +139,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
         },
 
         bindUI: function () {
-            this.on("*:click", function (e) {                            // @hack in order for event to be bubbled up
+            this.on("*:click", function (e) {                                   // @hack in order for event to be bubbled up
                 //Y.log("fix");
                 }, this);
         },
@@ -198,7 +208,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
             constrain: {
                 value: true
             },
-            zIndex:{
+            zIndex: {
                 value: 25
             },
             render: {

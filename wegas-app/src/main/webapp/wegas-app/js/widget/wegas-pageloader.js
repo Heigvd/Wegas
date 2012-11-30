@@ -18,21 +18,7 @@ YUI.add('wegas-pageloader', function(Y) {
     var CONTENTBOX = 'contentBox', PageLoader;
 
     PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable], {
-        // *** Private Methods ***/
-        isLoadingALoop: function(pageId) {                                     //Page loader mustn't load the page who contain himself.
-            var k, isALoop = false;
-            for (k in PageLoader.pageLoaderInstances) {
-                if (PageLoader.pageLoaderInstances[k].get('id') === this.get('id')) { //don't check pageId of current instance and contained childrens
-                    break;
-                }
-                if (pageId === PageLoader.pageLoaderInstances[k].get('pageId')
-                    || pageId === PageLoader.pageLoaderInstances[k].get('variable.evaluated')) {
-                    isALoop = true;
-                    Y.log("Attempt to load the PageLoader of this PageLoader's instance is aborted.", 'warn', 'Wegas.PageLoader');
-                }
-            }
-            return isALoop;
-        },
+
         // *** Lifecycle Methods ***/
         initializer: function() {
             PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded PageLoaders
@@ -40,6 +26,7 @@ YUI.add('wegas-pageloader', function(Y) {
             if (this.get("defaultPageId")) {
                 this.set("pageId", this.get("defaultPageId"));
             }
+
         },
         bindUI: function() {
             //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
@@ -57,6 +44,19 @@ YUI.add('wegas-pageloader', function(Y) {
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", onUpdate, this);
             Y.Wegas.app.after('currentPlayerChange', onUpdate, this);
 
+            this.on("*:exception", function(e) {
+                var test;
+
+                e.halt(true);
+
+                if (test = e.message.match(/ConstraintViolationException: (.*) is out of bound/)) {
+                    this.showMessage("error", "Insufficient " + test[1] + ".");
+                } else {
+                    this.showMessage("error", e.message);
+                }
+
+
+            });
         },
         syncUI: function() {
             var val = this.get("variable.evaluated");
@@ -65,6 +65,22 @@ YUI.add('wegas-pageloader', function(Y) {
             } else {                                                            // Otherwise use pageId (in case the setter has not been called yet)
                 this.set("pageId", this.get("pageId"));
             }
+        },
+
+        // *** Private Methods ***/
+        isLoadingALoop: function(pageId) {                                     //Page loader mustn't load the page who contain himself.
+            var k, isALoop = false;
+            for (k in PageLoader.pageLoaderInstances) {
+                if (PageLoader.pageLoaderInstances[k].get('id') === this.get('id')) { //don't check pageId of current instance and contained childrens
+                    break;
+                }
+                if (pageId === PageLoader.pageLoaderInstances[k].get('pageId')
+                    || pageId === PageLoader.pageLoaderInstances[k].get('variable.evaluated')) {
+                    isALoop = true;
+                    Y.log("Attempt to load the PageLoader of this PageLoader's instance is aborted.", 'warn', 'Wegas.PageLoader');
+                }
+            }
+            return isALoop;
         }
     }, {
         ATTRS: {
@@ -99,10 +115,11 @@ YUI.add('wegas-pageloader', function(Y) {
                     this.get(CONTENTBOX).empty();
                     this.showOverlay();
                     try {
-                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function(cfg) {   // Load the subwidget dependencies
+                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function(cfg) {    // Load the subwidget dependencies
                             var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
                             widget.render(this.get(CONTENTBOX));
                             this.set("widget", widget);
+                            widget.addTarget(this);                             // Event on the loaded widget will be forwarded
                             this.hideOverlay();
                         }, this, widgetCfg));
                     } catch (e) {

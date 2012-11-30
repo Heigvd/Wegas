@@ -246,10 +246,10 @@ YUI.add('wegas-tooltip', function (Y) {
          * if the default handler has not been prevented.
          */
         _defTriggerEnterFn: function (e) {
-            var node = e.node;
+            var delay, node = e.node;
             if (!this.get("disabled")) {
                 this._clearTimers();
-                var delay = (this.get("visible")) ? 0 : this.get("showDelay");
+                delay = (this.get("visible")) ? 0 : this.get("showDelay");
                 this._timers.show = Y.later(delay, this, this._showTooltip, [node]);
             }
         },
@@ -324,7 +324,7 @@ YUI.add('wegas-tooltip', function (Y) {
          */
         _setCurrentTrigger : function (node, x, y) {
 
-            var currTrigger = this._currTrigger,
+            var title, currTrigger = this._currTrigger,
             triggerHandles = this._eventHandles.trigger;
 
             this._setTriggerContent(node);
@@ -332,7 +332,7 @@ YUI.add('wegas-tooltip', function (Y) {
             triggerHandles.mouseMove = Y.on("mousemove", Y.bind(this._onNodeMouseMove, this), node);
             triggerHandles.mouseOut = Y.on("mouseleave", Y.bind(this._onNodeMouseLeave, this), node);
 
-            var title = node.getAttribute("title");
+            title = node.getAttribute("title");
             node.setAttribute("title", "");
 
             currTrigger.mouseX = x;
@@ -352,8 +352,8 @@ YUI.add('wegas-tooltip', function (Y) {
             triggerHandles = this._eventHandles.trigger;
 
             if (currTrigger.node) {
-                var node = currTrigger.node;
-                var title = currTrigger.title || "";
+                var node = currTrigger.node,
+                title = currTrigger.title || "";
 
                 currTrigger.node = null;
                 currTrigger.title = "";

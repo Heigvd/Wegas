@@ -34,8 +34,22 @@ YUI.add('wegas-editor-action', function (Y) {
         NS: "entityaction",
         NAME: "EntityAction",
         ATTRS: {
-            entity: {},
-            dataSource: {}
+            entity: {
+                getter: function (val) {
+                    if (val === "currentGameModel") {
+                        return Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
+                    }
+                    return val;
+                }
+            },
+            dataSource: {
+                getter: function (val) {
+                    if (Y.Lang.isString(val)) {
+                        return Y.Wegas[val];
+                    }
+                    return val;
+                }
+            }
         }
     });
     Y.namespace("Plugin").EntityAction = EntityAction;
@@ -117,28 +131,19 @@ YUI.add('wegas-editor-action', function (Y) {
                     this.callback(e.value, this.currentEntity);
                 }, EditEntityAction);
 
-                EditEntityAction.form.on("cancel", EditEntityAction.hideEditForm, EditEntityAction);
+                EditEntityAction.form.on("cancel", function () {
+                    EditEntityAction.tab.remove();
+                    EditEntityAction.tab.destroy();
+                    delete EditEntityAction.tab;
+
+                    //Y.Wegas.app.widget.hidePosition("right");                   // Hide the right layout
+                });
                 EditEntityAction.tab.add(EditEntityAction.form);
             }
 
             EditEntityAction.tab.set("selected", 2);
             EditEntityAction.form.emptyMessage();
             EditEntityAction.form.setForm(entity.toObject(), entity.getFormCfg());
-
-            Y.Wegas.app.widget.showPosition("right");                         // Finally show the layout widget position
-        },
-
-        /**
-         *
-         */
-        hideEditForm: function () {
-            //EditEntityAction.tab.get("parent").selectChild(0);
-            //Y.Wegas.TabView.destroyTab(EditEntityAction.tab.get("id"));
-            // EditEntityAction.tab.destroy();
-            //delete EditEntityAction.tab;
-            //delete EditEntityAction.form;
-
-            Y.Wegas.app.widget.hidePosition("right");
         },
 
         /**

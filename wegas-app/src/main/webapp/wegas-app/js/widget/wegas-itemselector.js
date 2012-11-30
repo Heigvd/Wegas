@@ -100,7 +100,7 @@ YUI.add('wegas-itemselector', function (Y) {
             }
         },
         createSelector: function (cb, variables) {
-            var i, node = cb.one('.selectors'), selector
+            var i, node = cb.one('.selectors'), selector;
             node.empty();
             for (i = 0; i < variables.length; i++) {
                 if (variables[i].getInstance().get('active') == null || variables[i].getInstance().get('active') == true) {
@@ -126,7 +126,7 @@ YUI.add('wegas-itemselector', function (Y) {
             for (i = 0; i < attrs.length; i++) {
                 obj = attrs[i];
                 if (typeof obj === 'object') {
-                    value = this.getVariableValue(variable, obj['name'])
+                    value = this.getVariableValue(variable, obj['name']);
                     value = (value != null) ? value : obj['name'];
                     label = (obj['label'] || null);
                     type = (obj['type'] || 'undefine');
