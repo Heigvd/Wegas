@@ -206,23 +206,27 @@ YUI.add("wegas-gallery", function(Y) {
                     if (e.newVal.length > 1) {
                         this.loadImage(1);
                     }
-                }
-                if (!this.scrollView.get("rendered")) {
-                    this.scrollView.plug(Y.Plugin.ScrollViewPaginator, {
-                        selector: 'li'
-                    });
+                    if (!this.scrollView.get("rendered")) {
+                        this.scrollView.plug(Y.Plugin.ScrollViewPaginator, {
+                            selector: 'li'
+                        });
 
-                    this.scrollView.render();
-                    this.scrollView.pages.after("indexChange", function(e) {
-                        this.setSelected(e.target.get("index"));
-                    }, this);
-                } else {
-                    this.scrollView.syncUI();
+                        this.scrollView.render();
+                        this.scrollView.pages.after("indexChange", function(e) {
+                            this.setSelected(e.target.get("index"));
+                        }, this);
+                    } else {
+                        this.scrollView.syncUI();
 
+                    }
+                    this.setSelected(0);
+                    this.scrollView.pages.set("index", 0);
+                    this.syncUI();
+                    arguments: [{
+                            type: "hidden",
+                            value: "self"
+                        }];
                 }
-                this.setSelected(0);
-                this.scrollView.pages.set("index", 0);
-                this.syncUI();
             });
             if (this.get("lightGallery")) {
                 this.eventInstances.push(Y.one("body").delegate("click", function(e) {

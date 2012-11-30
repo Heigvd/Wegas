@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.leaderway.persistence.DialogueDescriptor;
 import java.util.*;
@@ -56,6 +57,19 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         StateMachineDescriptor smDescriptor = (StateMachineDescriptor) a;
         this.mergeStates((HashMap<Long, State>) smDescriptor.getStates());
         super.merge(smDescriptor);
+    }
+
+    /* script methods */
+    public void enable(Player p) {
+        this.getInstance(p).setEnabled(Boolean.TRUE);
+    }
+
+    public void disable(Player p) {
+        this.getInstance(p).setEnabled(Boolean.FALSE);
+    }
+
+    public Boolean isEnabled(Player p) {
+        return this.getInstance(p).getEnabled();
     }
 
     private void mergeStates(HashMap<Long, State> newStates) {

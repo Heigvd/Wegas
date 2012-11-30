@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <actions>
     <action>
+        <actionName>run</actionName>
+        <goals>
+            <goal>package</goal>
+        </goals>
+        <properties>
+            <netbeans.deploy>true</netbeans.deploy>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+    <action>
+        <actionName>debug</actionName>
+        <goals>
+            <goal>package</goal>
+        </goals>
+        <properties>
+            <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
+            <netbeans.deploy>true</netbeans.deploy>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+    <action>
         <actionName>CUSTOM-Build -skip-test</actionName>
         <displayName>Build -skip-test</displayName>
         <goals>
@@ -46,27 +67,6 @@
         <goals>
             <goal>cobertura:cobertura</goal>
         </goals>
-    </action>
-    <action>
-        <actionName>run</actionName>
-        <goals>
-            <goal>package</goal>
-        </goals>
-        <properties>
-            <netbeans.deploy>true</netbeans.deploy>
-            <skipTests>true</skipTests>
-        </properties>
-    </action>
-    <action>
-        <actionName>debug</actionName>
-        <goals>
-            <goal>package</goal>
-        </goals>
-        <properties>
-            <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
-            <netbeans.deploy>true</netbeans.deploy>
-            <skipTests>true</skipTests>
-        </properties>
     </action>
 
 </actions>

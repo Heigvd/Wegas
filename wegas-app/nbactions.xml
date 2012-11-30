@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
+
+    <action>
+        <actionName>run</actionName>
+<!--        <preAction>build-with-dependencies</preAction>-->
+        <goals>
+            <goal>prepare-package</goal>
+            <goal>war:exploded</goal>
+        </goals>
+        <properties>
+            <netbeans.deploy>true</netbeans.deploy>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+    <action>
+        <actionName>debug</actionName>
+        <goals>
+            <goal>package</goal>
+        </goals>
+        <properties>
+            <netbeans.deploy>true</netbeans.deploy>
+            <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+
     <action>
         <actionName>CUSTOM-Build -skip-test</actionName>
         <displayName>Build -skip-test</displayName>
@@ -33,53 +58,31 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
+
     <action>
-        <actionName>CUSTOM-Build site</actionName>
+        <actionName>CUSTOM-Site</actionName>
         <displayName>Build site</displayName>
         <goals>
             <goal>site</goal>
         </goals>
     </action>
     <action>
-        <actionName>CUSTOM-Run Cobertura</actionName>
+        <actionName>CUSTOM-Cobertura</actionName>
         <displayName>Run Cobertura</displayName>
         <goals>
             <goal>cobertura:cobertura</goal>
         </goals>
     </action>
     <action>
-        <actionName>run</actionName>
-        <preAction>build-with-dependencies</preAction>
+        <actionName>CUSTOM-Run exploded -skipTests</actionName>
+        <displayName>Run -exploded -skipTests</displayName>
         <goals>
-            <goal>package</goal>
+            <goal>prepare-package</goal>
+            <goal>war:exploded</goal>
         </goals>
         <properties>
             <netbeans.deploy>true</netbeans.deploy>
             <skipTests>true</skipTests>
         </properties>
     </action>
-    <action>
-        <actionName>debug</actionName>
-        <goals>
-            <goal>package</goal>
-        </goals>
-        <properties>
-            <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
-            <netbeans.deploy>true</netbeans.deploy>
-            <skipTests>true</skipTests>
-        </properties>
-    </action>
-    <action>
-            <actionName>CUSTOM-Run -exploded -skipTests</actionName>
-            <displayName>Run -exploded -skipTests</displayName>
-            <goals>
-                <goal>prepare-package</goal>
-                <goal>war:exploded</goal>
-            </goals>
-            <properties>
-                <netbeans.deploy>true</netbeans.deploy>
-                <skipTests>true</skipTests>
-            </properties>
-        </action>
-
 </actions>
