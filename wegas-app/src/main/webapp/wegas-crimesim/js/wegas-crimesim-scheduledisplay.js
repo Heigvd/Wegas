@@ -41,18 +41,21 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 width: "250px"
             });
         },
+
         renderUI: function () {
             // cb.on("clickoutside", this.hideMenu, this);
             this.menu.on("button:mouseenter", function (e) {
+                var choice = e.target.get("data").choice;
                 this.menuDetails.set("align", {
                     node: this.menu.get("boundingBox"),
-                    points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ?
-                    ["tr", "tl"] : ["tl", "tr"]
+                    points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ? ["tr", "tl"] : ["tl", "tr"]
                 });
-                this.menuDetails.show();
-                this.menuDetails.get("contentBox").setHTML('<div style="padding:5px 10px">' +
-                    (e.target.get("data").choice.get("description") || "<i>No description</i>")
+                this.menuDetails.get("contentBox").setHTML('<div style="padding:5px 10px">'
+                    + (choice.get("description") || "<i>No description</i>")
+                    + "<br /><br />Human resources needed: " + choice.get("cost")
+                    + "<br />Duration: " + choice.get("duration")
                     + '</div>');
+                this.menuDetails.show();
             }, this);
 
             this.menu.on("visibleChange", function (e) {                 // When the menu is hidden, hide the details panel
@@ -76,17 +79,17 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
 
             cb.delegate("click", function (e) {                            // Show the available menu options on cell click
                 var questionId = e.target.ancestor("tr").getAttribute("data-questionid"),
-                startTime = e.target.ancestor("td").getAttribute("data-startTime") * 1,
+                startTime = +e.target.ancestor("td").getAttribute("data-startTime"),
                 question = Y.Wegas.VariableDescriptorFacade.rest.findById(questionId);
 
-                this.menu.removeAll();                                      // Populate the menu
+                this.menu.removeAll();                                          // Populate the menu
                 this.menu.add(this.genMenuItems(question, startTime));
-                this.menu.attachTo(e.target);                             // Display the menu button next to the arrow
+                this.menu.attachTo(e.target);                                   // Display the menu button next to the arrow
             }, ".schedule-available .icon", this);
 
-            this.menu.on("button:click", this.onMenuClick, this);         // Listen for the choice menu click event
+            this.menu.on("button:click", this.onMenuClick, this);               // Listen for the choice menu click event
 
-            cb.delegate("click", function (e) {                            // Show the question detail on left label click
+            cb.delegate("click", function (e) {                                 // Show the question detail on left label click
                 var questionId = e.target.ancestor("tr").getAttribute("data-questionid");
                 this.currentQuestionId = questionId;
                 this.get("contentBox").all(".schedule-leftcolum-selected").removeClass("schedule-leftcolum-selected");
@@ -94,17 +97,16 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 this.syncDetailsPanel();
             }, "td.schedule-leftcolum", this);
 
-            cb.delegate("click", this.hideDetails, // Hide the question detail on close icon click
+            cb.delegate("click", this.hideDetails,                              // Hide the question detail on close icon click
                 ".schedule-icon-close", this);
 
-            cb.delegate("click", this.onCancelReplyClick, // Hide the question detail on close icon click
-                ".icon .close-icon", this);
+            cb.delegate("click", this.onCancelReplyClick, ".icon .close-icon", this);// Hide the question detail on close icon click
 
-            this.handlers.response = // If data changes, refresh
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response",
-                this.syncUI, this);
 
-            this.handlers.playerChange = // If current user changes, refresh (editor only)
+            this.handlers.response =                                            // If data changes, refresh
+            Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+
+            this.handlers.playerChange =                                        // If current user changes, refresh (editor only)
             Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
         /**
@@ -122,7 +124,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
          *
          */
         destructor: function () {
-            for (var i in this.handlers) {
+            var i;
+            for (i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
@@ -192,7 +195,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 for (j = 0; j < questionInstance.get("replies").length; j += 1) {
                     reply = questionInstance.get("replies")[j];
                     cIndex = reply.get("startTime");
-                    choiceDescriptor = reply.getChoiceDescriptor(),
+                    choiceDescriptor = reply.getChoiceDescriptor();
                     choiceInstance = choiceDescriptor.getInstance();
 
                     cols[cIndex] = ["schedule-unavailable", "schedule-task",
@@ -241,11 +244,13 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 acc.push("</tr>");
             }
 
-            acc.push('<tfoot><tr>', // Generate table footer
-                '<td class="schedule-leftcolum">Available human resources</td>');
+            acc.push('<tfoot><tr>',                                             // Generate table footer
+                //'<td class="schedule-leftcolum">Available human resources</td>');
+                '<td class="schedule-leftcolum">Total human resources</td>');
 
             for (i = 0; i < perPeriodLoad.length; i += 1) {
-                acc.push('<td>' + (perPeriodBudget - perPeriodLoad[i]) + '/' + perPeriodBudget + '</td>');
+                //acc.push('<td>' + (perPeriodBudget - perPeriodLoad[i]) + '/' + perPeriodBudget + '</td>');
+                acc.push('<td>' + perPeriodLoad[i] + '</td>');
             }
             acc.push("</tr></tfoot></table>");
 
@@ -253,29 +258,29 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
         },
         renderDetailsPanel: function (node) {
             var columns = [{
-                    key: "choiceDescriptorId",
-                    className: "hidden"
-                },{
-                    sortable: true,
-                    key: "startTime",
-                    //className: 'hidden',
-                    label: "Period",
-                    className: "period"
-                }, {
-                    sortable: true,
-                    key: "analyis",
-                    label: "Analyse"
-                }, {
-                    key: "answer",
-                    label: "Result",
-                    allowHTML: true
-                }, {
-                    sortable: true,
-                    key: "fileLinks",
-                    label: "Files",
-                    allowHTML: true,
-                    emptyCellValue: "no files"
-                }];
+                key: "choiceDescriptorId",
+                className: "hidden"
+            }, {
+                sortable: true,
+                key: "startTime",
+                //className: 'hidden',
+                label: "Period",
+                className: "period"
+            }, {
+                sortable: true,
+                key: "analyis",
+                label: "Analyse"
+            }, {
+                key: "answer",
+                label: "Result",
+                allowHTML: true
+            }, {
+                sortable: true,
+                key: "fileLinks",
+                label: "Files",
+                allowHTML: true,
+                emptyCellValue: "no files"
+            }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
                 isTreeble: true,
@@ -302,7 +307,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
                 replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
                 replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
                 status = reply.getStatus(this.currentTime);
-                
+
                 if (status === 1) {
                     replyData.answer = "analysis in progress";
                 } else if (status === 2) {
@@ -365,7 +370,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function (Y) {
 
             this.showOverlay();
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/QuestionDescriptor/CancelReply/" + replyId
+                request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.app.get('currentPlayer')
             });
         },
         onMenuClick: function (e) {

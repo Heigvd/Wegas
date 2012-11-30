@@ -54,7 +54,7 @@
                         <version>${war.plugin.version}</version>
                         <configuration>
                         <!--remove not min js-->
-                            <packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>
+                            <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                             <overlays>
                                 <overlay>
                                     <id>wegaslibs</id>
@@ -70,47 +70,8 @@
                                         <include>lib/**/*.png</include>-->
                                     </includes>
                                     <excludes>
-                                    <!--<exclude>lib/yui3/**</exclude>-->
+                                        <exclude>lib/yui3/**</exclude>
                                     </excludes>
-                                </overlay>
-                            </overlays>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <version>${war.plugin.version}</version>
-                        <configuration>
-                        <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
-                            <failOnMissingWebXml>false</failOnMissingWebXml>
-                            <warName>Wegas</warName>
-
-                            <overlays>
-                                <overlay>
-                                    <id>wegaslibs</id>
-                                    <groupId>com.wegas</groupId>
-                                    <artifactId>wegas-resources</artifactId>
-                                    <type>war</type>
-                                    <includes>
-                                        <include>lib/**</include>
-                                <!--<include>lib/**/*-min.js</include>
-                                    <include>lib/**/*_*.js</include>
-                                    <include>lib/**/*.css</include>
-                                    <include>lib/**/*.gif</include>
-                                    <include>lib/**/*.png</include>-->
-                                    </includes>
-                                <!--<excludes>
-                                    <exclude>lib/yui3/**</exclude>
-                                </excludes>-->
                                 </overlay>
                             </overlays>
                         </configuration>
@@ -332,7 +293,6 @@
                         <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warName>Wegas</warName>
-
                     <overlays>
                         <overlay>
                             <id>wegaslibs</id>

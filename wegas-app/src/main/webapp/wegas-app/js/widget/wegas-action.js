@@ -151,11 +151,15 @@ YUI.add('wegas-action', function (Y) {
 
     Y.extend(ExecuteScriptAction, Action, {
         execute: function () {
+            var host = this.get("host");
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                 request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify(this.get("onClick"))
+                },
+                on: {
+                    failure: Y.bind(host.defaultExceptionHandler, host)
                 }
             });
         }

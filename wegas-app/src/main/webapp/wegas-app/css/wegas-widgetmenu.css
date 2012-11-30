@@ -1,0 +1,76 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+*/
+
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+*/
+
+/* Menu styles */
+.yui3-menu {
+    background: white;
+    border: 1px solid lightgray;
+    box-shadow: 1px 2px 4px #6D6D6D;
+    z-index: 100;
+    position: absolute;
+    font-size: 11px;
+    min-width: 12em;
+}
+.yui3-menu-hidden {
+    display:none;
+}
+.yui3-menu .wegas-text {
+    font-size: 11px;
+    color: #6D6D6D;
+    padding: 3px 10px 3px 6px;
+    width: 100%;
+}
+.yui3-menu .yui3-button {
+    border: none;
+    line-height: 1.9em;
+    font-size: 11px;
+    color: black;
+    box-shadow: none;
+    padding: 3px 10px 3px 10px;
+    width:100%;
+    background: none;
+    text-align: left;
+    display: block;
+}
+
+.yui3-menu .yui3-button:hover {
+    background: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15)));
+    background: -webkit-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
+    background: -moz-linear-gradient(top, transparent,rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));
+    background: -ms-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
+    background: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));
+    background: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
+}
+
+/* Proxy styles */
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu,
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button {
+    position: relative;
+    padding-right: 20px;
+}
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu .wegas-widgetmenu-submenuindicator {
+    display: block;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 13px;
+    height: 8px;
+    margin-top: 9px;
+    background: url(../images/wegas-submenuindicator.png) left center no-repeat;
+}
+
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu.wegas-widgetmenu-hassubmenuright .wegas-widgetmenu-submenuindicator {
+    margin-top: 8px;
+    background: url(../images/wegas-submenuindicator-right.png) left center no-repeat;
+}

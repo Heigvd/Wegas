@@ -11,9 +11,11 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -45,6 +47,7 @@ public class ChoiceInstance extends VariableInstance {
      *
      */
     @Column(name = "result_id")
+    @JsonView(Views.Public.class)
     private Long currentResultId;
 
     /**

@@ -231,7 +231,7 @@ YUI.add("wegas-button", function (Y) {
             },
             plugins: {
                 "transient": true,
-                getter: function() {
+                getter: function () {
                     return [];
                 }
             }

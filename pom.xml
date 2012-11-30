@@ -62,7 +62,7 @@
         <profile>
             <id>release-profile</id>
             <properties>
-                <build.optimize>false</build.optimize>
+                <build.optimize>true</build.optimize>
                 <resources.local>false</resources.local>
             </properties>
         </profile>

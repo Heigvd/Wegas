@@ -12,7 +12,6 @@ package com.wegas.core.persistence.variable.primitive;
 import com.wegas.core.ejb.exception.ConstraintViolationException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.exception.WegasException;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
