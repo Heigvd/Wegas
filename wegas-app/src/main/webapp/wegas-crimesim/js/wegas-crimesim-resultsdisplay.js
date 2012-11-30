@@ -30,10 +30,6 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         datatable: null,
         // *** Lifecycle Methods *** //
         initializer: function () {
-            this.menu = new Y.Wegas.Menu();
-            this.menuDetails = new Y.Wegas.Menu({
-                width: "250px"
-            });
             this.handlers = {};
         },
         renderUI: function () {

@@ -128,7 +128,7 @@
     min-width:970px;
 }
 
-.layout .horizontal-menu button{  
+.layout .horizontal-menu button{
     background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
@@ -144,7 +144,7 @@
     font-size: 1.1em;
 }
 
-.horizontal-menu button:hover{ 
+.horizontal-menu button:hover{
     border-width:0 1px 0 0;
     padding-bottom:1px;
     background:none;
@@ -185,8 +185,8 @@
 
 .title{
     background-image: url(/Wegas/wegas-pmg/images/h2.png);
-    background-repeat: repeat-x;    
-    background-color: white; 
+    background-repeat: repeat-x;
+    background-color: white;
     height:26px;
     width:50%;
     float:left;
@@ -266,13 +266,13 @@ h2{
 .unread-count .value{
     background-image: url(/Wegas/wegas-pmg/images/unread-count.png);
     background-position: center;
-    background-repeat: no-repeat; 
+    background-repeat: no-repeat;
     padding:20px;
     color:white;
 }
 
 /*---------------------------questions and actions----------------------------*/
-.questions-page .wegas-text, 
+.questions-page .wegas-text,
 .actions-page .wegas-text{
     height:27px;
 }
@@ -291,6 +291,7 @@ h2{
     float:left;
     padding:0;
     border:none;
+    background:white;
 }
 
 .wegas-mcqtabview .yui3-tab {
@@ -378,7 +379,7 @@ h2{
 }
 
 /*-----------------------------inbox and history------------------------------*/
-.inbox-page .wegas-text, 
+.inbox-page .wegas-text,
 .history-page .wegas-text{
     height:27px;
 }
@@ -464,7 +465,7 @@ h2{
     background-color:white;
     border:solid 1px #888;
     border-radius: 5px;
-    box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;    
+    box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;
 }
 
 .body .description .task_name{
@@ -554,8 +555,8 @@ h2{
 
 .resources-page .slidepanel-title{
     background-image: url(/Wegas/wegas-pmg/images/h2.png);
-    background-repeat: repeat-x;    
-    background-color: white; 
+    background-repeat: repeat-x;
+    background-color: white;
     height:26px;
     width:100%;
     border:solid black;
@@ -580,7 +581,7 @@ h2{
 
 .resources-page .yui3-datatable-col-assignements .assignement span{
     display:inline-block;
-    background-repeat: no-repeat;    
+    background-repeat: no-repeat;
     height:16px;
     width:16px;
 }

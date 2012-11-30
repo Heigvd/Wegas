@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
@@ -73,7 +74,7 @@ public class GameModel extends NamedEntity {
     @JsonManagedReference
     //@JsonView(Views.EditorI.class)
     @JsonIgnore
-    private List<Game> games = new ArrayList<Game>();
+    private List<Game> games = new ArrayList<>();
     /**
      * Holds all the scripts contained in current game model.
      *
@@ -119,6 +120,12 @@ public class GameModel extends NamedEntity {
         for (VariableDescriptor vd : this.getVariableDescriptors()) {
             vd.propagateDefaultInstance(force);
         }
+    }
+
+    @Override
+    public void merge(AbstractEntity n) {
+        this.setWidgetsUri(((GameModel) n).getWidgetsUri());
+        this.setCssUri(((GameModel) n).getCssUri());
     }
 
     /**
