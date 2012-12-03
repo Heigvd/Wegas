@@ -5,145 +5,150 @@
         "type": "List",
         "cssClass": "layout",
         "children": [
+        {
+            "label": "Menu",
+            "type": "List",
+            "cssClass": "menu",
+            "direction": "horizontal",
+            "children": [
             {
-                "label": "Menu",
-                "type": "List",
-                "cssClass": "menu",
-                "direction": "horizontal",
-                "children": [
-                    {
-                        "label": "Indicators",
-                        "type": "Text",
-                        "content": "Programming Game",
-                        "cssClass": "title"
-                    }, {
-                        "type": "VariableDisplay",
-                        "label": "Money",
-                        "view": "text",
-                        "variable": {
-                            "name": "money"
-                        }
-                    }, {
-                        "type": "Button",
-                        "label": "Battle!",
-                        "cssClass": "menu-button",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 2,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    }, {
-                        "type": "Button",
-                        "label": "Mails",
-                        "cssClass": "menu-button",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 5,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }, {
-                                "fn": "UnreadCount",
-                                "cfg": {
-                                    "variable": {
-                                        "name": "inbox"
-                                    }
-                                }
-                            }
-                        ]
-                    }, {
-                        "type": "Button",
-                        "label": "History",
-                        "disabled": true,
-                        "cssClass": "menu-button",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 3,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    }, {
-                        "type": "LoginButton",
-                        "cssClass": "menu-loginbutton"
+                "label": "Indicators",
+                "type": "Text",
+                "content": "Programming Game",
+                "cssClass": "title"
+            }, {
+                "type": "VariableDisplay",
+                "label": "Money",
+                "view": "text",
+                "variable": {
+                    "name": "money"
+                }
+            }, {
+                "type": "Button",
+                "label": "Battle!",
+                "cssClass": "menu-button",
+                "plugins": [
+                {
+                    "fn": "OpenPageAction",
+                    "cfg": {
+                        "subpageId": 2,
+                        "targetPageLoaderId": "maindisplayarea"
                     }
+                }
                 ]
             }, {
-                "type": "PageLoader",
-                "pageLoaderId": "maindisplayarea",
-                "cssClass": "body",
-                "variable": {
-                    "name": "currentLevel"
+                "type": "Button",
+                "label": "Mails",
+                "cssClass": "menu-button",
+                "plugins": [
+                {
+                    "fn": "OpenPageAction",
+                    "cfg": {
+                        "subpageId": 5,
+                        "targetPageLoaderId": "maindisplayarea"
+                    }
+                }, {
+                    "fn": "UnreadCount",
+                    "cfg": {
+                        "variable": {
+                            "name": "inbox"
+                        }
+                    }
                 }
+                ]
+            }, {
+                "type": "Button",
+                "label": "History",
+                "disabled": true,
+                "cssClass": "menu-button",
+                "plugins": [
+                {
+                    "fn": "OpenPageAction",
+                    "cfg": {
+                        "subpageId": 3,
+                        "targetPageLoaderId": "maindisplayarea"
+                    }
+                }
+                ]
+            }, {
+                "type": "LoginButton",
+                "cssClass": "menu-loginbutton"
             }
+            ]
+        }, {
+            "type": "PageLoader",
+            "pageLoaderId": "maindisplayarea",
+            "cssClass": "body",
+            "defaultPageId": 2
+        }
         ]
     },
     "2": {
         "id": 2,
-        "label": "Level 1 - First moves",
-        "type": "ProgGameLevel",
-        "maxTurns": 2,
-        "maxMoves": -1,
-        "winningCondition": "objects[1].life===0",
-        "onWin": "currentLevel.value=3;money.value+=500;",
-        "cssClass": "wegas-proggame-level",
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "fire"
-            }],
-        "ai": "rotateLeft();move();rotateRight();move();move();rotateRight();move();rotateLeft()",
-        "objects": [{
-                "id": "Player",
-                "type": "pc",
-                "direction": 2,
-                "x": 0,
-                "y": 3,
-                "life": 100,
-                "range": 3
-            }, {
-                "id": "Enemy",
-                "type": "npc",
-                "direction": 4,
-                "x": 7,
-                "y": 3,
-                "life": 100,
-                "range": 2
-            }]
+        "type": "PageLoader",
+        "pageLoaderId": "leveldisplay",
+        "cssClass": "body",
+        "variable": {
+            "name": "currentLevel"
+        }
     },
     "3": {
         "id": 3,
+        "label": "Level 1 - First moves",
+        "type": "ProgGameLevel",
+        "maxTurns": 2,
+        "maxActions": 20,
+        "winningCondition": "level.objects[1].life===0",
+        "onWin": "currentLevel.value=3;money.value+=500;",
+        "cssClass": "wegas-proggame-level",
+        "api": [{
+            "name": "move"
+        }, {
+            "name": "fire"
+        }],
+        "ai": "rotateLeft();\nmove();\nrotateRight();\nmove();\nmove();\nrotateRight();\nmove();\nrotateLeft()",
+        "objects": [{
+            "id": "Player",
+            "type": "pc",
+            "direction": 2,
+            "x": 0,
+            "y": 3,
+            "life": 100,
+            "range": 3
+        }, {
+            "id": "Enemy",
+            "type": "npc",
+            "direction": 4,
+            "x": 7,
+            "y": 3,
+            "life": 100,
+            "range": 2
+        }]
+    },
+    "4": {
+        "id": 4,
         "label": "Level 2 - First moves",
         "type": "ProgGameLevel",
         "maxTurns": 2,
         "maxMoves": -1,
-        "winningCondition": "objects[1].life===0",
+        "winningCondition": "level.objects[1].life===0",
         "onWin": "currentLevel.value=3",
         "cssClass": "wegas-proggame-level",
-        "objects": [
-            {
-                "id": "Player",
-                "direction": 2,
-                "x": 0,
-                "y": 3,
-                "life": 100,
-                "range": 3
-            }, {
-                "id": "Enemy",
-                "direction": 4,
-                "x": 7,
-                "y": 4,
-                "life": 100,
-                "range": 2
-            }
-        ]
+        "objects": [{
+            "id": "Player",
+            "direction": 2,
+            "x": 0,
+            "y": 3,
+            "life": 100,
+            "range": 3
+        }, {
+            "id": "Enemy",
+            "direction": 4,
+            "x": 7,
+            "y": 4,
+            "life": 100,
+            "range": 2
+        }]
     },
     "5": {
         "id": 5,
