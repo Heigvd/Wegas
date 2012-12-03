@@ -11,10 +11,9 @@ YUI.add('wegas-csseditor', function (Y) {
         // *** Lifecycle Methods *** //
 
         renderUI: function () {
-            this.plug( Y.Plugin.WidgetToolbar );
+            this.plug(Y.Plugin.WidgetToolbar);
 
-            var cb = this.get(CONTENTBOX),
-            form,
+            var form, cb = this.get(CONTENTBOX),
             value = Y.Wegas.app._customCSSText || '',
             el = this.toolbar.get('header');
 

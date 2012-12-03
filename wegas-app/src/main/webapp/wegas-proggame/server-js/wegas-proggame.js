@@ -36,32 +36,33 @@ function rotateLeft() {
 }
 
 function sendMoveCommand() {
-    sendCommand({type: 'move', objects: objects.clone()});
+    var object = findObject( cObject );
+    sendCommand({type: 'move', object: object.clone()});
 }
 
 function fire() {
     var source = findObject( cObject );
-    sendCommand({type: 'fire', object: cObject});
+    sendCommand({type: 'fire', object: source.clone()});
 
     switch (source.direction) {
         case 1:
-            for (var i=0; i < 3; i++) {
-                checkCollision( cObject, source.x, source.y + i + 1);
+            for (var i=0; i <= source.range; i++) {
+                checkCollision( cObject, source.x, source.y + i);
             }
             break;
         case 2:
-            for (var i=0; i < 3; i++) {
-                checkCollision( cObject, source.x + i + 1, source.y);
+            for (var i=0; i <= source.range; i++) {
+                checkCollision( cObject, source.x + i, source.y);
             }
             break;
         case 3:
-            for (var i=0; i < 3; i++) {
-                checkCollision( cObject, source.x, source.y - i - 1);
+            for (var i=0; i <= source.range; i++) {
+                checkCollision( cObject, source.x, source.y - i);
             }
             break;
         case 4:
-            for (var i=0; i < 3; i++) {
-                checkCollision( cObject, source.x - i - 1, source.y);
+            for (var i=0; i <= source.range; i++) {
+                checkCollision( cObject, source.x - i, source.y);
             }
             break;
     }

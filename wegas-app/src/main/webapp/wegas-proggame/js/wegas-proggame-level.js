@@ -15,161 +15,175 @@ YUI.add('wegas-proggame-level', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-    GRIDSIZE = 31,
-    ProgGameLevel;
+            GRIDSIZE = 31,
+            ProgGameLevel;
 
     /**
      *  The level display class, with script input, ia, debugger and
      *  terrain display.
      *
      */
-    ProgGameLevel = Y.Base.create( "wegas-proggame-level", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
-
+    ProgGameLevel = Y.Base.create("wegas-proggame-level", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         // *** Fields *** //
+        handlers: null,
+        aceField: null,
+        display: null,
+        runButton: null,
+        commandsStack: null,
         CONTENT_TEMPLATE: '<div class="yui3-g">'
 
-        + '<div class="yui3-u left">'
-        + '<div class="inventory"><h1>Inventory</h1><i><center style="padding-top:40px;">empty</center></i></div>'
-        + '<div class="api"><h1>Api</h1></div>'
-        + '</div>'
+                + '<div class="yui3-u left">'
+                + '<div class="inventory"><h1>Inventory</h1><i><center style="padding-top:40px;">empty</center></i></div>'
+                + '<div class="api"><h1>Api</h1></div>'
+                + '</div>'
 
-        + '<div class="yui3-u right">'
-        + '<div class="yui3-g topright">'
-        + '<div class="yui3-u topcenter"><h1></h1><div class="terrain"></div></div>'
-        + '<div class="yui3-u toptopright">'
-        + '<div class="buttons"></div>'
-        + '<div class="ai"><h1>Enemy A.I.</h1></div>'
-        + '<div class="debugger"><h1>Log</h1></div>'
-        + '</div>'
-        + '</div>'
+                + '<div class="yui3-u right">'
+                + '<div class="yui3-g topright">'
+                + '<div class="yui3-u topcenter"><h1></h1><div class="terrain"></div></div>'
+                + '<div class="yui3-u toptopright">'
+                + '<div class="buttons"></div>'
+                + '<div class="ai"><h1>Enemy A.I.</h1></div>'
+                + '<div class="debugger"><h1>Log</h1></div>'
+                + '</div>'
+                + '</div>'
 
-        + '<div class="code"><h1>Your code</h1></div>'
-        + '</div>'
-        + '<div style="clear:both"></div>',
-
+                + '<div class="code"><h1>Your code</h1></div>'
+                + '</div>'
+                + '<div style="clear:both"></div>',
         // *** Lifecycle Methods *** //
-        renderUI: function () {
-            var cb = this.get( CONTENTBOX );
-
-            cb.one( ".ai" ).append( Y.Wegas.App.nl2br(this.get( "ai" )) );
-            cb.one( ".topcenter h1" ).setHTML(this.get( "label" ));
-
-            cb.one(".api").append(this.get("api")+"*");
-
+        initializer: function () {
+            var cb = this.get(CONTENTBOX);
+            this.handlers = {};
             this.aceField = new Y.inputEx.AceField({
-                parentEl: cb.one( ".code" ),
+                parentEl: cb.one(".code"),
                 name: 'text',
                 type: 'ace',
                 height: "300px",
                 language: "javascript",
                 value: "move();fire();"
             });
-
             this.display = new ProgGameDisplay(this.toObject());
-            this.display.render( cb.one( ".terrain" ));
-
-            this.runButton = new Y.Wegas.Button( {
+            this.runButton = new Y.Wegas.Button({
                 label: "RUN SCRIPT"
-            } );
-            this.runButton.render( cb.one( ".buttons" ));
+            });
+        },
+        renderUI: function () {
+            var cb = this.get(CONTENTBOX);
+
+            cb.one(".ai").append(Y.Wegas.App.nl2br(this.get("ai")));
+            cb.one(".topcenter h1").setHTML(this.get("label"));
+
+            cb.one(".api").append(this.get("api") + "*");
+
+            this.display.render(cb.one(".terrain"));
+            this.runButton.render(cb.one(".buttons"));
 
         },
         bindUI: function () {
-            Y.Wegas.app.VariableDescriptorFacade.after( "response",             // If data changes, refresh
-                this.syncUI, this);
+            this.handlers.response = Y.Wegas.app.VariableDescriptorFacade.after("response", // If data changes, refresh
+                    this.syncUI, this);
 
-            Y.Wegas.app.after( 'currentPlayerChange', this.syncUI, this);       // If current user changes, refresh (editor only)
+            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);       // If current user changes, refresh (editor only)
 
-            this.runButton.on( "click" , function () {
+            this.handlers.runButton = this.runButton.on("click", function () {
 
-                this.display.set( "objects", this.get( "objects" ));            // Reset the display to default
+                this.display.set("objects", this.get("objects"));            // Reset the display to default
                 this.display.syncUI();
-                this.get( CONTENTBOX ).one( ".debugger" ).setHTML( "<h1>Debugger</h1>" );
-                this.runButton.set( "label", "RUNNING..." );
-                this.runButton.set( "disabled", true );
+                this.get(CONTENTBOX).one(".debugger").setHTML("<h1>Debugger</h1>");
+                this.runButton.set("label", "RUNNING...");
+                this.runButton.set("disabled", true);
 
                 Y.Wegas.app.VariableDescriptorFacade.rest.sendRequest({
                     request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                     cfg: {
                         method: "POST",
-                        data: "var ret = [], objects = " + Y.JSON.stringify(this.get( "objects" ))
-                        + ",cObject,"
-                        + "winingCondition=function(){return "+this.get( "winningCondition" ) +";};"
-                        + "for (var i =0;i<2;i++) {"
-                        + "cObject = 'player';"
-                        + "sendCommand({type:'log', 'text': 'Player turn.'});"
-                        + this.aceField.getValue()
-                        + "cObject='enemy';"
-                        + "sendCommand({type:'log', 'text': 'Enemy turn.'});"
-                        + this.get( "ai" )
-                        + "}"
-                        + "sendCommand({type:'log', 'text': 'Max turn reached, match is a draw.'});"
-                        + "JSON.stringify(ret)"
+                        data: "var ret = [], objects = " + Y.JSON.stringify(this.get("objects"))
+                                + ",cObject,"
+                                + "winingCondition=function(){return " + this.get("winningCondition") + ";};"
+                                + "for (var i =0;i<" + this.get("maxTurns") + ";i++) {"
+                                + "cObject = 'Player';"
+                                + "sendCommand({type:'log', 'text': 'Player turn.'});"
+                                + this.aceField.getValue()
+                                + "cObject='Enemy';"
+                                + "sendCommand({type:'log', 'text': 'Enemy turn.'});"
+                                + this.get("ai")
+                                + "}"
+                                + "sendCommand({type:'log', 'text': 'Max turn reached, match is a draw.'});"
+                                + "JSON.stringify(ret)"
                     },
                     on: {
-                        success: Y.bind(this.onServerReply, this ),
-                        failure: Y.bind( function () {
-                            this.runButton.set( "label", "RUN SCRIPT" );
-                            this.runButton.set( "disabled", false );
-                            alert( "Your script contains an error." );
-                        }, this )
+                        success: Y.bind(this.onServerReply, this),
+                        failure: Y.bind(function () {
+                            this.runButton.set("label", "RUN SCRIPT");
+                            this.runButton.set("disabled", false);
+                            alert("Your script contains an error.");
+                        }, this)
                     }
 
                 });
-            }, this );
+            }, this);
+
+            this.handlers.commandExecuted = this.display.after('commandExecuted', function () {
+                this.consumeServerCommand();
+            }, this);
+            this.handlers.commandExecuted = this.after('commandExecuted', function () {
+                this.consumeServerCommand();
+            });
 
         },
         syncUI: function () {
             this.display.syncUI();
         },
-
-        onServerReply: function ( e ) {
-            this.commandsStack = Y.JSON.parse( e.response.entity );
+        destructor: function () {
+            var k;
+            for (k in this.handlers) {
+                this.handlers[k].detach();
+            }
+            this.aceField.destroy();
+            this.display.destroy();
+            this.runButton.destroy();
+        },
+        onServerReply: function (e) {
+            this.commandsStack = Y.JSON.parse(e.response.entity);
             this.consumeServerCommand();
         },
-
         doNextLevel: function () {
             Y.Wegas.app.VariableDescriptorFacade.rest.sendRequest({
                 request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
-                    data: this.get( "onWin" )
+                    data: this.get("onWin")
                 }
             });
         },
-
         consumeServerCommand: function () {
-            if (this.commandsStack.length > 0 ) {
+            if (this.commandsStack && this.commandsStack.length > 0) {
                 var command = this.commandsStack.shift();
-
-                this.display.execute( command );
-
-                switch ( command.type ) {
-
+                this.display.execute(command);
+                switch (command.type) {
                     case "gameWon":
-                        this.runButton.set( "label", "NEXT LEVEL" );
-                        this.runButton.set( "disabled", false );
-                        this.runButton.detachAll( "click" );
-                        this.runButton.on( "click", this.doNextLevel, this );
+                        this.runButton.set("label", "NEXT LEVEL");
+                        this.runButton.set("disabled", false);
+                        this.runButton.detachAll("click");
+                        this.runButton.on("click", this.doNextLevel, this);
+                        this.fire("commandExecuted");
                         break;
 
                     case "log":
-                        this.get( "contentBox" ).one( ".debugger" ).append( command.text + "<br />" );
-
+                        this.get("contentBox").one(".debugger").append(command.text + "<br />");
+                        this.fire("commandExecuted");
                     default:
-                        Y.later( 500, this, this.consumeServerCommand );
                         break;
-
                 }
 
             } else {
-                this.runButton.set( "label", "RUN SCRIPT");
-                this.runButton.set( "disabled", false );
+                this.runButton.set("label", "RUN SCRIPT");
+                this.runButton.set("disabled", false);
             }
         }
 
     }, {
-        ATTRS : {
+        ATTRS: {
             label: {
                 type: "string"
             },
@@ -200,6 +214,13 @@ YUI.add('wegas-proggame-level', function (Y) {
                 _inputex: {
                     _type: "ace"
                 }
+            },
+            maxTurns: {
+                type: "string",
+                format: "Integer",
+                validator: function (s) {
+                    return (parseInt(s) ? parseInt(s) : 1);
+                }
             }
         }
     });
@@ -212,110 +233,195 @@ YUI.add('wegas-proggame-level', function (Y) {
      * table element.
      *
      */
-    var ProgGameDisplay = Y.Base.create( "wegas-proggame-display", Y.Widget, [], {
+    var ProgGameDisplay = Y.Base.create("wegas-proggame-display", Y.Widget, [], {
         CONTENT_TEMPLATE: '<div><div class="object-layer"></div></div>',
+        initializer: function () {
+            this.publish("commandExecuted", {});
+        },
+        renderUI: function () {
+            var i, renderMethod;
+            /*---crafty "init"---*/
+            var craftyNode = Y.Node.create("<div id='cr-stage'></div>");
+            this.get(CONTENTBOX).append(craftyNode);
+            
+            Crafty.init(GRIDSIZE * this.get('gridW'), GRIDSIZE * this.get('gridH'));
+            
+            if(!Crafty.support.canvas){
+                Crafty.canvas.init();
+                renderMethod = 'Canvas';
+            } else{
+                renderMethod = 'DOM';
+            }
 
-        execute: function ( command ) {
-            var cb = this.get( CONTENTBOX );
-            switch ( command.type ) {
+            Crafty.refWidget = this;
+            Crafty.background('rgb(110,110,110)');
+
+            Crafty.bind('moveEnded', function () {
+                this.refWidget.fire("commandExecuted");
+            });
+
+            //sprites
+            Crafty.sprite(24, 32, '/Wegas/wegas-proggame/images/sprites-1.png', {
+                SCharacter: [0, 0]
+            });
+            Crafty.sprite(32, 32, '/Wegas/wegas-proggame/images/lightning.png', {
+                SLightning: [0, 0]
+            });
+
+            //move function
+            Crafty.c('MoveFunction', {//require Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
+                moveToX: null,
+                moveToY: null,
+                init: function () {
+                    this.hackTrigged = false;
+                    this.bind('TweenEnd', function () {
+                        this.stop();
+                        Crafty.trigger('moveEnded');
+                    }, this);
+                },
+                execMove: function (direction, toX, toY, speed) {
+                    var animDir, time, dist;
+                    switch (direction) {
+                        case 1:
+                            animDir = 'moveUp';
+                            break;
+                        case 2:
+                            animDir = 'moveRight';
+                            break;
+                        case 3:
+                            animDir = 'moveDown';
+                            break;
+                        case 4:
+                            animDir = 'moveLeft';
+                            break;
+                        default:
+                            return;
+                    }
+                    this.moveToX = toX;
+                    this.moveToY = toY;
+                    if (!this.isPlaying(animDir)) {
+                        this.stop();
+                        this.animate(animDir, 10, -1);
+                    }
+                    speed = (speed > 0) ? speed : 1;
+                    dist = Math.sqrt(Crafty.math.squaredDistance(this.pos()._x, this.pos()._y, toX, toY));
+                    time = ((dist / GRIDSIZE) * (100 / speed)) + 1; //+1 because if time = 0, time = infinite
+                    this.tween({x: toX, y: toY}, time);
+                }});
+
+            Crafty.c("FireFunction", {
+                shot: null,
+                execFire: function (dir, toX, toY, speed) {
+                    this.shot = Crafty.e('2D, '+ renderMethod + ', Lightning');
+                    this.shot.attr('x', this.pos()._x);
+                    this.shot.attr('y', this.pos()._y);
+                    this.shot.execMove(dir, toX, toY, speed);
+                    this.bind("moveEnded", function () {
+                        this.shot.destroy();
+                    }, this);
+                }
+            });
+
+            //Lightning
+            Crafty.c('Lightning', {
+                init: function () {
+                    this.requires("MoveFunction, SpriteAnimation, Tween, SLightning")
+                            .animate("moveUp", 0, 6, 3)
+                            .animate("moveRight", 0, 0, 3)
+                            .animate("moveDown", 0, 2, 3)
+                            .animate("moveLeft", 0, 4, 3);
+                }
+            });
+
+            /*---Crafty "render"---*/
+            //chessboard
+            for (var i = 0; i < this.get('gridW'); i++) {
+                for (var j = 0; j < this.get('gridH'); j++) {
+                    if ((i + j) % 2 === 0) {
+                        Crafty.e('2D, '+ renderMethod + ', Color')
+                                .color('rgba(255,165,0, 0.5)')
+                                .attr({x: GRIDSIZE * i, y: GRIDSIZE * j, w: GRIDSIZE, h: GRIDSIZE});
+                    }
+                }
+            }
+
+            //Entities
+            var object, pos;
+            for (i = 0; i < this.get('objects').length; i++) {
+                object = this.get('objects')[i];
+                if (object.type === "pc") {
+                    Crafty.c(object.id, {
+                        init: function () {
+                            this.requires("MoveFunction, FireFunction, SpriteAnimation, Tween, SCharacter")
+                                    .animate("moveUp", 0, 0, 2)
+                                    .animate("moveRight", 0, 1, 2)
+                                    .animate("moveDown", 0, 2, 2)
+                                    .animate("moveLeft", 0, 3, 2);
+                        }
+                    });
+                } else {
+                    Crafty.c(object.id, {
+                        init: function () {
+                            this.requires("MoveFunction, FireFunction, SpriteAnimation, Tween, SCharacter")
+                                    .animate("moveUp", 9, 0, 11)
+                                    .animate("moveRight", 9, 1, 11)
+                                    .animate("moveDown", 9, 2, 11)
+                                    .animate("moveLeft", 9, 3, 11);
+                        }
+                    });
+                }
+                pos = this.getRealXYPos([object.x, object.y]);
+                Crafty.e('2D, '+ renderMethod + ', ' + object.id);
+                Crafty(object.id).attr('x', pos[0]);
+                Crafty(object.id).attr('y', pos[1]);
+                Crafty(object.id).execMove(object.direction, pos[0], pos[1]);
+            }
+        },
+        execute: function (command) {
+            var object, entity, dir, pos, cb = this.get(CONTENTBOX);
+            switch (command.type) {
                 case "move":
-                    this.set( "objects", command.objects );
-                    this.syncUI();
+                    object = command.object;
+                    this.set("objects", object);
+                    entity = object.id;
+                    dir = object.direction;
+                    pos = this.getRealXYPos([object.x, object.y]);
+                    if (entity && Crafty(entity) && Crafty(entity).execMove) {
+                        Crafty(entity).execMove(dir, pos[0], pos[1]);
+                    }
                     break;
 
                 case "fire":
-                    var object = this.findObjectByType( command.object ),
-                    p = Y.Node.create( '<div class="missile"></div>' ),     // Create a missile
-                    source = cb.one( "." + object.id ),                     // Retrieve the source node (the object which fired)
-                    to = source.getXY();
-                    
-                    switch ( object.direction ) {
+                    object = command.object;
+                    entity = object.id;
+                    dir = object.direction;
+                    switch (dir) {
                         case 1:
-                            to[1] -= GRIDSIZE * 3;
+                            pos = this.getRealXYPos([object.x, object.y + object.range]);
                             break;
                         case 2:
-                            to[0] += GRIDSIZE * 3;
+                            pos = this.getRealXYPos([object.x + object.range, object.y]);
                             break;
                         case 3:
-                            to[1] += GRIDSIZE * 3;
+                            pos = this.getRealXYPos([object.x, object.y - object.range]);
                             break;
                         case 4:
-                            to[0] -= GRIDSIZE * 3;
+                            pos = this.getRealXYPos([object.x - object.range, object.y]);
                             break;
                     }
-
-                    var anim = new Y.Anim({
-                        node: p,
-                        from: {
-                            xy: source.getXY()
-                        },
-                        to: {
-                            xy: to
-                        },
-                        duration: 0.5
-                    });
-                    cb.one( ".object-layer" ).append( p );
-                    anim.run();
-                    break;
-
-                case "die":
-                    var source2 = cb.one( "." + command.object ),
-                    anim2 = new Y.Anim({
-                        node: source2,
-                        from: {
-                            opacity: 1
-                        },
-                        to: {
-                            opacity: 0
-                        },
-                        duration: 1,
-                        iterations: 2
-                    });
-                    anim2.run();
-
-                    break;
-
+                    if (entity && Crafty(entity) && Crafty(entity).execFire) {
+                        Crafty(entity).execFire(dir, pos[0], pos[1], 5); //try with speed 7 (last arg), bug of Crafty (tweenEnterFrame))
+                    }
             }
         },
-
-        findObjectByType: function ( type ) {
-            var i, objs = this.get( "objects" );
-            for ( i = 0; i < objs.length; i = i + 1 ) {
-                if ( objs[i].id === type ) {
-                    return objs[i];
-                }
+        getRealXYPos: function (position) {
+            var pos = [];
+            if (!position || typeof position[0] !== 'number' || typeof position[1] !== 'number') {
+                return pos;
             }
-            return null;
-        },
-
-        renderUI: function () {
-            var i, j,
-            cb = this.get( "contentBox" ),
-            acc = [ "<table>" ];
-
-            for ( i = this.get( "gridH" ) - 1 ; i >= 0 ; i -= 1 ) {          // Render table elements
-                acc.push( "<tr>" );
-                for ( j = 0; j < this.get( "gridW" ); j += 1 ) {
-                    acc.push( "<td></td>" );
-                }
-                acc.push( "</tr>" );
-            }
-            acc.push( "</table>" );
-            cb.append( acc.join( "" ));
-        },
-
-        syncUI: function () {
-            var i,
-            playerLayer = this.get( "contentBox" ).one( ".object-layer" ),
-            objs = this.get( "objects" );
-            playerLayer.setHTML( "" );
-
-            for ( i = 0; i < objs.length; i = i + 1) {
-                var node = Y.Node.create( '<div class="' + objs[i].id + ' dir-' + objs[i].direction + '"></div>');
-                node.setXY( [ objs[i].x * GRIDSIZE , (this.get( "gridH" ) - objs[i].y - 1 ) * GRIDSIZE ]);
-                playerLayer.append( node );
-            }
-
+            pos.push(position[0] * GRIDSIZE); //x
+            pos.push((this.get("gridH") - position[1] - 1) * GRIDSIZE); //y
+            return pos;
         }
 
     }, {
@@ -327,8 +433,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                 value: 8
             },
             objects: {
-
-        }
+            }
         }
     });
     Y.namespace('Wegas').ProgGameDisplay = ProgGameDisplay;

@@ -48,7 +48,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-injector': {
                         path: 'wegas-app/js/widget/wegas-injector-min.js',
-                        ix_provides: "Injector"
+                        ws_provides: "Injector"
                     },
                     /** Persistence **/
                     'wegas-entity': {
@@ -74,12 +74,12 @@ YUI().use(function(Y) {
                     },
                     'wegas-pageloader': {
                         path: 'wegas-app/js/widget/wegas-pageloader-min.js',
-                        ix_provides: 'PageLoader'
+                        ws_provides: 'PageLoader'
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
                         requires: ['wegas-widget', 'wegas-action', 'button'],
-                        ix_provides: 'Button'
+                        ws_provides: 'Button'
                     },
                     'wegas-action': {
                         path: 'wegas-app/js/widget/wegas-action-min.js',
@@ -89,21 +89,21 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/widget/wegas-tooltip-min.js',
                         requires: ["wegas-action", "event-mouseenter", "widget", "widget-stack",
                         "widget-position", 'widget-position-constrain'],
-                        ix_provides: 'Button'
+                        ws_provides: 'Button'
                     },
                     'wegas-chat': {
                         path: 'wegas-app/js/widget/wegas-chat-min.js',
-                        ix_provides: 'Chat'
+                        ws_provides: 'Chat'
                     },
                     'wegas-langselector': {
                         path: 'wegas-app/js/widget/wegas-langselector-min.js',
-                        ix_provides: 'LangSelector'
+                        ws_provides: 'LangSelector'
                     },
                     'wegas-layout': {
                         path: 'wegas-app/js/widget/wegas-layout-min.js',
                         requires: ['wegas-widget', 'widget-stdmod', 'event-resize',
                         'anim-easing', 'resize', 'wegas-layoutcss'],
-                        ix_provides: 'Layout'
+                        ws_provides: 'Layout'
                     },
                     'wegas-layoutcss': {
                         path: 'wegas-app/css/wegas-layout.css',
@@ -112,16 +112,16 @@ YUI().use(function(Y) {
                     'wegas-list': {
                         path: 'wegas-app/js/widget/wegas-list-min.js',
                         requires: ['wegas-widget'],
-                        ix_provides: 'List'
+                        ws_provides: 'List'
                     },
                     'wegas-text': {
                         path: 'wegas-app/js/widget/wegas-text-min.js',
-                        ix_provides: "Text"
+                        ws_provides: "Text"
                     },
                     'wegas-tabview': {
                         path: 'wegas-app/js/widget/wegas-tabview-min.js',
                         requires: ['tabview', 'wegas-tabviewcss'],
-                        ix_provides: 'TabView'
+                        ws_provides: 'TabView'
                     },
                     'wegas-tabviewcss': {
                         path: 'wegas-app/css/wegas-tabview.css',
@@ -129,17 +129,17 @@ YUI().use(function(Y) {
                     },
                     'wegas-variabledisplay': {
                         path: 'wegas-app/js/widget/wegas-variabledisplay-min.js',
-                        ix_provides: 'VariableDisplay'
+                        ws_provides: 'VariableDisplay'
                     },
                     'wegas-gaugedisplay': {
                         path: 'wegas-app/js/widget/wegas-gaugedisplay-min.js',
                         requires: ["gauge"],
-                        ix_provides: 'GaugeDisplay'
+                        ws_provides: 'GaugeDisplay'
                     },
                     'wegas-inbox': {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
                         requires: ["tabview", 'wegas-tabviewcss', "wegas-inboxcss"],
-                        ix_provides: 'InboxDisplay'
+                        ws_provides: 'InboxDisplay'
                     },
                     'wegas-inboxcss': {
                         path: 'wegas-app/css/wegas-inbox.css',
@@ -148,19 +148,19 @@ YUI().use(function(Y) {
                     'wegas-form': {
                         path: 'wegas-app/js/widget/wegas-form-min.js',
                         requires: ['wegas-widget', 'wegas-inputex', 'inputex-string'],
-                        ix_provides: "FormWidget"
+                        ws_provides: "FormWidget"
                     },
                     'wegas-loginwidget': {
                         path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
                         requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
                         "inputex-hidden", "inputex-email", "inputex-checkbox", 'button'],
-                        ix_provides: "LoginWidget"
+                        ws_provides: "LoginWidget"
                     },
                     'wegas-joingamewidget': {
                         path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
                         requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
                         'wegas-editor-action', 'inputex-select', 'inputex-string'],
-                        ix_provides: "JoinGameWidget"
+                        ws_provides: "JoinGameWidget"
                     },
                     'wegas-imageloader': {
                         path: 'wegas-app/js/widget/wegas-imageloader-min.js',
@@ -175,16 +175,16 @@ YUI().use(function(Y) {
                         requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
                         'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss',
                         'stylesheet', 'event-resize'],
-                        ix_provides: "WegasGallery"
+                        ws_provides: "WegasGallery"
                     },
                     'wegas-itemselector': {
                         path: 'wegas-app/js/widget/wegas-itemselector-min.js',
                         requires: ['wegas-nodeformatter', 'scrollview'],
-                        ix_provides: "ItemSelector"
+                        ws_provides: "ItemSelector"
                     },
                     'wegas-nodeformatter': {
                         path: 'wegas-app/js/widget/wegas-nodeformatter-min.js',
-                        ix_provides: "NodeFormatter"
+                        ws_provides: "NodeFormatter"
                     },
                     /** Inputex Fields **/
                     'wegas-inputex': {
@@ -229,7 +229,7 @@ YUI().use(function(Y) {
                         requires: ['wegas-inputex', 'wegas-inputex-script', 'wegas-inputex-list',
                         'wegas-button', 'inputex-hidden', 'inputex-jsonschema', 'inputex-combine',
                         'inputex-select', 'esprima' /*, 'escodegen'*/],
-                        ix_provides: ['script',"entityarrayfieldselect"]
+                        ix_provides: ['script', "entityarrayfieldselect"]
                     },
                     'wegas-inputex-url': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-url-min.js',
@@ -271,7 +271,7 @@ YUI().use(function(Y) {
                     'wegas-widgettoolbar': {
                         path: 'wegas-app/js/widget/wegas-widgettoolbar-min.js',
                         requires: ['wegas-widgettoolbarcss'],
-                        ix_provides: 'WidgetToolbar'
+                        ws_provides: 'WidgetToolbar'
                     },
                     'wegas-widgettoolbarcss': {
                         path: 'wegas-app/css/wegas-widgettoolbar.css',
@@ -300,42 +300,42 @@ YUI().use(function(Y) {
                     'wegas-editor-action': {
                         path: 'wegas-editor/js/wegas-editor-action-min.js',
                         requires: ['wegas-action', 'inputex-jsonschema', 'wegas-form'],
-                        ix_provides: ['NewEntityAction', 'EditEntityAction', "NewEntityButton"]
+                        ws_provides: ['NewEntityAction', 'EditEntityAction', "NewEntityButton"]
                     },
                     'wegas-logger': {
                         path: 'wegas-editor/js/wegas-logger-min.js',
                         requires: ['console', 'console-filters'],
-                        ix_provides: 'Logger'
+                        ws_provides: 'Logger'
                     },
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
                         requires: ['wegas-button', 'wegas-widgetmenu'],
-                        ix_provides: ['SelectPlayerButton', 'SelectGameButton']
+                        ws_provides: ['SelectPlayerButton', 'SelectGameButton']
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        ix_provides: 'PageEditor',
+                        ws_provides: 'PageEditor',
                         requires: ['diff_match_patch']
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
                         requires: ['ace-css', 'wegas-inputex-ace'],
-                        ix_provides: 'CSSEditor'
+                        ws_provides: 'CSSEditor'
                     },
                     'wegas-console': {
                         path: 'wegas-editor/js/wegas-console-min.js',
                         requires: ['ace-javascript', 'wegas-inputex-ace'],
-                        ix_provides: 'Console'
+                        ws_provides: 'Console'
                     },
                     'wegas-editor-treeview': {
                         path: 'wegas-editor/js/wegas-editor-treeview-min.js',
                         requires: ['wegas-widget', "treeview", "wegas-widgetmenu"],
-                        ix_provides: ['EditorTreeView', "LobbyTreeView"]
+                        ws_provides: ['EditorTreeView', "LobbyTreeView"]
                     },
                     'wegas-datatable': {
                         path: 'wegas-editor/js/wegas-datatable-min.js',
                         requires: ['datatable', 'datatable-sort'],
-                        ix_provides: 'DataTable'
+                        ws_provides: 'DataTable'
                     },
                     'wegas-menucss': {
                         path: 'wegas-app/css/wegas-menu.css',
@@ -344,12 +344,12 @@ YUI().use(function(Y) {
                     'wegas-menu': {
                         path: 'wegas-app/js/widget/wegas-menu-min.js',
                         requires: ['button', 'wegas-menucss'],
-                        ix_provides: 'WegasMenu'
+                        ws_provides: 'WegasMenu'
                     },
                     'wegas-scriptlibrary': {
                         path: 'wegas-editor/js/wegas-scriptlibrary-min.js',
                         requires: ['ace-javascript', 'button', 'wegas-inputex-ace', 'inputex-select'],
-                        ix_provides: 'ScriptLibrary'
+                        ws_provides: 'ScriptLibrary'
                     },
                     'wegas-fileexplorercss': {
                         path: 'wegas-editor/css/wegas-fileexplorer.css',
@@ -360,19 +360,19 @@ YUI().use(function(Y) {
                         requires: ['treeview', 'uploader-html5', 'wegas-menu',
                         'wegas-progressbar', 'wegas-fileexplorercss',
                         'wegas-content-entities', 'wegas-tooltip'],
-                        ix_provides: "FileExplorer"
+                        ws_provides: "FileExplorer"
                     },
                     'wegas-progressbar': {
                         path: 'wegas-editor/js/wegas-progressbar-min.js',
                         requires: ['widget'],
-                        ix_provides: 'ProgressBar'
+                        ws_provides: 'ProgressBar'
                     },
                     'wegas-statemachineviewer': {
                         path: 'wegas-editor/js/wegas-statemachineviewer-min.js',
                         requires: ['dd-constrain', 'wegas-datasourcerest',
                         'wegas-statemachineviewercss', 'jsplumb-yui-all', 'button',
                         'wegas-statemachine-entities'],
-                        ix_provides: 'StateMachineViewer'
+                        ws_provides: 'StateMachineViewer'
                     },
                     'wegas-statemachineviewercss': {
                         path: 'wegas-editor/css/wegas-statemachineviewer.css'
@@ -380,59 +380,59 @@ YUI().use(function(Y) {
                     'wegas-mcqtabview': {
                         path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
                         requires: ['tabview', 'wegas-tabviewcss'],
-                        ix_provides: "MCQTabView"
+                        ws_provides: "MCQTabView"
                     },
                     'wegas-editor-page': {
                         path: 'wegas-editor/js/wegas-editor-page-min.js',
                         requires: ['wegas-datasourcerest'],
-                        ix_provides: "PageTreeview"
+                        ws_provides: "PageTreeview"
                     },
                     /** Project Management Game **/
                     'wegas-pmg': {
                         path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
                         requires: ['wegas-pmg-breadcrumb'],
-                        ix_provides: "PmgBreadcrumb"
+                        ws_provides: "PmgBreadcrumb"
                     },
                     'wegas-pmg-tasklist': {//Using simple taskList
                         path: 'wegas-pmg/js/wegas-pmg-tasklist.js',
                         requires: ['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
-                        ix_provides: "PmgTasklist"
+                        ws_provides: "PmgTasklist"
                     },
                     //                    'wegas-pmg-treebletasklist': { //Using Treeble
                     //                        path: 'wegas-pmg/js/wegas-pmg-treebletasklist.js',
                     //                        requires: ['wegas-pmg-treebletasklist', 'wegas-pmg-datatable'],
-                    //                        ix_provides: "PmgTreebleTasklist"
+                    //                        ws_provides: "PmgTreebleTasklist"
                     //                    },
 
                     'wegas-pmg-gantt': {
                         path: 'wegas-pmg/js/wegas-pmg-gantt.js',
                         requires: ['wegas-pmg-gantt', 'wegas-pmg-datatable'],
-                        ix_provides: "PmgGantt"
+                        ws_provides: "PmgGantt"
                     },
                     'wegas-pmg-resourcelist': {
                         path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
                         requires: ['wegas-widgetmenu', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
-                        ix_provides: "PmgResourcelist"
+                        ws_provides: "PmgResourcelist"
                     },
                     'wegas-pmg-datatable': {
                         path: 'wegas-pmg/js/wegas-pmg-datatable.js',
                         /*requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],*/ //Using Treeble
                         requires: ['wegas-pmg-datatable', 'datatable', 'datatable-mutable'], //Using simple datatable
-                        ix_provides: "PmgDatatable"
+                        ws_provides: "PmgDatatable"
                     },
                     'wegas-pmg-slidepanel': {
                         path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
-                        ix_provides: "PmgSlidePanel"
+                        ws_provides: "PmgSlidePanel"
                     },
                     /**book CYOA**/
                     'wegas-book': {
                         path: 'wegas-book/js/wegas-book-fight.js',
                         requires: ['wegas-book-fight', 'wegas-book-dice'],
-                        ix_provides: "Fight"
+                        ws_provides: "Fight"
                     },
                     'wegas-book-dice': {
                         path: 'wegas-book/js/wegas-book-dice.js',
-                        ix_provides: "Dice"
+                        ws_provides: "Dice"
                     },
                     /**CEP**/
                     'wegas-cep': {
@@ -442,18 +442,18 @@ YUI().use(function(Y) {
                     'wegas-crimesim-scheduledisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',
                         requires: ['wegas-widget', 'wegas-widgetmenu', 'wegas-crimesim-treeble', 'wegas-gallery'],
-                        ix_provides: "ScheduleDisplay"
+                        ws_provides: "ScheduleDisplay"
                     },
                     'wegas-crimesim-resultsdisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-resultsdisplay-min.js',
                         requires: ['wegas-widget', 'wegas-crimesim-treeble' ],
-                        ix_provides: "ResultsDisplay"
+                        ws_provides: "ResultsDisplay"
                     },
 
                     'wegas-crimesim-treeble': {
                         path: 'wegas-crimesim/js/wegas-crimesim-treeble.js',
                         requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble'],
-                        ix_provides: "CrimeSimTreeble"
+                        ws_provides: "CrimeSimTreeble"
                     },
 
                     /**Leaderway**/
@@ -461,27 +461,27 @@ YUI().use(function(Y) {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
                         requires: ['wegas-leaderway-folder', 'wegas-leaderway-tasklist',
                         'wegas-leaderway-score', 'wegas-leaderway-dialogue']/*,
-                             ix_provides: "HRList"*/
+                             ws_provides: "HRList"*/
                     },
                     'wegas-leaderway-folder': {
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
                         requires: ['wegas-itemselector'],
-                        ix_provides: "LWFolder"
+                        ws_provides: "LWFolder"
                     },
                     'wegas-leaderway-tasklist': {
                         path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
                         requires: ['datatable'],
-                        ix_provides: "TaskList"
+                        ws_provides: "TaskList"
                     },
                     'wegas-leaderway-score': {
                         path: 'wegas-leaderway/js/wegas-leaderway-score.js',
                         requires: ['datatable'],
-                        ix_provides: "Score"
+                        ws_provides: "Score"
                     },
                     'wegas-leaderway-dialogue': {
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
                         requires: ['charts', 'charts-legend'],
-                        ix_provides: "Dialogue"
+                        ws_provides: "Dialogue"
                     },
                     "wegas-leaderway-translator": {
                         path: 'wegas-leaderway/js/wegas-leaderway-translator/wegas-leaderway-translator.js',
@@ -491,7 +491,7 @@ YUI().use(function(Y) {
                     /** MMO **/
                     'wegas-proggame-level': {
                         path: 'wegas-proggame/js/wegas-proggame-level-min.js',
-                        requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace'],
+                        requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace', 'crafty'],
                         ix_provides: 'ProgGameLevel'
                     }
                 }
@@ -578,6 +578,9 @@ YUI().use(function(Y) {
                     },
                     'excanvas': {
                         path: 'excanvas/excanvas.compiled.js'
+                    },
+                    'crafty': {
+                        path: 'crafty/crafty.js'
                     }
                 }
             }
@@ -599,16 +602,21 @@ YUI().use(function(Y) {
         for (moduleName in modules) {                                           // Loop through all modules
             if (modules.hasOwnProperty(moduleName)) {
                 allModules.push(moduleName);                                    // Build a list of all modules
-
+                if (modules[moduleName].ws_provides) {                          // Build a reverse index on which module provides what type
+                    if (Y.Lang.isArray(modules[moduleName].ws_provides)) {
+                        for (i = 0; i < modules[moduleName].ws_provides.length; i = i + 1) {
+                            modulesByType[modules[moduleName].ws_provides[i]] = moduleName;
+                        }
+                    } else {
+                        modulesByType[modules[moduleName].ws_provides] = moduleName;
+                    }
+                }
                 if (modules[moduleName].ix_provides) {                          // Build a reverse index on which module provides what type
-
                     if (Y.Lang.isArray(modules[moduleName].ix_provides)) {
                         for (i = 0; i < modules[moduleName].ix_provides.length; i = i + 1) {
-                            modulesByType[modules[moduleName].ix_provides[i]] = moduleName;
                             YUI_config.groups.inputex.modulesByType[modules[moduleName].ix_provides[i]] = moduleName;
                         }
                     } else {
-                        modulesByType[modules[moduleName].ix_provides] = moduleName;
                         YUI_config.groups.inputex.modulesByType[modules[moduleName].ix_provides] = moduleName;
                     }
                 }
