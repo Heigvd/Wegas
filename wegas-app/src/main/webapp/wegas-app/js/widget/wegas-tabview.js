@@ -57,11 +57,7 @@ YUI.add('wegas-tabview', function ( Y ) {
             }
             return TabView.tabs[ id ];
         },
-        destroyTab: function( id ){                                             //FIX destroy config
-            if ( TabView.tabs[ id ] ) {
-                TabView.tabs[id].remove();
-            }
-        },
+
         /**
          *  Helper function
          */
@@ -261,4 +257,33 @@ YUI.add('wegas-tabview', function ( Y ) {
     });
 
     Y.namespace("Plugin").Removeable = Removeable;
+    /**
+    * Removable plugin for tabview
+    */
+    var LayoutToggleTab = function () {
+        LayoutToggleTab.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.extend(LayoutToggleTab, Y.Plugin.Base, {
+
+        REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
+
+        initializer: function() {
+            this.onHostEvent("removeChild", function (e) {
+                if (this.get("host").size() == 1) {
+                    Y.Wegas.app.widget.hidePosition("right");
+                }
+            });
+            this.onHostEvent("addChild", function (e) {
+                if (this.get("host").isEmpty()) {
+                    Y.Wegas.app.widget.showPosition("right");
+                }
+            });
+        }
+    }, {
+        NS: "LayoutToggleTab",
+        NAME: "LayoutToggleTab"
+    });
+
+    Y.namespace("Plugin").LayoutToggleTab = LayoutToggleTab;
 });

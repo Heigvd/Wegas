@@ -16,12 +16,12 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
     "use strict";
 
     var inputEx = Y.inputEx,
-    escapeJSString = function(str) {
-        return str.replace('"', '\\"').replace("\n", "\\n");
-    },
-    unesacapeJSString = function(str) {
-        return str.replace('\\"', '"');
-    };
+        escapeJSString = function (str) {
+            return str.replace('"', '\\"').replace("\n", "\\n");
+        },
+        unesacapeJSString = function (str) {
+            return str.replace('\\"', '"');
+        };
 
     inputEx.WysiwygScript = function (options) {
         inputEx.WysiwygScript.superclass.constructor.call(this, options);
@@ -611,7 +611,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
      * @extends inputEx.SelectField
      * @param {Object} options InputEx definition object
      */
-    var EntityArrayFieldSelect = function(options) {
+    var EntityArrayFieldSelect = function (options) {
         EntityArrayFieldSelect.superclass.constructor.call(this, options);
     };
     Y.extend(EntityArrayFieldSelect, inputEx.SelectField, {

@@ -18,7 +18,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 public class Views {
 
     /**
-     * Index minimal (w/ with ids)
+     * Index minimal (w/ ids)
      */
     public static interface IndexI {
     }
@@ -36,9 +36,15 @@ public class Views {
     }
 
     /**
-     * Full export
+     * Player view (w/ instances)
      */
-    public static interface ExportI {
+    public static interface PlayerI {
+    }
+
+    /**
+     * Single view (w/ instances)
+     */
+    public static interface SinglePlayerI extends PlayerI {
     }
 
     /**
@@ -56,19 +62,19 @@ public class Views {
     /**
      *
      */
-    public static class Private extends Public {
+    public static class Private extends Public implements SinglePlayerI {
     }
 
     /**
      *
      */
-    public static class Editor extends Public implements IndexI, EditorI {
+    public static class Editor extends Public implements IndexI, PlayerI, EditorI {
     }
 
     /**
      *
      */
-    public static class Export implements EditorI, ExportI {
+    public static class Export implements EditorI {
     }
 
     /**

@@ -33,8 +33,7 @@ YUI.add('wegas-entity', function (Y) {
     /**
      *
      */
-    function Editable() {
-    }
+    function Editable() { }
 
     Y.mix(Editable.prototype, {
         /**

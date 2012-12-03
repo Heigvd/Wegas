@@ -27,7 +27,7 @@ YUI.add('wegas-editor', function(Y) {
     */
     var Editor = Y.Base.create("wegas-editor", Y.Wegas.App, [], {
 
-        /** 
+        /**
          * @methodOf Y.Wegas.Editor#
          * @private
          * @name initializer
@@ -48,11 +48,11 @@ YUI.add('wegas-editor', function(Y) {
          * @description
          * <p><strong>Method</strong></p>
          * <ul>
-         *    <li>editorMenus : 
+         *    <li>editorMenus :
          *        This field is used to globally override Entities edition menus.
          *        Use the target class name as the key.
          *    </li>
-         *    <li>editorForms : 
+         *    <li>editorForms :
          *        This field is used to globally override Entities edition forms.
          *        Use the target class name as the key.
          *    </li>
@@ -78,5 +78,4 @@ YUI.add('wegas-editor', function(Y) {
     });
 
     Y.namespace('Wegas').Editor = Editor;
-
 });

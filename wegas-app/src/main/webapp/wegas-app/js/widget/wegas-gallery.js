@@ -167,25 +167,25 @@ YUI.add("wegas-gallery", function(Y) {
                 }
             });
 
-            this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-left').on("click", function(e) {
+            this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-left').on("click", function(e) {
                 e.halt(true);
                 this.prev();
 
-            }, this));
-            this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-right').on("click", function(e) {
+            }, this);
+            this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-right').on("click", function(e) {
                 e.halt(true);
                 this.next();
-            }, this));
-            this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-toggle').on("click", function(e) {
+            }, this);
+            this.scrollView.get(BOUNDING_BOX).one('.gallery-toggle').on("click", function(e) {
                 this.set("fullScreen", !this.get("fullScreen"));
-            }, this));
+            }, this);
             //Prevent scroll on borders
-            this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-left').on("mousedown", function(e) {
+            this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-left').on("mousedown", function(e) {
                 e.halt(true);
-            }));
-            this.eventInstances.push(this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-right').on("mousedown", function(e) {
+            });
+            this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-right').on("mousedown", function(e) {
                 e.halt(true);
-            }));
+            });
             this.scrollView.after("scrollEnd", function(e) {
                 this.scrollView.pages.scrollToIndex(this.scrollView.pages.get("index"));              //Constrain
                 Y.later(600, this, function() {                                  // Let some time before loading next one

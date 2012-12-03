@@ -40,7 +40,10 @@ YUI.add('wegas-mcqtabview', function (Y) {
                 this.showOverlay();
                 this.dataSource.rest.sendRequest({
                     request: "/QuestionDescriptor/SelectChoice/" + e.target.get('id')
-                    + "/Player/" + Y.Wegas.app.get('currentPlayer')
+                    + "/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    on: {
+                        failure: Y.bind(this.defaultExceptionHandler, this)
+                    }
                 });
             }, "input[type=submit]", this);
 
