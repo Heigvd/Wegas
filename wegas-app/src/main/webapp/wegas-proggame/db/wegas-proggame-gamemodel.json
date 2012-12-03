@@ -38,7 +38,7 @@
         "name":"currentLevel",
         "defaultInstance":{
             "@class":"NumberInstance",
-            "value":2
+            "value":3
         },
         "scope":{
             "@class":"PlayerScope"

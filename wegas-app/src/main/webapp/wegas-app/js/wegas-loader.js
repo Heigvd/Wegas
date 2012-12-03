@@ -482,7 +482,7 @@ YUI().use(function(Y) {
                     'wegas-proggame-level': {
                         path: 'wegas-proggame/js/wegas-proggame-level-min.js',
                         requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace', 'crafty'],
-                        ix_provides: 'ProgGameLevel'
+                        ws_provides: 'ProgGameLevel'
                     }
                 }
             },
