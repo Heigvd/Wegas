@@ -246,7 +246,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             
             Crafty.init(GRIDSIZE * this.get('gridW'), GRIDSIZE * this.get('gridH'));
             
-            if(!Crafty.support.canvas){
+            if(Crafty.support.canvas){
                 Crafty.canvas.init();
                 renderMethod = 'Canvas';
             } else{
