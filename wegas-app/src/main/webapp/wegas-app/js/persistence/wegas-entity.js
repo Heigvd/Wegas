@@ -247,7 +247,7 @@ YUI.add('wegas-entity', function (Y) {
                 } else if (val.expr) {                                          // if absent evaluate the expr field
                     val.evaluated = ds.rest.findById(Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
 
-                } else if (val.i) {
+                } else if (val.id) {
                     val.evaluated = ds.rest.findById(val.id);
                 }
             }

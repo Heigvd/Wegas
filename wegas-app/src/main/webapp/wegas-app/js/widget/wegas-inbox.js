@@ -126,7 +126,11 @@ YUI.add('wegas-inbox', function (Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "variable"
+                }
             }
         }
     });

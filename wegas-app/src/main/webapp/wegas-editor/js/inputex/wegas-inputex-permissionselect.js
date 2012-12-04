@@ -46,12 +46,12 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                 this.fireUpdatedEvt();
             }, this);
             
-            var logDiv = Y.Node.create("<div></div>").addClass("permissionList");
+            var logDiv = Y.Node.create('<div class="permissionList"></div>');
             this.fieldContainer.div = this.fieldContainer.appendChild(logDiv.getDOMNode());
             this.permissionsCheckBoxes = [];
             Y.Array.forEach(this.options.permissions, function (item, i){
-                var splitedPermissions = item.name.split(":");
-                var box = new Y.inputEx.CheckBox({
+                var splitedPermissions = item.name.split(":"),
+                box = new Y.inputEx.CheckBox({
                     rightLabel: splitedPermissions[1],
                     name: splitedPermissions[0]+":"+splitedPermissions[1],
                     value: false,
@@ -111,6 +111,10 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
         destroy: function () {
             inputEx.Wegas.PermissionSelect.superclass.destroy.call(this);
             this.roleSelect.destroy();
+            var i;
+            for (i = 0; i < this.permissionsCheckBoxes.length; i += 1) {
+                this.permissionsCheckBoxes[i].destroy();
+            }
         }
         
     });
@@ -181,11 +185,19 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
                    
                         this.get(CONTENTBOX).one(".roleBox img").hide();
                     }, this),
-                    failure: function (id, result) {
-                    }
+                    failure: Y.bind(function (e) {
+                        this.fire("exception", e.response.results);
+                    }, this)
                 }
             });  
         },
+        
+        destructor: function () {
+            if (this.permsField) {
+                this.permsField.destroy();                
+            }  
+        },
+        
         sync: function(){
             var list = this.permsField.getRoleIds();
             
@@ -223,11 +235,11 @@ YUI.add("wegas-inputex-permissionselect",function(Y){
     Y.extend(PermissionList, inputEx.ListField,  {
         
         getRoleIds: function () {
-            var list = [];
+            var list = [], roleWithPermission;
             Y.Array.forEach(this.subFields, function(field) {
-                var roleWithPermission = field.getValue();
+                roleWithPermission = field.getValue();
                 list.push(roleWithPermission.id);
-            }, this);
+            });
             return list;
         },
         

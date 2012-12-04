@@ -256,6 +256,11 @@ YUI().use(function(Y) {
                         requires: ['inputex-select'],
                         ix_provides: 'pageselect'
                     },
+                    'wegas-inputex-variableselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-variableselect-min.js',
+                        requires: ['inputex-group', 'wegas-inputex-wysiwygscript'],
+                        ix_provides: 'variableselect'
+                    },
                     /** Common Widgets **/
                     'wegas-widgetmenu': {
                         path: 'wegas-app/js/widget/wegas-widgetmenu-min.js',

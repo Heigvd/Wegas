@@ -176,7 +176,10 @@ YUI.add('wegas-mcqtabview', function (Y) {
                 * The target variable, returned either based on the name attribute,
                 * and if absent by evaluating the expr attribute.
                 */
-                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect"
+                }
             }
         }
     });
