@@ -401,7 +401,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-pmg-resourcelist': {
                         path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
-                        requires: ['wegas-widgetmenu', 'wegas-pmg-gantt', 'dd-constrain', 'dd-proxy', 'dd-drop'],
+                        requires: ['wegas-widgetmenu', 'wegas-pmg-gantt', 'sortable'],
                         ws_provides: "PmgResourcelist"
                     },
                     'wegas-pmg-datatable': {
@@ -480,7 +480,7 @@ YUI().use(function(Y) {
                     },
                     /** MMO **/
                     'wegas-proggame-level': {
-                        path: 'wegas-proggame/js/wegas-proggame-level-min.js',
+                        path: 'wegas-proggame/js/wegas-proggame-level.js',
                         requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace', 'crafty'],
                         ws_provides: 'ProgGameLevel'
                     }

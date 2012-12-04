@@ -96,6 +96,34 @@
         "id": 3,
         "label": "Level 1 - First moves",
         "type": "ProgGameLevel",
+        "maxTurns": 1,
+        "winningCondition": "level.objects[1].life===0",
+        "onWin": "currentLevel.value=3",
+        "cssClass": "wegas-proggame-level",
+        "objects": [{
+            "id": "Player",
+            "type": "pc",
+            "direction": 2,
+            "x": 0,
+            "y": 3,
+            "life": 100,
+            "actions": 20,
+            "range": 3
+        }, {
+            "id": "Enemy",
+            "direction": 4,
+            "type": "npc",
+            "x": 7,
+            "y": 4,
+            "life": 100,
+            "actions": 0,
+            "range": 2
+        }]
+    },
+    "4": {
+        "id": 4,
+        "label": "Level 2 - First moves",
+        "type": "ProgGameLevel",
         "maxTurns": 2,
         "maxActions": 20,
         "winningCondition": "level.objects[1].life===0",
@@ -121,31 +149,6 @@
             "direction": 4,
             "x": 7,
             "y": 3,
-            "life": 100,
-            "range": 2
-        }]
-    },
-    "4": {
-        "id": 4,
-        "label": "Level 2 - First moves",
-        "type": "ProgGameLevel",
-        "maxTurns": 2,
-        "maxMoves": -1,
-        "winningCondition": "level.objects[1].life===0",
-        "onWin": "currentLevel.value=3",
-        "cssClass": "wegas-proggame-level",
-        "objects": [{
-            "id": "Player",
-            "direction": 2,
-            "x": 0,
-            "y": 3,
-            "life": 100,
-            "range": 3
-        }, {
-            "id": "Enemy",
-            "direction": 4,
-            "x": 7,
-            "y": 4,
             "life": 100,
             "range": 2
         }]

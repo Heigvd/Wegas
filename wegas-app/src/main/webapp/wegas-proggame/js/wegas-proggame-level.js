@@ -56,8 +56,12 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         // *** Lifecycle Methods *** //
         initializer: function () {
-            var cb = this.get(CONTENTBOX);
             this.handlers = {};
+            this.objects = this.get("objects");
+        },
+        renderUI: function () {
+            var i, cb = this.get(CONTENTBOX);
+
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code"),
                 name: 'text',
@@ -66,80 +70,63 @@ YUI.add('wegas-proggame-level', function (Y) {
                 language: "javascript",
                 value: "move();fire();"
             });
-            this.display = new ProgGameDisplay(this.toObject());
-            this.runButton = new Y.Wegas.Button({
-                label: "RUN SCRIPT"
-            });
-        },
-        renderUI: function () {
-            var i, cb = this.get(CONTENTBOX);
 
-            cb.one(".ai").append(Y.Wegas.App.nl2br(this.get("ai")));
+            cb.one(".ai").append(Y.Wegas.App.nl2br(this.get("ai") || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
 
             for (i = 0; i < this.get("api").length; i += 1) {
                 cb.one(".api").append(this.get("api")[i].name + "()<br />");
             }
 
+            this.display = new ProgGameDisplay(this.toObject());
             this.display.render(cb.one(".terrain"));
+
+            this.runButton = new Y.Wegas.Button({
+                label: "RUN SCRIPT"
+            });
             this.runButton.render(cb.one(".buttons"));
 
         },
         bindUI: function () {
             this.handlers.response = Y.Wegas.app.VariableDescriptorFacade.after("response", // If data changes, refresh
                 this.syncUI, this);
-            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);       // If current user changes, refresh (editor only)
+            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange',
+                this.syncUI, this);                                             // If current user changes, refresh (editor only)
 
-            this.handlers.runButton = this.runButton.on("click", function () {
+            this.runButton.on("click", this.run, this);
 
-                this.display.set("objects", this.get("objects"));            // Reset the display to default
-                this.display.syncUI();
-                this.get(CONTENTBOX).one(".debugger").setHTML("<h1>Debugger</h1>");
-                this.runButton.set("label", "RUNNING...");
-                this.runButton.set("disabled", true);
+            this.display.after('commandExecuted', this.consumeServerCommand, this);
+            this.after('commandExecuted', this.consumeServerCommand, this);
 
-                Y.Wegas.app.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-                    cfg: {
-                        method: "POST",
-                        data: "JSON.stringify(run(function () {"+ this.aceField.getValue()+"}, "
-                        + Y.JSON.stringify(this.toObject()) + "));"
-                    },
-                    on: {
-                        success: Y.bind(this.onServerReply, this),
-                        failure: Y.bind(function () {
-                            this.runButton.set("label", "RUN SCRIPT");
-                            this.runButton.set("disabled", false);
-                            alert("Your script contains an error.");
-                        }, this)
-                    }
-                });
-            }, this);
+        },
+        run: function () {
+            this.objects = this.get("objects");
+            this.display.set("objects", this.get("objects"));                   // Reset the display to default
+            this.display.syncUI();
+            this.get(CONTENTBOX).one(".debugger").setHTML("<h1>Debugger</h1>");
+            this.runButton.set("label", "RUNNING...");
+            this.runButton.set("disabled", true);
 
-            this.handlers.commandExecuted = this.display.after('commandExecuted', this.consumeServerCommand, this);
-            this.handlers.commandExecuted = this.after('commandExecuted', this.consumeServerCommand, this);
-
+            Y.Wegas.app.VariableDescriptorFacade.rest.sendRequest({
+                request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                cfg: {
+                    method: "POST",
+                    data: "JSON.stringify(run(function () {"+ this.aceField.getValue()+"}, "
+                    + Y.JSON.stringify(this.toObject()) + "));"
+                },
+                on: {
+                    success: Y.bind(this.onServerReply, this),
+                    failure: Y.bind(function () {
+                        this.runButton.set("label", "RUN SCRIPT");
+                        this.runButton.set("disabled", false);
+                        alert("Your script contains an error.");
+                    }, this)
+                }
+            });
         },
         syncUI: function () {
             this.display.syncUI();
             this.syncFrontUI();
-        },
-
-        syncFrontUI: function () {
-            var cb = this.get(CONTENTBOX);
-
-            function updateUI(object, el) {
-                var i, acc= [];
-                for (i = 0; i < (object.actions || this.get("maxActions")); i += 1) {
-                    acc.push("<span></span>");
-                }
-
-                el.one(".life span").setStyle("width", object.life + "%");
-                el.one(".actions").setHTML(acc.join(""));
-            }
-            updateUI.call(this, this.get("objects")[0], cb.one(".player-ui"));
-            updateUI.call(this, this.get("objects")[1], cb.one(".enemy-ui"));
-
         },
 
         destructor: function () {
@@ -160,7 +147,6 @@ YUI.add('wegas-proggame-level', function (Y) {
         },
 
         findObjectById: function (id) {
-            var i, objs = this.get("objects");
             return Y.Array.find(this.get("objects"), function (o) {
                 return o.id === id;
             });
@@ -170,14 +156,14 @@ YUI.add('wegas-proggame-level', function (Y) {
             if (this.commandsStack && this.commandsStack.length > 0) {
                 var command = this.commandsStack.shift();
                 console.log("consumeServerCommand", command.type, command);
-                this.display.execute(command);
+
                 switch (command.type) {
+
                     case "move":
                     case "fire":
                     case "updated":
                         Y.mix(this.findObjectById(command.object.id),           // Update target object cfg
-                            command.object);
-
+                            command.object, true);
                         this.syncFrontUI();
                         break;
 
@@ -196,6 +182,8 @@ YUI.add('wegas-proggame-level', function (Y) {
                         break;
                 }
 
+                this.display.execute(command);                                  // Forware the command to the display
+
             } else {
                 this.runButton.set("label", "RUN SCRIPT");
                 this.runButton.set("disabled", false);
@@ -211,6 +199,22 @@ YUI.add('wegas-proggame-level', function (Y) {
                     data: this.get("onWin")
                 }
             });
+        },
+
+        syncFrontUI: function () {
+            var cb = this.get(CONTENTBOX);
+
+            function updateUI(object, el) {
+                var i, acc= [];
+                for (i = 0; i < object.actions; i += 1) {
+                    acc.push("<span></span>");
+                }
+
+                el.one(".life span").setStyle("width", object.life + "%");
+                el.one(".actions").setHTML(acc.join(""));
+            }
+            updateUI.call(this, this.objects[0], cb.one(".player-ui"));
+            updateUI.call(this, this.objects[1], cb.one(".enemy-ui"));
         }
 
     }, {
@@ -234,13 +238,6 @@ YUI.add('wegas-proggame-level', function (Y) {
                 },
                 _inputex: {
                     label: "Max turns"
-                }
-            },
-            maxActions: {
-                type: "text",
-                format: "number",
-                _inputex: {
-                    label: "Max actions per turn"
                 }
             },
             ai: {
@@ -287,7 +284,7 @@ YUI.add('wegas-proggame-level', function (Y) {
 
             Crafty.init(GRIDSIZE * this.get('gridW'), GRIDSIZE * this.get('gridH'));
 
-            if(!Crafty.support.canvas){
+            if(Crafty.support.canvas){
                 Crafty.canvas.init();
                 renderMethod = 'Canvas';
             } else{
@@ -482,8 +479,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             gridH: {
                 value: 8
             },
-            objects: {
-        }
+            objects: {}
         }
     });
     Y.namespace('Wegas').ProgGameDisplay = ProgGameDisplay;
