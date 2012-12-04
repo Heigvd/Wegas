@@ -99,7 +99,7 @@
             }, {
                 "name": "fire"
             }],
-        "ai": "rotateLeft();move();rotateRight();move();move();rotateRight();move();rotateLeft()",
+        "ai": "move()",
         "objects": [{
                 "id": "Player",
                 "type": "pc",
@@ -120,7 +120,7 @@
     },
     "3": {
         "id": 3,
-        "label": "Level 2 - First moves",
+        "label": "Level 2 - First moves (2)",
         "type": "ProgGameLevel",
         "maxTurns": 2,
         "maxMoves": -1,
@@ -130,6 +130,7 @@
         "objects": [
             {
                 "id": "Player",
+                "type": "pc",
                 "direction": 2,
                 "x": 0,
                 "y": 3,
@@ -137,6 +138,7 @@
                 "range": 3
             }, {
                 "id": "Enemy",
+                "type": "npc",
                 "direction": 4,
                 "x": 7,
                 "y": 4,
