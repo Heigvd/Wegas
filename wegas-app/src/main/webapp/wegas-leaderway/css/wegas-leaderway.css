@@ -316,10 +316,7 @@
     margin-left:800px;
     height:140px;
     width:140px;
-}
-
-.leaderway-folder .informations .picture img{
-    background-color:#FFFFFF;
+    background-color: white;
     border:solid 1px #6F89A2;
 }
 
@@ -391,7 +388,7 @@
     height:20px;
 }
 
-.leaderway-folder .actions{
+.leaderway-folder .wegas-leaderway-folder-content .actions{
     display:block;
     position:absolute;
     top: 450px;
@@ -571,7 +568,7 @@
     height: 315px;
     width:980px;
     overflow:hidden;
-    z-index: 0;
+    z-index: 0; 
 }
 
 .leaderway-dialogue .chart{

@@ -16,7 +16,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
 
     var CONTENTBOX = "contentBox", Datatable;
 
-    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.persistence.Editable], {
+    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
         datatable: null,
         data: null,
@@ -31,7 +31,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
                 variableDesc = variables.get('items')[i];
                 variableInst = variableDesc.getInstance();
                 oneRowDatas = {};
-                oneRowDatas["_name"] = variableDesc.get("name");
+                oneRowDatas["_id"] = variableDesc.get("id");
                 for (j = 0; j < ct.length; j++) {
                     if (variableDesc.get(cv[j])) {
                         data = variableDesc.get(cv[j]);
@@ -58,20 +58,20 @@ YUI.add("wegas-pmg-datatable", function (Y) {
                              return;   
             }
             columnTitles.push({
-                key: "_name",
-                label: "_name"
+                key: "_id",
+                label: "_id"
             });                                                                 //First column is always the name (but not displayed)
             for (i = 0; i < ct.length; i++) {                                         //construct Datatable's columns
                 columnTitles.push(
                         {
                             key: ct[i],
                             label: ct[i],
-                            sortable: false
+                            sortable: true
                         }
                 );
             }
 //            this.datatable = new Y.Treeble({                                  //Using Treeble (comment also the sorting methode belove)
-              this.datatable = new Y.Datatable({                                //Using simple database
+              this.datatable = new Y.DataTable({                                //Using simple database
                 columns: columnTitles
             });
             if (this.get("defaultSort") && this.get("defaultSort").indexOf(this.get("columnValues") > -1)) { //Add columns sorting possibilities
