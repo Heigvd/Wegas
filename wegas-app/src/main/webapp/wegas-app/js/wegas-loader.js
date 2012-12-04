@@ -241,10 +241,25 @@ YUI().use(function(Y) {
                         requires: ['inputex-field', 'ace'],
                         ix_provides: "ace"
                     },
+                    'wegas-inputex-permissionselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-permissionselect-min.js',
+                        requires: ['inputex-list', 'inputex-field', "inputex-checkbox", "wegas-inputex-roleselect"],
+                        ws_provides: 'RolePermissionList'
+                    },
                     'wegas-inputex-roleselect': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-roleselect-min.js',
                         requires: ['inputex-select'],
                         ix_provides: 'roleselect'
+                    },
+                    'wegas-inputex-pageselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-pageselect-min.js',
+                        requires: ['inputex-select'],
+                        ix_provides: 'pageselect'
+                    },
+                    'wegas-inputex-variableselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-variableselect-min.js',
+                        requires: ['inputex-group', 'wegas-inputex-wysiwygscript'],
+                        ix_provides: 'variableselect'
                     },
                     /** Common Widgets **/
                     'wegas-widgetmenu': {
