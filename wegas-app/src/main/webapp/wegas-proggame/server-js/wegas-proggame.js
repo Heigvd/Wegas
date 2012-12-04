@@ -1,4 +1,4 @@
-var gameOverSent = false;
+var isSendingGameOver = false, gameOverSent = false;
 
 function sendCommand (cfg) {
     if (!checkGameOver()) {
@@ -74,8 +74,8 @@ function fire () {
 function checkCollision (sourceId, x, y) {
     for (var k = 0; k < objects.length; k++) {
         if (objects[k].x === x && objects[k].y === y && objects[k].id !== sourceId) {
+            sendCommand({type: 'die', object: objects[k]});
             objects[k].life = 0;
-            sendCommand({type: 'die', object: objects[k].id});
         }
     }
 }
@@ -89,12 +89,17 @@ function checkWinningCondition () {
 
 function checkGameOver () {
     if (gameOverSent) {
+        return true;
+    }
+    if (isSendingGameOver) {
         return false;
     }
     if (checkWinningCondition()) {
-        gameOverSent = true;
+        isSendingGameOver = true;
         sendCommand({type: "log", text: "You won!"});
         sendCommand({type: "gameWon"});
+        isSendingGameOver = false;
+        gameOverSent = true;
         return true;
     }
     return false;

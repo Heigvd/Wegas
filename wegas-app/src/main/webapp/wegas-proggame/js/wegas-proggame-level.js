@@ -260,10 +260,6 @@ YUI.add('wegas-proggame-level', function (Y) {
             Crafty.refWidget = this;
             Crafty.background('rgb(110,110,110)');
 
-            Crafty.bind('moveEnded', function () {
-                this.refWidget.fire("commandExecuted");
-            });
-
             //sprites
             Crafty.sprite(24, 32, '/Wegas/wegas-proggame/images/sprites-1.png', {
                 SCharacter: [0, 0]
@@ -281,7 +277,8 @@ YUI.add('wegas-proggame-level', function (Y) {
                         this.tweenEnd.push(e);
                         if (this.tweenEnd.length === 2) {
                             this.stop();
-                            Crafty.trigger('moveEnded');
+                            this.trigger('moveEnded');
+                            Crafty.refWidget.fire("commandExecuted");
                         }
                     }, this);
                 },
@@ -331,7 +328,23 @@ YUI.add('wegas-proggame-level', function (Y) {
                 }
             });
 
-            //Lightning
+            Crafty.c("DieFunction", {
+                isDying: null,
+                init: function () {
+                    this.isDying = false;
+                    this.bind('TweenEnd', function (e) {
+                        if (this.isDying) {
+                            Crafty.refWidget.fire("commandExecuted");
+                            this.destroy();
+                        }
+                    }, this);
+                },
+                execDie: function () {
+                    this.isDying = true;
+                    this.tween({alpha: 0}, 50);
+                }
+            });
+
             Crafty.c('Lightning', {
                 init: function () {
                     this.requires("MoveFunction, SpriteAnimation, Tween, SLightning")
@@ -361,7 +374,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                 if (object.type === "pc") {
                     Crafty.c(object.id, {
                         init: function () {
-                            this.requires("MoveFunction, FireFunction, SpriteAnimation, Tween, SCharacter")
+                            this.requires("MoveFunction, FireFunction, DieFunction, SpriteAnimation, Tween, SCharacter")
                                     .animate("moveUp", 0, 0, 2)
                                     .animate("moveRight", 0, 1, 2)
                                     .animate("moveDown", 0, 2, 2)
@@ -371,7 +384,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                 } else {
                     Crafty.c(object.id, {
                         init: function () {
-                            this.requires("MoveFunction, FireFunction, SpriteAnimation, Tween, SCharacter")
+                            this.requires("MoveFunction, FireFunction, DieFunction, SpriteAnimation, Tween, SCharacter")
                                     .animate("moveUp", 9, 0, 11)
                                     .animate("moveRight", 9, 1, 11)
                                     .animate("moveDown", 9, 2, 11)
@@ -393,6 +406,8 @@ YUI.add('wegas-proggame-level', function (Y) {
                     Crafty("*")[k].destroy();
                 }
             }
+            Crafty.unbind('dieEnded');
+            Crafty.unbind('moveEnded');
         },
         execute: function (command) {
             var object, entity, dir, pos, i;
@@ -439,6 +454,14 @@ YUI.add('wegas-proggame-level', function (Y) {
                     if (entity && Crafty(entity) && Crafty(entity).execFire) {
                         Crafty(entity).execFire(dir, pos[0], pos[1], 7);
                     }
+                    break;
+                case "die":
+                    object = command.object;
+                    entity = object.id;
+                    if (entity && Crafty(entity) && Crafty(entity).execDie) {
+                        Crafty(entity).execDie();
+                    }
+                    break;
             }
         },
         getRealXYPos: function (position) {
