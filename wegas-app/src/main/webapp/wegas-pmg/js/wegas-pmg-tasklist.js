@@ -36,7 +36,7 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
                     taskInst = taskDesc.getInstance();
                     realized = (taskInst.get('properties').realized) ? taskInst.get('properties').realized : null;
                     if (realized) {
-                        if (node.one("*").getContent() == taskDesc.get('name')) {
+                        if (node.one("*").getContent() == taskDesc.get('id')) {
                             if (realized >= 100) {
                                 node.addClass("completed");
                             } else if (realized > 0) {
@@ -51,22 +51,22 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
             });
         },
         displayDescription: function (e) {
-            var i, name, label, tasks, node, divDesc, taskDesc, description;
+            var i, id, label, tasks, node, divDesc, taskDesc, description;
             node = e.currentTarget;
             if (this.get("viewDescription") == "false"
                     || node.one(".description")
                     || node.get("className").indexOf("cell-gantt") > -1) {
                 return;
             }
-            name = node.ancestor().one("*").getContent();
+            id = node.ancestor().one("*").getContent();
             tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
-            if (!name || !tasks) {
+            if (!id || !tasks) {
                 return;
             }
             for (i = 0; i < tasks.get('items').length; i += 1) {
                 taskDesc = tasks.get('items')[i];
-                if (taskDesc.get('name') === name) {
-                    label = (taskDesc.get("label") || name);
+                if (taskDesc.get('id') == id) {
+                    label = (taskDesc.get("label") || taskDesc.get("name"));
                     description = taskDesc.get("description");
                     break;
                 }
