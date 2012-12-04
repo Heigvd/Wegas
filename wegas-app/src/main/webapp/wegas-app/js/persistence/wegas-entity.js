@@ -214,9 +214,9 @@ YUI.add('wegas-entity', function (Y) {
         },
         readObject: function (o) {
             var classDef = Y.Wegas.persistence.Entity;
-
+            
             if (o["@class"]) {
-                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.Entity;
+                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity;
 
             } else if (o.type) {
                 classDef = Y.Wegas.persistence[o.type] || Y.Wegas.persistence.WidgetEntity;
@@ -247,7 +247,7 @@ YUI.add('wegas-entity', function (Y) {
                 } else if (val.expr) {                                          // if absent evaluate the expr field
                     val.evaluated = ds.rest.findById(Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
 
-                } else if (val.i) {
+                } else if (val.id) {
                     val.evaluated = ds.rest.findById(val.id);
                 }
             }
@@ -332,7 +332,16 @@ YUI.add('wegas-entity', function (Y) {
         METHODS: {}
     });
     Y.namespace('Wegas.persistence').Entity = Entity;
-
+    
+    Y.Wegas.persistence.DefaultEntity = Y.Base.create("DefaultEntity", Entity, [], {
+        initializer: function (cfg) {
+            this.set("val", cfg);
+        }
+    }, {
+        ATTRS: {
+            val: {}
+        }
+    });
     /**
      * Page response mapper
      */
@@ -385,7 +394,7 @@ YUI.add('wegas-entity', function (Y) {
             },
             widgetsUri: {
                 type: "string",
-               /* choices: [{
+                /* choices: [{
                     value: "wegas-leaderway/db/wegas-leaderway-pages.json",
                     label: "Leaderway"
                 }, {
@@ -428,6 +437,27 @@ YUI.add('wegas-entity', function (Y) {
             label: "Duplicate",
             plugins: [{
                 fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "Button",
+            label: "Share",
+            plugins: [{
+                fn: "OpenTabAction",
+                cfg: {
+                    children: {
+                        type: "RolePermissionList",
+                        permsList: [{
+                            name: "GameModel:Add"
+                        },{
+                            name: "GameModel:Edit"
+                        },{
+                            name: "GameModel:Delete"
+                        },{
+                            name: "GameModel:Create"
+                        },]
+                    },
+                    tabSelector: '#rightTabView'
+                }
             }]
         }, {
             type: "DeleteEntityButton"
@@ -476,6 +506,27 @@ YUI.add('wegas-entity', function (Y) {
         }, {
             type: "EditEntityButton",
             label: "Properties"
+        },{
+            type: "Button",
+            label: "Share",
+            plugins: [{
+                fn: "OpenTabAction",
+                cfg: {
+                    children: {
+                        type: "RolePermissionList",
+                        permsList: [{
+                            name: "Game:Add"
+                        },{
+                            name: "Game:Edit"
+                        },{
+                            name: "Game:Delete"
+                        },{
+                            name: "Game:Create"
+                        }]
+                    },
+                    tabSelector: '#rightTabView'
+                }
+            }]
         }, {
             type: "DeleteEntityButton"
         }]
