@@ -248,3 +248,14 @@
 #cr-stage{
     border: 1px solid orange;
 }
+
+.wegas-proggame-code,
+.wegas-proggame-def {
+    margin: 10px 0;
+    border: 1px solid orange;
+    background:darkgray;
+    padding: 5px 8px;
+}
+.wegas-proggame-code {
+    font-family: monospace;
+}

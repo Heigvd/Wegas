@@ -15,9 +15,8 @@ YUI.add('wegas-proggame-display', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-            GRIDSIZE = 31,
-            ProgGameLevel;
-            
+            GRIDSIZE = 31;
+
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.

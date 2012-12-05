@@ -36,9 +36,7 @@ YUI.add('wegas-entity', function (Y) {
             //statics: ["EDITMENU"],
             custom: {
         //HASH: function (prop, Receiver, Supplier) {
-
         //Entity.ENTITIES_HASH[Receiver.name] = true;
-
         //var c = Supplier.constructor;
         //while (!Receiver.EDITMENU && c) {
         //    if (c.EDITMENU) {                                                  // Add to attributes
@@ -93,7 +91,7 @@ YUI.add('wegas-entity', function (Y) {
         METHODS: {}
     });
     Y.namespace('Wegas.persistence').Entity = Entity;
-    
+
     Y.Wegas.persistence.DefaultEntity = Y.Base.create("DefaultEntity", Entity, [], {
         initializer: function (cfg) {
             this.set("val", cfg);
@@ -103,6 +101,8 @@ YUI.add('wegas-entity', function (Y) {
             val: {}
         }
     });
+
+    Y.Wegas.persistence.RestException = Y.Wegas.persistence.DefaultEntity;
     /**
      * Page response mapper
      */
@@ -114,7 +114,6 @@ YUI.add('wegas-entity', function (Y) {
         toJSON: function () {
             return this.__cfg;
         }
-
     });
 
     /**
