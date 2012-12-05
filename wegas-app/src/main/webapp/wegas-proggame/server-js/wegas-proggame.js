@@ -1,13 +1,86 @@
-var isSendingGameOver = false, gameOverSent = false;
+var ret = [], cObject, level;
+
+function resetActions () {
+    for (var i = 0; i < level.objects.length; i++) {
+        level.objects[i].actions = level.objects[i].defaultActions;
+        sendCommand({
+            type: "updated",
+            object: level.objects[i].clone()
+        });
+    }
+}
+function run (playerFn, lvl) {
+    var i;
+    level = lvl;
+
+    for (i = 0; i < level.objects.length; i++) {
+        level.objects[i].defaultActions = level.objects[i].actions;
+    }
+
+    for (i = 0; i < level.maxTurns; i++) {
+        sendCommand({
+            type: 'log',
+            'text': 'Turn ' + (i + 1)
+        });
+
+        resetActions();
+
+        cObject = 'Player';
+        sendCommand({
+            type: 'log',
+            'text': 'Player turn.'
+        });
+        playerFn();
+
+        if (level.ai) {
+            cObject = 'Enemy';
+            sendCommand({
+                type: 'log',
+                'text': 'Enemy turn.'
+            });
+            eval(level.ai);
+        }
+    }
+    sendCommand({
+        type: 'log',
+        'text': 'It\'s lost.'
+    });
+
+    //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
+    return ret;
+}
 
 function sendCommand (cfg) {
-    if (!checkGameOver()) {
+    if (!checkGameOver(cfg)) {
         ret.push(cfg);
     }
+}
+function log (text) {
+    ret.push({
+        type: 'log',
+        text: text
+    });
+}
+function checkActions (object, actions) {
+    return object.actions - actions >= 0;
+}
+function consumeActions (object, actions) {
+    if (object.actions - actions < 0) {
+        //log("Not enough actions");
+        return false;
+    }
+    object.actions -= actions;
+    return true;
 }
 
 function move () {
     var object = findObject(cObject);
+
+    if (!consumeActions(object, 1)) {
+        log("Not enough actions to move.");
+        return;
+    }
+
     switch (object.direction) {
         case 1:
             object.y += 1;
@@ -24,87 +97,108 @@ function move () {
     }
     sendMoveCommand();
 }
-function rotateRight () {
+function rotate (dir) {
     var object = findObject(cObject);
-    object.direction++;
+    if (!consumeActions(object, 1)) {
+        log("Not enough actions to rotate.");
+        return;
+    }
+    object.direction += dir;
     if (object.direction > 4)
         object.direction = 1;
-    sendMoveCommand();
-}
-function rotateLeft () {
-    var object = findObject(cObject);
-    object.direction--;
     if (object.direction < 1)
         object.direction = 4;
     sendMoveCommand();
 }
+function rotateRight () {
+    rotate(1);
+}
+function rotateLeft () {
+    rotate(-1);
+}
 
 function sendMoveCommand () {
     var object = findObject(cObject);
-    sendCommand({type: 'move', object: object.clone()});
+    sendCommand({
+        type: 'move',
+        object: object.clone()
+    });
 }
 
 function fire () {
-    var source = findObject(cObject);
-    sendCommand({type: 'fire', object: source.clone()});
+    var i, source = findObject(cObject);
+    println("fire" + source.actions);
+
+    if (!consumeActions(source, 1)) {
+        log("Not enough actions to fire.");
+        return;
+    }
+
+    sendCommand({
+        type: 'fire',
+        object: source.clone()
+    });
 
     switch (source.direction) {
         case 1:
-            for (var i = 0; i <= source.range; i++) {
+            for (i = 0; i <= source.range; i++) {
                 checkCollision(cObject, source.x, source.y + i);
             }
             break;
         case 2:
-            for (var i = 0; i <= source.range; i++) {
+            for (i = 0; i <= source.range; i++) {
                 checkCollision(cObject, source.x + i, source.y);
             }
             break;
         case 3:
-            for (var i = 0; i <= source.range; i++) {
+            for (i = 0; i <= source.range; i++) {
                 checkCollision(cObject, source.x, source.y - i);
             }
             break;
         case 4:
-            for (var i = 0; i <= source.range; i++) {
+            for (i = 0; i <= source.range; i++) {
                 checkCollision(cObject, source.x - i, source.y);
             }
             break;
     }
 }
 function checkCollision (sourceId, x, y) {
+    var objects = level.objects;
     for (var k = 0; k < objects.length; k++) {
         if (objects[k].x === x && objects[k].y === y && objects[k].id !== sourceId) {
-            sendCommand({type: 'die', object: objects[k]});
             objects[k].life = 0;
+            sendCommand({
+                type: 'die',
+                object: objects[k]
+            });
         }
     }
 }
 
 function checkWinningCondition () {
-    if (winingCondition()) {
-        return true;
-    }
-    return false;
+    return eval(level.winningCondition);
 }
-
-function checkGameOver () {
+var gameOverSent = false;
+function checkGameOver (cfg) {
     if (gameOverSent) {
         return true;
     }
-    if (isSendingGameOver) {
-        return false;
-    }
-    if (checkWinningCondition()) {
-        isSendingGameOver = true;
-        sendCommand({type: "log", text: "You won!"});
-        sendCommand({type: "gameWon"});
-        isSendingGameOver = false;
+    if (eval(level.winningCondition)) {
         gameOverSent = true;
+        ret.push(cfg);
+        ret.push({
+            type: "log",
+            text: "You won!"
+        });
+        ret.push({
+            type: "gameWon"
+        });
         return true;
     }
     return false;
 }
 function findObject (id) {
+    var objects = level.objects;
     for (var i = 0; i < objects.length; i = i + 1) {
         if (objects[i].id === id) {
             return objects[i];

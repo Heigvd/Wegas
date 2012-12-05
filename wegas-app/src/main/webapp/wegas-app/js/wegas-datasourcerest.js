@@ -15,12 +15,8 @@
 YUI.add('wegas-datasourcerest', function(Y) {
     "use strict";
 
-    var Lang = Y.Lang,
-    DataSourceREST,
-    VariableDescriptorDataSourceREST,
-    GameModelDataSourceREST,
-    GameDataSourceREST,
-    PageDataSourceREST,
+    var Lang = Y.Lang, DataSourceREST, VariableDescriptorDataSourceREST,
+    GameModelDataSourceREST, GameDataSourceREST, PageDataSourceREST,
     DEFAULTHEADERS = {
         'Content-Type': 'application/json;charset=ISO-8859-1',
         'Managed-Mode': 'true'
@@ -58,57 +54,81 @@ YUI.add('wegas-datasourcerest', function(Y) {
     });
 
     Y.extend(DataSourceREST, Y.Plugin.Base, {
-        initializer: function() {
-            this.get('host').data = [];
 
-            this.doBefore("_defResponseFn", this.beforeResponse, this);         // When the host receives some result, we parse the result
-            this.afterHostEvent("sourceChange", this.clearCache, this);         // When the source changes, we clear the cache
+        initializer: function() {
+            var host = this.get('host');
+            host.data = [];
+
+            this.doBefore("_defDataFn", this.onData, this);                     // When the host receives some data, we parse the result
+            this.afterHostEvent("sourceChange", this.clearCache, this);         // When the source changes, clear the cache
         },
+
         /**
          * Server requests methods
          *
          * @method sendRequest
          */
-        sendRequest: function(requestCfg) {
-            requestCfg.on = requestCfg.on || {
+        sendRequest: function(request) {
+            request.on = request.on || {
                 success: this._successHandler,
                 failure: this._failureHandler
             };
-            if (requestCfg.cfg && Y.Lang.isObject(requestCfg.cfg.data)) {
-                requestCfg.cfg.data = Y.JSON.stringify(requestCfg.cfg.data);
+            if (request.cfg && Lang.isObject(request.cfg.data)) {
+                request.cfg.data = Y.JSON.stringify(request.cfg.data);
             }
-            requestCfg.cfg = requestCfg.cfg || {};
-            requestCfg.cfg.headers = requestCfg.cfg.headers || {};
-            Y.mix(requestCfg.cfg.headers, DEFAULTHEADERS);
+            request.cfg = request.cfg || {};
+            request.cfg.headers = request.cfg.headers || {};
+            Y.mix(request.cfg.headers, DEFAULTHEADERS);
 
-            return this.get('host').sendRequest(requestCfg);
+            return this.get('host').sendRequest(request);
         },
+
         /**
          * @method beforeResponse
          * @private
          */
-        beforeResponse: function(e) {
-            var evt, i,
-            response = Y.Wegas.Editable.revive(e.response.results);             // Transform javascript object litterals to Y.Wegas.persistence.Entity's
+        onData: function(e) {
+            var data = e.data && (e.data.responseText || e.data),
+            schema = this.get('schema'),
+            payload = e.details[0];
+
+            payload.response = Y.DataSchema.JSON.apply.call(this, schema, data) || {
+                meta: {},
+                results: data
+            };
 
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
 
-            e.response.serverResponse = response;
+            Y.Wegas.Editable.use(payload.response.results,                      // Lookup dependencies
+                Y.bind(function (payload) {
+                    payload.serverResponse = Y.Wegas.Editable.revive(payload.response.results); // Revive
+                    this.onResponseRevived(payload);
+                    this.get("host").fire("response", payload);
+                }, this, payload));
+
+            return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
+        },
+
+        onResponseRevived: function(e) {
+            var i, evt, updated = false, response = e.serverResponse;
+
             e.response.data = this.getCache();                                  // Provides with a pointer to the datasource current content
 
             if (e.error) {                                                      // If there was an server error, do not update the cache
                 return;
             }
-
             if (Lang.isArray(response)) {                                       // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < response.length; i += 1) {
                     this.updateCache(e.cfg.method, response[i]);
+                    updated = true;
                 }
             } else {
                 for (i = 0; i < response.get("entities").length; i += 1) {      // Update the cache with the Entites in the reply body
                     e.response.entity = response.get("entities")[i];
                     if (Lang.isObject(e.response.entity)) {
                         this.updateCache(e.cfg.method, e.response.entity);
+                        updated = true;
+
                     }
                 }
 
@@ -117,12 +137,13 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     if (evt instanceof Y.Wegas.persistence.EntityUpdatedEvent) {// Case 1: EntityUpdatedEvent
                         for (i = 0; i < evt.get("updatedEntities").length; i += 1) {  // Update the cache with the entites contained in the reply
                             this.updateCache("POST", evt.get("updatedEntities")[i]);
+                            updated = true;
                         }
                     }
                 }
             }
-
         },
+
         /**
          *  @method updateCache
          *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
@@ -151,6 +172,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 this.addToCache(entity);
             }
         },
+
         addToCache: function(entity) {
             this.getCache().push(entity);
         },
@@ -240,7 +262,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
          * by childrn to extend look capacities. Used in Y.Wegas.GameModelDataSourceRest
          * and Y.Wegas.VariableDescriptorDataSourceRest
          */
-        walkEntity: function(entity, callback) {
+        walkEntity: function (entity, callback) {
             //Y.log("walkEntity(" + entity + ")", 'log', 'Y.Wegas.DataSourceRest');
             return false;
         },
@@ -315,6 +337,12 @@ YUI.add('wegas-datasourcerest', function(Y) {
         }
     }, {
         ATTRS: {
+            schema: {
+                value: {
+                    resultListLocator: "."
+                //resultFields: ["name", "id", "@class"]
+                }
+            },
             testFn: {
                 value: function(entity, key, needle) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values

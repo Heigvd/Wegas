@@ -22,67 +22,29 @@
                             "GameModel": {
                                 source: "rest/Index/GameModel",
                                 initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "GameModelDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "Game": {
                                 source: "rest/GameModel/",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "GameDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "User": {
                                 source: "rest/User",
                                 initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "UserDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "Role": {
                                 source: "rest/Role",
                                 initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "DataSourceREST"
-                                    }
-                                ]
+                                    }]
                             }
                         }
                     };

@@ -254,10 +254,12 @@ YUI.add("wegas-widget", function (Y) {
                     var i, p = [], plg;
                     for (i in this._plugins) {
                         plg = this[this._plugins[i].NS];
-                        p.push({
-                            "fn": this._getPluginFromName(this._plugins[i].NAME),   //TODO: find an other referencing way
-                            "cfg": plg.toObject()
-                        });
+                        if (plg.toObject) {
+                            p.push({
+                                "fn": this._getPluginFromName(this._plugins[i].NAME),   //TODO: find an other referencing way
+                                "cfg": plg.toObject()
+                            });
+                        }
                     }
                     return (p.length > 0 ? p : undefined);
                 },
@@ -271,6 +273,10 @@ YUI.add("wegas-widget", function (Y) {
                 }
             }
         },
+
+        /**
+         *
+         */
         create: function (config) {
             var child, Fn, type = config.childType || config.type;
 
@@ -288,78 +294,38 @@ YUI.add("wegas-widget", function (Y) {
         },
 
         /**
-        * Returns the class for the given type
-        *
-        * @static
-        * @param {String} type String type of the field
-        */
-        getClass: function (type) {
-        // @todo
-        },
-
-        /**
-        * Get the type for the given class
-        * @static
-        * @param {Wegas.Widget} Widget Class
-        * @return {String} returns the Wegas type string or <code>null</code>
-        */
-        getType: function (FieldClass) {
-        // @todo
-        },
-
-
-        /**
-        * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
-        */
-        getRawModulesFromDefinition: function (cfg) {
-
-            var i, props, type = cfg.type || "text",
-            module = YUI_config.groups.wegas.modulesByType[type],
-            modules = [];
-
-            if (module) {
-                modules.push(module);
-            }
-
-            props = [ "children" ];
-            for (i = 0; i < props.length; i = i + 1) {
-                if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParent widgets)
-                    Y.Array.each(cfg[props[i]], function (field) {
-                        modules = modules.concat(this.getModulesFromDefinition(field));
-                    }, this);
-                }
-            }
-            if (cfg.plugins) {                                            // Get definitions from children (for Y.WidgetParent widgets)
-                Y.Array.each(cfg.plugins, function (field) {
-                    field.cfg = field.cfg || {};
-                    field.cfg.type = field.fn;
-                    modules = modules.concat(this.getModulesFromDefinition(field.cfg));
-                }, this);
-            }
-
-            props = ["left", "right", "center", "top", "bottom"];               // Get definitions from children (for Y.Wegas.Layout widgets)
-            for (i = 0; i < props.length; i = i + 1) {
-                if (cfg[props[i]]) {
-                    modules = modules.concat(this.getModulesFromDefinition(cfg[props[i]]));
-                }
-            }
-
-            return modules;
-        },
-        /**
-         * Return unique modules definitions
-         */
-        getModulesFromDefinition: function (cfg) {
-            var modules = Y.Wegas.Widget.getRawModulesFromDefinition(cfg);
-            return Y.Object.keys(Y.Array.hash(modules));
-        },
-        /**
          * Load the modules from an Wegas widget definition
          */
         use: function (cfg, cb) {
-            var modules = Y.Wegas.Widget.getModulesFromDefinition(cfg);
-            modules.push(cb);
-            Y.use.apply(Y, modules);
+            Y.Wegas.Editable.use(cfg, cb);
+        },
+
+        /**
+         *
+         *  This getter is to be used for any object attribute that references a VariableDescriptor and
+         *  has either an name, id or expr parameter.
+         *
+         */
+        VARIABLEDESCRIPTORGETTER: function (val, fullName) {
+            var ds = Y.Wegas.VariableDescriptorFacade;
+            if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
+
+                if (val.name) {                                                 // Eval based on the name field
+                    val.evaluated = ds.rest.find('name', val.name);
+
+                } else if (val.expr) {                                          // if absent evaluate the expr field
+                    val.evaluated = ds.rest.findById(Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
+
+                } else if (val.id) {
+                    val.evaluated = ds.rest.findById(val.id);
+                }
+            }
+
+            if (val && fullName.indexOf(".") < 0) {                             // If the getter requires the full object (e.g. serialisation)
+                delete val.evaluated;                                           // Remove the ref to the evaluated descriptor
+            }
+
+            return val;
         }
     });
 
