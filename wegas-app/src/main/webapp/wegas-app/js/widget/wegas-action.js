@@ -176,4 +176,27 @@ YUI.add('wegas-action', function (Y) {
     });
 
     Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
+
+
+    var PopupPlg = function () {
+        PopupPlg.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(PopupPlg, Y.Plugin.Base, {
+        initializer: function () {
+            this.afterHostEvent("render",  function () {
+                this.get("host").showMessage("success", this.get("content"));
+            });
+        }
+    }, {
+        NS: "PopupPlg",
+        NAME: "PopupPlg",
+        ATTRS: {
+            content: {
+                type: "string",
+                format: "text"
+            }
+        }
+    });
+    Y.namespace("Plugin").PopupPlg = PopupPlg;
+
 });

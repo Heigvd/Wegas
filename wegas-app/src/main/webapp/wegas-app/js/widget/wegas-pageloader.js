@@ -54,8 +54,6 @@ YUI.add('wegas-pageloader', function(Y) {
                 } else {
                     this.showMessage("error", e.message);
                 }
-
-
             });
         },
         syncUI: function() {

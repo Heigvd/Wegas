@@ -57,7 +57,6 @@ YUI.add('wegas-proggame-level', function (Y) {
         // *** Lifecycle Methods *** //
         initializer: function () {
             this.handlers = {};
-            this.objects = this.get("objects");
         },
         renderUI: function () {
             var i, cb = this.get(CONTENTBOX);
@@ -86,6 +85,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             });
             this.runButton.render(cb.one(".buttons"));
 
+            this.resetUI();
         },
         bindUI: function () {
             this.handlers.response = Y.Wegas.app.VariableDescriptorFacade.after("response", // If data changes, refresh
@@ -95,15 +95,13 @@ YUI.add('wegas-proggame-level', function (Y) {
 
             this.runButton.on("click", this.run, this);
 
-            this.display.after('commandExecuted', this.consumeServerCommand, this);
-            this.after('commandExecuted', this.consumeServerCommand, this);
+            this.display.after('commandExecuted', this.consumeCommand, this);
+            this.after('commandExecuted', this.consumeCommand, this);
 
         },
         run: function () {
-            this.objects = this.get("objects");
-            this.display.set("objects", this.get("objects"));                   // Reset the display to default
-            this.display.syncUI();
-            this.get(CONTENTBOX).one(".debugger").setHTML("<h1>Debugger</h1>");
+            this.resetUI();
+
             this.runButton.set("label", "RUNNING...");
             this.runButton.set("disabled", true);
 
@@ -138,33 +136,55 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.display.destroy();
             this.runButton.destroy();
         },
+
+        resetUI: function () {
+            this.objects = Y.clone(this.get("objects"));
+
+            this.display.set("objects", this.objects);                          // Reset the display to default
+            this.display.syncUI();
+
+            this.get(CONTENTBOX).one(".debugger").setHTML("<h1>Debugger</h1>");
+            //this.get("contentBox").one(".debugger").empty();
+
+            this.syncFrontUI();
+        },
+
         onServerReply: function (e) {
             this.commandsStack = Y.JSON.parse(e.response.entity);
             for (var i = 0; i<this.commandsStack.length; i++ ) {
                 console.log("command: ", this.commandsStack[i].type, this.commandsStack[i], this.commandsStack[i].text);
             }
-            this.consumeServerCommand();
+
+            this.consumeCommand();
         },
 
         findObjectById: function (id) {
-            return Y.Array.find(this.get("objects"), function (o) {
+            return Y.Array.find(this.objects, function (o) {
                 return o.id === id;
             });
         },
 
-        consumeServerCommand: function () {
+        consumeCommand: function () {
             if (this.commandsStack && this.commandsStack.length > 0) {
                 var command = this.commandsStack.shift();
-                console.log("consumeServerCommand", command.type, command);
+                console.log("consumeCommand", command.type, command);
 
                 switch (command.type) {
 
                     case "move":
                     case "fire":
-                    case "updated":
+                        console.log("mixin", command.type, command.object);
                         Y.mix(this.findObjectById(command.object.id),           // Update target object cfg
                             command.object, true);
                         this.syncFrontUI();
+                        break;
+
+                    case "updated":
+                        console.log("mixin", command.type, command.object);
+                        Y.mix(this.findObjectById(command.object.id),           // Update target object cfg
+                            command.object, true);
+                        this.syncFrontUI();
+                        this.consumeCommand();
                         break;
 
                     case "gameWon":
@@ -177,7 +197,9 @@ YUI.add('wegas-proggame-level', function (Y) {
 
                     case "log":
                         this.get("contentBox").one(".debugger").append(command.text + "<br />");
-                        this.fire("commandExecuted");
+
+                        Y.later(500, this, this.consumeCommand);
+                        //this.fire("commandExecuted");
                     default:
                         break;
                 }

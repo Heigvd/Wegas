@@ -20,10 +20,10 @@
             }]
         }]
     }],
-    "childVariableDescriptors":[{
+    "childVariableDescriptors": [{
         "@class":"NumberDescriptor",
         "name":"money",
-        "defaultInstance":{
+        "defaultInstance": {
             "@class":"NumberInstance",
             "value":0
         },
