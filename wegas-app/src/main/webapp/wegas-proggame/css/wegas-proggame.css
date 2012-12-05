@@ -1,5 +1,8 @@
-/* CrimeSim GENERAL STYLES */
+/* Prog Game Styles */
 /* Layout style */
+.cl {
+    clear:both;
+}
 .layout {
     width:100%;
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -83,8 +86,13 @@
 .wegas-proggame-level .debugger,
 .wegas-proggame-level .code {
     border: 1px solid orange;
-    margin:10px 10px 0px 0;
+    margin:10px 10px 0px 10px;
     padding:5px;
+}
+
+/* Terrain styles */
+.wegas-proggame-level .topcenter {
+    position: relative;
 }
 .wegas-proggame-level .topcenter h1 {
     border: 1px solid orange;
@@ -92,6 +100,44 @@
     padding: 5px 10px;
     margin-top: 10px;
 }
+
+/* Terrain UI */
+.wegas-proggame-level .terrain-ui {
+    position: absolute;
+    top: 50px;
+    width: 150px;
+    padding: 5px;
+}
+.wegas-proggame-level .player-ui {
+    left:0;
+}
+.wegas-proggame-level .enemy-ui {
+    text-align: right;
+    right:0;
+}
+.wegas-proggame-level .terrain-ui .life {
+    width: 100%;
+    border: 1px solid orange;
+    border-radius: 3px;
+}
+.wegas-proggame-level .enemy-ui .life span{
+    float:right;
+}
+.wegas-proggame-level .terrain-ui .life span {
+    display:block;
+    height:10px;
+    background: lightgray;
+}
+.wegas-proggame-level .terrain-ui .actions span {
+    display: inline-block;
+    background: lightgray;
+    margin-right: 2px;
+    height: 7px;
+    width: 7px;
+    border: 1px solid orange;
+    border-radius: 2px;
+}
+
 .wegas-proggame-level .terrain {
     margin-top: 10px;
 }
@@ -130,6 +176,7 @@
     color: orange;
     border-right: 1px solid orange;
 }
+
 .wegas-proggame-level .ace_text-layer {
     /*    color: white;*/
 

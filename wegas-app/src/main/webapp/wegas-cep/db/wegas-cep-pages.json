@@ -252,8 +252,7 @@
             "selector": "li",
             "name": "leadershipLevel",
             "invert": "true"
-        }
-        ]
+        }]
     },
     "4": {
         "id": 4,

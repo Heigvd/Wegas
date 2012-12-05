@@ -44,55 +44,26 @@
                                 source: "rest/Editor/GameModel",
                                 initialRequest: "/#{gameController.currentGameModel.id}",
                                 plugins: [{
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
                                         fn: "GameModelDataSourceREST"
                                     }]
                             },
                             "GameIndex": {
                                 source: "rest/Index/GameModel/#{gameController.currentGameModel.id}/Game",
                                 initialRequest: "/",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "GameDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "Game": {
                                 source: "rest/Public/GameModel/#{gameController.currentGameModel.id}/Game",
                                 initialRequest: "/#{gameController.currentGame.id}",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "GameDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "Page": {
                                 source: "#{gameController.currentGameModel.widgetsUri}",
-                                plugins: [
-                                    {
+                                plugins: [{
                                         fn: "DataSourceJSONSchema",
                                         cfg: {
                                             schema: {
@@ -102,58 +73,30 @@
                                         }
                                     }, {
                                         fn: "PageDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "User": {
                                 source: "rest/User",
                                 initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "UserDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "Role": {
                                 source: "rest/Role",
                                 initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "DataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "VariableDescriptor": {
                                 source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "VariableDescriptorDataSourceREST"
                                     },{
                                         fn: "ScriptEval"
-                                    }
-                                ]
+                                    }]
                             },
                             "File": {
                                 source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
@@ -247,7 +190,7 @@
                         Y.Wegas.editor.after("render", function () {
                             var gm = Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
                             Y.one(".wegas-title").setContent(gm.get("name"));
-                        })
+                        });
 
                         editor.render();
 

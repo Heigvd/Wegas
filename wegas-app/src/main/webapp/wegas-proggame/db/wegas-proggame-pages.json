@@ -79,20 +79,26 @@
                 "type": "PageLoader",
                 "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
-                "variable": {
-                    "name": "currentLevel"
-                }
+                "defaultPageId": 2
             }
         ]
     },
     "2": {
         "id": 2,
+        "type": "PageLoader",
+        "pageLoaderId": "leveldisplay",
+        "cssClass": "body",
+        "variable": {
+            "name": "currentLevel"
+        }
+    },
+    "3": {
+        "id": 3,
         "label": "Level 1 - First moves",
         "type": "ProgGameLevel",
-        "maxTurns": 2,
-        "maxMoves": -1,
-        "winningCondition": "objects[1].life===0",
-        "onWin": "currentLevel.value=3;money.value+=500;",
+        "maxTurns": 1,
+        "winningCondition": "level.objects[1].life===0",
+        "onWin": "currentLevel.value=4",
         "cssClass": "wegas-proggame-level",
         "map": [
             ["g", "g", "g", "g", "g"],
@@ -106,7 +112,6 @@
             }, {
                 "name": "fire"
             }],
-        "ai": "move()",
         "objects": [{
                 "id": "Player",
                 "type": "pc",
@@ -114,27 +119,40 @@
                 "x": 0,
                 "y": 2,
                 "life": 100,
-                "range": 2
+                "actions": 20,
+                "range": 3
             }, {
                 "id": "Enemy",
-                "type": "npc",
                 "direction": 4,
+                "type": "npc",
                 "x": 4,
                 "y": 2,
                 "life": 100,
+                "actions": 20,
                 "range": 2
+            }],
+        "plugins": [{
+                "fn": "PopupPlg",
+                "cfg": {
+                    "content": "Welcom to the programming game"
+                }
             }]
     },
-    "3": {
-        "id": 3,
-        "label": "Level 2 - First moves (2)",
+    "4": {
+        "id": 4,
+        "label": "Level 2 - First moves",
         "type": "ProgGameLevel",
         "maxTurns": 2,
-        "maxMoves": -1,
-        "winningCondition": "objects[1].life===0 && objects[2].life===0",
-        "onWin": "currentLevel.value=3",
+        "maxActions": 20,
+        "winningCondition": "level.objects[1].life===0",
+        "onWin": "currentLevel.value=3;money.value+=500;",
         "cssClass": "wegas-proggame-level",
-        "ai": "move(); fire();",
+        "api": [{
+                "name": "move"
+            }, {
+                "name": "fire"
+            }],
+        "ai": "rotateLeft();\nmove();\nrotateRight();\nmove();\nmove();\nrotateRight();\nmove();\nrotateLeft()",
         "map": [
             ["w", "w", "w", "w", "w", "w", "w", "w", "w"],
             ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
@@ -154,6 +172,7 @@
                 "x": 0,
                 "y": 4,
                 "life": 100,
+                "actions": 20,
                 "range": 2
             }, {
                 "id": "Enemy1",
@@ -162,6 +181,7 @@
                 "x": 8,
                 "y": 5,
                 "life": 100,
+                "actions": 20,
                 "range": 4
             }, {
                 "id": "Enemy2",
@@ -170,6 +190,7 @@
                 "x": 8,
                 "y": 3,
                 "life": 100,
+                "actions": 20,
                 "range": 2
             }
         ]
