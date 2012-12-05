@@ -27,19 +27,18 @@ YUI().use(function(Y) {
                     'wegas-app': {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
-                        'wegas-datasourcerest', 'wegas-scripteval',
-                        //'wegas-entity',
-                        //'wegas-statemachine-entities',
-                        'wegas-pageloader',
-                        'wegas-button',
-                        'stylesheet'
-                        // 'wegas-mcq-entities',
+                        'wegas-entity', 'wegas-datasourcerest', 'wegas-scripteval',
+                        'wegas-pageloader', 'wegas-button', 'stylesheet'
                         // 'wegas-appcss',                                      // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
                     'wegas-appcss': {
                         path: 'wegas-app/css/wegas-app.css',
                         type: 'css'
+                    },
+                    'wegas-editable': {
+                        path: 'wegas-app/js/wegas-editable-min.js',
+                        requires: ['base'/*, 'inputex-jsonschema'*/]
                     },
                     'wegas-datasourcerest': {
                         path: 'wegas-app/js/wegas-datasourcerest-min.js',
@@ -54,10 +53,6 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/widget/wegas-injector-min.js',
                         ws_provides: "Injector"
                     },
-                    'wegas-editable': {
-                        path: 'wegas-app/js/wegas-editable-min.js',
-                        requires: ['base'/*, 'inputex-jsonschema'*/]
-                    },
 
                     /** Persistence **/
                     'wegas-entity': {
@@ -67,7 +62,8 @@ YUI().use(function(Y) {
                     },
                     'wegas-statemachine-entities': {
                         path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
-                        requires: ['wegas-entity']
+                        requires: ['wegas-entity'],
+                        ws_provides: ["DialogueDescriptor", "TriggerDescriptor"]
                     },
                     'wegas-mcq-entities': {
                         path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
@@ -415,11 +411,11 @@ YUI().use(function(Y) {
                         requires: ['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
                         ws_provides: "PmgTasklist"
                     },
-                    //                    'wegas-pmg-treebletasklist': { //Using Treeble
-                    //                        path: 'wegas-pmg/js/wegas-pmg-treebletasklist.js',
-                    //                        requires: ['wegas-pmg-treebletasklist', 'wegas-pmg-datatable'],
-                    //                        ws_provides: "PmgTreebleTasklist"
-                    //                    },
+                    //'wegas-pmg-treebletasklist': { //Using Treeble
+                    //    path: 'wegas-pmg/js/wegas-pmg-treebletasklist.js',
+                    //    requires: ['wegas-pmg-treebletasklist', 'wegas-pmg-datatable'],
+                    //    ws_provides: "PmgTreebleTasklist"
+                    //},
 
                     'wegas-pmg-gantt': {
                         path: 'wegas-pmg/js/wegas-pmg-gantt.js',

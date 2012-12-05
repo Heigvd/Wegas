@@ -59,7 +59,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.handlers = {};
         },
         renderUI: function () {
-            var i, cb = this.get(CONTENTBOX);
+            var i, cb = this.get(CONTENTBOX), api =[];
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code"),
