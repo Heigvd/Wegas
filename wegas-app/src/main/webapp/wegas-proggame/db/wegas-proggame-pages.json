@@ -100,6 +100,8 @@
         "winningCondition": "level.objects[1].life===0",
         "onWin": "currentLevel.value=4",
         "cssClass": "wegas-proggame-level",
+        "gridW": 5,
+        "gridH": 5,
         "api": [{
             "name": "move"
         }, {

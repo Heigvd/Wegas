@@ -504,8 +504,14 @@ YUI().use(function(Y) {
                     /** MMO **/
                     'wegas-proggame-level': {
                         path: 'wegas-proggame/js/wegas-proggame-level.js',
-                        requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace', 'crafty'],
+                        requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace', 'wegas-proggame-display'],
                         ws_provides: 'ProgGameLevel'
+                    },
+                    /** MMO **/
+                    'wegas-proggame-display': {
+                        path: 'wegas-proggame/js/wegas-proggame-display.js',
+                        requires: ['wegas-widget', 'crafty'],
+                        ws_provides: 'ProgGameDisplay'
                     }
                 }
             },
@@ -593,7 +599,7 @@ YUI().use(function(Y) {
                         path: 'excanvas/excanvas.compiled.js'
                     },
                     'crafty': {
-                        path: 'crafty/crafty.js'
+                        path: 'crafty/crafty-min.js'
                     }
                 }
             }
