@@ -14,9 +14,7 @@
 YUI.add('wegas-proggame-level', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
-    GRIDSIZE = 31,
-    ProgGameLevel;
+    var CONTENTBOX = 'contentBox', ProgGameLevel;
 
     /**
      *  The level display class, with script input, ia, debugger and
@@ -59,7 +57,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.handlers = {};
         },
         renderUI: function () {
-            var i, cb = this.get(CONTENTBOX), api =[];
+            var i, cb = this.get(CONTENTBOX);
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code"),
@@ -67,16 +65,15 @@ YUI.add('wegas-proggame-level', function (Y) {
                 type: 'ace',
                 height: "300px",
                 language: "javascript",
-                value: "//Put your code here.\nmove();\nfire();"
+                value: "//Put your code here..."
             });
 
             cb.one(".ai").append(Y.Wegas.App.nl2br(this.get("ai") || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
 
-            for (i = 0; i < this.get("api").length; i++) {
-                api.push(this.get("api")[i].name);
+            for (i = 0; i < this.get("api").length; i += 1) {
+                cb.one(".api").append(this.get("api")[i].name + "() <br />");
             }
-            cb.one(".api").append(api.join(', ') + "*");
 
             this.display = new Y.Wegas.ProgGameDisplay(this.toObject());
             this.display.render(cb.one(".terrain"));
@@ -110,7 +107,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                 request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
-                    data: "JSON.stringify(run(function () {"+ this.aceField.getValue()+"}, "
+                    data: "JSON.stringify(run(function () {" + this.aceField.getValue() + "}, "
                     + Y.JSON.stringify(this.toObject()) + "));"
                 },
                 on: {
@@ -152,7 +149,8 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         onServerReply: function (e) {
             this.commandsStack = Y.JSON.parse(e.response.entity);
-            for (var i = 0; i<this.commandsStack.length; i++ ) {
+            var i;
+            for (i = 0; i < this.commandsStack.length; i += 1) {
                 console.log("command: ", this.commandsStack[i].type, this.commandsStack[i], this.commandsStack[i].text);
             }
 
@@ -197,6 +195,7 @@ YUI.add('wegas-proggame-level', function (Y) {
 
                         Y.later(500, this, this.consumeCommand);
                         //this.fire("commandExecuted");
+                        break;
                     default:
                         break;
                 }
@@ -224,7 +223,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             var cb = this.get(CONTENTBOX);
 
             function updateUI(object, el) {
-                var i, acc= [];
+                var i, acc = [];
                 for (i = 0; i < object.actions; i += 1) {
                     acc.push("<span></span>");
                 }

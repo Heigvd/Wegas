@@ -100,12 +100,10 @@
         "winningCondition": "level.objects[1].life===0",
         "onWin": "currentLevel.value=4",
         "cssClass": "wegas-proggame-level",
-        "gridW": 5,
-        "gridH": 5,
+        "gridW": 6,
+        "gridH": 6,
         "api": [{
             "name": "move"
-        }, {
-            "name": "fire"
         }],
         "objects": [{
             "id": "Player",
@@ -120,8 +118,8 @@
             "id": "Enemy",
             "direction": 4,
             "type": "npc",
-            "x": 6,
-            "y": 4,
+            "x": 4,
+            "y": 3,
             "life": 100,
             "actions": 0,
             "range": 2
@@ -129,7 +127,7 @@
         "plugins": [{
             "fn": "PopupPlg",
             "cfg": {
-                "content": "Welcom to the programming game"
+                "content": "Bienvenue dans le jeu de la programation. Vous êtes malheureusement coincé à l'intérieur du jeu, et le seul moyen de vous en sortir est de coder vos propres <i>algorightme</i> pour contrôler votre avatar.<div class=\"wegas-proggame-def\">Le mot algorithme est dérivé du nom d'un mathématicien perse qui a vécu au IXème siècle,  Mohammed al-Khwârizmî (en latin Algorismus). Il a proposé un ensemble d'opérations élémentaires à exécuter séquentiellement, pour additionner, soustraire, multiplier et diviser des nombres  décimaux. Voici donc une définition : Un algorithme consiste en la description d'un certain nombre d'opérations élémentaires selon un ordre logique permettant de résoudre un problème sur des données en un nombre fini d'étapes.</div>Pour sortir de ce niveau il faut atteindre la porte de sortie. Vous avez à disposition la fonction <i>move</i> pour l'atteindre: entre simplement le nom de la fonction, suivie de parenthèses et d'un point virgule, comme ceci:<div class=\"wegas-proggame-code\">move();</div>Puis cliquez sur RUN. Vous pouvez appeler plusieurs fois la même fonction."
             }
         }]
     },
