@@ -44,7 +44,7 @@
                 {
                     "fn": "OpenPageAction",
                     "cfg": {
-                        "subpageId": 5,
+                        "subpageId": 6,
                         "targetPageLoaderId": "maindisplayarea"
                     }
                 }, {
@@ -209,38 +209,98 @@
         "type": "ProgGameLevel",
         "maxTurns": 2,
         "maxActions": 20,
-        "winningCondition": "level.objects[1].life===0",
-        "onWin": "currentLevel.value=3;money.value+=500;",
+        "winningCondition": "level.objects[0].life===0",
+        "onWin": "currentLevel.value=7;money.value+=500;",
         "cssClass": "wegas-proggame-level",
+        "gridW": 9,
+        "gridH": 7,
         "api": [{
             "name": "move"
         }, {
+            "name": "rotateLeft"
+        },{
+            "name": "rotateRight"
+        }, {
             "name": "fire"
         }],
-        "ai": "rotateLeft();\nmove();\nrotateRight();\nmove();\nmove();\nrotateRight();\nmove();\nrotateLeft()",
         "objects": [{
-            "id": "Player",
-            "type": "pc",
-            "direction": 2,
-            "x": 0,
-            "y": 3,
-            "life": 100,
-            "range": 3
-        }, {
             "id": "Enemy",
             "type": "npc",
             "direction": 4,
             "x": 7,
             "y": 3,
             "life": 100,
-            "range": 2
+            "range": 2,
+            "ai": "rotateLeft();\nmove();\nrotateRight();\nmove();\nmove();"
+        }, {
+            "id": "Player",
+            "type": "pc",
+            "direction": 2,
+            "x": 1,
+            "y": 3,
+            "life": 100,
+            "range": 3
+        }],
+        "plugins": [{
+            "fn": "PopupPlg",
+            "cfg": {
+                "content": "Oh non un ennemi vous barre la route. Vous devrez déchiffrer son intelligence artificielle pour en venir à bout.<br /><br />Vous disposez de la métode <i>fire</i> pour vous débarasser de cet ennemi."
+            }
         }]
     },
-    "5": {
-        "id": 5,
+    "6": {
+        "id": 6,
         "type": "InboxDisplay",
         "variable": {
             "name": "inbox"
         }
+    },
+    "7": {
+        "id": 3,
+        "label": "Level 1 - First moves",
+        "type": "ProgGameLevel",
+        "maxTurns": 1,
+        "winningCondition": "said.indexOf(\"Hello\")>=0",
+        "onWin": "currentLevel.value=4",
+        "cssClass": "wegas-proggame-level",
+        "gridW": 6,
+        "gridH": 5,
+        "api": [{
+            "name": "move"
+        }, {
+            "name": "rotateLeft"
+        }, {
+            "name": "rotateRight"
+        }, {
+            "name": "fire"
+        }, {
+            "name": "say"
+        }],
+        "objects": [{
+            "id": "Player",
+            "type": "pc",
+            "direction": 2,
+            "x": 1,
+            "y": 2,
+            "life": 100,
+            "actions": 20,
+            "range": 3
+        }, {
+            "id": "Enemy",
+            "direction": 4,
+            "type": "npc",
+            "x": 4,
+            "y": 2,
+            "life": 100,
+            "actions": 0,
+            "range": 2,
+            "collides": false
+        }],
+        "plugins": [{
+            "fn": "PopupPlg",
+            "cfg": {
+                "content": "Pour passer ce niveau, vous devrez répondre à la question de l'ordinateur. Mais comme tout ordinateur, il utilise des paramêtres au lieu de phrase pour poser sa question. Vous allez devoir manipuler ces paramêtre pour trouver la réponse à la question, puis utiliser la méthode <i>say</i> pour lui répondre.<br /><br />Dans ce cas l'ordinateur veut que vous le saluiez. Vous pouvez le faire comme cela: <div class=\"wegas-proggame-code\">say(\"Hello computer\");</div>"
+            }
+        }]
     }
 }
