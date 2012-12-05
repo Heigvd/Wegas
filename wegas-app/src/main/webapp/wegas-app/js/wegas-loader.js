@@ -28,9 +28,13 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
                         'wegas-datasourcerest', 'wegas-scripteval',
-                        'wegas-entity', 'wegas-mcq-entities', 'wegas-statemachine-entities',
-                        'wegas-pageloader', 'wegas-button', 'stylesheet'
-                        //'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                        //'wegas-entity',
+                        //'wegas-statemachine-entities',
+                        'wegas-pageloader',
+                        'wegas-button',
+                        'stylesheet'
+                        // 'wegas-mcq-entities',
+                        // 'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
                     'wegas-appcss': {
@@ -50,18 +54,25 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/widget/wegas-injector-min.js',
                         ws_provides: "Injector"
                     },
+                    'wegas-editable': {
+                        path: 'wegas-app/js/wegas-editable-min.js',
+                        requires: ['base'/*, 'inputex-jsonschema'*/]
+                    },
+
                     /** Persistence **/
                     'wegas-entity': {
                         path: 'wegas-app/js/persistence/wegas-entity-min.js',
-                        requires: ['base'/*, 'inputex-jsonschema'*/]
+                        requires: ['wegas-editable'],
+                        ws_provides: ['GameModel']
                     },
                     'wegas-statemachine-entities': {
                         path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
-                        requires: ['wegas-entity', 'wegas-widget']
+                        requires: ['wegas-entity']
                     },
                     'wegas-mcq-entities': {
                         path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
-                        requires: ['wegas-entity']
+                        requires: ['wegas-entity'],
+                        ws_provides: "QuestionDescriptor"
                     },
                     'wegas-content-entities': {
                         path: 'wegas-app/js/persistence/wegas-content-entities.js',
@@ -70,11 +81,12 @@ YUI().use(function(Y) {
                     /** Widgets **/
                     'wegas-widget': {
                         path: 'wegas-app/js/widget/wegas-widget-min.js',
-                        requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing']
+                        requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable']
                     },
                     'wegas-pageloader': {
                         path: 'wegas-app/js/widget/wegas-pageloader-min.js',
-                        ws_provides: 'PageLoader'
+                        ws_provides: 'PageLoader',
+                        requires: ["wegas-widget"]
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',

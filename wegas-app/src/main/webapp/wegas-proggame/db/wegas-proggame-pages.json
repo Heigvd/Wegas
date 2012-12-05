@@ -98,13 +98,18 @@
         "type": "ProgGameLevel",
         "maxTurns": 1,
         "winningCondition": "level.objects[1].life===0",
-        "onWin": "currentLevel.value=3",
+        "onWin": "currentLevel.value=4",
         "cssClass": "wegas-proggame-level",
+        "api": [{
+            "name": "move"
+        }, {
+            "name": "fire"
+        }],
         "objects": [{
             "id": "Player",
             "type": "pc",
             "direction": 2,
-            "x": 0,
+            "x": 1,
             "y": 3,
             "life": 100,
             "actions": 20,
@@ -113,11 +118,17 @@
             "id": "Enemy",
             "direction": 4,
             "type": "npc",
-            "x": 7,
+            "x": 6,
             "y": 4,
             "life": 100,
             "actions": 0,
             "range": 2
+        }],
+        "plugins": [{
+            "fn": "PopupPlg",
+            "cfg": {
+                "content": "Welcom to the programming game"
+            }
         }]
     },
     "4": {
