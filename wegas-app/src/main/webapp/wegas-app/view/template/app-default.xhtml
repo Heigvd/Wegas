@@ -112,30 +112,13 @@
                                         source: "rest/GameModel",
                                         initialRequest: "/#{gameController.currentGameModel.id}",
                                         plugins: [{
-                                                fn: "DataSourceJSONSchema",
-                                                cfg: {
-                                                    schema: {
-                                                        resultListLocator: "."
-                                                        // resultFields: ["name", "id", "@class", "errors"]
-                                                    }
-                                                }
-                                            }, {
                                                 fn: "GameModelDataSourceREST"
                                             }]
                                     },
                                     "Game": {
                                         source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
                                         initialRequest: "/#{gameController.currentGame.id}",
-                                        plugins: [
-                                            {
-                                                fn: "DataSourceJSONSchema",
-                                                cfg: {
-                                                    schema: {
-                                                        resultListLocator: "."
-                                                        // resultFields: ["name", "id", "@class", "errors"]
-                                                    }
-                                                }
-                                            }, {
+                                        plugins: [{
                                                 fn: "GameDataSourceREST"
                                             }
                                         ]
@@ -143,8 +126,7 @@
                                     "Page": {
                                         source: "#{gameController.currentGameModel.widgetsUri}",
                                         initialRequest: "",
-                                        plugins: [
-                                            {
+                                        plugins: [{
                                                 fn: "DataSourceJSONSchema",
                                                 cfg: {
                                                     schema: {
@@ -160,25 +142,15 @@
                                     "VariableDescriptor": {
                                         source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                         initialRequest: "",
-                                        plugins: [
-                                            {
-                                                fn: "DataSourceJSONSchema",
-                                                cfg: {
-                                                    schema: {
-                                                        resultListLocator: "."
-                                                    }
-                                                }
-                                            }, {
+                                        plugins: [{
                                                 fn: "VariableDescriptorDataSourceREST"
                                             }, {
                                                 fn: "ScriptEval"
-                                            }
-                                        ]
+                                            }]
                                     },
                                     "File": {
                                         source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/",
-                                        plugins: [
-                                            {
+                                        plugins: [{
                                                 fn: "DataSourceJSONSchema",
                                                 cfg: {
                                                     schema: {
@@ -186,8 +158,7 @@
                                                         //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
-                                            }
-                                        ]
+                                            }]
                                     }
                                 },
                                 /**

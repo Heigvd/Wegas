@@ -87,7 +87,7 @@ YUI.add('wegas-app', function (Y) {
             var k, dataSource, dataSources = this.get('dataSources');
 
             // @todo Shall we use browser native parser ?
-            // Y.JSON.useNativeParse = true;
+            Y.JSON.useNativeParse = true;
 
             this.requestCounter = 0;
 

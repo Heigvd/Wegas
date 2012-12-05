@@ -15,6 +15,7 @@
 YUI.add('wegas-editable', function (Y) {
     "use strict";
 
+    var Lang = Y.Lang;
 
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
@@ -56,7 +57,7 @@ YUI.add('wegas-editable', function (Y) {
          */
         toObject: function (mask) {
             var e = JSON.parse(JSON.stringify(this));
-            mask = Y.Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
+            mask = Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
             return mask.length > 0 ? Y.clone(e, true, function (value, key, output, input) {
                 if (mask.indexOf(key) !== -1) {
                     return false;
@@ -186,23 +187,24 @@ YUI.add('wegas-editable', function (Y) {
         * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
         */
         getRawModulesFromDefinition: function (cfg) {
-            var i, props, type = cfg.type || "text",
+            var i, props, type = cfg.type || cfg["@class"],
             module = YUI_config.groups.wegas.modulesByType[type],
-            modules = [];
+            modules = [],
+            pushFn = function (field) {
+                modules = modules.concat(Editable.getModulesFromDefinition(field));
+            };
 
             if (module) {
                 modules.push(module);
             }
 
-            props = [ "children" ];
-            for (i = 0; i < props.length; i = i + 1) {
+            props = ["children", "entities", "items"];                          // Revive array attributes
+            for (i = 0; i < props.length; i += 1) {
                 if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParent widgets)
-                    Y.Array.each(cfg[props[i]], function (field) {
-                        modules = modules.concat(Editable.getModulesFromDefinition(field));
-                    });
+                    Y.Array.each(cfg[props[i]], pushFn);
                 }
             }
-            if (cfg.plugins) {                                                   // Get definitions from children (for Y.WidgetParent widgets)
+            if (cfg.plugins) {                                                  // Plugins must be revived in the proper way
                 Y.Array.each(cfg.plugins, function (field) {
                     field.cfg = field.cfg || {};
                     field.cfg.type = field.fn;
@@ -210,7 +212,7 @@ YUI.add('wegas-editable', function (Y) {
                 });
             }
 
-            props = ["left", "right", "center", "top", "bottom"];               // Get definitions from children (for Y.Wegas.Layout widgets)
+            props = ["left", "right", "center", "top", "bottom"];               // Revive  objects attributes
             for (i = 0; i < props.length; i = i + 1) {
                 if (cfg[props[i]]) {
                     modules = modules.concat(Editable.getModulesFromDefinition(cfg[props[i]]));
@@ -228,9 +230,14 @@ YUI.add('wegas-editable', function (Y) {
         },
 
         /**
-         *  This method takes a parsed json object and instantiate them based
+         *  This method takes a js object and recuresively instantiate it based on
          *  on their @class attribute. Target class are found in namespace
-         *  Y.Wegas.Data.
+         *  Y.Wegas.persistence.
+         *
+         *  @methodOf Y.Wegas.Editable
+         *  @static
+         *  @augments o Object the object to revive
+         *  @return Y.Wegas.Widget the resulting entity
          */
         revive: function (data) {
             var walk = function (o, key) {
@@ -239,16 +246,13 @@ YUI.add('wegas-editable', function (Y) {
                     for (k in value) {
                         if (value.hasOwnProperty(k)) {
                             v = walk(value, k);
-                            if (v === undefined) {
-                            //delete value[k];
-                            } else {
+                            if (!Lang.isUndefined(v)) {
                                 value[k] = v;
                             }
                         }
                     }
-                    if (!Y.Lang.isArray(value) &&
-                        (!Y.Lang.isUndefined(value["@class"]) || !Y.Lang.isUndefined(value.type))) {
-                        return Y.Wegas.Editable.readObject(value);
+                    if (!Lang.isUndefined(value["@class"]) || !Lang.isUndefined(value.type)) {
+                        return Editable.reviver(value);
                     }
                 }
                 return value;                                                   // If no value was returned before, return raw original object
@@ -259,24 +263,39 @@ YUI.add('wegas-editable', function (Y) {
                 '': data
             }, '');
         },
-        readObject: function (o) {
-            var classDef = Y.Wegas.persistence.Entity;
+        /**
+         *  Takes an js object and lookup the corresponding entity in the
+         *  Y.Wegas.persistence package, based on its @class or type attributes.
+         *
+         *  @methodOf Y.Wegas.Editable
+         *  @static
+         *  @augments o Object the object to revive
+         *  @return Y.Wegas.Widget the resulting entity
+         */
+        reviver: function (o) {
+            var classDef = Y.Wegas.persistence.DefaultEntity;
 
             if (o["@class"]) {
-                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity;
+                classDef = Y.Wegas.persistence[o["@class"]];
 
             } else if (o.type) {
                 classDef = Y.Wegas.persistence[o.type] || Y.Wegas.persistence.WidgetEntity;
 
-            } else {
+            } /*else {
                 if (o["@class"] && o["@class"].indexOf("Descriptor") !== -1) {  // @Hack so VariableDescriptors are instantiated even if they dont have a mapping
                     classDef = Y.Wegas.persistence.VariableDescriptor;
                 }
                 if (o["@class"] && o["@class"].indexOf("Instance") !== -1) {    // @Hack so VariableInstances are instantiated even if they dont have a mapping
                     classDef = Y.Wegas.persistence.VariableInstance;
                 }
-            }
+            }*/
             return new classDef(o);
+        },
+
+        useAndRevive: function (cfg, cb) {
+            Editable.use(cfg, Y.bind(function (cb) {                            // Load target class dependencies
+                cb(Editable.revive(this));
+            }, cfg, cb));
         }
     });
     Y.namespace("Wegas").Editable = Editable;

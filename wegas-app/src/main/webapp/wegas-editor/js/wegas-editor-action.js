@@ -65,9 +65,12 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(NewEntityAction, EntityAction, {
         execute: function () {
-            EditEntityAction.showAddForm(Y.Wegas.Editable.revive({
+            Y.Wegas.Editable.useAndRevive({                                     // Load target class dependencies
                 "@class": this.get("targetClass")
-            }), null, Y.Wegas.app.dataSources[this.get("dataSource")]);
+            }, Y.bind(function (entity) {
+                EditEntityAction.showAddForm(entity, null,
+                    Y.Wegas.app.dataSources[this.get("dataSource")]);           // and display the edition form
+            }, this));
         }
     }, {
         NS: "wegas",
@@ -136,7 +139,7 @@ YUI.add('wegas-editor-action', function (Y) {
                     EditEntityAction.tab.destroy();
                     delete EditEntityAction.tab;
 
-                    //Y.Wegas.app.widget.hidePosition("right");                   // Hide the right layout
+                //Y.Wegas.app.widget.hidePosition("right");                   // Hide the right layout
                 });
                 EditEntityAction.tab.add(EditEntityAction.form);
             }
@@ -314,9 +317,11 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(AddEntityChildAction, EntityAction, {
         execute: function () {
-            EditEntityAction.showAddForm(Y.Wegas.Editable.revive({// Display the add form
+            Y.Wegas.Editable.useAndRevive({                                     // Load target class dependencies
                 "@class": this.get("targetClass")
-            }), this.get("entity"), this.get("dataSource"));
+            }, Y.bind(function (entity) {
+                EditEntityAction.showAddForm(entity, this.get("entity"), this.get("dataSource")); // and display the edition form
+            }, this));
         }
     }, {
         NS: "wegas",
@@ -447,7 +452,7 @@ YUI.add('wegas-editor-action', function (Y) {
     });
 
     Y.namespace("Plugin").OpenTabAction = OpenTabAction;
-    
+
     /**
      *  @class OpenGameAction
      *  @module Wegas
