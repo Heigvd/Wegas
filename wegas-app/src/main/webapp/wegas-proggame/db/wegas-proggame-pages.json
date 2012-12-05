@@ -94,6 +94,8 @@
         "winningCondition": "objects[1].life===0",
         "onWin": "currentLevel.value=3;money.value+=500;",
         "cssClass": "wegas-proggame-level",
+        "gridW": 5,
+        "gridH": 5,
         "api": [{
                 "name": "move"
             }, {
@@ -105,15 +107,15 @@
                 "type": "pc",
                 "direction": 2,
                 "x": 0,
-                "y": 3,
+                "y": 2,
                 "life": 100,
-                "range": 3
+                "range": 2
             }, {
                 "id": "Enemy",
                 "type": "npc",
                 "direction": 4,
-                "x": 7,
-                "y": 3,
+                "x": 4,
+                "y": 2,
                 "life": 100,
                 "range": 2
             }]
@@ -127,21 +129,30 @@
         "winningCondition": "objects[1].life===0",
         "onWin": "currentLevel.value=3",
         "cssClass": "wegas-proggame-level",
+        "ai": "move()",
         "objects": [
             {
                 "id": "Player",
                 "type": "pc",
                 "direction": 2,
                 "x": 0,
-                "y": 3,
+                "y": 4,
                 "life": 100,
-                "range": 3
+                "range": 2
             }, {
-                "id": "Enemy",
+                "id": "Enemy1",
                 "type": "npc",
                 "direction": 4,
-                "x": 7,
-                "y": 4,
+                "x": 8,
+                "y": 5,
+                "life": 100,
+                "range": 2
+            }, {
+                "id": "Enemy2",
+                "type": "npc",
+                "direction": 4,
+                "x": 8,
+                "y": 3,
                 "life": 100,
                 "range": 2
             }
