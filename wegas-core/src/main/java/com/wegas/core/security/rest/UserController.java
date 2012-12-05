@@ -14,6 +14,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.User;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
@@ -106,5 +108,62 @@ public class UserController extends AbstractRestController<UserFacade, User> {
         account.setLastname(lastname);
         account.setEmail(email);
         this.signup(account);                                                   // and forward
+    }
+    
+    /**
+     * Get all GameModel permissions by GameModel id
+     * @param gameModelId
+     * @return 
+     */
+    @GET
+    @Path("GameModelPermissions/{gameModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Map> findPermissionByGameModelId(@PathParam("gameModelId") String gameModelId){
+        return this.userFacade.findPermissionByGameModelId(gameModelId);
+    }
+    
+    /**
+     * Delete permission by role and permission
+     * @param roleId
+     * @param permission
+     * @return 
+     */
+    @POST
+    @Path("DeletePermission/{roleId : [1-9][0-9]*}/{permission}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public boolean deletePermissionByGameModelIdAndPermissions(@PathParam("roleId") Long roleId,
+    @PathParam("permission") String permission){
+        return this.userFacade.deletePermissionByGameModelIdAndPermissions(roleId, permission);
+    }
+    
+    /**
+     * Create role_permissions
+     * @param roleId
+     * @param permission
+     * @return 
+     */
+    @POST
+    @Path("AddPermission/{roleId : [1-9][0-9]*}/{permission}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public boolean addPermissionByGameModelIdAndPermissions(@PathParam("roleId") Long roleId,
+    @PathParam("permission") String permission){
+        return this.userFacade.addPermissionByGameModelIdAndPermissions(roleId, permission);
+    }
+    
+    /**
+     * Delete all permission from a role in a Game or GameModel
+     * @param roleId
+     * @param gameModelId
+     * @return 
+     */
+    @POST
+    @Path("DeleteAllRolePermissions/{roleId : [1-9][0-9]*}/{gameModelId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId, 
+    @PathParam("gameModelId") String gameModelId){
+        return this.userFacade.deleteAllRolePermissions(roleId, gameModelId);
     }
 }

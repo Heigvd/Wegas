@@ -7200,22 +7200,19 @@ Crafty.c("Tween", {
 function tweenEnterFrame(e) {
 	if (this._numProps <= 0) return;
 
-	var prop, k, pos = [];
+	var prop, k;
 	for (k in this._step) {
 		prop = this._step[k];
 		this[k] += prop.val;
 		if (--prop.rem == 0) {
 			// decimal numbers rounding fix
 			this[k] = prop.prop;
-                        pos.push(k);
+                        this.trigger("TweenEnd", k);
 			// make sure the duration wasn't changed in TweenEnd
 			if (this._step[k].rem <= 0) {
 				delete this._step[k];
 			}
 			this._numProps--;
-                        if(this._numProps <=0){
-                            this.trigger("TweenEnd", pos);
-                        }
                 }
         }
 

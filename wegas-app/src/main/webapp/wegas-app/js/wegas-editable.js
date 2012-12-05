@@ -263,7 +263,7 @@ YUI.add('wegas-editable', function (Y) {
             var classDef = Y.Wegas.persistence.Entity;
 
             if (o["@class"]) {
-                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.Entity;
+                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity;
 
             } else if (o.type) {
                 classDef = Y.Wegas.persistence[o.type] || Y.Wegas.persistence.WidgetEntity;
@@ -277,35 +277,8 @@ YUI.add('wegas-editable', function (Y) {
                 }
             }
             return new classDef(o);
-        },
-        /**
-         *
-         *  This getter is to be used for any object attribute that references a VariableDescriptor and
-         *  has either an name, id or expr parameter.
-         *
-         */
-        VARIABLEDESCRIPTORGETTER: function (val, fullName) {
-            var ds = Y.Wegas.VariableDescriptorFacade;
-            if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
-
-                if (val.name) {                                                 // Eval based on the name field
-                    val.evaluated = ds.rest.find('name', val.name);
-
-                } else if (val.expr) {                                          // if absent evaluate the expr field
-                    val.evaluated = ds.rest.findById(Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
-
-                } else if (val.i) {
-                    val.evaluated = ds.rest.findById(val.id);
-                }
-            }
-
-            if (val && fullName.indexOf(".") < 0) {                             // If the getter requires the full object (e.g. serialisation)
-                delete val.evaluated;                                           // Remove the ref to the evaluated descriptor
-            }
-
-            return val;
         }
-
     });
     Y.namespace("Wegas").Editable = Editable;
+
 });
