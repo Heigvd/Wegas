@@ -46,6 +46,8 @@ function run(playerFn, lvl) {
         type:'log',
         'text': 'It\'s lost.'
     });
+
+    //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
     return ret;
 }
 
@@ -97,14 +99,14 @@ function move() {
     sendMoveCommand();
 }
 function rotate(dir) {
-    var object = findObject( cObject );
+    var object = findObject(cObject);
     if (!consumeActions(object, 1)) {
         log("Not enough actions to rotate.");
         return;
     }
     object.direction += dir;
-    if (object.direction > 4 ) object.direction = 1;
-    if (object.direction < 1 ) object.direction = 4;
+    if (object.direction > 4) object.direction = 1;
+    if (object.direction < 1) object.direction = 4;
     sendMoveCommand();
 }
 function rotateRight() {
@@ -115,7 +117,7 @@ function rotateLeft() {
 }
 
 function sendMoveCommand() {
-    var object = findObject( cObject );
+    var object = findObject(cObject);
     sendCommand({
         type: 'move',
         object: object.clone()
@@ -123,7 +125,7 @@ function sendMoveCommand() {
 }
 
 function fire() {
-    var i, source = findObject( cObject );
+    var i, source = findObject(cObject);
     println("fire" + source.actions);
 
     if (!consumeActions(source, 1)) {
@@ -139,30 +141,30 @@ function fire() {
     switch (source.direction) {
         case 1:
             for (i=0; i <= source.range; i++) {
-                checkCollision( cObject, source.x, source.y + i);
+                checkCollision(cObject, source.x, source.y + i);
             }
             break;
         case 2:
             for (i=0; i <= source.range; i++) {
-                checkCollision( cObject, source.x + i, source.y);
+                checkCollision(cObject, source.x + i, source.y);
             }
             break;
         case 3:
             for (i=0; i <= source.range; i++) {
-                checkCollision( cObject, source.x, source.y - i);
+                checkCollision(cObject, source.x, source.y - i);
             }
             break;
         case 4:
             for (i=0; i <= source.range; i++) {
-                checkCollision( cObject, source.x - i, source.y);
+                checkCollision(cObject, source.x - i, source.y);
             }
             break;
     }
 }
-function checkCollision( sourceId, x, y ) {
+function checkCollision(sourceId, x, y) {
     var objects = level.objects;
     for (var k=0; k < objects.length; k++) {
-        if ( objects[k].x === x && objects[k].y === y && objects[k].id !== sourceId ) {
+        if (objects[k].x === x && objects[k].y === y && objects[k].id !== sourceId) {
             objects[k].life = 0;
             sendCommand({
                 type: 'die',
@@ -195,8 +197,8 @@ function checkGameOver() {
 }
 function findObject(id){
     var objects = level.objects;
-    for ( var i = 0; i < objects.length; i = i + 1 ) {
-        if ( objects[i].id === id ) {
+    for (var i = 0; i < objects.length; i = i + 1) {
+        if (objects[i].id === id) {
             return objects[i];
         }
     }
