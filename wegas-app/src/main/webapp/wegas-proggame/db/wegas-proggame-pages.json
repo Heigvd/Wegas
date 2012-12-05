@@ -94,8 +94,13 @@
         "winningCondition": "objects[1].life===0",
         "onWin": "currentLevel.value=3;money.value+=500;",
         "cssClass": "wegas-proggame-level",
-        "gridW": 5,
-        "gridH": 5,
+        "map": [
+            ["g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g"],
+            ["e", "e", "e", "e", "e"],
+            ["g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g"]
+        ],
         "api": [{
                 "name": "move"
             }, {
@@ -126,10 +131,21 @@
         "type": "ProgGameLevel",
         "maxTurns": 2,
         "maxMoves": -1,
-        "winningCondition": "objects[1].life===0",
+        "winningCondition": "objects[1].life===0 && objects[2].life===0",
         "onWin": "currentLevel.value=3",
         "cssClass": "wegas-proggame-level",
         "ai": "move(); fire();",
+        "map": [
+            ["w", "w", "w", "w", "w", "w", "w", "w", "w"],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
+            ["g", "g", "g", "e", "e", "e", "e", "e", "e"],
+            ["e", "e", "e", "e", "g", "g", "g", "g", "g"],
+            ["g", "g", "g", "e", "e", "e", "e", "e", "e"],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
+            ["w", "w", "w", "w", "w", "w", "w", "w", "w"]
+        ],
         "objects": [
             {
                 "id": "Player",

@@ -227,19 +227,8 @@ YUI.add('wegas-proggame-level', function (Y) {
                     return (parseInt(s) ? parseInt(s) : 1);
                 }
             },
-            gridW: {
-                type: "number",
-                format: "Integer",
-                validator: function (s) {
-                    return (parseInt(s) ? parseInt(s) : 9);
-                }
-            },
-            gridH: {
-                type: "string",
-                format: "Integer",
-                validator: function (s) {
-                    return (parseInt(s) ? parseInt(s) : 9);
-                }
+            map: {
+                validator: Y.Lang.isArray
             }
         }
     });

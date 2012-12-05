@@ -13,11 +13,9 @@
  */
 YUI.add('wegas-proggame-display', function (Y) {
     "use strict";
-
     var CONTENTBOX = 'contentBox',
-            GRIDSIZE = 31,
+            GRIDSIZE = 32,
             ProgGameLevel;
-            
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
@@ -26,17 +24,21 @@ YUI.add('wegas-proggame-display', function (Y) {
     var ProgGameDisplay = Y.Base.create("wegas-proggame-display", Y.Widget, [], {
         CONTENT_TEMPLATE: '<div><div class="object-layer"></div></div>',
         renderMethod: null,
+        gridH: null,
+        gridW: null,
         initializer: function () {
             this.publish("commandExecuted", {});
+            if (this.get('map')) {
+                this.gridH = this.get('map').length;
+                this.gridW = this.get('map')[0].length;
+            }
         },
         renderUI: function () {
-            var i, j;
-
-            var craftyNode = Y.Node.create("<div id='cr-stage'></div>");
+            var i, j,
+                    craftyNode = Y.Node.create("<div id='cr-stage'></div>");
             this.get(CONTENTBOX).append(craftyNode);
 
-            Crafty.init(GRIDSIZE * this.get('gridW'), GRIDSIZE * this.get('gridH'));
-
+            Crafty.init(GRIDSIZE * this.gridW, GRIDSIZE * this.gridH);
             if (Crafty.support.canvas) {
                 Crafty.canvas.init();
                 this.renderMethod = 'Canvas';
@@ -46,15 +48,20 @@ YUI.add('wegas-proggame-display', function (Y) {
 
             Crafty.refWidget = this;
             Crafty.background('rgb(110,110,110)');
-
             //sprites
             Crafty.sprite(24, 32, '/Wegas/wegas-proggame/images/sprites-1.png', {
                 SCharacter: [0, 0]
             });
+            Crafty.sprite(32, 32, '/Wegas/wegas-proggame/images/wood_tileset_3.png', {
+                SGrass1: [0, 0],
+                SGrass2: [0, 1],
+                SGrass3: [0, 2],
+                SEarth: [3, 1],
+                SWater: [4, 4]
+            });
             Crafty.sprite(32, 32, '/Wegas/wegas-proggame/images/lightning.png', {
                 SLightning: [0, 0]
             });
-
             //move function
             Crafty.c('MoveFunction', {//require Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
                 tweenEnd: null,
@@ -97,7 +104,6 @@ YUI.add('wegas-proggame-display', function (Y) {
                     this.tweenEnd.length = 0;
                     this.tween({x: toX, y: toY}, time);
                 }});
-
             Crafty.c("FireFunction", {
                 shot: null,
                 init: function () {
@@ -114,7 +120,6 @@ YUI.add('wegas-proggame-display', function (Y) {
                     this.shot.execMove(dir, toX, toY, speed);
                 }
             });
-
             Crafty.c("DieFunction", {
                 isDying: null,
                 init: function () {
@@ -131,7 +136,6 @@ YUI.add('wegas-proggame-display', function (Y) {
                     this.tween({alpha: 0}, 50);
                 }
             });
-
             Crafty.c('Lightning', {
                 init: function () {
                     this.requires("MoveFunction, SpriteAnimation, Tween, SLightning")
@@ -141,20 +145,27 @@ YUI.add('wegas-proggame-display', function (Y) {
                             .animate("moveLeft", 0, 4, 3);
                 }
             });
-
             /*---Crafty "render"---*/
-            //chessboard
-            for (i = 0; i < this.get('gridW'); i++) {
-                for (j = 0; j < this.get('gridH'); j++) {
-                    if ((i + j) % 2 === 0) {
-                        Crafty.e('2D, ' + this.renderMethod + ', Color')
-                                .color('rgba(255,165,0, 0.5)')
-                                .attr({x: GRIDSIZE * i, y: GRIDSIZE * j, w: GRIDSIZE, h: GRIDSIZE});
+            //map
+            for (i = 0; i < this.gridH; i++) {
+                for (j = 0; j < this.gridW; j++) {
+                    switch (this.get('map')[i][j]) {
+                        case 'e' :
+                            Crafty.e('2D, ' + this.renderMethod + ', Color, SEarth')
+                                    .attr({x: GRIDSIZE * j, y: GRIDSIZE * i, w: GRIDSIZE, h: GRIDSIZE});
+                            break;
+                        case 'w' :
+                            Crafty.e('2D, ' + this.renderMethod + ', Color, SWater')
+                                    .attr({x: GRIDSIZE * j, y: GRIDSIZE * i, w: GRIDSIZE, h: GRIDSIZE});
+                            break;
+                        default: //random Grass1 or Grass2
+                            Crafty.e('2D, ' + this.renderMethod + ', Color, SGrass'+(Math.floor(Math.random()*3)+1))
+                                    .attr({x: GRIDSIZE * j, y: GRIDSIZE * i, w: GRIDSIZE, h: GRIDSIZE});
                     }
                 }
             }
 
-            //Entities
+//Entities
             var object, pos;
             for (i = 0; i < this.get('objects').length; i++) {
                 object = this.get('objects')[i];
@@ -219,7 +230,6 @@ YUI.add('wegas-proggame-display', function (Y) {
                         Crafty(entity).execMove(dir, pos[0], pos[1], 2);
                     }
                     break;
-
                 case "fire":
                     object = command.object;
                     entity = object.id;
@@ -257,17 +267,14 @@ YUI.add('wegas-proggame-display', function (Y) {
                 return pos;
             }
             pos.push(position[0] * GRIDSIZE); //x
-            pos.push((this.get("gridH") - position[1] - 1) * GRIDSIZE); //y
+            pos.push((this.gridH - position[1] - 1) * GRIDSIZE); //y
             return pos;
         }
 
     }, {
         ATTRS: {
-            gridW: {
-                value: 9
-            },
-            gridH: {
-                value: 9
+            map: {
+                validator: Y.Lang.isArray
             },
             objects: {
             }
