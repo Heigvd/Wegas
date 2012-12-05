@@ -55,9 +55,13 @@ YUI.add('wegas-proggame-level', function (Y) {
         // *** Lifecycle Methods *** //
         initializer: function () {
             this.handlers = {};
+            this.objects = this.get("objects");
         },
         renderUI: function () {
-            var i, cb = this.get(CONTENTBOX);
+            var i, cb = this.get(CONTENTBOX),
+            METHODTOTEXT = {
+                say: "say(text: String)"
+            }, api = this.get("api");
 
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code"),
@@ -68,11 +72,12 @@ YUI.add('wegas-proggame-level', function (Y) {
                 value: "//Put your code here..."
             });
 
-            cb.one(".ai").append(Y.Wegas.App.nl2br(this.get("ai") || "<center><i>empty</i></center>"));
+console.log("e", this.findObject("Enemy"));
+            cb.one(".ai").append(Y.Wegas.App.nl2br(this.findObject("Enemy").ai || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
 
-            for (i = 0; i < this.get("api").length; i += 1) {
-                cb.one(".api").append(this.get("api")[i].name + "() <br />");
+            for (i = 0; i < api.length; i += 1) {
+                cb.one(".api").append((METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
             }
 
             this.display = new Y.Wegas.ProgGameDisplay(this.toObject());
@@ -165,7 +170,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.consumeCommand();
         },
 
-        findObjectById: function (id) {
+        findObject: function (id) {
             return Y.Array.find(this.objects, function (o) {
                 return o.id === id;
             });
@@ -180,13 +185,13 @@ YUI.add('wegas-proggame-level', function (Y) {
 
                     case "move":
                     case "fire":
-                        Y.mix(this.findObjectById(command.object.id),           // Update target object cfg
+                        Y.mix(this.findObject(command.object.id),           // Update target object cfg
                             command.object, true);
                         this.syncFrontUI();
                         break;
 
                     case "updated":
-                        Y.mix(this.findObjectById(command.object.id),           // Update target object cfg
+                        Y.mix(this.findObject(command.object.id),           // Update target object cfg
                             command.object, true);
                         this.syncFrontUI();
                         this.consumeCommand();
@@ -237,8 +242,8 @@ YUI.add('wegas-proggame-level', function (Y) {
                 el.one(".life span").setStyle("width", object.life + "%");
                 el.one(".actions").setHTML(acc.join(""));
             }
-            updateUI.call(this, this.objects[0], cb.one(".player-ui"));
-            updateUI.call(this, this.objects[1], cb.one(".enemy-ui"));
+            updateUI.call(this, this.findObject("Player"), cb.one(".player-ui"));
+            updateUI.call(this, this.findObject("Enemy"), cb.one(".enemy-ui"));
         }
 
     }, {
