@@ -430,8 +430,10 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(OpenTabAction, Action, {
         execute: function () {
+            var childCfg = this.get("children");                                // Forward plugin data to the target widget
+            childCfg.data = this.get("data");
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
-                this.get("tabSelector"), {}, this.get("children"));
+                this.get("tabSelector"), {}, childCfg);
         }
     }, {
         NS: "wegas",
@@ -445,7 +447,7 @@ YUI.add('wegas-editor-action', function (Y) {
     });
 
     Y.namespace("Plugin").OpenTabAction = OpenTabAction;
-
+    
     /**
      *  @class OpenGameAction
      *  @module Wegas

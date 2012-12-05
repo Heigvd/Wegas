@@ -81,7 +81,11 @@ YUI.add('wegas-gaugedisplay', function (Y) {
     }, {
         ATTRS : {
             variable: {
-                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "variable"
+                }
             },
             label : {
                 type: "string",

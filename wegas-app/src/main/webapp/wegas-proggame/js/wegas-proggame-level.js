@@ -73,9 +73,10 @@ YUI.add('wegas-proggame-level', function (Y) {
             cb.one(".ai").append(Y.Wegas.App.nl2br(this.get("ai") || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
 
-            for (i = 0; i < this.get("api").length; i += 1) {
-                cb.one(".api").append(this.get("api")[i].name + "()<br />");
+            for (i = 0; i < this.get("api").length; i++) {
+                api.push(this.get("api")[i].name);
             }
+            cb.one(".api").append(api.join(', ') + "*");
 
             this.display = new ProgGameDisplay(this.toObject());
             this.display.render(cb.one(".terrain"));
@@ -132,6 +133,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             for (k in this.handlers) {
                 this.handlers[k].detach();
             }
+            console.log('!')
             this.aceField.destroy();
             this.display.destroy();
             this.runButton.destroy();
@@ -192,9 +194,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                         this.runButton.set("disabled", false);
                         this.runButton.detachAll("click");
                         this.runButton.on("click", this.doNextLevel, this);
-                        this.fire("commandExecuted");
                         break;
-
                     case "log":
                         this.get("contentBox").one(".debugger").append(command.text + "<br />");
 
@@ -295,30 +295,27 @@ YUI.add('wegas-proggame-level', function (Y) {
      */
     var ProgGameDisplay = Y.Base.create("wegas-proggame-display", Y.Widget, [], {
         CONTENT_TEMPLATE: '<div><div class="object-layer"></div></div>',
+        renderMethod: null,
         initializer: function () {
             this.publish("commandExecuted", {});
         },
         renderUI: function () {
-            var i, renderMethod;
-            /*---crafty "init"---*/
+            var i, j;
+
             var craftyNode = Y.Node.create("<div id='cr-stage'></div>");
             this.get(CONTENTBOX).append(craftyNode);
 
             Crafty.init(GRIDSIZE * this.get('gridW'), GRIDSIZE * this.get('gridH'));
 
-            if(Crafty.support.canvas){
+            if (Crafty.support.canvas) {
                 Crafty.canvas.init();
-                renderMethod = 'Canvas';
-            } else{
-                renderMethod = 'DOM';
+                this.renderMethod = 'Canvas';
+            } else {
+                this.renderMethod = 'DOM';
             }
 
             Crafty.refWidget = this;
             Crafty.background('rgb(110,110,110)');
-
-            Crafty.bind('moveEnded', function () {
-                this.refWidget.fire("commandExecuted");
-            });
 
             //sprites
             Crafty.sprite(24, 32, '/Wegas/wegas-proggame/images/sprites-1.png', {
@@ -330,13 +327,16 @@ YUI.add('wegas-proggame-level', function (Y) {
 
             //move function
             Crafty.c('MoveFunction', {//require Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
-                moveToX: null,
-                moveToY: null,
+                tweenEnd: null,
                 init: function () {
-                    this.hackTrigged = false;
-                    this.bind('TweenEnd', function () {
-                        this.stop();
-                        Crafty.trigger('moveEnded');
+                    this.tweenEnd = []; //Tween x and y. Thus, the tween end when this variable contain x and y.
+                    this.bind('TweenEnd', function (e) {
+                        this.tweenEnd.push(e);
+                        if (this.tweenEnd.length === 2) {
+                            this.stop();
+                            this.trigger('moveEnded');
+                            Crafty.refWidget.fire("commandExecuted");
+                        }
                     }, this);
                 },
                 execMove: function (direction, toX, toY, speed) {
@@ -357,36 +357,51 @@ YUI.add('wegas-proggame-level', function (Y) {
                         default:
                             return;
                     }
-                    this.moveToX = toX;
-                    this.moveToY = toY;
                     if (!this.isPlaying(animDir)) {
                         this.stop();
                         this.animate(animDir, 10, -1);
                     }
                     speed = (speed > 0) ? speed : 1;
                     dist = Math.sqrt(Crafty.math.squaredDistance(this.pos()._x, this.pos()._y, toX, toY));
-                    time = ((dist / GRIDSIZE) * (100 / speed)) + 1; //+1 because if time = 0, time = infinite
-                    this.tween({
-                        x: toX,
-                        y: toY
-                    }, time);
-                }
-            });
+                    time = Math.round(((dist / GRIDSIZE) * (100 / speed))) + 1; //+1 because if time = 0, time = infinite
+                    this.tweenEnd.length = 0;
+                    this.tween({x: toX, y: toY}, time);
+                }});
 
             Crafty.c("FireFunction", {
                 shot: null,
+                init: function () {
+                    this.bind("moveEnded", function () {
+                        if (this.shot) {
+                            this.shot.destroy();
+                        }
+                    }, this);
+                },
                 execFire: function (dir, toX, toY, speed) {
-                    this.shot = Crafty.e('2D, '+ renderMethod + ', Lightning');
+                    this.shot = Crafty.e('2D, ' + Crafty.refWidget.renderMethod + ', Lightning');
                     this.shot.attr('x', this.pos()._x);
                     this.shot.attr('y', this.pos()._y);
                     this.shot.execMove(dir, toX, toY, speed);
-                    this.bind("moveEnded", function () {
-                        this.shot.destroy();
-                    }, this);
                 }
             });
 
-            //Lightning
+            Crafty.c("DieFunction", {
+                isDying: null,
+                init: function () {
+                    this.isDying = false;
+                    this.bind('TweenEnd', function (e) {
+                        if (this.isDying) {
+                            Crafty.refWidget.fire("commandExecuted");
+                            this.destroy();
+                        }
+                    }, this);
+                },
+                execDie: function () {
+                    this.isDying = true;
+                    this.tween({alpha: 0}, 50);
+                }
+            });
+
             Crafty.c('Lightning', {
                 init: function () {
                     this.requires("MoveFunction, SpriteAnimation, Tween, SLightning")
@@ -399,17 +414,12 @@ YUI.add('wegas-proggame-level', function (Y) {
 
             /*---Crafty "render"---*/
             //chessboard
-            for (var i = 0; i < this.get('gridW'); i++) {
-                for (var j = 0; j < this.get('gridH'); j++) {
+            for (i = 0; i < this.get('gridW'); i++) {
+                for (j = 0; j < this.get('gridH'); j++) {
                     if ((i + j) % 2 === 0) {
-                        Crafty.e('2D, '+ renderMethod + ', Color')
-                        .color('rgba(255,165,0, 0.5)')
-                        .attr({
-                            x: GRIDSIZE * i,
-                            y: GRIDSIZE * j,
-                            w: GRIDSIZE,
-                            h: GRIDSIZE
-                        });
+                        Crafty.e('2D, ' + this.renderMethod + ', Color')
+                                .color('rgba(255,165,0, 0.5)')
+                                .attr({x: GRIDSIZE * i, y: GRIDSIZE * j, w: GRIDSIZE, h: GRIDSIZE});
                     }
                 }
             }
@@ -421,34 +431,54 @@ YUI.add('wegas-proggame-level', function (Y) {
                 if (object.type === "pc") {
                     Crafty.c(object.id, {
                         init: function () {
-                            this.requires("MoveFunction, FireFunction, SpriteAnimation, Tween, SCharacter")
-                            .animate("moveUp", 0, 0, 2)
-                            .animate("moveRight", 0, 1, 2)
-                            .animate("moveDown", 0, 2, 2)
-                            .animate("moveLeft", 0, 3, 2);
+                            this.requires("MoveFunction, FireFunction, DieFunction, SpriteAnimation, Tween, SCharacter")
+                                    .animate("moveUp", 0, 0, 2)
+                                    .animate("moveRight", 0, 1, 2)
+                                    .animate("moveDown", 0, 2, 2)
+                                    .animate("moveLeft", 0, 3, 2);
                         }
                     });
                 } else {
                     Crafty.c(object.id, {
                         init: function () {
-                            this.requires("MoveFunction, FireFunction, SpriteAnimation, Tween, SCharacter")
-                            .animate("moveUp", 9, 0, 11)
-                            .animate("moveRight", 9, 1, 11)
-                            .animate("moveDown", 9, 2, 11)
-                            .animate("moveLeft", 9, 3, 11);
+                            this.requires("MoveFunction, FireFunction, DieFunction, SpriteAnimation, Tween, SCharacter")
+                                    .animate("moveUp", 9, 0, 11)
+                                    .animate("moveRight", 9, 1, 11)
+                                    .animate("moveDown", 9, 2, 11)
+                                    .animate("moveLeft", 9, 3, 11);
                         }
                     });
                 }
                 pos = this.getRealXYPos([object.x, object.y]);
-                Crafty.e('2D, '+ renderMethod + ', ' + object.id);
+                Crafty.e('2D, ' + this.renderMethod + ', ' + object.id);
                 Crafty(object.id).attr('x', pos[0]);
                 Crafty(object.id).attr('y', pos[1]);
                 Crafty(object.id).execMove(object.direction, pos[0], pos[1]);
             }
         },
+        destructor: function () {
+            var k;
+            for (k in Crafty("*")) {
+                if (Crafty("*")[k].destroy) {
+                    Crafty("*")[k].destroy();
+                }
+            }
+            Crafty.unbind('dieEnded');
+            Crafty.unbind('moveEnded');
+        },
         execute: function (command) {
-            var object, entity, dir, pos, cb = this.get(CONTENTBOX);
+            var object, entity, dir, pos, i;
             switch (command.type) {
+                case "resetLevel":
+                    for (i = 0; i < command.objects.length; i++) {
+                        object = command.objects[i];
+                        pos = this.getRealXYPos([object.x, object.y]);
+                        Crafty(object.id).attr('x', pos[0]);
+                        Crafty(object.id).attr('y', pos[1]);
+                        Crafty(object.id).execMove(object.direction, pos[0], pos[1]);
+                    }
+                    this.fire("commandExecuted");
+                    break;
                 case "move":
                     object = command.object;
                     this.set("objects", object);
@@ -456,7 +486,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                     dir = object.direction;
                     pos = this.getRealXYPos([object.x, object.y]);
                     if (entity && Crafty(entity) && Crafty(entity).execMove) {
-                        Crafty(entity).execMove(dir, pos[0], pos[1]);
+                        Crafty(entity).execMove(dir, pos[0], pos[1], 2);
                     }
                     break;
 
@@ -479,8 +509,16 @@ YUI.add('wegas-proggame-level', function (Y) {
                             break;
                     }
                     if (entity && Crafty(entity) && Crafty(entity).execFire) {
-                        Crafty(entity).execFire(dir, pos[0], pos[1], 5); //try with speed 7 (last arg), bug of Crafty (tweenEnterFrame))
+                        Crafty(entity).execFire(dir, pos[0], pos[1], 7);
                     }
+                    break;
+                case "die":
+                    object = command.object;
+                    entity = object.id;
+                    if (entity && Crafty(entity) && Crafty(entity).execDie) {
+                        Crafty(entity).execDie();
+                    }
+                    break;
             }
         },
         getRealXYPos: function (position) {

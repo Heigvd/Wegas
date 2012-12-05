@@ -34,7 +34,7 @@ YUI().use(function(Y) {
                         'wegas-button',
                         'stylesheet'
                         // 'wegas-mcq-entities',
-                        // 'wegas-appcss',                                       // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                        // 'wegas-appcss',                                      // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
                     'wegas-appcss': {
@@ -63,7 +63,7 @@ YUI().use(function(Y) {
                     'wegas-entity': {
                         path: 'wegas-app/js/persistence/wegas-entity-min.js',
                         requires: ['wegas-editable'],
-                        ws_provides: ['GameModel']
+                        ws_provides: ['Entity', 'GameModel']
                     },
                     'wegas-statemachine-entities': {
                         path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
@@ -253,10 +253,25 @@ YUI().use(function(Y) {
                         requires: ['inputex-field', 'ace'],
                         ix_provides: "ace"
                     },
+                    'wegas-inputex-permissionselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-permissionselect-min.js',
+                        requires: ['inputex-list', 'inputex-field', "inputex-checkbox", "wegas-inputex-roleselect"],
+                        ws_provides: 'RolePermissionList'
+                    },
                     'wegas-inputex-roleselect': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-roleselect-min.js',
                         requires: ['inputex-select'],
                         ix_provides: 'roleselect'
+                    },
+                    'wegas-inputex-pageselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-pageselect-min.js',
+                        requires: ['inputex-select'],
+                        ix_provides: 'pageselect'
+                    },
+                    'wegas-inputex-variableselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-variableselect-min.js',
+                        requires: ['inputex-group', 'wegas-inputex-wysiwygscript'],
+                        ix_provides: 'variableselect'
                     },
                     /** Common Widgets **/
                     'wegas-widgetmenu': {

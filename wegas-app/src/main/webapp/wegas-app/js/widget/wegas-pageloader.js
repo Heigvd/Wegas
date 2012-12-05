@@ -26,6 +26,7 @@ YUI.add('wegas-pageloader', function(Y) {
             if (this.get("defaultPageId")) {
                 this.set("pageId", this.get("defaultPageId"));
             }
+            this.handlers = [];
 
         },
         bindUI: function() {
@@ -41,8 +42,10 @@ YUI.add('wegas-pageloader', function(Y) {
                     this.syncUI();
                 }
             };
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response", onUpdate, this);
-            Y.Wegas.app.after('currentPlayerChange', onUpdate, this);
+            this.handlers.push(
+                Y.Wegas.app.dataSources.VariableDescriptor.after("response", onUpdate, this));
+            this.handlers.push(
+                Y.Wegas.app.after('currentPlayerChange', onUpdate, this));
 
             this.on("*:exception", function(e) {
                 var test;
@@ -56,12 +59,23 @@ YUI.add('wegas-pageloader', function(Y) {
                 }
             });
         },
+
         syncUI: function() {
             var val = this.get("variable.evaluated");
             if (val && val.getInstance().get('value')) {                        // If there is a variable to refresh
                 this.set("pageId", val.getInstance().get('value'));
             } else {                                                            // Otherwise use pageId (in case the setter has not been called yet)
                 this.set("pageId", this.get("pageId"));
+            }
+        },
+
+        destructor: function () {
+            var i;
+            if (this.get("widget")) {
+                this.get("widget").destroy();
+            }
+            for (i = 0; i < this.handlers.length; i += 1) {
+                this.handlers[i].detach();
             }
         },
 
@@ -91,7 +105,8 @@ YUI.add('wegas-pageloader', function(Y) {
             defaultPageId: {
                 type: "string",
                 _inputex: {
-                    label: "Default page"
+                    label: "Default page",
+                    _type: "pageselect"
                 }
             },
             pageId: {
@@ -131,7 +146,7 @@ YUI.add('wegas-pageloader', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER
             },
             widget: {
                 "transient": true

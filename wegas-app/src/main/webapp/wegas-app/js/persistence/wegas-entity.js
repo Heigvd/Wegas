@@ -93,7 +93,16 @@ YUI.add('wegas-entity', function (Y) {
         METHODS: {}
     });
     Y.namespace('Wegas.persistence').Entity = Entity;
-
+    
+    Y.Wegas.persistence.DefaultEntity = Y.Base.create("DefaultEntity", Entity, [], {
+        initializer: function (cfg) {
+            this.set("val", cfg);
+        }
+    }, {
+        ATTRS: {
+            val: {}
+        }
+    });
     /**
      * Page response mapper
      */
@@ -191,6 +200,27 @@ YUI.add('wegas-entity', function (Y) {
                 fn: "DuplicateEntityAction"
             }]
         }, {
+            type: "Button",
+            label: "Share",
+            plugins: [{
+                fn: "OpenTabAction",
+                cfg: {
+                    children: {
+                        type: "RolePermissionList",
+                        permsList: [{
+                            name: "GameModel:Add"
+                        },{
+                            name: "GameModel:Edit"
+                        },{
+                            name: "GameModel:Delete"
+                        },{
+                            name: "GameModel:Create"
+                        },]
+                    },
+                    tabSelector: '#rightTabView'
+                }
+            }]
+        }, {
             type: "DeleteEntityButton"
         }]
     //{
@@ -237,6 +267,27 @@ YUI.add('wegas-entity', function (Y) {
         }, {
             type: "EditEntityButton",
             label: "Properties"
+        },{
+            type: "Button",
+            label: "Share",
+            plugins: [{
+                fn: "OpenTabAction",
+                cfg: {
+                    children: {
+                        type: "RolePermissionList",
+                        permsList: [{
+                            name: "Game:Add"
+                        },{
+                            name: "Game:Edit"
+                        },{
+                            name: "Game:Delete"
+                        },{
+                            name: "Game:Create"
+                        }]
+                    },
+                    tabSelector: '#rightTabView'
+                }
+            }]
         }, {
             type: "DeleteEntityButton"
         }]

@@ -29,6 +29,13 @@ YUI.add('wegas-action', function (Y) {
             },
             destroyed: {
                 "transient": true
+            },
+            /* Shortcur */
+            data: {
+                readonly: true,
+                getter: function() {
+                    return this.get("host").get("data");
+                }
             }
         }
     });
@@ -126,7 +133,8 @@ YUI.add('wegas-action', function (Y) {
             subpageId: {
                 type: "string",
                 _inputex: {
-                    label: "Page to display"
+                    label: "Page to display",
+                    _type: "pageselect"
                 }
             },
             targetPageLoaderId: {

@@ -156,3 +156,36 @@ img.inputEx-ListField-delButton {
 .defaultSkin table.mceLayout {
     width: 100% !important;
 }
+
+/* Permissions */
+.role-permissions .inputEx-fieldWrapper{
+    float: left;
+    width: 80px;
+    /*margin-left: 25px;*/
+}
+
+.role-permissions .inputEx-fieldWrapper:first-child{
+    margin-left: 0px
+}
+
+.inputEx-fieldWrapper .roleBox {
+    margin-left: 25px;
+    margin-top: 5px;
+}
+
+.eachPermissions{
+    margin-left: 5px;
+}
+
+.eachPermissions:first-child{
+    margin-left: 20px;
+}
+
+.eachPermissions label{
+    margin-left: 4px;
+}
+
+.role-permissions .permissionList {
+    width: 74%;
+    margin-left: 115px;
+}
