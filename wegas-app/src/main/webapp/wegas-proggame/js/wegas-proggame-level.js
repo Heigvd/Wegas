@@ -86,8 +86,8 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.resetUI();
         },
         bindUI: function () {
-            this.handlers.response = Y.Wegas.app.VariableDescriptorFacade.after("response", // If data changes, refresh
-                this.syncUI, this);
+            this.handlers.response = Y.Wegas.app.VariableDescriptorFacade.after("response",
+                this.syncUI, this);                                             // If data changes, refresh
             this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange',
                 this.syncUI, this);                                             // If current user changes, refresh (editor only)
 
@@ -98,10 +98,14 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         },
         run: function () {
-            this.resetUI();
 
-            this.runButton.set("label", "RUNNING...");
-            this.runButton.set("disabled", true);
+            if (this.runButton.get("label") === "STOP") {
+                this.commandsStack = null;
+                this.runButton.set("label", "RUN SCRIPT");
+                return;
+            }
+            this.resetUI();
+            this.runButton.set("label", "STOP");
 
             Y.Wegas.app.VariableDescriptorFacade.rest.sendRequest({
                 request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
@@ -114,7 +118,6 @@ YUI.add('wegas-proggame-level', function (Y) {
                     success: Y.bind(this.onServerReply, this),
                     failure: Y.bind(function () {
                         this.runButton.set("label", "RUN SCRIPT");
-                        this.runButton.set("disabled", false);
                         alert("Your script contains an error.");
                     }, this)
                 }
@@ -137,9 +140,14 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         resetUI: function () {
             this.objects = Y.clone(this.get("objects"));
+            this.commandsStack = null;
 
-            this.display.set("objects", this.objects);                          // Reset the display to default
-            this.display.syncUI();
+            //this.display.set("objects", this.objects);                          // Reset the display to default
+            //this.display.syncUI();
+            this.display.execute({
+                type:'resetLevel',
+                objects: this.objects
+            });
 
             this.get(CONTENTBOX).one(".debugger").setHTML("<h1>Debugger</h1>");
             //this.get("contentBox").one(".debugger").empty();
@@ -186,7 +194,6 @@ YUI.add('wegas-proggame-level', function (Y) {
 
                     case "gameWon":
                         this.runButton.set("label", "NEXT LEVEL");
-                        this.runButton.set("disabled", false);
                         this.runButton.detachAll("click");
                         this.runButton.on("click", this.doNextLevel, this);
                         break;
@@ -202,9 +209,8 @@ YUI.add('wegas-proggame-level', function (Y) {
 
                 this.display.execute(command);                                  // Forware the command to the display
 
-            } else {
+            } else if (this.commandsStack) {
                 this.runButton.set("label", "RUN SCRIPT");
-                this.runButton.set("disabled", false);
             }
         },
 
