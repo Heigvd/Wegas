@@ -160,7 +160,7 @@ img.inputEx-ListField-delButton {
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper{
     float: left;
-    width: 80px;
+    width: 91px;
     /*margin-left: 25px;*/
 }
 
@@ -186,6 +186,6 @@ img.inputEx-ListField-delButton {
 }
 
 .role-permissions .permissionList {
-    width: 74%;
+    width: 80%;
     margin-left: 115px;
 }
