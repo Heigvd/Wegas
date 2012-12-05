@@ -129,7 +129,7 @@
         "winningCondition": "objects[1].life===0",
         "onWin": "currentLevel.value=3",
         "cssClass": "wegas-proggame-level",
-        "ai": "move()",
+        "ai": "move(); fire();",
         "objects": [
             {
                 "id": "Player",
@@ -146,7 +146,7 @@
                 "x": 8,
                 "y": 5,
                 "life": 100,
-                "range": 2
+                "range": 4
             }, {
                 "id": "Enemy2",
                 "type": "npc",
