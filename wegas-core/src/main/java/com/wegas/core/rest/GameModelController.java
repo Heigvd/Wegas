@@ -11,6 +11,8 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
@@ -59,5 +61,20 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
         s.checkPermission("GameModel:Edit:gm" + entityId);
 
         return super.update(entityId, entity);
+    }
+    
+    @Override
+    public Collection<GameModel> index() {
+        Collection<GameModel> allGm = getFacade().findAll();
+        Collection<GameModel> newGm = new ArrayList<>(allGm);
+
+        for (GameModel aGm : allGm){
+            Subject s = SecurityUtils.getSubject();
+            boolean isPermitted = s.isPermitted("GameModel:View:gm" + aGm.getId());
+            if (!isPermitted){
+                newGm.remove(aGm);
+            }
+        }
+        return newGm;
     }
 }
