@@ -96,6 +96,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 meta: {},
                 results: data
             };
+            payload.response.data = this.getCache();                            // Provides with a pointer to the datasource current content
 
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
 
@@ -111,8 +112,6 @@ YUI.add('wegas-datasourcerest', function(Y) {
 
         onResponseRevived: function(e) {
             var i, evt, updated = false, response = e.serverResponse;
-
-            e.response.data = this.getCache();                                  // Provides with a pointer to the datasource current content
 
             if (e.error) {                                                      // If there was an server error, do not update the cache
                 return;

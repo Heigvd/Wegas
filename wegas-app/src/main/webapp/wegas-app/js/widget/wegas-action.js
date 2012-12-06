@@ -192,7 +192,7 @@ YUI.add('wegas-action', function (Y) {
     Y.extend(PopupPlg, Y.Plugin.Base, {
         initializer: function () {
             this.afterHostEvent("render",  function () {
-                this.get("host").showMessage("success", this.get("content"));
+                this.get("host").showMessage("info", this.get("content"));
             });
         }
     }, {
