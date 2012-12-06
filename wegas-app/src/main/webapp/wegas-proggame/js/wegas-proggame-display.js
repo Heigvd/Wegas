@@ -14,8 +14,7 @@
 YUI.add('wegas-proggame-display', function (Y) {
     "use strict";
     var CONTENTBOX = 'contentBox',
-            GRIDSIZE = 32,
-            ProgGameLevel;
+            GRIDSIZE = 32;
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
@@ -52,15 +51,15 @@ YUI.add('wegas-proggame-display', function (Y) {
             Crafty.sprite(24, 32, '/Wegas/wegas-proggame/images/sprites-1.png', {
                 SCharacter: [0, 0]
             });
+            Crafty.sprite(32, 32, '/Wegas/wegas-proggame/images/lightning.png', {
+                SLightning: [0, 0]
+            });
             Crafty.sprite(32, 32, '/Wegas/wegas-proggame/images/wood_tileset_3.png', {
                 SGrass1: [0, 0],
                 SGrass2: [0, 1],
                 SGrass3: [0, 2],
                 SEarth: [3, 1],
-                SWater: [4, 4]
-            });
-            Crafty.sprite(32, 32, '/Wegas/wegas-proggame/images/lightning.png', {
-                SLightning: [0, 0]
+                SWater: [4, 4],
             });
             //move function
             Crafty.c('MoveFunction', {//require Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
@@ -159,7 +158,7 @@ YUI.add('wegas-proggame-display', function (Y) {
                                     .attr({x: GRIDSIZE * j, y: GRIDSIZE * i, w: GRIDSIZE, h: GRIDSIZE});
                             break;
                         default: //random Grass1 or Grass2
-                            Crafty.e('2D, ' + this.renderMethod + ', Color, SGrass'+(Math.floor(Math.random()*3)+1))
+                            Crafty.e('2D, ' + this.renderMethod + ', Color, SGrass' + (Math.floor(Math.random() * 3) + 1))
                                     .attr({x: GRIDSIZE * j, y: GRIDSIZE * i, w: GRIDSIZE, h: GRIDSIZE});
                     }
                 }
