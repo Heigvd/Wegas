@@ -97,12 +97,9 @@
         "label": "Level 1 - First moves",
         "type": "ProgGameLevel",
         "maxTurns": 1,
-        "winningCondition": "level.objects[1].life===0",
+        "winningCondition": "level.objects[0].x===level.objects[1].x && level.objects[0].y===level.objects[1].y",
         "onWin": "currentLevel.value=4",
         "cssClass": "wegas-proggame-level",
-        "api": [{
-                "name": "move"
-            }],
         "map": [
             ["g", "g", "g", "g", "g"],
             ["g", "g", "g", "g", "g"],
@@ -111,92 +108,114 @@
             ["g", "g", "g", "g", "g"]
         ],
         "api": [{
-                "name": "move"
-            }, {
-                "name": "fire"
-            }],
+            "name": "move"
+        }],
         "objects": [{
-                "id": "Player",
-                "type": "pc",
-                "direction": 2,
-                "x": 0,
-                "y": 2,
-                "life": 100,
-                "actions": 20,
-                "range": 3
-            }, {
-                "id": "Enemy",
-                "direction": 4,
-                "type": "npc",
-                "x": 4,
-                "y": 2,
-                "life": 100,
-                "actions": 20,
-                "range": 2
-            }],
+            "id": "Player",
+            "type": "pc",
+            "direction": 2,
+            "x": 0,
+            "y": 2,
+            "life": 100,
+            "actions": 20,
+            "range": 3
+        }, {
+            "id": "Enemy",
+            "direction": 4,
+            "type": "npc",
+            "x": 4,
+            "y": 2,
+            "life": 100,
+            "actions": 0,
+            "range": 2,
+            "collides": false
+        }],
         "plugins": [{
-                "fn": "PopupPlg",
-                "cfg": {
-                    "content": "Bienvenue dans le jeu de la programation. Vous êtes malheureusement coincé à l'intérieur du jeu, et le seul moyen de vous en sortir est de coder vos propres <i>algorightme</i> pour contrôler votre avatar.<div class=\"wegas-proggame-def\">Le mot algorithme est dérivé du nom d'un mathématicien perse qui a vécu au IXème siècle,  Mohammed al-Khwârizmî (en latin Algorismus). Il a proposé un ensemble d'opérations élémentaires à exécuter séquentiellement, pour additionner, soustraire, multiplier et diviser des nombres  décimaux. Voici donc une définition : Un algorithme consiste en la description d'un certain nombre d'opérations élémentaires selon un ordre logique permettant de résoudre un problème sur des données en un nombre fini d'étapes.</div>Pour sortir de ce niveau il faut atteindre la porte de sortie. Vous avez à disposition la fonction <i>move</i> pour l'atteindre: entre simplement le nom de la fonction, suivie de parenthèses et d'un point virgule, comme ceci:<div class=\"wegas-proggame-code\">move();</div>Puis cliquez sur RUN. Vous pouvez appeler plusieurs fois la même fonction."
-                }
-            }]
+            "fn": "PopupPlg",
+            "cfg": {
+                "content": "Bienvenue dans le jeu de la programation. Vous êtes malheureusement coincé à l'intérieur du jeu, et le seul moyen de vous en sortir est de coder vos propres <i>algorightme</i> pour contrôler votre avatar.<div class=\"wegas-proggame-def\">Le mot algorithme est dérivé du nom d'un mathématicien perse qui a vécu au IXème siècle,  Mohammed al-Khwârizmî (en latin Algorismus). Il a proposé un ensemble d'opérations élémentaires à exécuter séquentiellement, pour additionner, soustraire, multiplier et diviser des nombres  décimaux. Voici donc une définition : Un algorithme consiste en la description d'un certain nombre d'opérations élémentaires selon un ordre logique permettant de résoudre un problème sur des données en un nombre fini d'étapes.</div>Pour sortir de ce niveau il faut atteindre la porte de sortie. Vous avez à disposition la fonction <i>move</i> pour l'atteindre: entre simplement le nom de la fonction, suivie de parenthèses et d'un point virgule, comme ceci:<div class=\"wegas-proggame-code\">move();</div>Puis cliquez sur RUN. Vous pouvez appeler plusieurs fois la même fonction."
+            }
+        }]
     },
     "4": {
         "id": 4,
-        "label": "Level 2 - First moves",
+        "label": "Level 2 - Getting harder",
         "type": "ProgGameLevel",
-        "maxTurns": 2,
-        "maxActions": 20,
-        "winningCondition": "level.objects[1].life===0",
-        "onWin": "currentLevel.value=3;money.value+=500;",
+        "maxTurns": 1,
+        "winningCondition": "level.objects[0].x===level.objects[1].x && level.objects[0].y===level.objects[1].y",
+        "onWin": "currentLevel.value=5",
         "cssClass": "wegas-proggame-level",
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "fire"
-            }],
-        "ai": "rotateLeft();\nmove();\nrotateRight();\nmove();\nmove();\nrotateRight();\nmove();\nrotateLeft()",
         "map": [
-            ["w", "w", "w", "w", "w", "w", "w", "w", "w"],
-            ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
-            ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
-            ["g", "g", "g", "e", "e", "e", "e", "e", "e"],
-            ["e", "e", "e", "e", "g", "g", "g", "g", "g"],
-            ["g", "g", "g", "e", "e", "e", "e", "e", "e"],
-            ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
-            ["g", "g", "g", "g", "g", "g", "g", "g", "g"],
-            ["w", "w", "w", "w", "w", "w", "w", "w", "w"]
+            ["w", "w", "w", "w", "w", "w", "w"],
+            ["g", "g", "g", "g", "g", "g", "g"],
+            ["g", "g", "e", "e", "e", "g", "g"],
+            ["g", "g", "e", "g", "e", "g", "g"],
+            ["e", "e", "e", "g", "e", "e", "e"],
+            ["g", "g", "e", "g", "e", "g", "g"],
+            ["g", "g", "e", "e", "e", "g", "g"],
+            ["g", "g", "g", "g", "g", "g", "g"],
+            ["w", "w", "w", "w", "w", "w", "w"]
         ],
-        "objects": [
-            {
-                "id": "Player",
-                "type": "pc",
-                "direction": 2,
-                "x": 0,
-                "y": 4,
-                "life": 100,
-                "actions": 20,
-                "range": 2
-            }, {
-                "id": "Enemy1",
-                "type": "npc",
-                "direction": 4,
-                "x": 8,
-                "y": 5,
-                "life": 100,
-                "actions": 20,
-                "range": 4
-            }, {
-                "id": "Enemy2",
-                "type": "npc",
-                "direction": 4,
-                "x": 8,
-                "y": 3,
-                "life": 100,
-                "actions": 20,
-                "range": 2
+        "api": [{
+            "name": "move"
+        }, {
+            "name": "rotateLeft"
+        },{
+            "name": "rotateRight"
+        }],
+        "objects": [{
+            "id": "Player",
+            "type": "pc",
+            "direction": 2,
+            "x": 1,
+            "y": 4,
+            "life": 100,
+            "actions": 20,
+            "range": 3
+        }, {
+            "id": "Enemy",
+            "direction": 4,
+            "type": "npc",
+            "x": 5,
+            "y": 4,
+            "life": 100,
+            "actions": 0,
+            "range": 2,
+            "collides": false
+        }, {
+            "id": "Bloc1",
+            "direction": 4,
+            "type": "npc",
+            "x": 3,
+            "y": 4,
+            "life": 100,
+            "actions": 0,
+            "range": 2
+        }, {
+            "id": "Bloc2",
+            "direction": 4,
+            "type": "npc",
+            "x": 3,
+            "y": 3,
+            "life": 100,
+            "actions": 0,
+            "range": 2
+        }, {
+            "id": "Bloc3",
+            "direction": 4,
+            "type": "npc",
+            "x": 3,
+            "y": 5,
+            "life": 100,
+            "actions": 0,
+            "range": 2
+        }],
+        "plugins": [{
+            "fn": "PopupPlg",
+            "cfg": {
+                "content": "Bien joué! Je vois que la fonction n'a plus de secrets pour vous!<br /><br />Mais ça ne sera pas si façile cette fois, des obstacles se dressent sur votre route. Utilisez les fonctions<i>rotateLeft</i> et <i>rotateRight</i> pour le contourner."
             }
-        ]
+        }]
     },
     "5": {
         "id": 5,
