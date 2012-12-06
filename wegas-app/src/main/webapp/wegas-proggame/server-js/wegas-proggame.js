@@ -18,42 +18,35 @@ function run (playerFn, lvl) {
     }
 
     for (i = 0; i < level.maxTurns; i++) {
-        sendCommand({
-            type: 'log',
-            'text': 'Turn ' + (i + 1)
-        });
+
+        if (checkGameOver()) continue;
+
+        log('Turn ' + (i + 1));
 
         resetActions();
 
         cObject = 'Player';
-        sendCommand({
-            type: 'log',
-            'text': 'Player turn.'
-        });
+        log('Player turn');
         playerFn();
 
+        if (checkGameOver()) continue;
+
         if (level.ai) {
-            cObject = 'Enemy';
-            sendCommand({
-                type: 'log',
-                'text': 'Enemy turn.'
-            });
+            cObject='Enemy';
+            log('Enemy turn');
             eval(level.ai);
         }
     }
-    sendCommand({
-        type: 'log',
-        'text': 'It\'s lost.'
-    });
+    if (!checkGameOver()) {
+        log('It\'s lost.');
+    }
 
     //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
     return ret;
 }
 
 function sendCommand (cfg) {
-    if (!checkGameOver(cfg)) {
-        ret.push(cfg);
-    }
+    ret.push(cfg);
 }
 function log (text) {
     ret.push({
@@ -61,10 +54,7 @@ function log (text) {
         text: text
     });
 }
-function checkActions (object, actions) {
-    return object.actions - actions >= 0;
-}
-function consumeActions (object, actions) {
+function consumeActions(object, actions) {
     if (object.actions - actions < 0) {
         //log("Not enough actions");
         return false;
@@ -76,39 +66,42 @@ function consumeActions (object, actions) {
 function move () {
     var object = findObject(cObject);
 
+    if (checkGameOver()) return;
+
     if (!consumeActions(object, 1)) {
         log("Not enough actions to move.");
         return;
     }
+    var moveV = dirToVector(object.direction);
 
-    switch (object.direction) {
-        case 1:
-            object.y += 1;
-            break;
-        case 2:
-            object.x += 1;
-            break;
-        case 3:
-            object.y -= 1;
-            break;
-        case 4:
-            object.x -= 1;
-            break;
+    if (checkCollision(cObject, object.x + moveV.x, object.y + moveV.y)) {
+        log("Something is blocking the way");
+    } else {
+        object.x += moveV.x;
+        object.y += moveV.y;
+        sendCommand({
+            type: 'move',
+            object: object.clone()
+        });
     }
-    sendMoveCommand();
+
 }
 function rotate (dir) {
     var object = findObject(cObject);
+
+    if (checkGameOver()) return;
+
     if (!consumeActions(object, 1)) {
         log("Not enough actions to rotate.");
         return;
     }
     object.direction += dir;
-    if (object.direction > 4)
-        object.direction = 1;
-    if (object.direction < 1)
-        object.direction = 4;
-    sendMoveCommand();
+    if (object.direction > 4) object.direction = 1;
+    if (object.direction < 1) object.direction = 4;
+    sendCommand({
+        type: 'move',
+        object: object.clone()
+    });
 }
 function rotateRight () {
     rotate(1);
@@ -116,18 +109,33 @@ function rotateRight () {
 function rotateLeft () {
     rotate(-1);
 }
-
-function sendMoveCommand () {
-    var object = findObject(cObject);
-    sendCommand({
-        type: 'move',
-        object: object.clone()
-    });
+function dirToVector(dir) {
+    var dirX = 0, dirY = 0;
+    switch (dir) {
+        case 1:
+            dirY = 1;
+            break;
+        case 2:
+            dirX = 1;
+            break;
+        case 3:
+            dirY = -1;
+            break;
+        case 4:
+            dirX = -1;
+            break;
+    }
+    return {
+        x: dirX,
+        y: dirY
+    };
 }
 
 function fire () {
     var i, source = findObject(cObject);
     println("fire" + source.actions);
+
+    if (checkGameOver()) return;
 
     if (!consumeActions(source, 1)) {
         log("Not enough actions to fire.");
@@ -139,45 +147,32 @@ function fire () {
         object: source.clone()
     });
 
-    switch (source.direction) {
-        case 1:
-            for (i = 0; i <= source.range; i++) {
-                checkCollision(cObject, source.x, source.y + i);
-            }
-            break;
-        case 2:
-            for (i = 0; i <= source.range; i++) {
-                checkCollision(cObject, source.x + i, source.y);
-            }
-            break;
-        case 3:
-            for (i = 0; i <= source.range; i++) {
-                checkCollision(cObject, source.x, source.y - i);
-            }
-            break;
-        case 4:
-            for (i = 0; i <= source.range; i++) {
-                checkCollision(cObject, source.x - i, source.y);
-            }
-            break;
-    }
-}
-function checkCollision (sourceId, x, y) {
-    var objects = level.objects;
-    for (var k = 0; k < objects.length; k++) {
-        if (objects[k].x === x && objects[k].y === y && objects[k].id !== sourceId) {
-            objects[k].life = 0;
+    var colidee, dirV = dirToVector(source.direction);
+
+    for (i=0; i <= source.range; i++) {
+        colidee = checkCollision(cObject, source.x + (i*dirV.x), source.y + (i*dirV.y));
+        if (colidee) {
+            colidee.life = 0;
             sendCommand({
                 type: 'die',
-                object: objects[k]
+                object: colidee.clone()
             });
         }
     }
 }
 
-function checkWinningCondition () {
-    return eval(level.winningCondition);
+function checkCollision(sourceId, x, y) {
+    var o, objects = level.objects;
+    for (var k=0; k < objects.length; k++) {
+        o = objects[k];
+        if (o.x === x && o.y === y && o.id !== sourceId &&
+            (o.collides === undefined || o.collides)) {
+            return objects[k];
+        }
+    }
+    return null;
 }
+
 var gameOverSent = false;
 function checkGameOver (cfg) {
     if (gameOverSent) {
@@ -185,11 +180,7 @@ function checkGameOver (cfg) {
     }
     if (eval(level.winningCondition)) {
         gameOverSent = true;
-        ret.push(cfg);
-        ret.push({
-            type: "log",
-            text: "You won!"
-        });
+        log("You won!");
         ret.push({
             type: "gameWon"
         });
