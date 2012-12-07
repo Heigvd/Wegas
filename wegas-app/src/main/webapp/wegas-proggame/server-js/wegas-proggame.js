@@ -132,10 +132,10 @@ function rotate (dir) {
         object: object.clone()
     });
 }
-function rotateRight () {
+function right () {
     rotate(1);
 }
-function rotateLeft () {
+function left () {
     rotate(-1);
 }
 
