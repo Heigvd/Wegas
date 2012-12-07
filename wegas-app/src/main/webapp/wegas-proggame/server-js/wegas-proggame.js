@@ -1,8 +1,7 @@
 var ret = [], cObject, level;
 
-function resetActions() {
-    var i;
-    for (i = 0; i < level.objects.length; i++) {
+function resetActions () {
+    for (var i = 0; i < level.objects.length; i++) {
         level.objects[i].actions = level.objects[i].defaultActions;
         sendCommand({
             type: "updated",
@@ -10,9 +9,8 @@ function resetActions() {
         });
     }
 }
-function run(playerFn, lvl) {
-    var i, j, o;
-
+function run (playerFn, lvl) {
+    var i;
     level = lvl;
 
     //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
@@ -58,7 +56,7 @@ function run(playerFn, lvl) {
 function sendCommand(cfg) {
     ret.push(cfg);
 }
-function log(text) {
+function log (text) {
     ret.push({
         type: 'log',
         text: text
@@ -117,7 +115,7 @@ function move() {
     }
 
 }
-function rotate(dir) {
+function rotate (dir) {
     var object = findObject(cObject);
 
     if (checkGameOver()) return;
@@ -134,14 +132,14 @@ function rotate(dir) {
         object: object.clone()
     });
 }
-function rotateRight() {
+function rotateRight () {
     rotate(1);
 }
-function rotateLeft() {
+function rotateLeft () {
     rotate(-1);
 }
 
-function fire() {
+function fire () {
     var i, source = findObject(cObject);
     println("fire" + source.actions);
 
@@ -184,7 +182,7 @@ function checkCollision(sourceId, x, y) {
 }
 
 var gameOverSent = false;
-function checkGameOver() {
+function checkGameOver (cfg) {
     if (gameOverSent) {
         return true;
     } else if (eval(level.winningCondition)) {
@@ -197,7 +195,7 @@ function checkGameOver() {
     }
     return false;
 }
-function findObject(id) {
+function findObject (id) {
     var objects = level.objects;
     for (var i = 0; i < objects.length; i = i + 1) {
         if (objects[i].id === id) {
@@ -206,13 +204,15 @@ function findObject(id) {
     }
     return null;
 }
-Object.prototype.clone = function() {
+Object.prototype.clone = function () {
     var newObj = (this instanceof Array) ? [] : {};
     for (var i in this) {
-        if (i == 'clone') continue;
+        if (i == 'clone')
+            continue;
         if (this[i] && typeof this[i] == "object") {
             newObj[i] = this[i].clone();
-        } else newObj[i] = this[i]
+        } else
+            newObj[i] = this[i]
     }
     return newObj;
 };
