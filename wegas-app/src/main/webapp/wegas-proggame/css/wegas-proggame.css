@@ -5,108 +5,132 @@
 }
 .layout {
     width:100%;
+    min-height:100%;
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 9pt;
-    background:#6e6e6e;
-    min-height:100%;
+
+    background:
+        url(../../wegas-proggame/images/proggame-footerbg.png) no-repeat bottom center,
+        url(../../wegas-proggame/images/clouds.jpg) repeat-x top center,
+        url(../../wegas-proggame/images/proggame-footerbg2.png) repeat-x bottom center,
+        url(../../wegas-proggame/images/bg-body.gif) repeat-x top center;
+
+}
+.layout h1,
+.wegas-label {
+    font-weight: bold;
+    font-size: 15px;
+    color: #7e8a00;
+}
+.layout > .wegas-list-content {
+    background:
+        url(../../wegas-proggame/images/proggame-leftbanner.png) no-repeat top left;
+    /*    url("../images/clouds.jpg")*/
+    /*    min-height:1140px;*/
+    width:960px;
+    margin:auto;
+/*    overflow:hidden;*/
+    padding-left: 250px;
+    padding-bottom:40px;
+}
+.layout > .wegas-list-content > div {
+    display: inline-block;
+    float: none;
 }
 .layout .yui3-button {
-    background-color: orange;
+    background-color: #7e8a00;
     font-weight: bold;
-}
-.layout .title {
-    font-size: 13px;
-    font-weight: bold;
-    padding: 6px 10px 0 0;
+    color: white;
 }
 .layout .yui3-button-selected {
     background-color: #6e6e6e;
 }
 .menu {
-    background:orange;
-    border-top: 1px solid gray;
-    padding: 2px 10px 1px;
-}
-.menu.wegas-list-horizontal > div {
-    border-right: 1px solid gray;
-    padding: 5px 10px;
-    border-right: 1px solid gray;
-    height:15px;
-}
-.menu .wegas-variabledisplay {
-    padding: 7px 15px 0 15px;
-}
-.menu .wegas-variabledisplay:after {
-    /*content: '$';*/
+    width: 188px;
+    margin-top: 91px;
+    margin-left: -230px;
+    padding-right: 17px;
 }
 .wegas-login {
-    padding:5px;
     float:right  !important;
-    cursor: pointer;
 }
 .body {
+    width: 100%;
+}
+.banner {
+    padding: 33px 0px 0 200px;
+    height: 63px;
+}
+.banner .yui3-button {
+    margin-right: 20px;
+    padding:10px 20px;
 }
 
 /* level styles */
 .wegas-proggame-level {
-    color:white;
 }
-.wegas-proggame-level-content {
-    padding-left:250px;
+
+.wegas-proggame-level .top {
+    /*    position: relative;*/
+    padding-right: 240px;
+    min-height: 250px
 }
-.wegas-proggame-level .left {
-    width:250px;
-    margin-left:-250px;
+.wegas-proggame-level .topcenter {
+    position: relative;
+    width: 100%;
 }
-.wegas-proggame-level .right {
-    width:100%;
+.wegas-proggame-level .topcenter h1 {
+    background: url(../../wegas-proggame/images/proggame-titlebg.png) no-repeat;
+    height: 50px;
+    padding: 12px 0 0 58px;
+    color: white;
+    text-shadow: 2px 2px 1px #ffb500;
 }
+
 .wegas-proggame-level .topright {
-    padding-right:250px;
+    margin-right: -240px;
+    width: 225px;
+    padding-left: 15px;
 }
+
 .wegas-proggame-level .topright .yui3-button {
     margin: 10px 0 0 0;
     padding: 4px 8px;
     font-size: 2em;
-    width: 240px;
+    width: 100%;
     font-weight: bolder;
 }
-.wegas-proggame-level .topcenter {
-    width:100%;
-}
-.wegas-proggame-level .toptopright {
-    width:250px;
-    margin-right:-250px;
-}
-.wegas-proggame-level .inventory,
-.wegas-proggame-level .api,
+.inventory,
+.api,
+.menu .wegas-variabledisplay,
+.wegas-proggame-level .terrain-ui,
 /*.wegas-proggame-level .terrain,*/
-.wegas-proggame-level .bottomright,
-.wegas-proggame-level .ai,
-.wegas-proggame-level .debugger,
-.wegas-proggame-level .code {
-    border: 1px solid orange;
-    margin:10px 10px 0px 10px;
+.bottomright,
+.ai,
+.debugger,
+.code {
+    border: 2px solid #7e8a00;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.8);
+    margin-top: 10px;
     padding:5px;
 }
+.menu .wegas-variabledisplay:after {
+    /*content: '$';*/
+}
 
-/* Terrain styles */
-.wegas-proggame-level .topcenter {
-    position: relative;
-}
-.wegas-proggame-level .topcenter h1 {
-    border: 1px solid orange;
-    position: absolute;
-    padding: 5px 10px;
-    margin-top: 10px;
-}
 
 /* Terrain UI */
+.wegas-proggame-level .ui {
+    position: absolute;
+    width: 100%;
+}
 .wegas-proggame-level .terrain-ui {
     position: absolute;
-    top: 50px;
+    top: 40px;
     width: 150px;
     padding: 5px;
+    color: #7e8a00;
 }
 .wegas-proggame-level .player-ui {
     left:0;
@@ -117,7 +141,7 @@
 }
 .wegas-proggame-level .terrain-ui .life {
     width: 100%;
-    border: 1px solid orange;
+    border: 1px solid #7e8a00;
     border-radius: 3px;
 }
 .wegas-proggame-level .enemy-ui .life span{
@@ -126,55 +150,40 @@
 .wegas-proggame-level .terrain-ui .life span {
     display:block;
     height:10px;
-    background: lightgray;
+    background: white;
 }
 .wegas-proggame-level .terrain-ui .actions span {
     display: inline-block;
-    background: lightgray;
-    margin-right: 2px;
+    background: white;
+    margin-right: 1px;
     height: 7px;
     width: 7px;
-    border: 1px solid orange;
+    border: 1px solid #7e8a00;
     border-radius: 2px;
 }
 
 .wegas-proggame-level .terrain {
-    margin-top: 10px;
-}
-.wegas-proggame-level .inventory,
-.wegas-proggame-level .api {
-    margin-left: 10px;
-}
-.wegas-proggame-level .code {
-    margin-bottom: 10px;
-    margin-right: 10px;
-}
-.wegas-proggame-level .inventory {
-    height:140px;
-}
-.wegas-proggame-level h1 {
-    font-weight: bold;
-    font-size: 15px;
-    color: orange;
+    padding-top: 50px;
 }
 
 /* Code input styles */
-.wegas-proggame-level .code {
-    position: relative;
-    border: 1px solid orange;
-    height: 200px;
-    background: white;
-}
 .wegas-proggame-level .code h1{
-    padding-bottom:5px;
+    /*    padding-bottom:5px;*/
+}
+.wegas-proggame-level .code-content {
+    margin-top: 5px;
+    position: relative;
+    border: 1px solid #7e8a00;
+    height: 150px;
+    background: white;
 }
 .wegas-proggame-level div.inputEx-Field {
     float:none;
 }
 .wegas-proggame-level .ace-tm .ace_gutter {
     background: #6e6e6e;
-    color: orange;
-    border-right: 1px solid orange;
+    color: #7e8a00;
+    border-right: 1px solid #7e8a00;
 }
 
 .wegas-proggame-level .ace_text-layer {
@@ -200,7 +209,7 @@
     width: 30px;
     height: 30px;
     font-size: 1px;
-    border: 1px solid orange;
+    border: 1px solid #7e8a00;
 }
 .yui3-wegas-proggame-display .object-layer {
     position: relative;
@@ -246,15 +255,16 @@
 }
 
 #cr-stage{
-    border: 1px solid orange;
+    border: 3px solid #7E8A00;
+    border-radius: 6px;
 }
 
 .wegas-proggame-code,
 .wegas-proggame-def {
     margin: 10px 0;
-    border: 1px solid orange;
+    border: 1px solid #7e8a00;
     background:darkgray;
-    padding: 5px 8px;
+    padding: 10px;
 }
 .wegas-proggame-code {
     font-family: monospace;
