@@ -96,8 +96,13 @@
         "winningCondition": "level.objects[0].x===level.objects[1].x && level.objects[0].y===level.objects[1].y",
         "onWin": "currentLevel.value=4",
         "cssClass": "wegas-proggame-level",
-        "gridW": 6,
-        "gridH": 6,
+        "map": [
+            ["g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g"],
+            ["e", "e", "e", "e", "e"],
+            ["g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g"]
+        ],
         "api": [{
             "name": "move"
         }],
@@ -105,8 +110,8 @@
             "id": "Player",
             "type": "pc",
             "direction": 2,
-            "x": 1,
-            "y": 3,
+            "x": 0,
+            "y": 2,
             "life": 100,
             "actions": 20,
             "range": 3
@@ -115,7 +120,7 @@
             "direction": 4,
             "type": "npc",
             "x": 4,
-            "y": 3,
+            "y": 2,
             "life": 100,
             "actions": 0,
             "range": 2,
@@ -136,8 +141,17 @@
         "winningCondition": "level.objects[0].x===level.objects[1].x && level.objects[0].y===level.objects[1].y",
         "onWin": "currentLevel.value=5",
         "cssClass": "wegas-proggame-level",
-        "gridW": 7,
-        "gridH": 7,
+        "map": [
+            ["w", "w", "w", "w", "w", "w", "w"],
+            ["g", "g", "g", "g", "g", "g", "g"],
+            ["g", "g", "e", "e", "e", "g", "g"],
+            ["g", "g", "e", "g", "e", "g", "g"],
+            ["e", "e", "e", "g", "e", "e", "e"],
+            ["g", "g", "e", "g", "e", "g", "g"],
+            ["g", "g", "e", "e", "e", "g", "g"],
+            ["g", "g", "g", "g", "g", "g", "g"],
+            ["w", "w", "w", "w", "w", "w", "w"]
+        ],
         "api": [{
             "name": "move"
         }, {
@@ -150,7 +164,7 @@
             "type": "pc",
             "direction": 2,
             "x": 1,
-            "y": 3,
+            "y": 4,
             "life": 100,
             "actions": 20,
             "range": 3
@@ -159,7 +173,7 @@
             "direction": 4,
             "type": "npc",
             "x": 5,
-            "y": 3,
+            "y": 4,
             "life": 100,
             "actions": 0,
             "range": 2,
@@ -168,8 +182,8 @@
             "id": "Bloc1",
             "direction": 4,
             "type": "npc",
-            "x": 4,
-            "y": 3,
+            "x": 3,
+            "y": 4,
             "life": 100,
             "actions": 0,
             "range": 2
@@ -177,8 +191,8 @@
             "id": "Bloc2",
             "direction": 4,
             "type": "npc",
-            "x": 4,
-            "y": 2,
+            "x": 3,
+            "y": 3,
             "life": 100,
             "actions": 0,
             "range": 2
@@ -186,8 +200,8 @@
             "id": "Bloc3",
             "direction": 4,
             "type": "npc",
-            "x": 4,
-            "y": 4,
+            "x": 3,
+            "y": 5,
             "life": 100,
             "actions": 0,
             "range": 2
@@ -208,8 +222,6 @@
         "winningCondition": "level.objects[0].life===0",
         "onWin": "currentLevel.value=7;money.value+=500;",
         "cssClass": "wegas-proggame-level",
-        "gridW": 9,
-        "gridH": 7,
         "api": [{
             "name": "move"
         }, {
@@ -237,6 +249,17 @@
             "life": 100,
             "range": 3
         }],
+        "map": [
+            ["w", "w", "w", "w", "w", "w", "w"],
+            ["g", "g", "g", "g", "g", "g", "g"],
+            ["g", "g", "e", "e", "e", "g", "g"],
+            ["g", "g", "e", "g", "e", "g", "g"],
+            ["e", "e", "e", "g", "e", "e", "e"],
+            ["g", "g", "e", "g", "e", "g", "g"],
+            ["g", "g", "e", "e", "e", "g", "g"],
+            ["g", "g", "g", "g", "g", "g", "g"],
+            ["w", "w", "w", "w", "w", "w", "w"]
+        ],
         "plugins": [{
             "fn": "PopupPlg",
             "cfg": {
