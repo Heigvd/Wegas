@@ -33,8 +33,8 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         + '<div class="yui3-u topcenter">'
         + '<div class="ui"><h1></h1>'
-        + '<div class="terrain-ui player-ui">Life<div class="life"><span /></div>Actions<div class="actions"></div></div>'
-        + '<div class="terrain-ui enemy-ui">Life<div class="life"><span></span><div class="cl"></div></div>Actions<div class="actions"></div></div>'
+        + '<div class="terrain-ui player-ui"></div>'
+        + '<div class="terrain-ui enemy-ui"></div>'
         + '</div>'
         + '<div class="terrain"></div>'
         + '</div>'
@@ -75,9 +75,11 @@ YUI.add('wegas-proggame-level', function (Y) {
             cb.one(".topcenter h1").setHTML(this.get("label"));
             cb.one(".arguments").setHTML(this.get("arguments").join(", "));
 
+            var acc = ["<h1>API</h1>"];
             for (i = 0; i < api.length; i += 1) {
-                Y.one(".api").setHTML("<h1>API</h1>" + (METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
+                acc.push((METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
             }
+            Y.one(".api").setHTML(acc.join(""));
 
             this.display = new Y.Wegas.ProgGameDisplay(this.toObject());
             this.display.render(cb.one(".terrain"));
@@ -116,7 +118,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                 cfg: {
                     method: "POST",
                     data: "JSON.stringify(run("
-                    + "function (name) {" + this.aceField.getValue() + "}, "
+                    + "function (name) {" + this.aceField.getValue() + "\n}, "
                     + Y.JSON.stringify(this.toObject()) + "));"
                 },
                 on: {
@@ -235,12 +237,22 @@ YUI.add('wegas-proggame-level', function (Y) {
 
             function updateUI(object, el) {
                 var i, acc = [];
-                for (i = 0; i < object.actions; i += 1) {
-                    acc.push("<span></span>");
+                if (!Y.Lang.isUndefined(object.life)) {
+                    acc.push("Life<div class=\"life\"><span style=\"width:" +object.life + "%;\" ></span></div>")
                 }
-
-                el.one(".life span").setStyle("width", object.life + "%");
-                el.one(".actions").setHTML(acc.join(""));
+                if (!Y.Lang.isUndefined(object.actions)) {
+                    acc.push("Actions<div class=\"actions\">")
+                    for (i = 0; i < object.actions; i += 1) {
+                        acc.push("<span></span>");
+                    }
+                    acc.push("</div>");
+                }
+                el.setHTML(acc.join(""));
+                if (acc.length === 0) {
+                    el.hide();
+                } else {
+                    el.show();
+                }
             }
             updateUI.call(this, this.findObject("Player"), cb.one(".player-ui"));
             updateUI.call(this, this.findObject("Enemy"), cb.one(".enemy-ui"));

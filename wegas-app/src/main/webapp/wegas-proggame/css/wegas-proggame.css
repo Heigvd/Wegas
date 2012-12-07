@@ -25,13 +25,11 @@
 .layout > .wegas-list-content {
     background:
         url(../../wegas-proggame/images/proggame-leftbanner.png) no-repeat top left;
-    /*    url("../images/clouds.jpg")*/
-    /*    min-height:1140px;*/
     width:960px;
     margin:auto;
-/*    overflow:hidden;*/
     padding-left: 250px;
     padding-bottom:40px;
+    min-height: 481px;
 }
 .layout > .wegas-list-content > div {
     display: inline-block;
@@ -62,7 +60,7 @@
     height: 63px;
 }
 .banner .yui3-button {
-    margin-right: 20px;
+    margin-left: 20px;
     padding:10px 20px;
 }
 
