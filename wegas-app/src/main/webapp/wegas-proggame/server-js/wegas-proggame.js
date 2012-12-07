@@ -16,9 +16,13 @@ function run(playerFn, lvl) {
     level = lvl;
 
     //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
-    
+
     for (i = 0; i < level.objects.length; i += 1) {
         level.objects[i].defaultActions = level.objects[i].actions;
+    }
+
+    if (level.onStart) {
+        eval(level.onStart);
     }
 
     for (i = 0; i < level.maxTurns; i += 1) {
@@ -38,7 +42,7 @@ function run(playerFn, lvl) {
             if (o.id === "Player") {
                 log('Player turn');
                 cObject = 'Player';
-                playerFn();
+                playerFn.apply(this, values(getArgs()));
             }
         }
 
@@ -59,6 +63,13 @@ function log(text) {
         type: 'log',
         text: text
     });
+}
+var args = {};
+function pushArg(name, val) {
+    args[name] = val;
+}
+function getArgs() {
+    return args;
 }
 function consumeActions(object, actions) {
     if (object.actions - actions < 0) {
@@ -226,4 +237,11 @@ function dirToVector(dir) {
         x: dirX,
         y: dirY
     };
+}
+function values(object) {
+    var ret = [], i;
+    for (i in object) {
+        ret.push(object[i]);
+    }
+    return ret;
 }

@@ -28,29 +28,28 @@ YUI.add('wegas-proggame-level', function (Y) {
         display: null,
         runButton: null,
         commandsStack: null,
-        CONTENT_TEMPLATE: '<div class="yui3-g">'
+        CONTENT_TEMPLATE: '<div>'
+        + '<div class="yui3-g top">'
 
-        + '<div class="yui3-u left">'
-        + '<div class="inventory"><h1>Inventory</h1><i><center style="padding-top:40px;">empty</center></i></div>'
-        + '<div class="api"><h1>Api</h1></div>'
-        + '</div>'
-
-        + '<div class="yui3-u right">'
-        + '<div class="yui3-g topright">'
-        + '<div class="yui3-u topcenter"><h1></h1>'
+        + '<div class="yui3-u topcenter">'
+        + '<div class="ui"><h1></h1>'
         + '<div class="terrain-ui player-ui">Life<div class="life"><span /></div>Actions<div class="actions"></div></div>'
         + '<div class="terrain-ui enemy-ui">Life<div class="life"><span></span><div class="cl"></div></div>Actions<div class="actions"></div></div>'
-        + '<div class="terrain"></div></div>'
-        + '<div class="yui3-u toptopright">'
+        + '</div>'
+        + '<div class="terrain"></div>'
+        + '</div>'
+
+
+        + '<div class="yui3-u topright">'
         + '<div class="buttons"></div>'
         + '<div class="ai"><h1>Enemy A.I.</h1></div>'
         + '<div class="debugger"><h1>Log</h1></div>'
         + '</div>'
         + '</div>'
 
-        + '<div class="code"><h1>Your code</h1></div>'
-        + '</div>'
-        + '<div style="clear:both"></div>',
+        + '<div class="code"><h1>public void main(<span class="arguments"></span>) {</h1><div class="code-content"></div><h1>}</h1></div>'
+
+        + '</div>',
 
         // *** Lifecycle Methods *** //
         initializer: function () {
@@ -64,7 +63,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             }, api = this.get("api");
 
             this.aceField = new Y.inputEx.AceField({
-                parentEl: cb.one(".code"),
+                parentEl: cb.one(".code-content"),
                 name: 'text',
                 type: 'ace',
                 height: "300px",
@@ -72,12 +71,12 @@ YUI.add('wegas-proggame-level', function (Y) {
                 value: "//Put your code here..."
             });
 
-console.log("e", this.findObject("Enemy"));
             cb.one(".ai").append(Y.Wegas.App.nl2br(this.findObject("Enemy").ai || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
+            cb.one(".arguments").setHTML(this.get("arguments").join(", "));
 
             for (i = 0; i < api.length; i += 1) {
-                cb.one(".api").append((METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
+                Y.one(".api").setHTML("<h1>API</h1>" + (METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
             }
 
             this.display = new Y.Wegas.ProgGameDisplay(this.toObject());
@@ -116,7 +115,8 @@ console.log("e", this.findObject("Enemy"));
                 request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
-                    data: "JSON.stringify(run(function () {" + this.aceField.getValue() + "}, "
+                    data: "JSON.stringify(run("
+                    + "function (name) {" + this.aceField.getValue() + "}, "
                     + Y.JSON.stringify(this.toObject()) + "));"
                 },
                 on: {
@@ -256,7 +256,12 @@ console.log("e", this.findObject("Enemy"));
                     _type: "object"
                 }
             },
+            arguments: {
+                type: "array",
+                value: []
+            },
             api: {
+                type: "array",
                 value: []
             },
             maxTurns: {
@@ -269,14 +274,21 @@ console.log("e", this.findObject("Enemy"));
                     label: "Max turns"
                 }
             },
-            ai: {
+            winningCondition: {
                 type: "string",
                 format: "text"
             //                _inputex: {
             //                    _type: "ace"
             //                }
             },
-            winningCondition: {
+            onStart: {
+                type: "string",
+                format: "text"
+            //                _inputex: {
+            //                    _type: "ace"
+            //                }
+            },
+            onTurn: {
                 type: "string",
                 format: "text"
             //                _inputex: {

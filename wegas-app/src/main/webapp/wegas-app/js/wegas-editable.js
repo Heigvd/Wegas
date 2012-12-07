@@ -191,7 +191,9 @@ YUI.add('wegas-editable', function (Y) {
             module = YUI_config.groups.wegas.modulesByType[type],
             modules = [],
             pushFn = function (field) {
-                modules = modules.concat(Editable.getModulesFromDefinition(field));
+                if (field) {
+                    modules = modules.concat(Editable.getModulesFromDefinition(field));
+                }
             };
 
             if (module) {
