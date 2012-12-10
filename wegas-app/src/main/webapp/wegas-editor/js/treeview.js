@@ -109,7 +109,7 @@ YUI.add('treeview', function(Y) {
         },
         renderUI: function() {
             var bb = this.get(BOUNDING_BOX), cb = this.get(CONTENT_BOX), header;
-            header = Y.Node.create("<div class='" + this.getClassName("content", "header") + "'></div>");
+            header = Y.Node.create("<div class='content-header " + this.getClassName("content", "header") + "'></div>");
             bb.insertBefore(header, this.get(CONTENT_BOX));
             this.toggleNode = Y.Node.create("<span class='" + this.getClassName("content", "toggle") + "'></span>");
             this.iconNode = Y.Node.create("<span class='" + this.getClassName("content", "icon") + "'></span>");
@@ -331,7 +331,7 @@ YUI.add('treeview', function(Y) {
         },
         renderUI: function() {
             var cb = this.get(CONTENT_BOX), header;
-            header = Y.Node.create("<div class='" + this.getClassName("content", "header") + "'></div>");
+            header = Y.Node.create("<div class='content-header " + this.getClassName("content", "header") + "'></div>");
             cb.append(header);
             this.iconNode = Y.Node.create("<span class='" + this.getClassName("content", "icon") + "'></span>");
             this.labelNode = Y.Node.create("<span class='" + this.getClassName("content", "label") + "'></span>");
