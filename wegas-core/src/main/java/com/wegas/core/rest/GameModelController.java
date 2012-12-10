@@ -11,6 +11,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -61,6 +62,24 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
         s.checkPermission("GameModel:Edit:gm" + entityId);
 
         return super.update(entityId, entity);
+    }
+    
+    @Override
+    public GameModel duplicate(Long entityId) throws IOException{
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("GameModel:Duplicate:gm" + entityId);
+        
+        return super.duplicate(entityId);
+    }
+    
+    @Override
+    public GameModel delete(Long entityId){
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("GameModel:Delete:gm" + entityId);
+        
+        return super.delete(entityId); 
     }
     
     @Override
