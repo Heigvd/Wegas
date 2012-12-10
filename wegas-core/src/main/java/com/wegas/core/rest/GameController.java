@@ -18,16 +18,18 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
-import javax.persistence.NoResultException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -68,17 +70,48 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      * @return
      */
     @Override
-    public Collection<Game> index() {
+    public Collection<Game> index() {        
         GameModel gameModel = gameModelEntityFacade.find(new Long(this.getPathParam("gameModelId")));
-        return gameModel.getGames();
+        Collection<Game> game = new ArrayList<>(gameModel.getGames());
+        
+        for (Game aG : gameModel.getGames()){
+            Subject s = SecurityUtils.getSubject();
+            boolean isPermitted = s.isPermitted("Game:View:g" + aG.getId());
+            if (!isPermitted){
+                game.remove(aG);
+            }
+        }
+        return game;
+        //return gameModel.getGames();
     }
 
     @Override
     public Game create(Game entity) {
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("Game:Create");
+        
         this.gameFacade.create(new Long(this.getPathParam("gameModelId")), entity);
         return entity;
     }
 
+    @Override
+    public Game update(Long entityId, Game entity){
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("Game:Edit:g" + entityId);
+        
+        return super.update(entityId, entity);
+    }
+    
+    @Override
+    public Game delete(Long entityId){
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("Game:Edit:g" + entityId);
+        
+        return super.delete(entityId);
+    }
     /**
      * This method process a string token. It checks if the given token
      * corresponds to a game and then to a team, and return the corresponding
