@@ -63,7 +63,7 @@ YUI.add('wegas-tabview', function (Y) {
          */
         findTabAndLoadWidget: function (id, tabViewSelector, tabCfg, widgetCfg, fn) {
             var tab = TabView.getTab(id),                                       // Look for the tab
-            nTab = tab = TabView.createTab(id, tabViewSelector, tabCfg);        // create a new one
+            nTab = TabView.createTab(id, tabViewSelector, tabCfg);        // create a new one
             if (!tab || tab.get("destroyed")) {                                 // If it does not exist,
                 nTab.load(widgetCfg, fn);                                       // and load the widget in it.
             } else {                                                            // Otherwise,
