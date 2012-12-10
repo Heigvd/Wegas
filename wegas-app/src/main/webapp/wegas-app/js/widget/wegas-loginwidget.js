@@ -115,11 +115,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             var cb = this.get(CONTENTBOX);
 
             cb.one(".alt-link").on("click", this.toggleMode, this);
-            this.on("keypress", function(e) {
-                if (e.domEvent.which === 13) {                                  /* 13: Enter */
-                    this.loginButton.fire("click");
-                }
-            });
+
             this.loginButton.on("click", function(e) {                      // join a game based on a token
 
                 if (this.get("mode") === "login") {
@@ -153,6 +149,11 @@ YUI.add('wegas-loginwidget', function(Y) {
                     });
                 }
             }, this);
+            this.on("keypress", function(e) {
+                if(e.domEvent.keyCode === 13){
+                    this.loginButton.fire("click");
+                }
+            });
         },
         syncUI: function() {
             this.set("mode", this.get("mode"));
@@ -188,8 +189,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             window.location = this.getRedirect();
         },
         getRedirect: function() {
-            return this.getQueryParameter("redirect") ||
-                    (Y.Wegas.app.get("base") + this.defaultRedirect);
+            return this.getQueryParameter("redirect") || (Y.Wegas.app.get("base") + this.defaultRedirect);
         },
         /**
          * Returns a parameter from the GET parameters.
