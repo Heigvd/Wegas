@@ -286,6 +286,9 @@ YUI.add('wegas-proggame-level', function (Y) {
             },
             map: {
                 validator: Y.Lang.isArray
+            },
+            mapObjects: {
+                validator: Y.Lang.isArray
             }
         }
     });
