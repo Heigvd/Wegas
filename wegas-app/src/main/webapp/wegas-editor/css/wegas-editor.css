@@ -320,7 +320,7 @@ body {
 .wegas-pageeditor-overlay-hidden {
     display: none;
 }
-.wegas-pageeditor-overlay {
+.yui3-skin-sam .wegas-pageeditor-overlay {
     position: absolute;
     pointer-events: none;
 }
