@@ -108,7 +108,8 @@ YUI.add('wegas-pageloader', function(Y) {
                 type: "string",
                 _inputex: {
                     label: "Default page",
-                    _type: "pageselect"
+                    _type: "pageselect",
+                    required: false
                 }
             },
             pageId: {
