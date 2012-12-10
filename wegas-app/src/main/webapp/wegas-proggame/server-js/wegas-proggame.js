@@ -13,39 +13,47 @@ function run (playerFn, lvl) {
     var i;
     level = lvl;
 
-    for (i = 0; i < level.objects.length; i++) {
+    //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
+
+    for (i = 0; i < level.objects.length; i += 1) {
         level.objects[i].defaultActions = level.objects[i].actions;
     }
 
-    for (i = 0; i < level.maxTurns; i++) {
+    if (level.onStart) {
+        eval(level.onStart);
+    }
 
-        if (checkGameOver()) continue;
+    for (i = 0; i < level.maxTurns; i += 1) {
 
         log('Turn ' + (i + 1));
 
-        resetActions();
+        for (j = 0; j < level.objects.length; j += 1) {
 
-        cObject = 'Player';
-        log('Player turn');
-        playerFn();
+            if (checkGameOver()) continue;
 
-        if (checkGameOver()) continue;
-
-        if (level.ai) {
-            cObject='Enemy';
-            log('Enemy turn');
-            eval(level.ai);
+            o = level.objects[j];
+            if (o.ai) {
+                log(o.id + ' turn');
+                cObject = o.id;
+                eval(o.ai);
+            }
+            if (o.id === "Player") {
+                log('Player turn');
+                cObject = 'Player';
+                playerFn.apply(this, values(getArgs()));
+            }
         }
+
+        resetActions();
     }
     if (!checkGameOver()) {
         log('It\'s lost.');
     }
 
-    //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
     return ret;
 }
 
-function sendCommand (cfg) {
+function sendCommand(cfg) {
     ret.push(cfg);
 }
 function log (text) {
@@ -53,6 +61,13 @@ function log (text) {
         type: 'log',
         text: text
     });
+}
+var args = {};
+function pushArg(name, val) {
+    args[name] = val;
+}
+function getArgs() {
+    return args;
 }
 function consumeActions(object, actions) {
     if (object.actions - actions < 0) {
@@ -62,17 +77,31 @@ function consumeActions(object, actions) {
     object.actions -= actions;
     return true;
 }
-
-function move () {
+var said = "";
+function say(msg) {
     var object = findObject(cObject);
 
     if (checkGameOver()) return;
 
+    /*if (!consumeActions(object, 1)) {
+        log("Not enough actions to say something");
+        return;
+    }*/
+
+    log(object.id + " says \"" + msg + "\"" );
+    said = msg;
+}
+
+function move() {
+    var object = findObject(cObject),
+    moveV = dirToVector(object.direction);
+
+    if (checkGameOver()) return;
+
     if (!consumeActions(object, 1)) {
-        log("Not enough actions to move.");
+        log("Not enough actions to move");
         return;
     }
-    var moveV = dirToVector(object.direction);
 
     if (checkCollision(cObject, object.x + moveV.x, object.y + moveV.y)) {
         log("Something is blocking the way");
@@ -103,32 +132,11 @@ function rotate (dir) {
         object: object.clone()
     });
 }
-function rotateRight () {
+function right () {
     rotate(1);
 }
-function rotateLeft () {
+function left () {
     rotate(-1);
-}
-function dirToVector(dir) {
-    var dirX = 0, dirY = 0;
-    switch (dir) {
-        case 1:
-            dirY = 1;
-            break;
-        case 2:
-            dirX = 1;
-            break;
-        case 3:
-            dirY = -1;
-            break;
-        case 4:
-            dirX = -1;
-            break;
-    }
-    return {
-        x: dirX,
-        y: dirY
-    };
 }
 
 function fire () {
@@ -149,8 +157,8 @@ function fire () {
 
     var colidee, dirV = dirToVector(source.direction);
 
-    for (i=0; i <= source.range; i++) {
-        colidee = checkCollision(cObject, source.x + (i*dirV.x), source.y + (i*dirV.y));
+    for (i = 0; i <= source.range; i++) {
+        colidee = checkCollision(cObject, source.x + (i * dirV.x), source.y + (i * dirV.y));
         if (colidee) {
             colidee.life = 0;
             sendCommand({
@@ -162,8 +170,8 @@ function fire () {
 }
 
 function checkCollision(sourceId, x, y) {
-    var o, objects = level.objects;
-    for (var k=0; k < objects.length; k++) {
+    var o, k, objects = level.objects;
+    for (k=0; k < objects.length; k++) {
         o = objects[k];
         if (o.x === x && o.y === y && o.id !== sourceId &&
             (o.collides === undefined || o.collides)) {
@@ -177,8 +185,7 @@ var gameOverSent = false;
 function checkGameOver (cfg) {
     if (gameOverSent) {
         return true;
-    }
-    if (eval(level.winningCondition)) {
+    } else if (eval(level.winningCondition)) {
         gameOverSent = true;
         log("You won!");
         ret.push({
@@ -209,3 +216,32 @@ Object.prototype.clone = function () {
     }
     return newObj;
 };
+// *** Utilities *** //
+function dirToVector(dir) {
+    var dirX = 0, dirY = 0;
+    switch (dir) {
+        case 1:
+            dirY = 1;
+            break;
+        case 2:
+            dirX = 1;
+            break;
+        case 3:
+            dirY = -1;
+            break;
+        case 4:
+            dirX = -1;
+            break;
+    }
+    return {
+        x: dirX,
+        y: dirY
+    };
+}
+function values(object) {
+    var ret = [], i;
+    for (i in object) {
+        ret.push(object[i]);
+    }
+    return ret;
+}

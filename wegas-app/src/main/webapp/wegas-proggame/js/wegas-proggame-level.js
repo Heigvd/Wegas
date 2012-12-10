@@ -28,39 +28,42 @@ YUI.add('wegas-proggame-level', function (Y) {
         display: null,
         runButton: null,
         commandsStack: null,
-        CONTENT_TEMPLATE: '<div class="yui3-g">'
+        CONTENT_TEMPLATE: '<div>'
+        + '<div class="yui3-g top">'
 
-        + '<div class="yui3-u left">'
-        + '<div class="inventory"><h1>Inventory</h1><i><center style="padding-top:40px;">empty</center></i></div>'
-        + '<div class="api"><h1>Api</h1></div>'
+        + '<div class="yui3-u topcenter">'
+        + '<div class="ui"><h1></h1>'
+        + '<div class="terrain-ui player-ui"></div>'
+        + '<div class="terrain-ui enemy-ui"></div>'
+        + '</div>'
+        + '<div class="terrain"></div>'
         + '</div>'
 
-        + '<div class="yui3-u right">'
-        + '<div class="yui3-g topright">'
-        + '<div class="yui3-u topcenter"><h1></h1>'
-        + '<div class="terrain-ui player-ui">Life<div class="life"><span /></div>Actions<div class="actions"></div></div>'
-        + '<div class="terrain-ui enemy-ui">Life<div class="life"><span></span><div class="cl"></div></div>Actions<div class="actions"></div></div>'
-        + '<div class="terrain"></div></div>'
-        + '<div class="yui3-u toptopright">'
+
+        + '<div class="yui3-u topright">'
         + '<div class="buttons"></div>'
         + '<div class="ai"><h1>Enemy A.I.</h1></div>'
         + '<div class="debugger"><h1>Log</h1></div>'
         + '</div>'
         + '</div>'
 
-        + '<div class="code"><h1>Your code</h1></div>'
-        + '</div>'
-        + '<div style="clear:both"></div>',
+        + '<div class="code"><h1>public void main(<span class="arguments"></span>) {</h1><div class="code-content"></div><h1>}</h1></div>'
+
+        + '</div>',
 
         // *** Lifecycle Methods *** //
         initializer: function () {
             this.handlers = {};
+            this.objects = this.get("objects");
         },
         renderUI: function () {
-            var i, cb = this.get(CONTENTBOX);
+            var i, cb = this.get(CONTENTBOX),
+            METHODTOTEXT = {
+                say: "say(text: String)"
+            }, api = this.get("api");
 
             this.aceField = new Y.inputEx.AceField({
-                parentEl: cb.one(".code"),
+                parentEl: cb.one(".code-content"),
                 name: 'text',
                 type: 'ace',
                 height: "300px",
@@ -68,12 +71,15 @@ YUI.add('wegas-proggame-level', function (Y) {
                 value: "//Put your code here..."
             });
 
-            cb.one(".ai").append(Y.Wegas.App.nl2br(this.get("ai") || "<center><i>empty</i></center>"));
+            cb.one(".ai").append(Y.Wegas.App.nl2br(this.findObject("Enemy").ai || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
+            cb.one(".arguments").setHTML(this.get("arguments").join(", "));
 
-            for (i = 0; i < this.get("api").length; i += 1) {
-                cb.one(".api").append(this.get("api")[i].name + "() <br />");
+            var acc = ["<h1>API</h1>"];
+            for (i = 0; i < api.length; i += 1) {
+                acc.push((METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
             }
+            Y.one(".api").setHTML(acc.join(""));
 
             this.display = new Y.Wegas.ProgGameDisplay(this.toObject());
             this.display.render(cb.one(".terrain"));
@@ -111,7 +117,8 @@ YUI.add('wegas-proggame-level', function (Y) {
                 request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
-                    data: "JSON.stringify(run(function () {" + this.aceField.getValue() + "}, "
+                    data: "JSON.stringify(run("
+                    + "function (name) {" + this.aceField.getValue() + "\n}, "
                     + Y.JSON.stringify(this.toObject()) + "));"
                 },
                 on: {
@@ -165,7 +172,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.consumeCommand();
         },
 
-        findObjectById: function (id) {
+        findObject: function (id) {
             return Y.Array.find(this.objects, function (o) {
                 return o.id === id;
             });
@@ -180,13 +187,13 @@ YUI.add('wegas-proggame-level', function (Y) {
 
                     case "move":
                     case "fire":
-                        Y.mix(this.findObjectById(command.object.id),           // Update target object cfg
+                        Y.mix(this.findObject(command.object.id),           // Update target object cfg
                             command.object, true);
                         this.syncFrontUI();
                         break;
 
                     case "updated":
-                        Y.mix(this.findObjectById(command.object.id),           // Update target object cfg
+                        Y.mix(this.findObject(command.object.id),           // Update target object cfg
                             command.object, true);
                         this.syncFrontUI();
                         this.consumeCommand();
@@ -230,15 +237,25 @@ YUI.add('wegas-proggame-level', function (Y) {
 
             function updateUI(object, el) {
                 var i, acc = [];
-                for (i = 0; i < object.actions; i += 1) {
-                    acc.push("<span></span>");
+                if (!Y.Lang.isUndefined(object.life)) {
+                    acc.push("Life<div class=\"life\"><span style=\"width:" +object.life + "%;\" ></span></div>")
                 }
-
-                el.one(".life span").setStyle("width", object.life + "%");
-                el.one(".actions").setHTML(acc.join(""));
+                if (!Y.Lang.isUndefined(object.actions)) {
+                    acc.push("Actions<div class=\"actions\">")
+                    for (i = 0; i < object.actions; i += 1) {
+                        acc.push("<span></span>");
+                    }
+                    acc.push("</div>");
+                }
+                el.setHTML(acc.join(""));
+                if (acc.length === 0) {
+                    el.hide();
+                } else {
+                    el.show();
+                }
             }
-            updateUI.call(this, this.objects[0], cb.one(".player-ui"));
-            updateUI.call(this, this.objects[1], cb.one(".enemy-ui"));
+            updateUI.call(this, this.findObject("Player"), cb.one(".player-ui"));
+            updateUI.call(this, this.findObject("Enemy"), cb.one(".enemy-ui"));
         }
 
     }, {
@@ -251,7 +268,12 @@ YUI.add('wegas-proggame-level', function (Y) {
                     _type: "object"
                 }
             },
+            arguments: {
+                type: "array",
+                value: []
+            },
             api: {
+                type: "array",
                 value: []
             },
             maxTurns: {
@@ -264,14 +286,21 @@ YUI.add('wegas-proggame-level', function (Y) {
                     label: "Max turns"
                 }
             },
-            ai: {
+            winningCondition: {
                 type: "string",
                 format: "text"
             //                _inputex: {
             //                    _type: "ace"
             //                }
             },
-            winningCondition: {
+            onStart: {
+                type: "string",
+                format: "text"
+            //                _inputex: {
+            //                    _type: "ace"
+            //                }
+            },
+            onTurn: {
                 type: "string",
                 format: "text"
             //                _inputex: {
