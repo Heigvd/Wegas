@@ -64,13 +64,12 @@
             <properties>
                 <build.optimize>true</build.optimize>
                 <resources.local>false</resources.local>
+                <wegas.debug>false</wegas.debug>
             </properties>
         </profile>
     </profiles>
 
     <dependencies>
-
-
         <dependency>
             <artifactId>commons-logging</artifactId>
             <groupId>commons-logging</groupId>
