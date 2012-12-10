@@ -1,4 +1,4 @@
-{"1":{
+{"1": {
         "id": 1,
         "label": "Main layout",
         "type": "List",
@@ -11,32 +11,32 @@
                 "children": [{
                         "type": "VariableDisplay",
                         "label": "Semaine N° : ",
-                        "cssClass":"indicators-fraction",
+                        "cssClass": "indicators-fraction",
                         "view": "fraction",
                         "variable": {
                             "name": "week"
                         }
-                    },{
+                    }, {
                         "type": "Button",
                         "label": ">",
-                        "tooltip":"Semaine suivante",
+                        "tooltip": "Semaine suivante",
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
                                     "onClick": "importPackage(com.wegas.core.script);\nthis.finishCurrentWeek()\n"
                                 }
                             }]
-                    },{
+                    }, {
                         "type": "VariableDisplay",
                         "label": "Budget : ",
-                        "cssClass":"indicators-text",
+                        "cssClass": "indicators-text",
                         "view": "text",
                         "variable": {
                             "name": "budget"
                         }
-                    },{
+                    }, {
                         "type": "VariableDisplay",
-                        "cssClass":"indicators-gauge",
+                        "cssClass": "indicators-gauge",
                         "label": "Motivation générale",
                         "variable": {
                             "name": "teamMotivation"
@@ -45,7 +45,7 @@
                     },
                     {
                         "type": "VariableDisplay",
-                        "cssClass":"indicators-gauge",
+                        "cssClass": "indicators-gauge",
                         "label": "Satisfaction client",
                         "variable": {
                             "name": "clientsSatisfaction"
@@ -54,7 +54,7 @@
                     },
                     {
                         "type": "VariableDisplay",
-                        "cssClass":"indicators-block",
+                        "cssClass": "indicators-block",
                         "label": "Action restante",
                         "variable": {
                             "name": "actions"
@@ -71,7 +71,7 @@
                     {
                         "type": "Button",
                         "cssClass": "menu-folder",
-                        "tooltip":"Dossiers des membres",
+                        "tooltip": "Dossiers des membres",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
@@ -82,7 +82,7 @@
                     }, {
                         "type": "Button",
                         "cssClass": "menu-tasklist",
-                        "tooltip":"Liste des mandats",
+                        "tooltip": "Liste des mandats",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
@@ -94,13 +94,13 @@
                     {
                         "type": "Button",
                         "cssClass": "menu-email",
-                        "tooltip":"Réception e-mail",
+                        "tooltip": "Réception e-mail",
                         "plugins": [{
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": "inbox"
                                 }
-                            },{
+                            }, {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 5,
@@ -111,7 +111,7 @@
                     {
                         "type": "Button",
                         "cssClass": "menu-score",
-                        "tooltip":"Score des entreprises",
+                        "tooltip": "Score des entreprises",
                         "plugins": [{
                                 "fn": "OpenPageAction",
                                 "cfg": {
@@ -138,11 +138,11 @@
                 "defaultPageId": 2
             }]
     },
-    "2":{
-        "id":2,
-        "label":"Folder",
-        "type":"LWFolder",
-        "cssClass":"leaderway-folder",
+    "2": {
+        "id": 2,
+        "label": "Folder",
+        "type": "LWFolder",
+        "cssClass": "leaderway-folder",
         "listVariables": "resources",
         "searchInProperties": [
             "properties",
@@ -255,43 +255,43 @@
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     },
-   "4": {
-        "id":4,
-        "label":"TaskList",
-        "type":"TaskList",
-        "cssClass":"leaderway-tasklist",
-        "pickingMode":"true",
+    "4": {
+        "id": 4,
+        "label": "TaskList",
+        "type": "TaskList",
+        "cssClass": "leaderway-tasklist",
+        "pickingMode": "true",
         "targetPageLoaderId": "maindisplayarea",
         "dialoguePageId": "7"
     },
-    "5":{
-        "id":5,
-        "label":"Inbox",
-        "type":"InboxDisplay",
+    "5": {
+        "id": 5,
+        "label": "Inbox",
+        "type": "InboxDisplay",
         "variable": {
             "name": "inbox"
         },
-        "cssClass":"leaderway-inbox",
+        "cssClass": "leaderway-inbox",
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     },
-    "6":{
-        "id":6,
-        "label":"Score",
-        "type":"Score",
-        "title":"Top 5 des meilleurs entreprises actuelles",
-        "cssClass":"leaderway-score",
-        "maxRows":5,
+    "6": {
+        "id": 6,
+        "label": "Score",
+        "type": "Score",
+        "title": "Top 5 des meilleurs entreprises actuelles",
+        "cssClass": "leaderway-score",
+        "maxRows": 5,
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     },
-    "7":{
-        "id":7,
-        "label":"Dialogue",
-        "type":"Dialogue",
-        "cssClass":"leaderway-dialogue",
-        "toHide":".leaderway-menu",
-        "taskListPageId":"6",
+    "7": {
+        "id": 7,
+        "label": "Dialogue",
+        "type": "Dialogue",
+        "cssClass": "leaderway-dialogue",
+        "toHide": ".leaderway-menu",
+        "taskListPageId": "6",
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
     }
