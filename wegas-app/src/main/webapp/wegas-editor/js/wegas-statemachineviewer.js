@@ -454,7 +454,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
         },
         setOnEnterEvent: function(entity) {
-            entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.Editable.readObject(entity);
+            entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.Editable.reviver(entity);
             this.get("entity").set("onEnterEvent", entity);
         },
         addTransition: function(target) {
@@ -678,7 +678,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             });
         },
         setTriggerCondition: function(entity) {
-            entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.Editable.readObject(entity);
+            entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.Editable.reviver(entity);
             this.get("entity").set("triggerCondition", entity);
         },
         createLabel: function() {

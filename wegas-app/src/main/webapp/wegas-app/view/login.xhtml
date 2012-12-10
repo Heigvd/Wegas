@@ -36,18 +36,9 @@
                         dataSources: {
                             "User": {
                                 source: "rest/User",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "DataSourceREST"
-                                    }
-                                ]
+                                    }]
                             }
                         }
                     };

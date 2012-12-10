@@ -123,6 +123,12 @@ input[type="submit"], input[type="reset"] {
 .wegas-systemmessage > .success .icon {
     background: url(../images/wegas-icon-success-48.png) no-repeat;
 }
+.wegas-systemmessage > .info .icon {
+    background: url(../images/wegas-icon-info-48.png) no-repeat;
+}
+.wegas-systemmessage > .warning .icon {
+    background: url(../images/wegas-warning-info-48.png) no-repeat;
+}
 .wegas-systemmessage > .error .icon {
     background: url(../images/wegas-icon-error-48.png) no-repeat;
 }

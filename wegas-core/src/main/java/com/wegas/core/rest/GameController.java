@@ -130,12 +130,10 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         try {
             team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
             game = team.getGame();
-        }
-        catch (PersistenceException e2) {
+        } catch (PersistenceException e2) {
             try {
                 game = gameFacade.findByToken(token);                           // We check if there is game with given token
-            }
-            catch (PersistenceException e) {
+            } catch (PersistenceException e) {
                 throw new Exception("Could not find any game associated with this token.");
             }
         }
@@ -143,9 +141,8 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
             playerFacade.findByGameIdAndUserId(
                     game.getId(), userFacade.getCurrentUser().getId());
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
-        }
-        catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
-            return ( team != null ) ? team : game;
+        } catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
+            return (team != null) ? team : game;
         }
     }
 
@@ -154,6 +151,15 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Produces(MediaType.APPLICATION_JSON)
     public Game joinTeam(@PathParam("teamId") Long teamId) {
         return teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
+    }
+
+    @GET
+    @Path("/CreateTeam/{name : .*}/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Game createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
+        Team t = new Team(name);
+        this.teamFacade.create(new Long(this.getPathParam("gameId")), new Team(name));
+        return teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
     }
 
     /**

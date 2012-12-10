@@ -59,13 +59,13 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <!--<exclude>lib/diffmatchpatch/**</exclude>--><!-- Just to be sure to have a -min.js file -->
                         <exclude>lib/ace/**</exclude>
+                        <exclude>lib/crafty/**</exclude>
+                        <exclude>lib/diffmatchpatch/**</exclude>
                         <exclude>lib/excanvas/**</exclude>
                         <exclude>lib/jsPlumb/**</exclude>
                         <exclude>lib/tiny_mce/**</exclude>
                         <exclude>lib/yui3/**</exclude>
-                        <exclude>lib/**-min.js</exclude>
                     </excludes>
                 </configuration>
             </plugin>
