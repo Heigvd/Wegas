@@ -134,7 +134,8 @@ YUI.add('wegas-action', function (Y) {
                 type: "string",
                 _inputex: {
                     label: "Page to display",
-                    _type: "pageselect"
+                    _type: "pageselect",
+                    required: false
                 }
             },
             targetPageLoaderId: {
