@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-tabview', function ( Y ) {
+YUI.add('wegas-tabview', function (Y) {
     "use strict";
 
     var TabView, Tab;
@@ -21,7 +21,7 @@ YUI.add('wegas-tabview', function ( Y ) {
 
         initializer: function () {
             TabView.superclass.initializer.apply(this, arguments);
-        //this.plug( Removeable );
+        //this.plug(Removeable);
         },
         bindUI: function () {
             TabView.superclass.bindUI.apply(this, arguments);
@@ -39,43 +39,42 @@ YUI.add('wegas-tabview', function ( Y ) {
         tabs: {},
 
         getTab: function (id) {
-            return TabView.tabs[ id ];
+            return TabView.tabs[id];
         },
-        createTab: function ( id, tabViewSelector, tabCfg ) {
-            if ( !TabView.tabs[ id ] ) {                                        // If the tab does not exist,
-                var tabView = Y.Widget.getByNode( tabViewSelector );            // Look for the parent
+        createTab: function (id, tabViewSelector, tabCfg) {
+            if (!TabView.tabs[id]) {                                            // If the tab does not exist,
+                var tabs, tabView = Y.Widget.getByNode(tabViewSelector);        // Look for the parent
                 tabCfg = tabCfg || {};
                 Y.mix(tabCfg, {
                     type: "Tab",
                     label: id,
                     id: id
                 });
-                var tabs = tabView.add( tabCfg );                                // Instantiate a new tab
+                tabs = tabView.add(tabCfg);                                     // Instantiate a new tab
                 return tabs.item(0);
             } else {                                                            // Otherwise,
-                TabView.tabs[id].setAttrs( tabCfg )                             // update the tab config
+                TabView.tabs[id].setAttrs(tabCfg);                              // update the tab config
             }
-            return TabView.tabs[ id ];
+            return TabView.tabs[id];
         },
 
         /**
          *  Helper function
          */
         findTabAndLoadWidget: function (id, tabViewSelector, tabCfg, widgetCfg, fn) {
-            var tab = TabView.getTab( id );                                     // Look for the tab
-            if ( !tab ) {                                                       // If it does not exist,
-                tab = TabView.createTab( id, tabViewSelector, tabCfg);          // create a new one
-                tab.load(widgetCfg, fn);                                        // and load the widget in it.
+            var tab = TabView.getTab(id),                                       // Look for the tab
+            nTab = tab = TabView.createTab(id, tabViewSelector, tabCfg);        // create a new one
+            if (!tab || tab.get("destroyed")) {                                 // If it does not exist,
+                nTab.load(widgetCfg, fn);                                       // and load the widget in it.
             } else {                                                            // Otherwise,
-                tab.setAttrs(tabCfg);                                           // update the tab config
-                tab.item(0).setAttrs(widgetCfg);                                // @fixme what is the widget is of a different class ?
-                tab.item(0).syncUI();                                           // force sync
+                nTab.item(0).setAttrs(widgetCfg);                               // @fixme what is the widget is of a different class ?
+                nTab.item(0).syncUI();                                          // force sync
                 if (fn) {
-                    fn( tab.item(0));                                          // and trigger the callback
+                    fn(nTab.item(0));                                           // and trigger the callback
                 }
             }
             tab.set("selected", 2);
-            tab.plug( Removeable );
+            tab.plug(Removeable);
         }
     });
     Y.namespace('Wegas').TabView = TabView;
@@ -100,8 +99,7 @@ YUI.add('wegas-tabview', function ( Y ) {
 
         this._items = [];
 
-        var children,
-        handle;
+        var children, handle;
 
         if (config && config.children) {
 
@@ -142,24 +140,24 @@ YUI.add('wegas-tabview', function ( Y ) {
 
         // *** Lifecycle Methods *** //
         initializer: function(cfg) {
-            Tab.superclass.initializer.apply( this, arguments );
-            TabView.tabs[ cfg.id || cfg.label ] = this;
+            Tab.superclass.initializer.apply(this, arguments);
+            TabView.tabs[cfg.id || cfg.label] = this;
             this._witems = [];
 
-        //this.plug( Closable );
+        //this.plug(Closable);
         },
 
         renderUI: function () {
-            Tab.superclass.renderUI.apply(this, arguments );
+            Tab.superclass.renderUI.apply(this, arguments);
         },
 
         syncUI: function () {
-            Tab.superclass.syncUI.apply(this, arguments );
+            Tab.superclass.syncUI.apply(this, arguments);
         },
 
         destructor: function () {
-            delete TabView.tabs[ this.get("id") ];
-            Tab.superclass.destructor.apply(this, arguments );
+            delete TabView.tabs[this.get("id")];
+            Tab.superclass.destructor.apply(this, arguments);
         },
 
         // *** Private Methods *** //
@@ -169,7 +167,7 @@ YUI.add('wegas-tabview', function ( Y ) {
          * @function load
          *
          */
-        load: function ( cfg, callback ) {
+        load: function (cfg, callback) {
             Y.Wegas.Widget.use(cfg,  Y.bind(function (cfg, callback) {          // Load the subpage dependencies
                 var widgets = this.add(cfg);                                    // Render the subpage
                 if (callback) {
@@ -187,11 +185,11 @@ YUI.add('wegas-tabview', function ( Y ) {
             this._childrenContainer = renderTo;
 
             this.each(function (child) {
-                this._witems.push( child );                                     // @modified
-                child.render( renderTo )
+                this._witems.push(child);                                       // @modified
+                child.render(renderTo);
             }, this);
         },
-        witem: function ( index ) {
+        witem: function (index) {
             return this._witems[index];
         }
     }, {
@@ -214,17 +212,17 @@ YUI.add('wegas-tabview', function ( Y ) {
         Removeable.superclass.constructor.apply(this, arguments);
     };
 
-    Y.extend( Removeable, Y.Plugin.Base, {
+    Y.extend(Removeable, Y.Plugin.Base, {
 
         REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
 
-        initializer: function( config ) {
+        initializer: function (config) {
             var tab = this.get('host'),
             //cb = tab.get("parent").get("contentBox"),
             bb = tab.get("boundingBox");
 
             bb.addClass('yui3-tabview-removeable');
-            bb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this );
+            bb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this);
             bb.append(this.REMOVE_TEMPLATE);
 
         // Tab events bubble to TabView
@@ -233,7 +231,7 @@ YUI.add('wegas-tabview', function ( Y ) {
         //cb = tabview.get('contentBox');
         //
         //cb.addClass('yui3-tabview-removeable');
-        //cb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this );
+        //cb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this);
         //
         //// Tab events bubble to TabView
         //tabview.after('tab:render', this.afterTabRender, this);
@@ -243,17 +241,19 @@ YUI.add('wegas-tabview', function ( Y ) {
         //    e.target.get('boundingBox').append(this.REMOVE_TEMPLATE);           // boundingBox is the Tab's LI
         //},
 
-        onRemoveClick: function( e ) {
+        onRemoveClick: function(e) {
             e.stopPropagation();
             var host = this.get("host");
 
             host.remove();
-        //var tab = Y.Widget.getByNode( e.target );
+            host.destroy();
+
+        //var tab = Y.Widget.getByNode(e.target);
         // tab.remove();
         }
     }, {
-        NS:"removeable",
-        NAME:"removeableTabs"
+        NS: "removeable",
+        NAME: "removeableTabs"
     });
 
     Y.namespace("Plugin").Removeable = Removeable;
@@ -270,7 +270,7 @@ YUI.add('wegas-tabview', function ( Y ) {
 
         initializer: function() {
             this.onHostEvent("removeChild", function (e) {
-                if (this.get("host").size() == 1) {
+                if (this.get("host").size() === 1) {
                     Y.Wegas.app.widget.hidePosition("right");
                 }
             });
