@@ -4,19 +4,12 @@
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout",
-        "children": [
-            {
+        "direction": "horizontal",
+        "children": [{
                 "label": "Menu",
                 "type": "List",
                 "cssClass": "menu",
-                "direction": "horizontal",
-                "children": [
-                    {
-                        "label": "Indicators",
-                        "type": "Text",
-                        "content": "Programming Game",
-                        "cssClass": "title"
-                    }, {
+                "children": [{
                         "type": "VariableDisplay",
                         "label": "Money",
                         "view": "text",
@@ -24,70 +17,73 @@
                             "name": "money"
                         }
                     }, {
-                        "type": "Button",
-                        "label": "Battle!",
-                        "cssClass": "menu-button",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 2,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    }, {
-                        "type": "Button",
-                        "label": "Mails",
-                        "cssClass": "menu-button",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 5,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }, {
-                                "fn": "UnreadCount",
-                                "cfg": {
-                                    "variable": {
-                                        "name": "inbox"
-                                    }
-                                }
-                            }
-                        ]
-                    }, {
-                        "type": "Button",
-                        "label": "History",
-                        "disabled": true,
-                        "cssClass": "menu-button",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 3,
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    }, {
-                        "type": "LoginButton",
-                        "cssClass": "menu-loginbutton"
-                    }
-                ]
+                        "type": "Text",
+                        "content": "<div class=\"inventory\"><h1>Inventory</h1><i><center style=\"padding:10px 0;\">empty</center></i></div><div class=\"api\"><h1>Api</h1></div>"
+                    }]
             }, {
-                "type": "PageLoader",
-                "pageLoaderId": "maindisplayarea",
+                "type": "List",
                 "cssClass": "body",
-                "defaultPageId": 2
-            }
-        ]
+                "children": [{
+                        "label": "Menu",
+                        "type": "List",
+                        "cssClass": "banner",
+                        "children": [{
+                                "type": "Button",
+                                "label": "Battle!",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 2,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "label": "Mails",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 6,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }, {
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": {
+                                                "name": "inbox"
+                                            }
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "label": "History",
+                                "disabled": true,
+                                "cssClass": "menu-button",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 3,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            }, {
+                                "type": "LoginButton",
+                                "cssClass": "menu-loginbutton"
+                            }]
+                    }, {
+                        "type": "PageLoader",
+                        "pageLoaderId": "maindisplayarea",
+                        "defaultPageId": 2
+                    }]
+            }]
     },
     "2": {
         "id": 2,
         "type": "PageLoader",
         "pageLoaderId": "leveldisplay",
-        "cssClass": "body",
         "variable": {
             "name": "currentLevel"
         }
@@ -112,7 +108,7 @@
                 "spriteSheet": "terrain",
                 "x": [21, 22, 21],
                 "y": [5, 5, 11]
-            },{
+            }, {
                 "name": "e",
                 "spriteSheet": "terrain",
                 "x": 17,
@@ -218,12 +214,12 @@
                 "spriteSheet": "terrain",
                 "x": [21, 22, 21],
                 "y": [5, 5, 11]
-            },{
+            }, {
                 "name": "e",
                 "spriteSheet": "terrain",
                 "x": 17,
                 "y": 5
-            },{
+            }, {
                 "name": "w",
                 "spriteSheet": "terrain",
                 "x": 21,
@@ -232,9 +228,9 @@
         "api": [{
                 "name": "move"
             }, {
-                "name": "rotateLeft"
+                "name": "left"
             }, {
-                "name": "rotateRight"
+                "name": "right"
             }],
         "objects": [{
                 "id": "Player",
@@ -341,9 +337,345 @@
     },
     "5": {
         "id": 5,
+        "label": "Level 3",
+        "type": "ProgGameLevel",
+        "maxTurns": 2,
+        "maxActions": 20,
+        "winningCondition": "level.objects[0].life===0",
+        "onWin": "currentLevel.value=7;money.value+=500;",
+        "cssClass": "wegas-proggame-level",
+        "api": [{
+                "name": "move"
+            }, {
+                "name": "left"
+            }, {
+                "name": "right"
+            }, {
+                "name": "fire"
+            }],
+        "objects": [{
+                "id": "Enemy",
+                "type": "npc",
+                "direction": 4,
+                "x": 7,
+                "y": 3,
+                "life": 100,
+                "range": 2,
+                "actions": 5,
+                "ai": "left();\nmove();\nright();\nmove();\nmove();",
+                "aptitudes": "move4Direction, shoot, die",
+                "spriteSheet": "characters",
+                "sprites": [{
+                        "name": "moveUp",
+                        "x": 9,
+                        "y": 0,
+                        "toX": 11
+                    }, {
+                        "name": "moveRight",
+                        "x": 9,
+                        "y": 1,
+                        "toX": 11
+                    }, {
+                        "name": "moveDown",
+                        "x": 9,
+                        "y": 2,
+                        "toX": 11
+                    }, {
+                        "name": "moveLeft",
+                        "x": 9,
+                        "y": 3,
+                        "toX": 11
+                    }]
+            }, {
+                "id": "Player",
+                "type": "pc",
+                "direction": 2,
+                "x": 1,
+                "y": 3,
+                "life": 100,
+                "actions": 5,
+                "range": 3,
+                "aptitudes": "move4Direction, shoot, die",
+                "spriteSheet": "characters",
+                "sprites": [{
+                        "name": "moveUp",
+                        "x": 0,
+                        "y": 0,
+                        "toX": 2
+                    }, {
+                        "name": "moveRight",
+                        "x": 0,
+                        "y": 1,
+                        "toX": 2
+                    }, {
+                        "name": "moveDown",
+                        "x": 0,
+                        "y": 2,
+                        "toX": 2
+                    }, {
+                        "name": "moveLeft",
+                        "x": 0,
+                        "y": 3,
+                        "toX": 2
+                    }]
+            }],
+        "map": [
+            ["w", "w", "w", "w", "w", "w", "w", "w"],
+            ["g", "g", "g", "g", "g", "g", "g", "g"],
+            ["g", "g", "e", "e", "e", "g", "g", "g"],
+            ["g", "g", "e", "g", "e", "g", "g", "g"],
+            ["e", "e", "e", "g", "e", "e", "e", "e"],
+            ["g", "g", "e", "g", "e", "g", "g", "g"],
+            ["g", "g", "e", "e", "e", "g", "g", "g"],
+            ["g", "g", "g", "g", "g", "g", "g", "g"],
+            ["w", "w", "w", "w", "w", "w", "w", "w"]
+        ],
+        "mapObjects": [{
+                "name": "g",
+                "spriteSheet": "terrain",
+                "x": [21, 22, 21],
+                "y": [5, 5, 11]
+            }, {
+                "name": "e",
+                "spriteSheet": "terrain",
+                "x": 17,
+                "y": 5
+            }, {
+                "name": "w",
+                "spriteSheet": "terrain",
+                "x": 21,
+                "y": 17
+            }],
+        "plugins": [{
+                "fn": "PopupPlg",
+                "cfg": {
+                    "content": "Oh non un ennemi vous barre la route. Vous devrez déchiffrer son intelligence artificielle pour en venir à bout.<br /><br />Vous disposez de la métode <i>fire</i> pour vous débarasser de cet ennemi."
+                }
+            }]
+    },
+    "6": {
+        "id": 6,
         "type": "InboxDisplay",
         "variable": {
             "name": "inbox"
         }
+    },
+    "7": {
+        "id": 7,
+        "label": "Level 4",
+        "type": "ProgGameLevel",
+        "maxTurns": 1,
+        "winningCondition": "said.indexOf(\"Hello\")>=0",
+        "onWin": "currentLevel.value=8",
+        "cssClass": "wegas-proggame-level",
+        "gridW": 6,
+        "gridH": 5,
+        "api": [{
+                "name": "move"
+            }, {
+                "name": "left"
+            }, {
+                "name": "right"
+            }, {
+                "name": "fire"
+            }, {
+                "name": "say"
+            }],
+        "objects": [{
+                "id": "Player",
+                "type": "pc",
+                "direction": 2,
+                "x": 1,
+                "y": 2,
+                "actions": 5,
+                "range": 3,
+                "aptitudes": "move4Direction, shoot, die",
+                "spriteSheet": "characters",
+                "sprites": [{
+                        "name": "moveUp",
+                        "x": 0,
+                        "y": 0,
+                        "toX": 2
+                    }, {
+                        "name": "moveRight",
+                        "x": 0,
+                        "y": 1,
+                        "toX": 2
+                    }, {
+                        "name": "moveDown",
+                        "x": 0,
+                        "y": 2,
+                        "toX": 2
+                    }, {
+                        "name": "moveLeft",
+                        "x": 0,
+                        "y": 3,
+                        "toX": 2
+                    }]
+            }, {
+                "id": "Enemy",
+                "direction": 4,
+                "type": "npc",
+                "x": 4,
+                "y": 2,
+                "collides": false,
+                "aptitudes": "move4Direction, shoot, die",
+                "spriteSheet": "characters",
+                "sprites": [{
+                        "name": "moveUp",
+                        "x": 9,
+                        "y": 0,
+                        "toX": 11
+                    }, {
+                        "name": "moveRight",
+                        "x": 9,
+                        "y": 1,
+                        "toX": 11
+                    }, {
+                        "name": "moveDown",
+                        "x": 9,
+                        "y": 2,
+                        "toX": 11
+                    }, {
+                        "name": "moveLeft",
+                        "x": 9,
+                        "y": 3,
+                        "toX": 11
+                    }]
+            }],
+        "map": [
+            ["g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g"],
+            ["e", "e", "e", "e", "e"],
+            ["g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g"]
+        ],
+        "mapObjects": [{
+                "name": "g",
+                "spriteSheet": "terrain",
+                "x": [21, 22, 21],
+                "y": [5, 5, 11]
+            },{
+                "name": "e",
+                "spriteSheet": "terrain",
+                "x": 17,
+                "y": 5
+            }],
+        "plugins": [{
+                "fn": "PopupPlg",
+                "cfg": {
+                    "content": "Pour passer ce niveau, vous devrez répondre à la question de l'ordinateur. Mais comme tout ordinateur, il utilise des paramêtres au lieu de phrase pour poser sa question. Vous allez devoir manipuler ces paramêtre pour trouver la réponse à la question, puis utiliser la méthode <i>say</i> pour lui répondre.<br /><br />Dans ce cas l'ordinateur veut que vous le saluiez. Vous pouvez le faire comme cela: <div class=\"wegas-proggame-code\">say(\"Hello computer\");</div>"
+                }
+            }]
+    },
+    "8": {
+        "id": 8,
+        "label": "Level 5",
+        "type": "ProgGameLevel",
+        "maxTurns": 1,
+        "winningCondition": "said.indexOf(\"Hello \" + getArgs().name) >= 0",
+        "onWin": "currentLevel.value=4",
+        "onStart": "var names= [\"Romuald\", \"Pete\", \"Roger\"], name = names[Math.floor((Math.random()*2))];pushArg(\"name\", name);log(\"My name is \" + name);",
+        "cssClass": "wegas-proggame-level",
+        "gridW": 6,
+        "gridH": 5,
+        "arguments": ["String name"],
+        "api": [{
+                "name": "move"
+            }, {
+                "name": "left"
+            }, {
+                "name": "right"
+            }, {
+                "name": "fire"
+            }, {
+                "name": "say"
+            }],
+        "objects": [{
+                "id": "Player",
+                "type": "pc",
+                "direction": 2,
+                "x": 1,
+                "y": 2,
+                "actions": 5,
+                "range": 3,
+                "aptitudes": "move4Direction, shoot, die",
+                "spriteSheet": "characters",
+                "sprites": [{
+                        "name": "moveUp",
+                        "x": 0,
+                        "y": 0,
+                        "toX": 2
+                    }, {
+                        "name": "moveRight",
+                        "x": 0,
+                        "y": 1,
+                        "toX": 2
+                    }, {
+                        "name": "moveDown",
+                        "x": 0,
+                        "y": 2,
+                        "toX": 2
+                    }, {
+                        "name": "moveLeft",
+                        "x": 0,
+                        "y": 3,
+                        "toX": 2
+                    }]
+            }, {
+                "id": "Enemy",
+                "direction": 4,
+                "type": "npc",
+                "x": 4,
+                "y": 2,
+                "collides": false,
+                "aptitudes": "move4Direction, shoot, die",
+                "spriteSheet": "characters",
+                "sprites": [{
+                        "name": "moveUp",
+                        "x": 9,
+                        "y": 0,
+                        "toX": 11
+                    }, {
+                        "name": "moveRight",
+                        "x": 9,
+                        "y": 1,
+                        "toX": 11
+                    }, {
+                        "name": "moveDown",
+                        "x": 9,
+                        "y": 2,
+                        "toX": 11
+                    }, {
+                        "name": "moveLeft",
+                        "x": 9,
+                        "y": 3,
+                        "toX": 11
+                    }]
+            }],
+        "map": [
+            ["g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g"],
+            ["e", "e", "e", "e", "e"],
+            ["g", "g", "g", "g", "g"],
+            ["g", "g", "g", "g", "g"]
+        ],
+        "mapObjects": [{
+                "name": "g",
+                "spriteSheet": "terrain",
+                "x": [21, 22, 21],
+                "y": [5, 5, 11]
+            },{
+                "name": "e",
+                "spriteSheet": "terrain",
+                "x": 17,
+                "y": 5
+            }],
+        "plugins": [{
+                "fn": "PopupPlg",
+                "cfg": {
+                    "content": "Encore une fois bravo, mais ce n'était pas si dur. Pour passer le prochain niveau vous allez devoire utiliser des <i>variables</i>.<div class=\"wegas-proggame-def\">Dans un programme informatique, on va avoir en permanence besoin de stocker provisoirement des valeurs. Il peut s'agir de données issues d'un fichier sur disque dur, fournies par l'utilisateur (saisies au clavier), ou extraites d'une base de données. Il peut aussi s'agir de résultats obtenus au cours de l'exécution du programme. Ces données sont stockées en mémoire et ont une durée de vie égale au temps d'exécution du programme. Elles peuvent être de plusieurs types : des nombres, du texte, etc. Dès que l'on a besoin de stocker une valeur dans un programme, on utilise une variable.<br /><br />Pour employer une image, une variable est une boîte, repérée par une étiquette. Pour avoir accès au contenu de la boîte, il suffit de la désigner par son étiquette. En réalité, pour un ordinateur, Ces variables sont stockées dans la mémoire vive et elles sont désignées par des adresses binaires. Il est beaucoup plus facile d'employer des étiquettes de son choix, que de devoir manipuler des adresses binaires. Ainsi, la première chose à faire avant de pouvoir utiliser une variable est de définir « la boîte » et de lui donner une étiquette. Ceci se fait tout au début de l'algorithme, avant même les instructions proprement dites. C'est ce qu'on appelle la déclaration des variables.<br /><br />Le nom de la variable (l'étiquette de la boîte) obéit à des impératifs changeant selon les langages. Toutefois, une règle absolue est qu'ils peuvent comporter des lettres et des chiffres, mais qu'ils excluent tous les signes de ponctuation, en particulier les espaces. Un nom de variable correct commence impérativement par une lettre minuscule.<br /><br />Si pour des raisons purement pratiques on évite généralement les noms à rallonge, il faut tout de même veiller à choisir un nom pertinent en rapport à ce que représente la variable. Ainsi, on évitera d'utiliser de simples lettres souvent utilisées en mathématiques comme x, y, i, j,... qui sont peu explicites. On préférera des noms comme :compteur, temperature, abscisse, ordonnee, point, somme, moyenne...Des noms explicites apportent du sens, et rendent tout simplement les algorithmes plus lisibles et compréhensibles.</div>Dans cette exercice, recevrez votre première variable vous recevrez votre première variable en <i>paramètre</i> de votre fonction <i>main</i>. Cette variable contient le nom du charactère qui se tient en face de vous. Vous devez le saluer en utilisant ce nom, comme ceci:<div class=\"wegas-proggame-code\">var salutation = \"Hello \";<br />salutation = salutation + name;<br />say(salutation);</div>"
+                }
+            }]
     }
 }
