@@ -12,32 +12,32 @@ YUI.add("lang/inputex_fr", function(Y) {
 
         invalidEmail: "Email non valide, ex: michel.dupont@fai.fr",
         didYouMean: "Voulez-vous dire : ",
-        disposableEmail: "Adresse jetable non autorisÃ©e avec le domaine : ",
+        disposableEmail: "Adresse jetable non autorisée avec le domaine : ",
         selectColor: "S&eacute,lectionnez une couleur :",
         invalidPassword: ["Le mot de passe doit contenir au moins ", " caract&egrave,res (lettres ou chiffres)"],
-        invalidPasswordConfirmation: "Les mots de passe entrÃ©s ne sont pas identiques !",
-        passwordStrength: "SoliditÃ© du mot de passe",
-        capslockWarning: "Attention: touche majuscule activÃ©e",
+        invalidPasswordConfirmation: "Les mots de passe entrés ne sont pas identiques !",
+        passwordStrength: "Solidité du mot de passe",
+        capslockWarning: "Attention: touche majuscule activée",
         invalidDate: "Date non valide, ex: 25/01/2007",
         defaultDateFormat: "d/m/Y",
-        shortMonths: ["Jan", "FÃ©v", "Mars", "Avril", "Mai", "Juin", "Juil", "AoÃ»t", "Sept", "Oct", "Nov", "DÃ©c"],
-        months: ["Janvier", "FÃ©vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "AoÃ»t", "Septembre", "Octobre", "Novembre", "DÃ©cembre"],
+        shortMonths: ["Jan", "Fév", "Mars", "Avril", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Dèc"],
+        months: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "AoÃ»t", "Septembre", "Octobre", "Novembre", "Dècembre"],
         weekdays1char: ["D", "L", "M", "M", "J", "V", "S"],
         shortWeekdays: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
         selectMonth: "- Choisissez -",
         dayTypeInvite: "Jour",
         monthTypeInvite: "Mois",
-        yearTypeInvite: "AnnÃ©e",
+        yearTypeInvite: "Année",
         cancelEditor: "annuler",
         okEditor: "Ok",
         defaultCalendarOpts: {
             navigator: {
                 strings: {
                     month: "Choisissez un mois",
-                    year: "Entrez une annÃ©e",
+                    year: "Entrez une année",
                     submit: "Ok",
                     cancel: "Annuler",
-                    invalidYear: "AnnÃ©e non valide"
+                    invalidYear: "Année non valide"
                 }
             },
             start_weekday: 1
@@ -60,11 +60,11 @@ YUI.add("lang/inputex_fr", function(Y) {
         modifyText: "modifier",
         deleteText: "supprimer",
         insertItemText: "Ajouter",
-        confirmDeletion: "ÃŠtes-vous sÃ»r ?",
+        confirmDeletion: "Êtes-vous sûr ?",
         addButtonText: "Ajouter",
         loadingText: "Patientez...",
-        emptyDataText: "Aucune donnÃ©e.",
-        errorDataText: "Erreur de donnÃ©es.",
+        emptyDataText: "Aucune donnée.",
+        errorDataText: "Erreur de données.",
 
       /*  tableOptions: "Options des colonnes",
         showColumnButton: "Afficher",
