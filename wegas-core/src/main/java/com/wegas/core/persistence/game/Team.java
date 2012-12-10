@@ -75,6 +75,13 @@ public class Team extends AbstractEntity {
     @JsonBackReference(value = "game-team")
     private Game game;
 
+    public Team() {
+    }
+
+    public Team(String name) {
+        this.name = name;
+    }
+
     /**
      *
      * @param a
