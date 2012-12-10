@@ -23,7 +23,11 @@
                         "plugins": [{
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
-                                    "onClick": "importPackage(com.wegas.core.script);\nthis.finishCurrentWeek()\n"
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "finishCurrentWeek();"
+                                    }
                                 }
                             }]
                     }, {
