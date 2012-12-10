@@ -102,7 +102,9 @@
                         "plugins": [{
                                 "fn": "UnreadCount",
                                 "cfg": {
-                                    "variable": "inbox"
+                                    "variable": {
+                                        "name": "inbox"
+                                    }
                                 }
                             }, {
                                 "fn": "OpenPageAction",
@@ -110,7 +112,8 @@
                                     "subpageId": 5,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            }]
+                            }
+                        ]
                     },
                     {
                         "type": "Button",

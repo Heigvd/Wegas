@@ -7,7 +7,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
 
     var CONTENTBOX = 'contentBox', TaskList;
 
-    TaskList = Y.Base.create("wegas-tasklist", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    TaskList = Y.Base.create("wegas-tasklist", Y.Widget, [Y.Wegas.Widget], {
         // *** Fields *** /
         table: null,
         data: null,
