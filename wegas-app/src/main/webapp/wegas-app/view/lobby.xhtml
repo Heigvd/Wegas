@@ -35,52 +35,22 @@
                             "GameModel": {
                                 source: "rest/GameModel",
                                 initialRequest: "",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "GameModelDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "Game": {
                                 source: "rest/GameModel/1/Game",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "GameDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             },
                             "RegisteredGames": {
                                 source: "rest/RegisteredGames",
                                 initialRequest: "/#{requestController.currentUser.id}",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                // resultFields: ["name", "id", "@class", "errors"]
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
                                         fn: "GameDataSourceREST"
-                                    }
-                                ]
+                                    }]
                             }
                         }
                     };

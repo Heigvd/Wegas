@@ -172,7 +172,7 @@ YUI.add("wegas-button", function (Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER,
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     label: "List to count unread"

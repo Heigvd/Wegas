@@ -67,9 +67,8 @@ public class UserController extends AbstractRestController<UserFacade, User> {
             @Context HttpServletRequest request) {
 
         Subject currentUser = SecurityUtils.getSubject();
-        System.out.println("authenticated");
+
         if (!currentUser.isAuthenticated()) {
-            System.out.println("true");
             UsernamePasswordToken token = new UsernamePasswordToken(email, password);
             token.setRememberMe(remember);
             currentUser.login(token);
@@ -109,11 +108,11 @@ public class UserController extends AbstractRestController<UserFacade, User> {
         account.setEmail(email);
         this.signup(account);                                                   // and forward
     }
-    
+
     /**
      * Get all GameModel permissions by GameModel id
      * @param gameModelId
-     * @return 
+     * @return
      */
     @GET
     @Path("GameModelPermissions/{gameModelId}")
@@ -121,12 +120,12 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     public List<Map> findPermissionByGameModelId(@PathParam("gameModelId") String gameModelId){
         return this.userFacade.findPermissionByGameModelId(gameModelId);
     }
-    
+
     /**
      * Delete permission by role and permission
      * @param roleId
      * @param permission
-     * @return 
+     * @return
      */
     @POST
     @Path("DeletePermission/{roleId : [1-9][0-9]*}/{permission}")
@@ -136,12 +135,12 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @PathParam("permission") String permission){
         return this.userFacade.deletePermissionByGameModelIdAndPermissions(roleId, permission);
     }
-    
+
     /**
      * Create role_permissions
      * @param roleId
      * @param permission
-     * @return 
+     * @return
      */
     @POST
     @Path("AddPermission/{roleId : [1-9][0-9]*}/{permission}")
@@ -151,18 +150,18 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @PathParam("permission") String permission){
         return this.userFacade.addPermissionByGameModelIdAndPermissions(roleId, permission);
     }
-    
+
     /**
      * Delete all permission from a role in a Game or GameModel
      * @param roleId
      * @param gameModelId
-     * @return 
+     * @return
      */
     @POST
     @Path("DeleteAllRolePermissions/{roleId : [1-9][0-9]*}/{gameModelId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId, 
+    public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId,
     @PathParam("gameModelId") String gameModelId){
         return this.userFacade.deleteAllRolePermissions(roleId, gameModelId);
     }

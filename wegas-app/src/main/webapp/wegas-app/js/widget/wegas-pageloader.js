@@ -57,11 +57,9 @@ YUI.add('wegas-pageloader', function(Y) {
                 } else {
                     this.showMessage("error", e.message);
                 }
-
-
             });
         },
-        
+
         syncUI: function() {
             var val = this.get("variable.evaluated");
             if (val && val.getInstance().get('value')) {                        // If there is a variable to refresh
@@ -70,7 +68,7 @@ YUI.add('wegas-pageloader', function(Y) {
                 this.set("pageId", this.get("pageId"));
             }
         },
-        
+
         destructor: function () {
             var i;
             if (this.get("widget")) {
@@ -149,7 +147,7 @@ YUI.add('wegas-pageloader', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.Editable.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER
             },
             widget: {
                 "transient": true

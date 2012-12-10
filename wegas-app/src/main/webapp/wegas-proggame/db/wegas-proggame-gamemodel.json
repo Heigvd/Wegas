@@ -20,10 +20,10 @@
             }]
         }]
     }],
-    "childVariableDescriptors":[{
+    "childVariableDescriptors": [{
         "@class":"NumberDescriptor",
         "name":"money",
-        "defaultInstance":{
+        "defaultInstance": {
             "@class":"NumberInstance",
             "value":0
         },
@@ -38,7 +38,7 @@
         "name":"currentLevel",
         "defaultInstance":{
             "@class":"NumberInstance",
-            "value":2
+            "value":3
         },
         "scope":{
             "@class":"PlayerScope"

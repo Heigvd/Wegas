@@ -182,7 +182,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                     result = el.get("results")[l];
                                     //TODO : result should be an entity
                                     if (!(result instanceof Y.Wegas.persistence.Entity)) {
-                                        result = Y.Wegas.Editable.readObject(result);
+                                        result = Y.Wegas.Editable.reviver(result);
                                     }
                                     children.push({
                                         label: "Result: " + result.get("name"),

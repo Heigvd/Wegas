@@ -1,4 +1,4 @@
-Y.add("wegas-statemachine-entities", function(Y) {
+Y.add("wegas-statemachine-entities", function (Y) {
 
     /*******************************/
     /******** STATEMACHINE *********/
@@ -32,11 +32,11 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 type: "uneditable",
                 _inputex: {
                     label: "Transition History"
-                            //                    ,
-                            //                    elementType:{
-                            //                        type:"number",
-                            //                        readonly:true
-                            //                    }
+                //                    ,
+                //                    elementType:{
+                //                        type:"number",
+                //                        readonly:true
+                //                    }
                 }
             }
         }
@@ -45,15 +45,15 @@ Y.add("wegas-statemachine-entities", function(Y) {
      * FSMDescriptor Entity
      */
     Y.Wegas.persistence.FSMDescriptor = Y.Base.create("FSMDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
-// *** Lifecycle methods *** //
+        // *** Lifecycle methods *** //
         /**
          * Find a transition by it's id
          * @param {Integer} id The queried transition's id
          * @return {Transition|null} the transition if it exists
          */
-        getTransitionById: function(id) {
+        getTransitionById: function (id) {
             var i, t, states = this.get("states"),
-                    trs;
+            trs;
             for (i in states) {
                 trs = states[i].get("transitions");
                 for (t in trs) {
@@ -69,10 +69,10 @@ Y.add("wegas-statemachine-entities", function(Y) {
          *  for current user.
          *  @return {Array} An array containing alternatively state/transition.
          */
-        getFullHistory: function() {
+        getFullHistory: function () {
             var i, transitionHistory = this.getInstance().get("transitionHistory"),
-                    fullHistory = [],
-                    tmpTransition = null;
+            fullHistory = [],
+            tmpTransition = null;
             //TODO :Currently assuming it begins with initialState. May be wrong?
             fullHistory.push(this.getState(this.getInitialStateId()));
             for (i = 0; i < transitionHistory.length; i += 1) {
@@ -83,16 +83,16 @@ Y.add("wegas-statemachine-entities", function(Y) {
             return fullHistory;
         },
         // *** Private methods *** //
-        getCurrentState: function() {
+        getCurrentState: function () {
             return this.get("states")[this.getInstance().get("currentStateId")];
         },
-        getInitialStateId: function() {
+        getInitialStateId: function () {
             return this.get("defaultInstance").get("currentStateId");
         },
-        setInitialStateId: function(initialStateId) {
+        setInitialStateId: function (initialStateId) {
             this.get("defaultInstance").set("currentStateId", initialStateId);
         },
-        getState: function(identifier) {
+        getState: function (identifier) {
             return this.get("states")[identifier];
         }
     }, {
@@ -101,10 +101,10 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 value: "FSMDescriptor"
             },
             defaultInstance: {
-                valueFn: function() {
+                valueFn: function () {
                     return new Y.Wegas.persistence.FSMInstance();
                 },
-                validator: function(o) {
+                validator: function (o) {
                     return o instanceof Y.Wegas.persistence.FSMInstance;
                 },
                 properties: {
@@ -241,38 +241,38 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                plugins: [{
-                        fn: "EditFSMAction"
-                    }]
-            }, {
-                type: "Button",
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }],
+            type: "EditEntityButton",
+            plugins: [{
+                fn: "EditFSMAction"
+            }]
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "DeleteEntityButton"
+        }],
         METHODS: {
             enable: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             disable: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             isEnabled: {
                 label: "is enabled",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }],
+                    type: "hidden",
+                    value: "self"
+                }],
                 returns: "boolean"
             }
         }
@@ -282,10 +282,10 @@ Y.add("wegas-statemachine-entities", function(Y) {
      */
     Y.Wegas.persistence.State = Y.Base.create("State", Y.Wegas.persistence.Entity, [], {
 // *** Lifecycle methods *** //
-        initializer: function() {
+        initializer: function () {
         }
 
-// *** Private methods *** //
+    // *** Private methods *** //
     }, {
         ATTRS: {
             "@class": {
@@ -301,7 +301,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 value: []
             },
             editorPosition: {
-                valueFn: function() {
+                valueFn: function () {
                     return new Y.Wegas.persistence.Coordinate({
                         x: 30,
                         y: 30
@@ -342,7 +342,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
                 value: "TriggerDescriptor"
             },
             defaultInstance: {
-                valueFn: function() {
+                valueFn: function () {
                     return new Y.Wegas.persistence.TriggerInstance();
                 },
                 properties: {
@@ -394,17 +394,17 @@ Y.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
+            type: "EditEntityButton"
 
-            }, {
-                type: "Button",
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
             }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
     /*
      * TriggerInstance Entity
@@ -438,34 +438,33 @@ Y.add("wegas-statemachine-entities", function(Y) {
          * @param {DialogueTransition} transition - the transition object to trigger.
          * @param {Object} callbacks - {success:Function|String, failure:Function|String} - the callback functions to execute.
          */
-        doTransition: function(transition, callbacks) {
+        doTransition: function (transition, callbacks) {
             var request;
             if (transition instanceof Y.Wegas.persistence.DialogueTransition) {
                 if (!this.get("id") || !transition.get("id")) {
                     Y.error("Trying to call an unpersisted transition", new Error("Calling a detached entity"), "Y.Wegas.persistence.DialogueDescriptor");
                     return false;
                 }
-                if (transition.get("triggerCondition") === null || transition.get("triggerCondition").isEmpty()) {
-                    request = "/StateMachine/" + this.get("id")
-                            + "/Player/" + Y.Wegas.app.get("currentPlayer")
-                            + "/Do/" + transition.get("id");
-                    try {
-                        Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                            request: request,
-                            cfg: {
-                                method: "GET",
-                                headers: {
-                                    'Content-Type': 'application/json; charset=iso-8859-1',
-                                    'Managed-Mode': 'true'
-                                }
-                            },
-                            on: callbacks
-                        });
-                    } catch (e) {
-//TODO : that
-                    }
-                    return true;
+                request = "/StateMachine/" + this.get("id")
+                        + "/Player/" + Y.Wegas.app.get("currentPlayer")
+                        + "/Do/" + transition.get("id");
+                try {
+                    Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                        request: request,
+                        cfg: {
+                            method: "GET",
+                            headers: {
+                                'Content-Type': 'application/json; charset=iso-8859-1',
+                                'Managed-Mode': 'true'
+                            }
+                        },
+                        on: callbacks
+                    });
+                } catch (e) {
+//TODO : that           
                 }
+                return true;
+
             } else {
                 return false;
             }
@@ -486,12 +485,12 @@ Y.add("wegas-statemachine-entities", function(Y) {
          * @param {Integer} id The dialogue's id
          * @return {String} an url to GET.
          */
-        getTriggerURL: function(id) {
+        getTriggerURL: function (id) {
             return Y.Wegas.app.get("base") + "rest/GameMode/" +
-                    Y.Wegas.app.get("currentGame")
-                    + "/VariableDescriptor/StateMachine/" + id
-                    + "/Player/" + Y.Wegas.app.get("currentPlayer")
-                    + "/Do/" + this.get("id");
+            Y.Wegas.app.get("currentGame")
+            + "/VariableDescriptor/StateMachine/" + id
+            + "/Player/" + Y.Wegas.app.get("currentPlayer")
+            + "/Do/" + this.get("id");
         }
     }, {
         ATTRS: {
@@ -500,7 +499,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
             },
             actionText: {
                 value: null,
-                validator: function(s) {
+                validator: function (s) {
                     return s === null || Y.Lang.isString(s);
                 }
             }
@@ -510,16 +509,16 @@ Y.add("wegas-statemachine-entities", function(Y) {
      * DialogueState Entity
      */
     Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
-        initializer: function() {
+        initializer: function () {
             this.publish("actionsAvailable");
         },
         /*
          * Listen to "DialogueState:actionsAvailable" to get the result
          * event.actionsAvailable contains available transitions
          */
-        getAvailableActions: function() {
+        getAvailableActions: function () {
             var i, transitions = this.get("transitions"),
-                    ctrlObj = {};
+            ctrlObj = {};
             ctrlObj.availableActions = [];
             ctrlObj.toEval = 0;
             ctrlObj.evaluatedCount = 0;
@@ -528,7 +527,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
                     if (!transitions[i].get("triggerCondition")) {
                         ctrlObj.availableActions.push(transitions[i]);
                     } else {
-                        transitions[i].get("triggerCondition").once("Script:evaluated", function(e, o, obj) {
+                        transitions[i].get("triggerCondition").once("Script:evaluated", function (e, o, obj) {
                             var ctrlObj = obj[0], transition = obj[1];
                             ctrlObj.evaluatedCount += 1;
                             if (o === true) {
@@ -555,7 +554,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
          * Get an array of texts from the state's text, split by a token
          * @param {String} token The token to split by
          */
-        getTexts: function(token) {
+        getTexts: function (token) {
             return this.get("text").split(token);
         },
         /**
@@ -564,7 +563,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
          * @param {Array} a Strings to join
          * @param {String} token Token to join the array
          */
-        setText: function(a, token) {
+        setText: function (a, token) {
             this.set("text", a.join(token));
         }
     }, {
@@ -574,7 +573,7 @@ Y.add("wegas-statemachine-entities", function(Y) {
             },
             text: {
                 value: null,
-                validator: function(s) {
+                validator: function (s) {
                     return s === null || Y.Lang.isString(s);
                 }
             }
