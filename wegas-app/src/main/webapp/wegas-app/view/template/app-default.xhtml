@@ -12,6 +12,64 @@
         <ui:define name="page">
             <h:body class="yui3-skin-sam yui-skin-sam wegas-widget-loading">
 
+                <ui:fragment rendered="#{!wegasConfig.debug}">
+                    <!-- Muscula error tracking -->
+                    <script type='text/javascript'>
+                        window.Muscula = { settings:{
+                                logId:"1f9e3058-27dc-4fec-b633-1070e60f2fca", suppressErrors: false, branding: 'none'
+                            }};
+                        (function () {
+                            var m = document.createElement('script'); m.type = 'text/javascript'; m.async = true;
+                            m.src = (window.location.protocol == 'https:' ? 'https:' : 'http:') +
+                                '//musculahq.appspot.com/Muscula.js';
+                            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(m, s);
+                            window.Muscula.run=function(c){eval(c);window.Muscula.run=function(){};};
+                            window.Muscula.errors=[];window.onerror=function(){window.Muscula.errors.push(arguments);
+                                return window.Muscula.settings.suppressErrors===undefined;}
+                        })();
+                    </script>
+                </ui:fragment>
+
+                <!-- JSLogger error tracking -->
+                <!--<script type="text/javascript">
+                        (function () {
+                                var jsl=document.createElement('script');jsl.type='text/javascript';jsl.async=true;
+                                jsl.src=('https:'==document.location.protocol?'https:':'http:')+'//jslogger.com/jslogger.js';
+                                jsl.onload=function(){jslogger=new JSLogger();};
+                                var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(jsl,s);
+                        })();
+                </script>-->
+                <!-- Proxino error tracking -->
+                <!--<script type="text/javascript" src="https://www.proxino.com/p.js"></script>
+                <script type="text/javascript">
+                    Proxino.key = "yv9rIk-i4Jh7htO2KYDBhw";
+                    Proxino.track_errors();
+                    //Proxino.log("Hello World!");
+                </script>-->
+
+                <!-- Errorception error tracking -->
+                <!--<script>
+                    var _errs=["509a6af366e7b72724008580"];(function(a,b){a.onerror=function(){_errs.push(arguments)};
+                        var d=function(){var a=b.createElement("script"),c=b.getElementsByTagName("script")[0];
+                            a.src="//d15qhc0lu1ghnk.cloudfront.net/beacon.js";a.async=!0;
+                            c.parentNode.insertBefore(a,c)};a.addEventListener?a.addEventListener("load",d,!1):
+                           a.attachEvent("onload",d)})(window,document);
+                </script>-->
+
+                <!-- Google Analytics -->
+                <!--<script type="text/javascript">
+                        var _gaq = _gaq || [];
+                        _gaq.push(['_setAccount', 'UA-36197008-1']);
+                        _gaq.push(['_setLocalRemoteServerMode']);
+                        _gaq.push(['_trackPageview']);
+
+                        (function() {
+                                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                        })();
+                </script>-->
+
                 <!-- YUI Base -->
                 <ui:fragment rendered="#{!wegasConfig.assets_local}">
                     <!-- CDN -->
@@ -26,12 +84,14 @@
                 <script src="/Wegas/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
 
                 <!-- Wegas Loader -->
-                <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
+                <ui:fragment rendered="#{wegasConfig.debug}">
+                    <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
+                </ui:fragment>
+                <ui:fragment rendered="#{!wegasConfig.debug}">
+                    <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader-min.js"></script>
+                </ui:fragment>
 
                 <script type="text/javascript">
-
-                    var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                    comboBase = base + '/rest/combo?';
 
                     // Set up some YUI3 default parameters. Will be use for every call to
                     // the YUI(cfg) function. Can be overridden by the cfg parameter.
@@ -39,7 +99,7 @@
                     YUI_config.charset = 'ISO-8859-1';
                     YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.insertBefore = 'customstyles';
-                    YUI_config.debug = true;
+                    YUI_config.debug = #{wegasConfig.debug};
                     YUI_config.throwFail = true;                                // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function(msg, e, src) {
                         //console.log("ERRORFN", msg, e, src);
@@ -57,30 +117,36 @@
                     //YUI_config.logExclude = { event : true };
                     //YUI_config.logInclude = { event : true };
 
-                    YUI_config.groups.wegas.base = base + "/";                  // Set up wegas path
-                    YUI_config.groups.wegas.comboBase = comboBase;
-                    YUI_config.groups.wegas.combine = false;
-                    YUI_config.groups.wegas.filter = "min";
 
-                    YUI_config.groups.inputex.base = base + '/lib/inputex/src/';// Set up inputex path
-                    YUI_config.groups.inputex.comboBase = comboBase;
-                    YUI_config.groups.inputex.root = "/lib/inputex/src/";
-                    YUI_config.groups.inputex.combine = false;
-
-                    YUI_config.groups.ace.base = base + YUI_config.groups.ace.root;// Set up ace path
-                    YUI_config.groups.ace.comboBase = comboBase;
-
-                    YUI_config.groups.jsplumb.base =
-                        base + YUI_config.groups.jsplumb.root;                  // Set up jsplumb path
-                    YUI_config.groups.jsplumb.comboBase = comboBase;
-
-                    YUI_config.groups.libraries.base =
-                        base + YUI_config.groups.libraries.root;                // Set up libraries path
-                    YUI_config.groups.libraries.comboBase = comboBase;
+                    var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
+                    comboBase = base + '/rest/combo?';
+                    function setupLocalPath(groupName) {
+                        YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
+                        YUI_config.groups[groupName].comboBase = comboBase;
+                        //YUI_config.groups[name].comboBase = comboBase;
+                    }
+                    setupLocalPath("wegas");
+                    YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
+                    setupLocalPath("inputex");
+                    setupLocalPath("ace");                                      // Set up ace path
+                    setupLocalPath("jsplumb");                                  // Set up jsplumb path
+                    setupLocalPath("libraries");                                // Set up libraries path
                 </script>
-                
-                <!-- local assets -->
+
+                <ui:fragment rendered="#{!wegasConfig.debug}">
+                    <script>
+                        YUI_config.groups.inputex.combine = true;
+                    </script>
+                </ui:fragment>
+                <ui:fragment rendered="#{wegasConfig.debug}">
+                    <script>
+                        YUI_config.groups.wegas.filter = "raw";
+                        YUI_config.groups.wegas.combine = false;
+                    </script>
+                </ui:fragment>
+
                 <ui:fragment rendered="#{wegasConfig.assets_local}">
+                    <!-- local assets -->
                     <script>
                         YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
                         YUI_config.filter = "min";

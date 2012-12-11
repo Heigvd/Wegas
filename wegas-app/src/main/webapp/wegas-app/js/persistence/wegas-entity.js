@@ -207,14 +207,14 @@ YUI.add('wegas-entity', function (Y) {
                     children: {
                         type: "RolePermissionList",
                         permsList: [{
-                            name: "GameModel:Add"
+                            name: "GameModel:View"
                         },{
                             name: "GameModel:Edit"
                         },{
-                            name: "GameModel:Delete"
+                            name: "GameModel:Duplicate"
                         },{
-                            name: "GameModel:Create"
-                        },]
+                            name: "GameModel:Delete"
+                        }]
                     },
                     tabSelector: '#rightTabView'
                 }
@@ -275,13 +275,9 @@ YUI.add('wegas-entity', function (Y) {
                     children: {
                         type: "RolePermissionList",
                         permsList: [{
-                            name: "Game:Add"
+                            name: "Game:View"
                         },{
                             name: "Game:Edit"
-                        },{
-                            name: "Game:Delete"
-                        },{
-                            name: "Game:Create"
                         }]
                     },
                     tabSelector: '#rightTabView'

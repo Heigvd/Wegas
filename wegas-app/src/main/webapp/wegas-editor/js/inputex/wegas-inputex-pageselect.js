@@ -32,18 +32,28 @@ YUI.add("wegas-inputex-pageselect", function (Y) {
     };
 
     Y.extend(inputEx.Wegas.PageSelect, inputEx.SelectField, {
-
+        
         setOptions: function (options) {
-            var i;
             inputEx.Wegas.PageSelect.superclass.setOptions.call(this, options);
-            this.options.choices = [];
-            for (i in Y.Wegas.PageFacade.data) {
-                if (Y.Wegas.PageFacade.data.hasOwnProperty(i)) {
-                    this.options.choices.push({
-                        value: Y.Wegas.PageFacade.rest.getPage(i).id,
-                        label: "Page : " + Y.Wegas.PageFacade.rest.getPage(i).id
-                    });
-                }  
+            Y.Wegas.PageFacade.rest.getIndex(Y.bind(this.buildList, this));
+            
+        },
+        
+        setValue: function (val) {
+            inputEx.Wegas.PageSelect.superclass.setValue.apply(this, arguments);
+            this.options.value = val;
+        },
+        
+        buildList: function(value){
+            var i;
+            for(i in value){
+                this.addChoice({
+                    value: i,
+                    label: "Page : " + i
+                });
+                if (i == this.options.value){
+                    this.choicesList[i-1].node.selected = "selected"
+                }     
             }
         }
     });
