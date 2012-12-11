@@ -82,6 +82,23 @@ div.inputEx-fieldWrapper {
     height: 150px;
 }
 
+/* Variable descriptor select */
+.wegas-inputex-variabledescriptorselect .inputEx-fieldWrapper,
+.wegas-inputex-variabledescriptorselect .inputEx-CombineField,
+.wegas-inputex-variabledescriptorselect .inputEx-Group .inputEx-Group,
+.wegas-inputex-variabledescriptorselect div.inputEx-fieldWrapper {
+    float: left;
+    padding-left:0;
+}
+
+.wegas-inputex-variabledescriptorselect fieldset {
+    display: inline-block;
+}
+.wegas-inputex-variabledescriptorselect select {
+    width:auto;
+    max-width: 150px;
+}
+
 /* Wysiwyg code editor */
 .inputEx-WysiwigScript .inputEx-fieldWrapper,
 .inputEx-WysiwigScript .inputEx-CombineField,
@@ -89,13 +106,6 @@ div.inputEx-fieldWrapper {
 .inputEx-WysiwigScript div.inputEx-fieldWrapper {
     float: left;
     padding-left:0;
-}
-.inputEx-WysiwigScript fieldset {
-    display: inline-block;
-}
-.inputEx-WysiwigScript select {
-    width:auto;
-    max-width: 150px;
 }
 .inputEx-WysiwigScript div.inputEx-CombineField {
     padding:0;
