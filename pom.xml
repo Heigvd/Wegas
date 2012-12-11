@@ -51,11 +51,13 @@
         <jar.plugin.version>2.3.1</jar.plugin.version>
         <war.plugin.version>2.3</war.plugin.version>
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
-        <build.optimize>false</build.optimize>
-        <resources.local>true</resources.local>
         <skipTests>true</skipTests>
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
+
+        <resources.local>true</resources.local>
+        <wegas.debug>true</wegas.debug>
+        <build.optimize>false</build.optimize>
     </properties>
 
     <profiles>
