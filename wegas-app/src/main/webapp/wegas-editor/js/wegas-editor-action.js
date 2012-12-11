@@ -231,61 +231,61 @@ YUI.add('wegas-editor-action', function (Y) {
             parentEntity = this.get("parentEntity");
 
             switch (this.get("method")) {
-                case "put":
-                    EditEntityAction.showEditForm(entity, function (newVal) {
+            case "put":
+                EditEntityAction.showEditForm(entity, function (newVal) {
 
-                        entity.setAttrs(newVal);
+                    entity.setAttrs(newVal);
 
-                        dataSource.rest.put(parentEntity.toObject(), {
-                            success: function () {
-                                EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.showFormMessage("success", "Item has been updated");
-                            },
-                            failure: function (e) {
-                                EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
-                            }
-                        });
+                    dataSource.rest.put(parentEntity.toObject(), {
+                        success: function () {
+                            EditEntityAction.hideEditFormOverlay();
+                            EditEntityAction.showFormMessage("success", "Item has been updated");
+                        },
+                        failure: function (e) {
+                            EditEntityAction.hideEditFormOverlay();
+                            EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                        }
                     });
-                    break;
+                });
+                break;
 
-                case "post":
-                    var newEntity = Y.Wegas.Editable.revive({
-                        "@class": this.get("targetClass")
+            case "post":
+                var newEntity = Y.Wegas.Editable.revive({
+                    "@class": this.get("targetClass")
+                });
+                EditEntityAction.showEditForm(newEntity, Y.bind(function (newVal) {
+                    newEntity.setAttrs(newVal);
+                    entity.get(this.get("attributeKey")).push(newEntity);
+
+                    dataSource.rest.put(entity.toObject(), {
+                        success: function () {
+                            EditEntityAction.hideEditFormOverlay();
+                            EditEntityAction.showFormMessage("success", "Item has been added");
+                            EditEntityAction.hideFormFields();
+                        },
+                        failure: function (e) {
+                            EditEntityAction.hideEditFormOverlay();
+                            EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                        }
                     });
-                    EditEntityAction.showEditForm(newEntity, Y.bind(function (newVal) {
-                        newEntity.setAttrs(newVal);
-                        entity.get(this.get("attributeKey")).push(newEntity);
+                }, this));
+                break;
 
-                        dataSource.rest.put(entity.toObject(), {
-                            success: function () {
-                                EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.showFormMessage("success", "Item has been added");
-                                EditEntityAction.hideFormFields();
-                            },
-                            failure: function (e) {
-                                EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
-                            }
-                        });
-                    }, this));
-                    break;
-
-                case "delete":
-                    if (confirm("Are your sure your want to delete this item ?")) {
-                        var targetArray = parentEntity.get(this.get("attributeKey"));
-                        Y.Array.find(targetArray, function (e, i, a) {
-                            if (e.get("id") === entity.get("id")) {
-                                a.splice(i, 1);
-                                return true;
-                            }
-                            return false;
-                        });
-                        dataSource.rest.put(parentEntity.toObject());
-                    } else {
-                        return;
-                    }
-                    break;
+            case "delete":
+                if (confirm("Are your sure your want to delete this item ?")) {
+                    var targetArray = parentEntity.get(this.get("attributeKey"));
+                    Y.Array.find(targetArray, function (e, i, a) {
+                        if (e.get("id") === entity.get("id")) {
+                            a.splice(i, 1);
+                            return true;
+                        }
+                        return false;
+                    });
+                    dataSource.rest.put(parentEntity.toObject());
+                } else {
+                    return;
+                }
+                break;
             }
         }
     }, {

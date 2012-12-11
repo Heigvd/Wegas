@@ -278,19 +278,12 @@ YUI.add('wegas-editable', function (Y) {
             var classDef = Y.Wegas.persistence.DefaultEntity;
 
             if (o["@class"]) {
-                classDef = Y.Wegas.persistence[o["@class"]];
+                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity;
 
             } else if (o.type) {
                 classDef = Y.Wegas.persistence[o.type] || Y.Wegas.persistence.WidgetEntity;
 
-            } /*else {
-                if (o["@class"] && o["@class"].indexOf("Descriptor") !== -1) {  // @Hack so VariableDescriptors are instantiated even if they dont have a mapping
-                    classDef = Y.Wegas.persistence.VariableDescriptor;
-                }
-                if (o["@class"] && o["@class"].indexOf("Instance") !== -1) {    // @Hack so VariableInstances are instantiated even if they dont have a mapping
-                    classDef = Y.Wegas.persistence.VariableInstance;
-                }
-            }*/
+            }
             return new classDef(o);
         },
 
