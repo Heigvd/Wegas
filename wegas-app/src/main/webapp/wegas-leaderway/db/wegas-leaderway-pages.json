@@ -203,6 +203,7 @@
                 "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 5 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 4 : Elle a conscience de l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 3 : Elle sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li><li>Niveau 2 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 1 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li></ul>",
                 "selector": "li",
                 "name": "leadershipLevel",
+                "minVal" : "1",
                 "invert": "true"
             }, {
                 "name": "Conditions : ",
