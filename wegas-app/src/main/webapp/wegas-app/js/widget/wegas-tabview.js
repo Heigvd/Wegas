@@ -53,7 +53,7 @@ YUI.add('wegas-tabview', function (Y) {
                 tabs = tabView.add(tabCfg);                                     // Instantiate a new tab
                 return tabs.item(0);
             } else {                                                            // Otherwise,
-                TabView.tabs[id].setAttrs(tabCfg);                              // update the tab config
+            //TabView.tabs[id].setAttrs(tabCfg);                              // update the tab config
             }
             return TabView.tabs[id];
         },
@@ -64,11 +64,14 @@ YUI.add('wegas-tabview', function (Y) {
         findTabAndLoadWidget: function (id, tabViewSelector, tabCfg, widgetCfg, fn) {
             var nTab = TabView.createTab(id, tabViewSelector, tabCfg);          // create a new one
 
-            var w = nTab.removeAll();
-            w.each(function (i) {
+            nTab.removeAll().each(function (i) {
                 i.destroy();                                         // Empty it
             });
-
+            //nTab.each(function (i) {
+            //    i.remove();
+            //    i.destroy();
+            //});
+            nTab.get("panelNode").empty();                                       // @fixme since the above method is not enough
             nTab.load(widgetCfg, fn);                                           // Load target widget
             nTab.set("selected", 2);
             nTab.plug(Removeable);
@@ -96,29 +99,30 @@ YUI.add('wegas-tabview', function (Y) {
 
         this._items = [];
 
-        var children, handle;
-
+        var children,
+        handle;
+ 
         if (config && config.children) {
-
+ 
             children = config.children;
-
+        
             handle = this.after("initializedChange", function (e) {
                 this._add(children);
                 handle.detach();
             });
-
+ 
         }
-
+ 
         //  Widget method overlap
         Y.after(this._renderChildren, this, "renderUI");
         Y.after(this._bindUIParent, this, "bindUI");
-
-        //this.after("selectionChange", this._afterSelectionChange);
-        //this.after("selectedChange", this._afterParentSelectedChange);
-        //this.after("activeDescendantChange", this._afterActiveDescendantChange);
-
+ 
+        //        this.after("selectionChange", this._afterSelectionChange);
+        //        this.after("selectedChange", this._afterParentSelectedChange);
+        //        this.after("activeDescendantChange", this._afterActiveDescendantChange);
+ 
         this._hDestroyChild = this.after("*:destroy", this._afterDestroyChild);
-        this.after("*:focusedChange", this._updateActiveDescendant);
+        this.after("*:focusedChange", this._updateActiveDescendant);;
     }
 
     //Y.extend(Parent, Y.WidgetParent);
@@ -186,9 +190,10 @@ YUI.add('wegas-tabview', function (Y) {
                 child.render(renderTo);
             }, this);
         },
-        witem: function (index) {
+        witem: function(index) {
             return this._witems[index];
         }
+        
     }, {
 
         CSS_PREFIX: "yui3-tab",
