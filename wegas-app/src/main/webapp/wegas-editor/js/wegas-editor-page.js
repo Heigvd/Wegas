@@ -160,7 +160,7 @@ YUI.add('wegas-editor-page', function(Y) {
             this.tw.removeAll();
             for (i in index) {
                 node = new Y.TreeNode({
-                    label: "Page: " + index[i] + " (" + i + ")",
+                    label: "Page: " + Y.Lang.isString(index[i]) ? index[i] : "" + " (" + i + ")",
                     data: {
                         page: i
                     }
