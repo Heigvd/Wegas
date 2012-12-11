@@ -14,7 +14,7 @@
                         "label": "Money",
                         "view": "text",
                         "variable": {
-                            "name": "money"
+                            "id": "1206"
                         }
                     }, {
                         "type": "Text",
