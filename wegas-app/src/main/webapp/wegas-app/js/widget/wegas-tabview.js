@@ -62,19 +62,16 @@ YUI.add('wegas-tabview', function (Y) {
          *  Helper function
          */
         findTabAndLoadWidget: function (id, tabViewSelector, tabCfg, widgetCfg, fn) {
-            var tab = TabView.getTab(id),                                       // Look for the tab
-            nTab = TabView.createTab(id, tabViewSelector, tabCfg);        // create a new one
-            if (!tab || tab.get("destroyed")) {                                 // If it does not exist,
-                nTab.load(widgetCfg, fn);                                       // and load the widget in it.
-            } else {                                                            // Otherwise,
-                nTab.item(0).setAttrs(widgetCfg);                               // @fixme what is the widget is of a different class ?
-                nTab.item(0).syncUI();                                          // force sync
-                if (fn) {
-                    fn(nTab.item(0));                                           // and trigger the callback
-                }
-            }
-            tab.set("selected", 2);
-            tab.plug(Removeable);
+            var nTab = TabView.createTab(id, tabViewSelector, tabCfg);          // create a new one
+
+            var w = nTab.removeAll();
+            w.each(function (i) {
+                i.destroy();                                         // Empty it
+            });
+
+            nTab.load(widgetCfg, fn);                                           // Load target widget
+            nTab.set("selected", 2);
+            nTab.plug(Removeable);
         }
     });
     Y.namespace('Wegas').TabView = TabView;
@@ -139,7 +136,7 @@ YUI.add('wegas-tabview', function (Y) {
         // *** Private Fields *** //
 
         // *** Lifecycle Methods *** //
-        initializer: function(cfg) {
+        initializer: function (cfg) {
             Tab.superclass.initializer.apply(this, arguments);
             TabView.tabs[cfg.id || cfg.label] = this;
             this._witems = [];
@@ -268,13 +265,13 @@ YUI.add('wegas-tabview', function (Y) {
 
         REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
 
-        initializer: function() {
-            this.onHostEvent("removeChild", function (e) {
+        initializer: function () {
+            this.onHostEvent("removeChild", function () {
                 if (this.get("host").size() === 1) {
                     Y.Wegas.app.widget.hidePosition("right");
                 }
             });
-            this.onHostEvent("addChild", function (e) {
+            this.onHostEvent("addChild", function () {
                 if (this.get("host").isEmpty()) {
                     Y.Wegas.app.widget.showPosition("right");
                 }
