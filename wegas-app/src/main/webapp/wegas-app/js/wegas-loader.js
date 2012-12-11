@@ -237,8 +237,8 @@ YUI().use(function(Y) {
                         requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
                         'inputex-select', /*'wegas-inputex-list', 'inputex-jsonschema',*/],
                         ix_provides: ["entityarrayfieldselect"]
-
                     },
+
                     'wegas-inputex-wysiwygscript': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
                         requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
@@ -274,7 +274,9 @@ YUI().use(function(Y) {
                     },
                     'wegas-inputex-variableselect': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-variableselect-min.js',
-                        requires: ['inputex-group', 'wegas-inputex-wysiwygscript'],
+                        requires: ['wegas-inputex', 'inputex-group', 'inputex-textarea',
+                        'wegas-inputex-variabledescriptorselect', 'wegas-button',
+                        'esprima' ],
                         ix_provides: 'variableselect'
                     },
                     /** Common Widgets **/

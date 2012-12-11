@@ -36,6 +36,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
 
     Y.extend(VariableDescriptorSelect, inputEx.Group, {
 
+        currentEntityField: null,
+
         /**
 	 * Setup the options.fields from the availableFields option
 	 */
@@ -51,12 +53,15 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
         },
 
         setValue: function (val) {
-        // Set value should not ba called directly
-        //Y.log("VariableDescriptorSelect.setValue", val);
+            // Set value should not ba called directly
+            //Y.log("VariableDescriptorSelect.setValue", val);
+            VariableDescriptorSelect.superclass.setValue.apply(this, arguments);
+            this.options.value = val;
+            this.syncUI();
         },
 
         getValue: function () {
-            return "VariableDescriptorFacade.find(" + this.inputs[this.inputs.length - 1].getValue() + ")";
+            return "VariableDescriptorFacade.find(" + this.currentEntityField.getValue() + ")";
         },
 
         syncUI: function () {
@@ -79,6 +84,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             for (i = 0; i < ret.length; i += 1) {
                 this.addField(ret[i]);
             }
+            this.currentEntityField = this.inputs[this.inputs.length - 1];
         },
         /**
          *
@@ -141,11 +147,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
         genChoices: function (entity, items) {
             var i, choices = [];
 
-            if (items && items.length > 0) {                                    // If required, push separator
-                choices.push({
-                    value: "----------"
-                });
-            }
             if (items) {
                 for (i = 0; i < items.length; i += 1) {
                     choices.push({
@@ -173,6 +174,18 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
                 this.addField(this.generateSelectConfig(null,                   // Pushes the current entity methods and children to the stack
                     this.currentEntity, this.currentEntity.get("items")));
             }
+        },
+
+        genChoices: function (entity, items) {
+            var choices = [];
+
+            if (items && items.length > 0) {                                    // If required, push separator
+                choices.push({
+                    value: "----------"
+                });
+            }
+
+            return choices.concat(VariableDescriptorGetter.superclass.genChoices.apply(this, arguments));
         }
     });
 
@@ -272,11 +285,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
                 choices = choices.concat(this.getMethods(entity));              // Push the methods to the select choices
             }
 
-            /*if (items && choices.length > 0) {                                  // If required, push separator
+            if (items && choices.length > 0) {                                  // If required, push separator
                 choices.push({
                     value: "----------"
                 });
-            }*/
+            }
             return choices.concat(VariableDescriptorMethod.superclass.genChoices.apply(this, arguments));
         },
 
