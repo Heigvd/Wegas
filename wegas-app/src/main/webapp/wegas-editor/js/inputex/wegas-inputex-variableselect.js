@@ -48,7 +48,7 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
                 this.inputs[1].el.value =  val.expr;
                 return;
             } else if (val.id) {
-                findVal = Y.Wegas.VariableDescriptorFacade.rest.find('id', val.id);
+                findVal = Y.Wegas.VariableDescriptorFacade.rest.findById(val.id);
             }
             this.inputs[0].setValue(findVal.get("id"));                         // @fixme
         },
