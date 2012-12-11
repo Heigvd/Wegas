@@ -56,6 +56,7 @@
         <skipTests>true</skipTests>
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
+        <wegas.debug>true</wegas.debug>
     </properties>
 
     <profiles>
