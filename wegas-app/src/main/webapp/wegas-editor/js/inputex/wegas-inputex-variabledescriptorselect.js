@@ -364,7 +364,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
         },
 
         /**
-         * Overrid to prevent
+         * Override to prevent
          */
         onChange: function (fieldValue, fieldInstance) {
             VariableDescriptorCondition.superclass.onChange.apply(this, arguments);
