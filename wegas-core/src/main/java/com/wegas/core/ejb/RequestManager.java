@@ -53,7 +53,7 @@ public class RequestManager implements Serializable {
      *
      */
     private Locale locale;
-    
+
     /**
      *
      */
@@ -131,13 +131,13 @@ public class RequestManager implements Serializable {
     public void setView(Class view) {
         this.view = view;
     }
-    
+
     /**
-     * 
+     *
      * @return the ResourceBundle
      */
     public ResourceBundle getBundle(String bundle){
-        return ResourceBundle.getBundle(bundle, this.locale); 
+        return ResourceBundle.getBundle(bundle, this.locale);
     }
 
     /**

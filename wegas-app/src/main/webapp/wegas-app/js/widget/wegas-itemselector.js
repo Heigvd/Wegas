@@ -140,7 +140,7 @@ YUI.add('wegas-itemselector', function (Y) {
                             }, className);
                             break;
                         case 'position' :
-                            child = this.makeNodePosition(obj['html'], obj['selector'], value, obj['invert'], className);
+                            child = this.makeNodePosition(obj['html'], obj['selector'], value, obj['minVal'], obj['invert'], className);
                             break;
                         case 'valueBox' :
                             child = this.makeNodeValueBox(value, obj['maxValue'], label, className);

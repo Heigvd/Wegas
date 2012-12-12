@@ -50,9 +50,9 @@ YUI.add('wegas-nodeformatter', function (Y) {
             node.append('<span class="box-value">(' + value + '<span class="box-valueMax">/' + maxVal + '</span>)</span>');
             return node;
         },
-        makeNodePosition: function (html, selector, value, invert, className) {
+        makeNodePosition: function (html, selector, value, minVal, invert, className) {
             var node = new Y.Node.create('<div class="nodeformatter-position"></div>');
-            value = (typeof value === 'number') ? value : -1;
+            value = (parseInt(value) || -1) - minVal;
             invert = (invert == 'true') ? true : false;
             if (className) {
                 node.addClass(className);

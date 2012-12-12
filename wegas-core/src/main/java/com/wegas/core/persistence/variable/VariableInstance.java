@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.ejb.Helper;
+import com.wegas.core.ejb.RequestManagerFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -89,12 +90,7 @@ abstract public class VariableInstance extends AbstractEntity {
         if (this.getScope() == null) {                                          // If the instance has no scope, it means it's a default
             return;                                                             // default Instance and the updated event is not sent
         }
-        try {
-            Helper.lookupBy(VariableInstanceFacade.class).onVariableInstanceUpdate(this);
-        }
-        catch (NamingException ex) {
-            logger.error("Error looking up VariableInstanceFacade");
-        }
+        RequestManagerFacade.lookup().getRequestManager().addUpdatedInstance(this);
     }
 
     /**
