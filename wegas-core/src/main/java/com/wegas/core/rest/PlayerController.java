@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -38,8 +40,30 @@ public class PlayerController extends AbstractRestController<PlayerFacade, Playe
      */
     @Override
     public Player create(Player entity) {
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        
         playerFacade.create(new Long(this.getPathParam("teamId")), entity);
         return entity;
+    }
+    
+    @Override
+    public Player update(Long entityId, Player entity){
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        
+        return super.update(entityId, entity);
+    }
+    
+    @Override
+    public Player delete(Long entityId){
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        
+        return super.delete(entityId); 
     }
 
     /**
