@@ -191,7 +191,7 @@
                     "defaultInstance": {
                         "@class": "ResourceInstance",
                         "moral": 72,
-                        "confidence": 27,
+                        "confidence": 75,
                         "properties": {
                             "picture": "/Wegas/rest/File/GameModelId/1/read/fernandPortrait.png",
                             "surname": "Fernand",
@@ -203,7 +203,7 @@
                             "hate": "Design graphique",
                             "frankness": 90,
                             "numberOfWorkWithLeader": 0,
-                            "totalExperienceGained": 0,
+                            "totalExperienceGained": 120,
                             "learningCoefficient": 0.7,
                             "dialogue": "dialogueFernand",
                             "hiddenVariables": "",
@@ -1848,7 +1848,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                    "text": "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -2668,7 +2668,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                    "text": "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -3488,7 +3488,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                    "text": "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -4200,11 +4200,14 @@
                     }
                 },
                 "27": {
-                    "@class": "DialogueState",
-                    "text": "",
+                    "@class": "State",
+                    "onEnterEvent": {
+                        "@class": "Script",
+                        "content": "true",
+                        "language": "JavaScript"
+                    },
                     "transitions": [{
-                            "@class": "DialogueTransition",
-                            "actionText": "Suite",
+                            "@class": "Transition",
                             "nextStateId": 29,
                             "triggerCondition": {
                                 "@class": "Script",
@@ -4212,8 +4215,7 @@
                                 "language": "JavaScript"
                             }
                         }, {
-                            "@class": "DialogueTransition",
-                            "actionText": "Suite",
+                            "@class": "Transition",
                             "nextStateId": 32,
                             "triggerCondition": {
                                 "@class": "Script",
@@ -4221,8 +4223,7 @@
                                 "language": "JavaScript"
                             }
                         }, {
-                            "@class": "DialogueTransition",
-                            "actionText": "Suite",
+                            "@class": "Transition",
                             "nextStateId": 35,
                             "triggerCondition": {
                                 "@class": "Script",
@@ -4230,8 +4231,7 @@
                                 "language": "JavaScript"
                             }
                         }, {
-                            "@class": "DialogueTransition",
-                            "actionText": "Suite",
+                            "@class": "Transition",
                             "nextStateId": 37
                         }],
                     "editorPosition": {
@@ -4308,7 +4308,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                    "text": "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -5128,7 +5128,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n",
+                    "text": "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine ‘&codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code', j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/Wegas/rest/File/GameModelId/1/read/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",

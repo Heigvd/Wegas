@@ -34,18 +34,6 @@ import javax.mail.internet.MimeMessage;
 @LocalBean
 public class EMailFacade {
 
-    /**
-     *
-     * @param messageEvent
-     */
-    public void listener(@Observes MessageEvent messageEvent) {
-        // @fixme remove this hardcoded condition w/ some db values or at least a line in the prop file
-//        if (messageEvent.getType().equals("important")) {
-            this.send("fx@red-agent.com", "admin@wegas.com",
-                    messageEvent.getMessage().getSubject(),
-                    messageEvent.getMessage().getBody());
-//        }
-    }
 
     /**
      *
@@ -60,7 +48,7 @@ public class EMailFacade {
         Properties props = System.getProperties();
 
         ResourceBundle res = ResourceBundle.getBundle("wegas");
-        props.put("mail.smtp.host", res.getString("mail.smtp.host"));           // Attaching to default Session, or we could start a new one
+        props.put("smtp.hev.ch", res.getString("smtp.hev.ch"));           // Attaching to default Session, or we could start a new one
 
         Session session = Session.getDefaultInstance(props, null);
 
@@ -94,8 +82,7 @@ public class EMailFacade {
      * @param body
      */
     public void send(Player p, String from, String subject, String body) {
-        //this.send(p.getUser().getName(), from, subject, body);
-        this.send("fx@red-agent.com", from, subject, body);
+        this.send(p.getUser().getName(), from, subject, body);
     }
 
     /**
@@ -105,5 +92,17 @@ public class EMailFacade {
      */
     public void send(Player p, Message msg) {
         this.send(p, "admin@wegas.com", msg.getSubject(), msg.getBody());
+    }
+    /**
+     *
+     * @param messageEvent
+     */
+    public void listener(@Observes MessageEvent messageEvent) {
+        // @fixme remove this hardcoded condition w/ some db values or at least a line in the prop file
+//        if (messageEvent.getType().equals("important")) {
+//            this.send("fx@red-agent.com", "admin@wegas.com",
+//                    messageEvent.getMessage().getSubject(),
+//                    messageEvent.getMessage().getBody());
+//        }
     }
 }
