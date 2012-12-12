@@ -152,6 +152,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                         return;
                     }
                     value = this.sendNewPasswordForm.getValue();
+                    this.showOverlay();
                     this.sendNewPassword(value.email);
                 }
             }, this);
@@ -224,10 +225,12 @@ YUI.add('wegas-loginwidget', function (Y) {
                 },
                 on: {
                     success: Y.bind(function (e) {
+                        this.hideOverlay();
                         this.showMessage("success", "Your new password has been sent", 4000);
                         this.set("mode", "login");
                     }, this),
                     failure: Y.bind(function (e) {
+                        this.hideOverlay();
                         this.showMessage("error", e.response.results.message || "Error sent new password", 4000);
                     }, this)
                 }
