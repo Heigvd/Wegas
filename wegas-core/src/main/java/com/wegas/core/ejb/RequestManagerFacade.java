@@ -72,11 +72,14 @@ public class RequestManagerFacade {
     public static RequestManagerFacade lookup() {
         try {
             return Helper.lookupBy(RequestManagerFacade.class);
-        }
-        catch (NamingException ex) {
+        } catch (NamingException ex) {
             logger.error("Error retrieving requestmanager", ex);
             return null;
         }
+    }
+
+    public void commit() {
+        this.requestManager.commit();
     }
 
     /**
