@@ -5,4 +5,6 @@
     <include file="dbchangelogs/dbcreate.xml"/>
     <include file="dbchangelogs/initialInsert.xml"/>
     <include file="dbchangelogs/dbchanges.xml"/>
+    <include file="dbchangelogs/wegas-cs-1.xml"/>
+    
 </databaseChangeLog>

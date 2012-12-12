@@ -338,3 +338,8 @@ body {
     float: right;
     padding: 3px;
 }
+
+.lobbyOr {
+    margin-left: 135px;
+    font-weight: bold;
+}
