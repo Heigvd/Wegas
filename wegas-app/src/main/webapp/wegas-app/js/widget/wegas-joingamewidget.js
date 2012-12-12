@@ -28,12 +28,23 @@ YUI.add('wegas-joingamewidget', function (Y) {
         // *** Lifecycle Methods *** //
         renderUI: function () {
             var cb = this.get(CONTENTBOX);
-
+            
             this.tokenField = new Y.inputEx.StringField({                       // Render
-                required: "true",
+                required: false,
                 parentEl: cb,
-                label: "Enter a key phrase to join a game"
+                label: "Enter a key phrase to join a game",
+                typeInvite: "Enter a token"
             });
+            
+            this.p = Y.Node.create('<div class="lobbyOr"><p>Or</p><div>');
+            cb.appendChild(this.p.getDOMNode());
+            
+            this.selectPublicGame = new Y.inputEx.SelectField({                       // Render public games
+                required: false,
+                parentEl: cb,
+                label: "Select a public game"
+            });
+            
             this.joinGameButton = new Y.Button({
                 label: "Join game"
             });
@@ -65,10 +76,32 @@ YUI.add('wegas-joingamewidget', function (Y) {
         },
 
         bindUI: function () {
+            this.gameToJoin = null;
+            this.showPublicGames();
+            
+            this.tokenField.on("updated", function (e) {
+                if (this.tokenField.getValue()!=""){
+                    this.selectPublicGame.setValue("");
+                }
+            }, this);
+            
+            this.selectPublicGame.on("updated", function (e) {
+                if (this.selectPublicGame.getValue()!=""){
+                    this.tokenField.setValue("");
+                }
+            }, this);
+            
             this.joinGameButton.on("click", function (e) {                      // join a game based on a token
-                if (this.tokenField.validate()) {
+                if (this.tokenField.getValue() != ""){
+                    this.gameToJoin = this.tokenField.getValue()
+                }else if (this.selectPublicGame.getValue() != ""){
+                    this.gameToJoin = this.selectPublicGame.getValue()
+                }else{
+                    this.showMessage("error", "A key phrase or a public Game must be selected");
+                }
+                if (this.gameToJoin != null) {
                     Y.Wegas.GameFacade.rest.sendRequest({
-                        request: "/JoinGame/" + this.tokenField.getValue(),
+                        request: "/JoinGame/" + this.gameToJoin,
                         on: {
                             success: Y.bind(function (e) {
                                 if (e.response.entity                           // If the returned value is a Team enity
@@ -114,6 +147,8 @@ YUI.add('wegas-joingamewidget', function (Y) {
 
             this.joinGameButton.hide();
             this.tokenField.hide();
+            this.selectPublicGame.hide();
+            this.p.hide();
             this.joinTeamButton.show();
             this.teamsField.show();
             this.createButton.show();
@@ -129,6 +164,31 @@ YUI.add('wegas-joingamewidget', function (Y) {
                     value: teams[i].get("id")
                 });
             }
+        },
+        
+        showPublicGames: function (){
+            this.selectPublicGame.addChoice({
+                label: "--Select--",
+                value: ""
+            });
+            
+            Y.Wegas.PublicGamesFacade.rest.sendRequest({
+                request: "/Games/",
+                on: {
+                    success: Y.bind(function (e) {                  
+                        var data = e.response.results.entities;
+                        Y.Array.forEach(data, function (game) {
+                            this.selectPublicGame.addChoice({
+                                label: game.toObject().name,
+                                value: game.toObject().token
+                            });                            
+                        }, this);
+                    }, this),
+                    failure: Y.bind(function (e) {
+                        this.showMessage("error", "Error");
+                    }, this)
+                }
+            });       
         },
 
         sendJoinTeamRequest: function (teamId) {

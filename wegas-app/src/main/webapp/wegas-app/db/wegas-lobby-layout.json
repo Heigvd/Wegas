@@ -34,7 +34,7 @@
                 "type": "Tab",
                 "label": "Join a game",
                 "children": [{
-                    "type": "JoinGameWidget"
+                    "type": "JoinGameWidget"                    
                 }]
             }]
         }]
