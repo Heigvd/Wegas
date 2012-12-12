@@ -48,7 +48,7 @@ public class EMailFacade {
         Properties props = System.getProperties();
 
         ResourceBundle res = ResourceBundle.getBundle("wegas");
-        props.put("smtp.hev.ch", res.getString("smtp.hev.ch"));           // Attaching to default Session, or we could start a new one
+        props.put("mail.smtp.host", res.getString("mail.smtp.host"));           // Attaching to default Session, or we could start a new one
 
         Session session = Session.getDefaultInstance(props, null);
 
