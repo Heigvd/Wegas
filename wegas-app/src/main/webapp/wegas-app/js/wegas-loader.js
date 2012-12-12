@@ -232,12 +232,20 @@ YUI().use(function(Y) {
                         requires: ['inputex-textarea']
                     //ix_provides: 'script'
                     },
+                    'wegas-inputex-variabledescriptorselect': {
+                        path: 'wegas-editor/js/inputex/wegas-inputex-variabledescriptorselect-min.js',
+                        requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
+                        'inputex-select', /*'wegas-inputex-list', 'inputex-jsonschema',*/],
+                        ix_provides: ["entityarrayfieldselect"]
+                    },
+
                     'wegas-inputex-wysiwygscript': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
-                        requires: ['wegas-inputex', 'wegas-inputex-script', 'wegas-inputex-list',
-                        'wegas-button', 'inputex-hidden', 'inputex-jsonschema', 'inputex-combine',
-                        'inputex-select', 'esprima' /*, 'escodegen'*/],
-                        ix_provides: ['script', "entityarrayfieldselect"]
+                        requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
+                        'wegas-inputex-variabledescriptorselect',
+                        'wegas-button',  'inputex-jsonschema',
+                        'esprima' /*'inputex-hidden', 'escodegen'*/],
+                        ix_provides: ['script']
                     },
                     'wegas-inputex-url': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-url-min.js',
@@ -266,7 +274,9 @@ YUI().use(function(Y) {
                     },
                     'wegas-inputex-variableselect': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-variableselect-min.js',
-                        requires: ['inputex-group', 'wegas-inputex-wysiwygscript'],
+                        requires: ['wegas-inputex', 'inputex-group', 'inputex-textarea',
+                        'wegas-inputex-variabledescriptorselect', 'wegas-button',
+                        'esprima' ],
                         ix_provides: 'variableselect'
                     },
                     /** Common Widgets **/

@@ -54,7 +54,9 @@
 }
 
 /* Proxy styles */
-.yui3-skin-sam .wegas-widgetmenu-hassubmenu,
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu{
+    position: relative;
+}
 .yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button {
     position: relative;
     padding-right: 20px;
