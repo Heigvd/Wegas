@@ -352,14 +352,11 @@ body {
     display: none;
 }
 .yui3-skin-sam .wegas-pageeditor-overlay {
-<<<<<<< HEAD
     font-style:normal;
     font-size: 8pt;
     font-weight: bold;
     letter-spacing: normal;
     text-align: center;
-=======
->>>>>>> master
     position: absolute;
     pointer-events: none;
     line-height: normal;
