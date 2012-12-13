@@ -132,28 +132,28 @@ YUI.add('wegas-loginwidget', function (Y) {
 
 
             this.loginButton.on("click", function (e) {                      // join a game based on a token
-                var value;
+                var data;
                 if (this.get("mode") === "login") {
                     if (!this.loginForm.validate()) {
                         return;
                     }
-                    value = this.loginForm.getValue();
-                    this.doLogin(value.email, value.password, value.remember);
+                    data = this.loginForm.getValue();
+                    this.doLogin(data.email, data.password, data.remember);
 
                 } else if (this.get("mode") === "createaccount") {
                     if (!this.createAccountForm.validate()) {
                         return;
                     }
-                    value = this.createAccountForm.getValue();
-                    this.createAccount(value);
+                    data = this.createAccountForm.getValue();
+                    this.createAccount(data);
 
                 } else if (this.get("mode") === "sendNewPassword") {
                     if (!this.sendNewPasswordForm.validate()) {
                         return;
                     }
-                    value = this.sendNewPasswordForm.getValue();
+                    data = this.sendNewPasswordForm.getValue();
                     this.showOverlay();
-                    this.sendNewPassword(value.email);
+                    this.sendNewPassword(data.email);
                 }
             }, this);
             this.on("keypress", function (e) {
@@ -199,12 +199,12 @@ YUI.add('wegas-loginwidget', function (Y) {
                 }
             });
         },
-        createAccount: function (value) {
+        createAccount: function (data) {
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/Signup/",
                 cfg: {
                     method: "POST",
-                    data: value
+                    data: data
                 },
                 on: {
                     success: Y.bind(function (e) {
@@ -219,7 +219,7 @@ YUI.add('wegas-loginwidget', function (Y) {
         },
         sendNewPassword: function (email) {
             Y.Wegas.UserFacade.rest.sendRequest({
-                request: "/SendNewPassword/?email=" + email,
+                request: "/SendNewPassword/?email="+email,
                 cfg: {
                     method: "POST"
                 },

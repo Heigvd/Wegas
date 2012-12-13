@@ -210,7 +210,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         JpaAccount acc = (JpaAccount) accountFacade.findByEmail(email);
         EMailFacade emailFacade = new EMailFacade();
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        String newPassword = rng.nextBytes().toHex().substring(0, 8);
+        String newPassword = rng.nextBytes().toHex().substring(0, 12);
         String subject = "Wegas account";
         String body = "A new password for your wegas account has been successfully created: " + newPassword;
         if (acc != null) {
