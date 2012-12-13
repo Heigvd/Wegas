@@ -11,6 +11,7 @@ package com.wegas.core.rest.util;
 
 import com.sun.jersey.spi.container.*;
 import com.wegas.core.ejb.Helper;
+import com.wegas.core.ejb.RequestManagerFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -42,8 +43,16 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
      */
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
+
+
+        RequestManagerFacade requestManagerFacade = RequestManagerFacade.lookup();
+
+        if (requestManagerFacade.getPlayer() != null) {
+            //....
+        }
+
         if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))//) {
-                && !( response.getEntity() instanceof ExceptionWrapper )) { // If there was an exception during the request, we forward it without a change
+                && !(response.getEntity() instanceof ExceptionWrapper)) {       // If there was an exception during the request, we forward it without a change
 
             ServerResponse serverResponse = new ServerResponse();
 
@@ -57,14 +66,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             }
             response.setEntity(serverResponse);
 
-            try {
-                VariableInstanceFacade gameManager = Helper.lookupBy(VariableInstanceFacade.class);
-                if (!gameManager.getUpdatedInstances().isEmpty()) {
-                    serverResponse.getEvents().add(new EntityUpdatedEvent(gameManager.getUpdatedInstances()));
-                }
-            }
-            catch (NamingException ex) {
-                logger.error("Unable to find the game manager.");
+            if (!requestManagerFacade.getUpdatedInstances().isEmpty()) {
+                serverResponse.getEvents().add(new EntityUpdatedEvent(requestManagerFacade.getUpdatedInstances()));
             }
 
         }
@@ -97,7 +100,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         /**
          *
          */
-       // @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+        // @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
         private List<AbstractEntity> entities;
         /**
          *

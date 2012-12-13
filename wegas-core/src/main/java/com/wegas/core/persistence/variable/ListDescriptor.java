@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,7 +9,6 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.ejb.Helper;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import java.util.ArrayList;

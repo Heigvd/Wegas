@@ -10,6 +10,8 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
@@ -96,4 +98,13 @@ public class RequestManagerFacade {
     public ResourceBundle getBundle(String name) {
         return this.requestManager.getBundle(name);
     }
+
+    /**
+     *
+     * @return
+     */
+    public List<VariableInstance> getUpdatedInstances() {
+        return requestManager.getUpdatedInstances();
+    }
+
 }
