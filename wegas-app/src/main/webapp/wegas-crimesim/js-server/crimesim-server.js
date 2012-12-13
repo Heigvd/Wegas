@@ -62,7 +62,7 @@ function nextWeek() {
     var qdf = lookupBean("QuestionDescriptorFacade"),
     items = evidences.descriptor.items;
 
-    humanResources.value = 15;
+    humanResources.value =  humanResources.descriptor.maxValue;
 
     for (var i = 0; i < items.size(); i += 1) {
         var questionInstance = items.get(i).getInstance(self);
