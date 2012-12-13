@@ -72,10 +72,10 @@ public class RequestManager implements Serializable {
                     System.out.println(variableInstanceFacade.findAPlayer(instance) + ", ");
 
                     Player p = variableInstanceFacade.findAPlayer(instance);
+                    List<Player> players = variableInstanceFacade.findAllPlayer(instance);
 
                     System.out.println("This player has an update: " + p);
 
-                    List<Player> players = null;
                     //PlayerAction action = new PlayerAction();
                     //action.setPlayer(variableInstanceFacade.findAPlayer(instance));
                     //playerActionEvent.fire(action);
