@@ -10,6 +10,7 @@
 package com.wegas.core.security.rest;
 
 import com.wegas.core.rest.AbstractRestController;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.User;
@@ -24,6 +25,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.subject.Subject;
 
 /**
@@ -94,7 +97,6 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Path("Signup")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-
     public void signup(@FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("firstname") String firstname,
@@ -110,19 +112,33 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     }
 
     /**
+     *
+     * @param email
+     */
+    @POST
+    @Path("SendNewPassword")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void sendNewPassword(@QueryParam("email") String email,
+            @Context HttpServletRequest request) {
+        userFacade.sendNewPassword(email);
+    }
+
+    /**
      * Get all GameModel permissions by GameModel id
+     *
      * @param gameModelId
      * @return
      */
     @GET
     @Path("GameModelPermissions/{gameModelId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Map> findPermissionByGameModelId(@PathParam("gameModelId") String gameModelId){
+    public List<Map> findPermissionByGameModelId(@PathParam("gameModelId") String gameModelId) {
         return this.userFacade.findPermissionByGameModelId(gameModelId);
     }
 
     /**
      * Delete permission by role and permission
+     *
      * @param roleId
      * @param permission
      * @return
@@ -132,12 +148,13 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public boolean deletePermissionByGameModelIdAndPermissions(@PathParam("roleId") Long roleId,
-    @PathParam("permission") String permission){
+            @PathParam("permission") String permission) {
         return this.userFacade.deletePermissionByGameModelIdAndPermissions(roleId, permission);
     }
 
     /**
      * Create role_permissions
+     *
      * @param roleId
      * @param permission
      * @return
@@ -147,12 +164,13 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public boolean addPermissionByGameModelIdAndPermissions(@PathParam("roleId") Long roleId,
-    @PathParam("permission") String permission){
+            @PathParam("permission") String permission) {
         return this.userFacade.addPermissionByGameModelIdAndPermissions(roleId, permission);
     }
 
     /**
      * Delete all permission from a role in a Game or GameModel
+     *
      * @param roleId
      * @param gameModelId
      * @return
@@ -162,7 +180,7 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId,
-    @PathParam("gameModelId") String gameModelId){
+            @PathParam("gameModelId") String gameModelId) {
         return this.userFacade.deleteAllRolePermissions(roleId, gameModelId);
     }
 }

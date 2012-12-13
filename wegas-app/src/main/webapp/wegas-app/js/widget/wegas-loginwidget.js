@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-loginwidget', function(Y) {
+YUI.add('wegas-loginwidget', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -29,8 +29,8 @@ YUI.add('wegas-loginwidget', function(Y) {
         defaultRedirect: "wegas-app/view/lobby.html",
         // *** Lifecycle Methods *** //
 
-        renderUI: function() {
-            var cb = this.get(CONTENTBOX),
+        renderUI: function () {
+            var linksNode, cb = this.get(CONTENTBOX),
                     cUser = Y.Wegas.app.get("currentUser");
 
             if (cUser.accounts[0]["@class"] !== "GuestAccount") {
@@ -106,66 +106,80 @@ YUI.add('wegas-loginwidget', function(Y) {
                     }]
             });
 
+            this.sendNewPasswordForm = new Y.inputEx.Group({
+                fields: [{
+                        name: "email",
+                        label: "Email",
+                        required: true,
+                        type: "email"
+                    }],
+                parentEl: cb
+            });
+
             this.loginButton = new Y.Button();
             this.loginButton.render(cb);
-
-            cb.append('&nbsp;or <a class="alt-link" href="#"></a>');
+            linksNode = Y.Node.create('<div class="links" style="display:inline-block; padding: 5px;"></div>');
+            linksNode.append('<p><span>or </span><a class="alt-link" href="#"></a></p>');
+            linksNode.append('<p><a class="send-new-password" href="#">Forgot your password?</a></p>');
+            cb.append(linksNode);
         },
-        bindUI: function() {
+        bindUI: function () {
             var cb = this.get(CONTENTBOX);
 
-            cb.one(".alt-link").on("click", this.toggleMode, this);
+            cb.one(".alt-link").on("click", this.toggleCreateAccount, this);
 
-            this.loginButton.on("click", function(e) {                      // join a game based on a token
+            cb.one(".send-new-password").on("click", this.toggleSendNewPassword, this);
 
+
+            this.loginButton.on("click", function (e) {                      // join a game based on a token
+                var data;
                 if (this.get("mode") === "login") {
                     if (!this.loginForm.validate()) {
                         return;
                     }
+                    data = this.loginForm.getValue();
+                    this.doLogin(data.email, data.password, data.remember);
 
-                    var value = this.loginForm.getValue();
-                    this.doLogin(value.email, value.password, value.remember);
-
-                } else {
+                } else if (this.get("mode") === "createaccount") {
                     if (!this.createAccountForm.validate()) {
                         return;
                     }
+                    data = this.createAccountForm.getValue();
+                    this.createAccount(data);
 
-                    Y.Wegas.UserFacade.rest.sendRequest({
-                        request: "/Signup/",
-                        cfg: {
-                            method: "POST",
-                            data: this.createAccountForm.getValue()
-                        },
-                        on: {
-                            success: Y.bind(function(e) {
-                                this.showMessage("success", "User created, you can now use it to login", 4000);
-                                this.set("mode", "login");
-                            }, this),
-                            failure: Y.bind(function(e) {
-                                this.showMessage("error", e.response.results.message || "Error creating user", 4000);
-                            }, this)
-                        }
-                    });
+                } else if (this.get("mode") === "sendNewPassword") {
+                    if (!this.sendNewPasswordForm.validate()) {
+                        return;
+                    }
+                    data = this.sendNewPasswordForm.getValue();
+                    this.showOverlay();
+                    this.sendNewPassword(data.email);
                 }
             }, this);
-            this.on("keypress", function(e) {
-                if(e.domEvent.keyCode === 13){
+            this.on("keypress", function (e) {
+                if (e.domEvent.keyCode === 13) {
                     this.loginButton.fire("click");
                 }
             });
         },
-        syncUI: function() {
+        syncUI: function () {
             this.set("mode", this.get("mode"));
         },
-        toggleMode: function() {
+        toggleCreateAccount: function () {
             if (this.get("mode") === "login") {
                 this.set("mode", "createaccount");
             } else {
                 this.set("mode", "login");
             }
         },
-        doLogin: function(email, password, remember) {
+        toggleSendNewPassword: function () {
+            if (this.get("mode") === "login") {
+                this.set("mode", "sendNewPassword");
+            } else {
+                this.set("mode", "login");
+            }
+        },
+        doLogin: function (email, password, remember) {
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/Authenticate/?email=" + email
                         + "&password=" + password
@@ -174,27 +188,64 @@ YUI.add('wegas-loginwidget', function(Y) {
                     method: "POST"
                 },
                 on: {
-                    success: Y.bind(function(e) {
+                    success: Y.bind(function (e) {
                         this.showMessage("success", "Login successful", 4000);
                         this.redirect();
                         return;
                     }, this),
-                    failure: Y.bind(function(e) {
+                    failure: Y.bind(function (e) {
                         this.showMessage("error", e.response.results.message || "Email/password combination not found", 4000);
                     }, this)
                 }
             });
         },
-        redirect: function() {
+        createAccount: function (data) {
+            Y.Wegas.UserFacade.rest.sendRequest({
+                request: "/Signup/",
+                cfg: {
+                    method: "POST",
+                    data: data
+                },
+                on: {
+                    success: Y.bind(function (e) {
+                        this.showMessage("success", "User created, you can now use it to login", 4000);
+                        this.set("mode", "login");
+                    }, this),
+                    failure: Y.bind(function (e) {
+                        this.showMessage("error", e.response.results.message || "Error creating user", 4000);
+                    }, this)
+                }
+            });
+        },
+        sendNewPassword: function (email) {
+            Y.Wegas.UserFacade.rest.sendRequest({
+                request: "/SendNewPassword/?email="+email,
+                cfg: {
+                    method: "POST"
+                },
+                on: {
+                    success: Y.bind(function (e) {
+                        this.hideOverlay();
+                        this.showMessage("success", "Your new password has been sent", 4000);
+                        this.set("mode", "login");
+                    }, this),
+                    failure: Y.bind(function (e) {
+                        this.hideOverlay();
+                        this.showMessage("error", e.response.results.message || "Error sent new password", 4000);
+                    }, this)
+                }
+            });
+        },
+        redirect: function () {
             window.location = this.getRedirect();
         },
-        getRedirect: function() {
+        getRedirect: function () {
             return this.getQueryParameter("redirect") || (Y.Wegas.app.get("base") + this.defaultRedirect);
         },
         /**
          * Returns a parameter from the GET parameters.
          */
-        getQueryParameter: function(name) {
+        getQueryParameter: function (name) {
             var query = window.location.search.substring(1),
                     vars = query.split("&"),
                     i, pair;
@@ -212,21 +263,32 @@ YUI.add('wegas-loginwidget', function(Y) {
         ATTRS: {
             mode: {
                 value: "login",
-                setter: function(val) {
+                setter: function (val) {
                     var cb = this.get(CONTENTBOX);
 
                     if (val === "login") {
                         //this.loginForm.clear();
                         this.loginForm.show();
                         this.createAccountForm.hide();
+                        this.sendNewPasswordForm.hide();
                         this.loginButton.set("label", "Login");
-                        cb.one(".alt-link").setContent("create a new user");
-                    } else {
+                        cb.one(".alt-link").setContent("Create a new user");
+                        cb.one(".send-new-password").show();
+                    } else if (val === 'createaccount') {
                         this.loginForm.hide();
                         this.createAccountForm.show();
+                        this.sendNewPasswordForm.hide();
                         //this.createAccountForm.clear();
                         this.loginButton.set("label", "Submit");
-                        cb.one(".alt-link").setContent("login with existing account");
+                        cb.one(".alt-link").setContent("Login with existing account");
+                        cb.one(".send-new-password").hide();
+                    } else {
+                        this.loginForm.hide();
+                        this.createAccountForm.hide();
+                        this.sendNewPasswordForm.show();
+                        this.loginButton.set("label", "Submit");
+                        cb.one(".alt-link").setContent("Return to the login page");
+                        cb.one(".send-new-password").hide();
                     }
                 }
             }
