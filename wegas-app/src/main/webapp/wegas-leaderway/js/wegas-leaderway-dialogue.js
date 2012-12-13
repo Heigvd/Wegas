@@ -48,9 +48,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             this.handlers.variableResponse = Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
             this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
             this.handlers.dialogueResponse = cb.one('.dialogue .response').delegate('click', function (e) {
-                var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
+                var no = parseInt(e.currentTarget._node.attributes[0].nodeValue),
+                        dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);
                 this.responseIsDisplayed = false;
-                dialogue.doTransition(this.availableActions[parseInt(e.currentTarget._node.attributes[0].nodeValue)]);
+                if (this.availableActions[no]) {
+                    dialogue.doTransition(this.availableActions[no]);
+                }
             }, '.responseElements li', this);
         },
         /**
@@ -59,7 +62,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         syncUI: function () {
             var cb = this.get(CONTENTBOX);
-            console.log('!');
             if (!this.currentDialogue)
                 return;
             if (!this.responseIsDisplayed) {
@@ -104,7 +106,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         clear: function (cb) {
             this.chart = null;
-            this.seriesName.length = 0
+            this.seriesName.length = 0;
             this.seriesValue.length = 0;
             cb.one('.pictures .backgroundLayer').setHTML();
             cb.one('.pictures .questionLayer').setHTML();
@@ -135,7 +137,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             ],
                     rawSeries = [
                     resourceInstance.get('moralHistory'),
-                    resourceInstance.get('confidenceHistory'),
+                    resourceInstance.get('confidenceHistory')
             ];
             this.chart = new Y.Chart({
                 type: 'combospline',

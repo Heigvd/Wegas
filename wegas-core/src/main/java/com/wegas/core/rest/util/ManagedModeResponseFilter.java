@@ -43,17 +43,12 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
      */
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
+        RequestManagerFacade rmf = RequestManagerFacade.lookup();
 
+        rmf.commit();
 
-        RequestManagerFacade requestManagerFacade = RequestManagerFacade.lookup();
-
-        if (requestManagerFacade.getPlayer() != null) {
-            //....
-        }
-
-        if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))//) {
-                && !(response.getEntity() instanceof ExceptionWrapper)) {       // If there was an exception during the request, we forward it without a change
-
+        if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))
+                && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
             ServerResponse serverResponse = new ServerResponse();
 
             if (response.getEntity() instanceof List) {
@@ -66,11 +61,13 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             }
             response.setEntity(serverResponse);
 
-            if (!requestManagerFacade.getUpdatedInstances().isEmpty()) {
-                serverResponse.getEvents().add(new EntityUpdatedEvent(requestManagerFacade.getUpdatedInstances()));
+            if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
+                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
             }
 
+
         }
+
         return response;
     }
 

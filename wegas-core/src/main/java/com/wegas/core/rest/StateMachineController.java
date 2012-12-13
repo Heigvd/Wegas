@@ -11,6 +11,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.statemachine.State;
@@ -23,6 +24,7 @@ import com.wegas.leaderway.persistence.DialogueTransition;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -49,6 +51,8 @@ public class StateMachineController extends AbstractRestController<StateMachineD
     private ScriptFacade scriptManager;
     @EJB
     private PlayerFacade playerFacade;
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -92,6 +96,7 @@ public class StateMachineController extends AbstractRestController<StateMachineD
                 //TODO : eval attached script (AND)
                 stateMachineInstanceEntity.setCurrentStateId(transition.getNextStateId());
                 stateMachineInstanceEntity.transitionHistoryAdd(transitionId);
+                requestManager.addUpdatedInstance(stateMachineInstanceEntity);  /* Force in case next state == current state */
                 if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
                     scriptManager.eval(playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
                 }

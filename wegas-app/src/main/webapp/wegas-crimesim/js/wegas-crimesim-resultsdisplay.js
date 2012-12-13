@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
+YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -29,36 +29,36 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         gallery: null,
         datatable: null,
         // *** Lifecycle Methods *** //
-        initializer: function () {
+        initializer: function() {
             this.handlers = {};
         },
-        renderUI: function () {
+        renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
         },
-        bindUI: function () {
+        bindUI: function() {
             var cb = this.get(CONTENTBOX);
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
 
             this.handlers.response = // If data changes, refresh
-            Y.Wegas.app.dataSources.VariableDescriptor.after("response",
-                this.syncUI, this);
+                    Y.Wegas.app.dataSources.VariableDescriptor.after("response",
+                    this.syncUI, this);
         },
-        destructor: function () {
+        destructor: function() {
             this.datatable.destroy();
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
-        syncUI: function () {
+        syncUI: function() {
             var data = this.genData();
             this.datatable.syncUI(data);
         },
-        renderDetailsPanel: function (node) {
+        renderDetailsPanel: function(node) {
             var columns = [{
                     key: "choiceDescriptorId",
                     className: "hidden"
-                },{
+                }, {
                     sortable: true,
                     key: "startTime",
                     //className: 'hidden',
@@ -82,16 +82,16 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                     allowHTML: true,
                     label: "Files",
                     emptyCellValue: "no files"
-                }]
+                }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
                 isTreeble: true,
                 node: node,
                 descriptionColumn: 'evidence'
-            })
+            });
             this.datatable.render(this.get(CONTENTBOX));
         },
-        genData: function () {
+        genData: function() {
             var i, j, k, questionInstance, reply, replyData, status,
                     questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items"),
                     data = [],
@@ -126,7 +126,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
                         for (k = 0; k < replyData.files.length; k = k + 1) {
                             replyData.fileLinks += '<a target="_blank" href="' +
                                     Y.Plugin.CRDataSource.getFullpath(replyData.files[k]) + '">' +
-                                    Y.Plugin.CRDataSource.getFilename(replyData.files[k]) + '</a><br />'
+                                    Y.Plugin.CRDataSource.getFilename(replyData.files[k]) + '</a><br />';
                         }
                         if (!replyData.fileLinks) {
                             delete replyData.fileLinks;

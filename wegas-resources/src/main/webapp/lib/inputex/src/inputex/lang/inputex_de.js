@@ -11,18 +11,18 @@ YUI.add("lang/inputex_de", function(Y) {
    valid: "Eingabe korrekt",
    
    invalidEmail: "Email nicht korrekt, ej: ihr.name@beispiel.de",
-   selectColor: "Farbe wÃ¤hlen:",
+   selectColor: "Farbe wählen:",
    invalidPassword: ["Das Passwort muss aus mindestens "," Zeichen bestehen"],
-   invalidPasswordConfirmation: "Das Passwort stimmt nicht Ã¼berein!",
+   invalidPasswordConfirmation: "Das Passwort stimmt nicht überein!",
    passwordStrength: "Das Passwort ist zu schwach",
    capslockWarning: "Achtung: die caps-lock Taste ist aktiviert",
    invalidDate: "falsches Datumsformat, bsp: 25.01.2007",
    defaultDateFormat: "d.m.Y",
    shortMonths: ["Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dez"],
-   months: ["Januar", "Februar", "MÃ¤rz", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+   months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
    weekdays1char: ["S", "M", "D", "M", "D", "F", "S"],
    shortWeekdays: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
-   selectMonth: "- Monat auswÃ¤hlen -",
+   selectMonth: "- Monat auswählen -",
    dayTypeInvite: "Tag",
    monthTypeInvite: "Monat",
    yearTypeInvite: "Jahr",
@@ -31,8 +31,8 @@ YUI.add("lang/inputex_de", function(Y) {
    defaultCalendarOpts: {
       navigator: {
         strings : {
-            month: "Monat auswÃ¤hlen",
-            year: "Jahr ergÃ¤nzen",
+            month: "Monat auswählen",
+            year: "Jahr ergänzen",
             submit: "Ok",
             cancel: "Abbrechen",
             invalidYear: "Jahr stimmt nicht"
@@ -43,33 +43,22 @@ YUI.add("lang/inputex_de", function(Y) {
    stringTooShort: ["Dieses Feld braucht mindestens "," Zeichen (Buchstaben oder Zahlen)"],
    stringTooLong: ["Dieses Feld ist begrenzt auf "," Zeichen (Buchstaben oder Zahlen)"],
    ajaxWait: "lade...",
-	menuTypeInvite: 'AuswÃ¤hlen',
+	menuTypeInvite: 'Auswählen',
 	didYouMean: 'Meinten Sie: ',
 	emptyInPlaceEdit: '(Bearbeiten)',
    
    // List
-   listAddLink: "HinzufÃ¼gen",
-   listRemoveLink: "LÃ¶schen",
+   listAddLink: "Hinzufügen",
+   listRemoveLink: "Löschen",
    
 
    // Datatable
    saveText: "Speichern",
    cancelText: "Abbrechen",
    modifyText: "Bearbeiten",
-   deleteText: "LÃ¶schen",
-   insertItemText: "EinfÃ¼gen",
-   confirmDeletion: "MÃ¶chten Sie das Element wirklich lÃ¶schen?",
-   addButtonText: "HinzufÃ¼gen",
-   loadingText: "LÃ¤dt...",
-   emptyDataText: "Keine DatensÃ¤tze gefunden",
-   errorDataText: "Data error.",
-   tableOptions: "Tabellenoptionen",
-   showColumnButton: "Zeigen",
-   hideColumnButton: "Verbergen",
-   columnDialogTitle: "WÃ¤hlen Sie die Spalten, die Sie sehen mÃ¶chten.",
-   columnDialogCloseButton: "SchlieÃŸen",
-   addItemHeader: "Eintrag hinzufÃ¼gen",
-   modifyItemHeader: "Eintrag bearbeiten",
+   deleteText: "Löschen",
+   insertItemText: "Einfügen",
+   confirmDeletion: "Möchten Sie das Element wirklich löschen?",
    
       
    // TimeInterval
