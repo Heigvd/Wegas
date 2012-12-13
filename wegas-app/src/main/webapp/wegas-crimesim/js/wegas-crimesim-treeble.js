@@ -17,7 +17,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
 
     var CONTENTBOX = 'contentBox', Treeble;
 
-    Treeble = Y.Base.create("wegas-crimesim-treeble", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
+    Treeble = Y.Base.create("wegas-crimesim-treeble", Y.Widget, [], {
         // *** Fields *** /
         datatable: null,
         root: null,
@@ -182,6 +182,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             });
         }
     }, {
+    CSS_PREFIX: "wegas-crimesim-treeble",
         ATTRS: {
             columns: {
                 validator: Y.Lang.isArray

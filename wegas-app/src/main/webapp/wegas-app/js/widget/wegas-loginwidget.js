@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-loginwidget', function (Y) {
+YUI.add('wegas-loginwidget', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -188,12 +188,12 @@ YUI.add('wegas-loginwidget', function (Y) {
                     method: "POST"
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         this.showMessage("success", "Login successful", 4000);
                         this.redirect();
                         return;
                     }, this),
-                    failure: Y.bind(function (e) {
+                    failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Email/password combination not found", 4000);
                     }, this)
                 }
@@ -245,7 +245,7 @@ YUI.add('wegas-loginwidget', function (Y) {
         /**
          * Returns a parameter from the GET parameters.
          */
-        getQueryParameter: function (name) {
+        getQueryParameter: function(name) {
             var query = window.location.search.substring(1),
                     vars = query.split("&"),
                     i, pair;
@@ -263,7 +263,7 @@ YUI.add('wegas-loginwidget', function (Y) {
         ATTRS: {
             mode: {
                 value: "login",
-                setter: function (val) {
+                setter: function(val) {
                     var cb = this.get(CONTENTBOX);
 
                     if (val === "login") {
