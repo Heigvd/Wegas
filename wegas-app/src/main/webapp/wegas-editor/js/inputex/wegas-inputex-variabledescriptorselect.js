@@ -116,6 +116,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             while (this.inputs.length > 0) {
                 this.inputs.pop().destroy();
             }
+            (new Y.Node(this.fieldset)).empty();
         },
 
         /**

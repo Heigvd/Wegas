@@ -37,6 +37,9 @@ public class RequestManager implements Serializable {
      */
     @Inject
     Event<PlayerAction> playerActionEvent;
+    /**
+     *
+     */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
     /**
@@ -60,8 +63,6 @@ public class RequestManager implements Serializable {
      *
      */
     public void commit() {
-        System.out.println("commit ");
-
         if (this.getUpdatedInstances().size() > 0) {
             if (this.getPlayer() != null) {
                 PlayerAction action = new PlayerAction();
