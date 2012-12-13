@@ -93,10 +93,6 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
         getEntityManager().persist(entity);
     }
 
-    public void reviveRoles() {
-        
-    }
-
     /**
      * Return a user based on his principal.
      *

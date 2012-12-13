@@ -337,8 +337,8 @@ YUI().use(function(Y) {
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        ws_provides: 'PageEditor',
-                        requires: ['diff_match_patch']
+                        ix_provides: 'PageEditor',
+                        requires: ['diff_match_patch', "wegas-inputex-ace", "ace-json"]
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -540,6 +540,10 @@ YUI().use(function(Y) {
                     },
                     'ace-css': {
                         path: 'src/mode-css.js',
+                        requires: ['ace']
+                    },
+                    'ace-json':{
+                        path: 'src/mode-json.js',
                         requires: ['ace']
                     }
                 }
