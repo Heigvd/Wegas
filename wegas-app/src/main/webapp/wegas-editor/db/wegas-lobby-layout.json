@@ -6,7 +6,52 @@
             "type": "Text",
             "content": "Lobby",
             "cssClass": "wegas-title"
-        },{
+        }, {
+            "type": "Button",
+            "label": "Administrator",
+            "plugins": [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": [{
+                        "type": "OpenTabButton",
+                        "label": "Users",
+                        "children": {
+                            "type": "EditorTreeView",
+                            "dataSource": "User",
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
+                                        "type": "NewEntityButton",
+                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                        "targetClass": "JpaAccount",
+                                        "dataSource": "User"
+                                    }]
+                                }
+                            }]
+                        }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Groups",
+                        "children": {
+                            "type": "EditorTreeView",
+                            "dataSource": "Role",
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
+                                        "type": "NewEntityButton",
+                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                        "targetClass": "Role",
+                                        "dataSource": "Role"
+                                    }]
+                                }
+                            }]
+                        }
+                    }]
+                }
+            }]
+        }, {
             "type": "LoginButton",
             "cssClass": "menu-loginbutton"
         }]
