@@ -38,13 +38,15 @@ YUI.add('wegas-list', function (Y) {
         },
         
         //Children serialization
-        toObject: function () {
-            var i, s = Y.Wegas.Editable.prototype.toObject.call(this), children = [];
+        toObject: function (mask) {
+            var i, object, children = [];
+            mask = Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
+            object = Y.Wegas.Editable.prototype.toObject.call(this, mask);
             for (i = 0; i < this.size(); i = i + 1) {
                 children.push(this.item(i).toObject());
             }
-            s.children = children;
-            return s;
+            object.children = children;
+            return object;
         }
     }, {
         ATTRS : {
@@ -58,19 +60,23 @@ YUI.add('wegas-list', function (Y) {
             direction: {
                 value: 'vertical',
                 type: "string",
-                choices: [{value: 'vertical'}, {value: 'horizontal'}]
+                choices: [{
+                    value: 'vertical'
+                }, {
+                    value: 'horizontal'
+                }]
             },
             multiple: {
                 "transient": true
             }
 
-            /**
+        /**
              * Prevent widgetchild selection to be propagated through the hierarchy
              */
-            //selected: {
-            //    value: 2,
-            //    readonly: true
-            //}
+        //selected: {
+        //    value: 2,
+        //    readonly: true
+        //}
         }
     });
 

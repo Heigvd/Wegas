@@ -188,3 +188,7 @@ input[type="submit"], input[type="reset"] {
 .wegas-tooltip-hidden {
     visibility:hidden;
 }
+
+.yui3-togglebutton-hidden{
+    display: none;
+}
