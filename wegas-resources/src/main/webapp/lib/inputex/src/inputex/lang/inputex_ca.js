@@ -6,27 +6,27 @@ YUI.add("lang/inputex_ca", function(Y) {
     "ca", // BCP 47 language tag
     {
 
-        required: "Aquest camp Ã©s obligatori",
-        invalid: "Aquest camp no Ã©s obligatori",
-        valid: "Aquest camp Ã©s vÃ lid",
+        required: "Aquest camp és obligatori",
+        invalid: "Aquest camp no és obligatori",
+        valid: "Aquest camp és vàlid",
 
-        invalidEmail: "Correu electrÃ²nic no vÃ lid, ex:nom@correu.cat",
+        invalidEmail: "Correu electrònic no vàlid, ex:nom@correu.cat",
         selectColor: "Seleccioni un color:",
-        invalidPassword: ["La contrasenya ha de tenir almenys", "nÃºmeros o lletres"],
-        invalidPasswordConfirmation: "Les contrasenyes sÃ³n diferents!",
-        passwordStrength: "La contrasenya Ã©s massa senzilla",
-        capslockWarning: "AtenciÃ³: bloqueig de majÃºscules activat",
-        invalidDate: "Data no vÃ lida, ej: 25/01/2007",
+        invalidPassword: ["La contrasenya ha de tenir almenys", "números o lletres"],
+        invalidPasswordConfirmation: "Les contrasenyes són diferents!",
+        passwordStrength: "La contrasenya és massa senzilla",
+        capslockWarning: "Atenció: bloqueig de majúscules activat",
+        invalidDate: "Data no vàlida, ej: 25/01/2007",
         defaultDateFormat: "d/m/Y",
         shortMonths: ["Gen", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Dec"],
-        months: ["Gener", "Febrer", "MarÃ§", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Decembre"],
+        months: ["Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Decembre"],
         weekdays1char: ["G", "L", "T", "X", "J", "V", "S"],
         shortWeekdays: ["Dg", "Dl", "Dt", "Dc", "Dj", "Dv", "Ds"],
         selectMonth: "- Seleccioni un mes -",
         dayTypeInvite: "Dia",
         monthTypeInvite: "Mes",
         yearTypeInvite: "Any",
-        cancelEditor: "CancelÂ·la",
+        cancelEditor: "Cancel·la",
         okEditor: "D'acord",
         defaultCalendarOpts: {
             navigator: {
@@ -34,17 +34,17 @@ YUI.add("lang/inputex_ca", function(Y) {
                     month: "Seleccioni un mes",
                     year: "Introdueixi un any",
                     submit: "D'acord",
-                    cancel: "CancelÂ·la",
-                    invalidYear: "Any no vÃ lid"
+                    cancel: "Cancel·la",
+                    invalidYear: "Any no vàlid"
                 }
             },
             start_weekday: 1
-            // la setmana comenÃ§a el Dilluns
+            // la setmana comença el Dilluns
         },
-        stringTooShort: ["Aquest camp ha de tenir, almenys, ", " carÃ cters (lletres o nÃºmeros)"],
-        stringTooLong: ["Aquest camp ha de tenir, com a molt, ", " carÃ cters (lletres o nÃºmeros)"],
+        stringTooShort: ["Aquest camp ha de tenir, almenys, ", " caràcters (lletres o números)"],
+        stringTooLong: ["Aquest camp ha de tenir, com a molt, ", " caràcters (lletres o números)"],
         ajaxWait: "Enviant...",
-        menuTypeInvite: "Fes clic aquÃ­ per seleccionar",
+        menuTypeInvite: "Fes clic aquí per seleccionar",
 
         // List
         listAddLink: "Afegir",
@@ -53,11 +53,11 @@ YUI.add("lang/inputex_ca", function(Y) {
 
         // Datatable
         saveText: "Desa",
-        cancelText: "CancelÂ·la",
+        cancelText: "Cancel·la",
         modifyText: "Modifica",
         deleteText: "Elimina",
         insertItemText: "Insereix",
-        confirmDeletion: "EstÃ  segur que vol esborrar?",
+        confirmDeletion: "Està segur que vol esborrar?",
 
 
         // TimeInterval

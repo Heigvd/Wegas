@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -10,6 +10,7 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.ejb.Helper;
+import com.wegas.core.ejb.RequestManagerFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -79,22 +80,17 @@ abstract public class VariableInstance extends AbstractEntity {
         return (VariableInstance) super.clone();
     }
 
-//    @PostPersist
     /**
      *
      */
     @PostUpdate
 //    @PostRemove
+//    @PostPersist
     public void onInstanceUpdate() {
         if (this.getScope() == null) {                                          // If the instance has no scope, it means it's a default
             return;                                                             // default Instance and the updated event is not sent
         }
-        try {
-            Helper.lookupBy(VariableInstanceFacade.class).onVariableInstanceUpdate(this);
-        }
-        catch (NamingException ex) {
-            logger.error("Error looking up VariableInstanceFacade");
-        }
+        RequestManagerFacade.lookup().getRequestManager().addUpdatedInstance(this);
     }
 
     /**
@@ -155,5 +151,25 @@ abstract public class VariableInstance extends AbstractEntity {
     @Override
     public Long getId() {
         return id;
+    }
+    /**
+     *
+     */
+    @Column(name = "teamvariableinstances_key", nullable = false, insertable = false, updatable = false)
+    private Long teamScopeKey;
+
+    @JsonIgnore
+    public Long getTeamScopeKey() {
+        return teamScopeKey;
+    }
+    /**
+     *
+     */
+    @Column(name = "variableinstances_key", nullable = false, insertable = false, updatable = false)
+    private Long playerScopeKey;
+
+    @JsonIgnore
+    public Long getPlayerScopeKey() {
+        return playerScopeKey;
     }
 }

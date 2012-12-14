@@ -12,7 +12,7 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
-YUI.add('wegas-crimesim-treeble', function (Y) {
+YUI.add('wegas-crimesim-treeble', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', Treeble;
@@ -26,12 +26,12 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
         dataSource: null,
         descriptionColumn: null,
         // *** Lifecycle Methods *** //
-        initializer: function () {
+        initializer: function() {
             this.handlers = {};
             this.data = [];
             this.descriptionColumn = this.get('descriptionColumn');
         },
-        renderUI: function () {
+        renderUI: function() {
             var columns = this.get('columns');
             if (this.get('isTreeble')) {
                 this.datatable = new Y.Treeble({
@@ -45,12 +45,12 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
             }
             this.datatable.render(this.get(CONTENTBOX));
         },
-        bindUI: function () {
+        bindUI: function() {
             if (this.dataSource) {
                 this.handlers.openRow = this.dataSource.on('toggled', this.mergeColumns, this);
             }
         },
-        syncUI: function (data) {
+        syncUI: function(data) {
             this.data = data || [];
             if (this.get('isTreeble')) {
                 Y.bind(this.treebleTwistdown(), this);
@@ -58,14 +58,14 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                 this.datatable.addRows(this.data);
             }
         },
-        destructor: function () {
+        destructor: function() {
             this.datatable.destroy();
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
         /*** private functions ***/
-        initTreeble: function (columns) {
+        initTreeble: function(columns) {
             var i, treeble_config, schema_plugin_config, schema, resultFields, dataSource;
             this.handlers = [];
 
@@ -106,7 +106,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
 
             //Create the config object for the datasource's root
             treeble_config = {
-                generateRequest: function () {
+                generateRequest: function() {
                 },
                 schemaPluginConfig: schema_plugin_config,
                 childNodesKey: 'kiddies',
@@ -133,7 +133,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                 datasource: this.dataSource
             }, this);
         },
-        getTreebleDatas: function () {
+        getTreebleDatas: function() {
             var i, j, data = this.data.slice(0), reply,
                     description, kiddies;
             if (!data) {
@@ -150,7 +150,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
             }
             return data;
         },
-        treebleTwistdown: function () {
+        treebleTwistdown: function() {
             this.root.set('source', this.getTreebleDatas());                    //Get currents datas and set datasource
             this.datatable.datasource.load({//Request max 100 rows per trebble's level
                 request: {
@@ -159,16 +159,16 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                 }
             });
         },
-        mergeColumns: function () {                                             //add a colspan to description to merge columns of description's row.
+        mergeColumns: function() {                                             //add a colspan to description to merge columns of description's row.
             var colName = 'yui3-datatable-col-' + this.descriptionColumn,
                     nbCols = this.get('columns').length,
                     isAfterCol = false;
-            this.get(CONTENTBOX).all('tr').each(function (row, i) {
+            this.get(CONTENTBOX).all('tr').each(function(row, i) {
                 if (row.get('className').indexOf('treeble-depth-') > -1) {           //is a treeble row
                     if (row.get('className').indexOf('treeble-depth-0') <= -1) {     //and isn't a firste-level treeble row
                         if (row.get('className').indexOf(colName) <= -1) {           //and if the column exist
                             row.one('.' + colName).setAttribute('colspan', nbCols);  //add colspan value
-                            row.all('td').each(function (cell, i) {                  //hide overflowed columns
+                            row.all('td').each(function(cell, i) {                  //hide overflowed columns
                                 if (isAfterCol) {
                                     cell.addClass('hidden');
                                 }
@@ -192,7 +192,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
             },
             isTreeble: {
                 value: false,
-                validator: function (b) {
+                validator: function(b) {
                     return b || b === "true";
                 }
             },
@@ -204,15 +204,12 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
     });
 
     //Below : Hack because current verion of TreebleDataSource isn't on YUI (this is the worked version from Guithub).
-    Y.TreebleDataSource.prototype.toggle = function (path, request, completion) {
-        var searchOpen = function (
+    Y.TreebleDataSource.prototype.toggle = function(path, request, completion) {
+        var searchOpen = function(
                 /* array */list,
-                /* int */nodeIndex)
-        {
-            for (var i = 0; i < list.length; i++)
-            {
-                if (list[i].index == nodeIndex)
-                {
+                /* int */nodeIndex) {
+            for (var i = 0; i < list.length; i++) {
+                if (+list[i].index === +nodeIndex) {
                     return list[i];
                 }
             }
@@ -220,14 +217,11 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
             return false;
         };
 
-        function toggleSuccess (e, node, completion, path)
-        {
-            if (node.ds.treeble_config.totalRecordsExpr)
-            {
+        function toggleSuccess(e, node, completion, path) {
+            if (node.ds.treeble_config.totalRecordsExpr) {
                 eval('node.childTotal=e.response' + node.ds.treeble_config.totalRecordsExpr);
             }
-            else if (node.ds.treeble_config.totalRecordsReturnExpr)
-            {
+            else if (node.ds.treeble_config.totalRecordsReturnExpr) {
                 node.childTotal = e.response.results.length;
             }
 
@@ -243,7 +237,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
         }
         ;
 
-        function toggleFailure (e, node, completion, path) {
+        function toggleFailure(e, node, completion, path) {
             node.childTotal = 0;
 
             node.open = true;
@@ -257,30 +251,25 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                     });
         }
 
-        function complete (f) {
-            if (Y.Lang.isFunction(f))
-            {
+        function complete(f) {
+            if (Y.Lang.isFunction(f)) {
                 f();
             }
-            else if (f && f.fn)
-            {
+            else if (f && f.fn) {
                 f.fn.apply(f.scope || window, Y.Lang.isUndefined(f.args) ? [] : f.args);
             }
         }
 
         var list = this._open;
-        for (var i = 0; i < path.length; i++)
-        {
+        for (var i = 0; i < path.length; i++) {
             var node = searchOpen.call(this, list, path[i]);
-            if (!node)
-            {
+            if (!node) {
                 return false;
             }
             list = node.children;
         }
 
-        if (node.open === null)
-        {
+        if (node.open === null) {
             request.startIndex = 0;
             request.resultCount = 0;
             node.ds.sendRequest(
@@ -293,9 +282,7 @@ YUI.add('wegas-crimesim-treeble', function (Y) {
                                     failure: Y.rbind(toggleFailure, this, node, completion, path)
                                 }
                     });
-        }
-        else
-        {
+        } else {
             node.open = !node.open;
             complete(completion);
 

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -39,6 +40,11 @@ public class RequestManager implements Serializable {
     /**
      *
      */
+    @EJB
+    private VariableInstanceFacade variableInstanceFacade;
+    /**
+     *
+     */
     private Class view = Views.Public.class;
     /**
      *
@@ -48,20 +54,34 @@ public class RequestManager implements Serializable {
      *
      */
     private List<VariableInstance> updatedInstances = new ArrayList<>();
-
     /**
      *
      */
     private Locale locale;
-    
+
     /**
      *
      */
     public void commit() {
         if (this.getUpdatedInstances().size() > 0) {
-            PlayerAction action = new PlayerAction();
-            action.setPlayer(this.getPlayer());
-            playerActionEvent.fire(action);
+            if (this.getPlayer() != null) {
+                PlayerAction action = new PlayerAction();
+                action.setPlayer(this.getPlayer());
+                playerActionEvent.fire(action);
+            } else {
+                for (VariableInstance instance : this.getUpdatedInstances()) {
+                    System.out.println(variableInstanceFacade.findAPlayer(instance) + ", ");
+
+                    Player p = variableInstanceFacade.findAPlayer(instance);
+                    List<Player> players = variableInstanceFacade.findAllPlayer(instance);
+
+                    System.out.println("This player has an update: " + p);
+
+                    //PlayerAction action = new PlayerAction();
+                    //action.setPlayer(variableInstanceFacade.findAPlayer(instance));
+                    //playerActionEvent.fire(action);
+                }
+            }
         }
     }
 
@@ -131,13 +151,13 @@ public class RequestManager implements Serializable {
     public void setView(Class view) {
         this.view = view;
     }
-    
+
     /**
-     * 
+     *
      * @return the ResourceBundle
      */
-    public ResourceBundle getBundle(String bundle){
-        return ResourceBundle.getBundle(bundle, this.locale); 
+    public ResourceBundle getBundle(String bundle) {
+        return ResourceBundle.getBundle(bundle, this.locale);
     }
 
     /**

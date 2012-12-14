@@ -13,6 +13,10 @@ import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Game_;
+import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.persistence.Role;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -36,6 +40,9 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      */
     @EJB
     private GameModelFacade gameModelEntityFacade;
+    
+    @EJB
+    private RoleFacade roleFacade;
     /**
      *
      */
@@ -83,5 +90,26 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     @Override
     public EntityManager getEntityManager() {
         return em;
+    }
+    
+    /**
+     * Metod return all public games
+     * @return Collection<Game>
+     */
+    public Collection<Game> getPublicGames() {
+        
+        Role pRolle = roleFacade.findByName("Public");
+        Collection<Game> games = new ArrayList<>();
+        for (String permission : pRolle.getPermissions()){
+                String splitedPermission[] = permission.split(":g");
+                String f = splitedPermission[1].substring(0, 1);
+                if (!f.equals("m")){
+                    Game g = this.find(Long.parseLong(splitedPermission[1]));
+                    this.em.detach(g);
+                    g.setName(g.getGameModel().getName() + " : " + g.getName());
+                    games.add(g);
+                }
+            }
+        return games;
     }
 }

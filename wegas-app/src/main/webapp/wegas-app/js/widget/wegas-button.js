@@ -114,10 +114,14 @@ YUI.add("wegas-button", function (Y) {
         initializer: function () {
             this.vdHandler =                                                    // If data changes, refresh
             Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+            this.pcHandler =                                                    // If data changes, refresh
+            Y.Wegas.app.on("currentPlayerChanger", this.syncUI, this);
+
             this.afterHostEvent("render", this.syncUI, this);
         },
         destructor: function () {
             this.vdHandler.detach();
+            this.pcHandler.detach();
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),
@@ -130,7 +134,7 @@ YUI.add("wegas-button", function (Y) {
             }
 
             if (unreadCount > 0) {                                              // Update the content
-                target.setContent(" <span class='bracket'>(</span><span class='value'>" + unreadCount + "</span><span class='bracket'>)</span>");
+                target.setContent("<span class='value'>" + unreadCount + "</span>");
             } else {
                 target.setContent("");
             }
@@ -164,7 +168,7 @@ YUI.add("wegas-button", function (Y) {
             return count;
         }
     }, {
-        NS: "button",
+        NS: "UnreadCount",
         NAME: "UnreadCount",
         ATTRS: {
             /**

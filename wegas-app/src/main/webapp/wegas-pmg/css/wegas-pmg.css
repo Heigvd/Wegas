@@ -412,10 +412,6 @@ h2{
     text-align: justify;
 }
 
-.bracket{
-    display:none;
-}
-
 /*----------------------------------Datatable---------------------------------*/
 .body .yui3-datatable-col-_id{
     display:none;

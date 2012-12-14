@@ -337,7 +337,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        ws_provides: 'PageEditor',
+                        ix_provides: 'PageEditor',
                         requires: ['diff_match_patch', "wegas-inputex-ace", "ace-json"]
                     },
                     'wegas-csseditor': {

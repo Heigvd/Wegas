@@ -6,47 +6,47 @@ YUI.add("lang/inputex_es", function(Y) {
     "es", // BCP 47 language tag
     {
         required: "Este campo es obligatorio",
-        invalid: "Este campo no es vÃ¡lido",
-        valid: "Este campo es vÃ¡lido",
+        invalid: "Este campo no es válido",
+        valid: "Este campo es válido",
 
-        invalidEmail: "Correo electrÃ³nico no vÃ¡lido, ej: tu.nombre@correo.es",
+        invalidEmail: "Correo electrónico no válido, ej: tu.nombre@correo.es",
         selectColor: "Selecciona un color:",
-        invalidPassword: ["La contraseÃ±a debe contener al menos ", "numeros o letras"],
-        invalidPasswordConfirmation: "las contraseÃ±as son diferentes!",
-        passwordStrength: "La contraseÃ±a es demasiado dÃ©bil",
-        capslockWarning: "AtenciÃ³n: bloqueo de mayÃºsculas activado",
-        invalidDate: "Fecha no vÃ¡lida, ej: 25/01/2007",
+        invalidPassword: ["La contraseña debe contener al menos ", "numeros o letras"],
+        invalidPasswordConfirmation: "las contraseñas son diferentes!",
+        passwordStrength: "La contraseña es demasiado débil",
+        capslockWarning: "Atención: bloqueo de mayúsculas activado",
+        invalidDate: "Fecha no válida, ej: 25/01/2007",
         defaultDateFormat: "d/m/Y",
         shortMonths: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
         months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
         weekdays1char: ["D", "L", "M", "X", "J", "V", "S"],
         shortWeekdays: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
         selectMonth: "- Seleccione un mes -",
-        dayTypeInvite: "DÃ­a",
+        dayTypeInvite: "Día",
         monthTypeInvite: "Mes",
-        yearTypeInvite: "AÃ±o",
+        yearTypeInvite: "Año",
         cancelEditor: "Cancelar",
         okEditor: "Aceptar",
         defaultCalendarOpts: {
             navigator: {
                 strings: {
                     month: "Seleccione un mes",
-                    year: "Introduzca un aÃ±o",
+                    year: "Introduzca un año",
                     submit: "Aceptar",
                     cancel: "Cancelar",
-                    invalidYear: "AÃ±o no vÃ¡lido"
+                    invalidYear: "Año no válido"
                 }
             },
             start_weekday: 1
             // la semaine commence un lundi
         },
-        stringTooShort: ["Este campo debe contener al menos ", " caracteres (letras o nÃºmeros)"],
-        stringTooLong: ["Este campo debe contener como mucho ", " caracteres (letras o nÃºmeros)"],
+        stringTooShort: ["Este campo debe contener al menos ", " caracteres (letras o números)"],
+        stringTooLong: ["Este campo debe contener como mucho ", " caracteres (letras o números)"],
         ajaxWait: "Enviando...",
-        menuTypeInvite: "Haga click aquÃ­ para seleccionar",
+        menuTypeInvite: "Haga click aquí para seleccionar",
 
         // List
-        listAddLink: "AÃ±adir",
+        listAddLink: "Añadir",
         listRemoveLink: "Eliminar",
 
 
@@ -56,7 +56,7 @@ YUI.add("lang/inputex_es", function(Y) {
         modifyText: "Modificar",
         deleteText: "Eliminar",
         insertItemText: "Insertar",
-        confirmDeletion: "Â¿EstÃ¡ seguro que desea borrar?",
+        confirmDeletion: "¿Está seguro que desea borrar?",
 
 
         // TimeInterval
@@ -64,9 +64,9 @@ YUI.add("lang/inputex_es", function(Y) {
             SECOND: "segundos",
             MINUTE: "minutos",
             HOUR: "horas",
-            DAY: "dÃ­as",
+            DAY: "días",
             MONTH: "meses",
-            YEAR: "aÃ±os"
+            YEAR: "años"
         }
 
 
