@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -80,12 +80,12 @@ abstract public class VariableInstance extends AbstractEntity {
         return (VariableInstance) super.clone();
     }
 
-//    @PostPersist
     /**
      *
      */
     @PostUpdate
 //    @PostRemove
+//    @PostPersist
     public void onInstanceUpdate() {
         if (this.getScope() == null) {                                          // If the instance has no scope, it means it's a default
             return;                                                             // default Instance and the updated event is not sent
@@ -151,5 +151,25 @@ abstract public class VariableInstance extends AbstractEntity {
     @Override
     public Long getId() {
         return id;
+    }
+    /**
+     *
+     */
+    @Column(name = "teamvariableinstances_key", nullable = false, insertable = false, updatable = false)
+    private Long teamScopeKey;
+
+    @JsonIgnore
+    public Long getTeamScopeKey() {
+        return teamScopeKey;
+    }
+    /**
+     *
+     */
+    @Column(name = "variableinstances_key", nullable = false, insertable = false, updatable = false)
+    private Long playerScopeKey;
+
+    @JsonIgnore
+    public Long getPlayerScopeKey() {
+        return playerScopeKey;
     }
 }

@@ -6,9 +6,9 @@ YUI.add("lang/inputex_it", function(Y) {
     "it",   // BCP 47 language tag
     {
 
-   required: "Questo campo Ã¨ obbligatorio",
-   invalid: "Questo campo non Ã¨ stato validato",
-   valid: "Questo campo Ã¨ stato validato",
+   required: "Questo campo è obbligatorio",
+   invalid: "Questo campo non è stato validato",
+   valid: "Questo campo è stato validato",
    invalidEmail: "Email non valida, es: antonio.rossi@fai.it",
    selectColor: "Seleziona un colore:",
    invalidPassword: ["La password deve contenere almeno ","numeri o lettere"],

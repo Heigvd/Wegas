@@ -12,6 +12,11 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -44,6 +49,11 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
     /**
      *
      */
+    @EJB
+    private TeamFacade teamFacade;
+    /**
+     *
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
     /**
@@ -73,6 +83,37 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
     public VariableInstance find(Long variableDescriptorId,
             Long playerId) {
         return this.find(variableDescriptorId, playerFacade.find(playerId));
+    }
+
+    public List<Player> findAllPlayer(VariableInstance instance) {
+        if (instance.getScope() instanceof PlayerScope) {
+            List<Player> players = new ArrayList<>();
+            players.add(playerFacade.find(instance.getPlayerScopeKey()));
+            return players;
+        } else if (instance.getScope() instanceof TeamScope) {
+            return teamFacade.find(instance.getTeamScopeKey()).getPlayers();
+        } else if (instance.getScope() instanceof GameScope) {
+            throw new UnsupportedOperationException();                          // @fixme
+        } else if (instance.getScope() instanceof GameModelScope) {
+            return instance.getDescriptor().getGameModel().getPlayers();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
+    }
+
+    public Player findAPlayer(VariableInstance instance) {
+        if (instance.getScope() instanceof PlayerScope) {
+            return playerFacade.find(instance.getPlayerScopeKey());
+        } else if (instance.getScope() instanceof TeamScope) {
+            return teamFacade.find(instance.getTeamScopeKey()).getPlayers().get(0);
+        } else if (instance.getScope() instanceof GameScope) {
+            throw new UnsupportedOperationException();                          // @fixme
+        } else if (instance.getScope() instanceof GameModelScope) {
+            return instance.getDescriptor().getGameModel().getGames().get(0).getTeams().get(0).getPlayers().get(0);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**

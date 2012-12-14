@@ -103,7 +103,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     public void create(User user) {
         super.create(user);
         try {
-            user.getMainAccount().addRole(roleFacade.findByName("Administrator"));
+            user.getMainAccount().addRole(roleFacade.findByName("Public"));
         } catch (PersistenceException ex) {
             logger.error("Unable to find Role: Administrator", ex);
         }
@@ -133,12 +133,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             role.put("name", unRole.getName());
             List<String> permissions = new ArrayList<>();
             role.put("permissions", permissions);
-            
-            for (String permission : unRole.getPermissions()){
+
+            for (String permission : unRole.getPermissions()) {
                 String splitedPermission[] = permission.split(":");
-                if (splitedPermission[2].equals(id)){
+                if (splitedPermission[2].equals(id)) {
                     permissions.add(permission);
-                } 
+                }
             }
         }
 
@@ -210,7 +210,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         JpaAccount acc = (JpaAccount) accountFacade.findByEmail(email);
         EMailFacade emailFacade = new EMailFacade();
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        String newPassword = rng.nextBytes().toHex().substring(0, 8);
+        String newPassword = rng.nextBytes().toHex().substring(0, 12);
         String subject = "Wegas account";
         String body = "A new password for your wegas account has been successfully created: " + newPassword;
         if (acc != null) {
