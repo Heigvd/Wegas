@@ -280,4 +280,13 @@ public class GameModel extends NamedEntity {
     public void setScriptLibrary(Map<String, String> scriptLibrary) {
         this.scriptLibrary = scriptLibrary;
     }
+
+    @JsonIgnore
+    public List<Player> getPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Game g : this.getGames()) {
+            players.addAll(g.getPlayers());
+        }
+        return players;
+    }
 }

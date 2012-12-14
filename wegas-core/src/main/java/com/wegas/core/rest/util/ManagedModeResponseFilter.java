@@ -44,31 +44,30 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
         RequestManagerFacade rmf = RequestManagerFacade.lookup();
-        if (rmf != null) {
-            if (rmf.getPlayer() != null) {
-                rmf.commit();
+
+        rmf.commit();
+
+        if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))
+                && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
+            ServerResponse serverResponse = new ServerResponse();
+
+            if (response.getEntity() instanceof List) {
+                serverResponse.setEntities((List) response.getEntity());
+
+            } else {
+                ArrayList entities = new ArrayList();
+                entities.add(response.getEntity());
+                serverResponse.setEntities(entities);
             }
-            if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))
-                    && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
-                ServerResponse serverResponse = new ServerResponse();
+            response.setEntity(serverResponse);
 
-                if (response.getEntity() instanceof List) {
-                    serverResponse.setEntities((List) response.getEntity());
-
-                } else {
-                    ArrayList entities = new ArrayList();
-                    entities.add(response.getEntity());
-                    serverResponse.setEntities(entities);
-                }
-                response.setEntity(serverResponse);
-
-                if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-                    serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
-                }
-
-
+            if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
+                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
             }
+
+
         }
+
         return response;
     }
 

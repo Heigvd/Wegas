@@ -315,22 +315,74 @@ body {
 
 /* Pageeditor Plugin styles */
 .wegas-pageeditor-designmode .wegas-widget {
-    box-shadow: 0px 0px 3px black inset;
+    box-shadow: 0px 0px 1px black;
+    background: rgba(0,0,0,0.05) !important;
+    color: #990808 !important;
+    position: relative;
+    min-width: 20px;
+    min-height: 20px;
+    margin: 2px !important;
+    -webkit-transition: margin 2s;
 }
+.wegas-pageeditor-designmode .wegas-list,
+.wegas-pageeditor-designmode .wegas-pageloader{
+    padding-top: 15px !important;
+    -webkit-transition: padding-top 2s;
+}
+/*.wegas-pageeditor-designmode .wegas-widget::before{
+    font-style: normal;
+    position: absolute !important;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:20;
+    font-size: 8pt;
+    text-align: center;
+    letter-spacing: normal;
+    font-weight: normal;
+    text-shadow: none;
+    font-variant: normal;
+    font-family: sans-serif;
+    position: absolute;
+    box-shadow: 0px 0px 5px black;
+    content: "";
+}*/
 .wegas-pageeditor-overlay-hidden {
     display: none;
 }
-.yui3-skin-sam .wegas-pageeditor-overlay {
+.wegas-pageeditor-overlay {
+    font-style:normal;
+    font-size: 8pt;
+    font-weight: bold;
+    letter-spacing: normal;
+    text-align: center;
     position: absolute;
     pointer-events: none;
+    line-height: normal;
+    color: white;
+    font-family: sans-serif;
+    white-space: nowrap;
+    font-variant: normal;
 }
 .wegas-pageeditor-overlay-content {
+    padding:0;
+    margin: 0;
     width:100%;
     height:20px;
+    position: relative;
     background: rgba(38, 71, 160, 0.4);
     box-shadow: 0px 0px 6px black inset;
     min-height:30px;
     /* opacity: 0.5; */
+}
+.wegas-pageeditor-overlay-content div{
+    width:100%;
+    height: 1.5em;
+    overflow: hidden;
+    position: absolute;
+    top:50%;
+    margin-top: -0.7em;
 }
 .wegas-pageeditor-overlay .wegas-icon {
     cursor: pointer;
@@ -338,8 +390,24 @@ body {
     float: right;
     padding: 3px;
 }
-
-.lobbyOr {
-    margin-left: 135px;
-    font-weight: bold;
+.wegas-focused-widget{
+    box-shadow: 0 0 5px darkgreen inset;
+}
+.wegas-page-editor .content-header{
+    cursor: pointer;
+}
+.preview-content .inputEx-Field {
+    float:none;
+    height:100%;
+}
+.preview-content .inputEx-fieldWrapper {
+    height:100%;
+    margin-bottom:0;
+}
+.preview-content .ace_editor {
+    top:34px;
+    left:0px;
+    right:40px;
+    bottom:0px;
+    height: auto;
 }
