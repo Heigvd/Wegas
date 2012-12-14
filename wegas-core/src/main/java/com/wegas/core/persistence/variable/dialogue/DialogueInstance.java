@@ -12,7 +12,6 @@ package com.wegas.core.persistence.variable.dialogue;
 
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import java.util.List;
-import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.xml.bind.annotation.XmlType;

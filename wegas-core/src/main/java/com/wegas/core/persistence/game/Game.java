@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
 
@@ -108,6 +109,15 @@ public class Game extends NamedEntity {
     @JsonView(Views.Public.class)
     public List<Team> getTeams() {
         return this.teams;
+    }
+
+    @JsonIgnore
+    public List<Player> getPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Team t : this.getTeams()) {
+            players.addAll(t.getPlayers());
+        }
+        return players;
     }
 
     /**

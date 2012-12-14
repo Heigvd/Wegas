@@ -50,7 +50,7 @@ public class Helper {
                     return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
                 }
                 catch (NamingException ex2) {
-                    logger.error("Uanble to retrieve to do jndi lookup on class: {}", type.getSimpleName());
+                    logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
                     throw ex2;
                 }
             }

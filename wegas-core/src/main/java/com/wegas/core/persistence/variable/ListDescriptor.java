@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,7 +9,6 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.ejb.Helper;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import java.util.ArrayList;
@@ -37,9 +36,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> {
     /**
      * @fixme if we use a joint table here, it does not do the cascading on
      * delete a child for the joint table. @JoinTable(joinColumns = {
-     * @JoinColumn(referencedColumnName = "variabledescriptor_id")},
-     * inverseJoinColumns = { @JoinColumn(referencedColumnName =
-     * "variabledescriptor_id")})
      */
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")

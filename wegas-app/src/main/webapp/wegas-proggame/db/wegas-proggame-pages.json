@@ -14,7 +14,7 @@
                         "label": "Money",
                         "view": "text",
                         "variable": {
-                            "id": "1206"
+                            "name": "money"
                         }
                     }, {
                         "type": "Text",
@@ -94,7 +94,7 @@
         "type": "ProgGameLevel",
         "maxTurns": 1,
         "winningCondition": "level.objects[0].x===level.objects[1].x && level.objects[0].y===level.objects[1].y",
-        "onWin": "currentLevel.value=4",
+        "onWin": "currentLevel.value=4;money.value+=500",
         "cssClass": "wegas-proggame-level",
         "map": [
             ["g", "g", "g", "g", "g"],

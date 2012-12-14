@@ -140,7 +140,7 @@ public class ScriptFacade {
             }
 
             em.flush();                                                         // Commit the transaction
-            requestManager.commit();
+            //requestManager.commit();
         }
         return result;
     }

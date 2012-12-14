@@ -2,7 +2,7 @@ YUI.add("lang/inputex_fr", function(Y) {
 
     Y.Intl.add(
 
-    "inputex", // associated module
+    "inputex", // associated modul
     "fr",   // BCP 47 language tag
     {
 
@@ -20,8 +20,8 @@ YUI.add("lang/inputex_fr", function(Y) {
         capslockWarning: "Attention: touche majuscule activée",
         invalidDate: "Date non valide, ex: 25/01/2007",
         defaultDateFormat: "d/m/Y",
-        shortMonths: ["Jan", "Fév", "Mars", "Avril", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Dèc"],
-        months: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "AoÃ»t", "Septembre", "Octobre", "Novembre", "Dècembre"],
+        shortMonths: ["Jan", "Fév", "Mars", "Avril", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"],
+        months: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
         weekdays1char: ["D", "L", "M", "M", "J", "V", "S"],
         shortWeekdays: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
         selectMonth: "- Choisissez -",
@@ -69,7 +69,7 @@ YUI.add("lang/inputex_fr", function(Y) {
       /*  tableOptions: "Options des colonnes",
         showColumnButton: "Afficher",
         hideColumnButton: "Masquer",
-        columnDialogTitle: "Choisissez les colonnes Ã  afficher",
+        columnDialogTitle: "Choisissez les colonnes à afficher",
         columnDialogCloseButton: "Fermer",*/
 
         // TimeInterval
