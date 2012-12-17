@@ -414,7 +414,7 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.extend(ResetAction, Action, {
         execute: function () {
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: '/reset'
+                request: '/Reset/'
             });
         }
     }, {

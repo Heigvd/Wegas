@@ -196,7 +196,7 @@ YUI.add('wegas-proggame-display', function (Y) {
                     }
                     if (mapObject) {
                         var alea;
-                        console.log(mapObject.x[0]);
+                        //console.log(mapObject.x[0]);
                         if (mapObject.x.length && mapObject.y.length && mapObject.x.length === mapObject.y.length) {
                             alea = Math.floor(Math.random() * mapObject.x.length);
                             Crafty.e('2D, ' + this.renderMethod + ', Color, ' + mapObject.spriteSheet)
