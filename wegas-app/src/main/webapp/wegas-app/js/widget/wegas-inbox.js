@@ -27,7 +27,7 @@ YUI.add('wegas-inbox', function (Y) {
         initializer: function () {
             this.dataSource = Y.Wegas.app.VariableDescriptorFacade;
             this.handlers = {};
-            this.plug(Y.Toolbar);
+            this.plug(Y.Plugin.WidgetToolbar);
         },
 
         renderUI: function () {
@@ -111,7 +111,7 @@ YUI.add('wegas-inbox', function (Y) {
                         Y.log("Sending message read update", "info",  "InboxDisplay");
                         this.msg.set("unread", false);
                         this.dataSource.rest.sendRequest({
-                            request: "/Inbox/Message/Read" + this.msg.get("id"),
+                            request: "/Inbox/Message/Read/" + this.msg.get("id"),
                             cfg: {
                                 method: "PUT"
                             }
