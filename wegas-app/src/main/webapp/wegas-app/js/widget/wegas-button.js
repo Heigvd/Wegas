@@ -195,6 +195,7 @@ YUI.add("wegas-button", function (Y) {
 
             Y.Wegas.GameFacade.after("response", this.syncUI, this);
             Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
+
             this.plug(Y.Plugin.WidgetMenu, {
                 children: [{
                     type: "Button",

@@ -70,7 +70,7 @@ public class InboxDescriptorController extends AbstractRestController<VariableDe
         return update.getMailboxInstanceEntity();
     }
     /**
-     * 
+     *
      * @param messageId
      * @return
      */
@@ -86,9 +86,9 @@ public class InboxDescriptorController extends AbstractRestController<VariableDe
     @DELETE
     @Path("Message/{messageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Message deleteMessage(@PathParam("messageId") Long messageId) {
+    public InboxInstance deleteMessage(@PathParam("messageId") Long messageId) {
         Message m = messageFacade.find(messageId);
         messageFacade.remove(m);
-        return m;
+        return m.getMailboxInstanceEntity();
     }
 }
