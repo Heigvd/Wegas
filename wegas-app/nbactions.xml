@@ -14,7 +14,7 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
-    <action>
+<!--    <action>
         <actionName>debug</actionName>
         <goals>
             <goal>package</goal>
@@ -24,7 +24,7 @@
             <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
             <skipTests>true</skipTests>
         </properties>
-    </action>
+    </action>-->
 
     <action>
         <actionName>CUSTOM-Build -skip-test</actionName>

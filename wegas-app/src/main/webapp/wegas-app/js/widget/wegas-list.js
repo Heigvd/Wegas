@@ -12,19 +12,17 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-list', function (Y) {
+YUI.add('wegas-list', function(Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
-    CONTENTBOX = 'contentBox',
-    List;
+            CONTENTBOX = 'contentBox',
+            List;
 
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild,  Y.Wegas.Widget, Y.Wegas.Editable], {
-
-
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         // ** Lifecycle Methods ** //
 
-        syncUI: function () {
+        syncUI: function() {
             var cb = this.get(CONTENTBOX);
 
             if (this.get('direction') === 'vertical') {
@@ -36,18 +34,18 @@ YUI.add('wegas-list', function (Y) {
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
         },
-        
         //Children serialization
-        toObject: function () {
-            var i, s = Y.Wegas.Editable.prototype.toObject.call(this), children = [];
+        toObject: function() {
+            var i, object, children = [];
+            object = Y.Wegas.Editable.prototype.toObject.apply(this, Array.prototype.slice.call(arguments));
             for (i = 0; i < this.size(); i = i + 1) {
                 children.push(this.item(i).toObject());
             }
-            s.children = children;
-            return s;
+            object.children = children;
+            return object;
         }
     }, {
-        ATTRS : {
+        ATTRS: {
             defaultChildType: {
                 value: "Text",
                 "transient": true
@@ -58,7 +56,11 @@ YUI.add('wegas-list', function (Y) {
             direction: {
                 value: 'vertical',
                 type: "string",
-                choices: [{value: 'vertical'}, {value: 'horizontal'}]
+                choices: [{
+                        value: 'vertical'
+                    }, {
+                        value: 'horizontal'
+                    }]
             },
             multiple: {
                 "transient": true

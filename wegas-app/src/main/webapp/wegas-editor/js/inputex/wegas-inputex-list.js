@@ -194,6 +194,5 @@ YUI.add("wegas-inputex-list", function (Y) {
     });
 
     inputEx.registerType("editablelist", EditableList);                               // Register this class as "list" type
-
-
 });
+

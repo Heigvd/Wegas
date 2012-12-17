@@ -11,16 +11,13 @@ package com.wegas.messaging.rest;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.rest.AbstractRestController;
-import com.wegas.messaging.ejb.InGameMailFacade;
+import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -28,7 +25,7 @@ import javax.ws.rs.core.MediaType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/InboxDescriptor/")
+@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Inbox/")
 public class InboxDescriptorController extends AbstractRestController<VariableDescriptorFacade, InboxDescriptor> {
     /*
      *
@@ -40,7 +37,7 @@ public class InboxDescriptorController extends AbstractRestController<VariableDe
      *
      */
     @EJB
-    private InGameMailFacade inGameMailFacade;
+    private MessageFacade messageFacade;
 
     /**
      *
@@ -49,6 +46,13 @@ public class InboxDescriptorController extends AbstractRestController<VariableDe
     @Override
     protected VariableDescriptorFacade getFacade() {
         return this.inboxDescriptorFacade;
+    }
+
+    @GET
+    @Path("Message/{messageId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message find(@PathParam("messageId") Long messageId) {
+        return messageFacade.find(messageId);
     }
 
     /**
@@ -60,9 +64,31 @@ public class InboxDescriptorController extends AbstractRestController<VariableDe
     @PUT
     @Path("Message/{messageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public InboxInstance editMail(@PathParam("messageId") Long messageId,
+    public InboxInstance editMessage(@PathParam("messageId") Long messageId,
             Message message) {
-        Message update = inGameMailFacade.update(messageId, message);
+        Message update = messageFacade.update(messageId, message);
         return update.getMailboxInstanceEntity();
+    }
+    /**
+     * 
+     * @param messageId
+     * @return
+     */
+    @PUT
+    @Path("Message/Read/{messageId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public InboxInstance readMessage(@PathParam("messageId") Long messageId) {
+        Message update = messageFacade.find(messageId);
+        update.setUnread(false);
+        return update.getMailboxInstanceEntity();
+    }
+
+    @DELETE
+    @Path("Message/{messageId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Message deleteMessage(@PathParam("messageId") Long messageId) {
+        Message m = messageFacade.find(messageId);
+        messageFacade.remove(m);
+        return m;
     }
 }

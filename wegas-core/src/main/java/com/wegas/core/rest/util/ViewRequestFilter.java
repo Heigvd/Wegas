@@ -59,41 +59,47 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
         String firstPathSeg = cr.getPathSegments().get(0).getPath();
         switch (firstPathSeg) {
             case "Index":
-                rmf.setView(Views.Index.class);
-                newUri = newUri.replace("Index/", "");
-                break;
-
             case "Public":
-                rmf.setView(Views.Public.class);
-                newUri = newUri.replace("Public/", "");
-                break;
-
             case "Private":
-                cr.getPathSegments().remove(0);
-                String id = cr.getPathSegments().remove(0).getPath();
-                rmf.setView(Views.Private.class);
-                rmf.setPlayer(new Long(id));
-                newUri = newUri.replace("Private/" + id + "/", "");
-                break;
-
             case "Export":
-                rmf.setView(Views.Export.class);
-                newUri = newUri.replace("Export/", "");
-                break;
-
             case "Editor":
-                rmf.setView(Views.Editor.class);
-                newUri = newUri.replace("Editor/", "");
+                rmf.setView(this.stringToView(firstPathSeg));
+                newUri = newUri.replace(firstPathSeg + "/", "");
                 break;
         }
+
         try {
             cr.setUris(cr.getBaseUri(), new URI(newUri));
-        }
-        catch (URISyntaxException ex) {
+        } catch (URISyntaxException ex) {
             logger.error(null, ex);
         }
 
+        if (cr.getQueryParameters().get("view") != null) {                      // If the view is given through a query parameter
+            rmf.setView(this.stringToView(cr.getQueryParameters().get("view").get(0)));
+        }
+
         return cr;
+    }
+
+    public Class stringToView(String str) {
+        switch (str) {
+            case "Index":
+                return Views.Index.class;
+
+            case "Private":
+                return Views.Private.class;
+
+            case "Export":
+                return Views.Export.class;
+
+            case "Editor":
+                return Views.Editor.class;
+
+            case "Public":
+            default:
+                return Views.Public.class;
+        }
+
     }
 
     @Override

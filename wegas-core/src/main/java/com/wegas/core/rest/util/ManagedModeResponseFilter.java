@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -10,15 +10,12 @@
 package com.wegas.core.rest.util;
 
 import com.sun.jersey.spi.container.*;
-import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.RequestManagerFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.exception.ExceptionWrapper;
 import java.util.ArrayList;
 import java.util.List;
-import javax.naming.NamingException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -44,31 +41,30 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
         RequestManagerFacade rmf = RequestManagerFacade.lookup();
-        if (rmf != null) {
-            if (rmf.getPlayer() != null) {
-                rmf.commit();
+
+        rmf.commit();
+
+        if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))
+                && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
+            ServerResponse serverResponse = new ServerResponse();
+
+            if (response.getEntity() instanceof List) {
+                serverResponse.setEntities((List) response.getEntity());
+
+            } else {
+                ArrayList entities = new ArrayList();
+                entities.add(response.getEntity());
+                serverResponse.setEntities(entities);
             }
-            if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))
-                    && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
-                ServerResponse serverResponse = new ServerResponse();
+            response.setEntity(serverResponse);
 
-                if (response.getEntity() instanceof List) {
-                    serverResponse.setEntities((List) response.getEntity());
-
-                } else {
-                    ArrayList entities = new ArrayList();
-                    entities.add(response.getEntity());
-                    serverResponse.setEntities(entities);
-                }
-                response.setEntity(serverResponse);
-
-                if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-                    serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
-                }
-
-
+            if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
+                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
             }
+
+
         }
+
         return response;
     }
 

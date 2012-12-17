@@ -240,7 +240,7 @@ YUI().use(function(Y) {
                     'wegas-inputex-variabledescriptorselect': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-variabledescriptorselect-min.js',
                         requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
-                        'inputex-select', /*'wegas-inputex-list', 'inputex-jsonschema',*/],
+                        'inputex-select'/*, 'wegas-inputex-list', 'inputex-jsonschema',*/],
                         ix_provides: ["entityarrayfieldselect"]
                     },
 
@@ -343,7 +343,7 @@ YUI().use(function(Y) {
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
                         ws_provides: 'PageEditor',
-                        requires: ['diff_match_patch']
+                        requires: ['diff_match_patch', "wegas-inputex-ace", "ace-json"]
                     },
                     'wegas-csseditor': {
                         path: 'wegas-editor/js/wegas-csseditor-min.js',
@@ -545,6 +545,10 @@ YUI().use(function(Y) {
                     },
                     'ace-css': {
                         path: 'src/mode-css.js',
+                        requires: ['ace']
+                    },
+                    'ace-json':{
+                        path: 'src/mode-json.js',
                         requires: ['ace']
                     }
                 }
