@@ -35,7 +35,12 @@ YUI.add('wegas-editor', function(Y) {
          */
         initializer: function () {
             Y.Wegas.editor = this;
+
+            this.on('currentPlayerChange', function () {                        // Whenever the current player changes
+                Y.Wegas.VariableDescriptorFacade.fire("update");                // Fire an update event on the variable datasource
+            });
         },
+
         destructor : function () {
         }
 

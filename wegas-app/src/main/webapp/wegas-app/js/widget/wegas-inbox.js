@@ -15,8 +15,7 @@
 YUI.add('wegas-inbox', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
-    InboxDisplay;
+    var CONTENTBOX = 'contentBox', InboxDisplay;
 
     InboxDisplay = Y.Base.create("wegas-inbox", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
 
@@ -26,7 +25,9 @@ YUI.add('wegas-inbox', function (Y) {
 
         // *** Lifecycle Methods *** //
         initializer: function () {
-            this.dataSource = Y.Wegas.app.dataSources.VariableDescriptor;
+            this.dataSource = Y.Wegas.app.VariableDescriptorFacade;
+            this.handlers = {};
+            this.plug(Y.Toolbar);
         },
 
         renderUI: function () {
@@ -35,12 +36,8 @@ YUI.add('wegas-inbox', function (Y) {
         },
 
         bindUI: function () {
-            this.handlers = {};
-
             this.tabView.after("selectionChange", this.onTabSelected, this);
-
-            this.handlers.respone = this.dataSource.after("response", this.syncUI, this);
-            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handlers.dataUpdated = this.dataSource.after("update", this.syncUI, this);
         },
 
         syncUI: function () {
@@ -54,13 +51,13 @@ YUI.add('wegas-inbox', function (Y) {
             this.tabView.removeAll();
             for (i = messages.length - 1; i >= 0; i -= 1) {
                 msg = messages[i];
-                from  = msg.get("from") || "admin@wegas.com";
+                from  = msg.get("from") || "<i>No sender</i>";
                 tab = new Y.Tab({
                     label: '<div class="' + (msg.get("unread") ? "unread" : "read") + '"><div class="left">' + from + '</div>'
                     + '<div class="right">' + msg.get("subject") + '</div></div>',
                     content: '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
                     + '<div class="msg-from">From: ' + from + '</div>'
-                    + '<div class="msg-body">' + msg.get("body") + '</div>'
+                    + '<div class="msg-body"><center><em><i>Loading</i></center></div>'
                 });
                 tab.msg = msg;
                 tabs.push(tab);
@@ -74,7 +71,7 @@ YUI.add('wegas-inbox', function (Y) {
             if (messages.length === 0) {
                 this.tabView.add({
                     label: '',
-                    content: '<center><em>You have no messages</em></center>'
+                    content: '<center><i>You have no messages</i></center>'
                 });
             }
 
@@ -84,10 +81,7 @@ YUI.add('wegas-inbox', function (Y) {
 
         destructor: function () {
             this.tabView.destroy();
-            var i;
-            for (i in this.handlers) {
-                this.handlers[i].detach();
-            }
+            this.handlers.dataUpdated.detach();
         },
 
         // *** Private Methods *** //
@@ -101,17 +95,25 @@ YUI.add('wegas-inbox', function (Y) {
             }
 
             if (e.newVal && e.newVal.msg) {
+
+                this.dataSource.rest.sendRequest({                              // Retrieve the message body from the server
+                    request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Export",
+                    on: {
+                        success: Y.bind(function (e) {
+                            this.get("panelNode").one(".msg-body").setHTML(e.response.entity.get("body") || "<center><em><i>Empty</i></center>");
+                        }, e.newVal)
+                    }
+                });
                 this.msg = e.newVal.msg;
 
-                if (e.newVal.msg.get("unread")) {                                      // If the message is currently unread,
-                    this.timer = Y.later(2000, this, function () {              // we send a request to mark it as read
+                if (e.newVal.msg.get("unread")) {                               // If the message is currently unread,
+                    this.timer = Y.later(2000, this, function () {              // Send a request to mark it as read
                         Y.log("Sending message read update", "info",  "InboxDisplay");
                         this.msg.set("unread", false);
                         this.dataSource.rest.sendRequest({
-                            request: "/InboxDescriptor/Message/" + this.msg.get("id"),
+                            request: "/Inbox/Message/Read" + this.msg.get("id"),
                             cfg: {
-                                method: "PUT",
-                                data: Y.JSON.stringify(this.msg)
+                                method: "PUT"
                             }
                         });
                     });
