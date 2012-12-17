@@ -39,7 +39,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.handlers = [];
         },
         render: function() {
-            var el, host = this.get('host'), processSource;
+            var el, host = this.get('host'), processSource, processSave;
 
             if (host.toolbar) {
                 el = host.toolbar.get('header');
@@ -69,14 +69,18 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.jsonView.hide();
                 processSource = function() {
                     if (this.sourceButton.get("pressed")) {
-                        this.jsonView.setValue(JSON.stringify(host.get("widget").toObject(), null, "\t"));
+                        this.jsonView.setValue(JSON.stringify(host.get("widget").toObject("@pageId"), null, "\t"));
                         this.get("host").get("contentBox").hide();
                         this.jsonView.show();
                         this.jsonView.editor.resize();
                         this.jsonView.focus();
+                        this.designButton.hide();
+                        this.saveButton.show();
                     } else {
                         this.get("host").get("contentBox").show();
                         this.jsonView.hide();
+                        this.designButton.show();
+                        this.saveButton.hide();
                     }
                 };
                 this.sourceButton = new Y.ToggleButton({
@@ -86,6 +90,22 @@ YUI.add('wegas-pageeditor', function(Y) {
                     }
                 }).render(el);
                 this.afterHostEvent("widgetChange", processSource);
+                
+                processSave = function (){
+                    var page = Y.JSON.parse(this.jsonView.getValue());
+                    this.saveButton._host.removeClass("yui3-button-selected");
+                    host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
+                    page["@pageId"] = host.get("widget")["@pageId"];
+                    Y.Wegas.PageFacade.rest.patch(page);
+                }
+                this.saveButton = new Y.ToggleButton({
+                    label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
+                    on: {
+                        click: Y.bind(processSave, this)
+                    }
+                }).render(el);
+                
+                
             }
 
             this.highlightOverlay = new Alignable({// Init the highlighting overlay
