@@ -9,7 +9,8 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -22,22 +23,33 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 @Stateless
-@Path("RegisteredGames")
-public class RegisteredGameController {
+@Path("/")
+public class PublicGameController {
 
-    /**
-     *
-     */
+    @EJB
+    private GameFacade gameFacade;
     @EJB
     private UserFacade userFacade;
 
     @GET
-    @Path("/{userId : [1-9][0-9]*}/")
+    @Path("PublicGames/Games/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<AbstractEntity> index(@PathParam("userId") Long userId) {
+    public Collection<Game> publicGame() {
+        return gameFacade.getPublicGames();
+    }
+
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    @GET
+    @Path("RegisteredGames/{userId : [1-9][0-9]*}/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<Game> index(@PathParam("userId") Long userId) {
         return (Collection) userFacade.registeredGames(userId);
     }
 }

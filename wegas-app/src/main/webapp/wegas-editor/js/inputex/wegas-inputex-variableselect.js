@@ -58,6 +58,7 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
             this.viewSrc = new Y.Wegas.Button({                                 // Add the "view src" button
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>"
             });
+            var divLabel = Y.Node.create('<div class="inputEx-label"><label>Variable</label></div>'); //Add label
             this.options.mode = "text";
             this.setMode((this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
             this.viewSrc.after("click", function () {
@@ -71,8 +72,9 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
                 }
             }, this);
             this.viewSrc.render(this.fieldset);
-
-            var container = new Y.Node(this.fieldset);                          // Render a div where the wysiwyg list will be rendered
+            
+            var container = new Y.Node(this.fieldset);                    // Render a div where the wysiwyg list will be rendered
+            container.prepend(divLabel.getDOMNode());
             container.prepend(this.viewSrc.get("boundingBox"));
         },
         setMode: function (mode) {

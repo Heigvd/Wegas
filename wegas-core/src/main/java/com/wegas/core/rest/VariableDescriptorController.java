@@ -72,7 +72,7 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
      * @return OK
      */
     @GET
-    @Path("reset")
+    @Path("Reset")
     @Produces(MediaType.APPLICATION_JSON)
     public Response reset(@PathParam("gameModelId") Long gameModelId) {
         gameModelFacade.reset(gameModelId);
