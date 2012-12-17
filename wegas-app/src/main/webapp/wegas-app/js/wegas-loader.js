@@ -194,6 +194,11 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/widget/wegas-nodeformatter-min.js',
                         ws_provides: "NodeFormatter"
                     },
+                    'wegas-userpreferences': {
+                        path: 'wegas-app/js/widget/wegas-userpreferences-min.js',
+                        requires: ["wegas-form"],
+                        ws_provides: "UserPreferences"
+                    },
                     /** Inputex Fields **/
                     'wegas-inputex': {
                         path: 'wegas-editor/css/wegas-inputex.css',
