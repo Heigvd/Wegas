@@ -397,15 +397,15 @@ body {
 .wegas-page-editor .content-header{
     cursor: pointer;
 }
-.preview-content .inputEx-Field {
+.preview-content > .inputEx-fieldWrapper  .inputEx-Field {
     float:none;
     height:100%;
 }
-.preview-content .inputEx-fieldWrapper {
+.preview-content > .inputEx-fieldWrapper .inputEx-fieldWrapper {
     height:100%;
     margin-bottom:0;
 }
-.preview-content .ace_editor {
+.preview-content > .inputEx-fieldWrapper .ace_editor {
     top:34px;
     left:0px;
     right:40px;
