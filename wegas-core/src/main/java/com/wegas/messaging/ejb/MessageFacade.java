@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class InGameMailFacade extends AbstractFacadeImpl<Message> {
+public class MessageFacade extends AbstractFacadeImpl<Message> {
 
-    final static private Logger logger = LoggerFactory.getLogger(InGameMailFacade.class);
+    final static private Logger logger = LoggerFactory.getLogger(MessageFacade.class);
     /**
      *
      */
@@ -47,7 +47,7 @@ public class InGameMailFacade extends AbstractFacadeImpl<Message> {
     /**
      *
      */
-    public InGameMailFacade() {
+    public MessageFacade() {
         super(Message.class);
     }
 
