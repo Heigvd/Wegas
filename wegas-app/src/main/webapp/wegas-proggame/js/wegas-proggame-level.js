@@ -166,7 +166,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.commandsStack = Y.JSON.parse(e.response.entity);
             var i;
             for (i = 0; i < this.commandsStack.length; i += 1) {
-                console.log("command: ", this.commandsStack[i].type, this.commandsStack[i], this.commandsStack[i].text);
+               Y.log("command: " + this.commandsStack[i].type + ", " + this.commandsStack[i] + ", " + this.commandsStack[i].text);
             }
 
             this.consumeCommand();
@@ -181,7 +181,7 @@ YUI.add('wegas-proggame-level', function (Y) {
         consumeCommand: function () {
             if (this.commandsStack && this.commandsStack.length > 0) {
                 var command = this.commandsStack.shift();
-                console.log("consumeCommand", command.type, command);
+                Y.log("consumeCommand" + ", " + command.type + ", " + command);
 
                 switch (command.type) {
 
