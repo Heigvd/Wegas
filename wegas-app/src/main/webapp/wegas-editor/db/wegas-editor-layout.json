@@ -69,7 +69,7 @@
                     }]
                 }
             }]
-        },{
+        },  {
             "type": "Button",
             "label": "Administrator",
             "plugins": [{
@@ -114,7 +114,7 @@
                     }]
                 }
             }]
-        },{
+        }, {
             "type": "Button",
             "label": "Scenarist",
             "plugins": [{

@@ -93,12 +93,16 @@ YUI.add('wegas-pageeditor', function(Y) {
                 
                 processSave = function (){
                     var page = Y.JSON.parse(this.jsonView.getValue());
-                    this.saveButton._host.removeClass("yui3-button-selected");
-                    host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
+                    this.sourceButton.set("pressed", false);
+                    this.get("host").get("contentBox").show();
+                    this.jsonView.hide();
+                    this.designButton.show();
+                    this.saveButton.hide();
+                    //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
                     page["@pageId"] = host.get("widget")["@pageId"];
                     Y.Wegas.PageFacade.rest.patch(page);
-                }
-                this.saveButton = new Y.ToggleButton({
+                };
+                this.saveButton = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
                     on: {
                         click: Y.bind(processSave, this)
