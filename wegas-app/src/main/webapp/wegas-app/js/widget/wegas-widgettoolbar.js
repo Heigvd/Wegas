@@ -52,12 +52,14 @@ YUI.add('wegas-widgettoolbar', function (Y) {
         render: function () {
             var i, host = this.get("host"),
             bb = host.get('boundingBox'),
+            cb = host.get('contentBox'),
             children = this.get("children");
-
+            bb.addClass("wegas-hastoolbar");
             bb.append('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
-            host.get('contentBox').setStyles({
+            cb.addClass("wegas-toolbar-sibling");
+            cb.setStyles({
                 position: "absolute",
-                bottom: "26px",
+                //bottom: "26px",
                 overflow: "auto",
                 padding: "0",
                 left: "0px",

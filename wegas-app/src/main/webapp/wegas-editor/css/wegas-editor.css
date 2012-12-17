@@ -30,6 +30,10 @@ body {
     position: relative;
 }
 
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .wegas-hastoolbar > .wegas-toolbar-sibling {
+    bottom:26px;
+}
+
 /* Wegas small icons */
 .yui3-skin-sam .wegas-icon {
     background-image: url(../images/wegas-editor-sprite.png);
