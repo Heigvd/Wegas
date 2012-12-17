@@ -235,7 +235,7 @@ YUI().use(function(Y) {
                     'wegas-inputex-variabledescriptorselect': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-variabledescriptorselect-min.js',
                         requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
-                        'inputex-select', /*'wegas-inputex-list', 'inputex-jsonschema',*/],
+                        'inputex-select'/*, 'wegas-inputex-list', 'inputex-jsonschema',*/],
                         ix_provides: ["entityarrayfieldselect"]
                     },
 
@@ -337,7 +337,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        ix_provides: 'PageEditor',
+                        ws_provides: 'PageEditor',
                         requires: ['diff_match_patch', "wegas-inputex-ace", "ace-json"]
                     },
                     'wegas-csseditor': {
