@@ -35,8 +35,9 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 label: "Enter a key phrase to join a game",
                 typeInvite: "Enter a token"
             });
-
-            cb.append('<div class="lobbyOr"><p>Or</p><div>');
+            
+            this.p = Y.Node.create('<div class="lobbyOr"><p>Or</p><div>');
+            cb.append(this.p);
 
             this.selectPublicGame = new Y.inputEx.SelectField({                 // Render public games
                 required: false,
@@ -76,9 +77,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.showPublicGames();
         },
 
-        bindUI: function () {
-            this.showPublicGames();
-            
+        bindUI: function () {            
             this.tokenField.on("updated", function (e) {
                 if (this.tokenField.getValue() !== "") {
                     this.selectPublicGame.setValue("");
