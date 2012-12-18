@@ -61,32 +61,6 @@ public class RequestManager implements Serializable {
 
     /**
      *
-     */
-    public void commit() {
-        if (this.getUpdatedInstances().size() > 0) {
-            if (this.getPlayer() != null) {
-                PlayerAction action = new PlayerAction();
-                action.setPlayer(this.getPlayer());
-                playerActionEvent.fire(action);
-            } else {
-                for (VariableInstance instance : this.getUpdatedInstances()) {
-                    System.out.println(variableInstanceFacade.findAPlayer(instance) + ", ");
-
-                    Player p = variableInstanceFacade.findAPlayer(instance);
-                    List<Player> players = variableInstanceFacade.findAllPlayer(instance);
-
-                    System.out.println("This player has an update: " + p);
-
-                    //PlayerAction action = new PlayerAction();
-                    //action.setPlayer(variableInstanceFacade.findAPlayer(instance));
-                    //playerActionEvent.fire(action);
-                }
-            }
-        }
-    }
-
-    /**
-     *
      * @param instance
      */
     public void addUpdatedInstance(VariableInstance instance) {
@@ -183,6 +157,13 @@ public class RequestManager implements Serializable {
          *
          */
         private Player player;
+
+        public PlayerAction() {
+        }
+
+        public PlayerAction(Player p) {
+            this.player = p;
+        }
 
         /**
          * @return the player
