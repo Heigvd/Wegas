@@ -55,6 +55,12 @@ public interface AbstractFacade<T extends AbstractEntity> {
     /**
      *
      * @param id
+     */
+    public void remove(Long id);
+
+    /**
+     *
+     * @param id
      * @return
      */
     public T find(final Long id);

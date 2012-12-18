@@ -31,12 +31,12 @@ YUI.add('wegas-pageloader', function(Y) {
         },
         bindUI: function() {
             //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
-            Y.Wegas.PageFacade.rest.after("pageUpdated", function(e) {
+            this.handlers.push(Y.Wegas.PageFacade.rest.after("pageUpdated", function(e) {
                 if (e.page && (+e.page["@pageId"] === +this.get("pageId"))) {
                     this.currentPageId = null; // @hack force update
                     this.syncUI();
                 }
-            }, this);
+            }, this));
             var onUpdate = function(e) {
                 if (+this.get("variable.evaluated") !== +this.get('pageId')) {
                     this.syncUI();
@@ -77,6 +77,7 @@ YUI.add('wegas-pageloader', function(Y) {
             for (i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
+            delete PageLoader.pageLoaderInstances[this.get("pageLoaderId")];
         },
 
         // *** Private Methods ***/
@@ -132,6 +133,7 @@ YUI.add('wegas-pageloader', function(Y) {
                         Y.Wegas.Widget.use(widgetCfg, Y.bind(function(cfg) {    // Load the subwidget dependencies
                             var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
                             widget.render(this.get(CONTENTBOX));
+                            widget['@pageId'] = cfg['@pageId'];
                             this.set("widget", widget);
                             widget.addTarget(this);                             // Event on the loaded widget will be forwarded
                             this.hideOverlay();

@@ -14,7 +14,7 @@
 
 /* Override default browser styles */
 body {
-    overflow: hidden;b
+    overflow: hidden;
 }
 
 /* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
@@ -28,6 +28,10 @@ body {
 
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .yui3-widget {
     position: relative;
+}
+
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .wegas-hastoolbar > .wegas-toolbar-sibling {
+    bottom:26px;
 }
 
 /* Wegas small icons */
@@ -351,7 +355,7 @@ body {
 .wegas-pageeditor-overlay-hidden {
     display: none;
 }
-.wegas-pageeditor-overlay {
+.yui3-skin-sam .wegas-pageeditor-overlay {
     font-style:normal;
     font-size: 8pt;
     font-weight: bold;
@@ -364,6 +368,7 @@ body {
     font-family: sans-serif;
     white-space: nowrap;
     font-variant: normal;
+    padding: 0;
 }
 .wegas-pageeditor-overlay-content {
     padding:0;
@@ -396,15 +401,15 @@ body {
 .wegas-page-editor .content-header{
     cursor: pointer;
 }
-.preview-content .inputEx-Field {
+.preview-content > .inputEx-fieldWrapper  .inputEx-Field {
     float:none;
     height:100%;
 }
-.preview-content .inputEx-fieldWrapper {
+.preview-content > .inputEx-fieldWrapper .inputEx-fieldWrapper {
     height:100%;
     margin-bottom:0;
 }
-.preview-content .ace_editor {
+.preview-content > .inputEx-fieldWrapper .ace_editor {
     top:34px;
     left:0px;
     right:40px;

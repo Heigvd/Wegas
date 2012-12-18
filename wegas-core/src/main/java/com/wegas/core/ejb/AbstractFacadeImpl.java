@@ -123,6 +123,15 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
     /**
      *
      * @param id
+     */
+    @Override
+    public void remove(final Long id) {
+        getEntityManager().remove(this.find(id));
+    }
+
+    /**
+     *
+     * @param id
      * @return
      */
     @Override
@@ -168,7 +177,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
         Root<T> rt = cq.from(entityClass);
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
         Query q = getEntityManager().createQuery(cq);
-        return ( (Long) q.getSingleResult() ).intValue();
+        return ((Long) q.getSingleResult()).intValue();
     }
 
     @AroundInvoke
@@ -179,8 +188,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
             //if (!sessionContext.getRollbackOnly()) {
             //    entityManager.flush();
             //}
-        }
-        catch (NoResultException e) {                                           // NoResultException are caught and wrapped exception
+        } catch (NoResultException e) {                                           // NoResultException are caught and wrapped exception
             throw new PersistenceException(e);                                  // so they do not cause transaction rollback
             //throw e;
         }

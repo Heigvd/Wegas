@@ -182,8 +182,8 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                    "expr": "actions.items[currentPhase.value].descriptorId"
-                                                }
+                                                "expr": "actions.items[currentPhase.value].descriptorId"
+                                            }
                                         }
                                     }, {
                                         "fn": "OpenPageAction",
@@ -457,5 +457,8 @@
                 }
             }
         ]
+    }, "1000": {
+        "id": 1000,
+        "type": "UserPreferences"
     }
 }

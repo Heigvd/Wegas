@@ -5,153 +5,153 @@
         "type": "List",
         "cssClass": "layout wegas-crimesim",
         "children": [
-        {
-            "label": "Indicators",
-            "type": "List",
-            "cssClass": "header",
-            "direction": "horizontal",
-            "children": [
             {
-                "type": "Text",
-                "content": "Crimesim",
-                "cssClass": "wegas-crimesim-title"
-            }, {
-                "type": "VariableDisplay",
-                "label": "Period",
-                "view": "valuebox",
-                "variable": {
-                    "name": "period"
-                }
-            }, {
-                "type": "Button",
-                "label": "Next period",
-                "view": "button",
-                "tooltip": "Advance to next period",
-                "plugins": [
-                {
-                    "fn": "ExecuteScriptAction",
-                    "cfg": {
-                        "onClick": {
-                            "@class": "Script",
-                            "language": "JavaScript",
-                            "content": "nextWeek();"
-                        }
-                    }
-                }
-                ]
-            }, {
-                "type": "VariableDisplay",
-                "label": "Costs",
-                "view": "text",
-                "variable": {
-                    "name": "cost"
-                }
-            }, {
-                "type": "VariableDisplay",
-                "label": "Human resources",
-                "variable": {
-                    "name": "humanResources"
-                },
-                "view": "box"
-            }
-            ]
-        }, {
-            "id": "menu",
-            "label": "Menu",
-            "type": "List",
-            "cssClass": "menu",
-            "direction": "horizontal",
-            "children": [
-            {
-                "type": "Button",
-                "label": "Accueil",
-                "cssClass": "menu-button",
-                "plugins": [
-                {
-                    "fn": "OpenPageAction",
-                    "cfg": {
-                        "subpageId": 2,
-                        "targetPageLoaderId": "maindisplayarea"
-                    }
-                }
-                ]
-            }, {
-                "type": "Button",
-                "label": "Questions",
-                "cssClass": "menu-button",
-                "plugins": [
-                {
-                    "fn": "OpenPageAction",
-                    "cfg": {
-                        "subpageId": 3,
-                        "targetPageLoaderId": "maindisplayarea"
-                    }
-                }, {
-                    "fn": "UnreadCount",
-                    "cfg": {
+                "label": "Indicators",
+                "type": "List",
+                "cssClass": "header",
+                "direction": "horizontal",
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "Crimesim",
+                        "cssClass": "wegas-crimesim-title"
+                    }, {
+                        "type": "VariableDisplay",
+                        "label": "Period",
+                        "view": "valuebox",
                         "variable": {
-                            "name": "questions"
+                            "name": "period"
                         }
-                    }
-                }
-                ]
-            }, {
-                "type": "Button",
-                "label": "Pièces",
-                "cssClass": "menu-button",
-                "plugins": [
-                {
-                    "fn": "OpenPageAction",
-                    "cfg": {
-                        "subpageId": 4,
-                        "targetPageLoaderId": "maindisplayarea"
-                    }
-                }
-                ]
-            }, {
-                "type": "Button",
-                "label": "Analyses results",
-                "cssClass": "menu-button",
-                "plugins": [
-                {
-                    "fn": "OpenPageAction",
-                    "cfg": {
-                        "subpageId": 6,
-                        "targetPageLoaderId": "maindisplayarea"
-                    }
-                }
-                ]
-            }, {
-                "type": "Button",
-                "label": "Mails",
-                "cssClass": "menu-button",
-                "plugins": [
-                {
-                    "fn": "OpenPageAction",
-                    "cfg": {
-                        "subpageId": 5,
-                        "targetPageLoaderId": "maindisplayarea"
-                    }
-                }, {
-                    "fn": "UnreadCount",
-                    "cfg": {
+                    }, {
+                        "type": "Button",
+                        "label": "Next period",
+                        "view": "button",
+                        "tooltip": "Advance to next period",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "nextWeek();"
+                                    }
+                                }
+                            }
+                        ]
+                    }, {
+                        "type": "VariableDisplay",
+                        "label": "Costs",
+                        "view": "text",
                         "variable": {
-                            "name": "inbox"
+                            "name": "cost"
                         }
+                    }, {
+                        "type": "VariableDisplay",
+                        "label": "Human resources",
+                        "variable": {
+                            "name": "humanResources"
+                        },
+                        "view": "box"
                     }
-                }
                 ]
             }, {
-                "type": "LoginButton",
-                "cssClass": "menu-loginbutton"
+                "id": "menu",
+                "label": "Menu",
+                "type": "List",
+                "cssClass": "menu",
+                "direction": "horizontal",
+                "children": [
+                    {
+                        "type": "Button",
+                        "label": "Accueil",
+                        "cssClass": "menu-button",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 2,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }
+                        ]
+                    }, {
+                        "type": "Button",
+                        "label": "Questions",
+                        "cssClass": "menu-button",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 3,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }, {
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": {
+                                        "name": "questions"
+                                    }
+                                }
+                            }
+                        ]
+                    }, {
+                        "type": "Button",
+                        "label": "Pièces",
+                        "cssClass": "menu-button",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 4,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }
+                        ]
+                    }, {
+                        "type": "Button",
+                        "label": "Analyses results",
+                        "cssClass": "menu-button",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 6,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }
+                        ]
+                    }, {
+                        "type": "Button",
+                        "label": "Mails",
+                        "cssClass": "menu-button",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 5,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }, {
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": {
+                                        "name": "inbox"
+                                    }
+                                }
+                            }
+                        ]
+                    }, {
+                        "type": "LoginButton",
+                        "cssClass": "menu-loginbutton"
+                    }
+                ]
+            }, {
+                "type": "PageLoader",
+                "pageLoaderId": "maindisplayarea",
+                "cssClass": "body",
+                "defaultPageId": 2
             }
-            ]
-        }, {
-            "type": "PageLoader",
-            "pageLoaderId": "maindisplayarea",
-            "cssClass": "body",
-            "defaultPageId": 2
-        }
         ]
     },
     "2": {
@@ -180,5 +180,9 @@
     "6": {
         "id": 6,
         "type": "ResultsDisplay"
+    },
+    "1000": {
+        "id": 1000,
+        "type": "UserPreferences"
     }
 }

@@ -146,7 +146,8 @@ YUI.add('wegas-editor-action', function (Y) {
 
             EditEntityAction.tab.set("selected", 2);
             EditEntityAction.form.emptyMessage();
-            EditEntityAction.form.setForm(entity.toObject(), entity.getFormCfg());
+            EditEntityAction.form.set("cfg", entity.getFormCfg());
+            EditEntityAction.form.set("value",  entity.toObject());
         },
 
         /**
@@ -414,7 +415,7 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.extend(ResetAction, Action, {
         execute: function () {
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: '/reset'
+                request: '/Reset/'
             });
         }
     }, {
