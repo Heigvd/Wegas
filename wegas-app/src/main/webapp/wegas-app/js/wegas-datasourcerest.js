@@ -114,13 +114,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             if (Lang.isArray(response)) {                                       // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < response.length; i += 1) {
-                    updated = updated || this.updateCache(e.cfg.method, response[i]);
+                    updated =  this.updateCache(e.cfg.method, response[i]) || updated;
                 }
             } else {
                 for (i = 0; i < response.get("entities").length; i += 1) {      // Update the cache with the Entites in the reply body
                     e.response.entity = response.get("entities")[i];
                     if (Lang.isObject(e.response.entity)) {
-                        updated = updated || this.updateCache(e.cfg.method, e.response.entity);
+                        updated = this.updateCache(e.cfg.method, e.response.entity) || updated;
                     }
                 }
 
@@ -128,7 +128,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     evt = response.get("events")[i];
                     if (evt instanceof Y.Wegas.persistence.EntityUpdatedEvent) {// Case 1: EntityUpdatedEvent
                         for (i = 0; i < evt.get("updatedEntities").length; i += 1) {  // Update the cache with the entites contained in the reply
-                            updated = updated || this.updateCache("POST", evt.get("updatedEntities")[i]);
+                            updated = this.updateCache("POST", evt.get("updatedEntities")[i]) || updated;
                         }
                     }
                 }
