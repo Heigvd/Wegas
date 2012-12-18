@@ -16,7 +16,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -54,7 +58,19 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
 
         return super.create(entity);
     }
+  
+    @GET
+    @Path("{entityId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Override
+    public GameModel get(@PathParam("entityId") Long entityId) {
 
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("GameModel:View:gm" + entityId);
+        
+        return super.get(entityId);
+    }
+  
     @Override
     public GameModel update(Long entityId, GameModel entity) {
 

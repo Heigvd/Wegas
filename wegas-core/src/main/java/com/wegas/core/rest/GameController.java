@@ -17,7 +17,9 @@ import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -64,7 +66,25 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @EJB
     private PlayerFacade playerFacade;
+    
+    /**
+     * 
+     */
+    @EJB
+    private RoleFacade roleFacade;
 
+    @GET
+    @Path("{entityId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Override
+    public Game get(@PathParam("entityId") Long entityId) {
+        
+        Subject s = SecurityUtils.getSubject();
+        s.checkPermission("Game:View:g" + entityId);
+        
+        return super.get(entityId);
+    }
+    
     /**
      *
      * @return
@@ -124,7 +144,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Path("/JoinGame/{token : .*}/")
     @Produces(MediaType.APPLICATION_JSON)
     @TransactionAttribute()
-    public Object joinGame(@PathParam("token") String token) throws Exception {
+    public Object tokenJoinGame(@PathParam("token") String token) throws Exception {
         Game game = null;
         Team team = null;
         try {
@@ -142,6 +162,10 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
                     game.getId(), userFacade.getCurrentUser().getId());
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
         } catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
+            
+            Subject s = SecurityUtils.getSubject();
+            s.checkPermission("Game:Token:g"+game.getId());
+                
             return (team != null) ? team : game;
         }
     }
@@ -150,7 +174,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Path("/JoinTeam/{teamId : .*}/")
     @Produces(MediaType.APPLICATION_JSON)
     public Game joinTeam(@PathParam("teamId") Long teamId) {
-        return teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
+        Game g = teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
+        addRights(g);
+        return g;
     }
 
     @GET
@@ -159,7 +185,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     public Game createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
         Team t = new Team(name);
         this.teamFacade.create(new Long(this.getPathParam("gameId")), new Team(name));
-        return teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
+        Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
+        addRights(g);
+        return g;
     }
 
     /**
@@ -169,5 +197,18 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Override
     protected GameFacade getFacade() {
         return gameFacade;
+    }
+    
+    private void addRights(Game game){
+        Subject s = SecurityUtils.getSubject();
+        boolean gExist = s.isPermitted("Game:View:g" + game.getId());
+        boolean gmExist = s.isPermitted("GameModel:View:gm" + game.getGameModel().getId());
+            
+        if (!gExist){
+            userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g"+game.getId());
+        }
+        if (!gmExist){
+            userFacade.getCurrentUser().getMainAccount().getPermissions().add("GameModel:View:gm"+game.getGameModel().getId());
+        }
     }
 }

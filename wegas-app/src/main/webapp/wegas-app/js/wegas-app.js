@@ -66,11 +66,23 @@ YUI.add('wegas-app', function (Y) {
          * @description render function
          */
         render: function () {
+            var exception
 
             Y.io.header("Accept-Language", Y.config.lang);                      // Set the language for all requests
             this.on("render", function () {
                 Y.one("body").removeClass("wegas-widget-loading");
             });
+           
+            Y.on("io:failure", function (e, response) {
+                exception = response.responseText.substring(response.responseText.indexOf('"exception'), response.responseText.length);
+                exception = exception.split(",");
+                if (response.status == 400 && exception[0] == '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
+                exception[0] == '"exception":"org.apache.shiro.authz.UnauthenticatedException"'){
+//                    Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login 
+                    alert("You have been logged out or does not have permissions");
+                }
+                
+            }, this);
 
             this.initDataSources();
             this.initCSS();
