@@ -229,7 +229,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
-                        this.showMessage("success", "Your new password has been sent", 4000);
+                        this.showMessage("success", "Your new password had been sent", 4000);
                         this.set("mode", "login");
                     }, this),
                     failure: Y.bind(function(e) {

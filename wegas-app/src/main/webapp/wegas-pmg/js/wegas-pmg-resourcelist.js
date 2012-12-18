@@ -22,7 +22,7 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
         menuDetails: null,
         sortable: null,
         initializer: function () {
-            this.handlers = new Array();
+            this.handlers = {};
             this.menu = new Y.Wegas.Menu();
             this.menuDetails = new Y.Wegas.Menu({
                 width: "250px"
@@ -45,14 +45,13 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
         },
         bindUI: function () {
             ResourceList.superclass.bindUI.apply(this);
-            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
-            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
+            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
 
-            this.handlers.push(this.datatable.delegate('click', function (e) {            // fill the "add" menu on click
+            this.handlers.createMenu = this.datatable.delegate('click', function (e) {            // fill the "add" menu on click
                 this.createMenu(e, true);
-            }, '.yui3-datatable-data .assignement .assign', this));
+            }, '.yui3-datatable-data .assignement .assign', this);
 
-            this.handlers.push(this.menu.on("button:mouseenter", function (e) {           // align the menu
+            this.handlers.moveMenu = this.menu.on("button:mouseenter", function (e) {           // align the menu
                 this.menuDetails.set("align", {
                     node: this.menu.get("boundingBox"),
                     points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ?
@@ -60,15 +59,15 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
                 });
                 this.menuDetails.show();
                 this.menuDetails.get("contentBox").setHTML('<div style="padding:5px 10px"><i>' + e.target.get("data").description + '</i></div>');
-            }, this));
+            }, this);
 
-            this.handlers.push(this.menu.on("visibleChange", function (e) {                 // When the menu is hidden, hide the details panel
+            this.handlers.hideMenu = this.menu.on("visibleChange", function (e) {                 // When the menu is hidden, hide the details panel
                 if (!e.newVal) {
                     this.menuDetails.hide();
                 }
-            }, this));
+            }, this);
 
-            this.handlers.push(this.menu.on("button:click", this.onMenuClick, this));     // assign a task to a resource
+            this.handlers.assignTask = this.menu.on("button:click", this.onMenuClick, this);     // assign a task to a resource
         },
         syncUI: function () {
             ResourceList.superclass.syncUI.apply(this);
@@ -76,9 +75,9 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
             this.syncSortable();
         },
         destructor: function () {
-            var i;
-            for (i = 0; i < this.handlers.length; i++) {
-                this.handlers[i].detach();
+            var k;
+            for (k in this.handlers) {
+                this.handlers[k].detach();
             }
             this.menu.destroy();
             this.menuDetails.destroy();
@@ -129,13 +128,11 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
                     var node = e.target.get('node');
                     this.removeTask(node);
                 }, this);
-            }       
+            }
         },
-            
-        removeTask: function(node){
+        removeTask: function (node) {
             //todo
         },
-            
         createMenu: function (e, add) {
             var i, tasks, resources, resourceDesc, resourceId;
             resourceId = e.target.ancestor().ancestor().ancestor().one('*').getContent();

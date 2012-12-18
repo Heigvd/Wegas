@@ -1,42 +1,70 @@
 {
     "id": 2003,
-    "type" : "Layout",
-    "top" : {
+    "type": "Layout",
+    "top": {
         "children": [{
-            "type": "Text",
-            "content": "Lobby",
-            "cssClass": "wegas-title"
-        },{
-            "type": "LoginButton",
-            "cssClass": "menu-loginbutton"
-        }]
+                "type": "Text",
+                "content": "Lobby",
+                "cssClass": "wegas-title"
+            }, {
+                "type": "LoginButton",
+                "cssClass": "menu-loginbutton",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "Button",
+                                    "label": "Preferences",
+                                    "plugins": [{
+                                            "fn": "OpenTabAction",
+                                            "cfg": {
+                                                "children": {
+                                                    "type": "UserPreferences"
+                                                }
+                                            }
+                                        }]
+                                }, {
+                                    "type": "Button",
+                                    "label": "Logout",
+                                    "plugins": [{
+                                            "fn": "OpenUrlAction",
+                                            "cfg": {
+                                                "url": "wegas-app/logout",
+                                                "target": "self"
+                                            }
+                                        }
+                                    ]
+                                }]
+                        }
+                    }]
+            }]
     },
     "left": {
         "children": [{
-            "type": "TabView",
-            "id": "leftTabView",
-            "children": [{
-                "type": "Tab",
-                "label": "Your games",
+                "type": "TabView",
+                "id": "leftTabView",
                 "children": [{
-                    "type": "LobbyTreeView",
-                    "dataSource": "RegisteredGames",
-                    "emptyMessage": "You are not registered in any game."
-                }]
+                        "type": "Tab",
+                        "label": "Your games",
+                        "children": [{
+                                "type": "LobbyTreeView",
+                                "dataSource": "RegisteredGames",
+                                "emptyMessage": "You are not registered in any game."
+                            }]
+                    }]
             }]
-        }]
     },
     "center": {
         "children": [{
-            "id": "centerTabView",
-            "type": "TabView",
-            "children": [{
-                "type": "Tab",
-                "label": "Join a game",
+                "id": "centerTabView",
+                "type": "TabView",
                 "children": [{
-                    "type": "JoinGameWidget"
-                }]
+                        "type": "Tab",
+                        "label": "Join a game",
+                        "children": [{
+                                "type": "JoinGameWidget"
+                            }]
+                    }]
             }]
-        }]
     }
 }

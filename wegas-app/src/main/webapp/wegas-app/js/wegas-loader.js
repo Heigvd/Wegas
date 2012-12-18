@@ -89,6 +89,11 @@ YUI().use(function(Y) {
                         requires: ['wegas-widget', 'wegas-action', 'button'],
                         ws_provides: 'Button'
                     },
+                    'wegas-loginbutton': {
+                        path: 'wegas-app/js/widget/wegas-loginbutton-min.js',
+                        requires: ['wegas-button', 'wegas-widgetmenu'],
+                        ws_provides: 'LoginButton'
+                    },
                     'wegas-action': {
                         path: 'wegas-app/js/widget/wegas-action-min.js',
                         requires: ['plugin']
@@ -155,7 +160,8 @@ YUI().use(function(Y) {
                     },
                     'wegas-form': {
                         path: 'wegas-app/js/widget/wegas-form-min.js',
-                        requires: ['wegas-widget', 'wegas-inputex', 'inputex-string'],
+                        requires: ['wegas-widget', 'wegas-inputex', 'inputex-string', 'inputex-jsonschema',
+                            'wegas-widgettoolbar'],
                         ws_provides: "FormWidget"
                     },
                     'wegas-loginwidget': {
@@ -187,12 +193,17 @@ YUI().use(function(Y) {
                     },
                     'wegas-itemselector': {
                         path: 'wegas-app/js/widget/wegas-itemselector-min.js',
-                        requires: ['wegas-nodeformatter', 'scrollview'],
+                        requires: ['wegas-nodeformatter', 'scrollview', 'wegas-widgetmenu'],
                         ws_provides: "ItemSelector"
                     },
                     'wegas-nodeformatter': {
                         path: 'wegas-app/js/widget/wegas-nodeformatter-min.js',
                         ws_provides: "NodeFormatter"
+                    },
+                    'wegas-userpreferences': {
+                        path: 'wegas-app/js/widget/wegas-userpreferences-min.js',
+                        requires: ["wegas-form"],
+                        ws_provides: "UserPreferences"
                     },
                     /** Inputex Fields **/
                     'wegas-inputex': {
@@ -445,6 +456,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-pmg-slidepanel': {
                         path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
+                        requires: ['anim'],
                         ws_provides: "PmgSlidePanel"
                     },
                     /**book CYOA**/

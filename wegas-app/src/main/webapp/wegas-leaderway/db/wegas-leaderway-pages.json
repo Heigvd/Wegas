@@ -1,5 +1,5 @@
-{"1": {
-        "id": 1,
+{
+    "1": {
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout",
@@ -146,7 +146,6 @@
             }]
     },
     "2": {
-        "id": 2,
         "label": "Folder",
         "type": "LWFolder",
         "cssClass": "leaderway-folder",
@@ -203,7 +202,7 @@
                 "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 5 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 4 : Elle a conscience de l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 3 : Elle sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li><li>Niveau 2 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 1 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li></ul>",
                 "selector": "li",
                 "name": "leadershipLevel",
-                "minVal" : "1",
+                "minVal": "1",
                 "invert": "true"
             }, {
                 "name": "Conditions : ",
@@ -264,7 +263,6 @@
         "targetPageLoaderId": "maindisplayarea"
     },
     "4": {
-        "id": 4,
         "label": "TaskList",
         "type": "TaskList",
         "cssClass": "leaderway-tasklist",
@@ -273,7 +271,6 @@
         "dialoguePageId": "7"
     },
     "5": {
-        "id": 5,
         "label": "Inbox",
         "type": "InboxDisplay",
         "variable": {
@@ -284,7 +281,6 @@
         "targetPageLoaderId": "maindisplayarea"
     },
     "6": {
-        "id": 6,
         "label": "Score",
         "type": "Score",
         "title": "Top 5 des meilleurs entreprises actuelles",
@@ -294,7 +290,6 @@
         "targetPageLoaderId": "maindisplayarea"
     },
     "7": {
-        "id": 7,
         "label": "Dialogue",
         "type": "Dialogue",
         "cssClass": "leaderway-dialogue",
@@ -302,5 +297,8 @@
         "taskListPageId": "6",
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
+    },
+    "1000": {
+        "type": "UserPreferences"
     }
 }
