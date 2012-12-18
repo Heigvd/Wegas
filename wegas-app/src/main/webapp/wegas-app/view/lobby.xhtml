@@ -57,6 +57,12 @@
                                 plugins: [{
                                         fn: "GameDataSourceREST"
                                     }]
+                            },
+                            "User": {
+                                source: "rest/User",
+                                plugins: [{
+                                        fn: "UserDataSourceREST"
+                                    }]
                             }
                         }
                     };
