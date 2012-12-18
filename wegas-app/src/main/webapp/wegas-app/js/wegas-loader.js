@@ -456,6 +456,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-pmg-slidepanel': {
                         path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
+                        requires: ['anim'],
                         ws_provides: "PmgSlidePanel"
                     },
                     /**book CYOA**/
