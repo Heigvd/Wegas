@@ -4,14 +4,13 @@
 
     <parent>
         <groupId>com.wegas</groupId>
-        <version>0.2</version>
+        <version>0.2-SNAPSHOT</version>
         <artifactId>wegas-project</artifactId>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wegas</groupId>
     <artifactId>wegas-app</artifactId>
-    <version>0.2</version>
     <packaging>war</packaging>
 
     <properties>
@@ -94,7 +93,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wegas-core</artifactId>
-            <version>0.2</version>
+            <version>0.2-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
 

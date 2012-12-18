@@ -40,7 +40,7 @@
         <actionName>CUSTOM-Run -skip-test</actionName>
         <displayName>Run -skip-test</displayName>
         <goals>
-            <goal>package</goal>d
+            <goal>package</goal>
         </goals>
         <properties>
             <skipTests>true</skipTests>

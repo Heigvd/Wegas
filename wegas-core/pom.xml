@@ -4,12 +4,11 @@
     <parent>
         <artifactId>wegas-project</artifactId>
         <groupId>com.wegas</groupId>
-        <version>0.2</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>com.wegas</groupId>
     <artifactId>wegas-core</artifactId>
-    <version>0.2</version>
     <packaging>jar</packaging>
     <name>wegas-core</name>
 
@@ -216,7 +215,7 @@
     </dependencies>
 
     <build>
-        <finalName>wegas-core</finalName>
+        <finalName>wegas-core_${project.version}</finalName>
 
         <!-- Activate resources filtering (for properties injection in resources) -->
         <resources>
