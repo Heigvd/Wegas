@@ -16,6 +16,7 @@ import com.wegas.core.persistence.game.GameModel_;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jcr.RepositoryException;
@@ -41,6 +42,8 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+    @EJB
+    private RequestManagerFacade requestManagerFacade;
 
     /**
      *
@@ -76,8 +79,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
             try {
                 this.findByName(newName);
                 suffix++;
-            }
-            catch (NoResultException ex) {
+            } catch (NoResultException ex) {
                 added = true;
             }
         }
@@ -89,8 +91,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         try {                                                                   //Clone jcr FILES
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newEntity.getId());
             connector.cloneWorkspace(oldEntity.getId());
-        }
-        catch (RepositoryException ex) {
+        } catch (RepositoryException ex) {
             System.err.println(ex);
         }
         return newEntity;
@@ -132,5 +133,6 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         gm.propagateDefaultInstance(true);
         em.flush();
         em.refresh(gm);
+        requestManagerFacade.commit();
     }
 }

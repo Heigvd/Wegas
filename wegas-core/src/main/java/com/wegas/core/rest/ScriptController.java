@@ -9,6 +9,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.RequestManagerFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.exception.WegasException;
@@ -28,12 +29,17 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Script/")
 public class ScriptController {
-    /*
+
+    /**
      *
      */
-
     @EJB
     private ScriptFacade scriptManager;
+    /**
+     *
+     */
+    @EJB
+    private RequestManagerFacade requestManagerFacade;
 
     /**
      *
@@ -48,7 +54,8 @@ public class ScriptController {
     public Object run(
             @PathParam("playerId") Long playerId, Script script)
             throws ScriptException, WegasException {
-
-        return scriptManager.eval(playerId, script);
+        Object r = scriptManager.eval(playerId, script);
+        requestManagerFacade.commit();
+        return r;
     }
 }
