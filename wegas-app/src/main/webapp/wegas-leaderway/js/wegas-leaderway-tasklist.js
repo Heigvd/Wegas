@@ -19,7 +19,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         // *** Lifecycle Methods *** //
         initializer: function () {
             this.data = [];
-            this.handlers = [];
+            this.handlers = {};
             this.pickingMode = false;
             this.waitOnServer = false;
             this.table = new Y.DataTable({
@@ -84,21 +84,21 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          */
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
-            this.handlers.push(Y.Wegas.app.dataSources.VariableDescriptor.after("response", function () {
+            this.handlers.update = Y.Wegas.app.dataSources.VariableDescriptor.after("update", function () {
                 if (true)
                     this.syncUI();
-            }, this));
-            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-            this.handlers.push(this.table.delegate('click', function (e) {
-                this.selectRow(e);
-            }, '.yui3-datatable-data tr', this));
+            }, this);
 
-            this.handlers.push(cb.one('.buttons').delegate('click', function (e) {
+            this.handlers.selectRow = this.table.delegate('click', function (e) {
+                this.selectRow(e);
+            }, '.yui3-datatable-data tr', this);
+
+            this.handlers.assignTask = cb.one('.buttons').delegate('click', function (e) {
                 this.showOverlay();
                 this.assignTask(this.resourceDescriptor, this.selectedTaskDescriptor);
-            }, '.buttonOK', this));
+            }, '.buttonOK', this);
 
-            this.handlers.push(cb.one('.buttons').delegate('click', function (e) {
+            this.handlers.cancelAssign = cb.one('.buttons').delegate('click', function (e) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 targetPageLoader.once("widgetChange", function (e) {
                     if (e.newVal.setResourceDescriptor) {
@@ -108,7 +108,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     resourceDescriptor: this.resourceDescriptor
                 });
                 targetPageLoader.set("pageId", this.nextPageId);
-            }, '.buttonCancel', this));
+            }, '.buttonCancel', this);
 
         },
         /**
@@ -133,10 +133,10 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * Destroy all child widget and all function
          */
         destructor: function () {
-            var i;
+            var k;
             this.table.destroy();
-            for (i = 0; i < this.handlers.length; i++) {
-                this.handlers[i].detach();
+            for (k in this.handlers) {
+                this.handlers[k].detach();
             }
         },
         //*** Particular Methods ***/

@@ -20,6 +20,61 @@ YUI.add("wegas-pmg-datatable", function (Y) {
         handlers: null,
         datatable: null,
         data: null,
+        // *** Lifecycle Methods *** //
+        initializer: function () {
+            var i, ct = this.get("columnTitles"), columnTitles = new Array();
+            this.handlers = {};
+            this.data = [];
+            if (ct == null || ct.length == 0 || ct.length != this.get("columnValues").length) {
+                return;
+            }
+            columnTitles.push({
+                key: "_id",
+                label: "_id"
+            });                                                                 //First column is always the name (but not displayed)
+            for (i = 0; i < ct.length; i++) {                                         //construct Datatable's columns
+                columnTitles.push(
+                        {
+                            key: ct[i],
+                            label: ct[i],
+                            sortable: true
+                        }
+                );
+            }
+//            this.datatable = new Y.Treeble({                                  //Using Treeble (comment also the sorting methode belove)
+            this.datatable = new Y.DataTable({//Using simple database
+                columns: columnTitles
+            });
+            if (this.get("defaultSort") && this.get("defaultSort").indexOf(this.get("columnValues") > -1)) { //Add columns sorting possibilities
+                this.datatable.sort(this.get("defaultSort"));
+            } else {
+                this.datatable.sort(this.get("columnTitles")[0]);
+            }
+        },
+        renderUI: function () {
+            var cb = this.get(CONTENTBOX);
+            if (!this.datatable)
+                return;
+            this.datatable.render(cb);
+        },
+        bindUI: function () {
+            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
+        },
+        syncUI: function () {
+            if (this.datatable == null || this.get("variables") == null)
+                return;
+            this.datatable.set("data", []);
+            this.data.length = 0;
+            this.getData();
+            this.datatable.addRows(this.data);
+        },
+        destructor: function () {
+            var i;
+            for (i = 0; i < this.handlers.length; i++) {
+                this.handlers[i].detach();
+            }
+            this.datatable.destroy();
+        },
         //*** Private Methods ***/
         getData: function () {
             var i, j, variables, variableDesc, variableInst, oneRowDatas, data,
@@ -48,64 +103,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
                 }
                 this.data.push(oneRowDatas);
             }
-        },
-        // *** Lifecycle Methods *** //
-        initializer: function () {
-            var i, ct = this.get("columnTitles"), columnTitles = new Array();
-            this.handlers = [];
-            this.data = [];
-            if (ct == null || ct.length == 0 || ct.length != this.get("columnValues").length){
-                             return;   
-            }
-            columnTitles.push({
-                key: "_id",
-                label: "_id"
-            });                                                                 //First column is always the name (but not displayed)
-            for (i = 0; i < ct.length; i++) {                                         //construct Datatable's columns
-                columnTitles.push(
-                        {
-                            key: ct[i],
-                            label: ct[i],
-                            sortable: true
-                        }
-                );
-            }
-//            this.datatable = new Y.Treeble({                                  //Using Treeble (comment also the sorting methode belove)
-              this.datatable = new Y.DataTable({                                //Using simple database
-                columns: columnTitles
-            });
-            if (this.get("defaultSort") && this.get("defaultSort").indexOf(this.get("columnValues") > -1)) { //Add columns sorting possibilities
-                this.datatable.sort(this.get("defaultSort"));
-            } else {
-                this.datatable.sort(this.get("columnTitles")[0]);
-            }
-        },
-        renderUI: function () {
-            var cb = this.get(CONTENTBOX);
-            if (!this.datatable)
-                return;
-            this.datatable.render(cb);
-        },
-        bindUI: function () {
-            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
-            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-        },
-        syncUI: function () {
-            if (this.datatable == null || this.get("variables") == null)
-                return;
-            this.datatable.set("data", []);
-            this.data.length = 0;
-            this.getData();
-            this.datatable.addRows(this.data);
-        },
-        destructor: function () {
-            var i;
-            for (i = 0; i < this.handlers.length; i++) {
-                this.handlers[i].detach();
-            }
-            this.datatable.destroy();
         }
-
     }, {
         ATTRS: {
             variables: {
