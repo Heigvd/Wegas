@@ -1,87 +1,90 @@
 {
     "id": 2003,
-    "type": "Layout",
-    "top": [{
-            "type": "Text",
-            "content": "Lobby",
-            "cssClass": "wegas-title"
-        }, {
+    "type" : "Layout",
+    "top" : {
+        "children": [{
+                "type": "Text",
+                "content": "Lobby",
+                "cssClass": "wegas-title"
+            }, {
             "type": "Button",
             "label": "Administrator",
             "plugins": [{
-                    "fn": "WidgetMenu",
-                    "cfg": {
-                        "children": [{
-                                "type": "OpenTabButton",
-                                "label": "Users",
-                                "children": {
-                                    "type": "EditorTreeView",
-                                    "dataSource": "User",
-                                    "plugins": [{
-                                            "fn": "WidgetToolbar",
-                                            "cfg": {
-                                                "children": [{
-                                                        "type": "NewEntityButton",
-                                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                                        "targetClass": "JpaAccount",
-                                                        "dataSource": "User"
-                                                    }]
-                                            }
-                                        }]
-                                }
-                            }, {
-                                "type": "OpenTabButton",
-                                "label": "Groups",
-                                "children": {
-                                    "type": "EditorTreeView",
-                                    "dataSource": "Role",
-                                    "plugins": [{
-                                            "fn": "WidgetToolbar",
-                                            "cfg": {
-                                                "children": [{
-                                                        "type": "NewEntityButton",
-                                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                                        "targetClass": "Role",
-                                                        "dataSource": "Role"
-                                                    }]
-                                            }
-                                        }]
-                                }
-                            }]
-                    }
-                }]
-        }, {
-            "type": "LoginButton",
-            "cssClass": "menu-loginbutton",
-            "plugins": [{
-                    "fn": "WidgetMenu",
-                    "cfg": {
-                        "children": [{
-                                "type": "Button",
-                                "label": "Preferences",
-                                "plugins": [{
-                                        "fn": "OpenTabAction",
-                                        "cfg": {
-                                            "children": {
-                                                "type": "UserPreferences"
-                                            }
-                                        }
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "children": [{
+                        "type": "OpenTabButton",
+                        "label": "Users",
+                        "children": {
+                            "type": "EditorTreeView",
+                            "dataSource": "User",
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
+                                        "type": "NewEntityButton",
+                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                        "targetClass": "JpaAccount",
+                                        "dataSource": "User"
                                     }]
-                            }, {
-                                "type": "Button",
-                                "label": "Logout",
-                                "plugins": [{
-                                        "fn": "OpenUrlAction",
-                                        "cfg": {
-                                            "url": "wegas-app/logout",
-                                            "target": "self"
-                                        }
-                                    }
-                                ]
+                                }
                             }]
-                    }
-                }]
-        }],
+                        }
+                    }, {
+                        "type": "OpenTabButton",
+                        "label": "Groups",
+                        "children": {
+                            "type": "EditorTreeView",
+                            "dataSource": "Role",
+                            "plugins": [{
+                                "fn": "WidgetToolbar",
+                                "cfg": {
+                                    "children": [{
+                                        "type": "NewEntityButton",
+                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                        "targetClass": "Role",
+                                        "dataSource": "Role"
+                                    }]
+                                }
+                            }]
+                        }
+                    }]
+                }
+            }]
+    }, {
+                "type": "LoginButton",
+                "cssClass": "menu-loginbutton",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "Button",
+                                    "label": "Preferences",
+                                    "plugins": [{
+                                            "fn": "OpenTabAction",
+                                            "cfg": {
+                                                "children": {
+                                                    "type": "UserPreferences",
+                                                    "content": "test12"
+                                                }
+                                            }
+                                        }]
+                                }, {
+                                    "type": "Button",
+                                    "label": "Logout",
+                                    "plugins": [{
+                                            "fn": "OpenUrlAction",
+                                            "cfg": {
+                                                "url": "wegas-app/logout",
+                                                "target": "self"
+                                            }
+                                        }
+                                    ]
+                                }]
+                        }
+                    }]
+            }]
+    },
     "left": {
         "children": [{
                 "type": "TabView",

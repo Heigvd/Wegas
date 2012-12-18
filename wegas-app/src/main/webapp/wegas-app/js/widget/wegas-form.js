@@ -68,10 +68,6 @@ YUI.add('wegas-form', function (Y) {
                 }
             }).render(toolbarNode);
         },
-        setForm: function (values, formCfg) {
-            this.set("values", values);
-            this.set("formCfg", formCfg);
-        },
 
         destroyForm: function () {
             this.set("form", null);
@@ -80,7 +76,13 @@ YUI.add('wegas-form', function (Y) {
     }, {
         ATTRS: {
             values: {
-                value: {}
+                value: {
+                    setter: function (val) {
+                        if (this.get("form")) {
+                            this.form.setValue(val);
+                        }
+                    }
+                }
             },
             form: {
                 setter: function (val) {
@@ -90,12 +92,12 @@ YUI.add('wegas-form', function (Y) {
                     return val;
                 }
             },
-            formCfg: {
+            cfg: {
                 setter: function (val) {
                     val.parentEl = this.get(CONTENTBOX);                        // Set up the form parentEl attribute, so it knows where to render
 
-                    Y.inputEx.use(val, Y.bind(function (formCfg) {              // Load form dependencies
-                        var form = Y.inputEx(formCfg);                          // Initialize and render form
+                    Y.inputEx.use(val, Y.bind(function (cfg) {              // Load form dependencies
+                        var form = Y.inputEx(cfg);                          // Initialize and render form
                         form.setValue(this.get("values"));                      // Sync form with "values" ATTR
                         this.set("form", form);
                     }, this, val));
