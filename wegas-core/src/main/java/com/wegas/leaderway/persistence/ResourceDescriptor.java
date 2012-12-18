@@ -56,6 +56,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     }
 
     // **** Sugar for editor *** //
+    public void getConfidence(Player p) {
+        this.getInstance(p).getConfidence();
+    }
+    
     public void setConfidence(Player p, int value) {
         this.getInstance(p).setConfidence(value);
     }
@@ -63,6 +67,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     public void addAtConfidence(Player p, int value) {
         ResourceInstance instance = this.getInstance(p);
         instance.setConfidence(instance.getConfidence() + value);
+    }
+
+    public void getMoral(Player p) {
+        this.getInstance(p).getMoral();
     }
 
     public void setMoral(Player p, int value) {
@@ -75,6 +83,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     }
 
     //Methods below are temporary ; only for CEP-Game
+    public void getSalary(Player p) {
+        this.getInstance(p).getProperty("salary");
+    }
+    
     public void setSalary(Player p, int value) {
         this.getInstance(p).setProperty("salary", "" + value);
     }
@@ -83,6 +95,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         ResourceInstance instance = this.getInstance(p);
         int newVal = Integer.parseInt(instance.getProperty("salary")) + value;
         instance.setProperty("salary", "" + newVal);
+    }
+
+    public void getExperience(Player p) {
+        this.getInstance(p).getProperty("experience");
     }
 
     public void setExperience(Player p, int value) {
@@ -95,6 +111,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         instance.setProperty("experience", "" + newVal);
     }
 
+    public void getLeadershipLevel(Player p) {
+        this.getInstance(p).getProperty("leadershipLevel");
+    }
+
     public void setLeadershipLevel(Player p, int value) {
         this.getInstance(p).setProperty("leadershipLevel", "" + value);
     }
@@ -104,7 +124,12 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         int newVal = Integer.parseInt(instance.getProperty("leadershipLevel")) + value;
         instance.setProperty("leadershipLevel", "" + newVal);
     }
-
+    
+    public void getActive(Player p) {
+        ResourceInstance instance = this.getInstance(p);
+        instance.getActive();
+    }
+    
     public void setActive(Player p, boolean value) {
         ResourceInstance instance = this.getInstance(p);
         instance.setActive(value);
