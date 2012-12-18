@@ -26,7 +26,8 @@ YUI.add('wegas-editable', function (Y) {
     /**
      *
      */
-    function Editable() { }
+    function Editable () {
+    }
 
     Y.mix(Editable.prototype, {
         /**
@@ -37,7 +38,7 @@ YUI.add('wegas-editable', function (Y) {
          */
         toJSON: function () {
             var k, ret = this.getAttrs(),
-            attrCfgs = this.getAttrCfgs();
+                    attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
                 if (attrCfgs[k] && attrCfgs[k]["transient"]) {                           // Remove any transient attribute
@@ -77,10 +78,12 @@ YUI.add('wegas-editable', function (Y) {
             return this.toObject(["id", "variableInstances"]);
         },
         /**
+         * @param {Array} fieldsToIgnore (optional), don't create these inputs.
          * Returns the form configuration associated to this object, to be used a an inputex object.
          */
-        getFormCfg: function () {
+        getFormCfg: function (fieldsToIgnore) {
             var i, form, schemaMap, attrCfgs, builder;
+            fieldsToIgnore = (fieldsToIgnore || []);
             // forms = Y.Wegas.app.get('editorForms'),                          // Select first server defined forms, based on the @class or the type attribute
             // form = forms[this.get('@class')] || forms[this.get("type")]
 
@@ -92,7 +95,7 @@ YUI.add('wegas-editable', function (Y) {
                 for (i in attrCfgs) {
                     attrCfgs[i]["default"] = attrCfgs[i].value;                 // Use the value as default (useful form json object serialization)
 
-                    if (attrCfgs[i]["transient"]) {
+                    if (attrCfgs[i]["transient"] || fieldsToIgnore.indexOf(i) > -1) {
                         delete attrCfgs[i];
                     }
                 }
@@ -112,14 +115,15 @@ YUI.add('wegas-editable', function (Y) {
                 form = builder.schemaToInputEx(schemaMap.Entity);
             }
             return form || [];
-        },
+        }
+        ,
         /**
          * Returns the edition menu associated to this object, to be used a an inputex object.
          */
         getMenuCfg: function (data) {
             var menus = Y.Wegas.app.get('editorMenus'),
-            //    staticMenus =
-            menu;
+                    //    staticMenus =
+                    menu;
 
             if (menus) {
                 menu = menus[ this.get('@class')] || menus[this.get("type")];  // Select first server defined forms, based on the @class or the type attribute
@@ -127,7 +131,7 @@ YUI.add('wegas-editable', function (Y) {
             menu = menu || this.getStatic("EDITMENU")[0] || [];                 // And if no form is defined we return the default one defined in the entity
 
 
-            function mixMenuCfg(elts, data) {
+            function mixMenuCfg (elts, data) {
                 var i, j;
                 for (i = 0; i < elts.length; i += 1) {
                     elts[i].data = Y.mix({}, data);// Attach self and the provided datasource to the menu items, to allow them to know which entity to update
@@ -173,7 +177,6 @@ YUI.add('wegas-editable', function (Y) {
         }
     });
     Y.mix(Editable, {
-
         /**
          * Load the modules from an Wegas widget definition
          */
@@ -182,15 +185,14 @@ YUI.add('wegas-editable', function (Y) {
             modules.push(cb);
             Y.use.apply(Y, modules);
         },
-
         /**
-        * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
-        */
+         * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
+         */
         getRawModulesFromDefinition: function (cfg) {
             var i, props, type = cfg.type || cfg["@class"],
-            module = YUI_config.groups.wegas.modulesByType[type],
-            modules = [],
-            pushFn = function (field) {
+                    module = YUI_config.groups.wegas.modulesByType[type],
+                    modules = [],
+                    pushFn = function (field) {
                 if (field) {
                     modules = modules.concat(Editable.getModulesFromDefinition(field));
                 }
@@ -230,7 +232,6 @@ YUI.add('wegas-editable', function (Y) {
             var modules = Editable.getRawModulesFromDefinition(cfg);
             return Y.Object.keys(Y.Array.hash(modules));
         },
-
         /**
          *  This method takes a js object and recuresively instantiate it based on
          *  on their @class attribute. Target class are found in namespace
@@ -286,7 +287,6 @@ YUI.add('wegas-editable', function (Y) {
             }
             return new classDef(o);
         },
-
         useAndRevive: function (cfg, cb) {
             Editable.use(cfg, Y.bind(function (cb) {                            // Load target class dependencies
                 cb(Editable.revive(this));

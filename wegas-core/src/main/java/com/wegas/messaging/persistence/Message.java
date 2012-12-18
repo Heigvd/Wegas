@@ -62,11 +62,11 @@ public class Message extends NamedEntity {
      */
     @Column(name = "mfrom")
     private String from;
-    /**
-     *
-     */
-    @ElementCollection
-    private List<String> attachements;
+//    /**
+//     *
+//     */
+//    @ElementCollection
+//    private List<String> attachements;
     /**
      *
      */
@@ -102,7 +102,7 @@ public class Message extends NamedEntity {
         this.setUnread(other.getUnread());
         this.setTime(other.getTime());
         this.setSubject(other.getSubject());
-        this.setAttachements(other.attachements);
+//        this.setAttachements(other.attachements);
     }
 
     /**
@@ -226,17 +226,17 @@ public class Message extends NamedEntity {
         this.from = from;
     }
 
-    /**
-     * @return the attachements
-     */
-    public List<String> getAttachements() {
-        return attachements;
-    }
-
-    /**
-     * @param attachements the attachements to set
-     */
-    public void setAttachements(List<String> attachements) {
-        this.attachements = attachements;
-    }
+//    /**
+//     * @return the attachements
+//     */
+//    public List<String> getAttachements() {
+//        return attachements;
+//    }
+//
+//    /**
+//     * @param attachements the attachements to set
+//     */
+//    public void setAttachements(List<String> attachements) {
+//        this.attachements = attachements;
+//    }
 }
