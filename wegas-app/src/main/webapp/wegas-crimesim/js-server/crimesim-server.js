@@ -18,20 +18,20 @@ function EvtTarget() {
 }
 
 EvtTarget.prototype = {
-    on: function(evt, fn, scope) {
+    on: function (evt, fn, scope) {
         this.evts[evt] = this.evts[evt] || [];
         this.evts[evt].push({
             fn: fn,
             scope: scope || this
-            });
+        });
     },
-    fire: function(evt, args) {
-        var evts = this.evts[evt];
-        for (var i = 0; i < evts.length; i += 1) {
+    fire: function (evt, args) {
+        var i, evts = this.evts[evt];
+        for (i = 0; i < evts.length; i += 1) {
             evts[i].fn(args);
         }
     }
-}
+};
 
 function lookupBean(name) {
     var ctx = new InitialContext();
@@ -50,7 +50,7 @@ eventManager.on("replySelect", function(e) {
 });
 
 
-eventManager.on("replyCancel", function(e) {
+eventManager.on("replyCancel", function (e) {
     if (e.reply.startTime - period.value === -1) {
         humanResources.value += +e.reply.result.choiceDescriptor.cost;
     }
@@ -62,7 +62,7 @@ function nextWeek() {
     var qdf = lookupBean("QuestionDescriptorFacade"),
     items = evidences.descriptor.items;
 
-    humanResources.value =  humanResources.descriptor.maxValue;
+    humanResources.value = humanResources.descriptor.defaultInstance.value;
 
     for (var i = 0; i < items.size(); i += 1) {
         var questionInstance = items.get(i).getInstance(self);
