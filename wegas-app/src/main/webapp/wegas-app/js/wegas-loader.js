@@ -89,6 +89,11 @@ YUI().use(function(Y) {
                         requires: ['wegas-widget', 'wegas-action', 'button'],
                         ws_provides: 'Button'
                     },
+                    'wegas-loginbutton': {
+                        path: 'wegas-app/js/widget/wegas-loginbutton-min.js',
+                        requires: ['wegas-button', 'wegas-widgetmenu'],
+                        ws_provides: 'LoginButton'
+                    },
                     'wegas-action': {
                         path: 'wegas-app/js/widget/wegas-action-min.js',
                         requires: ['plugin']
@@ -155,7 +160,8 @@ YUI().use(function(Y) {
                     },
                     'wegas-form': {
                         path: 'wegas-app/js/widget/wegas-form-min.js',
-                        requires: ['wegas-widget', 'wegas-inputex', 'inputex-string'],
+                        requires: ['wegas-widget', 'wegas-inputex', 'inputex-string', 'inputex-jsonschema',
+                            'wegas-widgettoolbar'],
                         ws_provides: "FormWidget"
                     },
                     'wegas-loginwidget': {
@@ -187,12 +193,17 @@ YUI().use(function(Y) {
                     },
                     'wegas-itemselector': {
                         path: 'wegas-app/js/widget/wegas-itemselector-min.js',
-                        requires: ['wegas-nodeformatter', 'scrollview'],
+                        requires: ['wegas-nodeformatter', 'scrollview', 'wegas-widgetmenu'],
                         ws_provides: "ItemSelector"
                     },
                     'wegas-nodeformatter': {
                         path: 'wegas-app/js/widget/wegas-nodeformatter-min.js',
                         ws_provides: "NodeFormatter"
+                    },
+                    'wegas-userpreferences': {
+                        path: 'wegas-app/js/widget/wegas-userpreferences-min.js',
+                        requires: ["wegas-form"],
+                        ws_provides: "UserPreferences"
                     },
                     /** Inputex Fields **/
                     'wegas-inputex': {
@@ -235,7 +246,7 @@ YUI().use(function(Y) {
                     'wegas-inputex-variabledescriptorselect': {
                         path: 'wegas-editor/js/inputex/wegas-inputex-variabledescriptorselect-min.js',
                         requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
-                        'inputex-select', /*'wegas-inputex-list', 'inputex-jsonschema',*/],
+                        'inputex-select'/*, 'wegas-inputex-list', 'inputex-jsonschema',*/],
                         ix_provides: ["entityarrayfieldselect"]
                     },
 
@@ -337,7 +348,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
-                        ix_provides: 'PageEditor',
+                        ws_provides: 'PageEditor',
                         requires: ['diff_match_patch', "wegas-inputex-ace", "ace-json"]
                     },
                     'wegas-csseditor': {

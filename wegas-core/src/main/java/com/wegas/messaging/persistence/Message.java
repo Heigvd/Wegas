@@ -11,12 +11,16 @@ package com.wegas.messaging.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.rest.util.Views;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -41,6 +45,7 @@ public class Message extends NamedEntity {
     /**
      *
      */
+    @JsonView(Views.Export.class)
     @Column(length = 4096)
     private String body;
     /**
@@ -57,6 +62,11 @@ public class Message extends NamedEntity {
      */
     @Column(name = "mfrom")
     private String from;
+    /**
+     *
+     */
+    @ElementCollection
+    private List<String> attachements;
     /**
      *
      */
@@ -92,6 +102,7 @@ public class Message extends NamedEntity {
         this.setUnread(other.getUnread());
         this.setTime(other.getTime());
         this.setSubject(other.getSubject());
+        this.setAttachements(other.attachements);
     }
 
     /**
@@ -213,5 +224,19 @@ public class Message extends NamedEntity {
      */
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    /**
+     * @return the attachements
+     */
+    public List<String> getAttachements() {
+        return attachements;
+    }
+
+    /**
+     * @param attachements the attachements to set
+     */
+    public void setAttachements(List<String> attachements) {
+        this.attachements = attachements;
     }
 }

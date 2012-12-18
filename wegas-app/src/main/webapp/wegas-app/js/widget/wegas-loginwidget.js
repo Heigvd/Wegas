@@ -29,8 +29,8 @@ YUI.add('wegas-loginwidget', function(Y) {
         defaultRedirect: "wegas-app/view/lobby.html",
         // *** Lifecycle Methods *** //
 
-        renderUI: function () {
-            var linksNode, cb = this.get(CONTENTBOX),
+        renderUI: function() {
+            var cb = this.get(CONTENTBOX),
                     cUser = Y.Wegas.app.get("currentUser");
 
             if (cUser.accounts[0]["@class"] !== "GuestAccount") {
@@ -118,68 +118,71 @@ YUI.add('wegas-loginwidget', function(Y) {
 
             this.loginButton = new Y.Button();
             this.loginButton.render(cb);
-            linksNode = Y.Node.create('<div class="links" style="display:inline-block; padding: 5px;"></div>');
-            linksNode.append('<p><span>or </span><a class="alt-link" href="#"></a></p>');
-            linksNode.append('<p><a class="send-new-password" href="#">Forgot your password?</a></p>');
-            cb.append(linksNode);
+            cb.append('<div class="links" style="margin-left: 136px;margin-top:10px;">'
+                    + '<p><a class="alt-link" href="#"></a></p>'
+                    + '<p><a class="send-new-password" href="#">Forgot your password?</a></p>'
+                    + '</div>');
         },
-        bindUI: function () {
+        bindUI: function() {
             var cb = this.get(CONTENTBOX);
 
             cb.one(".alt-link").on("click", this.toggleCreateAccount, this);
 
             cb.one(".send-new-password").on("click", this.toggleSendNewPassword, this);
 
-
-            this.loginButton.on("click", function (e) {                      // join a game based on a token
-                var data;
-                if (this.get("mode") === "login") {
-                    if (!this.loginForm.validate()) {
-                        return;
-                    }
-                    data = this.loginForm.getValue();
-                    this.doLogin(data.email, data.password, data.remember);
-
-                } else if (this.get("mode") === "createaccount") {
-                    if (!this.createAccountForm.validate()) {
-                        return;
-                    }
-                    data = this.createAccountForm.getValue();
-                    this.createAccount(data);
-
-                } else if (this.get("mode") === "sendNewPassword") {
-                    if (!this.sendNewPasswordForm.validate()) {
-                        return;
-                    }
-                    data = this.sendNewPasswordForm.getValue();
-                    this.showOverlay();
-                    this.sendNewPassword(data.email);
-                }
-            }, this);
-            this.on("keypress", function (e) {
+            this.loginButton.on("click", this.onSubmit, this);
+            this.on("keypress", function(e) {
                 if (e.domEvent.keyCode === 13) {
                     this.loginButton.fire("click");
                 }
             });
+            this.after("render", function(e) {
+                cb.one("input").focus();
+            });
         },
-        syncUI: function () {
+        syncUI: function() {
             this.set("mode", this.get("mode"));
         },
-        toggleCreateAccount: function () {
+        toggleCreateAccount: function() {
             if (this.get("mode") === "login") {
                 this.set("mode", "createaccount");
             } else {
                 this.set("mode", "login");
             }
         },
-        toggleSendNewPassword: function () {
+        toggleSendNewPassword: function() {
             if (this.get("mode") === "login") {
                 this.set("mode", "sendNewPassword");
             } else {
                 this.set("mode", "login");
             }
         },
-        doLogin: function (email, password, remember) {
+        onSubmit: function(e) {
+            var data;
+            if (this.get("mode") === "login") {                                 // Join a game based on a token
+                if (!this.loginForm.validate()) {
+                    return;
+                }
+                data = this.loginForm.getValue();
+                this.doLogin(data.email, data.password, data.remember);
+
+            } else if (this.get("mode") === "createaccount") {
+                if (!this.createAccountForm.validate()) {
+                    return;
+                }
+                data = this.createAccountForm.getValue();
+                this.createAccount(data);
+
+            } else if (this.get("mode") === "sendNewPassword") {
+                if (!this.sendNewPasswordForm.validate()) {
+                    return;
+                }
+                data = this.sendNewPasswordForm.getValue();
+                this.showOverlay();
+                this.sendNewPassword(data.email);
+            }
+        },
+        doLogin: function(email, password, remember) {
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/Authenticate/?email=" + email
                         + "&password=" + password
@@ -199,7 +202,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 }
             });
         },
-        createAccount: function (data) {
+        createAccount: function(data) {
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/Signup/",
                 cfg: {
@@ -207,48 +210,47 @@ YUI.add('wegas-loginwidget', function(Y) {
                     data: data
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         this.showMessage("success", "User created, you can now use it to login", 4000);
                         this.set("mode", "login");
                     }, this),
-                    failure: Y.bind(function (e) {
+                    failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Error creating user", 4000);
                     }, this)
                 }
             });
         },
-        sendNewPassword: function (email) {
+        sendNewPassword: function(email) {
             Y.Wegas.UserFacade.rest.sendRequest({
-                request: "/SendNewPassword/?email="+email,
+                request: "/SendNewPassword/?email=" + email,
                 cfg: {
                     method: "POST"
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         this.hideOverlay();
-                        this.showMessage("success", "Your new password has been sent", 4000);
+                        this.showMessage("success", "Your new password had been sent", 4000);
                         this.set("mode", "login");
                     }, this),
-                    failure: Y.bind(function (e) {
+                    failure: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("error", e.response.results.message || "Error sent new password", 4000);
                     }, this)
                 }
             });
         },
-        redirect: function () {
+        redirect: function() {
             window.location = this.getRedirect();
         },
-        getRedirect: function () {
+        getRedirect: function() {
             return this.getQueryParameter("redirect") || (Y.Wegas.app.get("base") + this.defaultRedirect);
         },
         /**
          * Returns a parameter from the GET parameters.
          */
         getQueryParameter: function(name) {
-            var query = window.location.search.substring(1),
-                    vars = query.split("&"),
-                    i, pair;
+            var i, pair, query = window.location.search.substring(1),
+                    vars = query.split("&");
 
             for (i = 0; i < vars.length; i = i + 1) {
                 pair = vars[i].split("=");

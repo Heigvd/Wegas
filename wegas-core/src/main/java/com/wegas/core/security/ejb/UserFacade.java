@@ -219,4 +219,8 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             acc.setPasswordHex(null);                                           //force JPA update
         }
     }
+
+    public void update(JpaAccount account) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

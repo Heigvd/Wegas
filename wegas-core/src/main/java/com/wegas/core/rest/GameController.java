@@ -90,14 +90,14 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      * @return
      */
     @Override
-    public Collection<Game> index() {        
+    public Collection<Game> index() {
         GameModel gameModel = gameModelEntityFacade.find(new Long(this.getPathParam("gameModelId")));
         Collection<Game> game = new ArrayList<>(gameModel.getGames());
-        
-        for (Game aG : gameModel.getGames()){
+
+        for (Game aG : gameModel.getGames()) {
             Subject s = SecurityUtils.getSubject();
             boolean isPermitted = s.isPermitted("Game:View:g" + aG.getId());
-            if (!isPermitted){
+            if (!isPermitted) {
                 game.remove(aG);
             }
         }
@@ -107,31 +107,32 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
 
     @Override
     public Game create(Game entity) {
-        
+
         Subject s = SecurityUtils.getSubject();
         s.checkPermission("Game:Create");
-        
+
         this.gameFacade.create(new Long(this.getPathParam("gameModelId")), entity);
         return entity;
     }
 
     @Override
-    public Game update(Long entityId, Game entity){
-        
+    public Game update(Long entityId, Game entity) {
+
         Subject s = SecurityUtils.getSubject();
         s.checkPermission("Game:Edit:g" + entityId);
-        
+
         return super.update(entityId, entity);
     }
-    
+
     @Override
-    public Game delete(Long entityId){
-        
+    public Game delete(Long entityId) {
+
         Subject s = SecurityUtils.getSubject();
         s.checkPermission("Game:Edit:g" + entityId);
-        
+
         return super.delete(entityId);
     }
+
     /**
      * This method process a string token. It checks if the given token
      * corresponds to a game and then to a team, and return the corresponding

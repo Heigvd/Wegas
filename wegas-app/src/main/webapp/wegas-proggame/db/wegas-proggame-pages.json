@@ -555,7 +555,7 @@
                 "spriteSheet": "terrain",
                 "x": [21, 22, 21],
                 "y": [5, 5, 11]
-            },{
+            }, {
                 "name": "e",
                 "spriteSheet": "terrain",
                 "x": 17,
@@ -664,7 +664,7 @@
                 "spriteSheet": "terrain",
                 "x": [21, 22, 21],
                 "y": [5, 5, 11]
-            },{
+            }, {
                 "name": "e",
                 "spriteSheet": "terrain",
                 "x": 17,
@@ -676,5 +676,8 @@
                     "content": "Encore une fois bravo, mais ce n'était pas si dur. Pour passer le prochain niveau vous allez devoire utiliser des <i>variables</i>.<div class=\"wegas-proggame-def\">Dans un programme informatique, on va avoir en permanence besoin de stocker provisoirement des valeurs. Il peut s'agir de données issues d'un fichier sur disque dur, fournies par l'utilisateur (saisies au clavier), ou extraites d'une base de données. Il peut aussi s'agir de résultats obtenus au cours de l'exécution du programme. Ces données sont stockées en mémoire et ont une durée de vie égale au temps d'exécution du programme. Elles peuvent être de plusieurs types : des nombres, du texte, etc. Dès que l'on a besoin de stocker une valeur dans un programme, on utilise une variable.<br /><br />Pour employer une image, une variable est une boîte, repérée par une étiquette. Pour avoir accès au contenu de la boîte, il suffit de la désigner par son étiquette. En réalité, pour un ordinateur, Ces variables sont stockées dans la mémoire vive et elles sont désignées par des adresses binaires. Il est beaucoup plus facile d'employer des étiquettes de son choix, que de devoir manipuler des adresses binaires. Ainsi, la première chose à faire avant de pouvoir utiliser une variable est de définir « la boîte » et de lui donner une étiquette. Ceci se fait tout au début de l'algorithme, avant même les instructions proprement dites. C'est ce qu'on appelle la déclaration des variables.<br /><br />Le nom de la variable (l'étiquette de la boîte) obéit à des impératifs changeant selon les langages. Toutefois, une règle absolue est qu'ils peuvent comporter des lettres et des chiffres, mais qu'ils excluent tous les signes de ponctuation, en particulier les espaces. Un nom de variable correct commence impérativement par une lettre minuscule.<br /><br />Si pour des raisons purement pratiques on évite généralement les noms à rallonge, il faut tout de même veiller à choisir un nom pertinent en rapport à ce que représente la variable. Ainsi, on évitera d'utiliser de simples lettres souvent utilisées en mathématiques comme x, y, i, j,... qui sont peu explicites. On préférera des noms comme :compteur, temperature, abscisse, ordonnee, point, somme, moyenne...Des noms explicites apportent du sens, et rendent tout simplement les algorithmes plus lisibles et compréhensibles.</div>Dans cette exercice, recevrez votre première variable vous recevrez votre première variable en <i>paramètre</i> de votre fonction <i>main</i>. Cette variable contient le nom du charactère qui se tient en face de vous. Vous devez le saluer en utilisant ce nom, comme ceci:<div class=\"wegas-proggame-code\">var salutation = \"Hello \";<br />salutation = salutation + name;<br />say(salutation);</div>"
                 }
             }]
+    }, "1000": {
+        "id": 1000,
+        "type": "UserPreferences"
     }
 }

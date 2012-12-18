@@ -205,5 +205,9 @@
                 "content": "Créez maintenant vos propres sous-pages et widgets afin de créer un nouveau jeu !"
             }
         ]
+    },
+    "1000": {
+        "id": 1000,
+        "type": "UserPreferences"
     }
 }
