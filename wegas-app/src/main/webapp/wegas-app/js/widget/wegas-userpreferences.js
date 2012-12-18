@@ -9,7 +9,7 @@
  */
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 YUI.add("wegas-userpreferences", function (Y) {
     "use strict";
@@ -21,19 +21,14 @@ YUI.add("wegas-userpreferences", function (Y) {
             UserPreferences.superclass.initializer.apply(this, arguments);
         },
         renderUI: function () {
-            var k, cb = this.get(CONTENTBOX), fieldsToIgnore = [], datasource = Y.Wegas.app.dataSources["User"],
-                    entity = datasource.rest.get("currentUser").getMainAccount();
             UserPreferences.superclass.renderUI.apply(this, arguments);
-            for (k in entity.toObject()) {
-                if (k !== 'firstname' && k !== 'lastname'
-                        && k !== 'password' && k !== 'submit') {
-                    fieldsToIgnore.push(k);
-                }
-            }
-            this.setForm(entity.toObject(), entity.getFormCfg(fieldsToIgnore));
+            this.cancelButton.hide();
         },
         bindUI: function () {
             UserPreferences.superclass.bindUI.apply(this, arguments);
+
+            Y.Wegas.UserFacade.after("update", this.syncUI, this);
+
             this.on("submit", function (e) {
                 this.showOverlay();
                 this.sendUpdate();
@@ -41,6 +36,17 @@ YUI.add("wegas-userpreferences", function (Y) {
         },
         syncUI: function () {
             UserPreferences.superclass.syncUI.apply(this, arguments);
+
+            var entity = Y.Wegas.UserFacade.rest.get("currentUser").getMainAccount(),
+                    k, fieldsToIgnore = [];
+            for (k in entity.toObject()) {                                      //hide ineditable fields
+                if (k !== 'firstname' && k !== 'lastname'
+                        && k !== 'password' && k !== 'submit') {
+                    fieldsToIgnore.push(k);
+                }
+            }
+            this.set("cfg", entity.getFormCfg(fieldsToIgnore));
+            this.set("value", entity.toObject());
         },
         destructor: function () {
             UserPreferences.superclass.destructor.apply(this, arguments);
@@ -49,7 +55,7 @@ YUI.add("wegas-userpreferences", function (Y) {
             var k, updatedAccount, datasource = Y.Wegas.app.dataSources["User"],
                     user = datasource.rest.get("currentUser").getMainAccount().toObject();
             updatedAccount = this.get('form').getValue();
-            for (k in user) {
+            for (k in user) {                                                   //need to send an "JpAccount", thus merge account and updates.
                 if (!updatedAccount[k]) {
                     updatedAccount[k] = user[k];
                 }
@@ -67,6 +73,7 @@ YUI.add("wegas-userpreferences", function (Y) {
                     success: Y.bind(function (e) {
                         this.showMessage("success", "Your account had been successfully updated", 4000);
                         this.hideOverlay();
+
                     }, this),
                     failure: Y.bind(function (e) {
                         this.showMessage("error", e.response.results.message || "Error updating user", 4000);
