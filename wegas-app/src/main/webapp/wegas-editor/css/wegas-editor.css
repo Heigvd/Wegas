@@ -411,3 +411,8 @@ body {
     bottom:0px;
     height: auto;
 }
+
+.lobbyOr {
+    margin-left: 135px;
+    font-weight: bold;
+}

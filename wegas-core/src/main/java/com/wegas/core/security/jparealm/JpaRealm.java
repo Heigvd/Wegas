@@ -64,6 +64,7 @@ public class JpaRealm extends AuthorizingRealm {
                 info.addRole(role.getName());
                 info.addStringPermissions(role.getPermissions());
             }
+            info.addStringPermissions(account.getPermissions());
             return info;
         }
         catch (EJBException e) {

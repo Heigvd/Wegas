@@ -16,6 +16,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -32,10 +33,10 @@ public class PublicGameController {
     private GameFacade gameFacade;
 
     @GET
-    @Path("/Games/")
+    @Path("/Games/{userId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<Game> publicGame() {
-        return gameFacade.getPublicGames();
+    public Collection<Game> publicGame(@PathParam("userId") Long userId) {
+        return gameFacade.getPublicGames(userId);
     }
 
 }
