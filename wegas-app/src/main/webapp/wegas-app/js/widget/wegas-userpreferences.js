@@ -46,7 +46,7 @@ YUI.add("wegas-userpreferences", function (Y) {
                 }
             }
             this.set("cfg", entity.getFormCfg(fieldsToIgnore));
-            this.set("value", entity.toObject());
+            this.set("values", entity.toObject());
         },
         destructor: function () {
             UserPreferences.superclass.destructor.apply(this, arguments);
