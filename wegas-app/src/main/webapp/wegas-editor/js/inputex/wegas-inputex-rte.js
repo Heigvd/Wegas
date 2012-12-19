@@ -68,8 +68,12 @@ YUI.add("wegas-inputex-rte", function (Y) {
                     "searchreplace,contextmenu,fullscreen,visualchars",
 
                     // Theme options
-                    theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,|,bullist,numlist,|,outdent,indent,|,undo,redo,|,link,unlink,image,media,charmap,emotions,iespell,|,forecolor,backcolor",
-                    theme_advanced_buttons2 : "tablecontrols,|,hr,removeformat,cleanup,styleprops,iespell,spellchecker,visualaid,|,insertlayer,moveforward,movebackward,absolute,|,search,replace,|,fullscreen,code",
+                    theme_advanced_buttons1 : "bold,italic,styleselect,link,image,media,|,cleanup,code",
+
+                    // Theme options ( full )
+//                    theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,|,bullist,numlist,|,outdent,indent,|,undo,redo,|,link,unlink,image,media,charmap,emotions,iespell,|,forecolor,backcolor",
+//                    theme_advanced_buttons2 : "tablecontrols,|,hr,removeformat,cleanup,styleprops,iespell,spellchecker,visualaid,|,insertlayer,moveforward,movebackward,absolute,|,search,replace,|,fullscreen,code",
+
                     theme_advanced_toolbar_location : "top",
                     theme_advanced_toolbar_align : "left",
                     theme_advanced_statusbar_location : "none",                 // top, bottom, none
@@ -121,7 +125,7 @@ YUI.add("wegas-inputex-rte", function (Y) {
                         inputEx.RTEField.filePanel.win = win;
                         inputEx.RTEField.filePanel.field_name = field_name;
                         return false;
-                    }
+                    },
 
                 //content_css : "css/content.css",                              // Example content CSS (should be your site CSS)
 
@@ -132,37 +136,54 @@ YUI.add("wegas-inputex-rte", function (Y) {
                 //                    media_external_list_url : "lists/media_list.js",
 
                 // Style formats
-                //style_formats : [
-                //{
-                //    title : 'Bold text',
-                //    inline : 'b'
-                //},{
-                //    title : 'Red text',
-                //    inline : 'span',
-                //    styles : {
-                //        color : '#ff0000'
-                //    }
-                //},{
-                //    title : 'Red header',
-                //    block : 'h1',
-                //    styles : {
-                //        color : '#ff0000'
-                //    }
-                //},{
-                //    title : 'Example 1',
-                //    inline : 'span',
-                //    classes : 'example1'
-                //},{
-                //    title : 'Example 2',
-                //    inline : 'span',
-                //    classes : 'example2'
-                //},{
-                //    title : 'Table styles'
-                //},{
-                //    title : 'Table row 1',
-                //    selector : 'tr',
-                //    classes : 'tablerow1'
-                //}],
+                style_formats : [{
+                    title : 'Title 1',
+                    block : 'h1'
+                },{
+                    title : 'Title 2',
+                    block : 'h2'
+//                    styles : {
+//                        color : '#ff0000'
+//                    }
+                },{
+                    title : 'Title 3',
+                    block : 'h3'
+                },{
+                    title : 'Normal',
+                    inline : 'span'
+                }
+            //{
+            //    title : 'Bold text',
+            //    inline : 'b'
+            //},{
+            //    title : 'Red text',
+            //    inline : 'span',
+            //    styles : {
+            //        color : '#ff0000'
+            //    }
+            //},{
+            //    title : 'Red header',
+            //    block : 'h1',
+            //    styles : {
+            //        color : '#ff0000'
+            //    }
+            //},{
+            //    title : 'Example 1',
+            //    inline : 'span',
+            //    classes : 'example1'
+            //},{
+            //    title : 'Example 2',
+            //    inline : 'span',
+            //    classes : 'example2'
+            //},{
+            //    title : 'Table styles'
+            //},{
+            //    title : 'Table row 1',
+            //    selector : 'tr',
+            //    classes : 'tablerow1'
+            //}
+
+        ]
 
                 // Replace values for the template plugin
                 //template_replace_values : {
