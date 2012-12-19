@@ -90,7 +90,11 @@ public class StateMachineRunner implements Serializable {
             players.add(player);
         } else {
             for (VariableInstance instance : requestManager.getUpdatedInstances()) {
+                try {
                 players.add(variableInstanceFacade.findAPlayer(instance));
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // GOTCHA (This instance has no players, the team is empty
+                }
             }
         }
         if (players.size() < 1) {

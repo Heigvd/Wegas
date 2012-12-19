@@ -102,7 +102,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
 
     }
 
-    public Player findAPlayer(VariableInstance instance) {
+    public Player findAPlayer(VariableInstance instance) throws ArrayIndexOutOfBoundsException {
         if (instance.getScope() instanceof PlayerScope) {
             return playerFacade.find(instance.getPlayerScopeKey());
         } else if (instance.getScope() instanceof TeamScope) {
