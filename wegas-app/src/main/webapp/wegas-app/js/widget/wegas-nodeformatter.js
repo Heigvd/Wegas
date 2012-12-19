@@ -10,7 +10,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
     NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
         makeNodeText: function (value, label, className) {
             var node = Y.Node.create('<div class="nodeformatter-properties"></div>');
-            value = (value != null ? value : 'undefine');
+            value = (value !== null) ? value : 'undefine';
             if (className) {
                 node.addClass(className);
             }
@@ -36,7 +36,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
         },
         makeNodeValueBox: function (value, maxVal, label, className) {
             var i, acc = [], node = new Y.Node.create('<div class="nodeformatter-valuebox"></div>');
-            value = (value != null ? value : 'undefine');
+            value = (typeof parseInt(value) === 'number') ? parseInt(value) : 0;
             maxVal = (maxVal || 'undefine');
             label = (label || 'undefine');
             if (className) {
@@ -52,17 +52,19 @@ YUI.add('wegas-nodeformatter', function (Y) {
         },
         makeNodePosition: function (html, selector, value, minVal, invert, className) {
             var node = new Y.Node.create('<div class="nodeformatter-position"></div>');
-            value = (parseInt(value) || -1) - minVal;
-            invert = (invert == 'true') ? true : false;
+            minVal = (typeof parseInt(minVal) === 'number') ? parseInt(minVal) : 0;
+            value = (typeof parseInt(value) === 'number') ? parseInt(value) - minVal : -1 - minVal; // if value isn't a number, value egal minVal - 1 (and thus never selected)
+            invert = (invert === 'true' || invert === true) ? true : false;
             if (className) {
                 node.addClass(className);
             }
             node.append(html);
-            node.all(selector).each(function (n, i, q) {
+            node.all(selector).each(function (n, i, q) { //n = node, i = iteration, q = number of iterations.
                 i = (invert) ? (q.size() - 1 - i) : i;
+                n.setAttribute('data-position', i + minVal); //keep a reference to real number position
                 if (i < value) {
                     n.addClass('previous');
-                } else if (i == value) {
+                } else if (i === value) {
                     n.addClass('current');
                 } else {
                     n.addClass('next');
