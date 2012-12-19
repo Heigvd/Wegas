@@ -27,8 +27,6 @@ YUI.add("wegas-loginbutton", function (Y) {
             Y.Wegas.LoginButton.superclass.bindUI.apply(this, arguments);
 
             Y.Wegas.UserFacade.after("update", this.syncUI, this);
-            Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
-                
 
             if (this.menu) { //Don't add the plugin if it already exist.
                 return;
@@ -66,19 +64,23 @@ YUI.add("wegas-loginbutton", function (Y) {
                     cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer(),
                     cTeam = Y.Wegas.GameFacade.rest.getCurrentTeam(),
                     name = cUser.name || "undefined";
-
-            if (cPlayer) {
-                name = cPlayer.get("name");
-            }
-            if (cTeam) {
-                name = cTeam.get("name") + " : " + name;
+            if (!this.get('labelIsUser')) {
+                if (cPlayer) {
+                    name = cPlayer.get("name");
+                }
+                if (cTeam) {
+                    name = cTeam.get("name") + " : " + name;
+                }
             }
             this.set("label", name);
         }
     }, {
         ATTRS: {
-            label: {
-                value: "#{currentTeam} - #{currentPlayer}"
+            labelIsUser: {
+                value: false,
+                validator: function(b){
+                    return (b === 'true' || b === true)
+                }
             },
             type: {
                 value: "LoginButton"
@@ -94,7 +96,7 @@ YUI.add("wegas-loginbutton", function (Y) {
             },
             targetPageLoader: {
                 value: "maindisplayarea"
-            }
+            },
         }
     });
     Y.namespace('Wegas').LoginButton = LoginButton;

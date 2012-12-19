@@ -98,8 +98,7 @@ public class ScriptFacade {
         ScriptEngine engine;
         try {
             engine = mgr.getEngineByName(scripts.get(0).getLanguage());
-        }
-        catch (NullPointerException ex) {
+        } catch (NullPointerException ex) {
             logger.error("Wrong language ?", ex.getMessage(), ex.getStackTrace());
             return null;
         }
@@ -110,11 +109,9 @@ public class ScriptFacade {
         try {
             engineInvocationEvent.fire(
                     new EngineInvocationEvent(requestManager.getPlayer(), engine)); // Fires the engine invocation event, to allow extensions
-        }
-        catch (ObserverException ex) {
+        } catch (ObserverException ex) {
             throw (WegasException) ex.getCause();
-        }
-        finally {                                                               //Try finishing evaluation
+        } finally {                                                               //Try finishing evaluation
             for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
                 engine.put(arg.getKey(), arg.getValue());
             }
@@ -125,16 +122,14 @@ public class ScriptFacade {
             for (Script s : scripts) {                                          // Evaluate each script
                 try {
                     script += s.getContent() + ";";
-                }
-                catch (NullPointerException ex) {
+                } catch (NullPointerException ex) {
                     //script does not exist
                 }
                 //result = engine.eval(s.getContent());
             }
             try {
                 result = engine.eval(script);
-            }
-            catch (ScriptException ex) {
+            } catch (ScriptException ex) {
                 logger.warn("{} in\n{}", ex.getMessage(), script);
                 throw new ScriptException(ex.getMessage(), script, ex.getLineNumber());
             }
@@ -156,24 +151,22 @@ public class ScriptFacade {
 
         List<String> errorVariable = new ArrayList<>();
 
-        for (Entry<String, String> arg :
-                evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+        for (Entry<String, String> arg
+                : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
             try {
                 evt.getEngine().eval(arg.getValue());
-            }
-            catch (ScriptException ex) {
+            } catch (ScriptException ex) {
                 logger.warn("Error injecting script library: {} in\n{}", ex.getMessage(), arg.getValue());
                 throw new ScriptException(ex.getMessage(), arg.getValue(), ex.getLineNumber());
             }
         }
 
-        for (VariableDescriptor vd :
-                evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
+        for (VariableDescriptor vd
+                : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());
             try {
                 evt.getEngine().put(vd.getName(), vi);
-            }
-            catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ex) {
                 errorVariable.add(vd.getLabel());
 
             }

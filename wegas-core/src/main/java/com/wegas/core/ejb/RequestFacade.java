@@ -9,16 +9,31 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.statemachine.StateMachineRunner;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +54,15 @@ public class RequestFacade {
     /**
      *
      */
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
+    /**
+     *
+     */
     @EJB
     private PlayerFacade playerFacade;
+    @EJB
+    StateMachineRunner stateMachineRunner;
 
     /**
      * @return the variableInstanceManager
@@ -81,7 +103,39 @@ public class RequestFacade {
     }
 
     public void commit() {
-        this.requestManager.commit();
+        em.flush();
+        if (this.getUpdatedInstances().size() > 0) {
+
+            if (this.getPlayer() != null) {
+                // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
+                //action.setPlayer(this.getPlayer());
+                //playerActionEvent.fire(action);
+                stateMachineRunner.playerUpdated(this.requestManager.getPlayer());
+
+            } else {
+
+                //PlayerAction action = new PlayerAction();
+                //playerActionEvent.fire(action);
+
+                stateMachineRunner.playerUpdated(null);
+//                for (VariableInstance instance : this.getUpdatedInstances()) {
+//                    System.out.println(variableInstanceFacade.findAPlayer(instance) + ", ");
+//
+//                    Player p = variableInstanceFacade.findAPlayer(instance);
+//                    List<Player> players = variableInstanceFacade.findAllPlayer(instance);
+//
+//                    System.out.println("This player has an update: " + p.getName());
+//
+//                    //PlayerAction action = new PlayerAction();
+//                    //action.setPlayer(variableInstanceFacade.findAPlayer(instance));
+//                    //playerActionEvent.fire(action);
+//                }
+                //  PlayerAction action = new PlayerAction();
+                // playerActionEvent.fire(action);
+            }
+            em.flush();
+        }
+
     }
 
     /**
@@ -109,5 +163,4 @@ public class RequestFacade {
     public List<VariableInstance> getUpdatedInstances() {
         return requestManager.getUpdatedInstances();
     }
-
 }

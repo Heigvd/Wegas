@@ -125,6 +125,7 @@ public class GameModel extends NamedEntity {
 
     @Override
     public void merge(AbstractEntity n) {
+        super.merge(n);
         this.setWidgetsUri(((GameModel) n).getWidgetsUri());
         this.setCssUri(((GameModel) n).getCssUri());
     }
