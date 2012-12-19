@@ -10,6 +10,7 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -55,6 +56,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     @EJB
     private RoleFacade roleFacade;
+    
+    /**
+     * 
+     */
+    @EJB
+    private PlayerFacade playerFacade;
 
     /**
      *
@@ -222,5 +229,9 @@ public class UserFacade extends AbstractFacadeImpl<User> {
 
     public void update(JpaAccount account) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public boolean matchCurrentUser(Long playerId) {
+        return this.getCurrentUser().equals(playerFacade.find(playerId).getUser());
     }
 }

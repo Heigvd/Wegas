@@ -6,7 +6,7 @@
     <ui:composition template="/wegas-app/view/template/app-default.xhtml">
 
 
-        <ui:define name="title">#{gameController.currentGameModel.name}</ui:define>
+        <ui:define name="title">#{editorGameController.currentGameModel.name}</ui:define>
 
         <ui:define name="head">
             <link rel="stylesheet" type="text/css" href="/Wegas/wegas-editor/css/wegas-editor.css" /><style type="text/css">
@@ -32,37 +32,37 @@
                     var cfg = {
                         layoutSrc: 'wegas-editor/db/wegas-editor-layout.json',
                         debug : true,
-                        currentGameModel: #{gameController.currentGameModel.id},
-                        currentGame: #{gameController.currentGame.id},
-                        currentTeam: #{gameController.currentPlayer.team.id},
-                        currentPlayer: #{gameController.currentPlayer.id},
+                        currentGameModel: #{editorGameController.currentGameModel.id},
+                        currentGame: #{editorGameController.currentGame.id},
+                        currentTeam: #{editorGameController.currentPlayer.team.id},
+                        currentPlayer: #{editorGameController.currentPlayer.id},
                         currentUser: #{requestController.getCurrentUser().toJson()},
-                        cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
+                        cssStylesheets: ["#{editorGameController.currentGameModel.cssUri}"],
 
                         dataSources: {
                             "GameModel": {
                                 source: "rest/Editor/GameModel",
-                                initialRequest: "/#{gameController.currentGameModel.id}",
+                                initialRequest: "/#{editorGameController.currentGameModel.id}",
                                 plugins: [{
                                         fn: "GameModelDataSourceREST"
                                     }]
                             },
                             "GameIndex": {
-                                source: "rest/Index/GameModel/#{gameController.currentGameModel.id}/Game",
+                                source: "rest/Index/GameModel/#{editorGameController.currentGameModel.id}/Game",
                                 initialRequest: "/",
                                 plugins: [{
                                         fn: "GameDataSourceREST"
                                     }]
                             },
                             "Game": {
-                                source: "rest/Public/GameModel/#{gameController.currentGameModel.id}/Game",
-                                initialRequest: "/#{gameController.currentGame.id}",
+                                source: "rest/Public/GameModel/#{editorGameController.currentGameModel.id}/Game",
+                                initialRequest: "/#{editorGameController.currentGame.id}",
                                 plugins: [{
                                         fn: "GameDataSourceREST"
                                     }]
                             },
                             "Page": {
-                                source: "#{gameController.currentGameModel.widgetsUri}",
+                                source: "#{editorGameController.currentGameModel.widgetsUri}",
                                 plugins: [{
                                         fn: "DataSourceJSONSchema",
                                         cfg: {
@@ -90,7 +90,7 @@
                                     }]
                             },
                             "VariableDescriptor": {
-                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorDataSourceREST"
@@ -99,7 +99,7 @@
                                     }]
                             },
                             "File": {
-                                source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/" ,
+                                source: "rest/File/GameModelId/#{editorGameController.currentGameModel.id}/" ,
                                 plugins: [
                                     {
                                         fn: "DataSourceJSONSchema",

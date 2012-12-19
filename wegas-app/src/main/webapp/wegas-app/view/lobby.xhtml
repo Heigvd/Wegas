@@ -33,7 +33,7 @@
                         currentUser: #{requestController.getCurrentUser().toJson()},
                         dataSources: {
                             "GameModel": {
-                                source: "rest/GameModel",
+                                source: "rest/Index/GameModel",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "GameModelDataSourceREST"

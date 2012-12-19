@@ -11,12 +11,12 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.Player;
+import java.util.Collection;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -33,6 +33,21 @@ public class PlayerController extends AbstractRestController<PlayerFacade, Playe
     @EJB
     private PlayerFacade playerFacade;
 
+    @Override
+    public Player get(Long entityId) {
+
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + this.getPathParam("gameId"));
+        
+        return super.get(entityId);
+    }
+    
+    @Override
+    public Collection<Player> index() {
+        
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + this.getPathParam("gameId"));
+        
+        return super.index();
+    }
     /**
      *
      * @param entity
@@ -41,8 +56,7 @@ public class PlayerController extends AbstractRestController<PlayerFacade, Playe
     @Override
     public Player create(Player entity) {
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
         
         playerFacade.create(new Long(this.getPathParam("teamId")), entity);
         return entity;
@@ -51,8 +65,7 @@ public class PlayerController extends AbstractRestController<PlayerFacade, Playe
     @Override
     public Player update(Long entityId, Player entity){
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
         
         return super.update(entityId, entity);
     }
@@ -60,8 +73,7 @@ public class PlayerController extends AbstractRestController<PlayerFacade, Playe
     @Override
     public Player delete(Long entityId){
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
         
         return super.delete(entityId); 
     }
