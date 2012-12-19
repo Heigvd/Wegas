@@ -456,6 +456,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-pmg-slidepanel': {
                         path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
+                        requires: ['anim'],
                         ws_provides: "PmgSlidePanel"
                     },
                     /**book CYOA**/
@@ -470,7 +471,9 @@ YUI().use(function(Y) {
                     },
                     /**CEP**/
                     'wegas-cep': {
-                        requires: ['wegas-nodeformatter', 'wegas-itemselector']
+                        path: 'wegas-cep/js/wegas-cep-folder.js',
+                        requires: ['wegas-nodeformatter', 'wegas-itemselector', 'wegas-cep-folder'],
+                        ws_provides: 'CEPFolder'
                     },
                     /** CrimeSim **/
                     'wegas-crimesim-scheduledisplay': {

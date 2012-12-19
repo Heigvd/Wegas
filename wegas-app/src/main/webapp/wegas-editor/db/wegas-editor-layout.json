@@ -172,6 +172,7 @@
             }, {
                 "type": "LoginButton",
                 "cssClass": "menu-loginbutton",
+                "labelIsUser": true,
                 "plugins": [{
                         "fn": "WidgetMenu",
                         "cfg": {

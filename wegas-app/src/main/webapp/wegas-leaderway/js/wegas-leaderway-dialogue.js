@@ -45,8 +45,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
-            this.handlers.variableResponse = Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
-            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
             this.handlers.dialogueResponse = cb.one('.dialogue .response').delegate('click', function (e) {
                 var no = parseInt(e.currentTarget._node.attributes[0].nodeValue),
                         dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue);

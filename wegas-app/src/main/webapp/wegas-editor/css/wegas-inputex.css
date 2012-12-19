@@ -101,6 +101,9 @@ inputEx-ListField
 }
 
 /* Wysiwyg code editor */
+.inputEx-WysiwigScript {
+    min-height: 56px;
+}
 .inputEx-WysiwigScript .inputEx-fieldWrapper,
 .inputEx-WysiwigScript .inputEx-CombineField,
 .inputEx-WysiwigScript .inputEx-Group .inputEx-Group,

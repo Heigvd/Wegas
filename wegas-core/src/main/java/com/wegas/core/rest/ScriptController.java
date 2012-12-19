@@ -9,7 +9,7 @@
  */
 package com.wegas.core.rest;
 
-import com.sun.faces.util.Util;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.ejb.UserFacade;
@@ -31,15 +31,16 @@ import org.apache.shiro.authz.UnauthorizedException;
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Script/")
 public class ScriptController {
-    /*
+
+    /**
      *
      */
-
     @EJB
     private ScriptFacade scriptManager;
     @EJB
     private UserFacade userFacade;
-
+    @EJB
+    private RequestFacade requestFacade;
     /**
      *
      * @param playerId
@@ -57,6 +58,8 @@ public class ScriptController {
         if (!userFacade.matchCurrentUser(playerId)) {
             throw new UnauthorizedException();
         }
-        return scriptManager.eval(playerId, script);
+        Object r = scriptManager.eval(playerId, script);
+        requestFacade.commit();
+        return r;
     }
 }

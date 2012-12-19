@@ -13,7 +13,7 @@ YUI.add('wegas-itemselector', function (Y) {
         scrollView: null,
         // *** Lifecycle Methods *** //
         initializer: function () {
-            this.handlers = [];
+            this.handlers = {};
         },
         /**
          * Render the widget.
@@ -51,9 +51,9 @@ YUI.add('wegas-itemselector', function (Y) {
          */
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
-            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
-            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-            this.handlers.push(cb.one('.selectors').delegate('click', function (e) {
+            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            
+            this.handlers.select = cb.one('.selectors').delegate('click', function (e) {
                 var i, variables, name;
                 if (e.target.ancestors('.selector').item(0)) {
                     name = e.target.ancestors('.selector').item(0).getAttribute("data-name");
@@ -70,11 +70,11 @@ YUI.add('wegas-itemselector', function (Y) {
                     }
                 }
                 this.syncUI();
-            }, '.selector', this));
+            }, '.selector', this);
 
-            this.handlers.push(cb.one('.selectors').delegate('click', function (e) {
+            this.handlers.preventDefault = cb.one('.selectors').delegate('click', function (e) {
                 e.preventDefault();
-            }, '.selector', this));
+            }, '.selector', this);
 
         },
         /**
@@ -94,9 +94,9 @@ YUI.add('wegas-itemselector', function (Y) {
          * Destroy all child widget and all remanent function
          */
         destructor: function () {
-            var i;
-            for (i = 0; i < this.handlers.length; i++) {
-                this.handlers[i].detach();
+            var k;
+            for (k in this.handlers) {
+                this.handlers[k].detach();
             }
         },
         createSelector: function (cb, variables) {
@@ -143,7 +143,7 @@ YUI.add('wegas-itemselector', function (Y) {
                             child = this.makeNodePosition(obj['html'], obj['selector'], value, obj['minVal'], obj['invert'], className);
                             break;
                         case 'valueBox' :
-                            child = this.makeNodeValueBox(value, obj['maxValue'], label, className);
+                            child = this.makeNodeValueBox(''+value, obj['maxValue'], label, className);
                             break;
                         default :
                             child = this.makeNodeText(value, label, className);

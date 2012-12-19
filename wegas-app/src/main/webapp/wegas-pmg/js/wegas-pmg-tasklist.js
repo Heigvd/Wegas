@@ -18,7 +18,37 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
 
     Tasklist = Y.Base.create("wegas-pmg-tasklist", Y.Wegas.PmgDatatable, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
+        /*** Lifecycle methods ***/
+        initializer: function () {
+            this.handlers = {};
+        },
+        renderUI: function () {
+            Tasklist.superclass.renderUI.apply(this);
+        },
+        bindUI: function () {
+            Tasklist.superclass.bindUI.apply(this);
+            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
 
+            this.handlers.sort = this.datatable.after('sort', this.syncUI, this);
+
+            this.handlers.displayDescription = this.datatable.delegate('click', function (e) {
+                this.displayDescription(e);
+            }, '.yui3-datatable-data td', this);
+
+            this.handlers.removeDescription = this.datatable.delegate('mouseout', function (e) {
+                this.removeDescription(e);
+            }, '.yui3-datatable-data tr', this);
+        },
+        syncUI: function () {
+            Tasklist.superclass.syncUI.apply(this);
+            this.checkRealization();
+        },
+        destructor: function () {
+            var k;
+            for (k in this.handlers) {
+                this.handlers[k].detach();
+            }
+        },
         //*** Private Methods ***/
         checkRealization: function () {
             var i, cb = this.get(CONTENTBOX), tasks, taskDesc, taskInst, realized, allRow;
@@ -75,7 +105,6 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
             divDesc.append("<p class='task_name'>" + label + "</p>").append("<p class='content'>" + description + "</p>");
             node.append(divDesc);
         },
-
         removeDescription: function (e) {
             var disappearAnim, node;
             node = this.get(CONTENTBOX).one('.description');
@@ -93,41 +122,7 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
             disappearAnim.on('end', function () {
                 node.remove();
             });
-        },
-
-        initializer: function () {
-            this.handlers = [];
-        },
-
-        renderUI: function () {
-            Tasklist.superclass.renderUI.apply(this);
-        },
-
-        bindUI: function () {
-            Tasklist.superclass.bindUI.apply(this);
-            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
-            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
-            this.handlers.push(this.datatable.after('sort', this.syncUI, this));
-            this.handlers.push(this.datatable.delegate('click', function (e) {
-                this.displayDescription(e);
-            }, '.yui3-datatable-data td', this));
-            this.handlers.push(this.datatable.delegate('mouseout', function (e) {
-                this.removeDescription(e);
-            }, '.yui3-datatable-data tr', this));
-        },
-
-        syncUI: function () {
-            Tasklist.superclass.syncUI.apply(this);
-            this.checkRealization();
-        },
-
-        destructor: function () {
-            var i;
-            for (i = 0; i < this.handlers.length; i += 1) {
-                this.handlers[i].detach();
-            }
         }
-
     }, {
         ATTRS: {
             viewDescription: {
