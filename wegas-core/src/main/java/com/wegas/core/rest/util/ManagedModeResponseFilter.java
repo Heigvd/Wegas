@@ -16,8 +16,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.exception.ExceptionWrapper;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Resource;
-import javax.transaction.UserTransaction;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
