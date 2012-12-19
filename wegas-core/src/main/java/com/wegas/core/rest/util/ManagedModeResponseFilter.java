@@ -10,7 +10,7 @@
 package com.wegas.core.rest.util;
 
 import com.sun.jersey.spi.container.*;
-import com.wegas.core.ejb.RequestManagerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.exception.ExceptionWrapper;
@@ -40,7 +40,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
      */
     @Override
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
-        RequestManagerFacade rmf = RequestManagerFacade.lookup();
+        RequestFacade rmf = RequestFacade.lookup();
 
         rmf.commit();
 
