@@ -198,7 +198,7 @@
     },
     "3": {
         "id": 3,
-        "type": "ItemSelector",
+        "type": "CEPFolder",
         "listVariables": "employees",
         "searchInProperties": [
             "properties"
@@ -207,8 +207,8 @@
             {
                 "type": "image",
                 "name": "picture",
-                "height": "35",
-                "width": "35"
+                "height": 35,
+                "width": 35
             }, {
                 "name": "surname",
                 "label": "Prénom : "
@@ -237,21 +237,22 @@
                 "type": "valueBox",
                 "name": "moral",
                 "label": "Moral : ",
-                "maxValue": "100"
+                "maxValue": 100
             }, {
                 "type": "valueBox",
                 "name": "experience",
                 "label": "Expérience : ",
-                "maxValue": "100"
+                "maxValue": 100
             }, {
                 "name": "description",
                 "label": "Description : "
             }, {
                 "type": "position",
-                "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 5 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 4 : Elle se rend compte de toute l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 3 : Elle sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la dévelloper.</li><li>Niveau 2 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 1 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li></ul>",
+                "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 4 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 3 : Elle se rend compte de toute l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 2 : Elle sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la développer.</li><li>Niveau 1 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 0 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li><li>Niveau -1 : Elle ne supporte pas vos méthodes et fera tout pour vous mettre des batons dans les roues.</li></ul>",
                 "selector": "li",
                 "name": "leadershipLevel",
-                "invert": "true"
+                "invert": "true",
+                "minVal": -1
             }]
     },
     "4": {
