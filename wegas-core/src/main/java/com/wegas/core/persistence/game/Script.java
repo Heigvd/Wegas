@@ -77,6 +77,6 @@ public class Script implements Serializable {
 
     @Override
     public String toString() {
-        return "ScriptEntity(" + "language=" + this.lang + ", content=" + this.content + ')';
+        return "ScriptEntity(" + "language:" + this.lang + ", content:{\n" + this.content + "\n})";
     }
 }

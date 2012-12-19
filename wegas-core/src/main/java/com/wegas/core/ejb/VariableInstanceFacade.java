@@ -50,17 +50,17 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
      *
      */
     @EJB
+    private RequestManagerFacade requestManagerFacade;
+    /**
+     *
+     */
+    @EJB
     private TeamFacade teamFacade;
     /**
      *
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
-    /**
-     *
-     */
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *
@@ -102,7 +102,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
 
     }
 
-    public Player findAPlayer(VariableInstance instance) {
+    public Player findAPlayer(VariableInstance instance) throws ArrayIndexOutOfBoundsException {
         if (instance.getScope() instanceof PlayerScope) {
             return playerFacade.find(instance.getPlayerScopeKey());
         } else if (instance.getScope() instanceof TeamScope) {
@@ -132,6 +132,13 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
         VariableInstance vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));
         vi.merge(variableInstance);
         return vi;
+    }
+
+    @Override
+    public VariableInstance update(final Long entityId, final VariableInstance entity) {
+        VariableInstance ret = super.update(entityId, entity);
+        requestManagerFacade.commit();
+        return ret;
     }
 
     /**

@@ -40,7 +40,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      */
     @EJB
     private GameModelFacade gameModelEntityFacade;
-    
+
     @EJB
     private RoleFacade roleFacade;
     /**
@@ -91,13 +91,13 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     public EntityManager getEntityManager() {
         return em;
     }
-    
+
     /**
      * Metod return all public games
      * @return Collection<Game>
      */
     public Collection<Game> getPublicGames() {
-        
+
         Role pRolle = roleFacade.findByName("Public");
         Collection<Game> games = new ArrayList<>();
         for (String permission : pRolle.getPermissions()){

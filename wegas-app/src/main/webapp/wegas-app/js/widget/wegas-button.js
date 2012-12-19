@@ -17,7 +17,6 @@ YUI.add("wegas-button", function (Y) {
 
     var CONTENTBOX = 'contentBox',
             BOUNDINGBOX = 'boundingBox',
-            LoginButton,
             Button;
 
     /* @fixme So we can display html tag inside a button */

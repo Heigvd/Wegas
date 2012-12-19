@@ -16,6 +16,8 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.exception.ExceptionWrapper;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Resource;
+import javax.transaction.UserTransaction;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -42,7 +44,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
     public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
         RequestManagerFacade rmf = RequestManagerFacade.lookup();
 
-        rmf.commit();
+        //rmf.commit();
 
         if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))
                 && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
@@ -61,8 +63,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
                 serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
             }
-
-
         }
 
         return response;
