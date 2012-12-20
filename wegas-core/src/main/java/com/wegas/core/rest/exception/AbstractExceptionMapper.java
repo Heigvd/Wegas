@@ -9,7 +9,7 @@
  */
 package com.wegas.core.rest.exception;
 
-import com.wegas.core.ejb.RequestManagerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.exception.ConstraintViolationException;
 import com.wegas.exception.WegasException;
 import java.sql.SQLException;
@@ -82,7 +82,7 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof javax.validation.ConstraintViolationException) {
             javax.validation.ConstraintViolationException constraintViolationException = (javax.validation.ConstraintViolationException) exception;
 
-            String msg = RequestManagerFacade.lookup().getBundle("com.wegas.app.errors").getString("constraint"); //internationalised error (sample)
+            String msg = RequestFacade.lookup().getBundle("com.wegas.app.errors").getString("constraint"); //internationalised error (sample)
             Iterator it = constraintViolationException.getConstraintViolations().iterator();
             while (it.hasNext()) {
                 javax.validation.ConstraintViolation violation = (javax.validation.ConstraintViolation) it.next();
@@ -94,7 +94,7 @@ public abstract class AbstractExceptionMapper {
                     entity(new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
 
         } else {
-            logger.error(RequestManagerFacade.lookup().getBundle("com.wegas.app.errors").getString("unexpected"), exception); //internationalised error (sample)
+            logger.error(RequestFacade.lookup().getBundle("com.wegas.app.errors").getString("unexpected"), exception); //internationalised error (sample)
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
         }

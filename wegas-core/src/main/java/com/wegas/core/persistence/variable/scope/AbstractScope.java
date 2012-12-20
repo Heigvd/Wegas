@@ -9,7 +9,7 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
-import com.wegas.core.ejb.RequestManagerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -82,7 +82,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     //@XmlAttribute(name = "variableInstances")
     public Map<Long, VariableInstance> getPrivateInstances() {
         Map<Long, VariableInstance> ret = new HashMap<>();
-        RequestManagerFacade rmf = RequestManagerFacade.lookup();
+        RequestFacade rmf = RequestFacade.lookup();
 
         Long id = new Long(0);
         if (this instanceof TeamScope) {
@@ -98,7 +98,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
 
     @XmlTransient
     public VariableInstance getInstance() {
-        return this.getVariableInstance(RequestManagerFacade.lookup().getPlayer());
+        return this.getVariableInstance(RequestFacade.lookup().getPlayer());
     }
 
     /**
