@@ -410,9 +410,11 @@ body {
     margin-bottom:0;
 }
 .preview-content > .inputEx-fieldWrapper .ace_editor {
-    top:34px;
+    top:0px;
     left:0px;
     right:40px;
     bottom:0px;
     height: auto;
+    margin-top: 33px;
+    margin-bottom: 30px;
 }

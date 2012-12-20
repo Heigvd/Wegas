@@ -174,10 +174,7 @@ public class PageController {
     public Response setPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap)
             throws RepositoryException, JSONException, WegasException {
         Pages pages = getGameModelPages(new Long(gameModelId));
-        //pages.delete();                                                       //remove first existing Pages currently merges, uncomment to replace
-        Iterator kIterator = pageMap.keySet().iterator();
-        while (kIterator.hasNext()) {
-            Integer key = (Integer) kIterator.next();
+        for (Integer key : pageMap.keySet()) {
             Page page = new Page(key, pageMap.get(key));
             pages.store(page);
         }
