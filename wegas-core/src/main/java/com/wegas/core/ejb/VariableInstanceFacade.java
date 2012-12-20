@@ -55,7 +55,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
      *
      */
     @EJB
-    private RequestManagerFacade requestManagerFacade;
+    private RequestFacade requestFacade;
     /**
      *
      */
@@ -176,7 +176,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
     @Override
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
         VariableInstance ret = super.update(entityId, entity);
-        requestManagerFacade.commit();
+        requestFacade.commit();
         return ret;
     }
 

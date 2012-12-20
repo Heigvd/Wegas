@@ -10,13 +10,20 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -36,6 +43,9 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
      */
     @EJB
     private GameModelFacade gameModelFacade;
+    
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -54,21 +64,30 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
 
         return super.create(entity);
     }
+  
+    @GET
+    @Path("{entityId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Override
+    public GameModel get(@PathParam("entityId") Long entityId) {
 
+        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + entityId);
+        
+        return super.get(entityId);
+    }
+  
     @Override
     public GameModel update(Long entityId, GameModel entity) {
-
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("GameModel:Edit:gm" + entityId);
-
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + entityId);
+        
         return super.update(entityId, entity);
     }
     
     @Override
     public GameModel duplicate(Long entityId) throws IOException{
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("GameModel:Duplicate:gm" + entityId);
+        SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + entityId);
         
         return super.duplicate(entityId);
     }
@@ -76,20 +95,21 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
     @Override
     public GameModel delete(Long entityId){
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("GameModel:Delete:gm" + entityId);
+        SecurityUtils.getSubject().checkPermission("GameModel:Delete:gm" + entityId);
         
         return super.delete(entityId); 
     }
     
     @Override
     public Collection<GameModel> index() {
+        
         Collection<GameModel> allGm = getFacade().findAll();
         Collection<GameModel> newGm = new ArrayList<>(allGm);
 
+            String r =  (requestManager.getView() == Views.Index.class) ? "View": "Edit";
         for (GameModel aGm : allGm){
             Subject s = SecurityUtils.getSubject();
-            boolean isPermitted = s.isPermitted("GameModel:View:gm" + aGm.getId());
+            boolean isPermitted = s.isPermitted("GameModel:" + r +":gm" + aGm.getId());
             if (!isPermitted){
                 newGm.remove(aGm);
             }

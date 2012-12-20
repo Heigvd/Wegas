@@ -9,9 +9,10 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.RequestManagerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.exception.WegasException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -21,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  *
@@ -35,12 +37,10 @@ public class ScriptController {
      */
     @EJB
     private ScriptFacade scriptManager;
-    /**
-     *
-     */
     @EJB
-    private RequestManagerFacade requestManagerFacade;
-
+    private UserFacade userFacade;
+    @EJB
+    private RequestFacade requestFacade;
     /**
      *
      * @param playerId
@@ -54,8 +54,12 @@ public class ScriptController {
     public Object run(
             @PathParam("playerId") Long playerId, Script script)
             throws ScriptException, WegasException {
+        
+        if (!userFacade.matchCurrentUser(playerId)) {
+            throw new UnauthorizedException();
+        }
         Object r = scriptManager.eval(playerId, script);
-        requestManagerFacade.commit();
+        requestFacade.commit();
         return r;
     }
 }
