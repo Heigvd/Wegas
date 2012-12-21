@@ -13,7 +13,7 @@ import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 import com.sun.jersey.spi.container.ResourceFilter;
-import com.wegas.core.ejb.RequestManagerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
@@ -42,7 +42,7 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
      */
     @Override
     public ContainerRequest filter(ContainerRequest cr) {
-        RequestManagerFacade rmf = RequestManagerFacade.lookup();
+        RequestFacade rmf = RequestFacade.lookup();
 
         // Handle language parameter
         if (cr.getHeaderValue("lang") != null

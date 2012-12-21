@@ -43,9 +43,9 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class RequestManagerFacade {
+public class RequestFacade {
 
-    private static final Logger logger = LoggerFactory.getLogger(RequestManagerFacade.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestFacade.class);
     /**
      *
      */
@@ -93,9 +93,9 @@ public class RequestManagerFacade {
         return this.requestManager.getPlayer();
     }
 
-    public static RequestManagerFacade lookup() {
+    public static RequestFacade lookup() {
         try {
-            return Helper.lookupBy(RequestManagerFacade.class);
+            return Helper.lookupBy(RequestFacade.class);
         } catch (NamingException ex) {
             logger.error("Error retrieving requestmanager", ex);
             return null;

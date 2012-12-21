@@ -166,7 +166,10 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                         Y.Array.forEach(data, function (role) {
                             acc.push(role.get("val"));
                         }, this);
-
+                        
+                        this.messageDiv = Y.Node.create('<div class="wegas-smallmessage">Click new to add rights</div>');
+                        this.get(CONTENTBOX).getDOMNode().appendChild(this.messageDiv.getDOMNode());          
+                        
                         this.permsField = new PermissionList({
                             //listLabel: 'Websites',
                             elementType: {
@@ -200,7 +203,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
         sync: function() {
             var list = this.permsField.getRoleIds();
-
+            
             Y.Array.forEach(this.permsField.subFields, function(eachSubfield) {
                 Y.Array.forEach(eachSubfield.roleSelect.choicesList, function(role) {
                     if (eachSubfield.roleSelect.getValue().id === role.value || list.indexOf(role.value) === -1) {
@@ -210,6 +213,12 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                     }
                 }, this);
             }, this);
+            
+            if (this.permsField.subFields.length < 1){
+                this.messageDiv.show();
+            } else {
+                this.messageDiv.hide();
+            }
         }
     }, {
         ATTRS: {
@@ -267,7 +276,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                     break;
                 }
             }
-
+            
             PermissionList.superclass.onDelete.apply(this, arguments);
         }
     });

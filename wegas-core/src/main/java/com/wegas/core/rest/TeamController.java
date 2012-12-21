@@ -11,13 +11,13 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Team;
+import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -42,12 +42,27 @@ public class TeamController extends AbstractRestController<TeamFacade, Team> {
     protected TeamFacade getFacade() {
         return this.teamFacade;
     }
+    
+    @Override
+    public Team get(Long entityId) {
 
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + this.getPathParam("gameId"));
+        
+        return super.get(entityId);
+    }
+
+    @Override
+    public Collection<Team> index() {
+        
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + this.getPathParam("gameId"));
+        
+        return super.index();
+    }
+    
     @Override
     public Team create(Team entity) {
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
         
         this.teamFacade.create(new Long(this.getPathParam("gameId")),
                 (Team) entity);
@@ -57,8 +72,7 @@ public class TeamController extends AbstractRestController<TeamFacade, Team> {
     @Override
     public Team update(Long entityId, Team entity){
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
         
         return super.update(entityId, entity);
     }
@@ -66,8 +80,7 @@ public class TeamController extends AbstractRestController<TeamFacade, Team> {
     @Override
     public Team delete(Long entityId){
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
         
         return super.delete(entityId); 
     }

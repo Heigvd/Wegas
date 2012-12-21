@@ -10,6 +10,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.exception.PersistenceException;
+import com.wegas.core.ejb.statemachine.StateMachineRunner;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.util.List;
@@ -37,6 +38,8 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
      *
      */
     @EJB
+    private StateMachineRunner stateMachineRunner;
+    @EJB
     private TeamFacade teamEntityFacade;
 
     /**
@@ -59,6 +62,7 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         em.flush();
         em.refresh(player);
         team.getGame().getGameModel().propagateDefaultInstance(false);
+        stateMachineRunner.playerUpdated(player);
         //this.create(player);
     }
 
