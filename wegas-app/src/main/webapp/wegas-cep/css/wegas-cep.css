@@ -50,7 +50,7 @@ h3 {
     background: url(../../wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) top repeat-x;
 }
 .header > .wegas-list-content {
-    width: 960px;
+    width: 980px;
     height: 100px;
     margin: 0 auto;
     padding: 0 10px;
@@ -76,7 +76,7 @@ h3 {
     background: white url(../../wegas-cep/images/templatemo_banner_bg_wrapper.jpg) top repeat-x;
 }
 .body > div  {
-    width: 960px;
+    width: 980px;
     min-height: 250px;
     margin: 0 auto;
     padding: 10px;
@@ -94,7 +94,7 @@ h3 {
     min-height: 199px;
 }
 .footer > div {
-    width: 960px;
+    width: 980px;
     margin: 0 auto;
     padding: 0 10px 30px 10px;
     background: none;
@@ -184,10 +184,11 @@ h3 {
 }
 .timeIndicators .wegas-variabledisplay-text-value {
     padding:2px 6px 1px;
+    margin-right: 6px;
+    max-width:235px;
 }
 .variables .yui3-button {
-    margin-left: 6px;
-    margin-top: 16px;
+    margin: 16px 6px 0;
     background-color: #AF0303;
     color: white;
     padding: 13px 12px;
