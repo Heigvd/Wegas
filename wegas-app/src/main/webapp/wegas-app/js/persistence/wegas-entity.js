@@ -278,6 +278,8 @@ YUI.add('wegas-entity', function (Y) {
                                         name: "Game:View"
                                     }, {
                                         name: "Game:Edit"
+                                    },{
+                                        name: "Game:Token"
                                     }]
                             },
                             tabSelector: '#rightTabView'

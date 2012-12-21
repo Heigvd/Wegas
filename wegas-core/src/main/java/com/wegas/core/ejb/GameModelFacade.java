@@ -43,7 +43,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
     @EJB
-    private RequestManagerFacade requestManagerFacade;
+    private RequestFacade requestFacade;
 
     /**
      *
@@ -133,6 +133,6 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         gm.propagateDefaultInstance(true);
         em.flush();
         em.refresh(gm);
-        requestManagerFacade.commit();
+        requestFacade.commit();
     }
 }

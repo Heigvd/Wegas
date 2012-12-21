@@ -9,13 +9,18 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.exception.NoGameException;
+import com.wegas.exception.NoPlayerException;
+import com.wegas.exception.NoTeamException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -50,7 +55,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
      *
      */
     @EJB
-    private RequestManagerFacade requestManagerFacade;
+    private RequestFacade requestFacade;
     /**
      *
      */
@@ -102,17 +107,51 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
 
     }
 
-    public Player findAPlayer(VariableInstance instance) throws ArrayIndexOutOfBoundsException {
-        if (instance.getScope() instanceof PlayerScope) {
-            return playerFacade.find(instance.getPlayerScopeKey());
-        } else if (instance.getScope() instanceof TeamScope) {
-            return teamFacade.find(instance.getTeamScopeKey()).getPlayers().get(0);
-        } else if (instance.getScope() instanceof GameScope) {
-            throw new UnsupportedOperationException();                          // @fixme
-        } else if (instance.getScope() instanceof GameModelScope) {
-            return instance.getDescriptor().getGameModel().getGames().get(0).getTeams().get(0).getPlayers().get(0);
-        } else {
-            throw new UnsupportedOperationException();
+    public Player findAPlayer(VariableInstance instance)
+            throws NoPlayerException {
+        Player p;
+        try {
+            if (instance.getScope() instanceof PlayerScope) {
+                p = playerFacade.find(instance.getPlayerScopeKey());
+                if (p == null) {
+                    throw new NoPlayerException();
+                }
+                return p;
+            } else if (instance.getScope() instanceof TeamScope) {
+                try {
+                    p = teamFacade.find(instance.getTeamScopeKey()).getPlayers().get(0);
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeamScopeKey()).getName() + "] has no player");
+                }
+                return p;
+            } else if (instance.getScope() instanceof GameScope) {
+                throw new UnsupportedOperationException();                          // @fixme
+            } else if (instance.getScope() instanceof GameModelScope) {
+                Game g;
+                Team t;
+                try {
+                    g = instance.getDescriptor().getGameModel().getGames().get(0);
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    throw new NoGameException("GameModel [" + instance.getDescriptor().getGameModel().getName() + "] has no game");
+                }
+                try {
+                    t = g.getTeams().get(0);
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    throw new NoTeamException("Game [" + g.getName() + "] has no team");
+                }
+                try {
+                    p = t.getPlayers().get(0);
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    throw new NoPlayerException("Team [" + t.getName() + "] has no player");
+                }
+
+                return p;
+
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        } catch (NoTeamException | NoGameException ex) {
+            throw new NoPlayerException(ex.getMessage(), ex);
         }
     }
 
@@ -137,7 +176,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
     @Override
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
         VariableInstance ret = super.update(entityId, entity);
-        requestManagerFacade.commit();
+        requestFacade.commit();
         return ret;
     }
 

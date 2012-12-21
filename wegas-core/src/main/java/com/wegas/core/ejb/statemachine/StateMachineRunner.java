@@ -22,6 +22,7 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.exception.NoPlayerException;
 import com.wegas.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;
 import java.io.Serializable;
@@ -67,7 +68,7 @@ public class StateMachineRunner implements Serializable {
     public StateMachineRunner() {
     }
 
-    public void entityUpdateListener(@Observes RequestManager.PlayerAction playerAction) throws WegasException {
+    public void entityUpdateListener(@Observes RequestManager.PlayerAction playerAction) {
         this.playerUpdated(playerAction.getPlayer());
     }
 
@@ -76,7 +77,7 @@ public class StateMachineRunner implements Serializable {
         Integer steps = 0;
         logger.debug("Updated instances {}, transition done : {}", requestManager.getUpdatedInstances());
         if (run) {
-            logger.info("Running, received changed {}", requestManager.getUpdatedInstances());
+            logger.debug("Running, received changed {}", requestManager.getUpdatedInstances());
             return;
         }
 
@@ -85,33 +86,34 @@ public class StateMachineRunner implements Serializable {
         //TODO: lock SMInstance (concurrency)
 
         /* Find players for each instance */
-        List<Player> players = new ArrayList<>();
+        //List<Player> players = new ArrayList<>();
+        Map<Player, HashSet<Transition>> playerTransitions = new HashMap<>();   // store passed transitions.
         if (player != null) {
-            players.add(player);
+            playerTransitions.put(player, new HashSet<Transition>());
         } else {
             for (VariableInstance instance : requestManager.getUpdatedInstances()) {
                 try {
-                players.add(variableInstanceFacade.findAPlayer(instance));
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    // GOTCHA (This instance has no players, the team is empty
+                    /* Setup player's passed transitions */
+                    playerTransitions.put(variableInstanceFacade.findAPlayer(instance), new HashSet<Transition>());
+                } catch (NoPlayerException e) {
+                    logger.warn("{} : {}", e.getClass().getSimpleName(), e.getMessage());
                 }
             }
         }
-        if (players.size() < 1) {
+        if (playerTransitions.size() < 1) {
             logger.warn("No players found");
             return;
         }
         /* build a list with each statemachine instance relevant to players (MAP) */
         Map<StateMachineInstance, Player> statemachinesPlayerMap = new HashMap<>();
-        GameModel gamemodel = players.get(0).getGameModel();
+        GameModel gamemodel = ((Player) playerTransitions.keySet().toArray()[0]).getGameModel();
         List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel, StateMachineDescriptor.class);
         for (VariableDescriptor stateMachineDescriptor : stateMachineDescriptors) {
-            for (Player p : players) {
-                statemachinesPlayerMap.put((StateMachineInstance) stateMachineDescriptor.getInstance(p), p);
+            for (Player p : playerTransitions.keySet()) {
+                statemachinesPlayerMap.put((StateMachineInstance) stateMachineDescriptor.getInstance(p), p); //won't duplicate (HashMap) if players share same instance
             }
         }
 
-        Map<Player, HashSet<Transition>> playerTransitions = new HashMap<>();
         logger.debug("StateMachineInstance(s) found: {}", statemachinesPlayerMap);
         while (this.run(statemachinesPlayerMap, playerTransitions)) {
             steps += 1;
@@ -138,14 +140,8 @@ public class StateMachineRunner implements Serializable {
                 continue;
             }
             currentPlayer = statemachinesPlayerMap.get(stateMachine);
+            passedTransitions = playerTransitions.get(currentPlayer);
 
-            /* Setup player's passed transitions */
-            if (playerTransitions.get(currentPlayer) == null) {
-                passedTransitions = new HashSet<>();
-                playerTransitions.put(currentPlayer, passedTransitions);
-            } else {
-                passedTransitions = playerTransitions.get(currentPlayer);
-            }
 
             /* Setup player's impact list */
             if (playerImpacts.get(currentPlayer) == null) {
@@ -175,7 +171,7 @@ public class StateMachineRunner implements Serializable {
                     /* A valid transition has been found */
                     if (passedTransitions.contains(transition)) {
                         /* Loop prevention : that player already passed through this transiton */
-                        logger.info("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                        logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
                     } else {
                         passedTransitions.add(transition);                      //Store transition to avoid doing it again
                         stateMachine.setCurrentStateId(transition.getNextStateId());//Change statemachine's state
@@ -183,7 +179,7 @@ public class StateMachineRunner implements Serializable {
                         impacts.add(stateMachine.getCurrentState().getOnEnterEvent()); //Prepare for eval
                         stateMachine.transitionHistoryAdd(transition.getId());  // Adding transition.id to history
                         transitionTriggered = true;
-                        break;
+                        break;                                                  // A transition has bean found stop searching
                     }
                 }
             }

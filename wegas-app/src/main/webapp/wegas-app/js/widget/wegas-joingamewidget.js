@@ -35,8 +35,9 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 label: "Enter a key phrase to join a game",
                 typeInvite: "Enter a token"
             });
-
-            cb.append('<div class="lobbyOr"><p>Or</p><div>');
+            
+            this.p = Y.Node.create('<div class="lobbyOr"><p>Or</p><div>');
+            cb.append(this.p);
 
             this.selectPublicGame = new Y.inputEx.SelectField({                 // Render public games
                 required: false,
@@ -76,8 +77,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.showPublicGames();
         },
 
-        bindUI: function () {
-
+        bindUI: function () {            
             this.tokenField.on("updated", function (e) {
                 if (this.tokenField.getValue() !== "") {
                     this.selectPublicGame.setValue("");
@@ -91,32 +91,15 @@ YUI.add('wegas-joingamewidget', function (Y) {
             }, this);
 
             this.joinGameButton.on("click", function (e) {                      // join a game based on a token
-                var gameToJoin;
-                if (this.tokenField.getValue() !== "") {
-                    gameToJoin = this.tokenField.getValue();
-                } else if (this.selectPublicGame.getValue() !== "") {
-                    gameToJoin = this.selectPublicGame.getValue();
-                } else {
+                if (this.tokenField.getValue() != ""){
+                    this.sendJoinGame();
+                }else if (this.selectPublicGame.getValue() != ""){
+                    this.currentGame = this.selectPublicGame.getValue();
+                    this.showTeams(); 
+                }else{
                     this.showMessage("error", "A key phrase or a public Game must be selected");
                     return;
                 }
-                Y.Wegas.GameFacade.rest.sendRequest({
-                    request: "/JoinGame/" + gameToJoin,
-                    on: {
-                        success: Y.bind(function (e) {
-                            if (e.response.entity                           // If the returned value is a Team enity
-                                instanceof Y.Wegas.persistence.Team) {
-                                this.sendJoinTeamRequest(                   // it means we can join this team directly
-                                    e.response.entity.get("id"));
-                            } else {
-                                this.showTeams();                           // otherwise the player can choose or create its team
-                            }
-                        }, this),
-                        failure: Y.bind(function (e) {
-                            this.showMessage("error", e.response.results.message || "Invalid token", 4000);
-                        }, this)
-                    }
-                });
             }, this);
 
             this.joinTeamButton.on("click", function (e) {                      // Join an existing team
@@ -140,6 +123,27 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }
             }, this);
         },
+        
+        sendJoinGame: function(){
+            Y.Wegas.GameFacade.rest.sendRequest({
+                request: "/JoinGame/" + this.tokenField.getValue(),
+                on: {
+                    success: Y.bind(function (e) {
+                        if (e.response.entity                               // If the returned value is a Team enity
+                            instanceof Y.Wegas.persistence.Team) {
+                            this.sendJoinTeamRequest(                       // it means we can join this team directly
+                                e.response.entity.get("id"));
+                        } else {       
+                            this.currentGame = e.response.entity;
+                            this.showTeams();                               // otherwise the player can choose or create its team
+                        }
+                    }, this),
+                    failure: Y.bind(function (e) {
+                        this.showMessage("error", e.response.results.message || "Invalid token", 4000);
+                    }, this)
+                }
+            });
+        },
 
         showTeams: function () {
             //this.msg.empty();
@@ -153,14 +157,12 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.createButton.show();
             this.createTeamField.show();
 
-            this.currentGame = Y.Wegas.GameFacade.rest.getCache()[0];
-
-            var i, teams = this.currentGame.get("teams");
-
-            for (i = 0; i < teams.length; i = i + 1) {
+            var i;
+            this.teams = this.currentGame.get("teams");
+            for (i = 0; i < this.teams.length; i = i + 1) {
                 this.teamsField.addChoice({
-                    label: teams[i].get("name"),
-                    value: teams[i].get("id")
+                    label: this.teams[i].get("name"),
+                    value: this.teams[i].get("id")
                 });
             }
         },
@@ -172,15 +174,15 @@ YUI.add('wegas-joingamewidget', function (Y) {
             });
 
             Y.Wegas.PublicGamesFacade.rest.sendRequest({
-                request: "/Games/",
+                request: "/Games/" + Y.Wegas.app.get('currentUser').id,
                 on: {
                     success: Y.bind(function (e) {
                         var data = e.response.results.entities;
                         Y.Array.forEach(data, function (game) {
                             this.selectPublicGame.addChoice({
-                                label: game.toObject().name,
-                                value: game.toObject().token
-                            });
+                                label: game.get("name"),
+                                value: game
+                            });                            
                         }, this);
                     }, this),
                     failure: Y.bind(function (e) {
@@ -189,7 +191,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }
             });
         },
-
+        
         sendJoinTeamRequest: function (teamId) {
             Y.Wegas.GameFacade.rest.sendRequest({
                 request: "/JoinTeam/" + teamId,
@@ -201,18 +203,29 @@ YUI.add('wegas-joingamewidget', function (Y) {
                         Y.Wegas.RegisteredGamesFacade.rest.clearCache();
                         Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
 
+                        this.joinGameButton.show();
+                        this.tokenField.show();
+                        this.selectPublicGame.removeChoice({value: this.currentGame});
+                        this.selectPublicGame.show();
+                        this.p.show();
                         this.createButton.hide();
                         this.createTeamField.hide();
                         this.joinTeamButton.hide();
+                        this.removeAllTeamsChoices();
                         this.teamsField.hide();
-                        this.joinGameButton.hide();
-                        this.tokenField.hide();
                     }, this),
                     failure: Y.bind(function (e) {
                         this.showMessage("error", "Error joining team");
                     }, this)
                 }
             });
+        },
+        
+        removeAllTeamsChoices: function(){
+            var i;
+            for (i = 0; i < this.teams.length; i = i + 1) {
+                this.teamsField.removeChoice({value: this.teams[i].get("id")});
+            }
         }
     });
 

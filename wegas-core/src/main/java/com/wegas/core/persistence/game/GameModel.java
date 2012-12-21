@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.shiro.SecurityUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -289,5 +290,9 @@ public class GameModel extends NamedEntity {
             players.addAll(g.getPlayers());
         }
         return players;
+    }
+
+    public void checkPermission(String permission) {
+        SecurityUtils.getSubject().checkPermission("GameModel:" + permission + ":gm" + this.getId());
     }
 }

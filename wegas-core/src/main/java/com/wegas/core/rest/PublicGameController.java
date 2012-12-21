@@ -35,10 +35,10 @@ public class PublicGameController {
     private UserFacade userFacade;
 
     @GET
-    @Path("PublicGames/Games/")
+    @Path("PublicGames/Games/{userId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<Game> publicGame() {
-        return gameFacade.getPublicGames();
+    public Collection<Game> publicGame(@PathParam("userId") Long userId) {
+        return gameFacade.getPublicGames(userId);
     }
 
     /**
