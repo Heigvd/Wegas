@@ -57,6 +57,10 @@ public class RequestManager implements Serializable {
     /**
      *
      */
+    private List<Exception> exceptions = new ArrayList<>();
+    /**
+     *
+     */
     private Locale locale;
 
     /**
@@ -111,6 +115,15 @@ public class RequestManager implements Serializable {
     public void clearUpdatedInstances() {
         this.updatedInstances.clear();
     }
+
+    public List<Exception> getExceptions() {
+        return exceptions;
+    }
+
+    public void addException(Exception exception) {
+        this.exceptions.add(exception);
+    }
+
 
     /**
      * @return the view

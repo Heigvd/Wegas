@@ -134,6 +134,8 @@
                                         "type": "FileExplorer",
                                         "plugins": [{
                                                 "fn": "WidgetToolbar"
+                                            },{
+                                                "fn": "TreeviewFilter"
                                             }]
                                     }
                                 }, {
