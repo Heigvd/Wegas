@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.exception.WegasException;
+import com.wegas.exception.WegasScriptException;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.annotation.PostConstruct;
@@ -131,7 +132,8 @@ public class ScriptFacade {
                 result = engine.eval(script);
             } catch (ScriptException ex) {
                 logger.warn("{} in\n{}", ex.getMessage(), script);
-                throw new ScriptException(ex.getMessage(), script, ex.getLineNumber());
+                requestManager.addException(new WegasScriptException(script, ex.getLineNumber(), ex.getMessage()));
+                //throw new ScriptException(ex.getMessage(), script, ex.getLineNumber());
             }
 
             em.flush();                                                         // Commit the transaction
