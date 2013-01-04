@@ -19,7 +19,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -66,9 +65,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @EJB
     private PlayerFacade playerFacade;
-    
+
     /**
-     * 
+     *
      */
     @EJB
     private RoleFacade roleFacade;
@@ -78,13 +77,13 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Produces(MediaType.APPLICATION_JSON)
     @Override
     public Game get(@PathParam("entityId") Long entityId) {
-        
+
         Subject s = SecurityUtils.getSubject();
         s.checkPermission("Game:View:g" + entityId);
-        
+
         return super.get(entityId);
     }
-    
+
     /**
      *
      * @return
@@ -163,10 +162,10 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
                     game.getId(), userFacade.getCurrentUser().getId());
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
         } catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
-            
+
             Subject s = SecurityUtils.getSubject();
             s.checkPermission("Game:Token:g"+game.getId());
-                
+
             return (team != null) ? team : game;
         }
     }
@@ -199,12 +198,12 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     protected GameFacade getFacade() {
         return gameFacade;
     }
-    
+
     private void addRights(Game game){
         Subject s = SecurityUtils.getSubject();
         boolean gExist = s.isPermitted("Game:View:g" + game.getId());
         boolean gmExist = s.isPermitted("GameModel:View:gm" + game.getGameModel().getId());
-            
+
         if (!gExist){
             userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g"+game.getId());
         }

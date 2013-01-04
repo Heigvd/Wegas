@@ -9,7 +9,7 @@
  */
 package com.wegas.mcq.rest;
 
-import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.exception.WegasException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -18,7 +18,6 @@ import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,11 +39,8 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      */
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
-    /**
-     *
-     */
-    @Inject
-    private RequestManager requestManager;
+    @EJB
+    private RequestFacade requestFacade;
 
     /**
      *
@@ -52,6 +48,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
      * @param choiceId
      * @return p
      * @throws ScriptException
+     * @throws WegasException
      */
     @GET
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
@@ -65,12 +62,13 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
         //    questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), new Long(0));
 
         questionDescriptorFacade.validateReply(playerId, reply.getId());
+        requestFacade.commit();
         return Response.ok().build();
     }
 
     /**
      *
-     * @param gameModelId
+     * @param playerId
      * @param replyId
      * @return
      * @throws ScriptException
@@ -82,15 +80,17 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
             @PathParam("playerId") Long playerId,
             @PathParam("replyId") Long replyId) throws ScriptException {
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
+        requestFacade.commit();
         return reply.getQuestionInstance();
     }
 
     /**
      *
      * @param playerId
-     * @param choiceDescriptorId
+     * @param choiceId
      * @param startTime
      * @return p
+     * @throws WegasException
      */
     @GET
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
@@ -101,6 +101,7 @@ public class QuestionController extends AbstractRestController<QuestionDescripto
             @PathParam("startTime") Long startTime) throws WegasException {
 
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
+        requestFacade.commit();
         return reply.getQuestionInstance();
     }
 
