@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 
 /**
@@ -41,25 +42,31 @@ public class ScriptController {
     private UserFacade userFacade;
     @EJB
     private RequestFacade requestFacade;
+
     /**
      *
+     * @param gameModelId
      * @param playerId
      * @param script
      * @return p
      * @throws ScriptException
+     * @throws WegasException
      */
     @POST
     @Path("/Run/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object run(
+    public Object run(@PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, Script script)
             throws ScriptException, WegasException {
-        
-        if (!userFacade.matchCurrentUser(playerId)) {
+
+        if (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
+                || userFacade.matchCurrentUser(playerId)) {
+            Object r = scriptManager.eval(playerId, script);
+            requestFacade.commit();
+            return r;
+        } else {
             throw new UnauthorizedException();
+
         }
-        Object r = scriptManager.eval(playerId, script);
-        requestFacade.commit();
-        return r;
     }
 }
