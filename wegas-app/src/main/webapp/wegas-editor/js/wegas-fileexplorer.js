@@ -56,7 +56,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 plugins: [{
                         "fn": Y.Plugin.TreeViewFilter,
                         "cfg": {
-                            searchAttrs: ["label", "data.mimeType"]
+                            searchAttrs: ["label", "data.mimeType"],
+                            regExp: false
                         }
                     }]
             });
@@ -94,7 +95,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.treeView.render(cb);
             this.fileUploader.render(this.get(CONTENT_BOX));
             this.fileUploader.hide();
-            this.search = Y.Node.create("<input class='treeview-search' type='text' placeholder='Search'/>");
+            this.search = Y.Node.create("<input class='treeview-search' type='text' placeholder='Filter'/>");
             if (this.toolbar) {
                 this.toolbar.get("header").append(this.search);
             } else {
