@@ -28,22 +28,39 @@ YUI.add("treeview-filter", function(Y) {
                 this.filter(this.get("host"), this.get("searchVal"));
             });
         },
-        filter: function(item, matcher) {
-            var matches = false, i;
+        filter: function(item, match) {
+            var matches = false, i,
+                    matcher;
             if (item instanceof Y.TreeView) {
                 matches = false;
             } else {
-                for (i in this.get("searchAttrs")) {
+                if (this.get("regExp")) {
                     try {
-                        matches = matches || (item.get(this.get("searchAttrs")[i]).indexOf(matcher) > -1);
+                        matcher = new RegExp(match);
                     } catch (e) {
-                        //SearchAttrs fail
+                        return;
+                    }
+                    for (i in this.get("searchAttrs")) {
+                        try {
+                            matches = matches || matcher.test(item.get(this.get("searchAttrs")[i]));
+                        } catch (e) {
+                            //SearchAttrs fail
+                        }
+                    }
+                } else {
+                    for (i in this.get("searchAttrs")) {
+                        try {
+                            matches = matches || (item.get(this.get("searchAttrs")[i]).toLowerCase().indexOf(match.toLowerCase()) > -1);
+                        } catch (e) {
+                            //SearchAttrs fail
+                        }
                     }
                 }
+
             }
             if (item.each) {
                 item.each(function(node) {
-                    this.filter(node, matcher);
+                    this.filter(node, match);
                 }, this);
             }
             if (matches || item.get("boundingBox").one(".filter-match")) {
@@ -69,6 +86,10 @@ YUI.add("treeview-filter", function(Y) {
             },
             searchAttrs: {
                 value: ["label"]
+            },
+            regExp: {
+                value: false,
+                validator: Y.Lang.isBoolean
             }
         }
     });
