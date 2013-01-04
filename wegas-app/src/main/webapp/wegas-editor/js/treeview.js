@@ -238,7 +238,9 @@ YUI.add('treeview', function(Y) {
                 value: "",
                 validator: Y.Lang.isString,
                 setter: function(v) {
-                    this.labelNode.setContent(v);
+                    if (this.labelNode) {
+                        this.labelNode.setContent(v);
+                    }
                     return v;
                 }
             },
@@ -403,7 +405,10 @@ YUI.add('treeview', function(Y) {
                 value: "",
                 validator: Y.Lang.isString,
                 setter: function(v) {
-                    this.labelNode.setContent(v);
+                    if (this.labelNode) {
+                        this.labelNode.setContent(v);
+                    }
+                    return v;
                 },
                 getter: function(v) {
                     return this.labelNode.getContent();
