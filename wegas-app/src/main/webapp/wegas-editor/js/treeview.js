@@ -59,6 +59,20 @@ YUI.add('treeview', function(Y) {
                     if (this.get("visibleRightWidget")) {
                         this.get(CONTENT_BOX).addClass(classNames.visibleRightWidget);
                     }
+                },
+                expandAll: function() {
+                    this.each(function(item) {
+                        if (item.expandAll) {
+                            item.expandAll();
+                        }
+                    });
+                },
+                collapseAll: function() {
+                    this.each(function(item) {
+                        if (item.collapseAll) {
+                            item.collapseAll();
+                        }
+                    });
                 }
             }, {
         NAME: 'treeview',
@@ -221,6 +235,22 @@ YUI.add('treeview', function(Y) {
                     node: this
                 });
             }
+        },
+        expandAll: function() {
+            this.expand(false);
+            this.each(function(item) {
+                if (item.expandAll) {
+                    item.expandAll();
+                }
+            });
+        },
+        collapseAll: function() {
+            this.collapse(false);
+            this.each(function(item) {
+                if (item.collapseAll) {
+                    item.collapseAll();
+                }
+            });
         },
         destroyChildren: function() {
             var widgets = this.removeAll();
