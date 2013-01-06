@@ -51,16 +51,22 @@ YUI.add('wegas-fileexplorer', function(Y) {
             var cb = this.get(CONTENTBOX);
 
             Y.log('renderUI()', 'log', "Wegas.FileExplorer");
-            this.treeView = new Y.TreeView({
-                visibleRightWidget: false,
-                plugins: [{
-                        "fn": Y.Plugin.TreeViewFilter,
-                        "cfg": {
-                            searchAttrs: ["label", "data.mimeType"],
-                            regExp: false
-                        }
-                    }]
-            });
+            if (this.get("filter")) {
+                this.treeView = new Y.TreeView({
+                    visibleRightWidget: false,
+                    plugins: [{
+                            "fn": Y.Plugin.TreeViewFilter,
+                            "cfg": {
+                                searchAttrs: ["label", "data.mimeType"],
+                                regExp: false
+                            }
+                        }]
+                });
+            } else {
+                this.treeView = new Y.TreeView({
+                    visibleRightWidget: false
+                });
+            }
             this.rootNode = new Y.TreeNode({
                 collapsed: false,
                 label: "/",
@@ -95,17 +101,19 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.treeView.render(cb);
             this.fileUploader.render(this.get(CONTENT_BOX));
             this.fileUploader.hide();
-            this.search = Y.Node.create("<input class='treeview-search' type='text' placeholder='Filter'/>");
-            if (this.toolbar) {
-                this.toolbar.get("header").append(this.search);
-            } else {
-                this.get("boundingBox").append(this.search);
-                this.search.hide();
-                this.search.after("blur", function(e) {
-                    if (this.getDOMNode().value === "") {
-                        this.hide();
-                    }
-                });
+            if (this.get("filter")) {
+                this.search = Y.Node.create("<input class='treeview-search' type='text' placeholder='Filter'/>");
+                if (this.toolbar) {
+                    this.toolbar.get("header").append(this.search);
+                } else {
+                    this.get("boundingBox").append(this.search);
+                    this.search.hide();
+                    this.search.after("blur", function(e) {
+                        if (this.getDOMNode().value === "") {
+                            this.hide();
+                        }
+                    });
+                }
             }
             this.tooltip = new Y.Wegas.Tooltip({//
                 delegate: this.get("contentBox"),
@@ -243,16 +251,18 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 } catch (ex) {
                 }
             }, this);
-            this.before("keydown", function(e) {
-                if (e.domEvent.ctrlKey && String.fromCharCode(e.domEvent.charCode).toUpperCase() === "F") {
-                    e.domEvent.preventDefault();
-                    this.search.focus();
-                    this.search.show();
-                }
-            });
-            this.search.after("keyup", function(e) {
-                this.treeView.filter.set("searchVal", this.search.getDOMNode().value);
-            }, this);
+            if (this.search) {
+                this.before("keydown", function(e) {
+                    if (e.domEvent.ctrlKey && String.fromCharCode(e.domEvent.charCode).toUpperCase() === "F") {
+                        e.domEvent.preventDefault();
+                        this.search.focus();
+                        this.search.show();
+                    }
+                });
+                this.search.after("keyup", function(e) {
+                    this.treeView.filter.set("searchVal", this.search.getDOMNode().value);
+                }, this);
+            }
         },
         destructor: function() {
             for (var i in this.events) {
@@ -692,7 +702,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 setter: function(val) {
                     return "^/.*".test(val) ? val : "/" + val;
                 }
-
+            },
+            filter: {
+                value: true,
+                validator: Y.Lang.isBoolean
             }
         },
         formatFileSize: function(bytes) {
