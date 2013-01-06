@@ -60,7 +60,9 @@ YUI.add("treeview-filter", function(Y) {
             }
             if (item.each) {
                 item.each(function(node) {
-                    this.filter(node, match);
+                    if (this.filter(node, match) && item.expand) {
+                        item.expand(false);
+                    }
                 }, this);
             }
             if (matches || item.get("boundingBox").one(".filter-match")) {
