@@ -125,3 +125,13 @@
 .wegas-icon-video-mp4 {
     background-position: 1px -290px;
 }
+
+.wegas-fileexplorer > .treeview-search{
+    position: absolute;
+    top: 35px;
+    left: 50%;
+    z-index:3;
+}
+.wegas-fileexplorer > .wegas-toolbar .treeview-search{
+    margin: 3px 2px;
+}

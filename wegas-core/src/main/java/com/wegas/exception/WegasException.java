@@ -15,7 +15,7 @@ import javax.ejb.ApplicationException;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@ApplicationException(rollback=false)
+@ApplicationException(rollback = false)
 public class WegasException extends RuntimeException {
 
     public WegasException() {
@@ -28,5 +28,4 @@ public class WegasException extends RuntimeException {
     public WegasException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

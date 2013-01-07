@@ -154,14 +154,15 @@ public class StateMachineRunner implements Serializable {
             /* Loop on each state's transtions until a valid transition is found */
             for (Transition transition : transitions) {
                 Boolean validTransition = false;
-                try {
-                    if (!(transition instanceof DialogueTransition)
-                            && transition.getTriggerCondition() != null) {      //Do not eval Dialogue transition, no condition means invalid transition
-                        requestManager.setPlayer(currentPlayer);
+
+                if (!(transition instanceof DialogueTransition)
+                        && transition.getTriggerCondition() != null) {      //Do not eval Dialogue transition, no condition means invalid transition
+                    requestManager.setPlayer(currentPlayer);
+                    try {
                         validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
+                    } catch (ScriptException ex) {
+                        validTransition = false;
                     }
-                } catch (ScriptException ex) {
-                    logger.error("Script Failed : {} returned: {}", transition.getTriggerCondition(), ex);
                 }
 
                 if (validTransition == null) {
@@ -203,7 +204,7 @@ public class StateMachineRunner implements Serializable {
                 try {
                     scriptManager.eval(playerImpacts.get(p));
                 } catch (ScriptException | WegasException ex) {
-                    logger.warn("Script failed {}", ex);
+                    logger.warn("Script failed ", ex);
                 }
             }
         }

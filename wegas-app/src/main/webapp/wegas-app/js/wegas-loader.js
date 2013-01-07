@@ -319,6 +319,11 @@ YUI().use(function(Y) {
                         path: 'wegas-editor/css/treeview.css',
                         type: 'css'
                     },
+                    'treeview-filter':{
+                        path: 'wegas-editor/js/treeview-filter-min.js',
+                        requires: ['plugin'],
+                        ws_provides: 'TreeViewFilter'
+                    },
                     /** Editor **/
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
@@ -393,7 +398,7 @@ YUI().use(function(Y) {
                         path: 'wegas-editor/js/wegas-fileexplorer-min.js',
                         requires: ['treeview', 'uploader-html5', 'wegas-menu',
                         'wegas-progressbar', 'wegas-fileexplorercss',
-                        'wegas-content-entities', 'wegas-tooltip'],
+                        'wegas-content-entities', 'wegas-tooltip', 'treeview-filter'],
                         ws_provides: "FileExplorer"
                     },
                     'wegas-progressbar': {
