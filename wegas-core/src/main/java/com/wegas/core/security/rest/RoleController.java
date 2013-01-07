@@ -15,6 +15,7 @@ import com.wegas.core.security.persistence.Role;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 /**
  *
@@ -22,6 +23,7 @@ import javax.ws.rs.Path;
  */
 @Stateless
 @Path("Role")
+@RequiresPermissions("User:Edit")
 public class RoleController extends AbstractRestController<RoleFacade, Role> {
 
     /**

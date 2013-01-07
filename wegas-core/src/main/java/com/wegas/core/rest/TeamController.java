@@ -11,6 +11,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Team;
+import java.io.IOException;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -75,6 +76,14 @@ public class TeamController extends AbstractRestController<TeamFacade, Team> {
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
         
         return super.update(entityId, entity);
+    }
+    
+    @Override
+    public Team duplicate(Long entityId) throws IOException{
+        
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        
+        return super.duplicate(entityId);
     }
     
     @Override
