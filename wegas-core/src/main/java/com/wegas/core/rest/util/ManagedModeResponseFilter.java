@@ -61,6 +61,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
                 serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
             }
+            if(!rmf.getRequestManager().getExceptions().isEmpty()){
+                serverResponse.getEvents().add(new ExceptionEvent(rmf.getRequestManager().getExceptions()));
+            }
         }
 
         return response;
@@ -163,6 +166,27 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
          */
         public void setUpdatedEntities(List<VariableInstance> updatedEntities) {
             this.updatedEntities = updatedEntities;
+        }
+    }
+
+    @XmlType(name = "ExceptionEvent")
+    private static class ExceptionEvent extends ServerEvent {
+
+        private List<Exception> exceptions;
+
+        public ExceptionEvent() {
+        }
+
+        public ExceptionEvent(List<Exception> exceptions) {
+            this.exceptions = exceptions;
+        }
+
+        public List<Exception> getExceptions() {
+            return exceptions;
+        }
+
+        public void setExceptions(List<Exception> exceptions) {
+            this.exceptions = exceptions;
         }
     }
 }

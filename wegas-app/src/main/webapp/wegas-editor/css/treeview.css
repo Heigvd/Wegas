@@ -76,7 +76,13 @@
 .yui3-treeleaf-content-header{
     padding:2px;
     white-space: nowrap;
+    overflow: hidden;
     font-style: normal;
+    transition: max-height 1s;
+    -o-transition: max-height 1s;
+    -moz-transition: max-height 1s;
+    -ms-transition: max-height 1s;
+    -webkit-transition: max-height 1s;
 }
 .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{
@@ -136,4 +142,12 @@
 }
 .yui3-treenode-collapsed>ul:empty::before{
     content: "";
+}
+.yui3-treeview-content .filter-match .content-header{
+    max-height: 50px;
+}
+.yui3-treeview-content .filter-no-match .content-header{
+    padding-top:0;
+    padding-bottom: 0;
+    max-height: 0;
 }
