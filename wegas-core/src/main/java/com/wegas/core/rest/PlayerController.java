@@ -11,6 +11,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.Player;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -68,6 +69,14 @@ public class PlayerController extends AbstractRestController<PlayerFacade, Playe
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
         
         return super.update(entityId, entity);
+    }
+    
+    @Override
+    public Player duplicate(Long entityId) throws IOException{
+        
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
+        
+        return super.duplicate(entityId);
     }
     
     @Override

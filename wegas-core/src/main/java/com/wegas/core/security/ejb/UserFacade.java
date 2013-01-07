@@ -127,7 +127,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param id
      * @return
      */
-    public List<Map> findPermissionByGameModelId(String id) {
+    public List<Map> findPermissionByInstance(String id) {
 
         Query findByToken = em.createNamedQuery("findPermissionByGameModelId");
         findByToken.setParameter("gameId", "%:" + id);
@@ -159,7 +159,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param permission
      * @return
      */
-    public boolean deletePermissionByGameModelIdAndPermissions(Long roleId, String permission) {
+    public boolean deletePermissionByInstance(Long roleId, String permission) {
         String permissionToRemove = null;
         Role r = roleFacade.find(roleId);
         for (String p : r.getPermissions()) {
@@ -177,7 +177,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param permission
      * @return
      */
-    public boolean addPermissionByGameModelIdAndPermissions(Long roleId, String permission) {
+    public boolean addPermissionsByInstance(Long roleId, String permission) {
         boolean added = false;
         boolean exist = false;
         Role r = roleFacade.find(roleId);

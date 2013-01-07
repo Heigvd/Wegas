@@ -13,8 +13,11 @@ import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -25,8 +28,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.subject.Subject;
 
 /**
@@ -42,6 +43,12 @@ public class UserController extends AbstractRestController<UserFacade, User> {
      */
     @EJB
     private UserFacade userFacade;
+    
+    /**
+     *
+     */
+    @EJB
+    private AccountFacade accountFacade;
 
     /**
      *
@@ -50,6 +57,65 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Override
     protected UserFacade getFacade() {
         return this.userFacade;
+    }
+    
+    @Override
+    public Collection<User> index() {
+        
+        SecurityUtils.getSubject().checkPermission("User:Edit");
+        
+        return super.index();
+    }
+    
+    @Override
+    public User get(Long entityId) {
+        if (!userFacade.getCurrentUser().getId().equals(entityId)){
+            SecurityUtils.getSubject().checkPermission("User:Edit");
+        }
+
+        return super.get(entityId);
+    }
+    
+    @Override
+    public User update(Long entityId, User entity){
+        
+        if (!userFacade.getCurrentUser().getId().equals(entityId)){
+            SecurityUtils.getSubject().checkPermission("User:Edit");
+        }
+        
+        return super.update(entityId, entity);
+    }
+        /**
+     *
+     * @param entityId
+     * @return
+     */
+    @PUT
+    @Path("Account/{accountId: [1-9][0-9]*}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public AbstractAccount updateAccount(@PathParam("accountId") Long accountId, AbstractAccount entity) throws IOException {
+        AbstractAccount a = accountFacade.find(accountId);
+         if (!userFacade.getCurrentUser().equals(a.getUser())){
+            SecurityUtils.getSubject().checkPermission("User:Edit");
+        }
+        return accountFacade.update(accountId, entity);
+    }
+    
+    @Override
+    public User duplicate(Long entityId) throws IOException{
+        
+        SecurityUtils.getSubject().checkPermission("Game:Edit");
+        
+        return super.duplicate(entityId);
+    }
+    
+    @Override
+    public User delete(Long entityId){
+        
+        SecurityUtils.getSubject().checkPermission("Game:Edit");
+        
+        return super.delete(entityId); 
     }
 
     /**
@@ -126,14 +192,22 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     /**
      * Get all GameModel permissions by GameModel id
      *
-     * @param gameModelId
+     * @param id
      * @return
      */
     @GET
     @Path("GameModelPermissions/{gameModelId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Map> findPermissionByGameModelId(@PathParam("gameModelId") String gameModelId) {
-        return this.userFacade.findPermissionByGameModelId(gameModelId);
+    public List<Map> findPermissionByInstance(@PathParam(value = "gameModelId")
+    String id) {
+        
+        if (id.substring(0, 2).equals("gm")) {
+            SecurityUtils.getSubject().checkPermission("GameModel:Edit:" + id);
+        } else {
+            SecurityUtils.getSubject().checkPermission("Game:Edit:" + id);
+        }
+        
+        return this.userFacade.findPermissionByInstance(id);
     }
 
     /**
@@ -147,9 +221,18 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Path("DeletePermission/{roleId : [1-9][0-9]*}/{permission}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean deletePermissionByGameModelIdAndPermissions(@PathParam("roleId") Long roleId,
-            @PathParam("permission") String permission) {
-        return this.userFacade.deletePermissionByGameModelIdAndPermissions(roleId, permission);
+    public boolean deletePermissionByInstance(@PathParam(value = "roleId")
+    Long roleId, @PathParam(value = "permission")
+    String permission) {
+        
+        String splitedPermission[] = permission.split(":");
+        if (splitedPermission[2].substring(0, 2).equals("gm")){
+            SecurityUtils.getSubject().checkPermission("GameModel:Edit:" + splitedPermission[2]);
+        } else {
+            SecurityUtils.getSubject().checkPermission("Game:Edit:" + splitedPermission[2]);
+        }
+        
+        return this.userFacade.deletePermissionByInstance(roleId, permission);
     }
 
     /**
@@ -163,16 +246,25 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Path("AddPermission/{roleId : [1-9][0-9]*}/{permission}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public boolean addPermissionByGameModelIdAndPermissions(@PathParam("roleId") Long roleId,
-            @PathParam("permission") String permission) {
-        return this.userFacade.addPermissionByGameModelIdAndPermissions(roleId, permission);
+    public boolean addPermissionsByInstance(@PathParam(value = "roleId")
+    Long roleId, @PathParam(value = "permission")
+    String permission) {
+        
+        String splitedPermission[] = permission.split(":");
+        if (splitedPermission[2].substring(0, 2).equals("gm")){
+            SecurityUtils.getSubject().checkPermission("GameModel:Edit:" + splitedPermission[2]);
+        } else {
+            SecurityUtils.getSubject().checkPermission("Game:Edit:" + splitedPermission[2]);
+        }
+        
+        return this.userFacade.addPermissionsByInstance(roleId, permission);
     }
 
     /**
      * Delete all permission from a role in a Game or GameModel
      *
      * @param roleId
-     * @param gameModelId
+     * @param id
      * @return
      */
     @POST
@@ -180,7 +272,14 @@ public class UserController extends AbstractRestController<UserFacade, User> {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId,
-            @PathParam("gameModelId") String gameModelId) {
-        return this.userFacade.deleteAllRolePermissions(roleId, gameModelId);
+            @PathParam("gameModelId") String id) {
+        
+        if (id.substring(0, 2).equals("gm")) {
+            SecurityUtils.getSubject().checkPermission("GameModel:Edit:" + id);
+        } else {
+            SecurityUtils.getSubject().checkPermission("Game:Edit:" + id);
+        }
+        
+        return this.userFacade.deleteAllRolePermissions(roleId, id);
     }
 }

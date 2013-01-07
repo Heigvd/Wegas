@@ -19,7 +19,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Role;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -79,8 +79,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Override
     public Game get(@PathParam("entityId") Long entityId) {
         
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:View:g" + entityId);
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + entityId);
         
         return super.get(entityId);
     }
@@ -108,8 +107,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Override
     public Game create(Game entity) {
 
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Create");
+        SecurityUtils.getSubject().checkPermission("Game:Create");
 
         this.gameFacade.create(new Long(this.getPathParam("gameModelId")), entity);
         return entity;
@@ -118,17 +116,23 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Override
     public Game update(Long entityId, Game entity) {
 
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Edit:g" + entityId);
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
 
         return super.update(entityId, entity);
+    }
+    
+    @Override
+    public Game duplicate(Long entityId) throws IOException{
+        
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
+        
+        return super.duplicate(entityId);
     }
 
     @Override
     public Game delete(Long entityId) {
 
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("Game:Edit:g" + entityId);
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
 
         return super.delete(entityId);
     }
@@ -164,8 +168,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
         } catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
             
-            Subject s = SecurityUtils.getSubject();
-            s.checkPermission("Game:Token:g"+game.getId());
+            SecurityUtils.getSubject().checkPermission("Game:Token:g"+game.getId());
                 
             return (team != null) ? team : game;
         }
