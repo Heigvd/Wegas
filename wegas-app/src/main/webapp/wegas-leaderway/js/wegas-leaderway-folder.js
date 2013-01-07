@@ -28,7 +28,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                         cssClass: "folder-action-speak"
                     }]
             });
-            this.handlers = {};
+            this.handler = {};
             this.varToHide = [];
         },
         /**
@@ -45,12 +45,10 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         bindUI: function () {
             Folder.superclass.bindUI.apply(this);
             
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
-            
-            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handler.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
             
             //bind each action 'giveTask' change widget depending to the ATTRS 'taskListPageId'
-            this.handlers.giveTask = Y.one('body').delegate('click', function (e) {
+            this.handler.giveTask = Y.one('body').delegate('click', function (e) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 if (this.menuAction.menu.getMenu().toJSON()[0].get("disabled"))
                     return;
@@ -64,7 +62,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }, '.folder-action-giveTask', this);
         
             //bind each action 'speak' change widget depending to the ATTRS 'dialoguePageId'
-            this.handlers.speak = Y.one('body').delegate('click', function (e) {
+            this.handler.speak = Y.one('body').delegate('click', function (e) {
                 if (this.menuAction.menu.getMenu().toJSON()[1].get("disabled"))
                     return;
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
@@ -92,7 +90,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }, '.folder-action-speak', this);
         
             //syncAction when menu is open (and menu's sub-element exists)
-            this.handlers.syncAction = this.menuAction.menu.after('menuOpen', this.syncAction, this);
+            this.handler.syncAction = this.menuAction.menu.after('menuOpen', this.syncAction, this);
         },
         /**
          * Synchronise the content of this widget.
@@ -117,8 +115,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          */
         destructor: function () {
             var k;
-            for (k in this.handlers) {
-                this.handlers[k].detach();
+            for (k in this.handler) {
+                this.handler[k].detach();
             }
             this.menuAction.destroy();
         },

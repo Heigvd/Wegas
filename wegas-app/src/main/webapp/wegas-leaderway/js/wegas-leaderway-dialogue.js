@@ -217,6 +217,11 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.pictures .answerLayer').hide();
             cb.one('.response').hide();
             this.state = dialogue.getCurrentState();
+            if (!this.state.getAvailableActions) {
+                this.responseIsDisplayed = false;
+                Y.log("State isn't a dialogue state.", 'error', 'wegas-leaderway-dialogue.js');
+                return;
+            }
             this.state.once('actionsAvailable', this.readStateContent, this);
             this.state.getAvailableActions();
         },
