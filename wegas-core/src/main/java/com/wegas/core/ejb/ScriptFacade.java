@@ -135,9 +135,6 @@ public class ScriptFacade {
                 requestManager.addException(new WegasScriptException(script, ex.getLineNumber(), ex.getMessage()));
                 throw new ScriptException(ex.getMessage(), script, ex.getLineNumber());
             }
-
-            em.flush();                                                         // Commit the transaction
-            //requestManager.commit();
         }
         return result;
     }

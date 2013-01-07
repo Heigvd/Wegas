@@ -66,7 +66,7 @@ public class Player extends AbstractEntity {
     private int teamId;
 
     /**
-     * 
+     *
      */
     public Player() {
     }
@@ -86,6 +86,7 @@ public class Player extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Player p = (Player) a;
+        this.setName(p.getName());
     }
 
     /**
