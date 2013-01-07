@@ -98,7 +98,7 @@ public class FileController {
         AbstractContentDescriptor detachedFile = null;
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
         if (dir.exist()) {                                                  //directory has to exist
-            if (details == null || details.getContentDisposition().getFileName() == null || details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
+            if (details.getContentDisposition().getFileName() == null || details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
                 detachedFile = new DirectoryDescriptor(name, path, connector);
             } else {
                 logger.debug("File name: {}", details.getContentDisposition().getFileName());
@@ -149,7 +149,9 @@ public class FileController {
             fileDescriptor = DescriptorFactory.getDescriptor(name, connector);
         } catch (PathNotFoundException e) {
             logger.debug("Asked path does not exist: {}", e.getMessage());
-            connector.save();
+            if (connector != null) {
+                connector.save();
+            }
             return response.build();
         } catch (RepositoryException e) {
             logger.error("Need to check those errors", e);
@@ -170,7 +172,9 @@ public class FileController {
             } catch (IOException ex) {
                 Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                connector.save();
+                if (connector != null) {
+                    connector.save();
+                }
             }
         }
         return response.build();

@@ -220,7 +220,7 @@ YUI.add('treeview', function(Y) {
         },
         expand: function(fireEvent) {
             this.set("collapsed", false);
-            fireEvent = (fireEvent === null) ? true : fireEvent;
+            fireEvent = (fireEvent === undefined) ? true : fireEvent;
             if (fireEvent) {
                 this.fire('nodeExpanded', {
                     node: this
@@ -229,7 +229,7 @@ YUI.add('treeview', function(Y) {
         },
         collapse: function(fireEvent) {
             this.set("collapsed", true);
-            fireEvent = (fireEvent === null) ? true : fireEvent;
+            fireEvent = (fireEvent === undefined) ? true : fireEvent;
             if (fireEvent) {
                 this.fire('nodeCollapsed', {
                     node: this
