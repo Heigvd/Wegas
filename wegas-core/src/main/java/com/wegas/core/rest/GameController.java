@@ -66,9 +66,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @EJB
     private PlayerFacade playerFacade;
-    
+
     /**
-     * 
+     *
      */
     @EJB
     private RoleFacade roleFacade;
@@ -83,7 +83,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         
         return super.get(entityId);
     }
-    
+
     /**
      *
      * @return
@@ -202,12 +202,12 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     protected GameFacade getFacade() {
         return gameFacade;
     }
-    
+
     private void addRights(Game game){
         Subject s = SecurityUtils.getSubject();
         boolean gExist = s.isPermitted("Game:View:g" + game.getId());
         boolean gmExist = s.isPermitted("GameModel:View:gm" + game.getGameModel().getId());
-            
+
         if (!gExist){
             userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g"+game.getId());
         }
