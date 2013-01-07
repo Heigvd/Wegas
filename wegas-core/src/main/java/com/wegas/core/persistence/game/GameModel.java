@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
-import org.apache.shiro.SecurityUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -128,6 +127,21 @@ public class GameModel extends NamedEntity {
         super.merge(n);
         this.setWidgetsUri(((GameModel) n).getWidgetsUri());
         this.setCssUri(((GameModel) n).getCssUri());
+    }
+
+    /**
+     *
+     */
+    @PrePersist
+    public void prePersist() {
+        if (this.games.isEmpty()) {
+            String l = this.getName() + " Test game";
+            Team t = new Team("Default");
+            t.addPlayer(new Player("Test player"));
+            Game g = new Game(l, l);
+            g.addTeam(t);
+            this.addGame(g);
+        }
     }
 
     /**
@@ -283,6 +297,10 @@ public class GameModel extends NamedEntity {
         this.scriptLibrary = scriptLibrary;
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonIgnore
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>();
@@ -290,9 +308,5 @@ public class GameModel extends NamedEntity {
             players.addAll(g.getPlayers());
         }
         return players;
-    }
-
-    public void checkPermission(String permission) {
-        SecurityUtils.getSubject().checkPermission("GameModel:" + permission + ":gm" + this.getId());
     }
 }

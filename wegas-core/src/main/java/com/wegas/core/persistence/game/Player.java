@@ -66,6 +66,20 @@ public class Player extends AbstractEntity {
     private int teamId;
 
     /**
+     * 
+     */
+    public Player() {
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public Player(String name) {
+        this.name = name;
+    }
+
+    /**
      *
      * @param a
      */
@@ -115,7 +129,6 @@ public class Player extends AbstractEntity {
         this.team = team;
     }
 
-
     /**
      * @return the teamId
      */
@@ -157,5 +170,4 @@ public class Player extends AbstractEntity {
     public void setName(String name) {
         this.name = name;
     }
-
 }

@@ -59,6 +59,20 @@ YUI.add('treeview', function(Y) {
                     if (this.get("visibleRightWidget")) {
                         this.get(CONTENT_BOX).addClass(classNames.visibleRightWidget);
                     }
+                },
+                expandAll: function() {
+                    this.each(function(item) {
+                        if (item.expandAll) {
+                            item.expandAll();
+                        }
+                    });
+                },
+                collapseAll: function() {
+                    this.each(function(item) {
+                        if (item.collapseAll) {
+                            item.collapseAll();
+                        }
+                    });
                 }
             }, {
         NAME: 'treeview',
@@ -222,6 +236,22 @@ YUI.add('treeview', function(Y) {
                 });
             }
         },
+        expandAll: function() {
+            this.expand(false);
+            this.each(function(item) {
+                if (item.expandAll) {
+                    item.expandAll();
+                }
+            });
+        },
+        collapseAll: function() {
+            this.collapse(false);
+            this.each(function(item) {
+                if (item.collapseAll) {
+                    item.collapseAll();
+                }
+            });
+        },
         destroyChildren: function() {
             var widgets = this.removeAll();
             for (var i in widgets) {
@@ -238,7 +268,9 @@ YUI.add('treeview', function(Y) {
                 value: "",
                 validator: Y.Lang.isString,
                 setter: function(v) {
-                    this.labelNode.setContent(v);
+                    if (this.labelNode) {
+                        this.labelNode.setContent(v);
+                    }
                     return v;
                 }
             },
@@ -403,7 +435,10 @@ YUI.add('treeview', function(Y) {
                 value: "",
                 validator: Y.Lang.isString,
                 setter: function(v) {
-                    this.labelNode.setContent(v);
+                    if (this.labelNode) {
+                        this.labelNode.setContent(v);
+                    }
+                    return v;
                 },
                 getter: function(v) {
                     return this.labelNode.getContent();
