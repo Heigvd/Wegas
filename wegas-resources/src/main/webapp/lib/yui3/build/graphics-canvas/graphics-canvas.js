@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -30,10 +30,10 @@ var IMPLEMENTATION = "canvas",
     _getClassName = Y.ClassNameManager.getClassName;
 
 /**
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Drawing.html">`Drawing`</a> class. 
- * `CanvasDrawing` is not intended to be used directly. Instead, use the <a href="Drawing.html">`Drawing`</a> class. 
- * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has 
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Drawing.html">`Drawing`</a> 
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Drawing.html">`Drawing`</a> class.
+ * `CanvasDrawing` is not intended to be used directly. Instead, use the <a href="Drawing.html">`Drawing`</a> class.
+ * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Drawing.html">`Drawing`</a>
  * class will point to the `CanvasDrawing` class.
  *
  * @module graphics
@@ -82,7 +82,7 @@ CanvasDrawing.prototype = {
      * @private
      */
     _currentY: 0,
-    
+
     /**
      * Parses hex color string and alpha value to rgba
      *
@@ -112,7 +112,7 @@ CanvasDrawing.prototype = {
      *
      * @method _toRGB
      * @param val Color value to convert.
-     * @private 
+     * @private
      */
     _toRGB: function(val) {
         return TORGB(val);
@@ -120,7 +120,7 @@ CanvasDrawing.prototype = {
 
     /**
      * Sets the size of the graphics object.
-     * 
+     *
      * @method setSize
      * @param w {Number} width to set for the instance.
      * @param h {Number} height to set for the instance.
@@ -141,9 +141,9 @@ CanvasDrawing.prototype = {
             }
         }
     },
-    
+
 	/**
-     * Tracks coordinates. Used to calculate the start point of dashed lines. 
+     * Tracks coordinates. Used to calculate the start point of dashed lines.
      *
      * @method _updateCoords
      * @param {Number} x x-coordinate
@@ -159,8 +159,8 @@ CanvasDrawing.prototype = {
     },
 
 	/**
-     * Clears the coordinate arrays. Called at the end of a drawing operation.  
-	 * 
+     * Clears the coordinate arrays. Called at the end of a drawing operation.
+	 *
      * @method _clearAndUpdateCoords
      * @private
 	 */
@@ -181,18 +181,19 @@ CanvasDrawing.prototype = {
     {
         var node = this.get("node"),
             x = this.get("x"),
-            y = this.get("y"); 
+            y = this.get("y");
         node.style.position = "absolute";
         node.style.left = (x + this._left) + "px";
         node.style.top = (y + this._top) + "px";
     },
-    
+
     /**
      * Queues up a method to be executed when a shape redraws.
      *
      * @method _updateDrawingQueue
-     * @param {Array} val An array containing data that can be parsed into a method and arguments. The value at zero-index of the array is a string reference of
-     * the drawing method that will be called. All subsequent indices are argument for that method. For example, `lineTo(10, 100)` would be structured as:
+     * @param {Array} val An array containing data that can be parsed into a method and arguments. The value at zero-index
+     * of the array is a string reference of the drawing method that will be called. All subsequent indices are argument for
+     * that method. For example, `lineTo(10, 100)` would be structured as:
      * `["lineTo", 10, 100]`.
      * @private
      */
@@ -200,10 +201,10 @@ CanvasDrawing.prototype = {
     {
         this._methods.push(val);
     },
-    
+
     /**
      * Draws a line segment from the current drawing position to the specified x and y coordinates.
-     * 
+     *
      * @method lineTo
      * @param {Number} point1 x-coordinate for the end point.
      * @param {Number} point2 y-coordinate for the end point.
@@ -215,7 +216,7 @@ CanvasDrawing.prototype = {
 
     /**
      * Draws a line segment from the current drawing position to the relative x and y coordinates.
-     * 
+     *
      * @method lineTo
      * @param {Number} point1 x-coordinate for the end point.
      * @param {Number} point2 y-coordinate for the end point.
@@ -233,10 +234,10 @@ CanvasDrawing.prototype = {
      * @param {Boolean} relative Indicates whether or not to use relative coordinates.
      * @private
      */
-    _lineTo: function(args, relative) 
+    _lineTo: function(args, relative)
     {
-        var point1 = args[0], 
-            i, 
+        var point1 = args[0],
+            i,
             len,
             x,
             y,
@@ -262,7 +263,7 @@ CanvasDrawing.prototype = {
         }
         else
         {
-            for (i = 0; i < len; i = i + 1) 
+            for (i = 0; i < len; i = i + 1)
             {
                 x = parseFloat(args[i][0]);
                 y = parseFloat(args[i][1]);
@@ -322,7 +323,7 @@ CanvasDrawing.prototype = {
         this._drawingComplete = false;
         return this;
     },
-    
+
     /**
      * Draws a bezier curve.
      *
@@ -352,7 +353,7 @@ CanvasDrawing.prototype = {
     relativeCurveTo: function() {
         this._curveTo.apply(this, [Y.Array(arguments), true]);
     },
-    
+
     /**
      * Implements curveTo methods.
      *
@@ -396,7 +397,7 @@ CanvasDrawing.prototype = {
             top = Math.min(y, Math.min(cp1y, cp2y));
             w = Math.abs(right - left);
             h = Math.abs(bottom - top);
-            pts = [[this._currentX, this._currentY] , [cp1x, cp1y], [cp2x, cp2y], [x, y]]; 
+            pts = [[this._currentX, this._currentY] , [cp1x, cp1y], [cp2x, cp2y], [x, y]];
             this._setCurveBoundingBox(pts, w, h);
             this._currentX = x;
             this._currentY = y;
@@ -438,9 +439,9 @@ CanvasDrawing.prototype = {
      * @private
      */
     _quadraticCurveTo: function(args, relative) {
-        var cpx, 
-            cpy, 
-            x, 
+        var cpx,
+            cpy,
+            x,
             y,
             w,
             h,
@@ -467,7 +468,7 @@ CanvasDrawing.prototype = {
             top = Math.min(y, cpy);
             w = Math.abs(right - left);
             h = Math.abs(bottom - top);
-            pts = [[this._currentX, this._currentY] , [cpx, cpy], [x, y]]; 
+            pts = [[this._currentX, this._currentY] , [cpx, cpy], [x, y]];
             this._setCurveBoundingBox(pts, w, h);
             this._updateDrawingQueue(["quadraticCurveTo", cpx, cpy, x, y]);
             this._updateCoords(x, y);
@@ -499,8 +500,8 @@ CanvasDrawing.prototype = {
     },
 
     /**
-     * Draws a diamond.     
-     * 
+     * Draws a diamond.
+     *
      * @method drawDiamond
      * @param {Number} x y-coordinate
      * @param {Number} y x-coordinate
@@ -584,7 +585,7 @@ CanvasDrawing.prototype = {
 
     /**
      * Draws a rectangle with rounded corners.
-     * 
+     *
      * @method drawRect
      * @param {Number} x x-coordinate
      * @param {Number} y y-coordinate
@@ -607,7 +608,7 @@ CanvasDrawing.prototype = {
         this.quadraticCurveTo(x, y, x, y + eh);
         return this;
     },
-    
+
     /**
      * Draws a wedge.
      *
@@ -640,29 +641,29 @@ CanvasDrawing.prototype = {
         this._drawingComplete = false;
         // move to x,y position
         this._updateDrawingQueue(["moveTo", x, y]);
-        
+
         yRadius = yRadius || radius;
-        
+
         // limit sweep to reasonable numbers
         if(Math.abs(arc) > 360)
         {
             arc = 360;
         }
-        
+
         // First we calculate how many segments are needed
         // for a smooth arc.
         segs = Math.ceil(Math.abs(arc) / 45);
-        
+
         // Now calculate the sweep of each segment.
         segAngle = arc / segs;
-        
+
         // The math requires radians rather than degrees. To convert from degrees
         // use the formula (degrees/180)*Math.PI to get radians.
         theta = -(segAngle / 180) * Math.PI;
-        
+
         // convert angle startAngle to radians
         angle = (startAngle / 180) * Math.PI;
-        
+
         // draw the curve in segments no larger than 45 degrees.
         if(segs > 0)
         {
@@ -688,9 +689,9 @@ CanvasDrawing.prototype = {
         this._trackSize((radius * 2) + wt, (radius * 2) + wt);
         return this;
     },
-    
+
     /**
-     * Completes a drawing operation. 
+     * Completes a drawing operation.
      *
      * @method end
      */
@@ -715,7 +716,7 @@ CanvasDrawing.prototype = {
 	 *
 	 * @method clear
 	 */
-    
+
     /**
      * Returns a linear gradient fill
      *
@@ -757,7 +758,7 @@ CanvasDrawing.prototype = {
                 y2 = y;
             }
             x1 = cx - ((cy - y1)/tanRadians);
-            x2 = cx - ((cy - y2)/tanRadians); 
+            x2 = cx - ((cy - y2)/tanRadians);
         }
         else
         {
@@ -820,8 +821,8 @@ CanvasDrawing.prototype = {
             y = 0,
             w = this.get("width"),
             h = this.get("height"),
-            x1, x2, y1, y2, r2, 
-            xc, yc, xn, yn, d, 
+            x1, x2, y1, y2, r2,
+            xc, yc, xn, yn, d,
             offset,
             ratio,
             stopMultiplier;
@@ -848,9 +849,9 @@ CanvasDrawing.prototype = {
             x1 = xc + xn;
             y1 = yc + yn;
         }
-        
+
         //If the gradient radius is greater than the circle's, adjusting the radius stretches the gradient properly.
-        //If the gradient radius is less than the circle's, adjusting the radius of the gradient will not work. 
+        //If the gradient radius is less than the circle's, adjusting the radius of the gradient will not work.
         //Instead, adjust the color stops to reflect the smaller radius.
         if(r >= 0.5)
         {
@@ -908,7 +909,7 @@ CanvasDrawing.prototype = {
         this._currentX = 0;
         this._currentY = 0;
     },
-   
+
     /**
      * Indicates a drawing has completed.
      *
@@ -929,7 +930,7 @@ CanvasDrawing.prototype = {
         var graphic = Y.config.doc.createElement('canvas');
         return graphic;
     },
-    
+
     /**
      * Returns the points on a curve
      *
@@ -939,7 +940,7 @@ CanvasDrawing.prototype = {
      * @return Array
      * @private
      */
-    getBezierData: function(points, t) {  
+    getBezierData: function(points, t) {
         var n = points.length,
             tmp = [],
             i,
@@ -948,16 +949,16 @@ CanvasDrawing.prototype = {
         for (i = 0; i < n; ++i){
             tmp[i] = [points[i][0], points[i][1]]; // save input
         }
-        
+
         for (j = 1; j < n; ++j) {
             for (i = 0; i < n - j; ++i) {
                 tmp[i][0] = (1 - t) * tmp[i][0] + t * tmp[parseInt(i + 1, 10)][0];
-                tmp[i][1] = (1 - t) * tmp[i][1] + t * tmp[parseInt(i + 1, 10)][1]; 
+                tmp[i][1] = (1 - t) * tmp[i][1] + t * tmp[parseInt(i + 1, 10)][1];
             }
         }
-        return [ tmp[0][0], tmp[0][1] ]; 
+        return [ tmp[0][0], tmp[0][1] ];
     },
-  
+
     /**
      * Calculates the bounding box for a curve
      *
@@ -1008,13 +1009,13 @@ CanvasDrawing.prototype = {
         }
         if(w < this._left)
         {
-            this._left = w;    
+            this._left = w;
         }
         if (h < this._top)
         {
             this._top = h;
         }
-        if (h > this._bottom) 
+        if (h > this._bottom)
         {
             this._bottom = h;
         }
@@ -1024,10 +1025,10 @@ CanvasDrawing.prototype = {
 };
 Y.CanvasDrawing = CanvasDrawing;
 /**
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Shape.html">`Shape`</a> class. 
- * `CanvasShape` is not intended to be used directly. Instead, use the <a href="Shape.html">`Shape`</a> class. 
- * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has 
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Shape.html">`Shape`</a> 
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Shape.html">`Shape`</a> class.
+ * `CanvasShape` is not intended to be used directly. Instead, use the <a href="Shape.html">`Shape`</a> class.
+ * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Shape.html">`Shape`</a>
  * class will point to the `CanvasShape` class.
  *
  * @module graphics
@@ -1068,7 +1069,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             graphic = cfg.graphic,
             data = this.get("data");
         host._initProps();
-		host.createNode(); 
+		host.createNode();
 		host._xcoords = [0];
 		host._ycoords = [0];
         if(graphic)
@@ -1081,13 +1082,14 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
         }
 		host._updateHandler();
 	},
- 
+
     /**
      * Set the Graphic instance for the shape.
      *
      * @method _setGraphic
-     * @param {Graphic | Node | HTMLElement | String} render This param is used to determine the graphic instance. If it is a `Graphic` instance, it will be assigned
-     * to the `graphic` attribute. Otherwise, a new Graphic instance will be created and rendered into the dom element that the render represents.
+     * @param {Graphic | Node | HTMLElement | String} render This param is used to determine the graphic instance. If it is a
+     * `Graphic` instance, it will be assigned to the `graphic` attribute. Otherwise, a new Graphic instance will be created
+     * and rendered into the dom element that the render represents.
      * @private
      */
     _setGraphic: function(render)
@@ -1095,7 +1097,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
         var graphic;
         if(render instanceof Y.CanvasGraphic)
         {
-		    this._graphic = render;
+            this._graphic = render;
         }
         else
         {
@@ -1107,19 +1109,19 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             this._graphic = graphic;
         }
     },
-   
+
 	/**
 	 * Add a class name to each node.
 	 *
 	 * @method addClass
-	 * @param {String} className the class name to add to the node's class attribute 
+	 * @param {String} className the class name to add to the node's class attribute
 	 */
 	addClass: function(className)
 	{
 		var node = Y.one(this.get("node"));
 		node.addClass(className);
 	},
-	
+
 	/**
 	 * Removes a class name from each node.
 	 *
@@ -1165,7 +1167,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	},
 
 	/**
-	 * Determines whether the node is an ancestor of another HTML element in the DOM hierarchy. 
+	 * Determines whether the node is an ancestor of another HTML element in the DOM hierarchy.
 	 *
 	 * @method contains
 	 * @param {CanvasShape | HTMLElement} needle The possible node or descendent
@@ -1227,7 +1229,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @return Object
 	 * @private
 	 */
-	_getDefaultStroke: function() 
+	_getDefaultStroke: function()
 	{
 		return {
 			weight: 1,
@@ -1254,7 +1256,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @private
 	 */
 	_right: 0,
-	
+
 	/**
 	 * Top edge of the path
 	 *
@@ -1262,8 +1264,8 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
      * @type Number
 	 * @private
 	 */
-	_top: 0, 
-	
+	_top: 0,
+
 	/**
 	 * Bottom edge of the path
 	 *
@@ -1296,12 +1298,12 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
         }
 		node.setAttribute("id", id);
 		id = "#" + id;
-	    host.node = node;
-		host.addClass(_getClassName(SHAPE) + " " + _getClassName(concat(IMPLEMENTATION, SHAPE)) + " " + _getClassName(name) + " " + _getClassName(concat(IMPLEMENTATION, name))); 
+        host.node = node;
+		host.addClass(_getClassName(SHAPE) + " " + _getClassName(concat(IMPLEMENTATION, SHAPE)) + " " + _getClassName(name) + " " + _getClassName(concat(IMPLEMENTATION, name)));
 	},
-	
+
 	/**
-     * Overrides default `on` method. Checks to see if its a dom interaction event. If so, 
+     * Overrides default `on` method. Checks to see if its a dom interaction event. If so,
      * return an event attached to the `node` element. If not, return the normal functionality.
      *
      * @method on
@@ -1317,7 +1319,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 		}
 		return Y.on.apply(this, arguments);
 	},
-	
+
 	/**
 	 * Adds a stroke to the shape node.
 	 *
@@ -1333,7 +1335,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 			linejoin,
 			linecap,
 			dashstyle;
-	    if(stroke)
+        if(stroke)
         {
             color = stroke.color;
             weight = PARSE_FLOAT(stroke.weight);
@@ -1345,11 +1347,11 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             this._dashstyle = (dashstyle && Y.Lang.isArray(dashstyle) && dashstyle.length > 1) ? dashstyle : null;
             this._strokeWeight = weight;
 
-            if (IS_NUMBER(weight) && weight > 0) 
+            if (IS_NUMBER(weight) && weight > 0)
             {
                 this._stroke = 1;
-            } 
-            else 
+            }
+            else
             {
                 this._stroke = 0;
             }
@@ -1385,12 +1387,12 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
      * Sets the value of an attribute.
      *
      * @method set
-     * @param {String|Object} name The name of the attribute. Alternatively, an object of key value pairs can 
+     * @param {String|Object} name The name of the attribute. Alternatively, an object of key value pairs can
      * be passed in to set multiple attributes at once.
-     * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as 
+     * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as
      * the name param.
      */
-	set: function() 
+	set: function()
 	{
 		var host = this,
 			val = arguments[0];
@@ -1400,11 +1402,11 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 			host._updateHandler();
 		}
 	},
-	
+
 	/**
 	 * Adds a fill to the shape node.
 	 *
-	 * @method _setFillProps 
+	 * @method _setFillProps
      * @param {Object} fill Properties of the `fill` attribute.
 	 * @private
 	 */
@@ -1425,12 +1427,12 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             else if(color)
             {
                 opacity = fill.opacity;
-                if (isNumber(opacity)) 
+                if (isNumber(opacity))
                 {
                     opacity = Math.max(0, Math.min(1, opacity));
                     color = this._toRGBA(color, opacity);
-                } 
-                else 
+                }
+                else
                 {
                     color = TORGB(color);
                 }
@@ -1508,10 +1510,10 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @method skewX
 	 * @param {Number} x x-coordinate
 	 */
-	 skewX: function(x)
-	 {
-		this._addTransform("skewX", arguments);
-	 },
+    skewX: function(x)
+    {
+        this._addTransform("skewX", arguments);
+    },
 
 	/**
 	 * Skews the shape around the y-axis.
@@ -1519,10 +1521,10 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @method skewY
 	 * @param {Number} y y-coordinate
 	 */
-	 skewY: function(y)
-	 {
-		this._addTransform("skewY", arguments);
-	 },
+    skewY: function(y)
+    {
+        this._addTransform("skewY", arguments);
+    },
 
 	/**
 	 * Rotates the shape clockwise around it transformOrigin.
@@ -1530,11 +1532,11 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @method rotate
 	 * @param {Number} deg The degree of the rotation.
 	 */
-	 rotate: function(deg)
-	 {
-		this._rotation = deg;
-		this._addTransform("rotate", arguments);
-	 },
+    rotate: function(deg)
+    {
+        this._rotation = deg;
+        this._addTransform("rotate", arguments);
+    },
 
 	/**
 	 * Specifies a 2d scaling operation.
@@ -1542,11 +1544,11 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @method scale
 	 * @param {Number} val
 	 */
-	scale: function(x, y)
-	{
-		this._addTransform("scale", arguments);
-	},
-	
+    scale: function(x, y)
+    {
+        this._addTransform("scale", arguments);
+    },
+
     /**
      * Storage for `rotation` atribute.
      *
@@ -1555,7 +1557,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @private
 	 */
 	_rotation: 0,
-    
+
     /**
      * Storage for the transform attribute.
      *
@@ -1600,7 +1602,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             matrix = this.matrix,
             i,
             len = this._transforms.length;
-        
+
         if(this._transforms && this._transforms.length > 0)
         {
             for(i = 0; i < len; ++i)
@@ -1608,13 +1610,13 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
                 key = this._transforms[i].shift();
                 if(key)
                 {
-                    matrix[key].apply(matrix, this._transforms[i]); 
+                    matrix[key].apply(matrix, this._transforms[i]);
                 }
             }
             transform = matrix.toCSSText();
         }
-        
-        this._graphic.addToRedrawQueue(this);    
+
+        this._graphic.addToRedrawQueue(this);
 		transformOrigin = (100 * transformOrigin[0]) + "% " + (100 * transformOrigin[1]) + "%";
         Y_DOM.setStyle(node, "transformOrigin", transformOrigin);
         if(transform)
@@ -1635,7 +1637,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 		this._draw();
 		this._updateTransform();
 	},
-	
+
 	/**
 	 * Updates the shape.
 	 *
@@ -1676,8 +1678,8 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             argsLen,
 			len = 0;
 		this._context.clearRect(0, 0, node.width, node.height);
-	   if(this._methods)
-	   {
+        if(this._methods)
+        {
 			len = cachedMethods.length;
 			if(!len || len < 1)
 			{
@@ -1723,7 +1725,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 						}
 						else
 						{
-                            context[method].apply(context, args); 
+                            context[method].apply(context, args);
 						}
 					}
 				}
@@ -1746,7 +1748,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
      */
     _strokeAndFill: function(context)
     {
-        if (this._fillType) 
+        if (this._fillType)
         {
             if(this._fillType == "linear")
             {
@@ -1782,7 +1784,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 
 	/**
 	 * Draws a dashed line between two points.
-	 * 
+	 *
 	 * @method _drawDashedLine
 	 * @param {Number} xStart	The x position of the start of the line
 	 * @param {Number} yStart	The y position of the start of the line
@@ -1806,7 +1808,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 			i;
 		xDelta = Math.cos(radians) * segmentLength;
 		yDelta = Math.sin(radians) * segmentLength;
-		
+
 		for(i = 0; i < segmentCount; ++i)
 		{
 			context.moveTo(xCurrent, yCurrent);
@@ -1814,10 +1816,10 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 			xCurrent += xDelta;
 			yCurrent += yDelta;
 		}
-		
+
 		context.moveTo(xCurrent, yCurrent);
 		delta = Math.sqrt((xEnd - xCurrent) * (xEnd - xCurrent) + (yEnd - yCurrent) * (yEnd - yCurrent));
-		
+
 		if(delta > dashsize)
 		{
 			context.lineTo(xCurrent + Math.cos(radians) * dashsize, yCurrent + Math.sin(radians) * dashsize);
@@ -1826,26 +1828,26 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 		{
 			context.lineTo(xCurrent + Math.cos(radians) * delta, yCurrent + Math.sin(radians) * delta);
 		}
-		
+
 		context.moveTo(xEnd, yEnd);
 	},
 
-	//This should move to CanvasDrawing class. 
+	//This should move to CanvasDrawing class.
     //Currently docmented in CanvasDrawing class.
     clear: function() {
 		this._initProps();
-        if(this.node) 
+        if(this.node)
         {
             this._context.clearRect(0, 0, this.node.width, this.node.height);
         }
         return this;
 	},
-	
+
 	/**
 	 * Returns the bounds for a shape.
 	 *
      * Calculates the a new bounding box from the original corner coordinates (base on size and position) and the transform matrix.
-     * The calculated bounding box is used by the graphic instance to calculate its viewBox. 
+     * The calculated bounding box is used by the graphic instance to calculate its viewBox.
      *
 	 * @method getBounds
 	 * @return Object
@@ -1882,7 +1884,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
         var transformOrigin = this.get("transformOrigin"),
             transformX = transformOrigin[0] * w,
             transformY = transformOrigin[1] * h,
-		    transforms = this.matrix.getTransformArray(this.get("transform")),
+            transforms = this.matrix.getTransformArray(this.get("transform")),
             matrix = new Y.Matrix(),
             i,
             len = transforms.length,
@@ -1903,7 +1905,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             key = transform.shift();
             if(key)
             {
-                matrix[key].apply(matrix, transform); 
+                matrix[key].apply(matrix, transform);
             }
         }
         matrix.translate(-transformX, -transformY);
@@ -1953,7 +1955,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             args,
             commandArray = Y.Lang.trim(val.match(SPLITPATHPATTERN)),
             i,
-            len, 
+            len,
             str,
             symbolToMethod = this._pathSymbolToMethod;
         if(commandArray)
@@ -1981,7 +1983,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             this.end();
         }
     },
-    
+
     /**
      * Destroys the shape instance.
      *
@@ -2019,7 +2021,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 
 CanvasShape.ATTRS =  {
 	/**
-	 * An array of x, y values which indicates the transformOrigin in which to rotate the shape. Valid values range between 0 and 1 representing a 
+	 * An array of x, y values which indicates the transformOrigin in which to rotate the shape. Valid values range between 0 and 1 representing a
 	 * fraction of the shape's corresponding bounding box dimension. The default value is [0.5, 0.5].
 	 *
 	 * @config transformOrigin
@@ -2031,10 +2033,10 @@ CanvasShape.ATTRS =  {
 			return [0.5, 0.5];
 		}
 	},
-	
+
     /**
      * <p>A string containing, in order, transform operations applied to the shape instance. The `transform` string can contain the following values:
-     *     
+     *
      *    <dl>
      *        <dt>rotate</dt><dd>Rotates the shape clockwise around it transformOrigin.</dd>
      *        <dt>translate</dt><dd>Specifies a 2d translation.</dd>
@@ -2044,11 +2046,12 @@ CanvasShape.ATTRS =  {
      *        <dt>translateY</dt><dd>Translates the shape along the y-axis.</dd>
      *        <dt>skewX</dt><dd>Skews the shape around the x-axis.</dd>
      *        <dt>skewY</dt><dd>Skews the shape around the y-axis.</dd>
-     *        <dt>matrix</dt><dd>Specifies a 2D transformation matrix comprised of the specified six values.</dd>      
+     *        <dt>matrix</dt><dd>Specifies a 2D transformation matrix comprised of the specified six values.</dd>
      *    </dl>
      * </p>
-     * <p>Applying transforms through the transform attribute will reset the transform matrix and apply a new transform. The shape class also contains corresponding methods for each transform
-     * that will apply the transform to the current matrix. The below code illustrates how you might use the `transform` attribute to instantiate a recangle with a rotation of 45 degrees.</p>
+     * <p>Applying transforms through the transform attribute will reset the transform matrix and apply a new transform. The shape class also contains
+     * corresponding methods for each transform that will apply the transform to the current matrix. The below code illustrates how you might use the
+     * `transform` attribute to instantiate a recangle with a rotation of 45 degrees.</p>
             var myRect = new Y.Rect({
                 type:"rect",
                 width: 50,
@@ -2056,16 +2059,16 @@ CanvasShape.ATTRS =  {
                 transform: "rotate(45)"
             };
      * <p>The code below would apply `translate` and `rotate` to an existing shape.</p>
-    
+
         myRect.set("transform", "translate(40, 50) rotate(45)");
 	 * @config transform
-     * @type String  
+     * @type String
 	 */
 	transform: {
 		setter: function(val)
 		{
-            this.matrix.init();	
-		    this._transforms = this.matrix.getTransformArray(val);
+            this.matrix.init();
+            this._transforms = this.matrix.getTransformArray(val);
             this._transform = val;
             return val;
 		},
@@ -2176,7 +2179,7 @@ CanvasShape.ATTRS =  {
 	},
 
 	/**
-	 * Contains information about the fill of the shape. 
+	 * Contains information about the fill of the shape.
      *  <dl>
      *      <dt>color</dt><dd>The color of the fill.</dd>
      *      <dt>opacity</dt><dd>Number between 0 and 1 that indicates the opacity of the fill. The default value is 1.</dd>
@@ -2193,12 +2196,14 @@ CanvasShape.ATTRS =  {
      *      <dt>stops</dt><dd>An array of objects containing the following properties:
      *          <dl>
      *              <dt>color</dt><dd>The color of the stop.</dd>
-     *              <dt>opacity</dt><dd>Number between 0 and 1 that indicates the opacity of the stop. The default value is 1. Note: No effect for IE 6 - 8</dd>
-     *              <dt>offset</dt><dd>Number between 0 and 1 indicating where the color stop is positioned.</dd> 
+     *              <dt>opacity</dt><dd>Number between 0 and 1 that indicates the opacity of the stop. The default value is 1.
+     *              Note: No effect for IE 6 - 8</dd>
+     *              <dt>offset</dt><dd>Number between 0 and 1 indicating where the color stop is positioned.</dd>
      *          </dl>
      *      </dd>
      *      <p>Linear gradients also have the following property:</p>
-     *      <dt>rotation</dt><dd>Linear gradients flow left to right by default. The rotation property allows you to change the flow by rotation. (e.g. A rotation of 180 would make the gradient pain from right to left.)</dd>
+     *      <dt>rotation</dt><dd>Linear gradients flow left to right by default. The rotation property allows you to change the
+     *      flow by rotation. (e.g. A rotation of 180 would make the gradient pain from right to left.)</dd>
      *      <p>Radial gradients have the following additional properties:</p>
      *      <dt>r</dt><dd>Radius of the gradient circle.</dd>
      *      <dt>fx</dt><dd>Focal point x-coordinate of the gradient.</dd>
@@ -2208,19 +2213,23 @@ CanvasShape.ATTRS =  {
      *  <dl>
      *      <dt>cx</dt><dd>
      *          <p>The x-coordinate of the center of the gradient circle. Determines where the color stop begins. The default value 0.5.</p>
+     *          <p><strong>Note: </strong>Currently, this property is not implemented for corresponding `CanvasShape` and
+     *          `VMLShape` classes which are used on Android or IE 6 - 8.</p>
      *      </dd>
      *      <dt>cy</dt><dd>
      *          <p>The y-coordinate of the center of the gradient circle. Determines where the color stop begins. The default value 0.5.</p>
+     *          <p><strong>Note: </strong>Currently, this property is not implemented for corresponding `CanvasShape` and `VMLShape`
+     *          classes which are used on Android or IE 6 - 8.</p>
      *      </dd>
      *  </dl>
-     *  <p>These properties are not currently implemented in `CanvasShape` or `VMLShape`.</p> 
+     *  <p>These properties are not currently implemented in `CanvasShape` or `VMLShape`.</p>
 	 *
 	 * @config fill
-	 * @type Object 
+	 * @type Object
 	 */
 	fill: {
 		valueFn: "_getDefaultFill",
-		
+
 		setter: function(val)
 		{
 			var fill,
@@ -2244,8 +2253,8 @@ CanvasShape.ATTRS =  {
      *      <dt>color</dt><dd>The color of the stroke.</dd>
      *      <dt>weight</dt><dd>Number that indicates the width of the stroke.</dd>
      *      <dt>opacity</dt><dd>Number between 0 and 1 that indicates the opacity of the stroke. The default value is 1.</dd>
-     *      <dt>dashstyle</dt>Indicates whether to draw a dashed stroke. When set to "none", a solid stroke is drawn. When set to an array, the first index indicates the
-     *  length of the dash. The second index indicates the length of gap.
+     *      <dt>dashstyle</dt>Indicates whether to draw a dashed stroke. When set to "none", a solid stroke is drawn. When set
+     *      to an array, the first index indicates the length of the dash. The second index indicates the length of gap.
      *      <dt>linecap</dt><dd>Specifies the linecap for the stroke. The following values can be specified:
      *          <dl>
      *              <dt>butt (default)</dt><dd>Specifies a butt linecap.</dd>
@@ -2257,8 +2266,8 @@ CanvasShape.ATTRS =  {
      *          <dl>
      *              <dt>round (default)</dt><dd>Specifies that the linejoin will be round.</dd>
      *              <dt>bevel</dt><dd>Specifies a bevel for the linejoin.</dd>
-     *              <dt>miter limit</dt><dd>An integer specifying the miter limit of a miter linejoin. If you want to specify a linejoin of miter, you simply specify the limit as opposed to having
-     *  separate miter and miter limit values.</dd>
+     *              <dt>miter limit</dt><dd>An integer specifying the miter limit of a miter linejoin. If you want to specify a linejoin
+     *              of miter, you simply specify the limit as opposed to having separate miter and miter limit values.</dd>
      *          </dl>
      *      </dd>
      *  </dl>
@@ -2286,7 +2295,7 @@ CanvasShape.ATTRS =  {
 			return val;
 		}
 	},
-	
+
 	//Not used. Remove in future.
 	autoSize: {
 		value: false
@@ -2294,7 +2303,7 @@ CanvasShape.ATTRS =  {
 
 	// Only implemented in SVG
 	// Determines whether the instance will receive mouse events.
-	// 
+	//
 	// @config pointerEvents
 	// @type string
 	//
@@ -2303,9 +2312,10 @@ CanvasShape.ATTRS =  {
 	},
 
     /**
-     * Represents an SVG Path string. This will be parsed and added to shape's API to represent the SVG data across all implementations. Note that when using VML or SVG 
-     * implementations, part of this content will be added to the DOM using respective VML/SVG attributes. If your content comes from an untrusted source, you will need 
-     * to ensure that no malicious code is included in that content. 
+     * Represents an SVG Path string. This will be parsed and added to shape's API to represent the SVG data across all
+     * implementations. Note that when using VML or SVG implementations, part of this content will be added to the DOM using
+     * respective VML/SVG attributes. If your content comes from an untrusted source, you will need to ensure that no
+     * malicious code is included in that content.
      *
      * @config data
      * @type String
@@ -2338,10 +2348,10 @@ CanvasShape.ATTRS =  {
 };
 Y.CanvasShape = CanvasShape;
 /**
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Path.html">`Path`</a> class. 
- * `CanvasPath` is not intended to be used directly. Instead, use the <a href="Path.html">`Path`</a> class. 
- * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has 
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Path.html">`Path`</a> 
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Path.html">`Path`</a> class.
+ * `CanvasPath` is not intended to be used directly. Instead, use the <a href="Path.html">`Path`</a> class.
+ * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Path.html">`Path`</a>
  * class will point to the `CanvasPath` class.
  *
  * @module graphics
@@ -2397,11 +2407,11 @@ Y.extend(CanvasPath, Y.CanvasShape, {
 		node.setAttribute("id", id);
 		id = "#" + id;
 		host.node = node;
-		host.addClass(_getClassName(SHAPE) + " " + _getClassName(concat(IMPLEMENTATION, SHAPE)) + " " + _getClassName(name) + " " + _getClassName(concat(IMPLEMENTATION, name))); 
+		host.addClass(_getClassName(SHAPE) + " " + _getClassName(concat(IMPLEMENTATION, SHAPE)) + " " + _getClassName(name) + " " + _getClassName(concat(IMPLEMENTATION, name)));
 	},
 
     /**
-     * Completes a drawing operation. 
+     * Completes a drawing operation.
      *
      * @method end
      */
@@ -2451,7 +2461,7 @@ CanvasPath.ATTRS = Y.merge(Y.CanvasShape.ATTRS, {
 			return val;
 		}
 	},
-	
+
 	/**
 	 * Indicates the path used for the node.
 	 *
@@ -2470,10 +2480,10 @@ CanvasPath.ATTRS = Y.merge(Y.CanvasShape.ATTRS, {
 });
 Y.CanvasPath = CanvasPath;
 /**
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Rect.html">`Rect`</a> class. 
- * `CanvasRect` is not intended to be used directly. Instead, use the <a href="Rect.html">`Rect`</a> class. 
- * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has 
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Rect.html">`Rect`</a> 
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Rect.html">`Rect`</a> class.
+ * `CanvasRect` is not intended to be used directly. Instead, use the <a href="Rect.html">`Rect`</a> class.
+ * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Rect.html">`Rect`</a>
  * class will point to the `CanvasRect` class.
  *
  * @module graphics
@@ -2513,10 +2523,10 @@ Y.extend(CanvasRect, Y.CanvasShape, {
 CanvasRect.ATTRS = Y.CanvasShape.ATTRS;
 Y.CanvasRect = CanvasRect;
 /**
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Ellipse.html">`Ellipse`</a> class. 
- * `CanvasEllipse` is not intended to be used directly. Instead, use the <a href="Ellipse.html">`Ellipse`</a> class. 
- * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has 
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Ellipse.html">`Ellipse`</a> 
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Ellipse.html">`Ellipse`</a> class.
+ * `CanvasEllipse` is not intended to be used directly. Instead, use the <a href="Ellipse.html">`Ellipse`</a> class.
+ * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Ellipse.html">`Ellipse`</a>
  * class will point to the `CanvasEllipse` class.
  *
  * @module graphics
@@ -2557,7 +2567,7 @@ Y.extend(CanvasEllipse, CanvasShape, {
 });
 CanvasEllipse.ATTRS = Y.merge(CanvasShape.ATTRS, {
 	/**
-	 * Horizontal radius for the ellipse. 
+	 * Horizontal radius for the ellipse.
 	 *
 	 * @config xRadius
 	 * @type Number
@@ -2571,7 +2581,7 @@ CanvasEllipse.ATTRS = Y.merge(CanvasShape.ATTRS, {
 		getter: function()
 		{
 			var val = this.get("width");
-			if(val) 
+			if(val)
 			{
 				val *= 0.5;
 			}
@@ -2580,7 +2590,7 @@ CanvasEllipse.ATTRS = Y.merge(CanvasShape.ATTRS, {
 	},
 
 	/**
-	 * Vertical radius for the ellipse. 
+	 * Vertical radius for the ellipse.
 	 *
 	 * @config yRadius
 	 * @type Number
@@ -2595,7 +2605,7 @@ CanvasEllipse.ATTRS = Y.merge(CanvasShape.ATTRS, {
 		getter: function()
 		{
 			var val = this.get("height");
-			if(val) 
+			if(val)
 			{
 				val *= 0.5;
 			}
@@ -2605,10 +2615,10 @@ CanvasEllipse.ATTRS = Y.merge(CanvasShape.ATTRS, {
 });
 Y.CanvasEllipse = CanvasEllipse;
 /**
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Circle.html">`Circle`</a> class. 
- * `CanvasCircle` is not intended to be used directly. Instead, use the <a href="Circle.html">`Circle`</a> class. 
- * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has 
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Circle.html">`Circle`</a> 
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the <a href="Circle.html">`Circle`</a> class.
+ * `CanvasCircle` is not intended to be used directly. Instead, use the <a href="Circle.html">`Circle`</a> class.
+ * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Circle.html">`Circle`</a>
  * class will point to the `CanvasCircle` class.
  *
  * @module graphics
@@ -2619,7 +2629,7 @@ CanvasCircle = function(cfg)
 {
 	CanvasCircle.superclass.constructor.apply(this, arguments);
 };
-    
+
 CanvasCircle.NAME = "circle";
 
 Y.extend(CanvasCircle, Y.CanvasShape, {
@@ -2784,10 +2794,10 @@ CanvasPieSlice.ATTRS = Y.mix({
 }, Y.CanvasShape.ATTRS);
 Y.CanvasPieSlice = CanvasPieSlice;
 /**
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the `Graphic` class. 
- * `CanvasGraphic` is not intended to be used directly. Instead, use the <a href="Graphic.html">`Graphic`</a> class. 
- * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has 
- * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Graphic.html">`Graphic`</a> 
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> implementation of the `Graphic` class.
+ * `CanvasGraphic` is not intended to be used directly. Instead, use the <a href="Graphic.html">`Graphic`</a> class.
+ * If the browser lacks <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities but has
+ * <a href="http://www.w3.org/TR/html5/the-canvas-element.html">Canvas</a> capabilities, the <a href="Graphic.html">`Graphic`</a>
  * class will point to the `CanvasGraphic` class.
  *
  * @module graphics
@@ -2795,7 +2805,7 @@ Y.CanvasPieSlice = CanvasPieSlice;
  * @constructor
  */
 function CanvasGraphic(config) {
-    
+
     CanvasGraphic.superclass.constructor.apply(this, arguments);
 }
 
@@ -2803,13 +2813,14 @@ CanvasGraphic.NAME = "canvasGraphic";
 
 CanvasGraphic.ATTRS = {
     /**
-     * Whether or not to render the `Graphic` automatically after to a specified parent node after init. This can be a Node instance or a CSS selector string.
-     * 
+     * Whether or not to render the `Graphic` automatically after to a specified parent node after init. This can be a Node
+     * instance or a CSS selector string.
+     *
      * @config render
-     * @type Node | String 
+     * @type Node | String
      */
     render: {},
-	
+
     /**
 	 * Unique id for class instance.
 	 *
@@ -2852,7 +2863,7 @@ CanvasGraphic.ATTRS = {
     /**
      *  Object containing size and coordinate data for the content of a Graphic in relation to the graphic instance's position.
      *
-     *  @config contentBounds 
+     *  @config contentBounds
      *  @type Object
      *  @readOnly
      */
@@ -2882,7 +2893,7 @@ CanvasGraphic.ATTRS = {
     },
 
 	/**
-	 * Indicates the width of the `Graphic`. 
+	 * Indicates the width of the `Graphic`.
 	 *
 	 * @config width
 	 * @type Number
@@ -2892,16 +2903,16 @@ CanvasGraphic.ATTRS = {
         {
             if(this._node)
             {
-                this._node.style.width = val + "px";            
+                this._node.style.width = val + "px";
             }
             return val;
         }
     },
 
 	/**
-	 * Indicates the height of the `Graphic`. 
+	 * Indicates the height of the `Graphic`.
 	 *
-	 * @config height 
+	 * @config height
 	 * @type Number
 	 */
     height: {
@@ -2916,15 +2927,18 @@ CanvasGraphic.ATTRS = {
     },
 
     /**
-     *  Determines the sizing of the Graphic. 
+     *  Determines the sizing of the Graphic.
      *
      *  <dl>
-     *      <dt>sizeContentToGraphic</dt><dd>The Graphic's width and height attributes are, either explicitly set through the <code>width</code> and <code>height</code>
-     *      attributes or are determined by the dimensions of the parent element. The content contained in the Graphic will be sized to fit with in the Graphic instance's 
-     *      dimensions. When using this setting, the <code>preserveAspectRatio</code> attribute will determine how the contents are sized.</dd>
-     *      <dt>sizeGraphicToContent</dt><dd>(Also accepts a value of true) The Graphic's width and height are determined by the size and positioning of the content.</dd>
-     *      <dt>false</dt><dd>The Graphic's width and height attributes are, either explicitly set through the <code>width</code> and <code>height</code>
-     *      attributes or are determined by the dimensions of the parent element. The contents of the Graphic instance are not affected by this setting.</dd>
+     *      <dt>sizeContentToGraphic</dt><dd>The Graphic's width and height attributes are, either explicitly set through the
+     *      <code>width</code> and <code>height</code> attributes or are determined by the dimensions of the parent element. The
+     *      content contained in the Graphic will be sized to fit with in the Graphic instance's dimensions. When using this
+     *      setting, the <code>preserveAspectRatio</code> attribute will determine how the contents are sized.</dd>
+     *      <dt>sizeGraphicToContent</dt><dd>(Also accepts a value of true) The Graphic's width and height are determined by the
+     *      size and positioning of the content.</dd>
+     *      <dt>false</dt><dd>The Graphic's width and height attributes are, either explicitly set through the <code>width</code>
+     *      and <code>height</code> attributes or are determined by the dimensions of the parent element. The contents of the
+     *      Graphic instance are not affected by this setting.</dd>
      *  </dl>
      *
      *
@@ -2940,7 +2954,7 @@ CanvasGraphic.ATTRS = {
      * Determines how content is sized when <code>autoSize</code> is set to <code>sizeContentToGraphic</code>.
      *
      *  <dl>
-     *      <dt>none<dt><dd>Do not force uniform scaling. Scale the graphic content of the given element non-uniformly if necessary 
+     *      <dt>none<dt><dd>Do not force uniform scaling. Scale the graphic content of the given element non-uniformly if necessary
      *      such that the element's bounding box exactly matches the viewport rectangle.</dd>
      *      <dt>xMinYMin</dt><dd>Force uniform scaling position along the top left of the Graphic's node.</dd>
      *      <dt>xMidYMin</dt><dd>Force uniform scaling horizontally centered and positioned at the top of the Graphic's node.<dd>
@@ -2952,7 +2966,7 @@ CanvasGraphic.ATTRS = {
      *      <dt>xMidYMax</dt><dd>Force uniform scaling horizontally centered and position vertically from the bottom.</dd>
      *      <dt>xMaxYMax</dt><dd>Force uniform scaling positioned horizontally from the right and vertically from the bottom.</dd>
      *  </dl>
-     * 
+     *
      * @config preserveAspectRatio
      * @type String
      * @default xMidYMid
@@ -2965,7 +2979,7 @@ CanvasGraphic.ATTRS = {
      * The contentBounds will resize to greater values but not smaller values. (for performance)
      * When resizing the contentBounds down is desirable, set the resizeDown value to true.
      *
-     * @config resizeDown 
+     * @config resizeDown
      * @type Boolean
      */
     resizeDown: {
@@ -3053,12 +3067,12 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
      * Sets the value of an attribute.
      *
      * @method set
-     * @param {String|Object} name The name of the attribute. Alternatively, an object of key value pairs can 
+     * @param {String|Object} name The name of the attribute. Alternatively, an object of key value pairs can
      * be passed in to set multiple attributes at once.
-     * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as 
+     * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as
      * the name param.
      */
-	set: function(attr, value) 
+	set: function(attr, value)
 	{
 		var host = this,
             redrawAttrs = {
@@ -3069,7 +3083,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
             },
             key,
             forceRedraw = false;
-		AttributeLite.prototype.set.apply(host, arguments);	
+		AttributeLite.prototype.set.apply(host, arguments);
         if(host._state.autoDraw === true && Y.Object.size(this._shapes) > 0)
         {
             if(Y_LANG.isString && redrawAttrs[attr])
@@ -3128,12 +3142,12 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
         }
         return xy;
     },
-    
+
 	/**
      * Initializes the class.
      *
      * @method initializer
-     * @param {Object} config Optional attributes 
+     * @param {Object} config Optional attributes
      * @private
      */
     initializer: function(config) {
@@ -3162,7 +3176,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
 
     /**
      * Adds the graphics node to the dom.
-     * 
+     *
      * @method render
      * @param {HTMLElement} parentNode node in which to render the graphics node into.
      */
@@ -3229,7 +3243,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
     {
         var node = shape.node,
             parentNode = this._frag || this._node;
-        if(this.get("autoDraw")) 
+        if(this.get("autoDraw"))
         {
             parentNode.appendChild(node);
         }
@@ -3259,7 +3273,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
             shape._destroy();
             delete this._shapes[shape.get("id")];
         }
-        if(this.get("autoDraw")) 
+        if(this.get("autoDraw"))
         {
             this._redraw();
         }
@@ -3284,7 +3298,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
         }
         this._shapes = {};
     },
-    
+
     /**
      * Clears the graphics object.
      *
@@ -3314,7 +3328,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
             }
         }
     },
-    
+
     /**
      * Toggles visibility
      *
@@ -3344,11 +3358,11 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
     },
 
     /**
-     * Returns a shape class. Used by `addShape`. 
+     * Returns a shape class. Used by `addShape`.
      *
      * @method _getShapeClass
-     * @param {Shape | String} val Indicates which shape class. 
-     * @return Function 
+     * @param {Shape | String} val Indicates which shape class.
+     * @return Function
      * @private
      */
     _getShapeClass: function(val)
@@ -3360,7 +3374,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
         }
         return val;
     },
-    
+
     /**
      * Look up for shape classes. Used by `addShape` to retrieve a class for instantiation.
      *
@@ -3375,7 +3389,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
         ellipse: Y.CanvasEllipse,
         pieslice: Y.CanvasPieSlice
     },
-    
+
     /**
      * Returns a shape based on the id of its dom node.
      *
@@ -3418,7 +3432,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
         }
         return this._frag;
     },
-    
+
     /**
      * Redraws all shapes.
      *
@@ -3456,7 +3470,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
                 }
                 else
                 {
-                    if(contentWidth/contentHeight !== w/h) 
+                    if(contentWidth/contentHeight !== w/h)
                     {
                         if(contentWidth * h/contentHeight > w)
                         {
@@ -3489,7 +3503,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
             this._frag = null;
         }
     },
-    
+
     /**
      * Determines the value for either an x or y value to be used for the <code>translate</code> of the Graphic.
      *
@@ -3518,9 +3532,9 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
         }
         return coord;
     },
-    
+
     /**
-     * Adds a shape to the redraw queue and calculates the contentBounds. Used internally 
+     * Adds a shape to the redraw queue and calculates the contentBounds. Used internally
      * by `Shape` instances.
      *
      * @method addToRedrawQueue
@@ -3542,7 +3556,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
             box.bottom = box.bottom > shapeBox.bottom ? box.bottom : shapeBox.bottom;
             this._contentBounds = box;
         }
-        if(this.get("autoDraw")) 
+        if(this.get("autoDraw"))
         {
             this._redraw();
         }
@@ -3552,7 +3566,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
      * Recalculates and returns the `contentBounds` for the `Graphic` instance.
      *
      * @method _getUpdatedContentBounds
-     * @return {Object} 
+     * @return {Object}
      * @private
      */
     _getUpdatedContentBounds: function()
@@ -3635,4 +3649,4 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
 Y.CanvasGraphic = CanvasGraphic;
 
 
-}, '3.7.2', {"requires": ["graphics"]});
+}, '3.8.0', {"requires": ["graphics"]});

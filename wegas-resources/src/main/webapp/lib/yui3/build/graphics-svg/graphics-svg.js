@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -25,9 +25,9 @@ var IMPLEMENTATION = "svg",
 function SVGDrawing(){}
 
 /**
- * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Drawing.html">`Drawing`</a> class. 
- * `SVGDrawing` is not intended to be used directly. Instead, use the <a href="Drawing.html">`Drawing`</a> class. 
- * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Drawing.html">`Drawing`</a> 
+ * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Drawing.html">`Drawing`</a> class.
+ * `SVGDrawing` is not intended to be used directly. Instead, use the <a href="Drawing.html">`Drawing`</a> class.
+ * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Drawing.html">`Drawing`</a>
  * class will point to the `SVGDrawing` class.
  *
  * @module graphics
@@ -72,7 +72,7 @@ SVGDrawing.prototype = {
      * @private
      */
     _currentY: 0,
-    
+
     /**
      * Indicates the type of shape
      *
@@ -82,7 +82,7 @@ SVGDrawing.prototype = {
      * @type String
      */
     _type: "path",
-   
+
     /**
      * Draws a bezier curve.
      *
@@ -175,7 +175,7 @@ SVGDrawing.prototype = {
             top = Math.min(y, Math.min(cp1y, cp2y));
             w = Math.abs(right - left);
             h = Math.abs(bottom - top);
-            pts = [[this._currentX, this._currentY] , [cp1x, cp1y], [cp2x, cp2y], [x, y]]; 
+            pts = [[this._currentX, this._currentY] , [cp1x, cp1y], [cp2x, cp2y], [x, y]];
             this._setCurveBoundingBox(pts, w, h);
             this._currentX = x;
             this._currentY = y;
@@ -207,7 +207,7 @@ SVGDrawing.prototype = {
     relativeQuadraticCurveTo: function() {
         this._quadraticCurveTo.apply(this, [Y.Array(arguments), true]);
     },
-   
+
     /**
      * Implements quadraticCurveTo methods.
      *
@@ -217,9 +217,9 @@ SVGDrawing.prototype = {
      * @private
      */
     _quadraticCurveTo: function(args, relative) {
-        var cpx, 
-            cpy, 
-            x, 
+        var cpx,
+            cpy,
+            x,
             y,
             pathArrayLen,
             currentArray,
@@ -265,7 +265,7 @@ SVGDrawing.prototype = {
             top = Math.min(y, cpy);
             w = Math.abs(right - left);
             h = Math.abs(bottom - top);
-            pts = [[this._currentX, this._currentY] , [cpx, cpy], [x, y]]; 
+            pts = [[this._currentX, this._currentY] , [cpx, cpy], [x, y]];
             this._setCurveBoundingBox(pts, w, h);
             this._currentX = x;
             this._currentY = y;
@@ -291,7 +291,7 @@ SVGDrawing.prototype = {
 
     /**
      * Draws a rectangle with rounded corners.
-     * 
+     *
      * @method drawRect
      * @param {Number} x x-coordinate
      * @param {Number} y y-coordinate
@@ -313,8 +313,8 @@ SVGDrawing.prototype = {
 	},
 
     /**
-     * Draws a circle.     
-     * 
+     * Draws a circle.
+     *
      * @method drawCircle
      * @param {Number} x y-coordinate
      * @param {Number} y x-coordinate
@@ -334,7 +334,7 @@ SVGDrawing.prototype = {
         this._currentY = y;
         return this;
     },
-   
+
     /**
      * Draws an ellipse.
      *
@@ -361,8 +361,8 @@ SVGDrawing.prototype = {
     },
 
     /**
-     * Draws a diamond.     
-     * 
+     * Draws a diamond.
+     *
      * @method drawDiamond
      * @param {Number} x y-coordinate
      * @param {Number} y x-coordinate
@@ -420,29 +420,29 @@ SVGDrawing.prototype = {
         }
         else
         {
-            currentArray = this._getCurrentArray(); 
+            currentArray = this._getCurrentArray();
         }
         pathArrayLen = this._pathArray.length - 1;
-        this._pathArray[pathArrayLen].push(x); 
-        this._pathArray[pathArrayLen].push(x); 
-        
+        this._pathArray[pathArrayLen].push(x);
+        this._pathArray[pathArrayLen].push(x);
+
         // limit sweep to reasonable numbers
         if(Math.abs(arc) > 360)
         {
             arc = 360;
         }
-        
+
         // First we calculate how many segments are needed
         // for a smooth arc.
         segs = Math.ceil(Math.abs(arc) / 45);
-        
+
         // Now calculate the sweep of each segment.
         segAngle = arc / segs;
-        
+
         // The math requires radians rather than degrees. To convert from degrees
         // use the formula (degrees/180)*Math.PI to get radians.
         theta = -(segAngle / 180) * Math.PI;
-        
+
         // convert angle startAngle to radians
         angle = (startAngle / 180) * Math.PI;
         if(segs > 0)
@@ -455,7 +455,7 @@ SVGDrawing.prototype = {
             this._pathArray[pathArrayLen] = ["L"];
             this._pathArray[pathArrayLen].push(Math.round(ax));
             this._pathArray[pathArrayLen].push(Math.round(ay));
-            pathArrayLen++; 
+            pathArrayLen++;
             this._pathType = "Q";
             this._pathArray[pathArrayLen] = ["Q"];
             for(i = 0; i < segs; ++i)
@@ -474,13 +474,13 @@ SVGDrawing.prototype = {
         }
         this._currentX = x;
         this._currentY = y;
-        this._trackSize(diameter, diameter); 
+        this._trackSize(diameter, diameter);
         return this;
     },
 
     /**
      * Draws a line segment using the current line style from the current drawing position to the specified x and y coordinates.
-     * 
+     *
      * @method lineTo
      * @param {Number} point1 x-coordinate for the end point.
      * @param {Number} point2 y-coordinate for the end point.
@@ -492,7 +492,7 @@ SVGDrawing.prototype = {
 
     /**
      * Draws a line segment using the current line style from the current drawing position to the relative x and y coordinates.
-     * 
+     *
      * @method relativeLineTo
      * @param {Number} point1 x-coordinate for the end point.
      * @param {Number} point2 y-coordinate for the end point.
@@ -616,9 +616,9 @@ SVGDrawing.prototype = {
         this._currentY = y;
         this._trackSize(x, y);
     },
- 
+
     /**
-     * Completes a drawing operation. 
+     * Completes a drawing operation.
      *
      * @method end
      */
@@ -731,7 +731,7 @@ SVGDrawing.prototype = {
             {
                 node.setAttribute("d", path);
             }
-            
+
             this._path = path;
             this._fillChangeHandler();
             this._strokeChangeHandler();
@@ -766,7 +766,7 @@ SVGDrawing.prototype = {
         }
         return currentArray;
     },
-    
+
     /**
      * Returns the points on a curve
      *
@@ -776,7 +776,7 @@ SVGDrawing.prototype = {
      * @return Array
      * @private
      */
-    getBezierData: function(points, t) {  
+    getBezierData: function(points, t) {
         var n = points.length,
             tmp = [],
             i,
@@ -785,16 +785,16 @@ SVGDrawing.prototype = {
         for (i = 0; i < n; ++i){
             tmp[i] = [points[i][0], points[i][1]]; // save input
         }
-        
+
         for (j = 1; j < n; ++j) {
             for (i = 0; i < n - j; ++i) {
                 tmp[i][0] = (1 - t) * tmp[i][0] + t * tmp[parseInt(i + 1, 10)][0];
-                tmp[i][1] = (1 - t) * tmp[i][1] + t * tmp[parseInt(i + 1, 10)][1]; 
+                tmp[i][1] = (1 - t) * tmp[i][1] + t * tmp[parseInt(i + 1, 10)][1];
             }
         }
-        return [ tmp[0][0], tmp[0][1] ]; 
+        return [ tmp[0][0], tmp[0][1] ];
     },
-  
+
     /**
      * Calculates the bounding box for a curve
      *
@@ -829,7 +829,7 @@ SVGDrawing.prototype = {
         this._trackSize(right, bottom);
         this._trackSize(left, top);
     },
-    
+
     /**
      * Updates the size of the graphics object
      *
@@ -844,13 +844,13 @@ SVGDrawing.prototype = {
         }
         if(w < this._left)
         {
-            this._left = w;    
+            this._left = w;
         }
         if (h < this._top)
         {
             this._top = h;
         }
-        if (h > this._bottom) 
+        if (h > this._bottom)
         {
             this._bottom = h;
         }
@@ -860,9 +860,9 @@ SVGDrawing.prototype = {
 };
 Y.SVGDrawing = SVGDrawing;
 /**
- * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Shape.html">`Shape`</a> class. 
- * `SVGShape` is not intended to be used directly. Instead, use the <a href="Shape.html">`Shape`</a> class. 
- * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Shape.html">`Shape`</a> 
+ * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Shape.html">`Shape`</a> class.
+ * `SVGShape` is not intended to be used directly. Instead, use the <a href="Shape.html">`Shape`</a> class.
+ * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Shape.html">`Shape`</a>
  * class will point to the `SVGShape` class.
  *
  * @module graphics
@@ -896,7 +896,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
      * @protected
      */
     _y: 0,
-    
+
     /**
      * Init method, invoked during construction.
      * Calls `initializer` method.
@@ -920,7 +920,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 		var host = this,
             graphic = cfg.graphic,
             data = this.get("data");
-		host.createNode(); 
+		host.createNode();
 		if(graphic)
         {
             host._setGraphic(graphic);
@@ -931,13 +931,14 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
         }
         host._updateHandler();
 	},
- 
+
     /**
      * Set the Graphic instance for the shape.
      *
      * @method _setGraphic
-     * @param {Graphic | Node | HTMLElement | String} render This param is used to determine the graphic instance. If it is a `Graphic` instance, it will be assigned
-     * to the `graphic` attribute. Otherwise, a new Graphic instance will be created and rendered into the dom element that the render represents.
+     * @param {Graphic | Node | HTMLElement | String} render This param is used to determine the graphic instance. If it is a
+     * `Graphic` instance, it will be assigned to the `graphic` attribute. Otherwise, a new Graphic instance will be created
+     * and rendered into the dom element that the render represents.
      * @private
      */
     _setGraphic: function(render)
@@ -945,7 +946,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
         var graphic;
         if(render instanceof Y.SVGGraphic)
         {
-		    this._graphic = render;
+            this._graphic = render;
         }
         else
         {
@@ -962,11 +963,11 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	 * Add a class name to each node.
 	 *
 	 * @method addClass
-	 * @param {String} className the class name to add to the node's class attribute 
+	 * @param {String} className the class name to add to the node's class attribute
 	 */
 	addClass: function(className)
 	{
-		var node = this.node;
+        var node = this.node;
 		node.className.baseVal = Y_LANG.trim([node.className.baseVal, className].join(' '));
 	},
 
@@ -1015,7 +1016,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	},
 
 	/**
-	 * Determines whether the node is an ancestor of another HTML element in the DOM hierarchy. 
+	 * Determines whether the node is an ancestor of another HTML element in the DOM hierarchy.
 	 *
 	 * @method contains
 	 * @param {SVGShape | HTMLElement} needle The possible node or descendent
@@ -1050,7 +1051,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	{
 		return Y.Selector.test(this.node, selector);
 	},
-	
+
 	/**
 	 * Value function for fill attribute
 	 *
@@ -1069,7 +1070,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 			r: 0.5
 		};
 	},
-	
+
 	/**
 	 * Value function for stroke attribute
 	 *
@@ -1077,7 +1078,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	 * @method _getDefaultStroke
 	 * @return Object
 	 */
-	_getDefaultStroke: function() 
+	_getDefaultStroke: function()
 	{
 		return {
 			weight: 1,
@@ -1103,7 +1104,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
             concat = host._camelCaseConcat,
 			pointerEvents = host.get("pointerEvents");
 		host.node = node;
-		host.addClass(_getClassName(SHAPE) + " " + _getClassName(concat(IMPLEMENTATION, SHAPE)) + " " + _getClassName(name) + " " + _getClassName(concat(IMPLEMENTATION, name))); 
+		host.addClass(_getClassName(SHAPE) + " " + _getClassName(concat(IMPLEMENTATION, SHAPE)) + " " + _getClassName(name) + " " + _getClassName(concat(IMPLEMENTATION, name)));
         if(id)
 		{
 			node.setAttribute("id", id);
@@ -1117,10 +1118,10 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
             Y.one(node).setStyle("visibility", "hidden");
         }
 	},
-	
+
 
 	/**
-     * Overrides default `on` method. Checks to see if its a dom interaction event. If so, 
+     * Overrides default `on` method. Checks to see if its a dom interaction event. If so,
      * return an event attached to the `node` element. If not, return the normal functionality.
      *
      * @method on
@@ -1185,7 +1186,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 			node.setAttribute("stroke", "none");
 		}
 	},
-	
+
 	/**
 	 * Adds a fill to the shape node.
 	 *
@@ -1239,7 +1240,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
             newStop,
 			isNumber = Y_LANG.isNumber,
 			graphic = this._graphic,
-			type = fill.type, 
+			type = fill.type,
 			gradientNode = graphic.getGradientNode("grad" + this.get("id"), type),
 			stops = fill.stops,
 			w = this.get("width"),
@@ -1251,9 +1252,9 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 			len,
 			def,
 			stop,
-			x1 = "0%", 
-			x2 = "100%", 
-			y1 = "0%", 
+			x1 = "0%",
+			x2 = "100%",
+			y1 = "0%",
 			y2 = "0%",
 			cx = fill.cx,
 			cy = fill.cy,
@@ -1278,7 +1279,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
                     y2 = 0;
                 }
                 x1 = cx - ((cy - y1)/tanRadians);
-                x2 = cx - ((cy - y2)/tanRadians); 
+                x2 = cx - ((cy - y2)/tanRadians);
             }
             else
             {
@@ -1300,13 +1301,13 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
             x2 = Math.round(100 * x2/w);
             y1 = Math.round(100 * y1/h);
             y2 = Math.round(100 * y2/h);
-            
-            //Set default value if not valid 
+
+            //Set default value if not valid
             x1 = isNumber(x1) ? x1 : 0;
             x2 = isNumber(x2) ? x2 : 100;
             y1 = isNumber(y1) ? y1 : 0;
             y2 = isNumber(y2) ? y2 : 0;
-            
+
             gradientNode.setAttribute("spreadMethod", "pad");
 			gradientNode.setAttribute("width", w);
 			gradientNode.setAttribute("height", h);
@@ -1323,7 +1324,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 			gradientNode.setAttribute("fy", (fy * 100) + "%");
 			gradientNode.setAttribute("r", (r * 100) + "%");
 		}
-		
+
 		len = stops.length;
 		def = 0;
         for(i = 0; i < len; ++i)
@@ -1335,7 +1336,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
             }
             else
             {
-			    stopNode = graphic._createGraphicNode("stop");
+                stopNode = graphic._createGraphicNode("stop");
                 newStop = true;
             }
 			stop = stops[i];
@@ -1368,12 +1369,12 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
      * Sets the value of an attribute.
      *
      * @method set
-     * @param {String|Object} name The name of the attribute. Alternatively, an object of key value pairs can 
+     * @param {String|Object} name The name of the attribute. Alternatively, an object of key value pairs can
      * be passed in to set multiple attributes at once.
-     * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as 
+     * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as
      * the name param.
      */
-	set: function() 
+	set: function()
 	{
 		var host = this;
 		AttributeLite.prototype.set.apply(host, arguments);
@@ -1437,10 +1438,10 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	 * @method skewX
 	 * @param {Number} x x-coordinate
 	 */
-	 skewX: function(x)
-	 {
-		this._addTransform("skewX", arguments);
-	 },
+    skewX: function(x)
+    {
+        this._addTransform("skewX", arguments);
+    },
 
 	/**
 	 * Skews the shape around the y-axis.
@@ -1448,10 +1449,10 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	 * @method skewY
 	 * @param {Number} y y-coordinate
 	 */
-	 skewY: function(y)
-	 {
-		this._addTransform("skewY", arguments);
-	 },
+    skewY: function(y)
+    {
+        this._addTransform("skewY", arguments);
+    },
 
 	/**
 	 * Rotates the shape clockwise around it transformOrigin.
@@ -1459,10 +1460,10 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	 * @method rotate
 	 * @param {Number} deg The degree of the rotation.
 	 */
-	 rotate: function(deg)
-	 {
-		this._addTransform("rotate", arguments);
-	 },
+    rotate: function(deg)
+    {
+        this._addTransform("rotate", arguments);
+    },
 
 	/**
 	 * Specifies a 2d scaling operation.
@@ -1470,10 +1471,10 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	 * @method scale
 	 * @param {Number} val
 	 */
-	scale: function(x, y)
-	{
-		this._addTransform("scale", arguments);
-	},
+    scale: function(x, y)
+    {
+        this._addTransform("scale", arguments);
+    },
 
     /**
      * Adds a transform to the shape.
@@ -1523,11 +1524,11 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
             y = this._y;
             transformOrigin = this.get("transformOrigin");
             tx = x + (transformOrigin[0] * this.get("width"));
-            ty = y + (transformOrigin[1] * this.get("height")); 
+            ty = y + (transformOrigin[1] * this.get("height"));
             //need to use translate for x/y coords
             if(isPath)
             {
-                //adjust origin for custom shapes 
+                //adjust origin for custom shapes
                 if(!(this instanceof Y.SVGPath))
                 {
                     tx = this._left + (transformOrigin[0] * this.get("width"));
@@ -1542,7 +1543,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
                 if(key)
                 {
                     normalizedMatrix[key].apply(normalizedMatrix, this._transforms[i]);
-                    matrix[key].apply(matrix, this._transforms[i]); 
+                    matrix[key].apply(matrix, this._transforms[i]);
                 }
                 if(isPath)
                 {
@@ -1550,14 +1551,14 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
                 }
 			}
             normalizedMatrix.translate(-tx, -ty);
-            transform = "matrix(" + normalizedMatrix.a + "," + 
-                            normalizedMatrix.b + "," + 
-                            normalizedMatrix.c + "," + 
-                            normalizedMatrix.d + "," + 
+            transform = "matrix(" + normalizedMatrix.a + "," +
+                            normalizedMatrix.b + "," +
+                            normalizedMatrix.c + "," +
+                            normalizedMatrix.d + "," +
                             normalizedMatrix.dx + "," +
                             normalizedMatrix.dy + ")";
 		}
-        this._graphic.addToRedrawQueue(this);    
+        this._graphic.addToRedrawQueue(this);
         if(transform)
 		{
             node.setAttribute("transform", transform);
@@ -1598,7 +1599,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	{
 		this._draw();
 	},
-    
+
     /**
      * Storage for the transform attribute.
      *
@@ -1612,7 +1613,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	 * Returns the bounds for a shape.
 	 *
      * Calculates the a new bounding box from the original corner coordinates (base on size and position) and the transform matrix.
-     * The calculated bounding box is used by the graphic instance to calculate its viewBox. 
+     * The calculated bounding box is used by the graphic instance to calculate its viewBox.
      *
 	 * @method getBounds
 	 * @return Object
@@ -1632,7 +1633,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
             {
                 wt = stroke.weight;
             }
-            w = (x + w + wt) - (x - wt); 
+            w = (x + w + wt) - (x - wt);
             h = (y + h + wt) - (y - wt);
             x -= wt;
             y -= wt;
@@ -1682,7 +1683,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
             args,
             commandArray = Y.Lang.trim(val.match(SPLITPATHPATTERN)),
             i,
-            len, 
+            len,
             str,
             symbolToMethod = this._pathSymbolToMethod;
         if(commandArray)
@@ -1748,10 +1749,10 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
         }
     }
  }, Y.SVGDrawing.prototype));
-	
+
 SVGShape.ATTRS = {
 	/**
-	 * An array of x, y values which indicates the transformOrigin in which to rotate the shape. Valid values range between 0 and 1 representing a 
+	 * An array of x, y values which indicates the transformOrigin in which to rotate the shape. Valid values range between 0 and 1 representing a
 	 * fraction of the shape's corresponding bounding box dimension. The default value is [0.5, 0.5].
 	 *
 	 * @config transformOrigin
@@ -1763,10 +1764,10 @@ SVGShape.ATTRS = {
 			return [0.5, 0.5];
 		}
 	},
-	
+
     /**
      * <p>A string containing, in order, transform operations applied to the shape instance. The `transform` string can contain the following values:
-     *     
+     *
      *    <dl>
      *        <dt>rotate</dt><dd>Rotates the shape clockwise around it transformOrigin.</dd>
      *        <dt>translate</dt><dd>Specifies a 2d translation.</dd>
@@ -1776,11 +1777,12 @@ SVGShape.ATTRS = {
      *        <dt>translateY</dt><dd>Translates the shape along the y-axis.</dd>
      *        <dt>skewX</dt><dd>Skews the shape around the x-axis.</dd>
      *        <dt>skewY</dt><dd>Skews the shape around the y-axis.</dd>
-     *        <dt>matrix</dt><dd>Specifies a 2D transformation matrix comprised of the specified six values.</dd>      
+     *        <dt>matrix</dt><dd>Specifies a 2D transformation matrix comprised of the specified six values.</dd>
      *    </dl>
      * </p>
-     * <p>Applying transforms through the transform attribute will reset the transform matrix and apply a new transform. The shape class also contains corresponding methods for each transform
-     * that will apply the transform to the current matrix. The below code illustrates how you might use the `transform` attribute to instantiate a recangle with a rotation of 45 degrees.</p>
+     * <p>Applying transforms through the transform attribute will reset the transform matrix and apply a new transform. The shape class also contains
+     * corresponding methods for each transform that will apply the transform to the current matrix. The below code illustrates how you might use the
+     * `transform` attribute to instantiate a recangle with a rotation of 45 degrees.</p>
             var myRect = new Y.Rect({
                 type:"rect",
                 width: 50,
@@ -1788,17 +1790,17 @@ SVGShape.ATTRS = {
                 transform: "rotate(45)"
             };
      * <p>The code below would apply `translate` and `rotate` to an existing shape.</p>
-    
+
         myRect.set("transform", "translate(40, 50) rotate(45)");
 	 * @config transform
-     * @type String  
+     * @type String
 	 */
 	transform: {
 		setter: function(val)
         {
-            this.matrix.init();	
+            this.matrix.init();
             this._normalizedMatrix.init();
-		    this._transforms = this.matrix.getTransformArray(val);
+            this._transforms = this.matrix.getTransformArray(val);
             this._transform = val;
             return val;
 		},
@@ -1839,7 +1841,7 @@ SVGShape.ATTRS = {
 	 * @type Number
 	 */
 	x: {
-	    getter: function()
+        getter: function()
         {
             return this._x;
         },
@@ -1848,7 +1850,7 @@ SVGShape.ATTRS = {
         {
             var transform = this.get("transform");
             this._x = val;
-            if(transform) 
+            if(transform)
             {
                 this.set("transform", transform);
             }
@@ -1862,7 +1864,7 @@ SVGShape.ATTRS = {
 	 * @type Number
 	 */
 	y: {
-	    getter: function()
+        getter: function()
         {
             return this._y;
         },
@@ -1871,7 +1873,7 @@ SVGShape.ATTRS = {
         {
             var transform = this.get("transform");
             this._y = val;
-            if(transform) 
+            if(transform)
             {
                 this.set("transform", transform);
             }
@@ -1890,7 +1892,7 @@ SVGShape.ATTRS = {
 
 	/**
 	 * Indicates the height of the shape
-	 * 
+	 *
 	 * @config height
 	 * @type Number
 	 */
@@ -1918,7 +1920,7 @@ SVGShape.ATTRS = {
 	},
 
 	/**
-	 * Contains information about the fill of the shape. 
+	 * Contains information about the fill of the shape.
      *  <dl>
      *      <dt>color</dt><dd>The color of the fill.</dd>
      *      <dt>opacity</dt><dd>Number between 0 and 1 that indicates the opacity of the fill. The default value is 1.</dd>
@@ -1935,32 +1937,36 @@ SVGShape.ATTRS = {
      *      <dt>stops</dt><dd>An array of objects containing the following properties:
      *          <dl>
      *              <dt>color</dt><dd>The color of the stop.</dd>
-     *              <dt>opacity</dt><dd>Number between 0 and 1 that indicates the opacity of the stop. The default value is 1. Note: No effect for IE 6 - 8</dd>
-     *              <dt>offset</dt><dd>Number between 0 and 1 indicating where the color stop is positioned.</dd> 
+     *              <dt>opacity</dt><dd>Number between 0 and 1 that indicates the opacity of the stop. The default value is 1.
+     *              Note: No effect for IE 6 - 8</dd>
+     *              <dt>offset</dt><dd>Number between 0 and 1 indicating where the color stop is positioned.</dd>
      *          </dl>
      *      </dd>
      *      <p>Linear gradients also have the following property:</p>
-     *      <dt>rotation</dt><dd>Linear gradients flow left to right by default. The rotation property allows you to change the flow by rotation. (e.g. A rotation of 180 would make the gradient pain from right to left.)</dd>
+     *      <dt>rotation</dt><dd>Linear gradients flow left to right by default. The rotation property allows you to change the
+     *      flow by rotation. (e.g. A rotation of 180 would make the gradient pain from right to left.)</dd>
      *      <p>Radial gradients have the following additional properties:</p>
      *      <dt>r</dt><dd>Radius of the gradient circle.</dd>
      *      <dt>fx</dt><dd>Focal point x-coordinate of the gradient.</dd>
      *      <dt>fy</dt><dd>Focal point y-coordinate of the gradient.</dd>
      *      <dt>cx</dt><dd>
      *          <p>The x-coordinate of the center of the gradient circle. Determines where the color stop begins. The default value 0.5.</p>
-     *          <p><strong>Note: </strong>Currently, this property is not implemented for corresponding `CanvasShape` and `VMLShape` classes which are used on Android or IE 6 - 8.</p>
+     *          <p><strong>Note: </strong>Currently, this property is not implemented for corresponding `CanvasShape` and
+     *          `VMLShape` classes which are used on Android or IE 6 - 8.</p>
      *      </dd>
      *      <dt>cy</dt><dd>
      *          <p>The y-coordinate of the center of the gradient circle. Determines where the color stop begins. The default value 0.5.</p>
-     *          <p><strong>Note: </strong>Currently, this property is not implemented for corresponding `CanvasShape` and `VMLShape` classes which are used on Android or IE 6 - 8.</p>
+     *          <p><strong>Note: </strong>Currently, this property is not implemented for corresponding `CanvasShape` and `VMLShape`
+     *          classes which are used on Android or IE 6 - 8.</p>
      *      </dd>
      *  </dl>
 	 *
 	 * @config fill
-	 * @type Object 
+	 * @type Object
 	 */
 	fill: {
 		valueFn: "_getDefaultFill",
-		
+
 		setter: function(val)
 		{
 			var fill,
@@ -1983,8 +1989,8 @@ SVGShape.ATTRS = {
      *      <dt>color</dt><dd>The color of the stroke.</dd>
      *      <dt>weight</dt><dd>Number that indicates the width of the stroke.</dd>
      *      <dt>opacity</dt><dd>Number between 0 and 1 that indicates the opacity of the stroke. The default value is 1.</dd>
-     *      <dt>dashstyle</dt>Indicates whether to draw a dashed stroke. When set to "none", a solid stroke is drawn. When set to an array, the first index indicates the
-     *  length of the dash. The second index indicates the length of gap.
+     *      <dt>dashstyle</dt>Indicates whether to draw a dashed stroke. When set to "none", a solid stroke is drawn. When set
+     *      to an array, the first index indicates the length of the dash. The second index indicates the length of gap.
      *      <dt>linecap</dt><dd>Specifies the linecap for the stroke. The following values can be specified:
      *          <dl>
      *              <dt>butt (default)</dt><dd>Specifies a butt linecap.</dd>
@@ -1996,8 +2002,8 @@ SVGShape.ATTRS = {
      *          <dl>
      *              <dt>round (default)</dt><dd>Specifies that the linejoin will be round.</dd>
      *              <dt>bevel</dt><dd>Specifies a bevel for the linejoin.</dd>
-     *              <dt>miter limit</dt><dd>An integer specifying the miter limit of a miter linejoin. If you want to specify a linejoin of miter, you simply specify the limit as opposed to having
-     *  separate miter and miter limit values.</dd>
+     *              <dt>miter limit</dt><dd>An integer specifying the miter limit of a miter linejoin. If you want to specify a linejoin
+     *              of miter, you simply specify the limit as opposed to having separate miter and miter limit values.</dd>
      *          </dl>
      *      </dd>
      *  </dl>
@@ -2023,15 +2029,15 @@ SVGShape.ATTRS = {
             return (val) ? Y.merge(tmpl, val) : null;
 		}
 	},
-	
+
 	// Only implemented in SVG
 	// Determines whether the instance will receive mouse events.
-	// 
+	//
 	// @config pointerEvents
 	// @type string
 	//
 	pointerEvents: {
-		valueFn: function() 
+		valueFn: function()
 		{
 			var val = "visiblePainted",
 				node = this.node;
@@ -2063,16 +2069,17 @@ SVGShape.ATTRS = {
 	node: {
 		readOnly: true,
 
-		getter: function()
-		{
-			return this.node;
-		}
+        getter: function()
+        {
+            return this.node;
+        }
 	},
 
     /**
-     * Represents an SVG Path string. This will be parsed and added to shape's API to represent the SVG data across all implementations. Note that when using VML or SVG 
-     * implementations, part of this content will be added to the DOM using respective VML/SVG attributes. If your content comes from an untrusted source, you will need 
-     * to ensure that no malicious code is included in that content. 
+     * Represents an SVG Path string. This will be parsed and added to shape's API to represent the SVG data across all
+     * implementations. Note that when using VML or SVG implementations, part of this content will be added to the DOM using
+     * respective VML/SVG attributes. If your content comes from an untrusted source, you will need to ensure that no
+     * malicious code is included in that content.
      *
      * @config data
      * @type String
@@ -2098,18 +2105,18 @@ SVGShape.ATTRS = {
 	graphic: {
 		readOnly: true,
 
-		getter: function()
-		{
-			return this._graphic;
-		}
+        getter: function()
+        {
+            return this._graphic;
+        }
 	}
 };
 Y.SVGShape = SVGShape;
 
 /**
- * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Path.html">`Path`</a> class. 
- * `SVGPath` is not intended to be used directly. Instead, use the <a href="Path.html">`Path`</a> class. 
- * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Path.html">`Path`</a> 
+ * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Path.html">`Path`</a> class.
+ * `SVGPath` is not intended to be used directly. Instead, use the <a href="Path.html">`Path`</a> class.
+ * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Path.html">`Path`</a>
  * class will point to the `SVGPath` class.
  *
  * @module graphics
@@ -2140,7 +2147,7 @@ Y.extend(SVGPath, Y.SVGShape, {
      * @private
      */
     _right: 0,
-    
+
     /**
      * Top edge of the path
      *
@@ -2148,8 +2155,8 @@ Y.extend(SVGPath, Y.SVGShape, {
      * @type Number
      * @private
      */
-    _top: 0, 
-    
+    _top: 0,
+
     /**
      * Bottom edge of the path
      *
@@ -2198,7 +2205,7 @@ SVGPath.ATTRS = Y.merge(Y.SVGShape.ATTRS, {
 
 	/**
 	 * Indicates the width of the shape
-	 * 
+	 *
 	 * @config width
 	 * @type Number
 	 */
@@ -2212,7 +2219,7 @@ SVGPath.ATTRS = Y.merge(Y.SVGShape.ATTRS, {
 
 	/**
 	 * Indicates the height of the shape
-	 * 
+	 *
 	 * @config height
 	 * @type Number
 	 */
@@ -2225,9 +2232,9 @@ SVGPath.ATTRS = Y.merge(Y.SVGShape.ATTRS, {
 });
 Y.SVGPath = SVGPath;
 /**
- * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Rect.html">`Rect`</a> class. 
- * `SVGRect` is not intended to be used directly. Instead, use the <a href="Rect.html">`Rect`</a> class. 
- * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Rect.html">`Rect`</a> 
+ * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Rect.html">`Rect`</a> class.
+ * `SVGRect` is not intended to be used directly. Instead, use the <a href="Rect.html">`Rect`</a> class.
+ * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Rect.html">`Rect`</a>
  * class will point to the `SVGRect` class.
  *
  * @module graphics
@@ -2252,9 +2259,9 @@ Y.extend(SVGRect, Y.SVGShape, {
 SVGRect.ATTRS = Y.SVGShape.ATTRS;
 Y.SVGRect = SVGRect;
 /**
- * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Ellipse.html">`Ellipse`</a> class. 
- * `SVGEllipse` is not intended to be used directly. Instead, use the <a href="Ellipse.html">`Ellipse`</a> class. 
- * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Ellipse.html">`Ellipse`</a> 
+ * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Ellipse.html">`Ellipse`</a> class.
+ * `SVGEllipse` is not intended to be used directly. Instead, use the <a href="Ellipse.html">`Ellipse`</a> class.
+ * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Ellipse.html">`Ellipse`</a>
  * class will point to the `SVGEllipse` class.
  *
  * @module graphics
@@ -2307,7 +2314,7 @@ Y.extend(SVGEllipse, SVGShape, {
 
 SVGEllipse.ATTRS = Y.merge(SVGShape.ATTRS, {
 	/**
-	 * Horizontal radius for the ellipse. 
+	 * Horizontal radius for the ellipse.
 	 *
 	 * @config xRadius
 	 * @type Number
@@ -2321,7 +2328,7 @@ SVGEllipse.ATTRS = Y.merge(SVGShape.ATTRS, {
 		getter: function()
 		{
 			var val = this.get("width");
-			if(val) 
+			if(val)
 			{
 				val *= 0.5;
 			}
@@ -2330,7 +2337,7 @@ SVGEllipse.ATTRS = Y.merge(SVGShape.ATTRS, {
 	},
 
 	/**
-	 * Vertical radius for the ellipse. 
+	 * Vertical radius for the ellipse.
 	 *
 	 * @config yRadius
 	 * @type Number
@@ -2345,7 +2352,7 @@ SVGEllipse.ATTRS = Y.merge(SVGShape.ATTRS, {
 		getter: function()
 		{
 			var val = this.get("height");
-			if(val) 
+			if(val)
 			{
 				val *= 0.5;
 			}
@@ -2355,9 +2362,9 @@ SVGEllipse.ATTRS = Y.merge(SVGShape.ATTRS, {
 });
 Y.SVGEllipse = SVGEllipse;
 /**
- * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Circle.html">`Circle`</a> class. 
- * `SVGCircle` is not intended to be used directly. Instead, use the <a href="Circle.html">`Circle`</a> class. 
- * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Circle.html">`Circle`</a> 
+ * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Circle.html">`Circle`</a> class.
+ * `SVGCircle` is not intended to be used directly. Instead, use the <a href="Circle.html">`Circle`</a> class.
+ * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Circle.html">`Circle`</a>
  * class will point to the `SVGCircle` class.
  *
  * @module graphics
@@ -2368,11 +2375,11 @@ Y.SVGEllipse = SVGEllipse;
  {
     SVGCircle.superclass.constructor.apply(this, arguments);
  };
-    
+
  SVGCircle.NAME = "circle";
 
- Y.extend(SVGCircle, Y.SVGShape, {    
-    
+ Y.extend(SVGCircle, Y.SVGShape, {
+
     /**
      * Indicates the type of shape
      *
@@ -2404,7 +2411,7 @@ Y.SVGEllipse = SVGEllipse;
         this._updateTransform();
     }
  });
-    
+
 SVGCircle.ATTRS = Y.merge(Y.SVGShape.ATTRS, {
 	/**
 	 * Indicates the width of the shape
@@ -2535,9 +2542,9 @@ SVGPieSlice.ATTRS = Y.mix({
 }, Y.SVGShape.ATTRS);
 Y.SVGPieSlice = SVGPieSlice;
 /**
- * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Graphic.html">`Graphic`</a> class. 
- * `SVGGraphic` is not intended to be used directly. Instead, use the <a href="Graphic.html">`Graphic`</a> class. 
- * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Graphic.html">`Graphic`</a> 
+ * <a href="http://www.w3.org/TR/SVG/">SVG</a> implementation of the <a href="Graphic.html">`Graphic`</a> class.
+ * `SVGGraphic` is not intended to be used directly. Instead, use the <a href="Graphic.html">`Graphic`</a> class.
+ * If the browser has <a href="http://www.w3.org/TR/SVG/">SVG</a> capabilities, the <a href="Graphic.html">`Graphic`</a>
  * class will point to the `SVGGraphic` class.
  *
  * @module graphics
@@ -2552,13 +2559,14 @@ SVGGraphic.NAME = "svgGraphic";
 
 SVGGraphic.ATTRS = {
     /**
-     * Whether or not to render the `Graphic` automatically after to a specified parent node after init. This can be a Node instance or a CSS selector string.
-     * 
+     * Whether or not to render the `Graphic` automatically after to a specified parent node after init. This can be a Node
+     * instance or a CSS selector string.
+     *
      * @config render
-     * @type Node | String 
+     * @type Node | String
      */
     render: {},
-	
+
     /**
 	 * Unique id for class instance.
 	 *
@@ -2602,7 +2610,7 @@ SVGGraphic.ATTRS = {
      *  Object containing size and coordinate data for the content of a Graphic in relation to the coordSpace node.
      *
      *  @config contentBounds
-     *  @type Object 
+     *  @type Object
      *  @readOnly
      */
     contentBounds: {
@@ -2629,9 +2637,9 @@ SVGGraphic.ATTRS = {
             return this._node;
         }
     },
-    
+
 	/**
-	 * Indicates the width of the `Graphic`. 
+	 * Indicates the width of the `Graphic`.
 	 *
 	 * @config width
 	 * @type Number
@@ -2643,14 +2651,14 @@ SVGGraphic.ATTRS = {
             {
                 this._node.style.width = val + "px";
             }
-            return val; 
+            return val;
         }
     },
 
 	/**
-	 * Indicates the height of the `Graphic`. 
+	 * Indicates the height of the `Graphic`.
 	 *
-	 * @config height 
+	 * @config height
 	 * @type Number
 	 */
     height: {
@@ -2665,15 +2673,18 @@ SVGGraphic.ATTRS = {
     },
 
     /**
-     *  Determines the sizing of the Graphic. 
+     *  Determines the sizing of the Graphic.
      *
      *  <dl>
-     *      <dt>sizeContentToGraphic</dt><dd>The Graphic's width and height attributes are, either explicitly set through the <code>width</code> and <code>height</code>
-     *      attributes or are determined by the dimensions of the parent element. The content contained in the Graphic will be sized to fit with in the Graphic instance's 
-     *      dimensions. When using this setting, the <code>preserveAspectRatio</code> attribute will determine how the contents are sized.</dd>
-     *      <dt>sizeGraphicToContent</dt><dd>(Also accepts a value of true) The Graphic's width and height are determined by the size and positioning of the content.</dd>
-     *      <dt>false</dt><dd>The Graphic's width and height attributes are, either explicitly set through the <code>width</code> and <code>height</code>
-     *      attributes or are determined by the dimensions of the parent element. The contents of the Graphic instance are not affected by this setting.</dd>
+     *      <dt>sizeContentToGraphic</dt><dd>The Graphic's width and height attributes are, either explicitly set through the
+     *      <code>width</code> and <code>height</code> attributes or are determined by the dimensions of the parent element. The
+     *      content contained in the Graphic will be sized to fit with in the Graphic instance's dimensions. When using this
+     *      setting, the <code>preserveAspectRatio</code> attribute will determine how the contents are sized.</dd>
+     *      <dt>sizeGraphicToContent</dt><dd>(Also accepts a value of true) The Graphic's width and height are determined by the
+     *      size and positioning of the content.</dd>
+     *      <dt>false</dt><dd>The Graphic's width and height attributes are, either explicitly set through the <code>width</code>
+     *      and <code>height</code> attributes or are determined by the dimensions of the parent element. The contents of the
+     *      Graphic instance are not affected by this setting.</dd>
      *  </dl>
      *
      *
@@ -2684,12 +2695,12 @@ SVGGraphic.ATTRS = {
     autoSize: {
         value: false
     },
-    
+
     /**
      * Determines how content is sized when <code>autoSize</code> is set to <code>sizeContentToGraphic</code>.
      *
      *  <dl>
-     *      <dt>none<dt><dd>Do not force uniform scaling. Scale the graphic content of the given element non-uniformly if necessary 
+     *      <dt>none<dt><dd>Do not force uniform scaling. Scale the graphic content of the given element non-uniformly if necessary
      *      such that the element's bounding box exactly matches the viewport rectangle.</dd>
      *      <dt>xMinYMin</dt><dd>Force uniform scaling position along the top left of the Graphic's node.</dd>
      *      <dt>xMidYMin</dt><dd>Force uniform scaling horizontally centered and positioned at the top of the Graphic's node.<dd>
@@ -2701,7 +2712,7 @@ SVGGraphic.ATTRS = {
      *      <dt>xMidYMax</dt><dd>Force uniform scaling horizontally centered and position vertically from the bottom.</dd>
      *      <dt>xMaxYMax</dt><dd>Force uniform scaling positioned horizontally from the right and vertically from the bottom.</dd>
      *  </dl>
-     * 
+     *
      * @config preserveAspectRatio
      * @type String
      * @default xMidYMid
@@ -2709,12 +2720,12 @@ SVGGraphic.ATTRS = {
     preserveAspectRatio: {
         value: "xMidYMid"
     },
-    
+
     /**
      * The contentBounds will resize to greater values but not to smaller values. (for performance)
      * When resizing the contentBounds down is desirable, set the resizeDown value to true.
      *
-     * @config resizeDown 
+     * @config resizeDown
      * @type Boolean
      */
     resizeDown: {
@@ -2779,7 +2790,7 @@ SVGGraphic.ATTRS = {
     autoDraw: {
         value: true
     },
-    
+
     visible: {
         value: true,
 
@@ -2806,12 +2817,12 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
      * Sets the value of an attribute.
      *
      * @method set
-     * @param {String|Object} name The name of the attribute. Alternatively, an object of key value pairs can 
+     * @param {String|Object} name The name of the attribute. Alternatively, an object of key value pairs can
      * be passed in to set multiple attributes at once.
-     * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as 
+     * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as
      * the name param.
      */
-	set: function(attr, value) 
+	set: function(attr, value)
 	{
 		var host = this,
             redrawAttrs = {
@@ -2822,7 +2833,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
             },
             key,
             forceRedraw = false;
-		AttributeLite.prototype.set.apply(host, arguments);	
+		AttributeLite.prototype.set.apply(host, arguments);
         if(host._state.autoDraw === true && Y.Object.size(this._shapes) > 0)
         {
             if(Y_LANG.isString && redrawAttrs[attr])
@@ -2916,7 +2927,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
 
     /**
      * Adds the graphics node to the dom.
-     * 
+     *
      * @method render
      * @param {HTMLElement} parentNode node in which to render the graphics node into.
      */
@@ -2988,7 +2999,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
     {
         var node = shape.node,
             parentNode = this._frag || this._contentNode;
-        if(this.get("autoDraw")) 
+        if(this.get("autoDraw"))
         {
             parentNode.appendChild(node);
         }
@@ -3018,7 +3029,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
             shape._destroy();
             delete this._shapes[shape.get("id")];
         }
-        if(this.get("autoDraw")) 
+        if(this.get("autoDraw"))
         {
             this._redraw();
         }
@@ -3043,7 +3054,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
         }
         this._shapes = {};
     },
-    
+
     /**
      * Removes all child nodes.
      *
@@ -3107,11 +3118,11 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
     },
 
     /**
-     * Returns a shape class. Used by `addShape`. 
+     * Returns a shape class. Used by `addShape`.
      *
      * @method _getShapeClass
-     * @param {Shape | String} val Indicates which shape class. 
-     * @return Function 
+     * @param {Shape | String} val Indicates which shape class.
+     * @return Function
      * @private
      */
     _getShapeClass: function(val)
@@ -3138,7 +3149,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
         ellipse: Y.SVGEllipse,
         pieslice: Y.SVGPieSlice
     },
-    
+
     /**
      * Returns a shape based on the id of its dom node.
      *
@@ -3165,7 +3176,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
         method();
         this.set("autoDraw", autoDraw);
     },
-    
+
     /**
      * Returns a document fragment to for attaching shapes.
      *
@@ -3214,7 +3225,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
                 computedLeft = computedTop = 0;
                 this._contentNode.setAttribute("preserveAspectRatio", preserveAspectRatio);
             }
-            else 
+            else
             {
                 computedWidth = width;
                 computedHeight = height;
@@ -3253,11 +3264,11 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
                 this._contentNode.appendChild(this._frag);
             }
             this._frag = null;
-        } 
+        }
     },
- 
+
     /**
-     * Adds a shape to the redraw queue and calculates the contentBounds. Used internally 
+     * Adds a shape to the redraw queue and calculates the contentBounds. Used internally
      * by `Shape` instances.
      *
      * @method addToRedrawQueue
@@ -3281,7 +3292,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
             box.height = box.bottom - box.top;
             this._contentBounds = box;
         }
-        if(this.get("autoDraw")) 
+        if(this.get("autoDraw"))
         {
             this._redraw();
         }
@@ -3291,7 +3302,7 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
      * Recalculates and returns the `contentBounds` for the `Graphic` instance.
      *
      * @method _getUpdatedContentBounds
-     * @return {Object} 
+     * @return {Object}
      * @private
      */
     _getUpdatedContentBounds: function()
@@ -3451,4 +3462,4 @@ Y.SVGGraphic = SVGGraphic;
 
 
 
-}, '3.7.2', {"requires": ["graphics"]});
+}, '3.8.0', {"requires": ["graphics"]});

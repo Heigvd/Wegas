@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -19,7 +19,7 @@ YUI.add('json-parse', function (Y, NAME) {
  *
  * <p>The <code>json</code> module is a rollup of <code>json-parse</code> and
  * <code>json-stringify</code>.</p>
- * 
+ *
  * <p>As their names suggest, <code>json-parse</code> adds support for parsing
  * JSON data (Y.JSON.parse) and <code>json-stringify</code> for serializing
  * JavaScript data into JSON strings (Y.JSON.stringify).  You may choose to
@@ -45,7 +45,8 @@ YUI.add('json-parse', function (Y, NAME) {
 
 // All internals kept private for security reasons
 function fromGlobal(ref) {
-    return (Y.config.win || this || {})[ref];
+    var g = ((typeof global === 'object') ? global : undefined);
+    return ((Y.UA.nodejs && g) ? g : (Y.config.win || {}))[ref];
 }
 
 
@@ -115,7 +116,7 @@ var _JSON  = fromGlobal('JSON'),
      * @private
      */
     _UNSAFE = /[^\],:{}\s]/,
-    
+
     /**
      * Replaces specific unicode characters with their appropriate \unnnn
      * format. Some browsers ignore certain characters during eval.
@@ -181,7 +182,7 @@ var _JSON  = fromGlobal('JSON'),
         // incorrectly by some browser implementations.
         // NOTE: This modifies the input if such characters are found!
         s = s.replace(_UNICODE_EXCEPTIONS, _escapeException);
-        
+
         // Test for any remaining invalid characters
         if (!_UNSAFE.test(s.replace(_ESCAPES,'@').
                             replace(_VALUES,']').
@@ -194,7 +195,7 @@ var _JSON  = fromGlobal('JSON'),
 
         throw new SyntaxError('JSON.parse');
     };
-    
+
 Y.namespace('JSON').parse = function (s,reviver) {
         if (typeof s !== 'string') {
             s += '';
@@ -233,4 +234,4 @@ if ( Native ) {
 Y.JSON.useNativeParse = useNative;
 
 
-}, '3.7.2', {"requires": ["yui-base"]});
+}, '3.8.0', {"requires": ["yui-base"]});

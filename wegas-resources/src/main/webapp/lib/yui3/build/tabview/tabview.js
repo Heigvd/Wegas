@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -404,4 +404,14 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
 });
 
 
-}, '3.7.2', {"requires": ["widget", "widget-parent", "widget-child", "tabview-base", "node-pluginhost", "node-focusmanager"], "skinnable": true});
+}, '3.8.0', {
+    "requires": [
+        "widget",
+        "widget-parent",
+        "widget-child",
+        "tabview-base",
+        "node-pluginhost",
+        "node-focusmanager"
+    ],
+    "skinnable": true
+});

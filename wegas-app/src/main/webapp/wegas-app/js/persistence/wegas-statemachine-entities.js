@@ -281,7 +281,7 @@ Y.add("wegas-statemachine-entities", function (Y) {
      * State Entity
      */
     Y.Wegas.persistence.State = Y.Base.create("State", Y.Wegas.persistence.Entity, [], {
-// *** Lifecycle methods *** //
+        // *** Lifecycle methods *** //
         initializer: function () {
         }
 
@@ -446,8 +446,8 @@ Y.add("wegas-statemachine-entities", function (Y) {
                     return false;
                 }
                 request = "/StateMachine/" + this.get("id")
-                        + "/Player/" + Y.Wegas.app.get("currentPlayer")
-                        + "/Do/" + transition.get("id");
+                + "/Player/" + Y.Wegas.app.get("currentPlayer")
+                + "/Do/" + transition.get("id");
                 try {
                     Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                         request: request,
@@ -461,7 +461,7 @@ Y.add("wegas-statemachine-entities", function (Y) {
                         on: callbacks
                     });
                 } catch (e) {
-//TODO : that           
+                //TODO : that
                 }
                 return true;
 
@@ -485,26 +485,26 @@ Y.add("wegas-statemachine-entities", function (Y) {
          * @param {Integer} id The dialogue's id
          * @return {String} an url to GET.
          */
-        getTriggerURL: function (id) {
-            return Y.Wegas.app.get("base") + "rest/GameMode/" +
-            Y.Wegas.app.get("currentGame")
-            + "/VariableDescriptor/StateMachine/" + id
-            + "/Player/" + Y.Wegas.app.get("currentPlayer")
-            + "/Do/" + this.get("id");
-        }
-    }, {
-        ATTRS: {
-            "@class": {
-                value: "DialogueTransition"
-            },
-            actionText: {
-                value: null,
-                validator: function (s) {
-                    return s === null || Y.Lang.isString(s);
+        //getTriggerURL: function (id) {
+        //    return Y.Wegas.app.get("base") + "rest/GameModel/" +
+        //    Y.Wegas.app.get("currentGame")
+        //    + "/VariableDescriptor/StateMachine/" + id
+        //    + "/Player/" + Y.Wegas.app.get("currentPlayer")
+        //    + "/Do/" + this.get("id");
+        //}
+        }, {
+            ATTRS: {
+                "@class": {
+                    value: "DialogueTransition"
+                },
+                actionText: {
+                    value: null,
+                    validator: function (s) {
+                        return s === null || Y.Lang.isString(s);
+                    }
                 }
             }
-        }
-    });
+        });
     /**
      * DialogueState Entity
      */

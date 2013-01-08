@@ -29,8 +29,14 @@ import javax.ws.rs.core.MediaType;
 @Path("/")
 public class PublicGameController {
 
+    /**
+     *
+     */
     @EJB
     private GameFacade gameFacade;
+    /**
+     *
+     */
     @EJB
     private UserFacade userFacade;
 
@@ -49,7 +55,7 @@ public class PublicGameController {
     @GET
     @Path("RegisteredGames/{userId : [1-9][0-9]*}/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<Game> index(@PathParam("userId") Long userId) {
+    public Collection<Game> registeredGames(@PathParam("userId") Long userId) {
         return (Collection) userFacade.registeredGames(userId);
     }
 }

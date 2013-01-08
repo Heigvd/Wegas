@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -36,13 +36,17 @@ Y.mix(Y.namespace("XML"), {
             }
             catch(ee) {
                 try {
-                    if(!LANG.isUndefined(DOMParser)) {
+                    if (!LANG.isUndefined(DOMParser)) {
                         xmlDoc = new DOMParser().parseFromString(data, "text/xml");
+                    }
+                    if (!LANG.isUndefined(Windows.Data.Xml.Dom)) {
+                        xmlDoc = new Windows.Data.Xml.Dom.XmlDocument();
+                        xmlDoc.loadXml(data);
                     }
                 }
                 catch(e) {
                 }
-                    Y.log(ee.message + " (Could not parse data to type XML Document)", "warn", "xml");
+                    Y.log(ee.message + " (Could not initialize the ActiveX control for XML parsing)", "warn", "xml");
             }
         }
         
@@ -61,4 +65,4 @@ Y.namespace("DataType");
 Y.DataType.XML = Y.XML;
 
 
-}, '3.7.2');
+}, '3.8.0');

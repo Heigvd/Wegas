@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -89,7 +89,7 @@ Y.extend(DataSourceXMLSchema, Y.Plugin.Base, {
         var schema = this.get('schema'),
             payload = e.details[0],
             // TODO: Do I need to sniff for DS.IO + responseXML.nodeType 9?
-            data = e.data.responseXML || e.data;
+            data = Y.XML.parse(e.data.responseText) || e.data;
 
         payload.response = Y.DataSchema.XML.apply.call(this, schema, data) || {
             meta: {},
@@ -105,4 +105,4 @@ Y.extend(DataSourceXMLSchema, Y.Plugin.Base, {
 Y.namespace('Plugin').DataSourceXMLSchema = DataSourceXMLSchema;
 
 
-}, '3.7.2', {"requires": ["datasource-local", "plugin", "dataschema-xml"]});
+}, '3.8.0', {"requires": ["datasource-local", "plugin", "datatype-xml", "dataschema-xml"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1541,4 +1541,15 @@ AutoCompleteBase.UI_SRC = (Y.Widget && Y.Widget.UI_SRC) || 'ui';
 Y.AutoCompleteBase = AutoCompleteBase;
 
 
-}, '3.7.2', {"optional": ["autocomplete-sources"], "requires": ["array-extras", "base-build", "escape", "event-valuechange", "node-base"]});
+}, '3.8.0', {
+    "optional": [
+        "autocomplete-sources"
+    ],
+    "requires": [
+        "array-extras",
+        "base-build",
+        "escape",
+        "event-valuechange",
+        "node-base"
+    ]
+});

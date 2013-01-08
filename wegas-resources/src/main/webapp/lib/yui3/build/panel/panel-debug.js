@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -102,4 +102,17 @@ Y.Panel = Y.Base.create('panel', Y.Widget, [
 });
 
 
-}, '3.7.2', {"requires": ["widget", "widget-autohide", "widget-buttons", "widget-modality", "widget-position", "widget-position-align", "widget-position-constrain", "widget-stack", "widget-stdmod"], "skinnable": true});
+}, '3.8.0', {
+    "requires": [
+        "widget",
+        "widget-autohide",
+        "widget-buttons",
+        "widget-modality",
+        "widget-position",
+        "widget-position-align",
+        "widget-position-constrain",
+        "widget-stack",
+        "widget-stdmod"
+    ],
+    "skinnable": true
+});

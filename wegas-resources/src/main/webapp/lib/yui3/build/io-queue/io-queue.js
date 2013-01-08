@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -27,6 +27,7 @@ Y.mix(Y.IO.prototype, {
     _q: new Y.Queue(),
     _qActiveId: null,
     _qInit: false,
+
    /**
     * Property to determine whether the queue is set to
     * 1 (active) or 0 (inactive).  When inactive, transactions
@@ -111,6 +112,18 @@ Y.mix(Y.IO.prototype, {
         this._q.remove(o);
     },
 
+   /**
+    * Method for cancel all pending transaction from
+    * the queue.
+    *
+    * @method empty
+    * @static
+    * @since 3.7.3
+    */
+    qEmpty: function() {
+        this._q = new Y.Queue();
+    },
+
     qStart: function() {
         var io = this;
         io._qState = 1;
@@ -156,7 +169,8 @@ _queue.stop = function () { io.qStop(); };
 _queue.promote = function (o) { io.qPromote(o); };
 _queue.remove = function (o) { io.qRemove(o); };
 _queue.size = function () { io.qSize(); };
+_queue.empty = function () { io.qEmpty(); };
 Y.io.queue = _queue;
 
 
-}, '3.7.2', {"requires": ["io-base", "queue-promote"]});
+}, '3.8.0', {"requires": ["io-base", "queue-promote"]});
