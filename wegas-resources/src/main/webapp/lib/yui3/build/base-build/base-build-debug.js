@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -8,23 +8,62 @@ YUI.add('base-build', function (Y, NAME) {
 
     /**
      * The base-build submodule provides Base.build functionality, which
-     * can be used to create custom classes, by aggregating extensions onto 
+     * can be used to create custom classes, by aggregating extensions onto
      * a main class.
      *
      * @module base
      * @submodule base-build
      * @for Base
      */
-    var Base = Y.Base,
-        L = Y.Lang,
+    var BaseCore = Y.BaseCore,
+        Base     = Y.Base,
+        L        = Y.Lang,
+
         INITIALIZER = "initializer",
-        DESTRUCTOR = "destructor",
-        build,
-        arrayAggregator = function (prop, r, s) {
-            if (s[prop]) {
-                r[prop] = (r[prop] || []).concat(s[prop]);
-            }    
-        };
+        DESTRUCTOR  = "destructor",
+        AGGREGATES  = ["_PLUG", "_UNPLUG"],
+
+        build;
+
+    // Utility function used in `_buildCfg` to aggregate array values into a new
+    // array from the sender constructor to the reciver constructor.
+    function arrayAggregator(prop, r, s) {
+        if (s[prop]) {
+            r[prop] = (r[prop] || []).concat(s[prop]);
+        }
+    }
+
+    // Utility function used in `_buildCfg` to aggregate `_ATTR_CFG` array
+    // values from the sender constructor into a new array on reciver's
+    // constructor, and clear the cached hash.
+    function attrCfgAggregator(prop, r, s) {
+        if (s._ATTR_CFG) {
+            arrayAggregator.apply(null, arguments);
+
+            // Clear cached hash.
+            r._ATTR_CFG_HASH = null;
+        }
+    }
+
+    // Utility function used in `_buildCfg` to aggregate ATTRS configs from one
+    // the sender constructor to the reciver constructor.
+    function attrsAggregator(prop, r, s) {
+        var sAttrs, rAttrs, a;
+
+        r.ATTRS = r.ATTRS || {};
+
+        if (s.ATTRS) {
+            sAttrs = s.ATTRS;
+            rAttrs = r.ATTRS;
+
+            for (a in sAttrs) {
+                if (sAttrs.hasOwnProperty(a)) {
+                    rAttrs[a] = rAttrs[a] || {};
+                    Y.mix(rAttrs[a], sAttrs[a], true);
+                }
+            }
+        }
+    }
 
     Base._build = function(name, main, extensions, px, sx, cfg) {
 
@@ -46,7 +85,7 @@ YUI.add('base-build', function (Y, NAME) {
             extClass = extensions[i];
 
             extProto = extClass.prototype;
-            
+
             initializer = extProto[INITIALIZER];
             destructor = extProto[DESTRUCTOR];
             delete extProto[INITIALIZER];
@@ -58,7 +97,7 @@ YUI.add('base-build', function (Y, NAME) {
             // Custom Statics
             _mixCust(builtClass, extClass, buildCfg);
 
-            if (initializer) { 
+            if (initializer) {
                 extProto[INITIALIZER] = initializer;
             }
 
@@ -93,14 +132,14 @@ YUI.add('base-build', function (Y, NAME) {
     Y.mix(build, {
 
         _mixCust: function(r, s, cfg) {
-            
-            var aggregates, 
-                custom, 
+
+            var aggregates,
+                custom,
                 statics,
                 aggr,
                 l,
                 i;
-                
+
             if (cfg) {
                 aggregates = cfg.aggregates;
                 custom = cfg.custom;
@@ -128,7 +167,7 @@ YUI.add('base-build', function (Y, NAME) {
                     }
                 }
             }
-            
+
         },
 
         _tmpl: function(main) {
@@ -148,7 +187,7 @@ YUI.add('base-build', function (Y, NAME) {
                 if (cls._yuibuild) {
                     exts = cls._yuibuild.exts;
                     ll = exts.length;
-    
+
                     for (j = 0; j < ll; j++) {
                         if (exts[j] === extClass) {
                             return true;
@@ -177,7 +216,7 @@ YUI.add('base-build', function (Y, NAME) {
         },
 
         _cfg : function(main, cfg, exts) {
-            var aggr = [], 
+            var aggr = [],
                 cust = {},
                 statics = [],
                 buildCfg,
@@ -185,7 +224,7 @@ YUI.add('base-build', function (Y, NAME) {
                 cfgCustBuild = (cfg && cfg.custom),
                 cfgStatics = (cfg && cfg.statics),
                 c = main,
-                i, 
+                i,
                 l;
 
             // Prototype Chain
@@ -220,7 +259,7 @@ YUI.add('base-build', function (Y, NAME) {
                         if (buildCfg.statics) {
                             statics = statics.concat(buildCfg.statics);
                         }
-                    }                    
+                    }
                 }
             }
 
@@ -269,7 +308,7 @@ YUI.add('base-build', function (Y, NAME) {
      * <p>
      * Builds a custom constructor function (class) from the
      * main function, and array of extension functions (classes)
-     * provided. The NAME field for the constructor function is 
+     * provided. The NAME field for the constructor function is
      * defined by the first argument passed in.
      * </p>
      * <p>
@@ -279,14 +318,14 @@ YUI.add('base-build', function (Y, NAME) {
      *    <dt>dynamic &#60;boolean&#62;</dt>
      *    <dd>
      *    <p>If true (default), a completely new class
-     *    is created which extends the main class, and acts as the 
+     *    is created which extends the main class, and acts as the
      *    host on which the extension classes are augmented.</p>
      *    <p>If false, the extensions classes are augmented directly to
      *    the main class, modifying the main class' prototype.</p>
      *    </dd>
      *    <dt>aggregates &#60;String[]&#62;</dt>
      *    <dd>An array of static property names, which will get aggregated
-     *    on to the built class, in addition to the default properties build 
+     *    on to the built class, in addition to the default properties build
      *    will always aggregate as defined by the main class' static _buildCfg
      *    property.
      *    </dd>
@@ -307,41 +346,41 @@ YUI.add('base-build', function (Y, NAME) {
     };
 
     /**
-     * Creates a new class (constructor function) which extends the base class passed in as the second argument, 
+     * Creates a new class (constructor function) which extends the base class passed in as the second argument,
      * and mixes in the array of extensions provided.
-     * 
+     *
      * Prototype properties or methods can be added to the new class, using the px argument (similar to Y.extend).
-     * 
+     *
      * Static properties or methods can be added to the new class, using the sx argument (similar to Y.extend).
-     * 
-     * **NOTE FOR COMPONENT DEVELOPERS**: Both the `base` class, and `extensions` can define static a `_buildCfg` 
-     * property, which acts as class creation meta-data, and drives how special static properties from the base 
+     *
+     * **NOTE FOR COMPONENT DEVELOPERS**: Both the `base` class, and `extensions` can define static a `_buildCfg`
+     * property, which acts as class creation meta-data, and drives how special static properties from the base
      * class, or extensions should be copied, aggregated or (custom) mixed into the newly created class.
-     * 
+     *
      * The `_buildCfg` property is a hash with 3 supported properties: `statics`, `aggregates` and `custom`, e.g:
-     * 
+     *
      *     // If the Base/Main class is the thing introducing the property:
-     * 
+     *
      *     MyBaseClass._buildCfg = {
-     *     
+     *
      *        // Static properties/methods to copy (Alias) to the built class.
      *        statics: ["CopyThisMethod", "CopyThisProperty"],
-     * 
+     *
      *        // Static props to aggregate onto the built class.
      *        aggregates: ["AggregateThisProperty"],
-     * 
+     *
      *        // Static properties which need custom handling (e.g. deep merge etc.)
      *        custom: {
      *           "CustomProperty" : function(property, Receiver, Supplier) {
      *              ...
-     *              var triggers = Receiver.CustomProperty.triggers; 
+     *              var triggers = Receiver.CustomProperty.triggers;
                     Receiver.CustomProperty.triggers = triggers.concat(Supplier.CustomProperty.triggers);
      *              ...
      *           }
      *        }
      *     };
-     * 
-     *     MyBaseClass.CopyThisMethod = function() {...}; 
+     *
+     *     MyBaseClass.CopyThisMethod = function() {...};
      *     MyBaseClass.CopyThisProperty = "foo";
      *     MyBaseClass.AggregateThisProperty = {...};
      *     MyBaseClass.CustomProperty = {
@@ -349,16 +388,16 @@ YUI.add('base-build', function (Y, NAME) {
      *     }
      *
      *     // Or, if the Extension is the thing introducing the property:
-     * 
+     *
      *     MyExtension._buildCfg = {
      *         statics : ...
      *         aggregates : ...
-     *         custom : ...  
-     *     }    
-     * 
+     *         custom : ...
+     *     }
+     *
      * This way, when users pass your base or extension class to `Y.Base.create` or `Y.Base.mix`, they don't need to
      * know which properties need special handling. `Y.Base` has a buildCfg which defines `ATTRS` for custom mix handling
-     * (to protect the static config objects), and `Y.Widget` has a buildCfg which specifies `HTML_PARSER` for 
+     * (to protect the static config objects), and `Y.Widget` has a buildCfg which specifies `HTML_PARSER` for
      * straight up aggregation.
      *
      * @method create
@@ -389,9 +428,9 @@ YUI.add('base-build', function (Y, NAME) {
     /**
      * The build configuration for the Base class.
      *
-     * Defines the static fields which need to be aggregated
-     * when the Base class is used as the main class passed to
-     * the <a href="#method_Base.build">Base.build</a> method.
+     * Defines the static fields which need to be aggregated when the Base class
+     * is used as the main class passed to the
+     * <a href="#method_Base.build">Base.build</a> method.
      *
      * @property _buildCfg
      * @type Object
@@ -399,30 +438,26 @@ YUI.add('base-build', function (Y, NAME) {
      * @final
      * @private
      */
-    Base._buildCfg = {
-        custom : {
-            ATTRS : function(prop, r, s) {
-
-                r.ATTRS = r.ATTRS || {};
-
-                if (s.ATTRS) {
-
-                    var sAttrs = s.ATTRS,
-                        rAttrs = r.ATTRS,
-                        a;
-
-                    for (a in sAttrs) {
-                        if (sAttrs.hasOwnProperty(a)) {
-                            rAttrs[a] = rAttrs[a] || {};
-                            Y.mix(rAttrs[a], sAttrs[a], true);
-                        }
-                    }
-                }
-            },
-            _NON_ATTRS_CFG : arrayAggregator
+    BaseCore._buildCfg = {
+        custom: {
+            ATTRS         : attrsAggregator,
+            _ATTR_CFG     : attrCfgAggregator,
+            _NON_ATTRS_CFG: arrayAggregator
         },
-        aggregates : ["_PLUG", "_UNPLUG"]
+
+        aggregates: AGGREGATES.concat()
+    };
+
+    // Makes sure Base and BaseCore use separate `_buildCfg` objects.
+    Base._buildCfg = {
+        custom: {
+            ATTRS         : attrsAggregator,
+            _ATTR_CFG     : attrCfgAggregator,
+            _NON_ATTRS_CFG: arrayAggregator
+        },
+
+        aggregates: AGGREGATES.concat()
     };
 
 
-}, '3.7.2', {"requires": ["base-base"]});
+}, '3.8.0', {"requires": ["base-base"]});

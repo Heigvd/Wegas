@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -441,4 +441,4 @@ YUI.add('widget-stack', function (Y, NAME) {
     Y.WidgetStack = Stack;
 
 
-}, '3.7.2', {"requires": ["base-build", "widget"], "skinnable": true});
+}, '3.8.0', {"requires": ["base-build", "widget"], "skinnable": true});

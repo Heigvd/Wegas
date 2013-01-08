@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -276,9 +276,6 @@ Y.Handlebars = Handlebars;
 
 Handlebars.VERSION += '-yui';
 
-// The rest of this file is just API docs for methods defined in Handlebars
-// itself.
-
 /**
 Registers a helper function that will be made available to all templates.
 
@@ -357,5 +354,11 @@ Converts a precompiled template into a renderable template function.
 @return {Function} Compiled template function.
 */
 
+// Alias for Y.Handlebars.template(), used by Y.Template.
+Handlebars.revive = Handlebars.template;
 
-}, '3.7.2', {"requires": ["escape"]});
+// Make Y.Template.Handlebars an alias for Y.Handlebars.
+Y.namespace('Template').Handlebars = Handlebars;
+
+
+}, '3.8.0', {"requires": ["escape"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -169,4 +169,4 @@ Y.mix(DataSourceCache, {
 Y.namespace("Plugin").DataSourceCache = DataSourceCache;
 
 
-}, '3.7.2', {"requires": ["datasource-local", "plugin", "cache-base"]});
+}, '3.8.0', {"requires": ["datasource-local", "plugin", "cache-base"]});

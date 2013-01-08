@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -633,4 +633,4 @@ Fired by the `moveColumn` method.
 
 
 
-}, '3.7.2', {"requires": ["datatable-base"]});
+}, '3.8.0', {"requires": ["datatable-base"]});

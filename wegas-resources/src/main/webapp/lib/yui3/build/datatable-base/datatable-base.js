@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -686,4 +686,14 @@ Y.DataTable = Y.mix(
     Y.DataTable); // Migrate static and namespaced classes
 
 
-}, '3.7.2', {"requires": ["datatable-core", "datatable-table", "datatable-head", "datatable-body", "base-build", "widget"], "skinnable": true});
+}, '3.8.0', {
+    "requires": [
+        "datatable-core",
+        "datatable-table",
+        "datatable-head",
+        "datatable-body",
+        "base-build",
+        "widget"
+    ],
+    "skinnable": true
+});

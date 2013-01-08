@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -25,6 +25,15 @@ YUI.add('querystring-parse', function (Y, NAME) {
  * @module querystring
  * @main querystring
 */
+
+/**
+ * Provides Y.QueryString.parse method to accept Query Strings and return native
+ * JavaScript objects.
+ *
+ * @module querystring
+ * @submodule querystring-parse
+*/
+
 /**
  * The QueryString module adds support for serializing JavaScript objects into
  * query strings and parsing JavaScript objects from query strings format.
@@ -116,12 +125,8 @@ mergeObjects = function(params, addition) {
 };
 
 /**
- * Provides Y.QueryString.parse method to accept Query Strings and return native
- * JavaScript objects.
+ * Accept Query Strings and return native JavaScript objects.
  *
- * @module querystring
- * @submodule querystring-parse
- * @for QueryString
  * @method parse
  * @param qs {String} Querystring to be parsed into an object.
  * @param sep {String} (optional) Character that should join param k=v pairs together. Default: "&"
@@ -147,9 +152,7 @@ QueryString.parse = function (qs, sep, eq) {
  * the delimiters would not normally be handled properly by the builtin
  * (en|de)codeURIComponent functions.
  * Default: replace "+" with " ", and then decodeURIComponent behavior.
- * @module querystring
- * @submodule querystring-parse
- * @for QueryString
+ *
  * @method unescape
  * @param s {String} String to be decoded.
  * @public
@@ -162,4 +165,4 @@ QueryString.unescape = function (s) {
 
 
 
-}, '3.7.2', {"requires": ["yui-base", "array-extras"]});
+}, '3.8.0', {"requires": ["yui-base", "array-extras"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -32,13 +32,14 @@ YUI.add('editor-para', function (Y, NAME) {
         _onNodeChange: function(e) {
             var host = this.get(HOST), inst = host.getInstance(),
                 html, txt, par , d, sel, btag = inst.EditorSelection.DEFAULT_BLOCK_TAG,
-                inHTML, txt2, childs, aNode, index, node2, top, n, sib,
-                ps, br, item, p, imgs, t, LAST_CHILD = ':last-child';
+                inHTML, txt2, childs, aNode, node2, top, n, sib, para2, prev,
+                ps, br, item, p, imgs, t, LAST_CHILD = ':last-child', para, b, dir,
+                lc, lc2, found = false, start;
 
             switch (e.changedType) {
                 case 'enter-up':
-                    var para = ((this._lastPara) ? this._lastPara : e.changedNode),
-                        b = para.one('br.yui-cursor');
+                    para = ((this._lastPara) ? this._lastPara : e.changedNode);
+                    b = para.one('br.yui-cursor');
 
                     if (this._lastPara) {
                         delete this._lastPara;
@@ -52,14 +53,14 @@ YUI.add('editor-para', function (Y, NAME) {
                         }
                     }
                     if (!para.test(btag)) {
-                        var para2 = para.ancestor(btag);
+                        para2 = para.ancestor(btag);
                         if (para2) {
                             para = para2;
                             para2 = null;
                         }
                     }
                     if (para.test(btag)) {
-                        var prev = para.previous(), lc, lc2, found = false;
+                        prev = para.previous();
                         if (prev) {
                             lc = prev.one(LAST_CHILD);
                             while (!found) {
@@ -92,7 +93,7 @@ YUI.add('editor-para', function (Y, NAME) {
                         html = inst.EditorSelection.getText(e.changedNode);
                         if (html === '') {
                             par = e.changedNode.ancestor('ol,ul');
-                            var dir = par.getAttribute('dir');
+                            dir = par.getAttribute('dir');
                             if (dir !== '') {
                                 dir = ' dir = "' + dir + '"';
                             }
@@ -135,10 +136,11 @@ YUI.add('editor-para', function (Y, NAME) {
                                         n = sib.cloneNode();
                                         n.set('innerHTML', '');
                                         n.append(node2);
-                                        
+
                                         //Get children..
                                         childs = sib.get('childNodes');
-                                        var start = false;
+                                        start = false;
+                                        /*jshint loopfunc: true */
                                         childs.each(function(c) {
                                             if (start) {
                                                 n.append(c);
@@ -201,7 +203,7 @@ YUI.add('editor-para', function (Y, NAME) {
                         txt = inst.EditorSelection.getText(item);
                         txt = txt.replace(/ /g, '').replace(/\n/g, '');
                         imgs = item.all('img');
-                        
+
                         if (txt.length === 0 && !imgs.size()) {
                             //God this is horrible..
                             if (!item.test(P)) {
@@ -265,7 +267,7 @@ YUI.add('editor-para', function (Y, NAME) {
                     }
                 }
             }
-            
+
         },
         initializer: function() {
             var host = this.get(HOST);
@@ -295,11 +297,11 @@ YUI.add('editor-para', function (Y, NAME) {
             }
         }
     });
-    
+
     Y.namespace('Plugin');
-    
+
     Y.Plugin.EditorPara = EditorPara;
 
 
 
-}, '3.7.2', {"requires": ["editor-para-base"]});
+}, '3.8.0', {"requires": ["editor-para-base"]});

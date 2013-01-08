@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -27,4 +27,4 @@ function Chart(cfg)
 Y.Chart = Chart;
 
 
-}, '3.7.2', {"requires": ["charts-base"]});
+}, '3.8.0', {"requires": ["charts-base"]});
