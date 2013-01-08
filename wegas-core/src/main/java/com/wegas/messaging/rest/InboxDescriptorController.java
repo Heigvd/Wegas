@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -9,10 +9,7 @@
  */
 package com.wegas.messaging.rest;
 
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.rest.AbstractRestController;
 import com.wegas.messaging.ejb.MessageFacade;
-import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
 import javax.ejb.EJB;
@@ -26,27 +23,13 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Inbox/")
-public class InboxDescriptorController extends AbstractRestController<VariableDescriptorFacade, InboxDescriptor> {
-    /*
-     *
-     */
+public class InboxDescriptorController {
 
-    @EJB
-    private VariableDescriptorFacade inboxDescriptorFacade;
     /**
      *
      */
     @EJB
     private MessageFacade messageFacade;
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected VariableDescriptorFacade getFacade() {
-        return this.inboxDescriptorFacade;
-    }
 
     @GET
     @Path("Message/{messageId : [1-9][0-9]*}")
@@ -69,6 +52,7 @@ public class InboxDescriptorController extends AbstractRestController<VariableDe
         Message update = messageFacade.update(messageId, message);
         return update.getMailboxInstanceEntity();
     }
+
     /**
      *
      * @param messageId

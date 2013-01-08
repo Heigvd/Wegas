@@ -49,6 +49,20 @@
             }
         }, {
             "@class": "NumberDescriptor",
+            "name": "teamMotivation",
+            "editorLabel": "teamMotivation",
+            "label": "teamMotivation",
+            "minValue": 0,
+            "maxValue": 100,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
             "name": "managementApproval",
             "editorLabel": "managementApproval",
             "label": "managementApproval",

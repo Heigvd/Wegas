@@ -18,23 +18,25 @@ YUI.add('wegas-gaugedisplay', function (Y) {
     var CONTENTBOX = 'contentBox', GaugeDisplay;
 
     GaugeDisplay = Y.Base.create("wegas-gauge", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-
         CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas height="50px" width="100px"></canvas><center class="label"></center><center class="percent"></center></div>',
         MAXVAL: 200,
-
+        handlers: null,
+        gauge: null,
         // ** Lifecycle Methods ** //
-
+        initializer: function () {
+            this.handlers = [];
+        },
         renderUI: function () {
             var opts = {
-                lines: 12,                                                      // The number of lines to draw
-                angle: 0.15,                                                    // The length of each line
-                lineWidth: 0.44,                                                // The line thickness
+                lines: 12, // The number of lines to draw
+                angle: 0.15, // The length of each line
+                lineWidth: 0.44, // The line thickness
                 pointer: {
-                    length: 0.5,                                                // The radius of the inner circle
-                    strokeWidth: 0.035,                                         // The rotation offset
+                    length: 0.5, // The radius of the inner circle
+                    strokeWidth: 0.035, // The rotation offset
                     color: '#000000'                                            // Fill color
                 },
-                colorStart: '#0981A9',                                          // Colors
+                colorStart: '#0981A9', // Colors
                 colorStop: '#000000',
                 //strokeColor: '#E0E0E0',
                 strokeColor: '#FFFFFF',
@@ -45,16 +47,13 @@ YUI.add('wegas-gaugedisplay', function (Y) {
             this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
         },
-
         bindUI: function () {
-            this.handlers = [];
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this));
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', this.syncUI, this));
         },
-
         syncUI: function () {
             var maxVal, minVal, value, label,
-            variableDescriptor = this.get("variable.evaluated");
+                    variableDescriptor = this.get("variable.evaluated");
             if (!variableDescriptor) {
                 return;
             }
@@ -71,7 +70,6 @@ YUI.add('wegas-gaugedisplay', function (Y) {
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").setContent(Math.round(value / this.MAXVAL * 100) + "%");
         },
-
         destructor: function () {
             var i;
             for (i = 0; i < this.handlers.length; i += 1) {
@@ -79,18 +77,21 @@ YUI.add('wegas-gaugedisplay', function (Y) {
             }
         }
     }, {
-        ATTRS : {
+        ATTRS: {
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     label: "variable"
-                }
+                },
             },
-            label : {
+            label: {
                 type: "string",
                 optional: true,
-                validator: Y.Lang.isString
+                validator: Y.Lang.isString,
+                _inputex: {
+                    label: "Label"
+                }
             }
         }
     });

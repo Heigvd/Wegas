@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -98,4 +98,4 @@ Y.mix(Y.IO.prototype, {
 }, true);
 
 
-}, '3.7.2', {"requires": ["io-base", "node-base"]});
+}, '3.8.0', {"requires": ["io-base", "node-base"]});

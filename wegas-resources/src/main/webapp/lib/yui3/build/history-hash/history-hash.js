@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -470,4 +470,4 @@ if (useHistoryHTML5 === false || (!Y.History && useHistoryHTML5 !== true &&
 }
 
 
-}, '3.7.2', {"requires": ["event-synthetic", "history-base", "yui-later"]});
+}, '3.8.0', {"requires": ["event-synthetic", "history-base", "yui-later"]});

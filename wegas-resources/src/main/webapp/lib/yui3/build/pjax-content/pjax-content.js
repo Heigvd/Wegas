@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -71,13 +71,13 @@ PjaxContent.prototype = {
             titleSelector   = this.get('titleSelector'),
             titleNode;
 
-        if (contentSelector) {
+        if (contentSelector && frag) {
             content.node = frag.all(contentSelector).toFrag();
         } else {
             content.node = frag;
         }
 
-        if (titleSelector) {
+        if (titleSelector && frag) {
             titleNode = frag.one(titleSelector);
 
             if (titleNode) {
@@ -284,4 +284,4 @@ PjaxContent.ATTRS = {
 Y.PjaxContent = PjaxContent;
 
 
-}, '3.7.2', {"requires": ["io-base", "node-base", "router"]});
+}, '3.8.0', {"requires": ["io-base", "node-base", "router"]});

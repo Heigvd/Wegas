@@ -69,6 +69,12 @@
                                     "name": "managementApproval"
                                 },
                                 "cssClass": "fr"
+                            }, {
+                                "type": "GaugeDisplay",
+                                "variable": {
+                                    "name": "teamMotivation"
+                                },
+                                "cssClass": "fr"
                             }
                         ]
                     }, {

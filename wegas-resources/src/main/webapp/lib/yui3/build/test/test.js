@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -25,7 +25,7 @@ if (YUI.YUITest) {
 
     //Make this global for back compat
     YUITest = {
-        version: "3.7.2",
+        version: "3.8.0",
         guid: function(pre) {
             return Y.guid(pre);
         }
@@ -1727,12 +1727,19 @@ YUITest.TestFormat = function(){
              *      format is specified, a string representing the results in that format.
              * @method getCoverage
              */
-            getCoverage: function(format){
-                if (!this._running && typeof _yuitest_coverage == "object"){
-                    if (typeof format == "function"){
-                        return format(_yuitest_coverage);                    
+            getCoverage: function(format) {
+                var covObject = null;
+                if (typeof _yuitest_coverage === "object") {
+                    covObject = _yuitest_coverage;
+                }
+                if (typeof __coverage__ === "object") {
+                    covObject = __coverage__;
+                }
+                if (!this._running && typeof covObject == "object"){
+                    if (typeof format == "function") {
+                        return format(covObject);                    
                     } else {
-                        return _yuitest_coverage;
+                        return covObject;
                     }
                 } else {
                     return null;
@@ -3742,7 +3749,7 @@ if (!YUI.YUITest) {
                 break;
             default:
                 message = "Unexpected event " + event.type;
-                message = "info";
+                messageType = "info";
         }
         
         if (Y.Test.Runner._log) {
@@ -3762,4 +3769,4 @@ if (!YUI.YUITest) {
 } //End if for YUI.YUITest
 
 
-}, '3.7.2', {"requires": ["event-simulate", "event-custom", "json-stringify"]});
+}, '3.8.0', {"requires": ["event-simulate", "event-custom", "json-stringify"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -19,7 +19,7 @@ YUI.add('resize-plugin', function (Y, NAME) {
            align: {node:".example", points:["tc", "bc"]}
         });
         overlay.plug(Y.Plugin.Resize);
-    
+
 
  *
  * @module resize
@@ -41,7 +41,7 @@ var ResizePlugin = function(config) {
 
                 ResizePlugin.superclass.constructor.call(this, config);
         };
-        
+
         /**
         * @property NAME
         * @description resize-plugin
@@ -50,8 +50,9 @@ var ResizePlugin = function(config) {
         ResizePlugin.NAME = "resize-plugin";
 
         /**
+        * The Resize instance will be placed on the Node instance under
+        * the resize namespace. It can be accessed via Node.resize or Widget.resize;
         * @property NS
-        * @description The Resize instance will be placed on the Node instance under the resize namespace. It can be accessed via Node.resize or Widget.resize;
         * @type {String}
         */
         ResizePlugin.NS = "resize";
@@ -91,7 +92,7 @@ var ResizePlugin = function(config) {
 
 
         Y.extend(ResizePlugin, Y.Resize, {
-                
+
                 /**
                  * Stores the values for node and widget, and sets up an event-listener
                  *
@@ -105,7 +106,7 @@ var ResizePlugin = function(config) {
 
                         this.on('resize:resize', function(e) {
                                 this._correctDimensions(e);
-                        });             
+                        });
                 },
 
                 /**
@@ -128,7 +129,7 @@ var ResizePlugin = function(config) {
                             cur: e.currentTarget.info.top
                         };
 
-                        
+
                         if (this.get('widget')) {
                             this._setWidgetProperties(e, x, y);
                         }
@@ -144,7 +145,7 @@ var ResizePlugin = function(config) {
 
                 },
 
-                
+
                    /**
                     * If the host is a widget, then set the width, height. Then look for widgetPosition and set x,y
                     *
@@ -171,11 +172,11 @@ var ResizePlugin = function(config) {
                           widget.set('width', currentWidth);
                        }
 
-                       
 
-                       //If the widget uses Y.WidgetPosition, it will also have x,y position support. 
+
+                       //If the widget uses Y.WidgetPosition, it will also have x,y position support.
                        if (widget.hasImpl && widget.hasImpl(Y.WidgetPosition)) {
-                           
+
                            if (this._isDifferent(widget.get('x'), x.cur)) {
                                widget.set('x', x.cur);
                            }
@@ -183,7 +184,7 @@ var ResizePlugin = function(config) {
                            if (this._isDifferent(widget.get('y'), y.cur)) {
                                widget.set('y', y.cur);
                            }
-                           
+
 
                        }
                    },
@@ -192,7 +193,7 @@ var ResizePlugin = function(config) {
                       * a little utility method that returns a value if the old !== new, otherwise it returns false.
                       *
                       * @method _isDifferent
-                      * @param {Number} oldVal 
+                      * @param {Number} oldVal
                       * @param {Number} newVal
                       * @private
                       */
@@ -210,4 +211,4 @@ var ResizePlugin = function(config) {
         Y.Plugin.Resize = ResizePlugin;
 
 
-}, '3.7.2', {"requires": ["resize-base", "plugin"], "optional": ["resize-constrain"]});
+}, '3.8.0', {"requires": ["resize-base", "plugin"], "optional": ["resize-constrain"]});

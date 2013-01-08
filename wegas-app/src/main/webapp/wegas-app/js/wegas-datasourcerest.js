@@ -434,7 +434,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 switch (parentData["@class"]) {
                     case "ListDescriptor":
                     case "QuestionDescriptor":
-                        request = "/ListDescriptor/" + parentData.id;
+                        request = "/" + parentData.id;
                         break;
                     default:
                         request = "/" + parentData.id + "/VariableInstance/";

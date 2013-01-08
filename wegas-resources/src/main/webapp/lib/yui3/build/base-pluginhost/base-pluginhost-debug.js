@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -7,7 +7,7 @@ http://yuilibrary.com/license/
 YUI.add('base-pluginhost', function (Y, NAME) {
 
     /**
-     * The base-pluginhost submodule adds Plugin support to Base, by augmenting Base with 
+     * The base-pluginhost submodule adds Plugin support to Base, by augmenting Base with
      * Plugin.Host and setting up static (class level) Base.plug and Base.unplug methods.
      *
      * @module base
@@ -21,7 +21,7 @@ YUI.add('base-pluginhost', function (Y, NAME) {
     Y.mix(Base, PluginHost, false, null, 1);
 
     /**
-     * Alias for <a href="Plugin.Host.html#method_Plugin.Host.plug">Plugin.Host.plug</a>. See aliased 
+     * Alias for <a href="Plugin.Host.html#method_Plugin.Host.plug">Plugin.Host.plug</a>. See aliased
      * method for argument and return value details.
      *
      * @method plug
@@ -30,7 +30,7 @@ YUI.add('base-pluginhost', function (Y, NAME) {
     Base.plug = PluginHost.plug;
 
     /**
-     * Alias for <a href="Plugin.Host.html#method_Plugin.Host.unplug">Plugin.Host.unplug</a>. See the 
+     * Alias for <a href="Plugin.Host.html#method_Plugin.Host.unplug">Plugin.Host.unplug</a>. See the
      * aliased method for argument and return value details.
      *
      * @method unplug
@@ -39,4 +39,4 @@ YUI.add('base-pluginhost', function (Y, NAME) {
     Base.unplug = PluginHost.unplug;
 
 
-}, '3.7.2', {"requires": ["base-base", "pluginhost"]});
+}, '3.8.0', {"requires": ["base-base", "pluginhost"]});
