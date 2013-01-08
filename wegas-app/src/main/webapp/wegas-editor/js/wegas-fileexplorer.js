@@ -163,7 +163,12 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             // TODO: find out that after a delete
                         }
                         file.treeLeaf.parentPath = node.path;
-                        this.fileUploader.addFile(file);
+                        try {
+                            this.fileUploader.addFile(file);
+                        } catch (e) {
+                            this.showMessage("error", e.message);
+                            file.treeLeaf.destroy();
+                        }
                     }
                 }
             }, '.yui3-treenode', this));
@@ -301,17 +306,19 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     node.destroy();
                     break;
                 case 'upload':
-                    if (node.get("label").length < 1) {
-                        this.showMessage("error", node.get("label") + " must contain at least 1 characters.");
-                        break;
-                    }
-                    node.set("editable", false);
                     file = params.file;
+                    file._set("name", node.get("label"));
                     file.treeLeaf = node;
                     this.uploader.set("fileList", []);
                     this.uploader.disable();
                     this.uploader.hide();
-                    this.fileUploader.addFile(file);
+                    try {
+                        this.fileUploader.addFile(file);
+                        node.set("editable", false);
+                    } catch (e) {
+                        this.showMessage("error", e.message);
+                       // file.treeLeaf.destroy();
+                    }
                     break;
 
                     break;
@@ -644,8 +651,15 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 this.uploader.destroy();
             },
             addFile: function(file) {
-                var uploadDescriptor = new Y.Node.create("<div/>"),
-                        progressDiv = new Y.Node.create("<div/>"), detailDiv = new Y.Node.create("<div/>");
+                var uploadDescriptor,
+                        progressDiv,
+                        detailDiv;
+                if (!(new RegExp("^(\\w|\\.| |-|_)+$").test(file.get("name")))) {
+                    throw new Error(file.get("name") + ": invalid name. Letters, numbers, whitespace or \".-_\" only");
+                }
+                uploadDescriptor = new Y.Node.create("<div/>");
+                progressDiv = new Y.Node.create("<div/>");
+                detailDiv = new Y.Node.create("<div/>");
                 file.treeLeaf.set("rightWidget", new Y.Wegas.ProgressBar({
                     percent: 0,
                     width: "100px",
