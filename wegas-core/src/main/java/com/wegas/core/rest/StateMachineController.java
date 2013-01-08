@@ -37,7 +37,7 @@ import javax.ws.rs.core.MediaType;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]*}/StateMachine/")
+@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/StateMachine/")
 public class StateMachineController {
     /*
      *
