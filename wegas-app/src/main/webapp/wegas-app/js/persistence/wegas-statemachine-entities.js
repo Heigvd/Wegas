@@ -461,7 +461,7 @@ Y.add("wegas-statemachine-entities", function (Y) {
                         on: callbacks
                     });
                 } catch (e) {
-//TODO : that           
+//TODO : that
                 }
                 return true;
 
@@ -488,7 +488,7 @@ Y.add("wegas-statemachine-entities", function (Y) {
         getTriggerURL: function (id) {
             return Y.Wegas.app.get("base") + "rest/GameMode/" +
             Y.Wegas.app.get("currentGame")
-            + "/VariableDescriptor/StateMachine/" + id
+            + "/StateMachine/" + id
             + "/Player/" + Y.Wegas.app.get("currentPlayer")
             + "/Do/" + this.get("id");
         }
