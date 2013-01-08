@@ -1,14 +1,14 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-YUI.add('attribute-events', function (Y, NAME) {
+YUI.add('attribute-observable', function (Y, NAME) {
 
     /**
-     * The attribute module provides an augmentable Attribute implementation, which 
-     * adds configurable attributes and attribute change events to the class being 
+     * The attribute module provides an augmentable Attribute implementation, which
+     * adds configurable attributes and attribute change events to the class being
      * augmented. It also provides a State class, which is used internally by Attribute,
      * but can also be used independently to provide a name/property/value data structure to
      * store state.
@@ -17,11 +17,11 @@ YUI.add('attribute-events', function (Y, NAME) {
      */
 
     /**
-     * The attribute-events submodule provides augmentable attribute change event support 
+     * The `attribute-observable` submodule provides augmentable attribute change event support
      * for AttributeCore based implementations.
      *
      * @module attribute
-     * @submodule attribute-events
+     * @submodule attribute-observable
      */
     var EventTarget = Y.EventTarget,
 
@@ -30,21 +30,23 @@ YUI.add('attribute-events', function (Y, NAME) {
         PUBLISHED = "published";
 
     /**
-     * Provides an augmentable implementation of attribute change events for 
-     * AttributeCore. 
+     * Provides an augmentable implementation of attribute change events for
+     * AttributeCore.
      *
-     * @class AttributeEvents
+     * @class AttributeObservable
+     * @extensionfor AttributeCore
      * @uses EventTarget
      */
-    function AttributeEvents() {
+    function AttributeObservable() {
         // Perf tweak - avoid creating event literals if not required.
         this._ATTR_E_FACADE = {};
+
         EventTarget.call(this, {emitFacade:true});
     }
 
-    AttributeEvents._ATTR_CFG = [BROADCAST];
+    AttributeObservable._ATTR_CFG = [BROADCAST];
 
-    AttributeEvents.prototype = {
+    AttributeObservable.prototype = {
 
         /**
          * Sets the value of an attribute.
@@ -52,16 +54,16 @@ YUI.add('attribute-events', function (Y, NAME) {
          * @method set
          * @chainable
          *
-         * @param {String} name The name of the attribute. If the 
+         * @param {String} name The name of the attribute. If the
          * current value of the attribute is an Object, dot notation can be used
          * to set the value of a property within the object (e.g. <code>set("x.y.z", 5)</code>).
          *
          * @param {Any} value The value to set the attribute to.
          *
          * @param {Object} opts (Optional) Optional event data to be mixed into
-         * the event facade passed to subscribers of the attribute's change event. This 
-         * can be used as a flexible way to identify the source of a call to set, allowing 
-         * the developer to distinguish between set called internally by the host, vs. 
+         * the event facade passed to subscribers of the attribute's change event. This
+         * can be used as a flexible way to identify the source of a call to set, allowing
+         * the developer to distinguish between set called internally by the host, vs.
          * set called externally by the application developer.
          *
          * @return {Object} A reference to the host object.
@@ -76,7 +78,7 @@ YUI.add('attribute-events', function (Y, NAME) {
          * @method _set
          * @protected
          * @chainable
-         * 
+         *
          * @param {String} name The name of the attribute.
          * @param {Any} val The value to set the attribute to.
          * @param {Object} opts (Optional) Optional event data to be mixed into
@@ -92,7 +94,7 @@ YUI.add('attribute-events', function (Y, NAME) {
          *
          * @method setAttrs
          * @param {Object} attrs  An object with attributes name/value pairs.
-         * @param {Object} opts  Properties to mix into the event payload. These are shared and mixed into each set 
+         * @param {Object} opts  Properties to mix into the event payload. These are shared and mixed into each set
          * @return {Object} A reference to the host object.
          * @chainable
          */
@@ -106,7 +108,7 @@ YUI.add('attribute-events', function (Y, NAME) {
          * @method _setAttrs
          * @protected
          * @param {Object} attrs  An object with attributes name/value pairs.
-         * @param {Object} opts  Properties to mix into the event payload. These are shared and mixed into each set 
+         * @param {Object} opts  Properties to mix into the event payload. These are shared and mixed into each set
          * @return {Object} A reference to the host object.
          * @chainable
          */
@@ -122,11 +124,11 @@ YUI.add('attribute-events', function (Y, NAME) {
 
         /**
          * Utility method to help setup the event payload and fire the attribute change event.
-         * 
+         *
          * @method _fireAttrChange
          * @private
          * @param {String} attrName The name of the attribute
-         * @param {String} subAttrName The full path of the property being changed, 
+         * @param {String} subAttrName The full path of the property being changed,
          * if this is a sub-attribute value being change. Otherwise null.
          * @param {Any} currVal The current value of the attribute
          * @param {Any} newVal The new value of the attribute
@@ -141,11 +143,11 @@ YUI.add('attribute-events', function (Y, NAME) {
                 evtCfg;
 
             if (!state.get(attrName, PUBLISHED)) {
-                
+
                 evtCfg = {
                     queuable:false,
-                    defaultTargetOnly: true, 
-                    defaultFn:host._defAttrChangeFn, 
+                    defaultTargetOnly: true,
+                    defaultFn:host._defAttrChangeFn,
                     silent:true
                 };
 
@@ -155,13 +157,13 @@ YUI.add('attribute-events', function (Y, NAME) {
                 }
 
                 host.publish(eventName, evtCfg);
-                
+
                 state.add(attrName, PUBLISHED, true);
             }
 
             facade = (opts) ? Y.merge(opts) : host._ATTR_E_FACADE;
 
-            // Not using the single object signature for fire({type:..., newVal:...}), since 
+            // Not using the single object signature for fire({type:..., newVal:...}), since
             // we don't want to override type. Changed to the fire(type, {newVal:...}) signature.
 
             // facade.type = eventName;
@@ -193,9 +195,21 @@ YUI.add('attribute-events', function (Y, NAME) {
     };
 
     // Basic prototype augment - no lazy constructor invocation.
-    Y.mix(AttributeEvents, EventTarget, false, null, 1);
+    Y.mix(AttributeObservable, EventTarget, false, null, 1);
 
-    Y.AttributeEvents = AttributeEvents;
+    Y.AttributeObservable = AttributeObservable;
+
+    /**
+    The `AttributeEvents` class extension was deprecated in YUI 3.8.0 and is now
+    an alias for the `AttributeObservable` class extension. Use that class
+    extnesion instead. This alias will be removed in a future version of YUI.
+
+    @class AttributeEvents
+    @uses EventTarget
+    @deprecated Use `AttributeObservable` instead.
+    @see AttributeObservable
+    **/
+    Y.AttributeEvents = AttributeObservable;
 
 
-}, '3.7.2', {"requires": ["event-custom"]});
+}, '3.8.0', {"requires": ["event-custom"]});

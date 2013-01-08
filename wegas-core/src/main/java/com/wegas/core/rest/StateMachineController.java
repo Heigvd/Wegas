@@ -38,7 +38,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/StateMachine/")
-public class StateMachineController extends AbstractRestController<StateMachineDescriptorFacade, StateMachineDescriptor> {
+public class StateMachineController {
     /*
      *
      */
@@ -53,15 +53,6 @@ public class StateMachineController extends AbstractRestController<StateMachineD
     private PlayerFacade playerFacade;
     @Inject
     private RequestManager requestManager;
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected StateMachineDescriptorFacade getFacade() {
-        return this.stateMachineDescriptorFacade;
-    }
 
 //    @Override
 //    public StateMachineDescriptor create(AbstractEntity entity) {
@@ -96,7 +87,9 @@ public class StateMachineController extends AbstractRestController<StateMachineD
                 //TODO : eval attached script (AND)
                 stateMachineInstanceEntity.setCurrentStateId(transition.getNextStateId());
                 stateMachineInstanceEntity.transitionHistoryAdd(transitionId);
-                requestManager.addUpdatedInstance(stateMachineInstanceEntity);  /* Force in case next state == current state */
+                requestManager.addUpdatedInstance(stateMachineInstanceEntity);  /*
+                 * Force in case next state == current state
+                 */
                 if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
                     scriptManager.eval(playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
                 }

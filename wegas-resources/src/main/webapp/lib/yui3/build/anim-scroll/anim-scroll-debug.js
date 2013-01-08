@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -19,7 +19,7 @@ var NUM = Number;
 Y.Anim.behaviors.scroll = {
     set: function(anim, att, from, to, elapsed, duration, fn) {
         var
-            node = anim._node, 
+            node = anim._node,
             val = ([
             fn(elapsed, NUM(from[0]), NUM(to[0]) - NUM(from[0]), duration),
             fn(elapsed, NUM(from[1]), NUM(to[1]) - NUM(from[1]), duration)
@@ -41,4 +41,4 @@ Y.Anim.behaviors.scroll = {
 
 
 
-}, '3.7.2', {"requires": ["anim-base"]});
+}, '3.8.0', {"requires": ["anim-base"]});

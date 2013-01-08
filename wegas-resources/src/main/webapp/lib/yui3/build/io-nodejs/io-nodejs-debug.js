@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -52,7 +52,7 @@ YUI.add('io-nodejs', function (Y, NAME) {
     @method transports.nodejs
     @for IO
     @static
-    @returns {Object} This object contains only a `send` method that accepts a
+    @return {Object} This object contains only a `send` method that accepts a
     `transaction object`, `uri` and the `config object`.
     @example
 
@@ -173,4 +173,4 @@ YUI.add('io-nodejs', function (Y, NAME) {
 
 
 
-}, '3.7.2', {"requires": ["io-base"]});
+}, '3.8.0', {"requires": ["io-base"]});

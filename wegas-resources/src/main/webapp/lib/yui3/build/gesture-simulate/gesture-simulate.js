@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1328,4 +1328,4 @@ Y.Event.simulateGesture = function(node, name, options, cb) {
 };
 
 
-}, '3.7.2', {"requires": ["async-queue", "event-simulate", "node-screen"]});
+}, '3.8.0', {"requires": ["async-queue", "event-simulate", "node-screen"]});

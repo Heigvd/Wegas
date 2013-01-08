@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -478,4 +478,4 @@ Y.mix(ACBase.SOURCE_TYPES, {
 }, true);
 
 
-}, '3.7.2', {"optional": ["io-base", "json-parse", "jsonp", "yql"], "requires": ["autocomplete-base"]});
+}, '3.8.0', {"optional": ["io-base", "json-parse", "jsonp", "yql"], "requires": ["autocomplete-base"]});

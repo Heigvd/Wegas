@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -33,9 +33,9 @@ Y.Anim.getUpdatedColorValue = function(fromColor, toColor, elapsed, duration,  f
 
 Y.Anim.behaviors.color = {
     set: function(anim, att, from, to, elapsed, duration, fn) {
-        anim._node.setStyle(att, Y.Anim.getUpdatedColorValue(from, to, elapsed, duration, fn)); 
+        anim._node.setStyle(att, Y.Anim.getUpdatedColorValue(from, to, elapsed, duration, fn));
     },
-    
+
     // TODO: default bgcolor const
     get: function(anim, att) {
         var val = anim._node.getComputedStyle(att);
@@ -47,13 +47,13 @@ Y.Anim.behaviors.color = {
 Y.each(['backgroundColor',
         'borderColor',
         'borderTopColor',
-        'borderRightColor', 
-        'borderBottomColor', 
+        'borderRightColor',
+        'borderBottomColor',
         'borderLeftColor'],
-        function(v, i) {
+        function(v) {
             Y.Anim.behaviors[v] = Y.Anim.behaviors.color;
         }
 );
 
 
-}, '3.7.2', {"requires": ["anim-base"]});
+}, '3.8.0', {"requires": ["anim-base"]});

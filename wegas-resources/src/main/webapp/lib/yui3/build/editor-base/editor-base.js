@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -22,7 +22,7 @@ YUI.add('editor-base', function (Y, NAME) {
      * @submodule editor-base
      * @constructor
      */
-    
+
     var EditorBase = function() {
         EditorBase.superclass.constructor.apply(this, arguments);
     }, LAST_CHILD = ':last-child', BODY = 'body';
@@ -56,7 +56,7 @@ YUI.add('editor-base', function (Y, NAME) {
                 bubbles: true,
                 defaultFn: this._defNodeChangeFn
             });
-            
+
             //this.plug(Y.Plugin.EditorPara);
         },
         destructor: function() {
@@ -67,7 +67,7 @@ YUI.add('editor-base', function (Y, NAME) {
         /**
         * Copy certain styles from one node instance to another (used for new paragraph creation mainly)
         * @method copyStyles
-        * @param {Node} from The Node instance to copy the styles from 
+        * @param {Node} from The Node instance to copy the styles from
         * @param {Node} to The Node instance to copy the styles to
         */
         copyStyles: function(from, to) {
@@ -106,9 +106,9 @@ YUI.add('editor-base', function (Y, NAME) {
         * @private
         */
         _resolveChangedNode: function(n) {
-            var inst = this.getInstance(), lc, lc2, found;
+            var inst = this.getInstance(), lc, lc2, found, sel;
             if (n && n.test(BODY)) {
-                var sel = new inst.EditorSelection();
+                sel = new inst.EditorSelection();
                 if (sel && sel.anchorNode) {
                     n = sel.anchorNode;
                 }
@@ -153,9 +153,12 @@ YUI.add('editor-base', function (Y, NAME) {
         * @private
         */
         _defNodeChangeFn: function(e) {
-            var startTime = (new Date()).getTime();
-            var inst = this.getInstance(), sel, cur,
-                btag = inst.EditorSelection.DEFAULT_BLOCK_TAG;
+            var startTime = (new Date()).getTime(),
+                inst = this.getInstance(), sel,
+                changed, endTime,
+                cmds = {}, family, fsize, classes = [],
+                fColor = '', bColor = '', bq,
+                normal = false;
 
             if (Y.UA.ie) {
                 try {
@@ -175,15 +178,8 @@ YUI.add('editor-base', function (Y, NAME) {
             * Maybe static functions for the e.changeType and an object bag
             * to walk through and filter to pass off the event to before firing..
             */
-            
+
             switch (e.changedType) {
-                case 'keydown':
-                    if (!Y.UA.gecko) {
-                        if (!EditorBase.NC_KEYS[e.changedEvent.keyCode] && !e.changedEvent.shiftKey && !e.changedEvent.ctrlKey && (e.changedEvent.keyCode !== 13)) {
-                            //inst.later(100, inst, inst.EditorSelection.cleanCursor);
-                        }
-                    }
-                    break;
                 case 'tab':
                     if (!e.changedNode.test('li, li *') && !e.changedEvent.shiftKey) {
                         e.changedEvent.frameEvent.preventDefault();
@@ -199,8 +195,8 @@ YUI.add('editor-base', function (Y, NAME) {
                 case 'backspace-up':
                     // Fixes #2531090 - Joins text node strings so they become one for bidi
                     if (Y.UA.webkit && e.changedNode) {
-			            e.changedNode.set('innerHTML', e.changedNode.get('innerHTML'));
-		            }
+                        e.changedNode.set('innerHTML', e.changedNode.get('innerHTML'));
+                    }
                     break;
             }
             if (Y.UA.webkit && e.commands && (e.commands.indent || e.commands.outdent)) {
@@ -209,37 +205,35 @@ YUI.add('editor-base', function (Y, NAME) {
                 * a class to the BLOCKQUOTE that adds left/right margin to it
                 * This strips that style so it is just a normal BLOCKQUOTE
                 */
-                var bq = inst.all('.webkit-indent-blockquote, blockquote');
+                bq = inst.all('.webkit-indent-blockquote, blockquote');
                 if (bq.size()) {
                     bq.setStyle('margin', '');
                 }
             }
 
-            var changed = this.getDomPath(e.changedNode, false),
-                cmds = {}, family, fsize, classes = [],
-                fColor = '', bColor = '';
+            changed = this.getDomPath(e.changedNode, false);
 
             if (e.commands) {
                 cmds = e.commands;
             }
-            
-            var normal = false;
+
 
             Y.each(changed, function(el) {
                 var tag = el.tagName.toLowerCase(),
-                    cmd = EditorBase.TAG2CMD[tag];
+                    cmd = EditorBase.TAG2CMD[tag], s,
+                    n, family2, cls, bColor2;
 
                 if (cmd) {
                     cmds[cmd] = 1;
                 }
 
                 //Bold and Italic styles
-                var s = el.currentStyle || el.style;
-                
-                if ((''+s.fontWeight) == 'normal') {
+                s = el.currentStyle || el.style;
+
+                if ((''+s.fontWeight) === 'normal') {
                     normal = true;
                 }
-                if ((''+s.fontWeight) == 'bold') { //Cast this to a string
+                if ((''+s.fontWeight) === 'bold') { //Cast this to a string
                     cmds.bold = 1;
                 }
                 if (Y.UA.ie) {
@@ -247,7 +241,7 @@ YUI.add('editor-base', function (Y, NAME) {
                         cmds.bold = 1;
                     }
                 }
-                if (s.fontStyle == 'italic') {
+                if (s.fontStyle === 'italic') {
                     cmds.italic = 1;
                 }
 
@@ -257,10 +251,10 @@ YUI.add('editor-base', function (Y, NAME) {
                 if (s.textDecoration.indexOf('line-through') > -1) {
                     cmds.strikethrough = 1;
                 }
-                
-                var n = inst.one(el);
+
+                n = inst.one(el);
                 if (n.getStyle('fontFamily')) {
-                    var family2 = n.getStyle('fontFamily').split(',')[0].toLowerCase();
+                    family2 = n.getStyle('fontFamily').split(',')[0].toLowerCase();
                     if (family2) {
                         family = family2;
                     }
@@ -272,8 +266,7 @@ YUI.add('editor-base', function (Y, NAME) {
                 fsize = EditorBase.NORMALIZE_FONTSIZE(n);
 
 
-                var cls = el.className.split(' ');
-
+                cls = el.className.split(' ');
                 Y.each(cls, function(v) {
                     if (v !== '' && (v.substr(0, 4) !== 'yui_')) {
                         classes.push(v);
@@ -281,15 +274,15 @@ YUI.add('editor-base', function (Y, NAME) {
                 });
 
                 fColor = EditorBase.FILTER_RGB(n.getStyle('color'));
-                var bColor2 = EditorBase.FILTER_RGB(s.backgroundColor);
+                bColor2 = EditorBase.FILTER_RGB(s.backgroundColor);
                 if (bColor2 !== 'transparent') {
                     if (bColor2 !== '') {
                         bColor = bColor2;
                     }
                 }
-                
+
             });
-            
+
             if (normal) {
                 delete cmds.bold;
                 delete cmds.italic;
@@ -313,38 +306,38 @@ YUI.add('editor-base', function (Y, NAME) {
                 e.backgroundColor = bColor;
             }
 
-            var endTime = (new Date()).getTime();
+            endTime = (new Date()).getTime();
         },
         /**
         * Walk the dom tree from this node up to body, returning a reversed array of parents.
         * @method getDomPath
-        * @param {Node} node The Node to start from 
+        * @param {Node} node The Node to start from
         */
         getDomPath: function(node, nodeList) {
-			var domPath = [], domNode,
+            var domPath = [], domNode,
                 inst = this.frame.getInstance();
 
             domNode = inst.Node.getDOMNode(node);
             //return inst.all(domNode);
 
             while (domNode !== null) {
-                
+
                 if ((domNode === inst.config.doc.documentElement) || (domNode === inst.config.doc) || !domNode.tagName) {
                     domNode = null;
                     break;
                 }
-                
+
                 if (!inst.DOM.inDoc(domNode)) {
                     domNode = null;
                     break;
                 }
-                
+
                 //Check to see if we get el.nodeName and nodeType
-                if (domNode.nodeName && domNode.nodeType && (domNode.nodeType == 1)) {
+                if (domNode.nodeName && domNode.nodeType && (domNode.nodeType === 1)) {
                     domPath.push(domNode);
                 }
 
-                if (domNode == inst.config.doc.body) {
+                if (domNode === inst.config.doc.body) {
                     domNode = null;
                     break;
                 }
@@ -352,7 +345,7 @@ YUI.add('editor-base', function (Y, NAME) {
                 domNode = domNode.parentNode;
             }
 
-            /*{{{ Using Node 
+            /*{{{ Using Node
             while (node !== null) {
                 if (node.test('html') || node.test('doc') || !node.get('tagName')) {
                     node = null;
@@ -394,7 +387,7 @@ YUI.add('editor-base', function (Y, NAME) {
         */
         _afterFrameReady: function() {
             var inst = this.frame.getInstance();
-            
+
             this.frame.on('dom:mouseup', Y.bind(this._onFrameMouseUp, this));
             this.frame.on('dom:mousedown', Y.bind(this._onFrameMouseDown, this));
             this.frame.on('dom:keydown', Y.bind(this._onFrameKeyDown, this));
@@ -421,7 +414,7 @@ YUI.add('editor-base', function (Y, NAME) {
             }
             var inst = this.getInstance(),
                 sel = inst.config.doc.selection.createRange();
-            
+
             if (sel.compareEndPoints && !sel.compareEndPoints('StartToEnd', sel)) {
                 sel.pasteHTML('<var id="yui-ie-cursor">');
             }
@@ -514,7 +507,7 @@ YUI.add('editor-base', function (Y, NAME) {
                 this._currentSelectionTimer = Y.later(850, this, function() {
                     this._currentSelectionClear = true;
                 });
-                
+
                 inst = this.frame.getInstance();
                 sel = new inst.EditorSelection(e);
 
@@ -527,12 +520,20 @@ YUI.add('editor-base', function (Y, NAME) {
             sel = new inst.EditorSelection();
 
             this._currentSelection = sel;
-            
+
             if (sel && sel.anchorNode) {
                 this.fire('nodeChange', { changedNode: sel.anchorNode, changedType: 'keydown', changedEvent: e.frameEvent });
                 if (EditorBase.NC_KEYS[e.keyCode]) {
-                    this.fire('nodeChange', { changedNode: sel.anchorNode, changedType: EditorBase.NC_KEYS[e.keyCode], changedEvent: e.frameEvent });
-                    this.fire('nodeChange', { changedNode: sel.anchorNode, changedType: EditorBase.NC_KEYS[e.keyCode] + '-down', changedEvent: e.frameEvent });
+                    this.fire('nodeChange', {
+                        changedNode: sel.anchorNode,
+                        changedType: EditorBase.NC_KEYS[e.keyCode],
+                        changedEvent: e.frameEvent
+                    });
+                    this.fire('nodeChange', {
+                        changedNode: sel.anchorNode,
+                        changedType: EditorBase.NC_KEYS[e.keyCode] + '-down',
+                        changedEvent: e.frameEvent
+                    });
                 }
             }
         },
@@ -547,7 +548,11 @@ YUI.add('editor-base', function (Y, NAME) {
             if (sel && sel.anchorNode) {
                 this.fire('nodeChange', { changedNode: sel.anchorNode, changedType: 'keypress', changedEvent: e.frameEvent });
                 if (EditorBase.NC_KEYS[e.keyCode]) {
-                    this.fire('nodeChange', { changedNode: sel.anchorNode, changedType: EditorBase.NC_KEYS[e.keyCode] + '-press', changedEvent: e.frameEvent });
+                    this.fire('nodeChange', {
+                        changedNode: sel.anchorNode,
+                        changedType: EditorBase.NC_KEYS[e.keyCode] + '-press',
+                        changedEvent: e.frameEvent
+                    });
                 }
             }
         },
@@ -563,7 +568,12 @@ YUI.add('editor-base', function (Y, NAME) {
             if (sel && sel.anchorNode) {
                 this.fire('nodeChange', { changedNode: sel.anchorNode, changedType: 'keyup', selection: sel, changedEvent: e.frameEvent  });
                 if (EditorBase.NC_KEYS[e.keyCode]) {
-                    this.fire('nodeChange', { changedNode: sel.anchorNode, changedType: EditorBase.NC_KEYS[e.keyCode] + '-up', selection: sel, changedEvent: e.frameEvent  });
+                    this.fire('nodeChange', {
+                        changedNode: sel.anchorNode,
+                        changedType: EditorBase.NC_KEYS[e.keyCode] + '-up',
+                        selection: sel,
+                        changedEvent: e.frameEvent
+                    });
                 }
             }
             if (this._currentSelectionClear) {
@@ -680,7 +690,7 @@ YUI.add('editor-base', function (Y, NAME) {
         */
         NORMALIZE_FONTSIZE: function(n) {
             var size = n.getStyle('fontSize'), oSize = size;
-            
+
             switch (size) {
                 case '-webkit-xxx-large':
                     size = '48px';
@@ -723,24 +733,25 @@ YUI.add('editor-base', function (Y, NAME) {
         * @return String
         */
         FILTER_RGB: function(css) {
-            if (css.toLowerCase().indexOf('rgb') != -1) {
-                var exp = new RegExp("(.*?)rgb\\s*?\\(\\s*?([0-9]+).*?,\\s*?([0-9]+).*?,\\s*?([0-9]+).*?\\)(.*?)", "gi");
-                var rgb = css.replace(exp, "$1,$2,$3,$4,$5").split(',');
-            
-                if (rgb.length == 5) {
-                    var r = parseInt(rgb[1], 10).toString(16);
-                    var g = parseInt(rgb[2], 10).toString(16);
-                    var b = parseInt(rgb[3], 10).toString(16);
+            if (css.toLowerCase().indexOf('rgb') !== -1) {
+                var exp = new RegExp("(.*?)rgb\\s*?\\(\\s*?([0-9]+).*?,\\s*?([0-9]+).*?,\\s*?([0-9]+).*?\\)(.*?)", "gi"),
+                    rgb = css.replace(exp, "$1,$2,$3,$4,$5").split(','),
+                    r, g, b;
 
-                    r = r.length == 1 ? '0' + r : r;
-                    g = g.length == 1 ? '0' + g : g;
-                    b = b.length == 1 ? '0' + b : b;
+                if (rgb.length === 5) {
+                    r = parseInt(rgb[1], 10).toString(16);
+                    g = parseInt(rgb[2], 10).toString(16);
+                    b = parseInt(rgb[3], 10).toString(16);
+
+                    r = r.length === 1 ? '0' + r : r;
+                    g = g.length === 1 ? '0' + g : g;
+                    b = b.length === 1 ? '0' + b : b;
 
                     css = "#" + r + g + b;
                 }
             }
             return css;
-        },        
+        },
         /**
         * @static
         * @property TAG2CMD
@@ -840,7 +851,7 @@ YUI.add('editor-base', function (Y, NAME) {
             * @attribute linkedcss
             * @description An array of url's to external linked style sheets
             * @type String
-            */            
+            */
             linkedcss: {
                 value: '',
                 setter: function(css) {
@@ -854,7 +865,7 @@ YUI.add('editor-base', function (Y, NAME) {
             * @attribute extracss
             * @description A string of CSS to add to the Head of the Editor
             * @type String
-            */            
+            */
             extracss: {
                 value: false,
                 setter: function(css) {
@@ -868,7 +879,7 @@ YUI.add('editor-base', function (Y, NAME) {
             * @attribute defaultblock
             * @description The default tag to use for block level items, defaults to: p
             * @type String
-            */            
+            */
             defaultblock: {
                 value: 'p'
             }
@@ -907,4 +918,4 @@ YUI.add('editor-base', function (Y, NAME) {
 
 
 
-}, '3.7.2', {"requires": ["base", "frame", "node", "exec-command", "editor-selection"]});
+}, '3.8.0', {"requires": ["base", "frame", "node", "exec-command", "editor-selection"]});
