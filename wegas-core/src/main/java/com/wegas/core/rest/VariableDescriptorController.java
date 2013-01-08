@@ -12,14 +12,12 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
@@ -63,6 +61,14 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
         this.variableDescriptorFacade.create(new Long(this.getPathParam("gameModelId")),
                 entity);
         return entity;
+    }
+
+    @POST
+    @Path("{variableDescriptorId : [1-9][0-9]*}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public ListDescriptor createChild(@PathParam(value = "variableDescriptorId") Long variableDescriptorId, VariableDescriptor entity) {
+        return variableDescriptorFacade.createChild(variableDescriptorId, entity);
     }
 
     /**
