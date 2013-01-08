@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/{variableDescriptorId : [1-9][0-9]*}/VariableInstance/")
-public class VariableInstanceController extends AbstractRestController<VariableInstanceFacade, VariableInstance> {
+public class VariableInstanceController {
 
     /**
      *
@@ -40,17 +40,35 @@ public class VariableInstanceController extends AbstractRestController<VariableI
 
     /**
      *
+     * @param entityId
+     * @param entity
      * @return
      */
-    @Override
+    @PUT
+    @Path("{entityId: [1-9][0-9]*}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public VariableInstance update(@PathParam("entityId") Long entityId, VariableInstance entity) {
+        return variableInstanceFacade.update(entityId, entity);
+    }
+
+    /**
+     *
+     * @param variableDescriptorId
+     * @fixme Is this method still in use?
+     *
+     * @return
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<VariableInstance> index() {
-        VariableDescriptor vd = variableDescriptorFacade.find(new Long(this.getPathParam("variableDescriptorId")));
+    public Collection<VariableInstance> index(@PathParam("variableDescriptorId") Long variableDescriptorId) {
+        VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getScope().getVariableInstances().values();
     }
 
     /**
+     *
+     * @fixme Is this method still in use?
      *
      * @param gameModelId
      * @param variableDescriptorId
@@ -68,14 +86,5 @@ public class VariableInstanceController extends AbstractRestController<VariableI
             @PathParam("userId") Long userId,
             VariableInstance newInstance) {
         return variableInstanceFacade.update(variableDescriptorId, userId, newInstance);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected VariableInstanceFacade getFacade() {
-        return this.variableInstanceFacade;
     }
 }
