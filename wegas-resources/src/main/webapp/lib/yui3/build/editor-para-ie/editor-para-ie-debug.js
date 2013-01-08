@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -19,8 +19,8 @@ YUI.add('editor-para-ie', function (Y, NAME) {
 
     var EditorParaIE = function() {
         EditorParaIE.superclass.constructor.apply(this, arguments);
-    }, HOST = 'host', BODY = 'body', NODE_CHANGE = 'nodeChange', PARENT_NODE = 'parentNode',
-    FIRST_P = BODY + ' > p', P = 'p', BR = '<br>', FC = 'firstChild', LI = 'li';
+    }, HOST = 'host', NODE_CHANGE = 'nodeChange',
+    P = 'p';
 
 
     Y.extend(EditorParaIE, Y.Plugin.EditorParaBase, {
@@ -31,14 +31,14 @@ YUI.add('editor-para-ie', function (Y, NAME) {
         */
         _onNodeChange: function(e) {
             var host = this.get(HOST), inst = host.getInstance(),
-                html, txt, par , d, sel, btag = inst.EditorSelection.DEFAULT_BLOCK_TAG,
-                inHTML, txt2, childs, aNode, index, node2, top, n, sib,
-                ps, br, item, p, imgs, t, LAST_CHILD = ':last-child';
+                btag = inst.EditorSelection.DEFAULT_BLOCK_TAG,
+                prev, LAST_CHILD = ':last-child', para, b, para2,
+                lc, lc2, found = false;
 
             switch (e.changedType) {
                 case 'enter-up':
-                    var para = ((this._lastPara) ? this._lastPara : e.changedNode),
-                        b = para.one('br.yui-cursor');
+                    para = ((this._lastPara) ? this._lastPara : e.changedNode);
+                    b = para.one('br.yui-cursor');
 
                     if (this._lastPara) {
                         delete this._lastPara;
@@ -52,14 +52,14 @@ YUI.add('editor-para-ie', function (Y, NAME) {
                         }
                     }
                     if (!para.test(btag)) {
-                        var para2 = para.ancestor(btag);
+                        para2 = para.ancestor(btag);
                         if (para2) {
                             para = para2;
                             para2 = null;
                         }
                     }
                     if (para.test(btag)) {
-                        var prev = para.previous(), lc, lc2, found = false;
+                        prev = para.previous();
                         if (prev) {
                             lc = prev.one(LAST_CHILD);
                             while (!found) {
@@ -84,7 +84,7 @@ YUI.add('editor-para-ie', function (Y, NAME) {
                     if (e.changedNode.test('br')) {
                         e.changedNode.remove();
                     } else if (e.changedNode.test('p, span')) {
-                        var b = e.changedNode.one('br.yui-cursor');
+                        b = e.changedNode.one('br.yui-cursor');
                         if (b) {
                             b.remove();
                         }
@@ -120,12 +120,12 @@ YUI.add('editor-para-ie', function (Y, NAME) {
             }
         }
     });
-    
+
     Y.namespace('Plugin');
-    
+
     Y.Plugin.EditorPara = EditorParaIE;
 
 
 
 
-}, '3.7.2', {"requires": ["editor-para-base"]});
+}, '3.8.0', {"requires": ["editor-para-base"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -897,4 +897,19 @@ for API docs.
 Y.AutoComplete = List;
 
 
-}, '3.7.2', {"lang": ["en"], "requires": ["autocomplete-base", "event-resize", "node-screen", "selector-css3", "shim-plugin", "widget", "widget-position", "widget-position-align"], "skinnable": true});
+}, '3.8.0', {
+    "lang": [
+        "en"
+    ],
+    "requires": [
+        "autocomplete-base",
+        "event-resize",
+        "node-screen",
+        "selector-css3",
+        "shim-plugin",
+        "widget",
+        "widget-position",
+        "widget-position-align"
+    ],
+    "skinnable": true
+});

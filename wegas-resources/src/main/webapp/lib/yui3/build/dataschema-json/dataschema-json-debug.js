@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -446,4 +446,4 @@ SchemaJSON = {
 Y.DataSchema.JSON = Y.mix(SchemaJSON, Base);
 
 
-}, '3.7.2', {"requires": ["dataschema-base", "json"]});
+}, '3.8.0', {"requires": ["dataschema-base", "json"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -17,7 +17,7 @@ YUI.add('sortable-scroll', function (Y, NAME) {
      * @class SortScroll
      * @extends Base
      * @constructor
-     * @namespace Plugin     
+     * @namespace Plugin
      */
     
     var SortScroll = function() {
@@ -70,4 +70,4 @@ YUI.add('sortable-scroll', function (Y, NAME) {
 
 
 
-}, '3.7.2', {"requires": ["dd-scroll", "sortable"]});
+}, '3.8.0', {"requires": ["dd-scroll", "sortable"]});

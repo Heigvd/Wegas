@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -782,4 +782,4 @@ YUI.add('widget-stdmod', function (Y, NAME) {
     Y.WidgetStdMod = StdMod;
 
 
-}, '3.7.2', {"requires": ["base-build", "widget"]});
+}, '3.8.0', {"requires": ["base-build", "widget"]});

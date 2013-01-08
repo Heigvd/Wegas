@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -620,11 +620,14 @@ Y.mix(Y_Node.prototype, {
     },
 
     /**
-     * Retrieves a Node instance of nodes based on the given CSS selector.
+     * Retrieves a single Node instance, the first element matching the given 
+     * CSS selector.
+     * Returns null if no match found.
      * @method one
      *
      * @param {string} selector The CSS selector to test against.
-     * @return {Node} A Node instance for the matching HTMLElement.
+     * @return {Node | null} A Node instance for the matching HTMLElement or null 
+     * if no match found.
      */
     one: function(selector) {
         return Y.one(Y.Selector.query(selector, this._node, true));
@@ -713,7 +716,9 @@ Y.mix(Y_Node.prototype, {
     },
 
     /**
-     * Nulls internal node references, removes any plugins and event listeners
+     * Nulls internal node references, removes any plugins and event listeners.
+     * Note that destroy() will not remove the node from its parent or from the DOM. For that
+     * functionality, call remove(true).
      * @method destroy
      * @param {Boolean} recursivePurge (optional) Whether or not to remove listeners from the
      * node's subtree (default is false)
@@ -1596,4 +1601,4 @@ Y.NodeList.importMethod(Y.Node.prototype, [
 ]);
 
 
-}, '3.7.2', {"requires": ["dom-core", "selector"]});
+}, '3.8.0', {"requires": ["dom-core", "selector"]});

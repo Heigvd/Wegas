@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -14,7 +14,12 @@ YUI.add('json-stringify', function (Y, NAME) {
  * @for JSON
  * @static
  */
-var _JSON     = (Y.config.win || {}).JSON,
+// All internals kept private for security reasons
+function fromGlobal(ref) {
+    var g = ((typeof global === 'object') ? global : undefined);
+    return ((Y.UA.nodejs && g) ? g : (Y.config.win || {}))[ref];
+}
+var _JSON     = fromGlobal('JSON'),
     Lang      = Y.Lang,
     isFunction= Lang.isFunction,
     isObject  = Lang.isObject,
@@ -351,4 +356,4 @@ Y.mix(Y.namespace('JSON'),{
 });
 
 
-}, '3.7.2', {"requires": ["yui-base"]});
+}, '3.8.0', {"requires": ["yui-base"]});

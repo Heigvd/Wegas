@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -498,4 +498,4 @@ YUI.add('file-html5', function (Y, NAME) {
 
     Y.FileHTML5 = FileHTML5;
 
-}, '3.7.2', {"requires": ["base"]});
+}, '3.8.0', {"requires": ["base"]});

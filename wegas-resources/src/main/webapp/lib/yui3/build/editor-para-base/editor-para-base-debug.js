@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -19,8 +19,8 @@ YUI.add('editor-para-base', function (Y, NAME) {
 
     var EditorParaBase = function() {
         EditorParaBase.superclass.constructor.apply(this, arguments);
-    }, HOST = 'host', BODY = 'body', NODE_CHANGE = 'nodeChange', PARENT_NODE = 'parentNode',
-    FIRST_P = BODY + ' > p', P = 'p', BR = '<br>', FC = 'firstChild', LI = 'li';
+    }, HOST = 'host', BODY = 'body',
+    FIRST_P = BODY + ' > p', P = 'p', BR = '<br>';
 
 
     Y.extend(EditorParaBase, Y.Base, {
@@ -79,13 +79,12 @@ YUI.add('editor-para-base', function (Y, NAME) {
         * @method _afterPaste
         */
         _afterPaste: function() {
-            var host = this.get(HOST), inst = host.getInstance(),
-                sel = new inst.EditorSelection();
+            var host = this.get(HOST), inst = host.getInstance();
 
             Y.later(50, host, function() {
                 inst.EditorSelection.filterBlocks();
             });
-            
+
         },
         initializer: function() {
             var host = this.get(HOST);
@@ -119,12 +118,12 @@ YUI.add('editor-para-base', function (Y, NAME) {
             }
         }
     });
-    
+
     Y.namespace('Plugin');
-    
+
     Y.Plugin.EditorParaBase = EditorParaBase;
 
 
 
 
-}, '3.7.2', {"requires": ["editor-base"]});
+}, '3.8.0', {"requires": ["editor-base"]});
