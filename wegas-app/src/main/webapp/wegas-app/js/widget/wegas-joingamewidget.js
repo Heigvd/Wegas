@@ -165,6 +165,12 @@ YUI.add('wegas-joingamewidget', function (Y) {
                     value: this.teams[i].get("id")
                 });
             }
+            if (this.teams.length == 0) {
+                this.teamsField.addChoice({
+                    label: "-- No team --",
+                    value: ""
+                });
+            }
         },
 
         showPublicGames: function () {

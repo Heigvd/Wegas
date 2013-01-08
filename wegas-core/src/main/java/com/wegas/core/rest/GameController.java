@@ -153,12 +153,14 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         Game game = null;
         Team team = null;
         try {
-            team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
-            game = team.getGame();
+            game = gameFacade.findByToken(token);                           // We check if there is game with given token
+            
         } catch (PersistenceException e2) {
             try {
-                game = gameFacade.findByToken(token);                           // We check if there is game with given token
-            } catch (PersistenceException e) {
+                team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
+                game = team.getGame();
+        
+                } catch (PersistenceException e) {
                 throw new Exception("Could not find any game associated with this token.");
             }
         }
