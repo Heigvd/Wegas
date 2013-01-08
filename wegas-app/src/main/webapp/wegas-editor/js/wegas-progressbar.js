@@ -1,18 +1,17 @@
-YUI.add('wegas-progressbar', function (Y) {
+YUI.add('wegas-progressbar', function(Y) {
     'use strict';
     var ProgressBar,
-    BOUNDING_BOX = "boundingBox",
-    CONTENT_BOX = "contentBox";
+            BOUNDING_BOX = "boundingBox",
+            CONTENT_BOX = "contentBox";
 
     ProgressBar = Y.Base.create("wegas-progressbar", Y.Widget, [], {
-        labelNode:null,
-        valueNode:null,
-
-        initializer:function(){
+        labelNode: null,
+        valueNode: null,
+        initializer: function() {
             this.labelNode = Y.Node.create("<div></div>");
             this.valueNode = Y.Node.create("<div></div>");
         },
-        renderUI: function (){
+        renderUI: function() {
             var bbStyle = this.get(BOUNDING_BOX).getDOMNode().style;
             bbStyle.border = "1px solid " + this.get("color");
             bbStyle.borderRadius = "5px";
@@ -30,46 +29,48 @@ YUI.add('wegas-progressbar', function (Y) {
             this.get(BOUNDING_BOX).append(this.labelNode);
 
         },
-        syncUI: function () {
+        syncUI: function() {
             this.set("percent", this.get("percent"));
             this.set("color", this.get("color"));
             this.set("label", this.get("label"));
         }
-    },{
+    }, {
         ATTRS: {
-            percent:{
-                value:100,
-                setter:function (v){
-                    if(this.get(CONTENT_BOX).getDOMNode()){
+            percent: {
+                value: 100,
+                setter: function(v) {
+                    v = (+v).toFixed(1);
+                    if (this.get(CONTENT_BOX).getDOMNode()) {
                         this.get(CONTENT_BOX).getDOMNode().style.width = v + "%";
+                        this.set("label", this.get("label"));
                     }
                     return v;
                 }
             },
-            color:{
+            color: {
                 value: "lightblue",
-                validator:Y.Lang.isString,
-                setter: function(v){
+                validator: Y.Lang.isString,
+                setter: function(v) {
                     this.get(CONTENT_BOX).getDOMNode().style.backgroundColor = v;
                     this.get(BOUNDING_BOX).getDOMNode().style.borderColor = v;
                     return v;
                 }
             },
-            showValue:{
-                value:false,
+            showValue: {
+                value: false,
                 validator: Y.Lang.isBoolean,
-                setter:function (v){
+                setter: function(v) {
                     this.set("label", this.get("label"));
                     return v;
                 }
             },
-            label:{
-                value:"",
-                validator:Y.Lang.isString,
-                setter:function(s){
-                    if(this.get("showValue")){
+            label: {
+                value: "",
+                validator: Y.Lang.isString,
+                setter: function(s) {
+                    if (this.get("showValue")) {
                         this.labelNode.setContent(s + " " + this.get("percent") + "%");
-                    }else{
+                    } else {
                         this.labelNode.setContent(s);
                     }
                     return s;
