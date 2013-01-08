@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1072,4 +1072,4 @@ Y.namespace("Plugin");
 Y.Plugin.NodeFocusManager = NodeFocusManager;
 
 
-}, '3.7.2', {"requires": ["attribute", "node", "plugin", "node-event-simulate", "event-key", "event-focus"]});
+}, '3.8.0', {"requires": ["attribute", "node", "plugin", "node-event-simulate", "event-key", "event-focus"]});

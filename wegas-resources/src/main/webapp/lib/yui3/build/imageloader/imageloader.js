@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -656,4 +656,4 @@ YUI.add('imageloader', function (Y, NAME) {
 
 
 
-}, '3.7.2', {"requires": ["base-base", "node-style", "node-screen"]});
+}, '3.8.0', {"requires": ["base-base", "node-style", "node-screen"]});

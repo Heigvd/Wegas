@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -30,11 +30,12 @@ but reverts to mouse events if touch is not supported.
 
 */
 var doc = Y.config.doc,
+    GESTURE_MAP = Y.Event._GESTURE_MAP,
     SUPPORTS_TOUCHES = !!(doc && doc.createTouch),
-    EVT_START = SUPPORTS_TOUCHES ? 'touchstart' : 'mousedown',
-    EVT_MOVE = SUPPORTS_TOUCHES ? 'touchmove' : 'mousemove',
-    EVT_END = SUPPORTS_TOUCHES ? 'touchend' : 'mouseup',
-    EVT_CANCEL = SUPPORTS_TOUCHES ? 'touchcancel' : 'mousecancel',
+    EVT_START = GESTURE_MAP.start,
+    EVT_MOVE = GESTURE_MAP.move,
+    EVT_END = GESTURE_MAP.end,
+    EVT_CANCEL = GESTURE_MAP.cancel,
     EVT_TAP = 'tap',
 
     HANDLES = {
@@ -261,4 +262,4 @@ Y.Event.define(EVT_TAP, {
 });
 
 
-}, '3.7.2', {"requires": ["node-base", "event-base", "event-touch", "event-synthetic"]});
+}, '3.8.0', {"requires": ["node-base", "event-base", "event-touch", "event-synthetic"]});

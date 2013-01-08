@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -258,7 +258,7 @@ Y_DOM = {
 
 
     isWindow: function(obj) {
-        return !!(obj && obj.alert && obj.document);
+        return !!(obj && obj.scrollTo && obj.document);
     },
 
     _removeChildNodes: function(node) {
@@ -392,4 +392,4 @@ Y_DOM = {
 Y.DOM = Y_DOM;
 
 
-}, '3.7.2', {"requires": ["oop", "features"]});
+}, '3.8.0', {"requires": ["oop", "features"]});

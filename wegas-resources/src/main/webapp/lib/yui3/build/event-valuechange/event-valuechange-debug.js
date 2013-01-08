@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -478,4 +478,4 @@ Y.Event.define('valueChange', config); // deprecated, but supported for backcomp
 Y.ValueChange = VC;
 
 
-}, '3.7.2', {"requires": ["event-focus", "event-synthetic"]});
+}, '3.8.0', {"requires": ["event-focus", "event-synthetic"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -7,7 +7,7 @@ http://yuilibrary.com/license/
 YUI.add('io-upload-iframe', function (Y, NAME) {
 
 /**
-Extends the IO  to enable file uploads, with HTML forms 
+Extends the IO  to enable file uploads, with HTML forms
 using an iframe as the transport medium.
 @module io
 @submodule io-upload-iframe
@@ -17,7 +17,8 @@ using an iframe as the transport medium.
 var w = Y.config.win,
     d = Y.config.doc,
     _std = (d.documentMode && d.documentMode >= 8),
-    _d = decodeURIComponent;
+    _d = decodeURIComponent,
+    _end = Y.IO.prototype.end;
 
 /**
  * Creates the iframe transported used in file upload
@@ -40,7 +41,7 @@ function _cFrame(o, c, io) {
 }
 
 /**
- * Removes the iframe transport used in the file upload 
+ * Removes the iframe transport used in the file upload
  * transaction.
  *
  * @method _dFrame
@@ -261,8 +262,6 @@ Y.mix(Y.IO.prototype, {
         if (c.data) {
             io._removeData(f, fields);
         }
-        // Restore HTML form attributes to their original values.
-        io._resetAttrs(f, attr);
 
         return {
             id: o.id,
@@ -272,7 +271,7 @@ Y.mix(Y.IO.prototype, {
                 if (Y.one('#io_iframe' + o.id)) {
                     _dFrame(o.id);
                     io.complete(o, c);
-                    io.end(o, c);
+                    io.end(o, c, attr);
                     Y.log('Transaction ' + o.id + ' aborted.', 'info', 'io');
                 }
                 else {
@@ -290,8 +289,18 @@ Y.mix(Y.IO.prototype, {
     upload: function(o, uri, c) {
         _cFrame(o, c, this);
         return this._upload(o, uri, c);
+    },
+
+    end: function(transaction, config, attr) {
+        if (config && config.form && config.form.upload) {
+            var io = this;
+            // Restore HTML form attributes to their original values.
+            io._resetAttrs(f, attr);
+        }
+
+        return _end.call(this, transaction, config);
     }
 });
 
 
-}, '3.7.2', {"requires": ["io-base", "node-base"]});
+}, '3.8.0', {"requires": ["io-base", "node-base"]});

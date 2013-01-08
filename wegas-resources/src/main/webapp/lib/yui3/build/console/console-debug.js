@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1186,10 +1186,7 @@ Y.Console = Y.extend(Console, Y.Widget,
     FOOTER_TEMPLATE :
         '<div class="{console_ft_class}">'+
             '<div class="{console_controls_class}">'+
-                '<label for="{id_guid}" class="{console_pause_label_class}">'+
-                    '<input type="checkbox" class="{console_checkbox_class} '+
-                        '{console_pause_class}" value="1" id="{id_guid}"> '+
-                    '{str_pause}</label>' +
+                '<label class="{console_pause_label_class}"><input type="checkbox" class="{console_checkbox_class} {console_pause_class}" value="1" id="{id_guid}"> {str_pause}</label>' +
                 '<button type="button" class="'+
                     '{console_button_class} {console_clear_class}">{str_clear}'+
                 '</button>'+
@@ -1520,4 +1517,4 @@ Y.Console = Y.extend(Console, Y.Widget,
 });
 
 
-}, '3.7.2', {"requires": ["yui-log", "widget"], "skinnable": true, "lang": ["en", "es", "ja"]});
+}, '3.8.0', {"requires": ["yui-log", "widget"], "skinnable": true, "lang": ["en", "es", "ja"]});

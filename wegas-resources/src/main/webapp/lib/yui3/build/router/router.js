@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -17,7 +17,6 @@ Provides URL-based routing using HTML5 `pushState()` or the location hash.
 var HistoryHash = Y.HistoryHash,
     QS          = Y.QueryString,
     YArray      = Y.Array,
-    YLang       = Y.Lang,
 
     win = Y.config.win,
 
@@ -205,7 +204,9 @@ Y.Router = Y.extend(Router, Y.Base, {
             instances.splice(instanceIndex, 1);
         }
 
-        this._historyEvents && this._historyEvents.detach();
+        if (this._historyEvents) {
+            this._historyEvents.detach();
+        }
     },
 
     // -- Public Methods -------------------------------------------------------
@@ -624,6 +625,7 @@ Y.Router = Y.extend(Router, Y.Base, {
     **/
     _dispatch: function (path, url, src) {
         var self      = this,
+            decode    = self._decode,
             routes    = self.match(path),
             callbacks = [],
             matches, req, res;
@@ -662,9 +664,13 @@ Y.Router = Y.extend(Router, Y.Base, {
                 callback.call(self, req, res, req.next);
 
             } else if ((route = routes.shift())) {
-                // Make a copy of this route's `callbacks` and find its matches.
+                // Make a copy of this route's `callbacks` so the original array
+                // is preserved.
                 callbacks = route.callbacks.concat();
-                matches   = route.regex.exec(path);
+
+                // Decode each of the path matches so that the any URL-encoded
+                // path segments are decoded in the `req.params` object.
+                matches = YArray.map(route.regex.exec(path) || [], decode);
 
                 // Use named keys for parameter names if the route path contains
                 // named keys. Otherwise, use numerical match indices.
@@ -674,7 +680,7 @@ Y.Router = Y.extend(Router, Y.Base, {
                     req.params = matches.concat();
                 }
 
-                // Allow access tot he num of remaining routes for this request.
+                // Allow access to the num of remaining routes for this request.
                 req.pendingRoutes = routes.length;
 
                 // Execute this route's `callbacks`.
@@ -1155,7 +1161,9 @@ Y.Router = Y.extend(Router, Y.Base, {
         }
 
         // Joins the `url` with the `root`.
-        urlIsString && (url = this._joinURL(url));
+        if (urlIsString) {
+            url = this._joinURL(url);
+        }
 
         // Force _ready to true to ensure that the history change is handled
         // even if _save is called before the `ready` event fires.
@@ -1239,11 +1247,13 @@ Y.Router = Y.extend(Router, Y.Base, {
             hash = hash.replace(hashPrefix, '');
         }
 
-        hash && (hashPath = this._getHashPath(hash));
-
         // If the hash looks like a URL path, assume it is, and upgrade it!
-        if (hashPath) {
-            return this._resolveURL(hashPath);
+        if (hash) {
+            hashPath = this._getHashPath(hash);
+
+            if (hashPath) {
+                return this._resolveURL(hashPath);
+            }
         }
 
         return url;
@@ -1410,4 +1420,4 @@ version of YUI.
 Y.Controller = Y.Router;
 
 
-}, '3.7.2', {"optional": ["querystring-parse"], "requires": ["array-extras", "base-build", "history"]});
+}, '3.8.0', {"optional": ["querystring-parse"], "requires": ["array-extras", "base-build", "history"]});

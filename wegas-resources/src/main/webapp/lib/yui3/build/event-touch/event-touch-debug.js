@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -148,6 +148,7 @@ if ((win && ("ontouchstart" in win)) && !(Y.UA.chrome && Y.UA.chrome < 6)) {
     GESTURE_MAP.start = "touchstart";
     GESTURE_MAP.end = "touchend";
     GESTURE_MAP.move = "touchmove";
+    GESTURE_MAP.cancel = "touchcancel";
 }
 
 
@@ -156,12 +157,14 @@ else if (win && ("msPointerEnabled" in win.navigator)) {
     GESTURE_MAP.start = "MSPointerDown";
     GESTURE_MAP.end = "MSPointerUp";
     GESTURE_MAP.move = "MSPointerMove";
+    GESTURE_MAP.cancel = "MSPointerCancel";
 }
 
 else {
     GESTURE_MAP.start = "mousedown";
     GESTURE_MAP.end = "mouseup";
     GESTURE_MAP.move = "mousemove";
+    GESTURE_MAP.cancel = "mousecancel";
 }
 
 /**
@@ -177,4 +180,4 @@ else {
 Y.Event._GESTURE_MAP = GESTURE_MAP;
 
 
-}, '3.7.2', {"requires": ["node-base"]});
+}, '3.8.0', {"requires": ["node-base"]});

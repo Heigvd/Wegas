@@ -1,5 +1,5 @@
 /*
-YUI 3.7.2 (build 5639)
+YUI 3.8.0 (build 5744)
 Copyright 2012 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -112,7 +112,9 @@ PjaxBase.prototype = {
     },
 
     destructor: function () {
-        this._pjaxEvents && this._pjaxEvents.detach();
+        if (this._pjaxEvents) {
+            this._pjaxEvents.detach();
+        }
     },
 
     // -- Public Methods -------------------------------------------------------
@@ -271,11 +273,11 @@ PjaxBase.prototype = {
         // on `window.location`.
         if (this.get('html5') || options.force) {
             this.fire(EVT_NAVIGATE, options);
-        } else {
+        } else if (win) {
             if (options.replace) {
-                win && win.location.replace(url);
+                win.location.replace(url);
             } else {
-                win && (win.location = url);
+                win.location = url;
             }
         }
 
@@ -347,7 +349,7 @@ PjaxBase.prototype = {
     @since 3.5.0
     **/
     _onLinkClick: function (e) {
-        var link, url;
+        var link, url, navigated;
 
         // Allow the native behavior on middle/right-click, or when Ctrl or
         // Command are pressed.
@@ -372,7 +374,13 @@ PjaxBase.prototype = {
 
         // Try and navigate to the URL via the router, and prevent the default
         // link-click action if we do.
-        url && this._navigate(url, {originEvent: e}) && e.preventDefault();
+        if (url) {
+            navigated = this._navigate(url, {originEvent: e});
+
+            if (navigated) {
+                e.preventDefault();
+            }
+        }
     }
 };
 
@@ -434,4 +442,4 @@ PjaxBase.ATTRS = {
 Y.PjaxBase = PjaxBase;
 
 
-}, '3.7.2', {"requires": ["classnamemanager", "node-event-delegate", "router"]});
+}, '3.8.0', {"requires": ["classnamemanager", "node-event-delegate", "router"]});
