@@ -46,6 +46,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
@@ -84,6 +85,9 @@ public class FileController {
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException, WegasException {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
         if (name == null) {
             name = details.getContentDisposition().getFileName();
@@ -140,6 +144,9 @@ public class FileController {
     @GET
     @Path("read{absolutePath : .*?}")
     public Response read(@PathParam("gameModelId") String gameModelId, @PathParam("absolutePath") String name) {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
         ContentConnector connector = null;
@@ -190,6 +197,9 @@ public class FileController {
     @Path("list{absoluteDirectoryPath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> listDirectory(@PathParam("gameModelId") String gameModelId, @PathParam("absoluteDirectoryPath") String directory) {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         logger.debug("Asking listing for directory (/{})", directory);
         try {
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
@@ -214,6 +224,9 @@ public class FileController {
     @Path("exportRawXML")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response exportXML(@PathParam("gameModelId") String gameModelId) throws RepositoryException, IOException {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
         StreamingOutput out = new StreamingOutput() {
             @Override
@@ -236,6 +249,9 @@ public class FileController {
     @Path("exportXML")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response exportGZ(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
         StreamingOutput out = new StreamingOutput() {
             @Override
@@ -262,6 +278,9 @@ public class FileController {
     @GET
     @Path("exportZIP")
     public Response exportZIP(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
         StreamingOutput out = new StreamingOutput() {
             @Override
@@ -285,6 +304,9 @@ public class FileController {
             @FormDataParam("file") FormDataBodyPart details)
             throws RepositoryException, IOException, SAXException,
             ParserConfigurationException, TransformerException, WegasException {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         try {
             final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
             switch (details.getMediaType().getSubtype()) {
@@ -320,6 +342,8 @@ public class FileController {
             @PathParam("absolutePath") String absolutePath,
             @PathParam("force") String force) {
 
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         boolean recursive = force.equals("") ? false : true;
         logger.debug("Asking delete for node ({}), force {}", absolutePath, recursive);
         try {
@@ -356,6 +380,9 @@ public class FileController {
             @PathParam("absolutePath") String absolutePath) {
         ContentConnector connector = null;
         AbstractContentDescriptor descriptor = null;
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         try {
             connector = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
             descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
@@ -378,6 +405,9 @@ public class FileController {
     @DELETE
     @Path("destruct")
     public void deleteWorkspace(@PathParam("gameModelId") String gameModelId) {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Delete:gm" + gameModelId.substring(13, gameModelId.length()));
+        
         try {
             ContentConnector fileManager = ContentConnectorFactory.getContentConnectorFromGameModel(extractGameModelId(gameModelId));
             fileManager.deleteWorkspace();
