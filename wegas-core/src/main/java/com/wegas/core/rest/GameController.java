@@ -25,12 +25,10 @@ import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 
 /**
@@ -66,7 +64,6 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @EJB
     private PlayerFacade playerFacade;
-
     /**
      *
      */
@@ -78,9 +75,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Produces(MediaType.APPLICATION_JSON)
     @Override
     public Game get(@PathParam("entityId") Long entityId) {
-        
+
         SecurityUtils.getSubject().checkPermission("Game:View:g" + entityId);
-        
+
         return super.get(entityId);
     }
 
@@ -120,12 +117,12 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
 
         return super.update(entityId, entity);
     }
-    
+
     @Override
-    public Game duplicate(Long entityId) throws IOException{
-        
+    public Game duplicate(Long entityId) throws IOException {
+
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
-        
+
         return super.duplicate(entityId);
     }
 
@@ -154,13 +151,13 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         Team team = null;
         try {
             game = gameFacade.findByToken(token);                           // We check if there is game with given token
-            
+
         } catch (PersistenceException e2) {
             try {
                 team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
                 game = team.getGame();
-        
-                } catch (PersistenceException e) {
+
+            } catch (PersistenceException e) {
                 throw new Exception("Could not find any game associated with this token.");
             }
         }
@@ -169,9 +166,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
                     game.getId(), userFacade.getCurrentUser().getId());
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
         } catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
-            
-            SecurityUtils.getSubject().checkPermission("Game:Token:g"+game.getId());
-                
+
+            SecurityUtils.getSubject().checkPermission("Game:Token:g" + game.getId());
+
             return (team != null) ? team : game;
         }
     }
@@ -180,20 +177,22 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Path("/JoinTeam/{teamId : .*}/")
     @Produces(MediaType.APPLICATION_JSON)
     public Game joinTeam(@PathParam("teamId") Long teamId) {
+        checkPermissions(teamFacade.find(teamId).getGame().getId());
         Game g = teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
         addRights(g);
         return g;
     }
 
-    @GET
-    @Path("/CreateTeam/{name : .*}/")
+    @POST
+    @Path("{gameId : .*}/CreateTeam/{name : .*}/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Game createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
+    public Team createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
+        checkPermissions(gameId);
         Team t = new Team(name);
-        this.teamFacade.create(new Long(this.getPathParam("gameId")), new Team(name));
-        Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
-        addRights(g);
-        return g;
+        this.teamFacade.create(new Long(this.getPathParam("gameId")), t);
+//        Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
+        addRights(teamFacade.find(t.getId()).getGame());
+        return t;
     }
 
     /**
@@ -205,16 +204,22 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         return gameFacade;
     }
 
-    private void addRights(Game game){
+    private void addRights(Game game) {
         Subject s = SecurityUtils.getSubject();
         boolean gExist = s.isPermitted("Game:View:g" + game.getId());
         boolean gmExist = s.isPermitted("GameModel:View:gm" + game.getGameModel().getId());
 
-        if (!gExist){
-            userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g"+game.getId());
+        if (!gExist) {
+            userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g" + game.getId());
         }
-        if (!gmExist){
-            userFacade.getCurrentUser().getMainAccount().getPermissions().add("GameModel:View:gm"+game.getGameModel().getId());
+        if (!gmExist) {
+            userFacade.getCurrentUser().getMainAccount().getPermissions().add("GameModel:View:gm" + game.getGameModel().getId());
+        }
+    }
+
+    private void checkPermissions(Long id) throws UnauthorizedException {
+        if (!SecurityUtils.getSubject().isPermitted("Game:Token:g" + id) && !SecurityUtils.getSubject().isPermitted("Game:View:g" + id)) {
+            throw new UnauthorizedException();
         }
     }
 }
