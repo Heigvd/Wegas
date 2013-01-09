@@ -35,6 +35,7 @@ function checkMoral () {
 function setTeamMotivation () {
     var i, gm = self.getGameModel(),
             listEmployees = VariableDescriptorFacade.findByName(gm, 'employees'),
+            employeeInstance,
             teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation'),
             morals = [],
             mSum = 0,
@@ -47,12 +48,15 @@ function setTeamMotivation () {
         return;
     }
 
-    // calcul arithmetic average of morals
+    // calcul arithmetic average of morals (on actives employees only)
     for (i = 0; i < listEmployees.items.size(); i++) {
-        morals.push(parseInt(listEmployees.items.get(i).getInstance(self).getMoral()));
-        mSum += morals[i];
+        employeeInstance = listEmployees.items.get(i).getInstance(self);
+        if (employeeInstance.getActive() == true) {
+            morals.push(parseInt(employeeInstance.getMoral()));
+            mSum += parseInt(employeeInstance.getMoral());
+        }
     }
-    mAverage = mSum / listEmployees.items.size();
+    mAverage = mSum / morals.length;
 
     //For each moral calcul gap between moral and average (= moral - average);
     //take the sum of each square of gaps (= Sum(n_gaps * n_gaps)). 
@@ -66,9 +70,9 @@ function setTeamMotivation () {
 
     //calcul the new Team Motivation
     newTeamMotivation = (mAverage + (mAverage - standardDeviation)) / 2;
-    if(newTeamMotivation<0){ //in extrems cases
+    if (newTeamMotivation < 0) { //in extrems cases
         newTeamMotivation = 0;
-    } 
+    }
 
     //set teamMotivation
     teamMotivation.getInstance(self).setValue(Math.round(newTeamMotivation));
