@@ -51,9 +51,9 @@ YUI.add('wegas-itemselector', function (Y) {
          */
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.itemSelectorUpdate = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
             
-            this.handlers.select = cb.one('.selectors').delegate('click', function (e) {
+            this.handlers.itemSelectorSelect = cb.one('.selectors').delegate('click', function (e) {
                 var i, variables, name;
                 if (e.target.ancestors('.selector').item(0)) {
                     name = e.target.ancestors('.selector').item(0).getAttribute("data-name");
@@ -72,7 +72,7 @@ YUI.add('wegas-itemselector', function (Y) {
                 this.syncUI();
             }, '.selector', this);
 
-            this.handlers.preventDefault = cb.one('.selectors').delegate('click', function (e) {
+            this.handlers.itemSelectorPreventDefault = cb.one('.selectors').delegate('click', function (e) {
                 e.preventDefault();
             }, '.selector', this);
 
