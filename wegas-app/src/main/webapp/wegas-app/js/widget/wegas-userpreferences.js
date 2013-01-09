@@ -22,6 +22,7 @@ YUI.add("wegas-userpreferences", function (Y) {
         },
         renderUI: function () {
             UserPreferences.superclass.renderUI.apply(this, arguments);
+            this.get(CONTENTBOX).set('className', 'wegas-form');   
             this.cancelButton.hide();
         },
         bindUI: function () {
