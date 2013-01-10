@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -83,6 +84,23 @@ public class MessageFacade extends AbstractFacadeImpl<Message> {
         msg.setSubject(subject);
         msg.setBody(body);
         msg.setFrom(from);
+        this.send(p, msg);
+    }
+    
+    /**
+     *
+     * @param p
+     * @param subject
+     * @param body
+     * @param from
+     * @param attachements
+     */
+    public void send(Player p, String subject, String body, String from, List<String> attachements) {
+        Message msg = new Message();
+        msg.setSubject(subject);
+        msg.setBody(body);
+        msg.setFrom(from);
+        msg.setAttachements(attachements);
         this.send(p, msg);
     }
 
