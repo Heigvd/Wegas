@@ -113,7 +113,7 @@ public class Message extends NamedEntity {
     @PostUpdate
     @PostRemove
     private void onUpdate() {
-        this.getMailboxInstanceEntity().onInstanceUpdate();
+        this.getInboxInstanceEntity().onInstanceUpdate();
     }
 
     @Override
@@ -173,14 +173,14 @@ public class Message extends NamedEntity {
      * @return the MCQDescriptor
      */
     @XmlTransient
-    public InboxInstance getMailboxInstanceEntity() {
+    public InboxInstance getInboxInstanceEntity() {
         return inboxInstanceEntity;
     }
 
     /**
      * @param mailboxInstanceEntity
      */
-    public void setMailboxInstanceEntity(InboxInstance mailboxInstanceEntity) {
+    public void setInboxInstanceEntity(InboxInstance mailboxInstanceEntity) {
         this.inboxInstanceEntity = mailboxInstanceEntity;
     }
 
