@@ -18,7 +18,6 @@ YUI.add('wegas-form', function (Y) {
     var CONTENTBOX = 'contentBox', FormWidget;
 
     FormWidget = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-
         // ** Private Fields ** //
 
         // ** Lifecycle Methods ** //
@@ -28,13 +27,10 @@ YUI.add('wegas-form', function (Y) {
                 emitFacade: true
             });
         },
-
         renderUI: function () {
             this.renderToolbar();
         },
-
         // ** Private Methods ** //
-
         renderToolbar: function () {
             var toolbarNode = this.toolbar.get('header');
 
@@ -43,7 +39,7 @@ YUI.add('wegas-form', function (Y) {
                 on: {
                     click: Y.bind(function () {
                         var form = this.get("form"),
-                        val = form.getValue();
+                                val = form.getValue();
 
                         if (!form.validate()) {
                             return;
@@ -68,7 +64,7 @@ YUI.add('wegas-form', function (Y) {
                 }
             }).render(toolbarNode);
         },
-
+    
         destroyForm: function () {
             this.set("form", null);
         }
@@ -95,9 +91,9 @@ YUI.add('wegas-form', function (Y) {
             cfg: {
                 setter: function (val) {
                     val.parentEl = this.get(CONTENTBOX);                        // Set up the form parentEl attribute, so it knows where to render
-
-                    Y.inputEx.use(val, Y.bind(function (cfg) {              // Load form dependencies
-                        var form = Y.inputEx(cfg);                          // Initialize and render form
+                    val.className = "wegas-form-ix";
+                    Y.inputEx.use(val, Y.bind(function (cfg) {                  // Load form dependencies
+                        var form = Y.inputEx(cfg);                              // Initialize and render form
                         form.setValue(this.get("values"));                      // Sync form with "values" ATTR
                         this.set("form", form);
                     }, this, val));
@@ -110,7 +106,7 @@ YUI.add('wegas-form', function (Y) {
     Y.namespace("Wegas").FormWidget = FormWidget;
 
     var inputEx = Y.inputEx,
-    lang = Y.Lang;
+            lang = Y.Lang;
 
     /**
      *  @hack So we can easily change classs on inputex fields
@@ -137,8 +133,8 @@ YUI.add('wegas-form', function (Y) {
         }
         this.options.readonly = options.readonly;
         this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
-        inputEx.browserAutocomplete :
-        (options.autocomplete === false || options.autocomplete === "off") ? false : true;
+                inputEx.browserAutocomplete :
+                (options.autocomplete === false || options.autocomplete === "off") ? false : true;
         this.options.trim = (options.trim === true) ? true : false;
     };
     /**
@@ -147,12 +143,12 @@ YUI.add('wegas-form', function (Y) {
     Y.inputEx.getRawModulesFromDefinition = function (inputexDef) {
 
         var type = inputexDef.type || 'string',
-        module = YUI_config.groups.inputex.modulesByType[type],
-        modules = [module || type],
-        //set fields if they exist
-        fields = inputexDef.fields
-        //else see if we have elementType for lists - if neither then we end up with null
-        || inputexDef.availableFields || [];
+                module = YUI_config.groups.inputex.modulesByType[type],
+                modules = [module || type],
+                //set fields if they exist
+                fields = inputexDef.fields
+                //else see if we have elementType for lists - if neither then we end up with null
+                || inputexDef.availableFields || [];
 
         if (inputexDef.elementType) {
             fields.push(inputexDef.elementType);
