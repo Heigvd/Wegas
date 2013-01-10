@@ -76,6 +76,13 @@ public class InboxInstance extends VariableInstance {
     public void sendMessage(String from, String subject, String body) {
         this.sendMessage(new Message(from, subject, body));
     }
+    /**
+     *
+     * @param message
+     */
+    public void sendMessage(String from, String subject, String body, List<String> attachements) {
+        this.sendMessage(new Message(from, subject, body, attachements));
+    }
 
     @Override
     public void merge(AbstractEntity a) {

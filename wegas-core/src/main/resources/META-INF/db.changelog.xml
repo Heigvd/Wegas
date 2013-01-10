@@ -2,9 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-    <include file="dbchangelogs/dbcreate.xml"/>
-    <include file="dbchangelogs/initialInsert.xml"/>
-    <include file="dbchangelogs/dbchanges.xml"/>
-    <include file="dbchangelogs/wegas-cs-1.xml"/>
-    
+
+    <includeAll path="dbchangelogs/"/>
+
 </databaseChangeLog>
