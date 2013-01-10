@@ -56,7 +56,7 @@ public class InboxInstance extends VariableInstance {
         this.messages = messages;
         for (Iterator<Message> it = this.messages.iterator(); it.hasNext();) {
             Message r = it.next();
-            r.setMailboxInstanceEntity(this);
+            r.setInboxInstanceEntity(this);
         }
     }
 
@@ -66,7 +66,7 @@ public class InboxInstance extends VariableInstance {
      */
     public void sendMessage(Message message) {
         this.messages.add(message);
-        message.setMailboxInstanceEntity(this);
+        message.setInboxInstanceEntity(this);
     }
 
     /**

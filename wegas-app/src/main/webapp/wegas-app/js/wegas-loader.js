@@ -151,7 +151,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-inbox': {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
-                        requires: ["tabview", 'wegas-tabviewcss', "wegas-inboxcss"],
+                        requires: ["tabview", 'wegas-tabviewcss', "wegas-inboxcss", "wegas-widgettoolbar"],
                         ws_provides: 'InboxDisplay'
                     },
                     'wegas-inboxcss': {

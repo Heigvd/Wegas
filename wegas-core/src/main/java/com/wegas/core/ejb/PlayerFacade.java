@@ -11,8 +11,10 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.ejb.statemachine.StateMachineRunner;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.ejb.UserFacade;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -41,6 +43,8 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
     private StateMachineRunner stateMachineRunner;
     @EJB
     private TeamFacade teamEntityFacade;
+    @EJB
+    private UserFacade userFacade;
 
     /**
      *
@@ -77,6 +81,10 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         Query findByGameId = em.createNamedQuery("findPlayerByGameId");
         findByGameId.setParameter("gameId", gameId);
         return findByGameId.getResultList();
+    }
+
+    public Player findCurrentPlayer(Game g) {
+        return this.findByGameIdAndUserId(g.getId(), userFacade.getCurrentUser().getId());
     }
 
     /**
