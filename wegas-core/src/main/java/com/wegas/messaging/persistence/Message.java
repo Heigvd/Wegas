@@ -20,6 +20,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -46,7 +47,8 @@ public class Message extends NamedEntity {
      *
      */
     @JsonView(Views.Export.class)
-    @Column(length = 4096)
+    //@Column(length = 4096)
+    @Lob
     private String body;
     /**
      *
@@ -62,11 +64,12 @@ public class Message extends NamedEntity {
      */
     @Column(name = "mfrom")
     private String from;
-//    /**
-//     *
-//     */
-//    @ElementCollection
-//    private List<String> attachements;
+    /**
+     *
+     */
+    @ElementCollection
+    @JsonView(Views.Export.class)
+    private List<String> attachements;
     /**
      *
      */
@@ -90,6 +93,13 @@ public class Message extends NamedEntity {
         this.body = body;
     }
 
+    public Message(String from, String subject, String body, List<String> attachements) {
+        this.from = from;
+        this.subject = subject;
+        this.body = body;
+        this.attachements = attachements;
+    }
+
     /**
      *
      * @param a
@@ -102,7 +112,7 @@ public class Message extends NamedEntity {
         this.setUnread(other.getUnread());
         this.setTime(other.getTime());
         this.setSubject(other.getSubject());
-//        this.setAttachements(other.attachements);
+        this.setAttachements(other.attachements);
     }
 
     /**
@@ -226,17 +236,17 @@ public class Message extends NamedEntity {
         this.from = from;
     }
 
-//    /**
-//     * @return the attachements
-//     */
-//    public List<String> getAttachements() {
-//        return attachements;
-//    }
-//
-//    /**
-//     * @param attachements the attachements to set
-//     */
-//    public void setAttachements(List<String> attachements) {
-//        this.attachements = attachements;
-//    }
+    /**
+     * @return the attachements
+     */
+    public List<String> getAttachements() {
+        return attachements;
+    }
+
+    /**
+     * @param attachements the attachements to set
+     */
+    public void setAttachements(List<String> attachements) {
+        this.attachements = attachements;
+    }
 }
