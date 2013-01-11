@@ -77,7 +77,7 @@
                             },
                             "User": {
                                 source: "rest/User",
-                                initialRequest: "/",
+                                initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
                                         fn: "UserDataSourceREST"
                                     }]

@@ -60,6 +60,7 @@
                             },
                             "User": {
                                 source: "rest/User",
+                                initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
                                         fn: "UserDataSourceREST"
                                     }]
