@@ -226,7 +226,7 @@
                                     },
                                     "User": {
                                         source: "rest/User",
-                                        initialRequest: "/" + #{requestController.getCurrentUser().toJson()}.id,
+                                        initialRequest: "/" + #{requestController.currentUser.id},
                                         plugins: [{
                                                 fn: "UserDataSourceREST"
                                             }]
