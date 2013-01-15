@@ -60,15 +60,15 @@
 .yui3-skin-sam .wegas-inbox .read {
     padding: 0 10px;
 }
-.yui3-skin-sam .wegas-inbox .msg-subject,
-.yui3-skin-sam .wegas-inbox .msg-from {
+.yui3-skin-sam .wegas-inbox .msg-header{
     background: rgba(178, 210, 255, 0.6);
+    border-bottom: 1px solid lightgray;
+}
+
+.yui3-skin-sam .wegas-inbox .msg-header>div{
     padding: 5px 10px;
 }
 
-.yui3-skin-sam .wegas-inbox .msg-from {
-    border-bottom: 1px solid lightgray;
-}
 .yui3-skin-sam .wegas-inbox .msg-body {
     border-bottom: 1px solid lightgray;
     padding: 5px 10px;

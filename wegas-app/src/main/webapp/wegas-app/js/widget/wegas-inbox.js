@@ -20,6 +20,7 @@ YUI.add('wegas-inbox', function (Y) {
     InboxDisplay = Y.Base.create("wegas-inbox", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         // *** Private Fields *** //
         tabView: null,
+        handlers: null,
         dataSource: null,
         deleteButton: null,
         msg: null,
@@ -57,8 +58,10 @@ YUI.add('wegas-inbox', function (Y) {
                 tab = new Y.Tab({
                     label: '<div class="' + (msg.get("unread") ? "unread" : "read") + '"><div class="left">' + from + '</div>'
                             + '<div class="right">' + msg.get("subject") + '</div></div>',
-                    content: '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
+                    content: '<div class="msg-header">'
+                            + '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
                             + '<div class="msg-from">From: ' + from + '</div>'
+                            + '</div>'
                             + '<div class="msg-body"><center><em><i>Loading</i></center></div>'
                 });
                 tab.msg = msg;
@@ -100,6 +103,7 @@ YUI.add('wegas-inbox', function (Y) {
             });
         },
         onTabSelected: function (e) {
+            var i, attachement, attachements = [];
             if (this.isSyncing) {
                 return;
             }
@@ -114,6 +118,16 @@ YUI.add('wegas-inbox', function (Y) {
                     request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Export",
                     on: {
                         success: Y.bind(function (e) {
+                            if (e.response.entity.get("attachements") && e.response.entity.get("attachements").length > 0) {
+                                for (i = 0; i < e.response.entity.get("attachements").length; i++) {
+                                    attachement = e.response.entity.get("attachements")[i];
+                                    attachements.push("<a href='" + attachement + "'>" + attachement + "</a>");
+                                }
+                                if (!this.get("panelNode").one(".msg-header .msg-attachement")) {
+                                    this.get("panelNode").one(".msg-header").append("<div class='msg-attachement'></div>");
+                                } 
+                                this.get("panelNode").one(".msg-header .msg-attachement").setHTML("Attachements: " + attachements.join("; "));
+                            }
                             this.get("panelNode").one(".msg-body").setHTML(e.response.entity.get("body") || "<center><em><i>Empty</i></center>");
                         }, e.newVal)
                     }
