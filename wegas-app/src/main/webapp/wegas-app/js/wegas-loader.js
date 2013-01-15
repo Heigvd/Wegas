@@ -477,7 +477,7 @@ YUI().use(function(Y) {
                     /**CEP**/
                     'wegas-cep': {
                         path: 'wegas-cep/js/wegas-cep-folder.js',
-                        requires: ['wegas-nodeformatter', 'wegas-itemselector', 'wegas-cep-folder'],
+                        requires: ['wegas-nodeformatter', 'wegas-itemselector', 'wegas-cep-folder', , "wegas-injector"],
                         ws_provides: 'CEPFolder'
                     },
                     /** CrimeSim **/
@@ -507,7 +507,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-leaderway-folder': {
                         path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
-                        requires: ['wegas-itemselector'],
+                        requires: ['wegas-itemselector', "wegas-injector"],
                         ws_provides: "LWFolder"
                     },
                     'wegas-leaderway-tasklist': {
@@ -522,7 +522,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-leaderway-dialogue': {
                         path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
-                        requires: ['charts', 'charts-legend'],
+                        requires: ['charts', 'charts-legend', "wegas-injector"],
                         ws_provides: "Dialogue"
                     },
                     "wegas-leaderway-translator": {

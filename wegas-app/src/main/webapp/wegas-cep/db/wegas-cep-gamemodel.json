@@ -340,7 +340,7 @@
                 "moral":72,
                 "confidence":0,
                 "properties":{
-                    "picture":"/Wegas/rest/File/GameModelId/1/read/fernandNeutre.png",
+                    "picture":"/fernandNeutre.png",
                     "surname":"Fernand",
                     "male":true,
                     "salary":4000,
@@ -361,7 +361,7 @@
                 "moral":45,
                 "confidence":0,
                 "properties":{
-                    "picture":"/Wegas/rest/File/GameModelId/1/read/danielaNeutre.png",
+                    "picture":"/danielaNeutre.png",
                     "surname":"Daniela",
                     "male":false,
                     "salary":3800,
@@ -382,7 +382,7 @@
                 "moral":92,
                 "confidence":0,
                 "properties":{
-                    "picture":"/Wegas/rest/File/GameModelId/1/read/jessicaNeutre.png",
+                    "picture":"/jessicaNeutre.png",
                     "surname":"Jessica",
                     "male":false,
                     "salary":3300,
@@ -403,7 +403,7 @@
                 "moral":95,
                 "confidence":0,
                 "properties":{
-                    "picture":"/Wegas/rest/File/GameModelId/1/read/hectorNeutre.png",
+                    "picture":"/hectorNeutre.png",
                     "surname":"Hector",
                     "male":true,
                     "salary":3400,
@@ -424,7 +424,7 @@
                 "moral":78,
                 "confidence":0,
                 "properties":{
-                    "picture":"/Wegas/rest/File/GameModelId/1/read/lucienNeutre.png",
+                    "picture":"/lucienNeutre.png",
                     "surname":"Lucien",
                     "male":true,
                     "salary":3500,
