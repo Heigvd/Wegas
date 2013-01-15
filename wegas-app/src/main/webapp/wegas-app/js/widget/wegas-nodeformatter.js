@@ -30,7 +30,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
                 return node;
             }
             for (k in attrs) {
-                node.one('img').set(k, attrs[k]);
+                node.one('img').setAttribute(k, attrs[k]);
             }
             return node;
         },
