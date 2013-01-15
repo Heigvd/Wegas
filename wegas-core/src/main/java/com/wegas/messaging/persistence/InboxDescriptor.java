@@ -12,6 +12,7 @@ package com.wegas.messaging.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -67,6 +68,19 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     public void sendMessage(Player p, String from, String subject, String body) {
         this.getInstance(p).sendMessage(from, subject, body);
+    }
+    
+    /**
+     *
+     * Sugar to be used from scripts.
+     *
+     * @param p
+     * @param from
+     * @param subject
+     * @param content
+     */
+    public void sendMessage(Player p, String from, String subject, String body, List<String> attachements) {
+        this.getInstance(p).sendMessage(from, subject, body, attachements);
     }
 
     public Boolean isEmpty(Player p) {
