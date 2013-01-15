@@ -142,12 +142,12 @@
                 "type": "PageLoader",
                 "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
-                "defaultPageId": 2
+                "defaultPageId": 2,
+                "plugins": [{"fn": "Injector"}]
             }]
     },
     "2": {
         "label": "Folder",
-        "plugins": [{"fn": "Injector"}],
         "type": "LWFolder",
         "cssClass": "leaderway-folder",
         "listVariables": "resources",
@@ -293,7 +293,6 @@
     "7": {
         "label": "Dialogue",
         "type": "Dialogue",
-        "plugins": [{"fn": "Injector"}],
         "cssClass": "leaderway-dialogue",
         "toHide": ".leaderway-menu",
         "taskListPageId": "6",
