@@ -11,11 +11,15 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -43,6 +47,11 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
      */
     @EJB
     private GameModelFacade gameModelFacade;
+    /**
+     *
+     */
+    @EJB
+    private UserFacade userFacade;
     
     @Inject
     private RequestManager requestManager;
@@ -62,7 +71,17 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
         Subject s = SecurityUtils.getSubject();
         s.checkPermission("GameModel:Create");
 
-        return super.create(entity);
+        GameModel gm = super.create(entity);
+        if (gm.getId() != null){
+            userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Edit:gm" + gm.getId());
+            userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View:gm" + gm.getId());
+            if (gm.getGames().get(0) != null){
+                userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + gm.getGames().get(0).getId());
+                userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + gm.getGames().get(0).getId());
+            }
+        }
+        
+        return gm;
     }
   
     @GET
@@ -96,6 +115,18 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
     public GameModel delete(Long entityId){
         
         SecurityUtils.getSubject().checkPermission("GameModel:Delete:gm" + entityId);
+    
+        System.out.print("gm" + entityId);
+
+        userFacade.deleteUserPermissionByInstance("gm" + entityId);
+        
+        List<Game> allg = gameModelFacade.find(entityId).getGames();
+        if (allg.size() >= 1){
+            for (Game aGame : allg){
+                System.out.println("g" + aGame.getId());
+                userFacade.deleteUserPermissionByInstance("g" + aGame.getId());
+            }
+        }
         
         return super.delete(entityId); 
     }
