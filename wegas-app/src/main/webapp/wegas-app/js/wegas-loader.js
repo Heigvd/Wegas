@@ -477,7 +477,7 @@ YUI().use(function(Y) {
                     /**CEP**/
                     'wegas-cep': {
                         path: 'wegas-cep/js/wegas-cep-folder.js',
-                        requires: ['wegas-nodeformatter', 'wegas-itemselector', 'wegas-cep-folder'],
+                        requires: ['wegas-nodeformatter', 'wegas-itemselector', 'wegas-cep-folder', "wegas-injector"],
                         ws_provides: 'CEPFolder'
                     },
                     /** CrimeSim **/
@@ -502,7 +502,7 @@ YUI().use(function(Y) {
                     'wegas-leaderway': {
                         path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
                         requires: ['wegas-leaderway-folder', 'wegas-leaderway-tasklist',
-                        'wegas-leaderway-score', 'wegas-leaderway-dialogue']/*,
+                        'wegas-leaderway-score', 'wegas-leaderway-dialogue', "wegas-injector"]/*,
                              ws_provides: "HRList"*/
                     },
                     'wegas-leaderway-folder': {
