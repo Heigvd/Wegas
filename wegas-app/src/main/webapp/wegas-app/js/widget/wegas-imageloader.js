@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-imageloader', function (Y) {
+YUI.add('wegas-imageloader', function(Y) {
     "use strict";
 
     /**
@@ -22,7 +22,7 @@ YUI.add('wegas-imageloader', function (Y) {
      * @constructor
      */
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder,
-    ImgageLoader = function () {
+            ImgageLoader = function() {
         Y.Wegas.ImgageLoader.superclass.constructor.apply(this, arguments);
     };
 
@@ -33,7 +33,7 @@ YUI.add('wegas-imageloader', function (Y) {
     };
 
     Y.extend(ImgageLoader, Y.ImgLoadImgObj, {
-        _getImgEl: function () {
+        _getImgEl: function() {
 
             return this.get("target");
 
@@ -42,7 +42,7 @@ YUI.add('wegas-imageloader', function (Y) {
             }
             return this._imgEl;
         },
-        fetch: function (withinY) {
+        fetch: function(withinY) {
             if (this._fetched) {
                 return true;
             }
@@ -91,21 +91,20 @@ YUI.add('wegas-imageloader', function (Y) {
 
             return true;
         },
-
-        loadImage: function (el, attr) {
+        loadImage: function(el, attr) {
 
             // Method 1, using BlobBuilder & XMLHttpRequest
-            if (XMLHttpRequest &&  BlobBuilder) {
+            if (window.XMLHttpRequest && window.BlobBuilder) {
                 var request = new XMLHttpRequest();
-                request.onload = Y.bind(function (loadEvt) {
+                request.onload = Y.bind(function(loadEvt) {
                     if (loadEvt.target.status === 200) {
                         var blob, bb = new BlobBuilder(),
-                        reader = new FileReader();
+                                reader = new FileReader();
 
                         bb.append(loadEvt.target.response);                     // Note: not request.responseText
                         blob = bb.getBlob(loadEvt.target.getResponseHeader("Content-Type"));
 
-                        reader.onload = Y.bind(function (e) {
+                        reader.onload = Y.bind(function(e) {
                             el.setAttribute(attr, e.target.result);
                             this.fire("load", {
                                 meta: {
@@ -121,14 +120,11 @@ YUI.add('wegas-imageloader', function (Y) {
                 request.responseType = "arraybuffer";
                 request.send(null);
                 return;
-            }
-
-            // Method 2, using overrideMimeType
-            if (GM_xmlhttpRequest) {
+            } else if (window.GM_xmlhttpRequest) {                              // Method 2, using overrideMimeType
                 GM_xmlhttpRequest({
                     method: 'GET',
                     url: this.get('srcUrl'),
-                    onload: function (respDetails) {
+                    onload: function(respDetails) {
                         var binResp = customBase64Encode(respDetails.responseText);
                         el.setAttribute(attr, 'data:image/png;base64,' + binResp);
                     },
@@ -139,7 +135,7 @@ YUI.add('wegas-imageloader', function (Y) {
 
             // Method 3 (fallback), set img src
             el.setAttribute(attr, this.get('srcUrl'));
-            el.once("load", function ( e ) {
+            el.once("load", function(e) {
                 this.fire("load", {
                     meta: {}
                 });
@@ -151,47 +147,47 @@ YUI.add('wegas-imageloader', function (Y) {
 
     function customBase64Encode(inputStr) {
         var
-        bbLen               = 3,
-        enCharLen           = 4,
-        inpLen              = inputStr.length,
-        inx                 = 0,
-        jnx,
-        keyStr              = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-        + "0123456789+/=",
-        output              = "",
-        paddingBytes        = 0;
+                bbLen = 3,
+                enCharLen = 4,
+                inpLen = inputStr.length,
+                inx = 0,
+                jnx,
+                keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+                + "0123456789+/=",
+                output = "",
+                paddingBytes = 0;
         var
-        bytebuffer          = new Array (bbLen),
-        encodedCharIndexes  = new Array (enCharLen);
+                bytebuffer = new Array(bbLen),
+                encodedCharIndexes = new Array(enCharLen);
 
         while (inx < inpLen) {
-            for (jnx = 0;  jnx < bbLen;  ++jnx) {
+            for (jnx = 0; jnx < bbLen; ++jnx) {
                 /*--- Throw away high-order byte, as documented at:
-              https://developer.mozilla.org/En/Using_XMLHttpRequest#Handling_binary_data
+                 https://developer.mozilla.org/En/Using_XMLHttpRequest#Handling_binary_data
                  */
                 if (inx < inpLen)
-                    bytebuffer[jnx] = inputStr.charCodeAt (inx++) & 0xff;
+                    bytebuffer[jnx] = inputStr.charCodeAt(inx++) & 0xff;
                 else
                     bytebuffer[jnx] = 0;
             }
 
             /*--- Get each encoded character, 6 bits at a time.
-            index 0: first  6 bits
-            index 1: second 6 bits
-                        (2 least significant bits from inputStr byte 1
-                         + 4 most significant bits from byte 2)
-            index 2: third  6 bits
-                        (4 least significant bits from inputStr byte 2
-                         + 2 most significant bits from byte 3)
-            index 3: forth  6 bits (6 least significant bits from inputStr byte 3)
+             index 0: first  6 bits
+             index 1: second 6 bits
+             (2 least significant bits from inputStr byte 1
+             + 4 most significant bits from byte 2)
+             index 2: third  6 bits
+             (4 least significant bits from inputStr byte 2
+             + 2 most significant bits from byte 3)
+             index 3: forth  6 bits (6 least significant bits from inputStr byte 3)
              */
             encodedCharIndexes[0] = bytebuffer[0] >> 2;
-            encodedCharIndexes[1] = ( (bytebuffer[0] & 0x3) << 4)   |  (bytebuffer[1] >> 4);
-            encodedCharIndexes[2] = ( (bytebuffer[1] & 0x0f) << 2)  |  (bytebuffer[2] >> 6);
+            encodedCharIndexes[1] = ((bytebuffer[0] & 0x3) << 4) | (bytebuffer[1] >> 4);
+            encodedCharIndexes[2] = ((bytebuffer[1] & 0x0f) << 2) | (bytebuffer[2] >> 6);
             encodedCharIndexes[3] = bytebuffer[2] & 0x3f;
 
             //--- Determine whether padding happened, and adjust accordingly.
-            paddingBytes          = inx - (inpLen - 1);
+            paddingBytes = inx - (inpLen - 1);
             switch (paddingBytes) {
                 case 1:
                     // Set last character to padding char
@@ -207,10 +203,10 @@ YUI.add('wegas-imageloader', function (Y) {
             }
 
             /*--- Now grab each appropriate character out of our keystring,
-            based on our index array and append it to the output string.
+             based on our index array and append it to the output string.
              */
-            for (jnx = 0;  jnx < enCharLen;  ++jnx)
-                output += keyStr.charAt ( encodedCharIndexes[jnx] );
+            for (jnx = 0; jnx < enCharLen; ++jnx)
+                output += keyStr.charAt(encodedCharIndexes[jnx]);
         }
         return output;
     }
