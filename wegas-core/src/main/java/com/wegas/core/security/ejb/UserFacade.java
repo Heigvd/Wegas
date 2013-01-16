@@ -253,7 +253,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
                     if (splitedPermission[2].equals(gameOrGameModelId)) {
-                        System.out.println(p);
                         sit.remove();
                     }
                 }
