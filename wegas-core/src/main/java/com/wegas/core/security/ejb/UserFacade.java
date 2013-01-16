@@ -246,8 +246,8 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         Query findByToken = em.createNamedQuery("findUserPermissions");
         findByToken.setParameter("gameId", "%:" + gameOrGameModelId);
         List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
-        for (Iterator<AbstractAccount> it = accounts.iterator(); it.hasNext();) {
-            AbstractAccount a = it.next();
+        for (AbstractAccount a : accounts) {
+            em.detach(a);
             for (Iterator<String> sit = a.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next();
                 String splitedPermission[] = p.split(":");
@@ -258,9 +258,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                     }
                 }
             }
-//            em.persist(a);
-//            em.refresh(a);
-//            em.flush();
+            em.merge(a);
         }
 
 
