@@ -22,6 +22,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -107,6 +109,11 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         SecurityUtils.getSubject().checkPermission("Game:Create");
 
         this.gameFacade.create(new Long(this.getPathParam("gameModelId")), entity);
+        
+        if (entity.getId() != null){
+            userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + entity.getId());
+            userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + entity.getId());
+        }   
         return entity;
     }
 
@@ -130,7 +137,11 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     public Game delete(Long entityId) {
 
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
-
+      
+        userFacade.deleteUserPermissionByInstance("g" + entityId);
+        
+        userFacade.deleteAllRolePermissionsById("g" + entityId);
+        
         return super.delete(entityId);
     }
 
