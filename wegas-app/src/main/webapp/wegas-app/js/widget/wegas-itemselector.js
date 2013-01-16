@@ -26,7 +26,7 @@ YUI.add('wegas-itemselector', function (Y) {
                 return;
             }
             variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('listVariables'));
-            if(!variables || !variables.get('items')){
+            if (!variables || !variables.get('items')) {
                 return;
             }
             for (i = 0; i < variables.get('items').length; i++) {
@@ -52,7 +52,7 @@ YUI.add('wegas-itemselector', function (Y) {
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
             this.handlers.itemSelectorUpdate = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
-            
+
             this.handlers.itemSelectorSelect = cb.one('.selectors').delegate('click', function (e) {
                 var i, variables, name;
                 if (e.target.ancestors('.selector').item(0)) {
@@ -134,6 +134,13 @@ YUI.add('wegas-itemselector', function (Y) {
                     switch (type) {
                         case 'image' :
                             child = this.makeNodeImage({
+                                "data-file": value,
+                                "width": obj['height'],
+                                "height": obj['width']
+                            }, className);
+                            break;
+                        case 'external-image' :
+                            child = this.makeNodeImage({
                                 "src": value,
                                 "width": obj['height'],
                                 "height": obj['width']
@@ -143,7 +150,7 @@ YUI.add('wegas-itemselector', function (Y) {
                             child = this.makeNodePosition(obj['html'], obj['selector'], value, obj['minVal'], obj['invert'], className);
                             break;
                         case 'valueBox' :
-                            child = this.makeNodeValueBox(''+value, obj['maxValue'], label, className);
+                            child = this.makeNodeValueBox('' + value, obj['maxValue'], label, className);
                             break;
                         default :
                             child = this.makeNodeText(value, label, className);

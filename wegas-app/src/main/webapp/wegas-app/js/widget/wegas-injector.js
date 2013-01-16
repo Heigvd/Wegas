@@ -21,22 +21,35 @@ YUI.add("wegas-injector", function(Y) {
             case "IMG":
                 if (!element.hasAttribute("src")) {
                     element.setAttribute("src", Y.Wegas.app.get("dataSources").File.source + "read" + element.getAttribute("data-file"));
+                    element.removeAttribute("data-file");
                 }
                 break;
             default:
                 if (!element.hasAttribute("href")) {
                     element.setAttribute("href", Y.Wegas.app.get("dataSources").File.source + "read" + element.getAttribute("data-file"));
+                    element.removeAttribute("data-file");
                 }
         }
     };
 
     Y.extend(Injector, Y.Plugin.Base, {
         initializer: function() {
+            Y.mix(Y.Node.DOM_EVENTS, {
+                DOMNodeInserted: true,
+                DOMNodeRemoved: true,
+                DOMCharacterDataModified: true
+            });
             this.gallery = false;
             this.insertEvent = this.get("host").get("boundingBox").delegate("DOMNodeInserted", function(e) {
-                parser(e.currentTarget);
+                var list = e.currentTarget.all(MATCHER);
+                e.halt(true);
+                list.each(function(item) {
+                    parser(item);
+                });
                 this.instanciateGallery(e.currentTarget);
-            }, MATCHER, this);
+            }, function(item) {
+                return (item.all(MATCHER).size() > 0);
+            }, this);
             this.renderEvent = this.afterHostEvent("*:render", function(e) {
                 var list = e.currentTarget.get("boundingBox").all(MATCHER);
                 list.each(function(item) {

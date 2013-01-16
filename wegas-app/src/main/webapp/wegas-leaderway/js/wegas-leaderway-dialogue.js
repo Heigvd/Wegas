@@ -319,7 +319,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         renderImages: function (node, imageObjects) {
             var i, key, imageHTML = new Array();
             for (i = 0; i < imageObjects.length; i++) {
-                imageHTML.push('<img src="');
+                imageHTML.push('<img data-file="');
                 imageHTML.push(imageObjects[i].link);
                 imageHTML.push('" ');
                 if (imageObjects[i].height) {
