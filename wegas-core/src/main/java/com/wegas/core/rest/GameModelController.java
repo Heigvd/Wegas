@@ -115,17 +115,14 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
     public GameModel delete(Long entityId){
         
         SecurityUtils.getSubject().checkPermission("GameModel:Delete:gm" + entityId);
-    
-        System.out.print("gm" + entityId);
 
         userFacade.deleteUserPermissionByInstance("gm" + entityId);
+        userFacade.deleteAllRolePermissionsById("gm" + entityId);
         
         List<Game> allg = gameModelFacade.find(entityId).getGames();
-        if (allg.size() >= 1){
-            for (Game aGame : allg){
-                System.out.println("g" + aGame.getId());
-                userFacade.deleteUserPermissionByInstance("g" + aGame.getId());
-            }
+        for (Game aGame : allg){
+            userFacade.deleteUserPermissionByInstance("g" + aGame.getId());
+            userFacade.deleteAllRolePermissionsById("g" + aGame.getId());
         }
         
         return super.delete(entityId); 
