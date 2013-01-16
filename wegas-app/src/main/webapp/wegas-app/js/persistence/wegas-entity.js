@@ -1201,16 +1201,20 @@ YUI.add('wegas-entity', function (Y) {
                         value: "self"
                     }]
             },
-            setActive: {
-                label: "Set active",
+            activate: {
+                label: "Activate",
                 arguments: [{
                         type: "hidden",
                         value: "self"
-                    }, {
-                        type: "boolean",
-                        value: false
                     }]
-            }
+            },
+            desactivate: {
+                label: "Desactivate",
+                arguments: [{
+                        type: "hidden",
+                        value: "self"
+                    }]
+            },
         }
     });
 
@@ -1391,7 +1395,7 @@ YUI.add('wegas-entity', function (Y) {
                         label: "Attachements",
                         scriptType: "list",
                         useButtons: true
-                        /*sortable: true*/
+                                /*sortable: true*/
                     }
                 ]
             },
