@@ -90,6 +90,7 @@ public class Team extends AbstractEntity {
     public void merge(AbstractEntity a) {
         Team t = (Team) a;
         this.setName(t.getName());
+        this.setToken(t.getToken());
     }
 
     @PrePersist

@@ -1,6 +1,5 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -12,6 +11,7 @@ package com.wegas.core.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.Set;
 import javax.ejb.Stateless;
@@ -83,10 +83,13 @@ public class ResourceCombo {
         for (String fileName : fileList) {
             try {
                 InputStream fis = (InputStream) servletContext.getResource(fileName).getContent();
-                String content = new Scanner(fis, "ISO-8859-1").useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
+                String content = new Scanner(fis, ResourceBundle.getBundle("wegas").getString("charset")).useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
                 if (mediaType.equals("text/css")) {                             // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
-                    content = content.replaceAll("url\\(([^:\\)]+\\))", /* Regexp to avoid rewriting protocol guess they contain ':' (http: data:) */
+                    content = content.replaceAll("url\\(([^:\\)]+\\))", /*
+                             * Regexp to avoid rewriting protocol guess they
+                             * contain ':' (http: data:)
+                             */
                             "url(" + servletContext.getContextPath() + dir + "$1");
                 }
 
