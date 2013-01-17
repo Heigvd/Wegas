@@ -1,0 +1,91 @@
+/* 
+    Document   : wegas-button
+    Created on : 17 janv. 2013, 16:24:10
+    Author     : Benjamin
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* Wegas small icons */
+.yui3-skin-sam .wegas-icon {
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-image: url(../images/wegas-app-sprite.png);
+}
+.yui3-skin-sam .wegas-icon-reset {
+    background-position: 0px -300px;
+}
+.yui3-skin-sam .wegas-icon-refresh {
+    background-position: 0px -300px;
+}
+.yui3-skin-sam .wegas-icon-new {
+    background-position: 0px 0px;
+}
+.yui3-skin-sam .wegas-icon-newfile {
+    background: url(../images/wegas-app-sprite.png) no-repeat 1px -1210px,
+        url(../../wegas_editor/images/wegas-icon-files.png) no-repeat 1px -228px;
+}
+.yui3-skin-sam .wegas-icon-newdir {
+    background: url(../images/wegas-app-sprite.png) no-repeat 1px -1167px,
+        url(../images/wegas-button-sprite.png) no-repeat 1px -272px;
+}
+.yui3-skin-sam .wegas-icon-play {
+    background-position: 0px -192px;
+}
+.yui3-skin-sam .wegas-icon-stop {
+    background-position: 0px -172px;
+}
+.yui3-skin-sam .wegas-icon-zoomin {
+    background-position: 0px -124px;
+}
+.yui3-skin-sam .wegas-icon-zoomout {
+    background-position: 0px -152px;
+}
+.yui3-skin-sam .wegas-icon-select{
+    background-position: 0px -244px;
+}
+.yui3-skin-sam .wegas-icon-move {
+    background-position: 0px -214px;
+}
+.yui3-skin-sam .wegas-icon-cut {
+    background-position: 0px -42px;
+}
+.yui3-skin-sam .wegas-icon-copy {
+    background-position: 0px -68px;
+}
+.yui3-skin-sam .wegas-icon-paste {
+    background-position: 0px -271px;
+}
+.yui3-skin-sam .wegas-icon-save {
+    background-position: 0px -654px;
+}
+.yui3-skin-sam .wegas-icon-delete {
+    background-position: 0px -771px;
+}
+.yui3-skin-sam .wegas-icon-preview {
+    background-position: 0px -741px;
+}
+.yui3-skin-sam .wegas-icon-cancel {
+    background-position: 0px -834px;
+}
+.yui3-skin-sam .wegas-icon-fileexplorer {
+    background-position: 0px -870px;
+}
+.yui3-skin-sam .wegas-icon-add {
+    background-position: 1px -1027px;
+}
+.yui3-skin-sam .wegas-icon-remove {
+    background-position: 1px -1002px;
+}
+.yui3-skin-sam .wegas-icon-viewsrc {
+    background-position: 2px -804px;
+}
+.yui3-skin-sam .wegas-icon-edit {
+    background-position: 2px -943px;
+}
+.yui3-skin-sam .wegas-icon-designmode {
+    background-position: 0px -1110px;
+}

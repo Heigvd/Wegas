@@ -85,7 +85,7 @@
     display:inline-block;
     width: 49%;
     height: 100%;
-    background:url(../images/wegas-editor-sprite.png);
+    background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -772px;
     background-repeat: no-repeat;
 }
@@ -94,7 +94,7 @@
     display: inline-block;
     width: 49%;
     height: 100%;
-    background:url(../images/wegas-editor-sprite.png);
+    background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -943px;
     background-repeat: no-repeat;
 }
@@ -103,7 +103,7 @@
     display:inline-block;
     width:18px;
     height:24px;
-    background:url(../images/wegas-editor-sprite.png);
+    background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -943px;
     background-repeat: no-repeat;
 }
