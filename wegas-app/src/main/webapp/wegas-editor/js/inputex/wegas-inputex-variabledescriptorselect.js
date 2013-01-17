@@ -204,7 +204,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     Y.extend(VariableDescriptorMethod, VariableDescriptorSelect, {
 
         syncUI: function () {
-            var i, args, methods, cMethod = this.options.methodCfg,
+            var i, args, methods, cMethod,
             rootEntities = Y.Wegas.VariableDescriptorFacade.rest.getCache(),
             currentEntity = Y.Wegas.VariableDescriptorFacade.rest.findById(this.options.value) || rootEntities[0];
 
@@ -213,6 +213,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
                 currentEntity = currentEntity.get("items")[0];                  // select its first child
                 this.options.value = currentEntity.get("id");
             }
+            cMethod = this.options.methodCfg;                                   //assign cMethod after set this.options.methodCfg by this.getMethods()
 
             VariableDescriptorMethod.superclass.syncUI.call(this);
 

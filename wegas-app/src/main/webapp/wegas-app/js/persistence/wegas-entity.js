@@ -278,7 +278,7 @@ YUI.add('wegas-entity', function (Y) {
                                         name: "Game:View"
                                     }, {
                                         name: "Game:Edit"
-                                    },{
+                                    }, {
                                         name: "Game:Token"
                                     }]
                             },
@@ -1201,16 +1201,20 @@ YUI.add('wegas-entity', function (Y) {
                         value: "self"
                     }]
             },
-            setActive: {
-                label: "Set active",
+            activate: {
+                label: "Activate",
                 arguments: [{
                         type: "hidden",
                         value: "self"
-                    }, {
-                        type: "boolean",
-                        value: false
                     }]
-            }
+            },
+            desactivate: {
+                label: "Desactivate",
+                arguments: [{
+                        type: "hidden",
+                        value: "self"
+                    }]
+            },
         }
     });
 
@@ -1386,7 +1390,14 @@ YUI.add('wegas-entity', function (Y) {
                         type: "text",
                         label: "Content",
                         scriptType: "string"
-                    }]
+                    }, {
+                        type: "list",
+                        label: "Attachements",
+                        scriptType: "list",
+                        useButtons: true
+                                /*sortable: true*/
+                    }
+                ]
             },
             isEmpty: {
                 label: "is empty",
@@ -1433,7 +1444,8 @@ YUI.add('wegas-entity', function (Y) {
                 value: false,
                 type: "boolean"
             },
-            from: {}
+            from: {},
+            attachements: {}
         }
     });
 
