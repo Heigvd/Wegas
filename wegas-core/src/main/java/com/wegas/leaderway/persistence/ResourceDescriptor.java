@@ -134,4 +134,12 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         ResourceInstance instance = this.getInstance(p);
         instance.setActive(value);
     }
+    
+    public void activate(Player p) {
+        this.setActive(p, true);
+    }
+    
+    public void desactivate(Player p) {
+        this.setActive(p, false);
+    }
 }

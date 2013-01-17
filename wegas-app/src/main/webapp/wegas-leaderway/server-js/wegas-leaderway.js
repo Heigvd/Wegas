@@ -667,7 +667,7 @@ function lookupBean (name) {
  * @param String from, the sender of the message.
  */
 function sendMessage (subject, content, from) {
-    var EF = lookupBean('EMailFacade');
+    var EF = lookupBean('MessageFacade');
     if (EF) {
         EF.send(self, subject, content, from);
     }

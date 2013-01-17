@@ -36,25 +36,25 @@ div.inputEx-fieldWrapper {
 .wegas-form div.inputEx-Field {
     float:none;
 }
-/*.wegas-form .inputEx-Group,*/
-.wegas-form input[type=text],
-.wegas-form select,
-.wegas-form textarea {
+/*.wegas-form-centent .inputEx-Group,*/
+.wegas-form-content input[type=text],
+.wegas-form-content select,
+.wegas-form-content textarea {
     width: 100%;
 }
-.wegas-form div.inputEx-StringField-wrapper {
+.wegas-form-content div.inputEx-StringField-wrapper {
     display: inline-block;
     vertical-align: top;
     width: 100%;
 }
 /* Set up fluid layout for inputex fields */
-.wegas-form-content >div >fieldset >div {
+.wegas-form div.wegas-form-ix >fieldset >div {
     padding-left:135px;
     margin-right: 7px;
     white-space: nowrap;
     position: relative;
 }
-.wegas-form-content >div >fieldset >div div.inputEx-label,
+.wegas-form div.wegas-form-ix >fieldset >div div.inputEx-label,
 .wegas-form div.inputEx-CombineField > div.inputEx-label,
 .wegas-form div.inputEx-fieldWrapper > div.inputEx-label {
     margin-left:-135px;
