@@ -6,7 +6,7 @@
         Purpose of the stylesheet follows.
 */
 /*---------------------------------General------------------------------------*/
-.layout, html, .preview-content{
+.layout, html, .editor-preview {
     background-color:#E4DDCC;
 }
 
