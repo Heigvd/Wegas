@@ -18,7 +18,7 @@
         <meta name="audience" content="General" />
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="30 days" />
-        <link rel="icon" type="image/ico" href="/Wegas/favicon.ico" />
+        <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
 
         <!-- YUI -->
         <ui:fragment rendered="#{!wegasConfig.assets_local}">
@@ -27,13 +27,13 @@
         </ui:fragment>
         <ui:fragment rendered="#{wegasConfig.assets_local}">
             <!-- Self hosted -->
-            <link rel="stylesheet" type="text/css" href="/Wegas/rest/combo?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
         </ui:fragment>
 
         <!-- Those styles are placed here, since they should be above any other in the CSS cascading
             (even dependencies added on the fly). -->
         <meta id="customstyles" />
-        <link rel="stylesheet" type="text/css" href="/Wegas/wegas-app/css/wegas-app.css" />
+        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-app/css/wegas-app.css" />
         <ui:insert name="head"/>
 
     </h:head>
@@ -43,5 +43,5 @@
             <ui:insert name="body">Default Body</ui:insert>
         </h:body>
     </ui:insert>
-
+    
 </html>

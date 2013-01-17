@@ -23,6 +23,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 @Path("combo")
 public class ResourceCombo {
 
+    final static private String MediaTypeCss = "text/css; charset=ISO-8859-1";
+    final static private String MediaTypeJs = "text/javascript; charset=ISO-8859-1";
     private static final Logger logger = LoggerFactory.getLogger(ResourceCombo.class);
     /**
      *
@@ -55,13 +58,11 @@ public class ResourceCombo {
      * @return
      */
     @GET
-    @Produces({"text/javascript", "text/css"})
+    @Produces({MediaTypeJs, MediaTypeCss})
     public Response index(@Context Request req) throws IOException {
         final Set<String> files = this.uriInfo.getQueryParameters().keySet();
-
         final String mediaType = (files.iterator().next().endsWith("css")) // Select the content-type based on the first file extension
-                ? "text/css"
-                : "text/javascript";
+                ? MediaTypeCss : MediaTypeJs;
 
         // MediaType types[] = {"application/json", "application/xml"};
         // List<Variant> vars = Variant.mediaTypes(types).add().build();
@@ -79,27 +80,23 @@ public class ResourceCombo {
     }
 
     private String getCombinedFile(Set<String> fileList, String mediaType) throws IOException {
-        StringBuilder combinedJavaScript = new StringBuilder();
+        StringBuilder acc = new StringBuilder();
         for (String fileName : fileList) {
             try {
-                InputStream fis = (InputStream) servletContext.getResource(fileName).getContent();
-                String content = new Scanner(fis, ResourceBundle.getBundle("wegas").getString("charset")).useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
-                if (mediaType.equals("text/css")) {                             // @hack for css files, we correct the path
+                InputStream fis = (InputStream) servletContext.getResourceAsStream(fileName);
+                String content = IOUtils.toString(fis, ResourceBundle.getBundle("wegas").getString("encoding"));
+                //String content = new Scanner(fis, ResourceBundle.getBundle("wegas").getString("encoding")).useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
+                if (mediaType.equals(MediaTypeCss)) {                             // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
-                    content = content.replaceAll("url\\(([^:\\)]+\\))", /*
-                             * Regexp to avoid rewriting protocol guess they
-                             * contain ':' (http: data:)
-                             */
-                            "url(" + servletContext.getContextPath() + dir + "$1");
+                    content = content.replaceAll("url\\(([^:\\)]+\\))",
+                            "url(" + servletContext.getContextPath() + dir + "$1"); //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }
 
-                combinedJavaScript.append(content);
+                acc.append(content);
             } catch (NullPointerException e) {
                 logger.error("Resource not found : {}", fileName);
-            } catch (IOException e) {
-                logger.error("Error reading file: {}", fileName);
             }
         }
-        return combinedJavaScript.toString();
+        return acc.toString();
     }
 }
