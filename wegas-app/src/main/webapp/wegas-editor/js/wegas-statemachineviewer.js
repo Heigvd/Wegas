@@ -319,17 +319,17 @@ YUI.add('wegas-statemachineviewer', function (Y) {
                 return;
             }
             for (k in this.nodes) {
+                this.nodes[k].textNode.ancestor().removeClass('currentState'); //delete class on node highlighted
                 if (this.nodes[k].getAttrs().entity) {
-                    if (sm.getCurrentState().getAttrs().id === this.nodes[k].getAttrs().entity.getAttrs().id){
+                    if (sm.getCurrentState().getAttrs().id === this.nodes[k].getAttrs().entity.getAttrs().id) {
                         currentStateNode = this.nodes[k];
-                        break;
                     }
                 }
             }
-            if(currentStateNode){
+            if (currentStateNode) {
                 currentStateNode.textNode.ancestor().addClass('currentState');
             }
-            
+
         }
     }, {
         ATTRS: {
@@ -357,8 +357,10 @@ YUI.add('wegas-statemachineviewer', function (Y) {
             this.get(BOUNDING_BOX).addClass(this.cssClass.state);
             if (this.get("entity") instanceof Y.Wegas.persistence.DialogueState) {
                 this.textNode = new Y.Node.create("<textarea placeholder=\"Text (Response)\"></textarea>");
-                this.textNode.addClass(this.getClassName("text"));
+            } else {
+                this.textNode = new Y.Node.create("<textarea placeholder=\"Simple state\"></textarea>");
             }
+            this.textNode.addClass(this.getClassName("text"));
             this.publish("userRemove", {
                 emitFacade: true
             });
