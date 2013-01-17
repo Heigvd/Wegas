@@ -68,10 +68,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
 
     /**
      *
+     * @param entityId
+     * @return
      */
-    @EJB
-    private RoleFacade roleFacade;
-
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -164,7 +163,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         } catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
 
             Subject s = SecurityUtils.getSubject();
-            s.checkPermission("Game:Token:g"+game.getId());
+            s.checkPermission("Game:Token:g" + game.getId());
 
             return (team != null) ? team : game;
         }
@@ -199,16 +198,16 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         return gameFacade;
     }
 
-    private void addRights(Game game){
+    private void addRights(Game game) {
         Subject s = SecurityUtils.getSubject();
         boolean gExist = s.isPermitted("Game:View:g" + game.getId());
         boolean gmExist = s.isPermitted("GameModel:View:gm" + game.getGameModel().getId());
 
-        if (!gExist){
-            userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g"+game.getId());
+        if (!gExist) {
+            userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g" + game.getId());
         }
-        if (!gmExist){
-            userFacade.getCurrentUser().getMainAccount().getPermissions().add("GameModel:View:gm"+game.getGameModel().getId());
+        if (!gmExist) {
+            userFacade.getCurrentUser().getMainAccount().getPermissions().add("GameModel:View:gm" + game.getGameModel().getId());
         }
     }
 }

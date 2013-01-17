@@ -19,10 +19,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     VariableDescriptorSetter, VariableDescriptorGetter, VariableDescriptorCondition,
     EntityArrayFieldSelect,
     escapeJSString = function (str) {
-        return str.replace('"', '\\"').replace("\n", "\\n");
+        return str.replace(/"/g, '\\"').replace(/\n/g, "\\n");
     },
     unesacapeJSString = function (str) {
-        return str.replace('\\"', '"');
+        return str.replace(/\\"/g, '"');
     };
     /**
      * @class VariableDescriptorSelect
