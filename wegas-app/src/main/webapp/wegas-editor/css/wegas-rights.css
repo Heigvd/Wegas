@@ -1,0 +1,55 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+*/
+
+/**
+ * @author Yannick Lagger <lagger.yannick@gmail.com>
+*/
+
+/**
+    Hide all necessary button
+*/
+.editor-animator-button, .editor-scenarist-button, .editor-administrator-button, .editor-game-button, 
+.editor-player-button, .wegas-title, .editor-restart-button, .editor-preview .wegas-toolbar .yui3-button,
+.editor-developer-button, .editor-newGame-button, .editor-newGameModel-button, .editor-newVariable-button{
+    display: none
+}
+
+/**
+    Show administrator button
+*/
+.wegas-group-administrator .editor-animator-button, .wegas-group-administrator .editor-scenarist-button, 
+.wegas-group-administrator .editor-administrator-button, .wegas-group-administrator .editor-game-button, 
+.wegas-group-administrator .editor-player-button, .wegas-group-administrator .wegas-title, 
+.wegas-group-administrator .editor-restart-button, .wegas-group-administrator .editor-preview .wegas-toolbar .yui3-button,
+.wegas-group-administrator .editor-developer-button, .wegas-group-administrator .editor-newGame-button,
+.wegas-group-administrator .editor-newGameModel-button, .wegas-group-administrator .editor-newVariable-button{
+    display: inline-block
+}
+
+/**
+    Show developer button
+*/
+.wegas-devmode .editor-animator-button, .wegas-devmode .editor-scenarist-button, 
+.wegas-devmode .editor-administrator-button, .wegas-devmode .editor-game-button, 
+.wegas-devmode .editor-player-button, .wegas-devmode .wegas-title, 
+.wegas-devmode .editor-restart-button, .wegas-devmode .editor-preview .wegas-toolbar .yui3-button,
+.wegas-devmode .editor-developer-button, .wegas-devmode .editor-newGame-button,
+.wegas-devmode .editor-newGameModel-button, .wegas-devmode .editor-newVariable-button{
+    display: inline-block
+}
+
+/**
+    Show animator button
+*/
+.wegas-group-animator .editor-animator-button, .wegas-group-animator .editor-game-button, 
+.wegas-group-animator .editor-player-button, .wegas-group-animator .editor-restart-button{
+    display: inline-block;
+}
+
