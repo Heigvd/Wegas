@@ -42,12 +42,15 @@
                         }
                     }]
             }, {
-                "type": "SelectGameButton"
+                "type": "SelectGameButton",
+                "cssClass": "editor-game-button"
             }, {
-                "type": "SelectPlayerButton"
+                "type": "SelectPlayerButton",
+                "cssClass": "editor-player-button"
             }, {
                 "type": "Button",
                 "label": "Developer",
+                "cssClass": "editor-developer-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
                         "cfg": {
@@ -72,6 +75,7 @@
             }, {
                 "type": "Button",
                 "label": "Administrator",
+                "cssClass": "editor-administrator-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
                         "cfg": {
@@ -117,6 +121,7 @@
             }, {
                 "type": "Button",
                 "label": "Scenarist",
+                "cssClass": "editor-scenarist-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
                         "cfg": {
@@ -156,6 +161,7 @@
             }, {
                 "type": "Button",
                 "label": "Animator",
+                "cssClass": "editor-animator-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
                         "cfg": {
@@ -171,7 +177,7 @@
                     }]
             }, {
                 "type": "LoginButton",
-                "cssClass": "menu-loginbutton",
+                "cssClass": "editor-login-button",
                 "labelIsUser": true,
                 "plugins": [{
                         "fn": "WidgetMenu",
@@ -226,6 +232,7 @@
                                             "children": [{
                                                     "type": "Button",
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                                    "cssClass": "editor-newVariable-button",
                                                     "plugins": [{
                                                             "fn": "WidgetMenu",
                                                             "cfg": {
@@ -267,6 +274,7 @@
                                                     "targetClass": "VariableDescriptor"
                                                 }, {
                                                     "type": "Button",
+                                                    "cssClass": "editor-restart-button",
                                                     "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
                                                     "plugins": [{
                                                             "fn": "ResetAction"
@@ -296,7 +304,7 @@
                                 "type": "PageLoader",
                                 "pageLoaderId": "previewPageLoader",
                                 "defaultPageId": 1,
-                                "cssClass": "preview-content",
+                                "cssClass": "editor-preview",
                                 "plugins": [{
                                         "fn": "WidgetToolbar",
                                         "cfg": {

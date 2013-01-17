@@ -9,6 +9,7 @@
             }, {
             "type": "Button",
             "label": "Administrator",
+            "cssClass": "editor-administrator-button",
             "plugins": [{
                 "fn": "WidgetMenu",
                 "cfg": {
@@ -53,7 +54,7 @@
             }]
     }, {
                 "type": "LoginButton",
-                "cssClass": "menu-loginbutton",
+                "cssClass": "editor-login-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
                         "cfg": {
@@ -102,7 +103,8 @@
                                                     "type": "NewEntityButton",
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
                                                     "targetClass": "GameModel",
-                                                    "dataSource": "GameModel"
+                                                    "dataSource": "GameModel",
+                                                    "cssClass": "editor-newGameModel-button"
                                                 }]
                                         }
                                     }]
@@ -130,7 +132,8 @@
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
                                                     "targetClass": "Game",
                                                     "dataSource": "Game",
-                                                    "disabled": true
+                                                    "disabled": true,
+                                                    "cssClass": "editor-newGame-button"
                                                 }]
                                         }
                                     }]
