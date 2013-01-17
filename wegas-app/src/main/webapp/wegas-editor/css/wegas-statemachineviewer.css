@@ -85,7 +85,7 @@
     display:inline-block;
     width: 49%;
     height: 100%;
-    background:url(../images/wegas-editor-sprite.png);
+    background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -772px;
     background-repeat: no-repeat;
 }
@@ -94,7 +94,7 @@
     display: inline-block;
     width: 49%;
     height: 100%;
-    background:url(../images/wegas-editor-sprite.png);
+    background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -943px;
     background-repeat: no-repeat;
 }
@@ -103,7 +103,7 @@
     display:inline-block;
     width:18px;
     height:24px;
-    background:url(../images/wegas-editor-sprite.png);
+    background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -943px;
     background-repeat: no-repeat;
 }
@@ -130,7 +130,10 @@ yui3-wegas-script-content{
 }
 
 .initial-state{
-    border-color:#006633;
+    border-color:black;
+}
+.wegas-statemachineviewer-content .currentState{
+    background-color:rgba(255, 170, 0, 0.7);
 }
 ._jsPlumb_connector{
     z-index:1;
@@ -169,6 +172,9 @@ yui3-wegas-script-content{
     box-shadow: 2px 3px 5px #6D6D6D;
     opacity: 0.9;
     cursor:pointer;
+    max-width: 120px;
+    max-height: 30px;
+    overflow: hidden;
 }
 .transition-label:hover{
     z-index:8;
