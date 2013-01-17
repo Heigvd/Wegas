@@ -40,6 +40,11 @@ public class PublicGameController {
     @EJB
     private UserFacade userFacade;
 
+    /**
+     *
+     * @param userId
+     * @return
+     */
     @GET
     @Path("PublicGames/Games/{userId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
