@@ -235,7 +235,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * questionImages is displayed during the display of the text then hidden if answerImages exist
          * answerImages is displayed when the text is completely displayed.
          * For more information about object image, read comments on the function "renderJSONImages()" in this widget.
-         * Display text after 400 milisecondes.
          * hide the layer "answerImage".
          */
         readStateContent: function (e) {

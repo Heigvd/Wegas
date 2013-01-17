@@ -9,7 +9,7 @@
  * Copyright (C) 2012
  */
 
-YUI.add('wegas-statemachineviewer', function(Y) {
+YUI.add('wegas-statemachineviewer', function (Y) {
     "use strict";
 
     var StateMachineViewer, State, Transition, Script,
@@ -38,7 +38,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         events: {},
         cacheDialogue: null,
         nodes: {},
-        initializer: function() {
+        initializer: function () {
             this.currentZoom = 1;
             this.stateId = 1;
             this.jpLoaded = false;
@@ -49,11 +49,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 async: true,
                 broadcast: true
             });
-            window.jsPlumb.ready(Y.bind(function() {
+            window.jsPlumb.ready(Y.bind(function () {
                 this.initJsPlumb();
             }, this));
         },
-        initJsPlumb: function() {
+        initJsPlumb: function () {
             jp = window.jsPlumb.getInstance({
                 Container: this.get(CONTENT_BOX),
                 Anchor: "Continuous",
@@ -79,15 +79,16 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     outlineWidth: 3
                 }
             });
-            this.events.transitionDeleted = jp.bind("connectionDetached", function(e) {
+            this.events.transitionDeleted = jp.bind("connectionDetached", function (e) {
                 //Clean panel
                 try {
                     jp.deleteEndpoint(e.sourceEndpoint);
                     jp.deleteEndpoint(e.targetEndpoint);
                 } catch (e) {
+                    Y.error("Fail to delete end point", e, "Y.Wegas.StateMachineViewer");
                 }
             });
-            this.events.deleteTransition = jp.bind("beforeDetach", function(e) {
+            this.events.deleteTransition = jp.bind("beforeDetach", function (e) {
                 var transitions;
                 transitions = e.getParameter("transition").source.get("entity").get("transitions");
                 for (var i in transitions) {
@@ -102,14 +103,14 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.fire("jsPlumbLoaded");
             this.fire("rebuild");
         },
-        renderUI: function() {
+        renderUI: function () {
             this.panel = this.toolbar.get("panel");
             this.header = this.toolbar.get("header");
 
             this.toolbar.add(new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
                 on: {
-                    'click': function(e) {
+                    'click': function (e) {
                         this.fire("save");
                     }
                 }
@@ -119,23 +120,26 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.renderPanel();
             this.get(CONTENT_BOX).setStyle("zoom", this.currentZoom);
         },
-        bindUI: function() {
-            this.on("rebuild", function(e) {
+        bindUI: function () {
+            this.on("rebuild", function (e) {
                 e.halt(true);
                 this.showOverlay();
                 Y.later(30, this, this.rebuild);
             });
-            this.events.toolbarNodeNew = this.on("button:load", function(e) {
+
+            this.events.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+
+            this.events.toolbarNodeNew = this.on("button:load", function (e) {
                 this.processMenu("load");
             });
-            this.events.toolbarNodeNew = this.on("button:new", function(e) {
+            this.events.toolbarNodeNew = this.on("button:new", function (e) {
                 this.processMenu("new");
             });
 
-            this.events.toolbarNodeSave = this.on("button:save", function(e) {
+            this.events.toolbarNodeSave = this.on("button:save", function (e) {
                 this.processMenu("save");
             });
-            this.events.createNode = this.get(CONTENT_BOX).on("dblclick", function(e) {
+            this.events.createNode = this.get(CONTENT_BOX).on("dblclick", function (e) {
                 e.halt(true);
                 //TODO : something with Zoom
                 if (e.target === this.get(CONTENT_BOX) && this.get("entity")) {
@@ -143,43 +147,43 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }
             }, this);
 
-            this.events.smUpdate = this.after("entityChange", function(e) {
+            this.events.smUpdate = this.after("entityChange", function (e) {
                 this.fire("rebuild");
             });
-            this.events.zoom = this.get(CONTENT_BOX).delegate("mousewheel", function(e) {
+            this.events.zoom = this.get(CONTENT_BOX).delegate("mousewheel", function (e) {
                 if (e.altKey) {
                     e.halt(true);
                     this.zoom(e);
                 }
             }, ".yui3-wegas-statemachineviewer-content", this);
-            this.events.stateDestroy = this.on("wegas-state:userRemove", function(e) {
+            this.events.stateDestroy = this.on("wegas-state:userRemove", function (e) {
                 delete this.get("entity").get("states")[e.target.get("sid").toString()];
                 delete this.nodes[e.target.get("sid").toString()];
             });
-            this.events.nameChange = this.panel.name.on("change", function(e) {
+            this.events.nameChange = this.panel.name.on("change", function (e) {
                 this.get("entity").set("name", e.target.getDOMNode().value);
             }, this);
-            this.events.scopeChange = this.panel.scope.on("change", function(e) {
+            this.events.scopeChange = this.panel.scope.on("change", function (e) {
                 this.get("entity").set("scope", new Y.Wegas.persistence[e.target.getDOMNode().value]());
             }, this);
         },
-        syncUI: function() {
-
+        syncUI: function () {
+            this.highlightCurrentState();
         },
-        destructor: function() {
+        destructor: function () {
             var i;
             for (i in this.events) {
                 try {
                     this.events[i].detach();
                 } catch (e) {
-
+                    Y.error("Destruction failed, can't detach event", e, "Y.Wegas.StateMachineViewer");
                 }
             }
             jp.unbind();
             delete this.nodes;
             delete this.events;
         },
-        loader: function() {
+        loader: function () {
             var tmp;
             if (!this.panel.loader) {
                 this.cacheDialogue = Y.Wegas.VariableDescriptorFacade.rest.filter("@class", "DialogueDescriptor");
@@ -190,7 +194,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 tmp += "</select>";
                 this.panel.loader = Y.Node.create(tmp);
                 this.panel.append(this.panel.loader);
-                this.panel.loader.on("change", function(e) {
+                this.panel.loader.on("change", function (e) {
                     if (e.target.getDOMNode().value) {
                         this.set("entity", Y.Wegas.VariableDescriptorFacade.rest.find("id", parseInt(e.target.getDOMNode().value)));
                     }
@@ -199,7 +203,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }, this);
             }
         },
-        rebuild: function() {
+        rebuild: function () {
             if (!this.jpLoaded) {
                 this.hideOverlay();
                 return false;
@@ -208,7 +212,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.stateId = 1;
             this.nodes = {};
             states = this.removeAll();
-            states.each(function(item) {
+            states.each(function (item) {
                 item.destroy();
             });
             this.renderPanel();
@@ -217,7 +221,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     this.addState(sm.get("states")[state].get("editorPosition") ? sm.get("states")[state].get("editorPosition").get("x") || 30 : 30, sm.get("states")[state].get("editorPosition") ? sm.get("states")[state].get("editorPosition").get("y") || 30 : 30, parseInt(state), sm.get("states")[state]);
                 }
 
-                this.each(function() {
+                this.each(function () {
                     try {
                         this.makeAllOutgoingTransitions();
                     } catch (e) {
@@ -226,10 +230,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 });
             }
             this.hideOverlay();
+            this.syncUI();
             return true;
 
         },
-        addState: function(x, y, id, entity) {
+        addState: function (x, y, id, entity) {
             if (!this.jpLoaded) {
                 return null;
             }
@@ -245,19 +250,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 delete config.entity;
             }
             state = new Y.Wegas.State(config);
-            try {
-                this.add(state);
-            } catch (e) {
-                //Really ... should find the problem, this currently goes quite well
-                //console.error(e.message,e.stack);
-                this.add(state);
-            }
+            this.add(state);
             this.nodes[id.toString()] = state;
             this.get("entity").get("states")[id.toString()] = state.get("entity");
             this.stateId = Math.max(this.stateId, parseInt(id) + 1);
             return state;
         },
-        renderPanel: function() {
+        renderPanel: function () {
             if (!this.get("entity") || !this.get("entity").get("scope")) {
                 return false;
             }
@@ -268,14 +267,14 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.panel.scope.getDOMNode().value = this.get("entity").get("scope").get("@class");
             return true;
         },
-        processMenu: function(type) {
+        processMenu: function (type) {
             var entity,
                     DEFAULTCB = {
-            success: Y.bind(function(e) {
+            success: Y.bind(function (e) {
                 this.showMessage("success", "States successfully saved", 1500);
                 this.hideOverlay();
             }, this),
-                    failure: Y.bind(function(e) {
+                    failure: Y.bind(function (e) {
                 this.showMessage("error", e.response.data.message);
                 this.hideOverlay();
             }, this)
@@ -305,7 +304,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     Y.log("Not Implemented yet: " + type, "warn", "Y.Wegas.StateMachineViewer");
             }
         },
-        zoom: function(event) {
+        zoom: function (event) {
             return; //zoom disabled
             if (event.wheelDelta < 0) {
                 this.currentZoom = (this.currentZoom < 0.35) ? 0.3 : this.currentZoom - 0.05;
@@ -313,12 +312,30 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.currentZoom = (this.currentZoom > 1.95) ? 2 : this.currentZoom + 0.05;
             }
             this.get(CONTENT_BOX).setStyle("zoom", this.currentZoom);
+        },
+        highlightCurrentState: function () {
+            var k, currentStateNode, sm = this.get("entity");
+            if (!sm || !this.nodes || !sm.getCurrentState()) {
+                return;
+            }
+            for (k in this.nodes) {
+                if (this.nodes[k].getAttrs().entity) {
+                    if (sm.getCurrentState().getAttrs().id === this.nodes[k].getAttrs().entity.getAttrs().id){
+                        currentStateNode = this.nodes[k];
+                        break;
+                    }
+                }
+            }
+            if(currentStateNode){
+                currentStateNode.textNode.ancestor().addClass('currentState');
+            }
+            
         }
     }, {
         ATTRS: {
             entity: {
                 value: null,
-                validator: function(o) {
+                validator: function (o) {
                     return o instanceof Y.Wegas.persistence.FSMDescriptor || o === null;
                 }
             }
@@ -335,7 +352,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         },
         CONTENT_TEMPLATE: null,
         //TODO : use localStorage for positions !
-        initializer: function() {
+        initializer: function () {
             this.transitionsTarget = [];
             this.get(BOUNDING_BOX).addClass(this.cssClass.state);
             if (this.get("entity") instanceof Y.Wegas.persistence.DialogueState) {
@@ -346,7 +363,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 emitFacade: true
             });
         },
-        renderUI: function() {
+        renderUI: function () {
             if (this.textNode) {
                 this.get(CONTENT_BOX).append(this.textNode);
                 this.textNode.setContent(this.get("entity").get("text"));
@@ -367,12 +384,12 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(CONTENT_BOX).append("<div class='state-toolbox'><div class='state-edit'></div><div class='state-delete'></div></div>");
 
         },
-        syncUI: function() {
+        syncUI: function () {
             this.set("sid", this.get("sid"));
             this.set("initial", this.get("initial"));
         },
-        bindUI: function() {
-            this.events.deleteState = this.get(CONTENT_BOX).delegate("click", function(e) {
+        bindUI: function () {
+            this.events.deleteState = this.get(CONTENT_BOX).delegate("click", function (e) {
                 this.deleteSelf();
             }, ".state-delete", this);
             jp.draggable(this.get(BOUNDING_BOX), {
@@ -399,7 +416,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 },
                 uniqueEndpoint: false,
                 deleteEndpointsOnDetach: true,
-                beforeDrop: function(e) {
+                beforeDrop: function (e) {
                     var s, t;
                     s = Y.Widget.getByNode("#" + e.sourceId);
                     t = Y.Widget.getByNode("#" + e.targetId);
@@ -411,7 +428,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 parent: this.get(BOUNDING_BOX)
             });
             if (this.textNode) {
-                this.events.textNodeChange = this.textNode.on("change", function(e) {
+                this.events.textNodeChange = this.textNode.on("change", function (e) {
                     var val = e.target.getDOMNode().value;
                     if (val === "") {                                              //Set an empty String to null
                         val = null;
@@ -419,14 +436,14 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     this.get("entity").set("text", val);
                 }, this);
             }
-            this.events.editState = this.get(CONTENT_BOX).delegate("click", function(e) {
+            this.events.editState = this.get(CONTENT_BOX).delegate("click", function (e) {
                 if (this.get("entity").get("onEnterEvent")) {
                     Y.Plugin.EditEntityAction.showEditForm(this.get("entity").get("onEnterEvent"), Y.bind(this.setOnEnterEvent, this));
                 } else {
                     Y.Plugin.EditEntityAction.showEditForm(new Y.Wegas.persistence.Script(), Y.bind(this.setOnEnterEvent, this));
                 }
             }, ".state-edit", this);
-            this.events.transitionDelete = this.on("wegas-transition:destroy", function(e) {
+            this.events.transitionDelete = this.on("wegas-transition:destroy", function (e) {
                 var index = this.transitionsTarget.indexOf(e.target);
                 if (index > -1) {
                     this.transitionsTarget.splice(index, 1);
@@ -434,13 +451,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             });
 
         },
-        destructor: function() {
+        destructor: function () {
             var i;
             for (i in this.events) {
                 this.events[i].detach();
             }
         },
-        dragEnd: function(e) {
+        dragEnd: function (e) {
             if (this.get("entity").get("editorPosition")) {
                 this.get("entity").get("editorPosition").setAttrs({
                     x: parseInt(e.target.el.getStyle("left")),
@@ -453,11 +470,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }));
             }
         },
-        setOnEnterEvent: function(entity) {
+        setOnEnterEvent: function (entity) {
             entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.Editable.reviver(entity);
             this.get("entity").set("onEnterEvent", entity);
         },
-        addTransition: function(target) {
+        addTransition: function (target) {
             var tr;
             tr = new Y.Wegas.persistence.DialogueTransition();
             tr.set("nextStateId", target.get("sid"));
@@ -466,14 +483,14 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             })).item(0).connect();
             this.get("entity").get("transitions").push(tr);
         },
-        deleteSelf: function() {
+        deleteSelf: function () {
             while (this.transitionsTarget.length > 0) {
                 this.transitionsTarget[0].disconnect();
             }
             this.fire("userRemove");
             this.destroy();
         },
-        makeAllOutgoingTransitions: function() {
+        makeAllOutgoingTransitions: function () {
             var i, transitions = this.get("entity").get("transitions");
             for (i in transitions) {
                 this.add(new Y.Wegas.Transition({
@@ -485,23 +502,23 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         ATTRS: {
             sid: {
                 value: 0,
-                setter: function(v) {
+                setter: function (v) {
                     this.get(BOUNDING_BOX).setAttribute("sid", v);
                     return v;
                 }
             },
             entity: {
-                valueFn: function() {
+                valueFn: function () {
                     return new Y.Wegas.persistence.DialogueState();
                 },
-                validator: function(o) {
+                validator: function (o) {
                     return o instanceof Y.Wegas.persistence.State;
                 }
             },
             initial: {
                 value: false,
                 validator: Y.Lang.isBoolean,
-                setter: function(v) {
+                setter: function (v) {
                     if (v) {
                         this.get(BOUNDING_BOX).addClass(this.cssClass.initial);
                     } else {
@@ -530,7 +547,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         content: null,
         language: null,
         CONTENT_TEMPLATE: null,
-        initializer: function() {
+        initializer: function () {
             this.content = new Y.Node.create("<textarea placeholder=\"onEnterEvent (Script Impact)\"></textarea>");
             this.language = new Y.Node.create("<div></div>");
             this.content.addClass(this.getClassName(this.cssClass.script));
@@ -540,15 +557,15 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 bubbles: true
             });
         },
-        renderUI: function() {
+        renderUI: function () {
             this.get(CONTENT_BOX).append(this.content);
             this.get(CONTENT_BOX).append(this.language);
         },
-        syncUI: function() {
+        syncUI: function () {
             this.set("entity", this.get("entity"));
         },
-        bindUI: function() {
-            this.events.contentChange = this.content.on("change", function(e) {
+        bindUI: function () {
+            this.events.contentChange = this.content.on("change", function (e) {
                 e.stopImmediatePropagation();
                 this.get("entity").set("content", this.content.getDOMNode().value);
                 if (!this.get("entity").isValid()) {
@@ -561,7 +578,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }, this);
 
         },
-        destructor: function() {
+        destructor: function () {
             for (var i in this.events) {
                 this.events[i].detach();
             }
@@ -570,13 +587,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
     }, {
         ATTRS: {
             entity: {
-                valueFn: function() {
+                valueFn: function () {
                     return new Y.Wegas.persistence.Script();
                 },
-                validator: function(o) {
+                validator: function (o) {
                     return o instanceof Y.Wegas.persistence.Script;
                 },
-                setter: function(o) {
+                setter: function (o) {
                     this.language.setContent(o.get("language"));
                     this.content.setContent(o.get("content"));
                     return o;
@@ -591,13 +608,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         source: null,
         target: null,
         actionNode: null,
-        initializer: function() {
+        initializer: function () {
             if (this.get("entity") instanceof Y.Wegas.persistence.DialogueTransition) {
                 this.actionNode = new Y.Node.create("<textarea placeholder=\"actionText (button's label)\"/>");
                 this.actionNode.addClass(this.getClassName("text"));
             }
         },
-        renderUI: function() {
+        renderUI: function () {
             this.hide();
             if (this.actionNode) {
                 this.get(CONTENT_BOX).append(this.actionNode);
@@ -609,15 +626,15 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
             this.get(CONTENT_BOX).append("<div class='transition-edit'></div>");
         },
-        bindUI: function() {
-            this.events.modalClick = this.get(BOUNDING_BOX).on("click", function(e) {
+        bindUI: function () {
+            this.events.modalClick = this.get(BOUNDING_BOX).on("click", function (e) {
                 e.stopImmediatePropagation();
                 if (e.target === this.get(BOUNDING_BOX)) {
                     this.hide();
                 }
             }, this);
             if (this.actionNode) {
-                this.events.actionTextChange = this.actionNode.on("change", function(e) {
+                this.events.actionTextChange = this.actionNode.on("change", function (e) {
                     var val = e.target.getDOMNode().value;
                     this.connector.setLabel(val);
                     if (val === "" || val === undefined) {                                              //Set an empty String to null
@@ -626,7 +643,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     this.get("entity").set("actionText", val);
                 }, this);
             }
-            this.events.editTransition = this.get(CONTENT_BOX).delegate("click", function(e) {
+            this.events.editTransition = this.get(CONTENT_BOX).delegate("click", function (e) {
                 if (this.get("entity").get("triggerCondition")) {
                     Y.Plugin.EditEntityAction.showEditForm(this.get("entity").get("triggerCondition"), Y.bind(this.setTriggerCondition, this));
                 } else {
@@ -634,7 +651,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }
             }, ".transition-edit", this);
 
-            this.events.scriptUpdate = this.on("wegas-script:scriptContentUpdated", function(e) {
+            this.events.scriptUpdate = this.on("wegas-script:scriptContentUpdated", function (e) {
                 this.connector.setLabel(e.content);
                 //TODO : need some more control, waiting to have full script transition management
                 //                if(this.get("entity").triggerCondition.isEmpty()){
@@ -647,7 +664,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 //                }
             }, this);
         },
-        connect: function() {
+        connect: function () {
             this.get(BOUNDING_BOX).appendTo(this.get("parent").get("parent").get(CONTENT_BOX));
             var nextStateId = this.get("entity").get("nextStateId");
             this.source = this.get('parent');
@@ -672,32 +689,34 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.createLabel();
         },
         //
-        disconnect: function(e) {
+        disconnect: function (e) {
             jp.detach(this.connector, {
                 fireEvent: true
             });
         },
-        setTriggerCondition: function(entity) {
+        setTriggerCondition: function (entity) {
             entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.Editable.reviver(entity);
             this.get("entity").set("triggerCondition", entity);
         },
-        createLabel: function() {
+        createLabel: function () {
             if (this.get("entity") instanceof Y.Wegas.persistence.DialogueTransition) {
                 this.connector.setLabel({
                     label: this.get("entity").get("actionText"),
                     cssClass: "transition-label"
                 });
-            } else if (!(this.get("entity") instanceof Y.Wegas.persistence.DialogueTransition) && this.get("entity").triggerCondition) {
+            } else {
                 this.connector.setLabel({
                     label: this.get("entity").get("triggerCondition").get("content"),
                     cssClass: "transition-label"
                 });
             }
             this.labelNode = this.connector.getLabelOverlay();
-            this.events.labelClick = this.labelNode.bind("click", function(e) {
-                var that = e.component.getParameter("transition");
-                that.editor();
-            });
+            if (this.labelNode) {
+                this.events.labelClick = this.labelNode.bind("click", function (e) {
+                    var that = e.component.getParameter("transition");
+                    that.editor();
+                });
+            }
             //Listen to complete connector
             //            this.events.conClick = this.connector.bind("click", function (e){
             //                var that = e.getParameter("transition");
@@ -705,7 +724,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             //            });
 
         },
-        editor: function() {
+        editor: function () {
             var x, y;
             x = parseInt(this.labelNode.getElement().style.left);
             y = parseInt(this.labelNode.getElement().style.top);
@@ -713,7 +732,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(CONTENT_BOX).setStyle("top", (y - 5) + "px");
             this.show();
         },
-        destructor: function() {
+        destructor: function () {
             jp.detach(this.connector, {
                 forceDetach: true
             });
@@ -732,7 +751,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 validator: Y.Lang.isNumber
             },
             entity: {
-                valueFn: function() {
+                valueFn: function () {
                     var e = new Y.Wegas.persistence.Transition();
                     return e;
                 }
