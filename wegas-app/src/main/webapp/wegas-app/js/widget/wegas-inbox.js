@@ -41,7 +41,14 @@ YUI.add('wegas-inbox', function (Y) {
         bindUI: function () {
             this.tabView.after("selectionChange", this.onTabSelected, this);
             this.handlers.dataUpdated = this.dataSource.after("update", this.syncUI, this);
-            this.handlers.deleteEMail = this.deleteButton.on("click", this.deleteEmail, this);
+            this.handlers.deleteEMail = this.deleteButton.on("click", function (e) {
+                if(!this.msg) {
+                    return;
+                }
+                if (confirm('The e-mail "' + this.msg.get("subject") + '" will be deleted permanently. Continue ?')) {
+                    this.deleteEmail();
+                }
+            }, this);
         },
         syncUI: function () {
             var i, msg, tab, from,
@@ -89,7 +96,7 @@ YUI.add('wegas-inbox', function (Y) {
         },
         // *** Private Methods *** //
         deleteEmail: function (e) {
-            if (this.msg === null) {
+            if (!this.msg) {
                 return;
             }
             this.dataSource.rest.sendRequest({
@@ -125,7 +132,7 @@ YUI.add('wegas-inbox', function (Y) {
                                 }
                                 if (!this.get("panelNode").one(".msg-header .msg-attachement")) {
                                     this.get("panelNode").one(".msg-header").append("<div class='msg-attachement'></div>");
-                                } 
+                                }
                                 this.get("panelNode").one(".msg-header .msg-attachement").setHTML("Attachements: " + attachements.join("; "));
                             }
                             this.get("panelNode").one(".msg-body").setHTML(e.response.entity.get("body") || "<center><em><i>Empty</i></center>");

@@ -68,10 +68,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     private PlayerFacade playerFacade;
     /**
      *
+     * @param entityId
+     * @return
      */
-    @EJB
-    private RoleFacade roleFacade;
-
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
