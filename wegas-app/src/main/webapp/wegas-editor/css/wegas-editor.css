@@ -34,85 +34,6 @@ body {
     bottom:26px;
 }
 
-/* Wegas small icons */
-.yui3-skin-sam .wegas-icon {
-    background-image: url(../images/wegas-editor-sprite.png);
-}
-.yui3-skin-sam .wegas-icon-reset {
-    background-position: 0px -300px;
-}
-.yui3-skin-sam .wegas-icon-refresh {
-    background-position: 0px -300px;
-}
-.yui3-skin-sam .wegas-icon-new {
-    background-position: 0px 0px;
-}
-.yui3-skin-sam .wegas-icon-newfile {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1210px,
-        url(../images/wegas-icon-files.png) no-repeat 1px -228px;
-}
-.yui3-skin-sam .wegas-icon-newdir {
-    background: url(../images/wegas-editor-sprite.png) no-repeat 1px -1167px,
-        url(../images/wegas-editor-sprite.png) no-repeat 1px -272px;
-}
-.yui3-skin-sam .wegas-icon-play {
-    background-position: 0px -192px;
-}
-.yui3-skin-sam .wegas-icon-stop {
-    background-position: 0px -172px;
-}
-.yui3-skin-sam .wegas-icon-zoomin {
-    background-position: 0px -124px;
-}
-.yui3-skin-sam .wegas-icon-zoomout {
-    background-position: 0px -152px;
-}
-.yui3-skin-sam .wegas-icon-select{
-    background-position: 0px -244px;
-}
-.yui3-skin-sam .wegas-icon-move {
-    background-position: 0px -214px;
-}
-.yui3-skin-sam .wegas-icon-cut {
-    background-position: 0px -42px;
-}
-.yui3-skin-sam .wegas-icon-copy {
-    background-position: 0px -68px;
-}
-.yui3-skin-sam .wegas-icon-paste {
-    background-position: 0px -271px;
-}
-.yui3-skin-sam .wegas-icon-save {
-    background-position: 0px -654px;
-}
-.yui3-skin-sam .wegas-icon-delete {
-    background-position: 0px -771px;
-}
-.yui3-skin-sam .wegas-icon-preview {
-    background-position: 0px -741px;
-}
-.yui3-skin-sam .wegas-icon-cancel {
-    background-position: 0px -834px;
-}
-.yui3-skin-sam .wegas-icon-fileexplorer {
-    background-position: 0px -870px;
-}
-.yui3-skin-sam .wegas-icon-add {
-    background-position: 1px -1027px;
-}
-.yui3-skin-sam .wegas-icon-remove {
-    background-position: 1px -1002px;
-}
-.yui3-skin-sam .wegas-icon-viewsrc {
-    background-position: 2px -804px;
-}
-.yui3-skin-sam .wegas-icon-edit {
-    background-position: 2px -943px;
-}
-.yui3-skin-sam .wegas-icon-designmode {
-    background-position: 0px -1110px;
-}
-
 /* Console Widget Styles */
 .wegas-console div.inputEx-Field {
     float:none;
@@ -233,7 +154,7 @@ body {
     width: 20px;
     height: 20px;
     cursor: pointer;
-    background: transparent url(../images/wegas-editor-sprite.png) 2px -334px no-repeat;
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 2px -334px no-repeat;
     margin: 2px 5px;
     display: inline-block;
 }
@@ -248,20 +169,20 @@ body {
     height: 24px;
 }
 .yui3-skin-sam .wegas-icon-gamemodel {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -514px no-repeat;
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -514px no-repeat;
 }
 .yui3-skin-sam .wegas-icon-game {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -550px no-repeat;
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -550px no-repeat;
 
 }
 .yui3-skin-sam .wegas-icon-team {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -621px no-repeat;
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -621px no-repeat;
 }
 .yui3-skin-sam .wegas-icon-player {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -590px no-repeat;
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -590px no-repeat;
 }
 .wegas-icon-variabledescriptor {
-    background: transparent url(../images/wegas-editor-sprite.png) 0 -974px no-repeat;
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -974px no-repeat;
 }
 
 /* Panel Widget Styles */
