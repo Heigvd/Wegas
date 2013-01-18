@@ -86,8 +86,12 @@ YUI().use(function(Y) {
                     },
                     'wegas-button': {
                         path: 'wegas-app/js/widget/wegas-button-min.js',
-                        requires: ['wegas-widget', 'wegas-action', 'button'],
+                        requires: ['wegas-widget', 'wegas-action', 'button', 'wegas-button-css'],
                         ws_provides: 'Button'
+                    },
+                    'wegas-button-css': {
+                        path: 'wegas-app/css/wegas-button.css',
+                        type: 'css'
                     },
                     'wegas-loginbutton': {
                         path: 'wegas-app/js/widget/wegas-loginbutton-min.js',
@@ -151,7 +155,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-inbox': {
                         path: 'wegas-app/js/widget/wegas-inbox-min.js',
-                        requires: ["tabview", 'wegas-tabviewcss', "wegas-inboxcss", "wegas-widgettoolbar"],
+                        requires: ["tabview", "wegas-inboxcss", "wegas-widgettoolbar"],
                         ws_provides: 'InboxDisplay'
                     },
                     'wegas-inboxcss': {
@@ -437,12 +441,12 @@ YUI().use(function(Y) {
                     },
                     /** Project Management Game **/
                     'wegas-pmg': {
-                        path: 'wegas-pmg/js/wegas-pmg-breadcrumb.js',
+                        path: 'wegas-pmg/js/wegas-pmg-breadcrumb-min.js',
                         requires: ['wegas-pmg-breadcrumb'],
                         ws_provides: "PmgBreadcrumb"
                     },
                     'wegas-pmg-tasklist': {//Using simple taskList
-                        path: 'wegas-pmg/js/wegas-pmg-tasklist.js',
+                        path: 'wegas-pmg/js/wegas-pmg-tasklist-min.js',
                         requires: ['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
                         ws_provides: "PmgTasklist"
                     },
@@ -453,40 +457,40 @@ YUI().use(function(Y) {
                     //},
 
                     'wegas-pmg-gantt': {
-                        path: 'wegas-pmg/js/wegas-pmg-gantt.js',
+                        path: 'wegas-pmg/js/wegas-pmg-gantt-min.js',
                         requires: ['wegas-pmg-gantt', 'wegas-pmg-datatable'],
                         ws_provides: "PmgGantt"
                     },
                     'wegas-pmg-resourcelist': {
-                        path: 'wegas-pmg/js/wegas-pmg-resourcelist.js',
+                        path: 'wegas-pmg/js/wegas-pmg-resourcelist-min.js',
                         requires: ['wegas-widgetmenu', 'wegas-pmg-gantt', 'sortable'],
                         ws_provides: "PmgResourcelist"
                     },
                     'wegas-pmg-datatable': {
-                        path: 'wegas-pmg/js/wegas-pmg-datatable.js',
+                        path: 'wegas-pmg/js/wegas-pmg-datatable-min.js',
                         /*requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],*/ //Using Treeble
                         requires: ['wegas-pmg-datatable', 'datatable', 'datatable-mutable'], //Using simple datatable
                         ws_provides: "PmgDatatable"
                     },
                     'wegas-pmg-slidepanel': {
-                        path: 'wegas-pmg/js/wegas-pmg-slidepanel.js',
+                        path: 'wegas-pmg/js/wegas-pmg-slidepanel-min.js',
                         requires: ['anim'],
                         ws_provides: "PmgSlidePanel"
                     },
                     /**book CYOA**/
                     'wegas-book': {
-                        path: 'wegas-book/js/wegas-book-fight.js',
+                        path: 'wegas-book/js/wegas-book-fight-min.js',
                         requires: ['wegas-book-fight', 'wegas-book-dice'],
                         ws_provides: "Fight"
                     },
                     'wegas-book-dice': {
-                        path: 'wegas-book/js/wegas-book-dice.js',
+                        path: 'wegas-book/js/wegas-book-dice-min.js',
                         ws_provides: "Dice"
                     },
                     /**CEP**/
                     'wegas-cep': {
-                        path: 'wegas-cep/js/wegas-cep-folder.js',
-                        requires: ['wegas-nodeformatter', 'wegas-itemselector', 'wegas-cep-folder', "wegas-injector"],
+                        path: 'wegas-cep/js/wegas-cep-folder-min.js',
+                        requires: ['wegas-nodeformatter', 'wegas-itemselector', 'wegas-cep-folder', "wegas-injector", "wegas-inbox"],
                         ws_provides: 'CEPFolder'
                     },
                     /** CrimeSim **/
@@ -502,52 +506,52 @@ YUI().use(function(Y) {
                     },
 
                     'wegas-crimesim-treeble': {
-                        path: 'wegas-crimesim/js/wegas-crimesim-treeble.js',
+                        path: 'wegas-crimesim/js/wegas-crimesim-treeble.min.js',
                         requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble'],
                         ws_provides: "CrimeSimTreeble"
                     },
 
                     /**Leaderway**/
                     'wegas-leaderway': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-hrlist-min.js',
                         requires: ['wegas-leaderway-folder', 'wegas-leaderway-tasklist',
                         'wegas-leaderway-score', 'wegas-leaderway-dialogue', "wegas-injector"]/*,
                              ws_provides: "HRList"*/
                     },
                     'wegas-leaderway-folder': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-folder.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-folder-min.js',
                         requires: ['wegas-itemselector'],
                         ws_provides: "LWFolder"
                     },
                     'wegas-leaderway-tasklist': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-tasklist.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-tasklist-min.js',
                         requires: ['datatable'],
                         ws_provides: "TaskList"
                     },
                     'wegas-leaderway-score': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-score.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-score-min.js',
                         requires: ['datatable'],
                         ws_provides: "Score"
                     },
                     'wegas-leaderway-dialogue': {
-                        path: 'wegas-leaderway/js/wegas-leaderway-dialogue.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-dialogue-min.js',
                         requires: ['charts', 'charts-legend'],
                         ws_provides: "Dialogue"
                     },
                     "wegas-leaderway-translator": {
-                        path: 'wegas-leaderway/js/wegas-leaderway-translator/wegas-leaderway-translator.js',
+                        path: 'wegas-leaderway/js/wegas-leaderway-translator/wegas-leaderway-translator-min.js',
                         pkg: 'wegas-leaderway/js/wegas-leaderway-translator',
                         lang: ["en"]
                     },
                     /** MMO **/
                     'wegas-proggame-level': {
-                        path: 'wegas-proggame/js/wegas-proggame-level.js',
+                        path: 'wegas-proggame/js/wegas-proggame-level-min.js',
                         requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace', 'wegas-proggame-display'],
                         ws_provides: 'ProgGameLevel'
                     },
                     /** MMO **/
                     'wegas-proggame-display': {
-                        path: 'wegas-proggame/js/wegas-proggame-display.js',
+                        path: 'wegas-proggame/js/wegas-proggame-display-min.js',
                         requires: ['wegas-widget', 'crafty'],
                         ws_provides: 'ProgGameDisplay'
                     }

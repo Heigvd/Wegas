@@ -15,6 +15,7 @@
     margin:0 auto 0 auto;
     border-style: solid;
     border-width: 0 1px 1px 1px;
+    background-color:white;
 }
 
 .layout .wegas-list-content .body{
@@ -127,7 +128,7 @@
     width:970px;
     padding:5px;
     height:40px;
-    overflow:auto;
+    overflow:hidden;
     border: 1px solid;
     border-width: 0 0 1px 0;
 }
