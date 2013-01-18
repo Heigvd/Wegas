@@ -26,6 +26,8 @@
     width:60%;
     float:left;
     overflow:inherit;
+    padding:0;
+    border:none;
 }
 .yui3-skin-sam  .wegas-inbox .yui3-tab-panel  {
     border-left: 1px solid lightgray;

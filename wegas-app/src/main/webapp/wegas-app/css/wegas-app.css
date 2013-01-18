@@ -21,16 +21,6 @@ input[type="submit"], input[type="reset"] {
     cursor: pointer;
 }
 
-/* Wegas small icons */
-.yui3-skin-sam .wegas-icon {
-    display: inline-block;
-    height: 18px;
-    width: 18px;
-    overflow: hidden;
-    background-image: url(../images/wegas-editor-sprite.png);
-    background-repeat: no-repeat;
-}
-
 /* YUI3 Button Widget styles redefinition */
 .yui3-skin-sam .yui3-button {
     vertical-align: top;
