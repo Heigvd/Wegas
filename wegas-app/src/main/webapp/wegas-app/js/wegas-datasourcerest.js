@@ -320,21 +320,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
         clone: function (id, parentData, callbacks) {
             var entity = this.findById(id).clone();
             this.post(entity, parentData, callbacks);
-        },
-        /**
-         * @deprecated, here for retrocompatibility
-         */
-        getCachedVariableBy: function (key, val) {
-            Y.log("Function getCachedVariableBy() is deprecated, use find(key, val)");
-            return this.find(key, val);
-        },
-        getCachedVariablesBy: function (key, val) {
-            Y.log("Function getCachedVariablesBy() is deprecated, use filter(key, val)");
-            return this.filter(key, val);
-        },
-        getCachedVariableById: function (id) {
-            Y.log("Function getCachedVariableById() is deprecated, use findById(key, val)");
-            return this.findById(id);                     // Cast to number
         }
     }, {
         ATTRS: {
@@ -569,7 +554,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         /* Util methods */
         getCurrentGame: function () {
-            return this.getCachedVariableById(Y.Wegas.app.get('currentGame'));
+            return this.findById(Y.Wegas.app.get('currentGame'));
         },
         getCurrentPlayer: function () {
             return this.getPlayerById(Y.Wegas.app.get('currentPlayer'));
