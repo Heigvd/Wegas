@@ -172,6 +172,21 @@
                                         "type": "EditorTreeView",
                                         "dataSource": "Game"
                                     }
+                                },{
+                                    "type": "OpenTabButton",
+                                    "label": "Impact game",
+                                    "children": {
+                                        "type": "ImpactGame",
+                                        "class": "wegas-console",
+                                        "plugins": [{
+                                                "fn": "WidgetToolbar",
+                                                "cfg": {
+                                                    "children": [{
+                                                            "type": "SelectPlayerButton"
+                                                        }]
+                                                }
+                                            }]
+                                    }
                                 }]
                         }
                     }]

@@ -367,8 +367,13 @@ YUI().use(function(Y) {
                     },
                     'wegas-console': {
                         path: 'wegas-editor/js/wegas-console-min.js',
-                        requires: ['ace-javascript', 'wegas-inputex-ace'],
+                        requires: ['ace-javascript'],
                         ws_provides: 'Console'
+                    },
+                    'wegas-impactgame': {
+                        path: 'wegas-editor/js/wegas-impactgame-min.js',
+                        requires: ['wegas-console', 'wegas-inputex-wysiwygscript', "inputex-hidden"],
+                        ws_provides: 'ImpactGame'
                     },
                     'wegas-editor-treeview': {
                         path: 'wegas-editor/js/wegas-editor-treeview-min.js',
