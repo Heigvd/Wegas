@@ -16,13 +16,21 @@ YUI.add('wegas-datasourcerest', function (Y) {
     "use strict";
 
     var Lang = Y.Lang, DataSourceREST, VariableDescriptorDataSourceREST,
-            GameModelDataSourceREST, GameDataSourceREST, PageDataSourceREST,
-            DEFAULTHEADERS = {
-    'Content-Type': 'application/json;charset=ISO-8859-1',
-            'Managed-Mode': 'true'
+    GameModelDataSourceREST, GameDataSourceREST, PageDataSourceREST,
+    DEFAULTHEADERS = {
+        'Content-Type': 'application/json;charset=ISO-8859-1',
+        'Managed-Mode': 'true'
     };
 
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
+
+        initializer: function () {
+            this.publish("EntityUpdatedEvent", {
+                broadcast: true,
+                bubbles: false
+            });
+        },
+
         sendInitialRequest: function () {
             if (this.get("initialRequest") !== undefined) {                     // Use this condition so we allow empty strin e.g. ""
                 var sender = this.rest || this;
@@ -86,8 +94,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
          */
         onData: function (e) {
             var data = e.data && (e.data.responseText || e.data),
-                    schema = this.get('schema'),
-                    payload = e.details[0];
+            schema = this.get('schema'),
+            payload = e.details[0];
 
             payload.response = Y.DataSchema.JSON.apply.call(this, schema, data) || {
                 meta: {},
@@ -98,42 +106,43 @@ YUI.add('wegas-datasourcerest', function (Y) {
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
 
             Y.Wegas.Editable.use(payload.response.results, // Lookup dependencies
-                    Y.bind(function (payload) {
-                payload.serverResponse = Y.Wegas.Editable.revive(payload.response.results); // Revive
-                this.onResponseRevived(payload);
-                this.get("host").fire("response", payload);
-            }, this, payload));
+                Y.bind(function (payload) {
+                    payload.serverResponse = Y.Wegas.Editable.revive(payload.response.results); // Revive
+                    this.onResponseRevived(payload);
+                    this.get("host").fire("response", payload);
+                }, this, payload));
 
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },
-        onResponseRevived: function (e) {
-            var i, evt, updated = false, response = e.serverResponse;
 
+
+        onResponseRevived: function (e) {
+            var i, evtPayload, response = e.serverResponse;
+            this.updated = false;
             if (e.error) {                                                      // If there was an server error, do not update the cache
                 return;
             }
             if (Lang.isArray(response)) {                                       // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < response.length; i += 1) {
-                    updated =  this.updateCache(e.cfg.method, response[i]) || updated;
+                    this.updated =  this.updateCache(e.cfg.method, response[i]) || this.updated;
                 }
             } else {
                 for (i = 0; i < response.get("entities").length; i += 1) {      // Update the cache with the Entites in the reply body
                     e.response.entity = response.get("entities")[i];
                     if (Lang.isObject(e.response.entity)) {
-                        updated = this.updateCache(e.cfg.method, e.response.entity) || updated;
+                        this.updated = this.updateCache(e.cfg.method, e.response.entity) || this.updated;
                     }
                 }
 
                 for (i = 0; i < response.get("events").length; i += 1) {
-                    evt = response.get("events")[i];
-                    if (evt instanceof Y.Wegas.persistence.EntityUpdatedEvent) {// Case 1: EntityUpdatedEvent
-                        for (i = 0; i < evt.get("updatedEntities").length; i += 1) {  // Update the cache with the entites contained in the reply
-                            updated = this.updateCache("POST", evt.get("updatedEntities")[i]) || updated;
-                        }
-                    }
+                    evtPayload = {
+                        serverEvent: response.get("events")[i]
+                    };
+                    this.fire(evtPayload.serverEvent.get("@class"), evtPayload);
+                //this.fire("serverEvent", evtPayload);
                 }
             }
-            if (updated) {
+            if (this.updated) {
                 this.get("host").fire("update", e);
             }
         },
@@ -332,13 +341,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
             schema: {
                 value: {
                     resultListLocator: "."
-                            //resultFields: ["name", "id", "@class"]
+                //resultFields: ["name", "id", "@class"]
                 }
             },
             testFn: {
                 value: function (entity, key, needle) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
-                            needleValue = (needle.get) ? needle.get(key) :  (typeof needle === 'object') ? needle[key] : needle;
+                    needleValue = (needle.get) ? needle.get(key) :  (typeof needle === 'object') ? needle[key] : needle;
 
                     return value === needleValue;
                 }
@@ -363,7 +372,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         getFullpath: function (relativePath) {
             return Y.Wegas.app.get("base") + "rest/File/GameModelId/" + Y.Wegas.app.get("currentGameModel") +
-                    "/read" + relativePath;
+            "/read" + relativePath;
         },
         getFilename: function (path) {
             return path.replace(/^.*[\\\/]/, '');
@@ -382,7 +391,18 @@ YUI.add('wegas-datasourcerest', function (Y) {
         NS: "rest",
         NAME: "VariableDescriptorDataSourceREST"
     });
+
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
+
+        initializer: function () {
+            this.on("EntityUpdatedEvent", function (e) {
+                var i, entities = e.serverEvent.get("updatedEntities");
+                for (i = 0; i < entities.length; i += 1) {  // Update the cache with the entites contained in the reply
+                    this.updated = this.updateCache("POST", entities[i]);
+                }
+            }, this);
+        },
+
         walkEntity: function (entity, callback) {
             if (entity.get && entity.get("items")) {
                 if (callback(entity.get("items"))) {
@@ -527,7 +547,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 return '/' + data.gameId + '/Team/' + data.id;
             } else if (data['@class'] === 'Player') {
                 return "/" + this.getGameByTeamId(data.teamId).get("id")
-                        + '/Team/' + data.teamId + '/Player/' + data.id;
+                + '/Team/' + data.teamId + '/Player/' + data.id;
             } else {
                 return "/" + data.id;
             }
@@ -536,7 +556,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             if (entity['@class'] === 'Player') {
                 this.sendRequest({
                     request: "/" + this.getGameByTeamId(parentData.id).get("id")
-                            + "/Team/" + parentData.id + "/Player",
+                    + "/Team/" + parentData.id + "/Player",
                     cfg: {
                         method: "POST",
                         data: Y.JSON.stringify(entity)
@@ -658,7 +678,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         deleteAllRolePermissions: function (roleId, entityId) {
             this.sendRequest({
                 request: "/DeleteAllRolePermissions/" + roleId
-                        + "/" + entityId,
+                + "/" + entityId,
                 cfg: {
                     method: "POST"
                 }
@@ -698,8 +718,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         beforeResponse: function (e) {
             var result = e.response.results,
-                    page = e.data ? (e.data.getResponseHeader("Page") || '') : null,
-                    i;
+            page = e.data ? (e.data.getResponseHeader("Page") || '') : null,
+            i;
 
             result = (e.error) ? null : result;                                 //No Content found
             if (page === "*" || page === '') {
@@ -773,10 +793,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         patch: function (o) {
             var dmp = new diff_match_patch(),
-                    oldPage = this.getCache(o["@pageId"]),
-                    newPage = Y.clone(o),
-                    pageId = o["@pageId"],
-                    patch;
+            oldPage = this.getCache(o["@pageId"]),
+            newPage = Y.clone(o),
+            pageId = o["@pageId"],
+            patch;
             delete newPage["@pageId"];
             patch = dmp.patch_toText(dmp.patch_make(JSON.stringify(oldPage), JSON.stringify(newPage)));
             this.sendRequest({
@@ -855,8 +875,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
      */
     Y.DataSchema.JSON.getPath = function (locator) {
         var path = null,
-                keys = [],
-                i = 0;
+        keys = [],
+        i = 0;
 
         if (locator) {
             if (locator === '.') {
@@ -865,17 +885,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             // Strip the ["string keys"] and [1] array indexes
             locator = locator.
-                    replace(/\[(['"])(.*?)\1\]/g,
-                    function (x, $1, $2) {
-                        keys[i] = $2;
-                        return '.@' + (i++);
-                    }).
-                    replace(/\[(\d+)\]/g,
-                    function (x, $1) {
-                        keys[i] = parseInt($1, 10) | 0;
-                        return '.@' + (i++);
-                    }).
-                    replace(/^\./, ''); // remove leading dot
+            replace(/\[(['"])(.*?)\1\]/g,
+                function (x, $1, $2) {
+                    keys[i] = $2;
+                    return '.@' + (i++);
+                }).
+            replace(/\[(\d+)\]/g,
+                function (x, $1) {
+                    keys[i] = parseInt($1, 10) | 0;
+                    return '.@' + (i++);
+                }).
+            replace(/^\./, ''); // remove leading dot
 
             // Validate against problematic characters.
             if (!/[^\w\.\$@]/.test(locator)) {
@@ -884,7 +904,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     /*if (path[i].charAt(0) === '@') {				// MODIFIED !!
                      path[i] = keys[parseInt(path[i].substr(1),10)];
                      }*/
-                }
+                    }
             }
             else {
             }
@@ -897,16 +917,16 @@ YUI.add('wegas-datasourcerest', function (Y) {
      */
     Y.DataSource.IO.prototype._defRequestFn = function (e) {
         var uri = this.get("source"),
-                io = this.get("io"),
-                defIOConfig = this.get("ioConfig"),
-                request = e.request,
-                cfg = Y.merge(defIOConfig, e.cfg, {
-        on: Y.merge(defIOConfig, {
-        success: this.successHandler,
+        io = this.get("io"),
+        defIOConfig = this.get("ioConfig"),
+        request = e.request,
+        cfg = Y.merge(defIOConfig, e.cfg, {
+            on: Y.merge(defIOConfig, {
+                success: this.successHandler,
                 failure: this.failureHandler
-        }),
-                context: this,
-                "arguments": e
+            }),
+            context: this,
+            "arguments": e
         });
 
         // Support for POST transactions
@@ -916,7 +936,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             //}
             //else {
             uri += request;
-            //}
+        //}
         }
         Y.DataSource.Local.transactions[e.tId] = io(uri, cfg);
         return e.tId;
@@ -925,8 +945,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     // @FIXME We rewrite this function, should be overriden
     Y.DataSchema.JSON._parseResults = function (schema, json_in, data_out) {
         var results = [],
-                path,
-                error;
+        path,
+        error;
 
         if (schema.resultListLocator) {
             path = Y.DataSchema.JSON.getPath(schema.resultListLocator);
