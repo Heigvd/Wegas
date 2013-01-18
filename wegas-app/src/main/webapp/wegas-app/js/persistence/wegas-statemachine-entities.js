@@ -510,44 +510,37 @@ Y.add("wegas-statemachine-entities", function (Y) {
      */
     Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
         initializer: function () {
-            this.publish("actionsAvailable");
         },
         /*
-         * Listen to "DialogueState:actionsAvailable" to get the result
-         * event.actionsAvailable contains available transitions
+         *
          */
-        getAvailableActions: function () {
+        getAvailableActions: function (callback) {
             var i, transitions = this.get("transitions"),
-            ctrlObj = {};
-            ctrlObj.availableActions = [];
-            ctrlObj.toEval = 0;
-            ctrlObj.evaluatedCount = 0;
+            ctrlObj = {
+                availableActions : [],
+                toEval : 0
+            };
             for (i in transitions) {
                 if (transitions[i] instanceof Y.Wegas.persistence.DialogueTransition) {
                     if (!transitions[i].get("triggerCondition")) {
                         ctrlObj.availableActions.push(transitions[i]);
                     } else {
-                        transitions[i].get("triggerCondition").once("Script:evaluated", function (e, o, obj) {
-                            var ctrlObj = obj[0], transition = obj[1];
-                            ctrlObj.evaluatedCount += 1;
+                        transitions[i].get("triggerCondition").once("Script:evaluated", function (e, o, ctrlObj, transition, callback) {
+                            ctrlObj.toEval -= 1;
                             if (o === true) {
                                 ctrlObj.availableActions.push(transition);
                             }
-                            if (ctrlObj.toEval === ctrlObj.evaluatedCount) {
-                                this.fire("actionsAvailable", {
-                                    actionsAvailable: ctrlObj.availableActions
-                                });
+                            if (ctrlObj.toEval === 0) {
+                                callback(ctrlObj.availableActions);
                             }
-                        }, this, [ctrlObj, transitions[i]]);
+                        }, this, ctrlObj, transitions[i], callback);
                         ctrlObj.toEval += 1;
                         transitions[i].get("triggerCondition").localEval();
                     }
                 }
             }
-            if (ctrlObj.toEval === ctrlObj.evaluatedCount) {
-                this.fire("actionsAvailable", {
-                    actionsAvailable: ctrlObj.availableActions
-                });
+            if (ctrlObj.toEval === 0) {
+                callback(ctrlObj.availableActions);
             }
         },
         /**
