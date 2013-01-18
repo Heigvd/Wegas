@@ -158,20 +158,12 @@ YUI.add('wegas-action', function(Y) {
 
     Y.extend(ExecuteScriptAction, Action, {
         execute: function() {
-            var host = this.get("host"), overlayGuest, guest = host;
-            if (host.showOverlay && host.hideOverlay) {
-                overlayGuest = host;
-            } else {
-                while (!overlayGuest && guest.get("parent")) {
-                    guest = guest.get("parent");
-                    if (guest.showOverlay && guest.hideOverlay) {
-                        overlayGuest = guest;
-                    }
-                }
-            }
-            if (overlayGuest) {
+            var host = this.get("host"), overlayGuest, guest = host.get("root");
+            if (guest.showOverlay && guest.hideOverlay) {
+                overlayGuest = guest;
                 overlayGuest.showOverlay();
             }
+
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                 request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
