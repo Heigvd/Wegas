@@ -67,14 +67,15 @@ YUI.add("wegas-widget", function (Y) {
         },
 
         showOverlay: function () {
-            this.get(BOUNDING_BOX).prepend("<div class='wegas-widget-loading'></div>");
+            var bb = this.get(BOUNDING_BOX);
+            bb.addClass("wegas-loading");
+            bb.prepend("<div class='wegas-loading-overlay'></div>");
         },
 
         hideOverlay: function () {
-            var overlayNode = this.get(BOUNDING_BOX).all(".wegas-widget-loading");
-            if (overlayNode) {
-                overlayNode.remove(true);
-            }
+            var bb = this.get(BOUNDING_BOX);
+            bb.removeClass("wegas-loading");
+            bb.all(".wegas-overlay-overlay").remove(true);
         },
 
         emptyMessage: function () {						// Form msgs logic
