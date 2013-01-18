@@ -75,7 +75,7 @@ YUI.add("wegas-widget", function (Y) {
         hideOverlay: function () {
             var bb = this.get(BOUNDING_BOX);
             bb.removeClass("wegas-loading");
-            bb.all(".wegas-overlay-overlay").remove(true);
+            bb.all(".wegas-overlay-loading").remove(true);
         },
 
         emptyMessage: function () {						// Form msgs logic
