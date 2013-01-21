@@ -165,7 +165,7 @@ YUI().use(function(Y) {
                     'wegas-form': {
                         path: 'wegas-app/js/widget/wegas-form-min.js',
                         requires: ['wegas-widget', 'wegas-inputex', 'inputex-string', 'inputex-jsonschema',
-                            'wegas-widgettoolbar'],
+                        'wegas-widgettoolbar'],
                         ws_provides: "FormWidget"
                     },
                     'wegas-loginwidget': {
@@ -259,6 +259,8 @@ YUI().use(function(Y) {
                         requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
                         'wegas-inputex-variabledescriptorselect',
                         'wegas-button',  'inputex-jsonschema',
+
+                        'inputex-list', 'wegas-inputex-url', // for mail attachements in script
                         'esprima' /*'inputex-hidden', 'escodegen'*/],
                         ix_provides: ['script']
                     },

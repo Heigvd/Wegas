@@ -52,7 +52,7 @@ YUI.add("wegas-widget", function (Y) {
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
-        || this.constructor.NAME.toLowerCase();                                 // the usual "yui3-" prefix)
+            || this.constructor.NAME.toLowerCase();                                 // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
 
         this.publish("exception", {
@@ -67,14 +67,15 @@ YUI.add("wegas-widget", function (Y) {
         },
 
         showOverlay: function () {
-            this.get(BOUNDING_BOX).prepend("<div class='wegas-widget-loading'></div>");
+            this.get(BOUNDING_BOX)
+            .addClass("wegas-loading")
+            .prepend("<div class='wegas-loading-overlay'></div>");
         },
 
         hideOverlay: function () {
-            var overlayNode = this.get(BOUNDING_BOX).all(".wegas-widget-loading");
-            if (overlayNode) {
-                overlayNode.remove(true);
-            }
+            this.get(BOUNDING_BOX)
+            .removeClass("wegas-loading")
+            .all("> .wegas-loading-overlay").remove(true);
         },
 
         emptyMessage: function () {						// Form msgs logic

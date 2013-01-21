@@ -262,16 +262,24 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
         },
 
         getValue: function () {
-            var i, l = this.inputs.length,
+            var i, j, l = this.inputs.length,
             args = this.inputs[l - this.argsOffset].getValue(),
             method = this.inputs[l - this.argsOffset - 1].getValue();
 
             if (!method) {
                 return "true";
             }
+
             for (i = 0; i < args.length; i = i + 1) {
                 if (this.currentMethod.arguments[i].scriptType === "string") {
-                    args[i] = '"' + escapeJSString(args[i]) + '"';
+                    if (Y.Lang.isArray(args[i])) {
+                        for (j = 0; j < args[i].length; j++) {
+                            args[i][j] = escapeJSString(args[i][j]);
+                        }
+                        args[i] = Y.JSON.stringify(args[i]);
+                    } else {
+                        args[i] = '"' + escapeJSString(args[i]) + '"';
+                    }
                 }
             }
             return "VariableDescriptorFacade.find(" + this.inputs[l - this.argsOffset - 2].getValue() + ")"
