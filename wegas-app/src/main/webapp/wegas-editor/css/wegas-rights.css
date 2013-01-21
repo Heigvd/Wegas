@@ -20,7 +20,11 @@
 .editor-developer-button, .editor-newGame-button, .editor-newGameModel-button, .editor-newVariable-button,
 .yui3-menu .yui3-menu-content .editor-shareGame-button, .yui3-menu .yui3-menu-content .editor-shareGameModel-button,
 .yui3-menu .yui3-menu-content .editor-exploreGameModel-button, .yui3-menu .yui3-menu-content .editor-duplicateGameModel-button,
-.yui3-menu .yui3-menu-content .editor-deleteGameModel-button{
+.yui3-menu .yui3-menu-content .editor-deleteGameModel-button, .yui3-menu .yui3-menu-content .editor-addTeam-button, 
+.yui3-menu .yui3-menu-content .editor-gameProperties-button, .yui3-menu .yui3-menu-content .editor-shareGame-button,
+.yui3-menu .yui3-menu-content .editor-deleteGame-button, .yui3-menu .yui3-menu-content .editor-teamProperties-button,
+.yui3-menu .yui3-menu-content .editor-addPlayer-button, .yui3-menu .yui3-menu-content .editor-deleteTeam-button,
+.yui3-menu .yui3-menu-content .editor-playerProperties-button, .yui3-menu .yui3-menu-content .editor-deletePlayer-button{
     display: none
 }
 
@@ -34,7 +38,12 @@
 .wegas-group-administrator .editor-newGame-button, .wegas-group-administrator .editor-newGameModel-button, 
 .wegas-group-administrator .editor-newVariable-button, .wegas-group-administrator .yui3-menu .editor-shareGameModel-button, 
 .wegas-group-administrator .yui3-menu .editor-shareGame-button, .wegas-group-administrator .yui3-menu .editor-exploreGameModel-button,
-.wegas-group-administrator .yui3-menu .editor-duplicateGameModel-button, .wegas-group-administrator .yui3-menu .editor-deleteGameModel-button{
+.wegas-group-administrator .yui3-menu .editor-duplicateGameModel-button, .wegas-group-administrator .yui3-menu .editor-deleteGameModel-button,
+.wegas-group-administrator .yui3-menu .editor-addTeam-button, 
+.wegas-group-administrator .yui3-menu .editor-gameProperties-button, .wegas-group-administrator .yui3-menu .editor-shareGame-button,
+.wegas-group-administrator .yui3-menu .editor-deleteGame-button, .wegas-group-administrator .yui3-menu .editor-teamProperties-button,
+.wegas-group-administrator .yui3-menu .editor-addPlayer-button, .wegas-group-administrator .yui3-menu .editor-deleteTeam-button,
+.wegas-group-administrator .yui3-menu .editor-playerProperties-button, .wegas-group-administrator .yui3-menu .editor-deletePlayer-button{
     display: inline-block
 }
 
@@ -49,7 +58,11 @@
 .wegas-devmode .editor-newGameModel-button, .wegas-devmode .editor-newVariable-button,
 .wegas-devmode .yui3-menu .editor-shareGameModel-button, .wegas-devmode .yui3-menu .editor-shareGame-button,
 .wegas-devmode .yui3-menu .editor-exploreGameModel-button, .wegas-devmode .yui3-menu .editor-duplicateGameModel-button,
-.wegas-devmode .yui3-menu .editor-deleteGameModel-button {
+.wegas-devmode .yui3-menu .editor-deleteGameModel-button, .wegas-devmode .yui3-menu .editor-addTeam-button, 
+.wegas-devmode .yui3-menu .editor-gameProperties-button, .wegas-devmode .yui3-menu .editor-shareGame-button,
+.wegas-devmode .yui3-menu .editor-deleteGame-button, .wegas-devmode .yui3-menu .editor-teamProperties-button,
+.wegas-devmode .yui3-menu .editor-addPlayer-button, .wegas-devmode .yui3-menu .editor-deleteTeam-button,
+.wegas-devmode .yui3-menu .editor-playerProperties-button, .wegas-devmode .yui3-menu .editor-deletePlayer-button{
     display: inline-block
 }
 
@@ -57,7 +70,11 @@
     Show animator button
 */
 .wegas-group-animator .editor-animator-button, .wegas-group-animator .editor-game-button, 
-.wegas-group-animator .editor-player-button, .wegas-group-animator .editor-restart-button{
+.wegas-group-animator .editor-player-button, .wegas-group-animator .editor-restart-button,
+.wegas-group-animator .yui3-menu .editor-addTeam-button,.wegas-group-animator .yui3-menu .editor-gameProperties-button, 
+.wegas-group-animator .yui3-menu .editor-shareGame-button,.wegas-group-animator .yui3-menu .editor-teamProperties-button,
+.wegas-group-animator .yui3-menu .editor-addPlayer-button, .wegas-group-animator .yui3-menu .editor-deleteTeam-button,
+.wegas-group-animator .yui3-menu .editor-playerProperties-button, .wegas-group-animator .yui3-menu .editor-deletePlayer-button{
     display: inline-block;
 }
 
