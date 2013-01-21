@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -32,7 +31,6 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @NamedQueries({
     @NamedQuery(name = "findTeamByToken", query = "SELECT team FROM Team team WHERE team.token = :token")
 })
-@XmlType(name = "Team")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Team extends AbstractEntity {
 

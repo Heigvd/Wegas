@@ -9,9 +9,7 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.ejb.Helper;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
@@ -23,7 +21,6 @@ import com.wegas.leaderway.persistence.TaskInstance;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.messaging.persistence.InboxInstance;
-import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
