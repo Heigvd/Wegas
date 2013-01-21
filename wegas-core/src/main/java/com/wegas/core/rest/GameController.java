@@ -93,7 +93,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
 
         for (Game aG : gameModel.getGames()) {
             Subject s = SecurityUtils.getSubject();
-            boolean isPermitted = s.isPermitted("Game:View:g" + aG.getId());
+            boolean isPermitted = s.isPermitted("Game:Edit:g" + aG.getId());
             if (!isPermitted) {
                 game.remove(aG);
             }

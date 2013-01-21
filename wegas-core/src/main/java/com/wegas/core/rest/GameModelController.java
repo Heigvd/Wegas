@@ -134,10 +134,11 @@ public class GameModelController extends AbstractRestController<GameModelFacade,
         Collection<GameModel> allGm = getFacade().findAll();
         Collection<GameModel> newGm = new ArrayList<>(allGm);
 
-            String r =  (requestManager.getView() == Views.Index.class) ? "View": "Edit";
+//            String r =  (requestManager.getView() == Views.Index.class) ? "View": "Edit";
         for (GameModel aGm : allGm){
             Subject s = SecurityUtils.getSubject();
-            boolean isPermitted = s.isPermitted("GameModel:" + r +":gm" + aGm.getId());
+//            boolean isPermitted = s.isPermitted("GameModel:" + r +":gm" + aGm.getId());
+            boolean isPermitted = s.isPermitted("GameModel:View:gm" + aGm.getId());
             if (!isPermitted){
                 newGm.remove(aGm);
             }
