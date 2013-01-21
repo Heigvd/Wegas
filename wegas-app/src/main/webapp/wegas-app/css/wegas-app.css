@@ -52,7 +52,10 @@ input[type="submit"], input[type="reset"] {
 }
 
 /* Y.Wegas.Widget extension styles */
-.wegas-widget-loading {
+.wegas-loading {
+    position: relative;
+}
+.wegas-loading-overlay {
     background: rgba(255, 255, 255, 0.8) url(../images/loading.gif) center center no-repeat;
     position: absolute;
     top: 0;

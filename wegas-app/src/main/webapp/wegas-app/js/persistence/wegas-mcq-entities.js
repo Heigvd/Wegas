@@ -406,7 +406,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             type: "array",
                             items: {
                                 type: "string",
-                                optional: true,
+                                optional: false,
                                 _inputex: {
                                     _type: "wegasurl",
                                     label: ""

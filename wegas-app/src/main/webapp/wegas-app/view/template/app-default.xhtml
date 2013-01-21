@@ -10,7 +10,7 @@
         <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam yui-skin-sam wegas-widget-loading">
+            <h:body class="yui3-skin-sam yui-skin-sam wegas-loading-overlay">
 
                 <ui:fragment rendered="#{!wegasConfig.debug}">
                     <!-- Muscula error tracking -->
@@ -87,28 +87,27 @@
                 </ui:fragment>
                 <ui:fragment rendered="#{wegasConfig.assets_local}">
                     <!-- Self hosted -->
-                    <script type="text/javascript" src="/Wegas/lib/yui3/build/yui/yui-min.js"></script>
+                    <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
                 </ui:fragment>
 
                 <!-- InputEx Loader -->
-                <script src="/Wegas/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
+                <script src="#{request.contextPath}/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
 
                 <!-- Wegas Loader -->
                 <ui:fragment rendered="#{wegasConfig.debug}">
-                    <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader.js"></script>
+                    <script type="text/javascript" src="#{request.contextPath}/wegas-app/js/wegas-loader.js"></script>
                 </ui:fragment>
                 <ui:fragment rendered="#{!wegasConfig.debug}">
-                    <script type="text/javascript" src="/Wegas/wegas-app/js/wegas-loader-min.js"></script>
+                    <script type="text/javascript" src="#{request.contextPath}/wegas-app/js/wegas-loader-min.js"></script>
                 </ui:fragment>
 
                 <script type="text/javascript">
-
                     // Set up some YUI3 default parameters. Will be use for every call to
                     // the YUI(cfg) function. Can be overridden by the cfg parameter.
                     YUI_config.useBrowserConsole = true;
-                    YUI_config.charset = 'ISO-8859-1';
                     YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.insertBefore = 'customstyles';
+                    YUI_config.charset = "#{wegasConfig.encoding}";
                     YUI_config.debug = #{wegasConfig.debug};
                     YUI_config.throwFail = true;                                // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function (msg, e, src) {
@@ -266,4 +265,5 @@
             </h:body>
         </ui:define>
     </ui:composition>
+
 </html>
