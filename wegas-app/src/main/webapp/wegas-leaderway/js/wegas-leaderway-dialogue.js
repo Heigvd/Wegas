@@ -222,8 +222,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 Y.log("State isn't a dialogue state.", 'error', 'wegas-leaderway-dialogue.js');
                 return;
             }
-            this.state.once('actionsAvailable', this.readStateContent, this);
-            this.state.getAvailableActions();
+            this.state.getAvailableActions(Y.bind(this.readStateContent, this));
         },
         /**
          * Read a dialogue corresponding with the current dialogue value in this widget.
@@ -237,11 +236,11 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * For more information about object image, read comments on the function "renderJSONImages()" in this widget.
          * hide the layer "answerImage".
          */
-        readStateContent: function (e) {
+        readStateContent: function (availableActions) {
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
                     content, rawContent, texts, splittedText = new Array(), cb = this.get(CONTENTBOX);
             //get availableActions
-            this.availableActions = e.actionsAvailable;
+            this.availableActions = availableActions;
             rawContent = this.state.get('text');
             //Do semi-auto transition
             if (!rawContent || rawContent.length === 0) {
