@@ -26,7 +26,7 @@ import org.apache.shiro.SecurityUtils;
  */
 @ManagedBean(name = "gameController")
 @RequestScoped
-public class LobbyController {
+public class SingleLobbyController {
 
     @ManagedProperty(value = "#{param.token}")
     protected Long gameId;
