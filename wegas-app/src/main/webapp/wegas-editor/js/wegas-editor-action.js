@@ -483,7 +483,7 @@ YUI.add('wegas-editor-action', function (Y) {
         ATTRS: {
             entity: {},
             editorUrl: {
-                value: 'wegas-editor/view/editor.html?'
+                value: 'wegas-app/view/editor.html?'
             }
         }
     });

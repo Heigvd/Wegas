@@ -35,17 +35,17 @@ YUI.add('wegas-entity', function (Y) {
         _buildCfg: {
             //statics: ["EDITMENU"],
             custom: {
-                //HASH: function (prop, Receiver, Supplier) {
-                //Entity.ENTITIES_HASH[Receiver.name] = true;
-                //var c = Supplier.constructor;
-                //while (!Receiver.EDITMENU && c) {
-                //    if (c.EDITMENU) {                                                  // Add to attributes
-                //        Receiver.EDITMENU = c.EDITMENU
-                //    }
-                //    c = c.superclass ? c.superclass.constructor : null;
-                //}
-                //}
-            }
+        //HASH: function (prop, Receiver, Supplier) {
+        //Entity.ENTITIES_HASH[Receiver.name] = true;
+        //var c = Supplier.constructor;
+        //while (!Receiver.EDITMENU && c) {
+        //    if (c.EDITMENU) {                                                  // Add to attributes
+        //        Receiver.EDITMENU = c.EDITMENU
+        //    }
+        //    c = c.superclass ? c.superclass.constructor : null;
+        //}
+        //}
+        }
         },
         ATTRS: {
             initialized: {
@@ -182,66 +182,62 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                type: "Button",
-                label: "Explore",
-                cssClass: "editor-exploreGameModel-button",
-                plugins: [{
-                        fn: "LoadTreeviewNodeAction",
-                        cfg: {
-                            tabId: "gamesTreeViewTab"
-                        }
-                    }, {
-                        fn: "EditEntityAction"
-                    }]
+            type: "Button",
+            label: "Explore",
+            plugins: [{
+                fn: "LoadTreeviewNodeAction",
+                cfg: {
+                    tabId: "gamesTreeViewTab"
+                }
             }, {
-                type: "Button",
-                label: "Duplicate",
-                cssClass: "editor-duplicateGameModel-button",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "Button",
-                label: "Share",
-                cssClass: "editor-shareGameModel-button",
-                plugins: [{
-                        fn: "OpenTabAction",
-                        cfg: {
-                            children: {
-                                type: "RolePermissionList",
-                                permsList: [{
-                                        name: "GameModel:View"
-                                    }, {
-                                        name: "GameModel:Edit"
-                                    }, {
-                                        name: "GameModel:Duplicate"
-                                    }, {
-                                        name: "GameModel:Delete"
-                                    }]
-                            },
-                            tabSelector: '#rightTabView'
-                        }
-                    }]
-            }, {
-                type: "DeleteEntityButton",
-                cssClass: "editor-deleteGameModel-button"
+                fn: "EditEntityAction"
             }]
-                //{
-                //    type: "Button",
-                //    label: "Open in editor",
-                //    plugins: [{
-                //        fn: "OpenGameAction"
-                //    }]
-                //},
-                //    {
-                //    type: "AddEntityChildButton",
-                //    label: "Add game",
-                //    childClass: "Game"
-                //},
-                //{
-                //    type: "EditEntityButton",
-                //    label: "Properties"
-                //},
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "Button",
+            label: "Share",
+            plugins: [{
+                fn: "OpenTabAction",
+                cfg: {
+                    children: {
+                        type: "RolePermissionList",
+                        permsList: [{
+                            name: "GameModel:View"
+                        }, {
+                            name: "GameModel:Edit"
+                        }, {
+                            name: "GameModel:Duplicate"
+                        }, {
+                            name: "GameModel:Delete"
+                        }]
+                    },
+                    tabSelector: '#rightTabView'
+                }
+            }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
+    //{
+    //    type: "Button",
+    //    label: "Open in editor",
+    //    plugins: [{
+    //        fn: "OpenGameAction"
+    //    }]
+    //},
+    //    {
+    //    type: "AddEntityChildButton",
+    //    label: "Add game",
+    //    childClass: "Game"
+    //},
+    //{
+    //    type: "EditEntityButton",
+    //    label: "Properties"
+    //},
     });
 
     /**
@@ -264,38 +260,34 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                type: "AddEntityChildButton",
-                label: "Add team",
-                cssClass: "editor-addTeam-button",
-                targetClass: "Team"
-            }, {
-                type: "EditEntityButton",
-                label: "Properties",
-                cssClass: "editor-gameProperties-button"
-            }, {
-                type: "Button",
-                label: "Share",
-                cssClass: "editor-shareGame-button",
-                plugins: [{
-                        fn: "OpenTabAction",
-                        cfg: {
-                            children: {
-                                type: "RolePermissionList",
-                                permsList: [{
-                                        name: "Game:View"
-                                    }, {
-                                        name: "Game:Edit"
-                                    }, {
-                                        name: "Game:Token"
-                                    }]
-                            },
-                            tabSelector: '#rightTabView'
-                        }
-                    }]
-            }, {
-                type: "DeleteEntityButton",
-                cssClass: "editor-deleteGame-button"
+            type: "AddEntityChildButton",
+            label: "Add team",
+            targetClass: "Team"
+        }, {
+            type: "EditEntityButton",
+            label: "Properties"
+        }, {
+            type: "Button",
+            label: "Share",
+            plugins: [{
+                fn: "OpenTabAction",
+                cfg: {
+                    children: {
+                        type: "RolePermissionList",
+                        permsList: [{
+                            name: "Game:View"
+                        }, {
+                            name: "Game:Edit"
+                        }, {
+                            name: "Game:Token"
+                        }]
+                    },
+                    tabSelector: '#rightTabView'
+                }
             }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -321,23 +313,20 @@ YUI.add('wegas-entity', function (Y) {
             gameId: IDATTRDEF
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Properties",
-                cssClass: "editor-teamProperties-button"
-            }, {
-                type: "Button",
-                label: "Add player",
-                cssClass: "editor-addPlayer-button",
-                plugins: [{
-                        fn: "AddEntityChildAction",
-                        cfg: {
-                            targetClass: "Player"
-                        }
-                    }]
-            }, {
-                type: "DeleteEntityButton",
-                cssClass: "editor-deleteTeam-button"
+            type: "EditEntityButton",
+            label: "Properties"
+        }, {
+            type: "Button",
+            label: "Add player",
+            plugins: [{
+                fn: "AddEntityChildAction",
+                cfg: {
+                    targetClass: "Player"
+                }
             }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -351,13 +340,11 @@ YUI.add('wegas-entity', function (Y) {
             teamId: IDATTRDEF
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Properties",
-                cssClass: "editor-playerProperties-button"
-            }, {
-                type: "DeleteEntityButton",
-                cssClass: "editor-deletePlayer-button"
-            }]
+            type: "EditEntityButton",
+            label: "Properties"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -416,11 +403,11 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Edit group"
-            }, {
-                type: "DeleteEntityButton"
-            }]
+            type: "EditEntityButton",
+            label: "Edit group"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
     /**
      * JpaAccount mapper
@@ -495,15 +482,15 @@ YUI.add('wegas-entity', function (Y) {
                 items: {
                     type: "string",
                     choices: [{
-                            value: 1,
-                            label: 'Administrator'
-                        }, {
-                            value: 4,
-                            label: 'Scenarist'
-                        }, {
-                            value: 5,
-                            label: 'Animator'
-                        }],
+                        value: 1,
+                        label: 'Administrator'
+                    }, {
+                        value: 4,
+                        label: 'Scenarist'
+                    }, {
+                        value: 5,
+                        label: 'Animator'
+                    }],
                     _inputex: {
                         label: "",
                         _type: "roleselect"
@@ -515,35 +502,35 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Edit user"
-            }, {
-                type: "Button",
-                disabled: true,
-                label: "Permissions"
-            }
-            //        , {
-            //            type: "DeleteEntityButton"
-            //        }
+            type: "EditEntityButton",
+            label: "Edit user"
+        }, {
+            type: "Button",
+            disabled: true,
+            label: "Permissions"
+        }
+        //        , {
+        //            type: "DeleteEntityButton"
+        //        }
         ]
-                //EDITFORM : [{
-                //    name: 'name',
-                //    label:'Name',
-                //    required: true
-                //}, {
-                //    name: 'password',
-                //    type: 'password',
-                //    label: 'New password',
-                //    showMsg: true,
-                //    id: 'firstPassword',
-                //    strengthIndicator: true,
-                //    capsLockWarning: true
-                //}, {
-                //    type: 'password',
-                //    label: 'Confirmation',
-                //    showMsg: true,
-                //    confirm: 'firstPassword'
-                //}]
+    //EDITFORM : [{
+    //    name: 'name',
+    //    label:'Name',
+    //    required: true
+    //}, {
+    //    name: 'password',
+    //    type: 'password',
+    //    label: 'New password',
+    //    showMsg: true,
+    //    id: 'firstPassword',
+    //    strengthIndicator: true,
+    //    capsLockWarning: true
+    //}, {
+    //    type: 'password',
+    //    label: 'Confirmation',
+    //    showMsg: true,
+    //    confirm: 'firstPassword'
+    //}]
     });
 
     /**
@@ -606,15 +593,15 @@ YUI.add('wegas-entity', function (Y) {
                     "@class": {
                         type: "string",
                         choices: [{
-                                value: "TeamScope",
-                                label: 'different for each team'
-                            }, {
-                                value: "PlayerScope",
-                                label: 'different for each user'
-                            }, {
-                                value: "GameModelScope",
-                                label: 'the same for everybody'
-                            }],
+                            value: "TeamScope",
+                            label: 'different for each team'
+                        }, {
+                            value: "PlayerScope",
+                            label: 'different for each user'
+                        }, {
+                            value: "GameModelScope",
+                            label: 'the same for everybody'
+                        }],
                         _inputex: {
                             label: 'Variable is'
                         }
@@ -629,16 +616,16 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: "Button",
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
+            type: "EditEntityButton"
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
             }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
 
@@ -737,8 +724,8 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
-            }]
+            type: "EditEntityButton"
+        }]
     });
     /**
      * StringDescriptor mapper
@@ -831,30 +818,30 @@ YUI.add('wegas-entity', function (Y) {
         METHODS: {
             add: {
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             setValue: {
                 label: "set",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             getValue: {
                 label: "value",
                 returns: "number",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             }
         }
     });
@@ -937,61 +924,61 @@ YUI.add('wegas-entity', function (Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: "Button",
-                label: "Add",
-                plugins: [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "menuCfg": {
-                                points: ["tl", "tr"]
-                            },
-                            "event": "mouseenter",
-                            "children": [{
-                                    "type": "AddEntityChildButton",
-                                    "label": "Number",
-                                    "targetClass": "NumberDescriptor"
-                                }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "String",
-                                    "targetClass": "StringDescriptor"
-                                }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "List",
-                                    "targetClass": "ListDescriptor"
-                                }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Question",
-                                    "targetClass": "QuestionDescriptor"
-                                }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Trigger",
-                                    "targetClass": "TriggerDescriptor"
-                                }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Resource (Leaderway, CEP Game)",
-                                    "targetClass": "ResourceDescriptor"
-                                }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Dialogue (Leaderway)",
-                                    "targetClass": "DialogueDescriptor"
-                                }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Task (Leaderway)",
-                                    "targetClass": "TaskDescriptor"
-                                }]
-                        }
+            type: "EditEntityButton"
+        }, {
+            type: "Button",
+            label: "Add",
+            plugins: [{
+                "fn": "WidgetMenu",
+                "cfg": {
+                    "menuCfg": {
+                        points: ["tl", "tr"]
+                    },
+                    "event": "mouseenter",
+                    "children": [{
+                        "type": "AddEntityChildButton",
+                        "label": "Number",
+                        "targetClass": "NumberDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "String",
+                        "targetClass": "StringDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "List",
+                        "targetClass": "ListDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Question",
+                        "targetClass": "QuestionDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Trigger",
+                        "targetClass": "TriggerDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Resource (Leaderway, CEP Game)",
+                        "targetClass": "ResourceDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Dialogue (Leaderway)",
+                        "targetClass": "DialogueDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Task (Leaderway)",
+                        "targetClass": "TaskDescriptor"
                     }]
-            }, {
-                type: "Button",
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
+                }
             }]
+        }, {
+            type: "Button",
+            label: "Duplicate",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
     /*
      * ListInstance mapper
@@ -1069,164 +1056,164 @@ YUI.add('wegas-entity', function (Y) {
                 label: "Get confidence",
                 returns: "number",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             addAtConfidence: {
                 label: "Add at confidence",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             setConfidence: {
                 label: "Set confidence",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             getMoral: {
                 label: "Get moral",
                 returns: "number",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             addAtMoral: {
                 label: "Add at moral",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             setMoral: {
                 label: "Set moral",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             //methods below are temporary ; only for CEP-Game
             getSalary: {
                 label: "Get salary",
                 returns: "number",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             addAtSalary: {
                 label: "Add at salary",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             setSalary: {
                 label: "Set salary",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             getExperience: {
                 label: "Get experience",
                 returns: "number",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             addAtExperience: {
                 label: "Add at experience",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             setExperience: {
                 label: "Set experience",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             getLeadershipLevel: {
                 label: "Get leadership level",
                 returns: "number",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             addAtLeadershipLevel: {
                 label: "Add at leadership level",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             setLeadershipLevel: {
                 label: "Set leadership level",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        value: 1
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    value: 1
+                }]
             },
             getActive: {
                 label: "Is active",
                 returns: "boolean",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             activate: {
                 label: "Activate",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             },
             desactivate: {
                 label: "Desactivate",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             }
         }
     });
@@ -1389,36 +1376,40 @@ YUI.add('wegas-entity', function (Y) {
                 label: "send message",
                 className: "wegas-method-sendmessage",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }, {
-                        type: "string",
-                        label: "from",
-                        scriptType: "string"
-                    }, {
-                        type: "string",
-                        label: "title",
-                        scriptType: "string"
-                    }, {
-                        type: "text",
-                        label: "Content",
-                        scriptType: "string"
-                    }, {
-                        type: "list",
-                        label: "Attachements",
-                        scriptType: "list",
-                        useButtons: true
-                                /*sortable: true*/
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    label: "from",
+                    scriptType: "string"
+                }, {
+                    type: "string",
+                    label: "title",
+                    scriptType: "string"
+                }, {
+                    type: "text",
+                    label: "Content",
+                    scriptType: "string"
+                }, {
+                    type: "list",
+                    label: "Attachements",
+                    scriptType: "string",
+                    useButtons: true,
+                    /*sortable: true*/
+                    elementType: {
+                        type: "wegasurl",
+                        label: "",
+                        required: true
                     }
-                ]
+                }]
             },
             isEmpty: {
                 label: "is empty",
                 returns: "boolean",
                 arguments: [{
-                        type: "hidden",
-                        value: "self"
-                    }]
+                    type: "hidden",
+                    value: "self"
+                }]
             }
 
         }
@@ -1472,7 +1463,7 @@ YUI.add('wegas-entity', function (Y) {
             this._result = null;
         },
         isValid: function () {
-            // @todo : FX a greffer :)
+        // @todo : FX a greffer :)
         },
         /*
          * evaluated event contains response. true or false. False if script error.
@@ -1542,8 +1533,8 @@ YUI.add('wegas-entity', function (Y) {
                 value: "JavaScript",
                 type: "string",
                 choices: [{
-                        value: "JavaScript"
-                    }],
+                    value: "JavaScript"
+                }],
                 _inputex: {
                     //type:"select",
                     _type: "hidden"

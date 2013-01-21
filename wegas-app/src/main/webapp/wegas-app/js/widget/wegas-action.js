@@ -12,10 +12,11 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-action', function (Y) {
+YUI.add('wegas-action', function(Y) {
     "use strict";
 
-    function Plugin() {}
+    function Plugin() {
+    }
 
     Y.mix(Plugin.prototype, {});
 
@@ -43,14 +44,13 @@ YUI.add('wegas-action', function (Y) {
     Y.namespace("Wegas").Plugin = Plugin;
 
     var Action = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
-
-        initializer: function () {
-            this.onHostEvent(this.get("targetEvent"), function () {
+        initializer: function() {
+            this.onHostEvent(this.get("targetEvent"), function() {
                 this.setAttrs(this.get("host").get("data"));                    // Pass the action data from the host to the plug
                 this.execute();
             }, this);
         },
-        execute: function () {
+        execute: function() {
             Y.error("Y.Plugin.Action.execute() is abstract, should be overriddent");
         }
     }, {
@@ -69,13 +69,13 @@ YUI.add('wegas-action', function (Y) {
      *  @module Wegas
      *  @constructor
      */
-    var OpenUrlAction = function () {
+    var OpenUrlAction = function() {
         OpenUrlAction.superclass.constructor.apply(this, arguments);
     };
 
     Y.extend(OpenUrlAction, Action, {
-        execute: function () {
-            var targetUrl  = Y.Wegas.app.get("base") + this.get("url");
+        execute: function() {
+            var targetUrl = Y.Wegas.app.get("base") + this.get("url");
 
             if (this.get("target") === "blank") {
                 window.open(targetUrl);
@@ -87,12 +87,12 @@ YUI.add('wegas-action', function (Y) {
         NS: "openurlaction",
         NAME: "OpenUrlAction",
         ATTRS: {
-            url: { },
+            url: {},
             /**
              * Can be "self" or "blank"
              */
             target: {
-                value : "blank"
+                value: "blank"
             }
         }
     });
@@ -105,23 +105,21 @@ YUI.add('wegas-action', function (Y) {
      *  @module Wegas
      *  @constructor
      */
-    var OpenPageAction = function () {
+    var OpenPageAction = function() {
         OpenPageAction.superclass.constructor.apply(this, arguments);
     };
 
     Y.extend(OpenPageAction, Action, {
-
-        initializer: function () {
+        initializer: function() {
             OpenPageAction.superclass.initializer.apply(this, arguments);
-            this.afterHostEvent("render", function () {
+            this.afterHostEvent("render", function() {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 if (targetPageLoader.get("pageId") === this.get("subpageId")) {
                     this.get("host").set("selected", 1);
                 }
             }, this);
         },
-
-        execute: function () {
+        execute: function() {
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             targetPageLoader.set("pageId", this.get("subpageId"));
             this.get("host").set("selected", 1);
@@ -154,13 +152,26 @@ YUI.add('wegas-action', function (Y) {
      *  @module Wegas
      *  @constructor
      */
-    var ExecuteScriptAction = function () {
+    var ExecuteScriptAction = function() {
         ExecuteScriptAction.superclass.constructor.apply(this, arguments);
     };
 
     Y.extend(ExecuteScriptAction, Action, {
-        execute: function () {
-            var host = this.get("host");
+        execute: function() {
+            var host = this.get("host"), overlayGuest, guest = host;
+            if (host.showOverlay && host.hideOverlay) {
+                overlayGuest = host;
+            } else {
+                while (!overlayGuest && guest.get("parent")) {
+                    guest = guest.get("parent");
+                    if (guest.showOverlay && guest.hideOverlay) {
+                        overlayGuest = guest;
+                    }
+                }
+            }
+            if (overlayGuest) {
+                overlayGuest.showOverlay();
+            }
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                 request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
@@ -168,7 +179,17 @@ YUI.add('wegas-action', function (Y) {
                     data: Y.JSON.stringify(this.get("onClick"))
                 },
                 on: {
-                    failure: Y.bind(host.defaultExceptionHandler, host)
+                    success: function(r) {
+                        if (overlayGuest) {
+                            overlayGuest.hideOverlay();
+                        }
+                    },
+                    failure: function(r) {
+                        if (overlayGuest) {
+                            overlayGuest.hideOverlay();
+                        }
+                        Y.bind(host.defaultExceptionHandler, host, r);
+                    }
                 }
             });
         }
@@ -187,12 +208,12 @@ YUI.add('wegas-action', function (Y) {
     Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
 
 
-    var PopupPlg = function () {
+    var PopupPlg = function() {
         PopupPlg.superclass.constructor.apply(this, arguments);
     };
     Y.extend(PopupPlg, Y.Plugin.Base, {
-        initializer: function () {
-            this.afterHostEvent("render",  function () {
+        initializer: function() {
+            this.afterHostEvent("render", function() {
                 this.get("host").showMessage("info", this.get("content"));
             });
         }
