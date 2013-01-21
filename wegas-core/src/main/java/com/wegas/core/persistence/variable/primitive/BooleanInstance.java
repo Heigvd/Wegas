@@ -12,7 +12,6 @@ package com.wegas.core.persistence.variable.primitive;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "BooleanInstance")
 public class BooleanInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
