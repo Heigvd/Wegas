@@ -1,11 +1,18 @@
 {
     "id": 2003,
-    "type" : "List",
+    "type" : "PanelWidget",
+    "width": 410,
+    "zIndex": 6,
+    "centered": true,
+    "modal": false,
+    "render": true,
+    "visible": true,
+    "buttons": [],
     "children": [{
         "type": "Text",
-        "content": "Login",
+        "content": "Join Team",
         "cssClass": "wegas-title"
     }, {
-        "type": "LoginWidget"
+        "type": "JoinTeamWidget"
     }]
 }

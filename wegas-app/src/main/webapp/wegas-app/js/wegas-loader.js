@@ -180,6 +180,16 @@ YUI().use(function(Y) {
                         'wegas-editor-action', 'inputex-select', 'inputex-string'],
                         ws_provides: "JoinGameWidget"
                     },
+                    'wegas-jointeamwidget': {
+                        path: 'wegas-app/js/widget/wegas-jointeamwidget-min.js',
+                        requires: ['wegas-joingamewidget'],
+                        ws_provides: "JoinTeamWidget"
+                    },
+                    'wegas-panelwidget': {
+                        path: 'wegas-app/js/widget/wegas-panelwidget-min.js',
+                        requires: ['panel', 'wegas-joingamewidget'],
+                        ws_provides: "PanelWidget"
+                    },
                     'wegas-imageloader': {
                         path: 'wegas-app/js/widget/wegas-imageloader-min.js',
                         requires: ['io-base', 'imageloader']
