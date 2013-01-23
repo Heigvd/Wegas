@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -37,11 +36,6 @@ public class RequestManager implements Serializable {
      */
     @Inject
     Event<PlayerAction> playerActionEvent;
-    /**
-     *
-     */
-    @EJB
-    private VariableInstanceFacade variableInstanceFacade;
     /**
      *
      */
