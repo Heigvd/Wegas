@@ -30,6 +30,15 @@ abstract public class AbstractContentDescriptor implements Serializable {
 
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
+
+    @JsonCreator
+    public static AbstractContentDescriptor getDescriptor(@JsonProperty("name") String name, @JsonProperty("path") String path, @JsonProperty("mimeType") String mimeType) throws RepositoryException {
+        if (mimeType.equals(DirectoryDescriptor.MIME_TYPE)) {
+            return new DirectoryDescriptor(name, path, null);
+        } else {
+            return new FileDescriptor(name, path, null);
+        }
+    }
     @XmlTransient
     private boolean synched = false;
     protected String mimeType;
@@ -161,6 +170,10 @@ abstract public class AbstractContentDescriptor implements Serializable {
         return file;
     }
 
+    public Long getBytes() {
+        return new Long(0);
+    }
+
     @XmlTransient
     public void delete(boolean force) throws RepositoryException {
         if (this.exist()) {
@@ -245,14 +258,5 @@ abstract public class AbstractContentDescriptor implements Serializable {
     @Override
     public String toString() {
         return "AbstractContentDescriptor{" + "mimeType=" + mimeType + ", name=" + name + ", path=" + path + ", fileSystemAbsolutePath=" + fileSystemAbsolutePath + ", note=" + note + ", description=" + description + "}";
-    }
-
-    @JsonCreator
-    public static AbstractContentDescriptor getDescriptor(@JsonProperty("name") String name, @JsonProperty("path") String path, @JsonProperty("mimeType") String mimeType) throws RepositoryException {
-        if (mimeType.equals(DirectoryDescriptor.MIME_TYPE)) {
-            return new DirectoryDescriptor(name, path, null);
-        } else {
-            return new FileDescriptor(name, path, null);
-        }
     }
 }
