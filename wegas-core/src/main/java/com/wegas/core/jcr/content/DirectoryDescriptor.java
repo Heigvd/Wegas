@@ -12,10 +12,13 @@ package com.wegas.core.jcr.content;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  *
@@ -42,6 +45,21 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
     @XmlTransient
     public boolean isRootDirectory() {
         return this.fileSystemAbsolutePath.equals("/");
+    }
+
+    @JsonProperty("bytes")
+    @Override
+    public Long getBytes() {
+        List<AbstractContentDescriptor> nodes = new ArrayList<>();
+        try {
+            nodes = this.list();
+        } catch (RepositoryException ex) {
+        }
+        Long sum = new Long(0);
+        for (AbstractContentDescriptor n : nodes) {
+            sum += n.getBytes();
+        }
+        return sum;
     }
 
     @XmlTransient
