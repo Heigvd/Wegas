@@ -2,11 +2,10 @@
     "id": 2003,
     "type" : "PanelWidget",
     "width": 410,
-    "zIndex": 6,
-    "centered": true,
+    "align": {
+        "points": ["tc", "tc"]
+    },
     "modal": false,
-    "render": true,
-    "visible": true,
     "buttons": [],
     "children": [{
         "type": "Text",

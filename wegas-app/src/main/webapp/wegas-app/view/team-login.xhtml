@@ -7,7 +7,23 @@
     <ui:composition template="template/app-default.xhtml">
 
         <ui:define name="title">Team login for #{singleLobbyController.currentGameByTocken.name}</ui:define>
-
+        
+        <ui:define name="head">
+            <style type="text/css">
+                .yui3-skin-sam .wegas-title {
+                    border: solid #2647A0;
+                    border-width: 0 0 5px;
+                    padding-bottom: 5px;
+                    margin-bottom: 19px;
+                    margin-top: 80px;
+                }
+                
+                .wegas-jointeamwidget-content {
+                    margin-left: 60px;
+                }
+            </style>
+        </ui:define>
+        
         <ui:define name="body">
             <script type="text/javascript">
                 var Y = YUI().use("wegas-app", function (Y) {
