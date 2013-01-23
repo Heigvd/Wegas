@@ -108,7 +108,7 @@
         "maxValue":10
     },{
         "@class":"NumberDescriptor",
-        "label": "Team motivation",
+        "label": "Motivation d'équipe",
         "name":"teamMotivation",
         "defaultInstance":{
             "@class":"NumberInstance",

@@ -344,3 +344,8 @@ body {
     margin-left: 135px;
     font-weight: bold;
 }
+
+.loading-icon{
+    background-image: url(../../wegas-app/images/loading-small.gif);
+    background-repeat: no-repeat;
+}
