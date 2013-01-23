@@ -209,30 +209,33 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 request: "/JoinTeam/" + teamId,
                 on: {
                     success: Y.bind(function (e) {
-
-                        this.showMessage("success", "Game joined, it has been added to your games", 10000);
-
-                        Y.Wegas.RegisteredGamesFacade.rest.clearCache();
-                        Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
-
-                        this.joinGameButton.show();
-                        this.tokenField.show();
-                        this.selectPublicGame.show();
-                        this.p.show();
-                        this.createButton.hide();
-                        this.createTeamField.hide();
-                        this.joinTeamButton.hide();
-                        this.removeAllTeamsChoices();
-                        this.teamsField.hide();
-                        this.selectPublicGame.setValue("");
-                        this.tokenField.setValue("");
-                        this.createTeamField.setValue("");
+                        this.joinTeamSuccess();
                     }, this),
                     failure: Y.bind(function (e) {
                         this.showMessage("error", "Error joining team");
                     }, this)
                 }
             });
+        },
+        
+        joinTeamSuccess : function() {
+            this.showMessage("success", "Game joined, it has been added to your games", 10000);
+            
+            Y.Wegas.RegisteredGamesFacade.rest.clearCache();
+            Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
+            
+            this.joinGameButton.show();
+            this.tokenField.show();
+            this.selectPublicGame.show();
+            this.p.show();
+            this.createButton.hide();
+            this.createTeamField.hide();
+            this.joinTeamButton.hide();
+            this.removeAllTeamsChoices();
+            this.teamsField.hide();
+            this.selectPublicGame.setValue("");
+            this.tokenField.setValue("");
+            this.createTeamField.setValue("");
         },
         
         removeAllTeamsChoices: function(){
