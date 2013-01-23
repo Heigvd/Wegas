@@ -66,6 +66,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @EJB
     private PlayerFacade playerFacade;
+
     /**
      *
      * @param entityId
@@ -108,11 +109,11 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         SecurityUtils.getSubject().checkPermission("Game:Create");
 
         this.gameFacade.create(new Long(this.getPathParam("gameModelId")), entity);
-        
-        if (entity.getId() != null){
+
+        if (entity.getId() != null) {
             userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + entity.getId());
             userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + entity.getId());
-        }   
+        }
         return entity;
     }
 
@@ -136,11 +137,11 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     public Game delete(Long entityId) {
 
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
-      
+
         userFacade.deleteUserPermissionByInstance("g" + entityId);
-        
+
         userFacade.deleteAllRolePermissionsById("g" + entityId);
-        
+
         return super.delete(entityId);
     }
 
@@ -157,20 +158,16 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
     @Produces(MediaType.APPLICATION_JSON)
     @TransactionAttribute()
     public Object tokenJoinGame(@PathParam("token") String token) throws Exception {
-        Game game = null;
+        Game game = gameFacade.findByToken(token);
         Team team = null;
-        try {
-            game = gameFacade.findByToken(token);                           // We check if there is game with given token
-
-        } catch (PersistenceException e2) {
-            try {
-                team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
-                game = team.getGame();
-
-            } catch (PersistenceException e) {
+        if (game == null) {                                                     // We check if there is game with given token
+            team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
+            if (team == null) {
                 throw new Exception("Could not find any game associated with this token.");
             }
+            game = team.getGame();
         }
+
         try {                                                                   // We check if logged user is already registered in the target game
             playerFacade.findByGameIdAndUserId(
                     game.getId(), userFacade.getCurrentUser().getId());
