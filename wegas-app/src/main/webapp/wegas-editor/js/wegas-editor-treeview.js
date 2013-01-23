@@ -21,15 +21,14 @@ YUI.add('wegas-editor-treeview', function (Y) {
     EditorTreeView = Y.Base.create("wegas-editor-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         // *** Private fields ** //
         treeView: null,
-        expandedIds: {},
+        menu: null,
         // ** Lifecycle methods ** //
 
         renderUI: function () {
-            
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
             this.menu = new Y.Wegas.Menu();
-           
+
             this.plug(Y.Plugin.EditorTVAdminAction);
         },
         bindUI: function () {
@@ -39,14 +38,6 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     this.showMessage("error", e.response.results.message);
                 }, this);
             }
-
-            this.treeView.before("*:nodeExpanded", function (e) {
-                this.expandedIds[e.node.get("data").entity.get("id")] = true;
-            }, this);
-
-            this.treeView.before("*:nodeCollapsed", function (e) {
-                delete this.expandedIds[e.node.get("data").entity.get("id")];
-            }, this);
         },
         syncUI: function () {
             this.set("dataSource", this.get("dataSource"));
@@ -65,17 +56,32 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 msg.remove(true);
             }
             this.treeView.removeAll();
-            if (entities.length == 0) {
+            if (entities.length === 0) {
                 this.get(CONTENTBOX).append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
                 return;
             }
             this.treeView.add(this.genTreeViewElements(entities));
             this.treeView.syncUI();
+
+//             if (!this.get("request")) {
+//                entities = (selector) ? ds.rest.find(selector.key, selector.val) : ds.rest.getCache();
+//                if (entities.length === 0) {
+//                    this.get(CONTENTBOX).append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
+//                    return;
+//                }
+//                this.treeView.add(this.genTreeViewElements(entities));
+//                this.treeView.syncUI();
+//            } else {
+//                ds.rest.sendRequest(this.get("request"), {
+//                    on: {
+//                        success: function (e) {
+//                            this.treeView.add(this.genTreeViewElements(e.response.entities));
+//                        }
+//                    }
+//                });
+//            }
         },
         // *** Private Methods *** //
-        isNodeExpanded: function (id) {
-            return this.expandedIds[id] || false;
-        },
         genTreeViewElements: function (elements) {
             var ret = [], i, el, elClass, text, collapsed, selected;
 
@@ -83,7 +89,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 if (elements.hasOwnProperty(i)) {
                     el = elements[i];
                     elClass = (el.get) ? el.get('@class') : el['type'];
-                    collapsed = (el.get) ? !this.isNodeExpanded(el.get("id")) : true;
+                    collapsed = (el.get) ? !this.EditorTVAction.isNodeExpanded(el.get("id")) : true;
                     selected = (el.get) ? ((this.currentSelection == el.get("id")) ? 2 : 0) : 0;
 
                     if ((this.get("excludeClasses") === null
@@ -100,10 +106,13 @@ YUI.add('wegas-editor-treeview', function (Y) {
                             case 'ResourceDescriptor':
                             case 'DialogueDescriptor':
                                 text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                                var els = this.genScopeTreeViewElements(el);
                                 ret.push({
                                     type: 'TreeNode',
                                     label: text,
-                                    children: this.genScopeTreeViewElements(el),
+                                    //children: els,
+                                    children: (els.length > 1) ? els : null, //no children now, loaded on expands
+                                    //children: null, //no children now, loaded on expands
                                     data: {
                                         entity: el
                                     },
@@ -507,11 +516,59 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
 
     Y.Plugin.EditorTVAdminAction = Y.Base.create("admin-action", Y.Plugin.Base, [], {
+        expandedIds: {},
+        lastOpenedNode: null,
         initializer: function () {
             this.afterHostEvent("render", function () {
                 var host = this.get("host");
                 host.treeView.on("*:click", this.onTreeViewClick, host);
+
+                //if treeleaf is empty, load elements (all instances)
+                host.treeView.before("*:nodeExpanded", function (e) {
+                    this.expandedIds[e.node.get("data").entity.get("id")] = true;
+                    this.lastOpenedNode = e.node;
+                    this.fillsLeaf();
+                }, this);
+
+                host.treeView.before("*:nodeCollapsed", function (e) {
+                    delete this.expandedIds[e.node.get("data").entity.get("id")];
+                }, this);
+
             });
+        },
+        fillsLeaf: function () {
+            var id = this.lastOpenedNode.get("data").entity.get("id");
+
+            if (this.lastOpenedNode.get("data").entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+
+                if (!this.lastOpenedNode.isEmpty()) {
+                    return;
+                }
+                this.lastOpenedNode.add({
+                    label: '<span style="font-style:italic">loading</span>',
+                    iconCSS: 'loading-icon'
+                });
+            }
+
+            Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                request: "/" + id + "?view=Editor",
+//                    headers: {
+//                        'Managed-Mode': 'true'
+//                    },
+                on: {
+                    'success': Y.bind(function (e) {
+                        //var instances = this.get("host").genScopeTreeViewElements(e.response.entity);
+                        //this.lastOpenedNode.removeAll();
+                        //this.lastOpenedNode.add(instances);
+
+                        //e.halt(true);
+                    }, this)
+                }
+            }, this);
+
+        },
+        isNodeExpanded: function (id) {
+            return this.expandedIds[id] || false;
         },
         onTreeViewClick: function (e) {
             Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");

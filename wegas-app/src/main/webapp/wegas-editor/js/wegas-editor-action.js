@@ -519,7 +519,7 @@ YUI.add('wegas-editor-action', function (Y) {
             Y.Wegas.GameFacade.set("source",                                    // Change the source attribute on the datasource
                 Y.Wegas.app.get("base") + "rest/GameModel/" + entity.get("id") + "/Game");
 
-            Y.Wegas.GameFacade.sendRequest({
+            Y.Wegas.GameFacade.rest.sendRequest({
                 request: "/"
             });
         }
