@@ -40,16 +40,13 @@ public class Helper {
         try {
             //   context.
             return (T) context.lookup("java:module/" + service.getSimpleName() + "!" + type.getName());
-        }
-        catch (NamingException ex) {
+        } catch (NamingException ex) {
             try {
                 return (T) context.lookup("java:global/classes/" + service.getSimpleName() + "!" + type.getName());
-            }
-            catch (NamingException ex1) {
+            } catch (NamingException ex1) {
                 try {
                     return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
-                }
-                catch (NamingException ex2) {
+                } catch (NamingException ex2) {
                     logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
                     throw ex2;
                 }
@@ -162,5 +159,26 @@ public class Helper {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Generate an alphanumeric token based on system time.
+     *
+     * @param maxLength Token maximum length. The shorter, the sooner it will
+     * collide.
+     * @return String token
+     */
+    public static String genToken(Integer maxLength) {
+        final String digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHYJKLMNOPQRSTUVWXYZ1234567890";
+        final int digitSize = digits.length();
+        StringBuilder sb = new StringBuilder();
+        int modulo;
+        Long time = System.nanoTime();
+        while (time > 0) {
+            modulo = (int) (time % digitSize);
+            sb.append(digits.substring(modulo, modulo + 1));
+            time = time / digitSize;
+        }
+        return sb.toString().substring(0, Math.min(sb.length(), maxLength));
     }
 }
