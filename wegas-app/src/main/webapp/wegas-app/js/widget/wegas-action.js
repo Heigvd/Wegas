@@ -31,13 +31,7 @@ YUI.add('wegas-action', function(Y) {
             destroyed: {
                 "transient": true
             },
-            /* Shortcur */
-            data: {
-                readonly: true,
-                getter: function() {
-                    return this.get("host").get("data");
-                }
-            }
+            /* Shortcut */
         }
     });
 
@@ -46,7 +40,7 @@ YUI.add('wegas-action', function(Y) {
     var Action = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
             this.onHostEvent(this.get("targetEvent"), function() {
-                this.setAttrs(this.get("host").get("data"));                    // Pass the action data from the host to the plug
+               // this.setAttrs(this.get("host").get("data"));                    // Pass the action data from the host to the plug
                 this.execute();
             }, this);
         },
@@ -59,6 +53,12 @@ YUI.add('wegas-action', function(Y) {
         ATTRS: {
             targetEvent: {
                 value: "click"
+            },
+            entity: {
+//                readonly: true,
+                getter: function() {
+                    return this.get("host").get("entity");
+                }
             }
         }
     });

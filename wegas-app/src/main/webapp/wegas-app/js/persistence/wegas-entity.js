@@ -295,6 +295,9 @@ YUI.add('wegas-entity', function (Y) {
         }, {
             type: "DeleteEntityButton",
             cssClass: "editor-deleteGame-button"
+        },{
+            type: "Linkwidget",
+            cssClass: "editor-playerlink-button"
         }]
     });
 
