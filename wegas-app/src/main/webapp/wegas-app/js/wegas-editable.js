@@ -138,6 +138,7 @@ YUI.add('wegas-editable', function (Y) {
 
                     if (elts[i].plugins) {
                         for (j = 0; j < elts[i].plugins.length; j = j + 1) {
+                            Y.mix(elts[i].plugins[j], data, true);
                             if (elts[i].plugins[j].cfg && elts[i].plugins[j].cfg.children) {
                                 mixMenuCfg(elts[i].plugins[j].cfg.children, data);
                             }

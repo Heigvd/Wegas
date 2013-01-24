@@ -66,15 +66,15 @@ YUI.add('wegas-app', function (Y) {
          * @description render function
          */
         render: function () {
-            var exception
-
             Y.io.header("Accept-Language", Y.config.lang);                      // Set the language for all requests
-            this.on("render", function () {
+            Y.JSON.useNativeParse = true;                                       // @todo Shall we use browser native parser ?
+            
+            this.on("render", function () {                                     // Remove loading overlay
                 Y.one("body").removeClass("wegas-loading-overlay");
             });
 
             Y.on("io:failure", function (e, response) {
-                exception = response.responseText.substring(response.responseText.indexOf('"exception'), response.responseText.length);
+                var exception = response.responseText.substring(response.responseText.indexOf('"exception'), response.responseText.length);
                 exception = exception.split(",");
                 if (response.status == 400 && exception[0] == '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
                 exception[0] == '"exception":"org.apache.shiro.authz.UnauthenticatedException"'){
@@ -97,9 +97,6 @@ YUI.add('wegas-app', function (Y) {
          */
         initDataSources: function () {
             var k, dataSource, dataSources = this.get('dataSources');
-
-            // @todo Shall we use browser native parser ?
-            Y.JSON.useNativeParse = true;
 
             this.requestCounter = 0;
 

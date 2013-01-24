@@ -15,9 +15,7 @@
 YUI.add("wegas-loginbutton", function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
-            BOUNDINGBOX = 'boundingBox',
-            LoginButton;
+    var LoginButton;
 
     /**
      * Login button
@@ -25,45 +23,44 @@ YUI.add("wegas-loginbutton", function (Y) {
     LoginButton = Y.Base.create("wegas-login", Y.Wegas.Button, [], {
         bindUI: function () {
             Y.Wegas.LoginButton.superclass.bindUI.apply(this, arguments);
-
             Y.Wegas.UserFacade.after("update", this.syncUI, this);
 
-            if (this.menu) { //Don't add the plugin if it already exist.
+            if (this.menu) {                                                    // Don't add the plugin if it already exist.
                 return;
             }
 
             this.plug(Y.Plugin.WidgetMenu, {
                 children: [{
-                        type: "Button",
-                        label: "Preferences",
-                        plugins: [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": this.get("preferencePageId"), // @fixme
-                                    "targetPageLoaderId": this.get("targetPageLoader")
-                                }
-                            }]
-                    }, {
-                        type: "Button",
-                        label: "Logout",
-                        "plugins": [{
-                                fn: "OpenUrlAction",
-                                cfg: {
-                                    url: "wegas-app/logout",
-                                    target: "self"
-                                }
-                            }
-                        ]
+                    type: "Button",
+                    label: "Preferences",
+                    plugins: [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": this.get("preferencePageId"), // @fixme
+                            "targetPageLoaderId": this.get("targetPageLoader")
+                        }
                     }]
+                }, {
+                    type: "Button",
+                    label: "Logout",
+                    "plugins": [{
+                        fn: "OpenUrlAction",
+                        cfg: {
+                            url: "wegas-app/logout",
+                            target: "self"
+                        }
+                    }
+                    ]
+                }]
             });
         },
         syncUI: function () {
             Y.Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
             var cUser = Y.Wegas.app.get("currentUser"),
-                    cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer(),
-                    cTeam = Y.Wegas.GameFacade.rest.getCurrentTeam(),
-                    name = cUser.name || "undefined";
+            cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer(),
+            cTeam = Y.Wegas.GameFacade.rest.getCurrentTeam(),
+            name = cUser.name || "undefined";
             if (!this.get('labelIsUser')) {
                 if (cPlayer) {
                     name = cPlayer.get("name");
@@ -78,8 +75,8 @@ YUI.add("wegas-loginbutton", function (Y) {
         ATTRS: {
             labelIsUser: {
                 value: false,
-                validator: function(b){
-                    return (b === 'true' || b === true)
+                validator: function(b) {
+                    return (b === 'true' || b === true);
                 }
             },
             type: {
@@ -96,7 +93,7 @@ YUI.add("wegas-loginbutton", function (Y) {
             },
             targetPageLoader: {
                 value: "maindisplayarea"
-            },
+            }
         }
     });
     Y.namespace('Wegas').LoginButton = LoginButton;
