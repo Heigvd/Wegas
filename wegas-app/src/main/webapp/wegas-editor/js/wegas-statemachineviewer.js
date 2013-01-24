@@ -13,13 +13,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
     "use strict";
 
     var StateMachineViewer, State, Transition, Script,
-            jp,
-            getClassName = Y.ClassNameManager.getClassName,
-            CONTENT_BOX = 'contentBox',
-            BOUNDING_BOX = 'boundingBox',
-            DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=ISO-8859-1'
-    };
+        jp,
+        CONTENT_BOX = 'contentBox',
+        BOUNDING_BOX = 'boundingBox';
 
     StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Y.Wegas.Widget, Y.WidgetParent, Y.WidgetChild], {
         //TODO : zoom on simple scroll (ie without altKey), move panel with mouse (overflow hidden); zoom disabled
@@ -49,9 +45,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 async: true,
                 broadcast: true
             });
-            window.jsPlumb.ready(Y.bind(function() {
-                this.initJsPlumb();
-            }, this));
+            window.jsPlumb.ready(Y.bind(this.initJsPlumb, this));
         },
         initJsPlumb: function() {
             jp = window.jsPlumb.getInstance({
@@ -89,9 +83,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }
             });
             this.events.deleteTransition = jp.bind("beforeDetach", function(e) {
-                var transitions;
+                var i,
                 transitions = e.getParameter("transition").source.get("entity").get("transitions");
-                for (var i in transitions) {
+                for (i in transitions) {
                     if (transitions[i] === e.getParameter("transition").get("entity")) {
                         transitions.splice(i, 1);
                     }
@@ -184,11 +178,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             delete this.events;
         },
         loader: function() {
-            var tmp;
+            var i, tmp;
             if (!this.panel.loader) {
                 this.cacheDialogue = Y.Wegas.VariableDescriptorFacade.rest.filter("@class", "DialogueDescriptor");
                 tmp = "<select><option>Select</option>";
-                for (var i in this.cacheDialogue) {
+                for (i in this.cacheDialogue) {
                     tmp += "<option value='" + this.cacheDialogue[i].get("id") + "'>" + this.cacheDialogue[i].get("name") + "</option>";
                 }
                 tmp += "</select>";
@@ -242,7 +236,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             config = {
                 sid: id,
                 initial: (+id === +this.get("entity").getInitialStateId()),
-                entity: (entity ? entity : null),
+                entity: entity || null,
                 x: x,
                 y: y
             };
@@ -269,16 +263,16 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         },
         processMenu: function(type) {
             var entity,
-                    DEFAULTCB = {
-                success: Y.bind(function(e) {
-                    this.showMessage("success", "States successfully saved", 1500);
-                    this.hideOverlay();
-                }, this),
-                failure: Y.bind(function(e) {
-                    this.showMessage("error", e.response.data.message);
-                    this.hideOverlay();
-                }, this)
-            };
+                DEFAULTCB = {
+                    success: Y.bind(function(e) {
+                        this.showMessage("success", "States successfully saved", 1500);
+                        this.hideOverlay();
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.showMessage("error", e.response.data.message);
+                        this.hideOverlay();
+                    }, this)
+                };
             switch (type) {
                 case "load":
                     this.loader();

@@ -12,12 +12,12 @@ YUI.add('wegas-leaderway-score', function (Y) {
         table: null,
         data: null,
         // *** Lifecycle Methods *** //
-        initializer: function(){
+        initializer: function () {
             this.data = [];
         },
         /**
          * Render the widget.
-         * Create the child widget "table"  
+         * Create the child widget "table"
          */
         renderUI: function () {
             var cb = this.get(CONTENTBOX);
@@ -51,8 +51,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
             this.table.addRows(this.data);
             if (!this.data[0]) {
                 this.table.showMessage("Aucun score n'est disponible.");
-            }
-            else {
+            } else {
                 this.table.hideMessage();
             }
             this.goToFinalPage();// ! hack function
@@ -69,7 +68,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
          * @param Integer rows, number of wanted rows.
          */
         getTeamScore: function (maxRows) {
-            var i, j, k, allScore, team = new Array(), score = new Array(), sortedScore = new Array(), sortedTeam = new Array(), exist = false;
+            var i, j, k, allScore, team = [], score = [], sortedScore = [], sortedTeam = [], exist = false;
             allScore = Y.Wegas.VariableDescriptorFacade.rest.find("name", "score").get("scope").get("variableInstances");
             for (i in allScore) {
                 team.push(Y.Wegas.GameFacade.rest.findById(i).get('name'));
@@ -94,14 +93,15 @@ YUI.add('wegas-leaderway-score', function (Y) {
                         }
                     }
                 }
-                if (score.length <= maxRows)
+                if (score.length <= maxRows) {
                     maxRows = score.length;
+                }
                 for (i = 0; i < maxRows; i++) {
                     this.data.push({
                         number: i + 1,
                         team: sortedTeam[i],
                         score: sortedScore[i]
-                    })
+                    });
                 }
             }
         },
@@ -120,8 +120,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
             }
         }
-    },
-    {
+    }, {
         ATTRS: {
             title: {
                 value: 'Top 5 des meilleurs entreprises.',

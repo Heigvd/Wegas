@@ -183,8 +183,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 for (j = numberOfValues - 1; j >= 0; j--) {
                     if (serieRawData.length - 1 < j) {
                         serieFitData.push(serieRawData[0]);
-                    }
-                    else {
+                    } else {
                         serieFitData.push(serieRawData[serieRawData.length - (j + 1)]);
                     }
                 }
@@ -238,7 +237,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         readStateContent: function (availableActions) {
             var dialogue = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.currentDialogue),
-                    content, rawContent, texts, splittedText = new Array(), cb = this.get(CONTENTBOX);
+                    content, rawContent, texts, splittedText = [], cb = this.get(CONTENTBOX);
             //get availableActions
             this.availableActions = availableActions;
             rawContent = this.state.get('text');
@@ -273,11 +272,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.speaker-name').setHTML(content.speakerName);
             cb.one('.dialogue .talk').insert('<p></p>');
             //Display image
-            if (content.backgroundImages)
+            if (content.backgroundImages) {
                 this.renderImages(cb.one('.pictures .backgroundLayer'), content.backgroundImages);
+            }
             if (content.questionImages) {
                 this.renderImages(cb.one('.pictures .questionLayer'), content.questionImages);
-                (content.answerImages) ? this.renderImages(cb.one('.pictures .answerLayer'), content.answerImages) : this.renderImages(cb.one('.pictures .answerLayer'), content.questionImages);
+                this.renderImages(cb.one('.pictures .answerLayer'), (content.answerImages) ? content.answerImages : content.questiocnImages);
             }
             cb.one('.pictures .backgroundLayer').show();
             cb.one('.pictures .questionLayer').show();
@@ -299,8 +299,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                     if (content.functionAfterTransition) {
                         try {
                             eval(content.functionAfterTransition);
-                        }
-                        catch (e) {
+                        } catch (e) {
                             Y.log('unable to execute function : ' + content.functionAfterTransition, 'warn', 'wegas.leaderway.dialogue');
                         }
                     }
@@ -353,8 +352,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             textParts.shift();
             if (textParts.length > 0) {
                 this.timers.push(Y.later(50, this, Y.bind(this.displayText, this, cb, textParts)));
-            }
-            else {
+            } else {
                 cb.one('.pictures .questionLayer').hide();
                 cb.one('.pictures .answerLayer').show();
                 this.displayResponse();

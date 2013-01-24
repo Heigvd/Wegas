@@ -5,76 +5,75 @@
 
 YUI.add('treeview', function(Y) {
     var getClassName = Y.ClassNameManager.getClassName,
-            TREEVIEW = 'treeview',
-            TREENODE = 'treenode',
-            TREELEAF = 'treeleaf',
-            CONTENT_BOX = "contentBox",
-            BOUNDING_BOX = "boundingBox",
-            classNames = {
-        loading: getClassName(TREENODE, "loading"),
-        collapsed: getClassName(TREENODE, "collapsed"),
-        visibleRightWidget: getClassName(TREEVIEW, "visible-right")
-    },
-    RIGHTWIDGETSETTERFN = function(v) {
-        if (this.get("rightWidget") !== v && this.get("rightWidget")) {// Remove existing child
-            if (this.get("rightWidget") instanceof Y.Node) {        // Case 1: Y.Node
-                this.get("rightWidget").remove();
-            } else {
-                this.get("rightWidget").get(BOUNDING_BOX).remove(); // Case 2: Y.Widget
-                this.get("rightWidget").removeTarget(this);
-                this.set("parent", null);
-            }
-        }
-        if (v) {                                                    // Append the new widget
-            if (v instanceof Y.Node) {                              // Case 1: Y.Node
-                v.appendTo("#" + this.get("id") + "_right");
-            } else {                                                // Case 2: Y.Widget
-                if (v.get("rendered")) {
-                    v.get(BOUNDING_BOX).appendTo("#" + this.get("id") + "_right");
+        TREEVIEW = 'treeview',
+        TREENODE = 'treenode',
+        TREELEAF = 'treeleaf',
+        CONTENT_BOX = "contentBox",
+        BOUNDING_BOX = "boundingBox",
+        classNames = {
+            loading: getClassName(TREENODE, "loading"),
+            collapsed: getClassName(TREENODE, "collapsed"),
+            visibleRightWidget: getClassName(TREEVIEW, "visible-right")
+        },
+        RIGHTWIDGETSETTERFN = function(v) {
+            if (this.get("rightWidget") !== v && this.get("rightWidget")) {// Remove existing child
+                if (this.get("rightWidget") instanceof Y.Node) {        // Case 1: Y.Node
+                    this.get("rightWidget").remove();
                 } else {
-                    v.render("#" + this.get("id") + "_right");
+                    this.get("rightWidget").get(BOUNDING_BOX).remove(); // Case 2: Y.Widget
+                    this.get("rightWidget").removeTarget(this);
+                    this.set("parent", null);
                 }
-                v.set("parent", this);
-                v.addTarget(this);
             }
-        }
-        return v;
-    };
-
-    Y.TreeView = Y.Base.create("treeview", Y.Widget, [Y.WidgetParent],
-            {
-                BOUNDING_TEMPLATE: "<div></div>",
-                CONTENT_TEMPLATE: "<ul></ul>",
-                initializer: function() {
-                },
-                bindUI: function() {
-                    this.on("*:click", function(e) {
-                        if (e.node && e.node !== this) {
-                            this.deselectAll();
-                            e.node.set("selected", 2);
-                        }
-                    });
-                },
-                renderUI: function() {
-                    if (this.get("visibleRightWidget")) {
-                        this.get(CONTENT_BOX).addClass(classNames.visibleRightWidget);
+            if (v) {                                                    // Append the new widget
+                if (v instanceof Y.Node) {                              // Case 1: Y.Node
+                    v.appendTo("#" + this.get("id") + "_right");
+                } else {                                                // Case 2: Y.Widget
+                    if (v.get("rendered")) {
+                        v.get(BOUNDING_BOX).appendTo("#" + this.get("id") + "_right");
+                    } else {
+                        v.render("#" + this.get("id") + "_right");
                     }
-                },
-                expandAll: function() {
-                    this.each(function(item) {
-                        if (item.expandAll) {
-                            item.expandAll();
-                        }
-                    });
-                },
-                collapseAll: function() {
-                    this.each(function(item) {
-                        if (item.collapseAll) {
-                            item.collapseAll();
-                        }
-                    });
+                    v.set("parent", this);
+                    v.addTarget(this);
                 }
-            }, {
+            }
+            return v;
+        };
+
+    Y.TreeView = Y.Base.create("treeview", Y.Widget, [Y.WidgetParent], {
+        BOUNDING_TEMPLATE: "<div></div>",
+        CONTENT_TEMPLATE: "<ul></ul>",
+        initializer: function() {
+        },
+        bindUI: function() {
+            this.on("*:click", function(e) {
+                if (e.node && e.node !== this) {
+                    this.deselectAll();
+                    e.node.set("selected", 2);
+                }
+            });
+        },
+        renderUI: function() {
+            if (this.get("visibleRightWidget")) {
+                this.get(CONTENT_BOX).addClass(classNames.visibleRightWidget);
+            }
+        },
+        expandAll: function() {
+            this.each(function(item) {
+                if (item.expandAll) {
+                    item.expandAll();
+                }
+            });
+        },
+        collapseAll: function() {
+            this.each(function(item) {
+                if (item.collapseAll) {
+                    item.collapseAll();
+                }
+            });
+        }
+    }, {
         NAME: 'treeview',
         ATTRS: {
             visibleRightWidget: {
@@ -122,7 +121,7 @@ YUI.add('treeview', function(Y) {
             });
         },
         renderUI: function() {
-            var bb = this.get(BOUNDING_BOX), cb = this.get(CONTENT_BOX), header;
+            var bb = this.get(BOUNDING_BOX), header;
             header = Y.Node.create("<div class='content-header " + this.getClassName("content", "header") + "'></div>");
             bb.insertBefore(header, this.get(CONTENT_BOX));
             this.toggleNode = Y.Node.create("<span class='" + this.getClassName("content", "toggle") + "'></span>");
@@ -161,7 +160,7 @@ YUI.add('treeview', function(Y) {
                     node: this
                 });
             },
-                    this);
+            this);
             this.eventInstances.fullClick = this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).on("click", function(e) {
                 var node = e.target;
                 e.stopPropagation();
@@ -193,18 +192,14 @@ YUI.add('treeview', function(Y) {
             this.set("collapsed", this.get("collapsed"));
         },
         destructor: function() {
+            var event;
             this.blur();                                                        //remove a focused node generates some errors
-            for (var event in this.eventInstances) {
+            for (event in this.eventInstances) {
                 this.eventInstances[event].detach();
             }
             if (this.get("rightWidget")) {
                 this.get("rightWidget").destroy();
             }
-
-            this.iconNode.remove(true);
-            this.labelNode.remove(true);
-            this.toggleNode.remove(true);
-
         },
         toggleTree: function() {
             this.get(BOUNDING_BOX).toggleClass(classNames.collapsed);
@@ -253,8 +248,8 @@ YUI.add('treeview', function(Y) {
             });
         },
         destroyChildren: function() {
-            var widgets = this.removeAll();
-            for (var i in widgets) {
+            var i, widgets = this.removeAll();
+            for (i in widgets) {
                 widgets.each(this.destroyChild, this);
             }
         },

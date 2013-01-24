@@ -44,14 +44,15 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          */
         bindUI: function () {
             Folder.superclass.bindUI.apply(this);
-            
+
             this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
-            
+
             //bind each action 'giveTask' change widget depending to the ATTRS 'taskListPageId'
             this.handlers.giveTask = Y.one('body').delegate('click', function (e) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                if (this.menuAction.menu.getMenu().toJSON()[0].get("disabled"))
+                if (this.menuAction.menu.getMenu().toJSON()[0].get("disabled")) {
                     return;
+                }
                 targetPageLoader.once("widgetChange", function (e) {
                     e.newVal.switchToPickingMode(this.resourceDescriptor, this.folderPageId);
                 }, {
@@ -60,11 +61,12 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 });
                 targetPageLoader.set("pageId", this.get('taskListPageId'));
             }, '.folder-action-giveTask', this);
-        
+
             //bind each action 'speak' change widget depending to the ATTRS 'dialoguePageId'
             this.handlers.speak = Y.one('body').delegate('click', function (e) {
-                if (this.menuAction.menu.getMenu().toJSON()[1].get("disabled"))
+                if (this.menuAction.menu.getMenu().toJSON()[1].get("disabled")) {
                     return;
+                }
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 targetPageLoader.once("widgetChange", function (e) {
                     e.newVal.setCurrentDialogue(this.resourceDescriptor.getInstance().get('properties').dialogue);
@@ -88,7 +90,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
             }, '.folder-action-speak', this);
-        
+
             //syncAction when menu is open (and menu's sub-element exists)
             this.handlers.syncAction = this.menuAction.menu.after('menuOpen', this.syncAction, this);
         },
@@ -127,8 +129,9 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          * @param ResourceDescriptor resourceDescriptor, the new resource.
          */
         setResourceDescriptor: function (resourceDescriptor) {
-            if (!resourceDescriptor && !resourceDescriptor.getInstance())
+            if (!resourceDescriptor && !resourceDescriptor.getInstance()) {
                 return;
+            }
             this.currentItem = resourceDescriptor;
             this.syncUI();
         },
@@ -153,7 +156,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     default :
                         occupation = "Malade";
                 }
-                if (resource.getInstance().get('active') == null || resource.getInstance().get('active') == true) {
+                if (resource.getInstance().get('active') === null || resource.getInstance().get('active') === true) {
                     selectorNo++;
                     cb.all('.selector').item(selectorNo).append('<p>' + occupation + '</p>');
                 }
@@ -173,7 +176,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 taskDescriptor = listAbsenceDescriptor.get('items')[i];
                 if (taskDescriptor.getInstance().get('active')) {
                     for (j = 0; j < resourceInstance.get('assignments').length; j++) {
-                        if (taskDescriptor.get('id') == resourceInstance.get('assignments')[j].get('taskDescriptorId')) {
+                        if (taskDescriptor.get('id') === resourceInstance.get('assignments')[j].get('taskDescriptorId')) {
                             sick = true;
                             occupationObject = {
                                 code: 2,
@@ -188,7 +191,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 for (i = 0; i < taskListDescriptor.get('items').length; i++) {
                     for (j = 0; j < resourceInstance.get('assignments').length; j++) {
                         taskDescriptor = taskListDescriptor.get('items')[i];
-                        if (taskDescriptor.get('id') == resourceInstance.get('assignments')[j].get('taskDescriptorId')) {
+                        if (taskDescriptor.get('id') === resourceInstance.get('assignments')[j].get('taskDescriptorId')) {
                             occupationObject = {
                                 code: 1,
                                 taskDescriptor: taskDescriptor
@@ -197,7 +200,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     }
                 }
             }
-            if (occupationObject == null) {
+            if (occupationObject === null) {
                 occupationObject = {
                     code: 0,
                     taskDescriptor: null
@@ -211,16 +214,17 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          * @return String decription of the occupation of the given resource
          */
         getTextOccupation: function (resourceInstance) {
-            var occupationObject, occupation = new Array(), taskInstance, taskSkills = new Array();
+            var occupationObject, occupation = [], taskInstance, taskSkills = [], key;
             occupationObject = this.getOccupationObject(resourceInstance);
-            if (occupationObject.taskDescriptor != null)
+            if (occupationObject.taskDescriptor !== null) {
                 taskInstance = occupationObject.taskDescriptor.getInstance();
+            }
             switch (occupationObject.code) {
                 case 0 :
                     occupation.push('Libre pour un mandat, travail habituel.');
                     break;
                 case 1 :
-                    for (var key in taskInstance.get('skillset')) {
+                    for (key in taskInstance.get('skillset')) {
                         taskSkills.push('<li class="task-skill-value">' + key + ' (' + taskInstance.get('skillset')[key] + ')</li>');
                     }
                     occupation.push('<div class="task">');

@@ -229,7 +229,8 @@ YUI.add('wegas-editor-action', function (Y) {
         execute: function () {
             var entity = this.get("entity"),
             dataSource = this.get("dataSource"),
-            parentEntity = this.get("parentEntity");
+            parentEntity = this.get("parentEntity"),
+            newEntity, targetArray;
 
             switch (this.get("method")) {
             case "put":
@@ -251,7 +252,7 @@ YUI.add('wegas-editor-action', function (Y) {
                 break;
 
             case "post":
-                var newEntity = Y.Wegas.Editable.revive({
+                newEntity = Y.Wegas.Editable.revive({
                     "@class": this.get("targetClass")
                 });
                 EditEntityAction.showEditForm(newEntity, Y.bind(function (newVal) {
@@ -274,7 +275,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
             case "delete":
                 if (confirm("Are your sure your want to delete this item ?")) {
-                    var targetArray = parentEntity.get(this.get("attributeKey"));
+                    targetArray = parentEntity.get(this.get("attributeKey"));
                     Y.Array.find(targetArray, function (e, i, a) {
                         if (e.get("id") === entity.get("id")) {
                             a.splice(i, 1);
