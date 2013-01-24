@@ -93,7 +93,7 @@ YUI.add('wegas-editor-buttons', function (Y) {
         syncUI: function () {
             SelectGameButton.superclass.syncUI.apply(this, arguments);
 
-            var j, k, menuItems = [],
+            var j, menuItems = [],
             cGame = Y.Wegas.GameFacade.rest.getCurrentGame(),
             games = Y.Wegas.GameIndexFacade.rest.getCache();
 
