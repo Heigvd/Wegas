@@ -134,7 +134,7 @@ YUI.add('wegas-editable', function (Y) {
             function mixMenuCfg (elts, data) {
                 var i, j;
                 for (i = 0; i < elts.length; i += 1) {
-                    elts[i].data = Y.mix({}, data);// Attach self and the provided datasource to the menu items, to allow them to know which entity to update
+                    Y.mix(elts[i], data);// Attach self and the provided datasource to the menu items, to allow them to know which entity to update
 
                     if (elts[i].plugins) {
                         for (j = 0; j < elts[i].plugins.length; j = j + 1) {
