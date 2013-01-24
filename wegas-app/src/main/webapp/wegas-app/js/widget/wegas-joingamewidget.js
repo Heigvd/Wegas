@@ -96,6 +96,9 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }else if (this.selectPublicGame.getValue() != ""){
                     this.currentGame = this.selectPublicGame.getValue();
                     this.showTeams(); 
+                    this.selectPublicGame.removeChoice({
+                        value: this.currentGame
+                    });
                 }else{
                     this.showMessage("error", "A key phrase or a public Game must be selected");
                     return;
@@ -109,16 +112,19 @@ YUI.add('wegas-joingamewidget', function (Y) {
             }, this);
             this.createButton.on("click", function (e) {                      // Create a new team
                 if (this.createTeamField.validate()) {
-                    var team = new Y.Wegas.persistence.Team({
-                        name: this.createTeamField.getValue()
-                    });
-                    Y.Wegas.GameFacade.rest.post(team.toObject(), this.currentGame.toObject(), {
-                        success: Y.bind(function (e) {
-                            this.sendJoinTeamRequest(e.response.entity.get("id"));
-                        }, this),
-                        failure: Y.bind(function (e) {
-                            this.showMessage("error", e.response.results.message || "Error creating team", 4000);
-                        }, this)
+                    Y.Wegas.GameFacade.rest.sendRequest({    
+                        request: "/" + this.currentGame.get("id") + "/CreateTeam/" + this.createTeamField.getValue(),
+                        cfg: {
+                            method: "POST"
+                        },
+                        on: {
+                            success: Y.bind(function (e) {
+                                this.sendJoinTeamRequest(e.response.entity.get("id"));
+                            }, this),
+                            failure: Y.bind(function (e) {
+                                this.showMessage("error", e.response.results.message || "Error creating team", 4000);
+                            }, this)
+                        }
                     });
                 }
             }, this);
@@ -165,6 +171,12 @@ YUI.add('wegas-joingamewidget', function (Y) {
                     value: this.teams[i].get("id")
                 });
             }
+            if (this.teams.length == 0) {
+                this.teamsField.addChoice({
+                    label: "-- No team --",
+                    value: ""
+                });
+            }
         },
 
         showPublicGames: function () {
@@ -197,22 +209,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 request: "/JoinTeam/" + teamId,
                 on: {
                     success: Y.bind(function (e) {
-
-                        this.showMessage("success", "Game joined, it has been added to your games", 10000);
-
-                        Y.Wegas.RegisteredGamesFacade.rest.clearCache();
-                        Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
-
-                        this.joinGameButton.show();
-                        this.tokenField.show();
-                        this.selectPublicGame.removeChoice({value: this.currentGame});
-                        this.selectPublicGame.show();
-                        this.p.show();
-                        this.createButton.hide();
-                        this.createTeamField.hide();
-                        this.joinTeamButton.hide();
-                        this.removeAllTeamsChoices();
-                        this.teamsField.hide();
+                        this.joinTeamSuccess();
                     }, this),
                     failure: Y.bind(function (e) {
                         this.showMessage("error", "Error joining team");
@@ -221,10 +218,32 @@ YUI.add('wegas-joingamewidget', function (Y) {
             });
         },
         
+        joinTeamSuccess : function() {
+            this.showMessage("success", "Game joined, it has been added to your games", 10000);
+            
+            Y.Wegas.RegisteredGamesFacade.rest.clearCache();
+            Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
+            
+            this.joinGameButton.show();
+            this.tokenField.show();
+            this.selectPublicGame.show();
+            this.p.show();
+            this.createButton.hide();
+            this.createTeamField.hide();
+            this.joinTeamButton.hide();
+            this.removeAllTeamsChoices();
+            this.teamsField.hide();
+            this.selectPublicGame.setValue("");
+            this.tokenField.setValue("");
+            this.createTeamField.setValue("");
+        },
+        
         removeAllTeamsChoices: function(){
             var i;
             for (i = 0; i < this.teams.length; i = i + 1) {
-                this.teamsField.removeChoice({value: this.teams[i].get("id")});
+                this.teamsField.removeChoice({
+                    value: this.teams[i].get("id")
+                });
             }
         }
     });

@@ -10,6 +10,7 @@
  */
 package com.wegas.core.jcr.content;
 
+import com.wegas.exception.WegasException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +75,16 @@ public class FileDescriptor extends AbstractContentDescriptor {
         try {
             this.sync();
             connector.setData(this.fileSystemAbsolutePath, mimeType, data);
-            this.bytes = connector.getSize(fileSystemAbsolutePath);
+            this.bytes = connector.getBytesSize(fileSystemAbsolutePath);
+            if (WFSConfig.MAX_FILE_SIZE < this.bytes) {
+                this.delete(true);
+                throw new WegasException(this.getName() + "[" + ContentConnector.bytesToHumanReadable(this.bytes) + "] file max size exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
+            }
+            Long totalSize = ((DirectoryDescriptor) DescriptorFactory.getDescriptor("/", connector)).getBytes();
+            if (totalSize > WFSConfig.MAX_REPO_SIZE) {
+                this.delete(true);
+                throw new WegasException("Total size[" + ContentConnector.bytesToHumanReadable(totalSize) + "] exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
+            }
             this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
             this.mimeType = mimeType;
         } catch (PathNotFoundException ex) {
@@ -103,6 +113,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     @JsonProperty("bytes")
+    @Override
     public Long getBytes() {
         return bytes;
     }
@@ -114,7 +125,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
             throw new ClassCastException("Trying to retrieve a directory as a file");
         }
         this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
-        this.bytes = connector.getSize(fileSystemAbsolutePath);
+        this.bytes = connector.getBytesSize(fileSystemAbsolutePath);
         super.getContentFromRepository();
     }
 

@@ -10,7 +10,7 @@
         <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam yui-skin-sam wegas-loading-overlay">
+            <h:body class="yui3-skin-sam yui-skin-sam wegas-loading-overlay #{requestController.currentRole}">
 
                 <ui:fragment rendered="#{!wegasConfig.debug}">
                     <!-- Muscula error tracking -->
@@ -225,7 +225,7 @@
                                     },
                                     "User": {
                                         source: "rest/User",
-                                        initialRequest: "/",
+                                        initialRequest: "/" + #{requestController.currentUser.id},
                                         plugins: [{
                                                 fn: "UserDataSourceREST"
                                             }]

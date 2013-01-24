@@ -163,7 +163,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
                 Y.log("Sending question read update", "info",  "MCQTabView");
                 this.questionInstance = e.newVal.questionInstance;
                 this.timer = Y.later(2000, this, function () {
-                    this.questionInstance.set("unread") = false;
+                    this.questionInstance.set("unread", false);
                     this.dataSource.rest.put(this.questionInstance);
                 });
             }

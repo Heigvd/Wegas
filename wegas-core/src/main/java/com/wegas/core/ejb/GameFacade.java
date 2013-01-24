@@ -9,19 +9,21 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Game_;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.exception.WegasException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -42,12 +44,17 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     @EJB
     private GameModelFacade gameModelEntityFacade;
     /**
-     * 
+     *
      */
     @EJB
     private RoleFacade roleFacade;
     /**
-     * 
+     *
+     */
+    @EJB
+    private TeamFacade teamFacade;
+    /**
+     *
      */
     @EJB
     private UserFacade userFacade;
@@ -69,14 +76,21 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param token
      * @return
      */
-    public Game findByToken(String token)
-            throws PersistenceException {
+    public Game findByToken(String token) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<Game> game = cq.from(Game.class);
         cq.where(cb.equal(game.get(Game_.token), token));
         Query q = em.createQuery(cq);
-        return (Game) q.getResultList().get(0);                                     // If there is more than one game with this token, use the 1st one
+        Game g;
+        try {
+            g = (Game) q.getSingleResult();
+        } catch (NoResultException ex) {
+            g = null;
+        } catch (NonUniqueResultException ex) {
+            g = (Game) q.getResultList().get(0);
+        }
+        return g;                                     // If there is more than one game with this token, use the 1st one
         //return (Game) q.getSingleResult();
     }
 
@@ -86,9 +100,20 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param game
      */
     public void create(Long gameModelId, Game game) {
+        if (game.getToken() == null || game.getToken().equals("") || this.findByToken(game.getToken()) != null || teamFacade.findByToken(game.getToken()) != null) {
+            game.setToken(Helper.genToken(10));
+        }
         GameModel gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
         super.create(game);
+    }
+
+    @Override
+    public Game update(final Long entityId, Game entity) {
+        if (entity.getToken() == null || entity.getToken().equals("") || (this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId() != entity.getId()) || teamFacade.findByToken(entity.getToken()) != null) {
+            entity.setToken(Helper.genToken(10));
+        }
+        return super.update(entityId, entity);
     }
 
     /**
@@ -106,7 +131,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @return Collection<Game>
      */
     public Collection<Game> getPublicGames(Long userId) {
-        
+
         Role pRolle = roleFacade.findByName("Public");
         Collection<Game> registerdGame = userFacade.registeredGames(userId);
         Collection<Game> games = new ArrayList<>();
@@ -117,13 +142,13 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
                 Game g = this.find(Long.parseLong(splitedPermission[1]));
                 this.em.detach(g);
                 boolean registerd = false;
-                for (Game aRegisterdG : registerdGame){
-                    if (g.equals(aRegisterdG)){
+                for (Game aRegisterdG : registerdGame) {
+                    if (g.equals(aRegisterdG)) {
                         registerd = true;
                         break;
                     }
                 }
-                if (!registerd){
+                if (!registerd) {
                     g.setName(g.getGameModel().getName() + " : " + g.getName());
                     games.add(g);
                 }

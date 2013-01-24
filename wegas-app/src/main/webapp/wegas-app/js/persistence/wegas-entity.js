@@ -184,6 +184,7 @@ YUI.add('wegas-entity', function (Y) {
         EDITMENU: [{
             type: "Button",
             label: "Explore",
+            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                 fn: "LoadTreeviewNodeAction",
                 cfg: {
@@ -195,12 +196,14 @@ YUI.add('wegas-entity', function (Y) {
         }, {
             type: "Button",
             label: "Duplicate",
+            cssClass: "editor-duplicateGameModel-button",
             plugins: [{
                 fn: "DuplicateEntityAction"
             }]
         }, {
             type: "Button",
             label: "Share",
+            cssClass: "editor-shareGameModel-button",
             plugins: [{
                 fn: "OpenTabAction",
                 cfg: {
@@ -220,7 +223,8 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }]
         }, {
-            type: "DeleteEntityButton"
+            type: "DeleteEntityButton",
+            cssClass: "editor-deleteGameModel-button"
         }]
     //{
     //    type: "Button",
@@ -262,13 +266,16 @@ YUI.add('wegas-entity', function (Y) {
         EDITMENU: [{
             type: "AddEntityChildButton",
             label: "Add team",
+            cssClass: "editor-addTeam-button",
             targetClass: "Team"
         }, {
             type: "EditEntityButton",
-            label: "Properties"
+            label: "Properties",
+            cssClass: "editor-gameProperties-button"
         }, {
             type: "Button",
             label: "Share",
+            cssClass: "editor-shareGame-button",
             plugins: [{
                 fn: "OpenTabAction",
                 cfg: {
@@ -286,7 +293,8 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }]
         }, {
-            type: "DeleteEntityButton"
+            type: "DeleteEntityButton",
+            cssClass: "editor-deleteGame-button"
         }]
     });
 
@@ -314,10 +322,12 @@ YUI.add('wegas-entity', function (Y) {
         },
         EDITMENU: [{
             type: "EditEntityButton",
-            label: "Properties"
+            label: "Properties",
+            cssClass: "editor-teamProperties-button"
         }, {
             type: "Button",
             label: "Add player",
+            cssClass: "editor-addPlayer-button",
             plugins: [{
                 fn: "AddEntityChildAction",
                 cfg: {
@@ -325,7 +335,8 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }]
         }, {
-            type: "DeleteEntityButton"
+            type: "DeleteEntityButton",
+            cssClass: "editor-deleteTeam-button"
         }]
     });
 
@@ -341,9 +352,11 @@ YUI.add('wegas-entity', function (Y) {
         },
         EDITMENU: [{
             type: "EditEntityButton",
-            label: "Properties"
+            label: "Properties",
+            cssClass: "editor-playerProperties-button"
         }, {
-            type: "DeleteEntityButton"
+            type: "DeleteEntityButton",
+            cssClass: "editor-deletePlayer-button"
         }]
     });
 
@@ -1214,7 +1227,7 @@ YUI.add('wegas-entity', function (Y) {
                     type: "hidden",
                     value: "self"
                 }]
-            },
+            }
         }
     });
 

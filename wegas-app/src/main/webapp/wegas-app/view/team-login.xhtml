@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <ui:composition template="template/app-default.xhtml">
+
+        <ui:define name="title">Team login for #{singleLobbyController.currentGameByTocken.name}</ui:define>
+
+        <ui:define name="body">
+            <script type="text/javascript">
+                var Y = YUI().use("wegas-app", function (Y) {
+                    var cfg = {
+                        currentUser: #{requestController.getCurrentUser().toJson()},
+                        layoutSrc: 'wegas-app/db/wegas-teamlogin-layout.json',
+                        dataSources: {
+                            "User": {
+                                source: "rest/User",
+                                plugins: [{
+                                        fn: "DataSourceREST"
+                                    }]
+                            },
+                            "PublicGames": {
+                                source: "rest/PublicGames",
+                                plugins: [{
+                                        fn: "GameDataSourceREST"
+                                    }]
+                            },
+                            "Game": {
+                                source: "rest/GameModel/1/Game",
+                                plugins: [{
+                                        fn: "GameDataSourceREST"
+                                    }]
+                            }
+                        }
+                    };
+
+                    Y.on('domready', function() {                               // When dom is ready,
+                        var app = new Y.Wegas.App(cfg);                         // Launch the editor as soon as Dom is ready
+                        app.render();
+                    });
+                });
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
