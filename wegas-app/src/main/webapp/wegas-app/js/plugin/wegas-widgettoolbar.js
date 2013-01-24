@@ -29,6 +29,7 @@ YUI.add('wegas-widgettoolbar', function (Y) {
 
 
     Y.extend(WidgetToolbar, Y.Plugin.Base, {
+        className: null,
 
         // *** Lifecycle methods *** //
 

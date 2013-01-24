@@ -93,7 +93,7 @@
                 "@class": "InboxInstance"
             },
             "scope": {
-                "@class": "PlayerScope"
+                "@class": "TeamScope"
             }
         }, {
             "@class": "TriggerDescriptor",
