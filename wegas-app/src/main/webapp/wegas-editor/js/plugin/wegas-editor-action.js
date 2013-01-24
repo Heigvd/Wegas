@@ -7,11 +7,9 @@
  *
  * Copyright (C) 2012
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-editor-action', function (Y) {
     "use strict";
     /**
@@ -129,7 +127,8 @@ YUI.add('wegas-editor-action', function (Y) {
         ATTRS: {
             editorUrl: {
                 value: 'wegas-app/view/editor.html?'
-            }
+            },
+            entity: {}
         }
     });
 
@@ -213,7 +212,7 @@ YUI.add('wegas-editor-action', function (Y) {
         },
 
         syncUI: function() {
-            var url = document.URL + "game.html?token=a";
+            var url = document.URL + "game.html?token=" + this.get("entity").get("token");
             this.textField.setValue(url);
         }
     }, {
