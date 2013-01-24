@@ -28,12 +28,15 @@ YUI.add('wegas-panelwidget', function (Y) {
             Y.Array.forEach(this.get("children"), function (child, i){
                 var widget = Y.Wegas.Widget.create(child);
                 widget.render(this.get("contentBox"));
-            }, this); 
+                }, this);
         }
     },{
         ATTRS: {
             children: {
                 value: []
+            },            
+            zIndex: {
+                value: 6
             }
         }
     }

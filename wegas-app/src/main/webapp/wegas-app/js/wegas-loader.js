@@ -369,7 +369,7 @@ YUI().use(function(Y) {
                     'wegas-editor-buttons': {
                         path: 'wegas-editor/js/wegas-editor-buttons-min.js',
                         requires: ['wegas-button', 'wegas-widgetmenu'],
-                        ws_provides: ['SelectPlayerButton', 'SelectGameButton']
+                        ws_provides: ['SelectPlayerButton', 'SelectGameButton', 'Linkwidget']
                     },
                     'wegas-pageeditor': {
                         path: 'wegas-editor/js/wegas-pageeditor-min.js',
