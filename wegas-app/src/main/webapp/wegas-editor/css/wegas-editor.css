@@ -375,7 +375,8 @@ body {
     margin-left: -50px;
 }
 
-.loading-icon{
-    background-image: url(../../wegas-app/images/loading-small.gif);
-    background-repeat: no-repeat;
+/* Player link menu */
+.yui3-menu-content .editor-playerlink-button {
+    padding: .1em 0.6em .1em;
+    border-top: double;
 }

@@ -39,7 +39,7 @@ YUI.add('wegas-editor-action', function (Y) {
                     if (val === "currentGameModel") {
                         return Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
                     }
-                    return val;
+                    return this.get("host").get("entity");
                 }
             },
             dataSource: {
@@ -437,7 +437,7 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.extend(OpenTabAction, Action, {
         execute: function () {
             var childCfg = this.get("children");                                // Forward plugin data to the target widget
-            childCfg.data = this.get("data");
+            childCfg.data = this.getAttrs();                                    // @fixme @fx Is this useful?
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                 this.get("tabSelector"), {}, childCfg);
         }
@@ -481,7 +481,6 @@ YUI.add('wegas-editor-action', function (Y) {
         NS: "wegas",
         NAME: "OpenGameAction",
         ATTRS: {
-            entity: {},
             editorUrl: {
                 value: 'wegas-app/view/editor.html?'
             }
@@ -657,6 +656,38 @@ YUI.add('wegas-editor-action', function (Y) {
             }
         }
     });
+    
+    /**
+     * 
+     */
+    var CONTENTBOX = 'contentBox',
+        Linkwidget;
+
+    Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+        
+        renderUI: function(){
+            Linkwidget.superclass.renderUI.apply(this);
+            
+            this.p = Y.Node.create('<div class="playerlink-label"><p>Player link</p><div>');
+            this.get(CONTENTBOX).append(this.p);
+            
+            this.textField = new Y.inputEx.StringField({parentEl: this.get(CONTENTBOX)});
+            this.get(CONTENTBOX).on("click", function (e) {
+                e.halt(true);
+            });
+        },
+
+        syncUI: function() {
+            console.log(this.get("entity").get("id"));
+            var url = document.URL + "game.html?token=a";
+            this.textField.setValue(url);
+        }
+    }, {
+        ATTRS: {
+            entity: {}
+        }
+    });
+    Y.namespace("Wegas").Linkwidget = Linkwidget;
 });
 
 

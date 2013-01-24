@@ -1,6 +1,12 @@
 {
     "id": 2003,
-    "type" : "List",
+    "type" : "PanelWidget",
+    "width": 410,
+    "align": {
+        "points": ["tc", "tc"]
+    },
+    "modal": false,
+    "buttons": [],
     "children": [{
         "type": "Text",
         "content": "Login",

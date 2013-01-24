@@ -53,7 +53,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.teamsField = new Y.inputEx.SelectField({                       // Render team selection
                 required: "true",
                 parentEl: cb,
-                label: "Select a new you want to join"
+                label: "Select the team you want to join"
             });
             this.teamsField.hide();
             this.joinTeamButton = new Y.Button({

@@ -73,7 +73,7 @@ YUI.add("wegas-button", function (Y) {
                 "transient": false,
                 "type": "boolean"
             },
-            data: {
+            entity: {
                 "transient": true
             },
             cssClass: {
