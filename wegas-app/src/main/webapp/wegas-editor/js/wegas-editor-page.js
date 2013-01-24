@@ -11,6 +11,7 @@
 
 YUI.add('wegas-editor-page', function(Y) {
     var PageEditor, CONTENT_BOX = "contentBox", BOUNDING_BOX = "boundingBox";
+    
     PageEditor = Y.Base.create("wegas-editor-page", Y.Widget, [Y.WidgetChild], {
         initializer: function() {
             this.dataSource = Y.Wegas.PageFacade.rest;

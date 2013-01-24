@@ -126,7 +126,7 @@ YUI.add('wegas-editable', function (Y) {
                     menu;
 
             if (menus) {
-                menu = menus[ this.get('@class')] || menus[this.get("type")];  // Select first server defined forms, based on the @class or the type attribute
+                menu = menus[ this.get('@class')] || menus[this.get("type")];   // Select first server defined forms, based on the @class or the type attribute
             }
             menu = menu || this.getStatic("EDITMENU")[0] || [];                 // And if no form is defined we return the default one defined in the entity
 
@@ -134,7 +134,7 @@ YUI.add('wegas-editable', function (Y) {
             function mixMenuCfg (elts, data) {
                 var i, j;
                 for (i = 0; i < elts.length; i += 1) {
-                    Y.mix(elts[i], data);// Attach self and the provided datasource to the menu items, to allow them to know which entity to update
+                    Y.mix(elts[i], data, true);                                 // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
 
                     if (elts[i].plugins) {
                         for (j = 0; j < elts[i].plugins.length; j = j + 1) {

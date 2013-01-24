@@ -22,14 +22,15 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
         // *** Private fields ** //
         treeView: null,
-        expandedIds: {},
+        expandedIds: null,
 
         // ** Lifecycle methods ** //
-
         renderUI: function () {
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
-            this.menu = new Y.Wegas.Menu();
+            this.expandedIds = {};
+
+            this.plug(EditMenuTreeviewPlugin);
         },
 
         bindUI: function () {
@@ -39,7 +40,6 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     this.showMessage("error", e.response.results.message);
                 }, this);
             }
-            this.treeView.on("*:click", this.onTreeViewClick, this);
 
             this.treeView.before("*:nodeExpanded", function (e) {
                 this.expandedIds[e.node.get("data").entity.get("id")] = true;
@@ -67,7 +67,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 msg.remove(true);
             }
             this.treeView.removeAll();
-            if (entities.length == 0) {
+            if (entities.length === 0) {
                 this.get(CONTENTBOX).append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
                 return;
             }
@@ -76,43 +76,20 @@ YUI.add('wegas-editor-treeview', function (Y) {
         },
 
         // *** Private Methods *** //
-        onTreeViewClick: function (e) {
-            Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");
-
-            var menuItems, data = e.node.get("data"),
-            domTarget = e.domEvent.target;
-            this.currentSelection = data.entity.get("id");
-            data.dataSource = this.get("dataSource");
-
-            menuItems = data.entity.getMenuCfg(data);
-
-            if (menuItems.length == 0) {
-                return;
-            }
-
-            this.menu.removeAll();                                              // Populate the menu with the elements associated to the
-            this.menu.add(menuItems);
-
-            if (domTarget.hasClass("wegas-treeview-editmenubutton")) {       // If user clicked on the edit button
-                this.menu.attachTo(domTarget);                                // Display the edit button next to it
-            } else {                                                            // Otherwise the user clicked on the node
-                this.menu.item(0).fire("click");                            // Excute the actions associated to the first item of the menu
-            }
-        },
-
         isNodeExpanded: function (id) {
             return this.expandedIds[id] || false;
         },
 
         genTreeViewElements: function (elements) {
-            var ret = [], i, el, elClass, text, collapsed, selected;
+            var ret = [], i, el, elClass, text, collapsed, selected,
+            l, result, children = [];
 
             for (i in elements) {
                 if (elements.hasOwnProperty(i)) {
                     el = elements[i];
-                    elClass = (el.get) ? el.get('@class') : el['type'];
-                    collapsed = (el.get) ? !this.isNodeExpanded(el.get("id")) : true;
-                    selected = (el.get) ? ((this.currentSelection == el.get("id")) ? 2 : 0) : 0;
+                    elClass = el.get('@class');
+                    collapsed = !this.isNodeExpanded(el.get("id"));
+                    selected = (this.currentSelection === el.get("id")) ? 2 : 0;
 
                     if ((this.get("excludeClasses") === null
                         || !this.get('excludeClasses').hasOwnProperty(elClass))
@@ -177,8 +154,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                             case 'ChoiceDescriptor':
                                 text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
 
-                                var l, result, children = [];
-                                for (l = 0; l < el.get("results").length ; l += 1) {
+                                for (l = 0; l < el.get("results").length; l += 1) {
                                     result = el.get("results")[l];
                                     //TODO : result should be an entity
                                     if (!(result instanceof Y.Wegas.persistence.Entity)) {
@@ -186,7 +162,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                     }
                                     children.push({
                                         label: "Result: " + result.get("name"),
-                                        selected: (result.get("id") == this.currentSelection) ? 2 : 0,
+                                        selected: (result.get("id") === this.currentSelection) ? 2 : 0,
                                         data: {
                                             entity: result,
                                             parentEntity: el
@@ -357,8 +333,9 @@ YUI.add('wegas-editor-treeview', function (Y) {
         },
 
         genVariableInstanceElements: function (label, el) {
-            var l,
-            selected = (el.get) ? ((this.currentSelection == el.get("id")) ? 2 : 0) : 0;
+            var l, k, children = [],
+            selected = (this.currentSelection === el.get("id")) ? 2 : 0;
+
             switch (el.get('@class')) {
                 case 'StringInstance':
                 case 'NumberInstance':
@@ -382,8 +359,6 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     };
 
                 case 'InboxInstance':
-                    var k, children = [];
-
                     label += "(" + el.get("messages").length + ")";
 
                     for (k = 0; k < el.get("messages").length; k += 1) {
@@ -500,17 +475,91 @@ YUI.add('wegas-editor-treeview', function (Y) {
         bindUI: function () {
             VariableDescriptorTreeview.superclass.bindUI.call(this);
 
-        //            this.sortable = new Y.Sortable({
-        //                container: this.get("contentBox"),
-        //                nodes: 'li',
-        //                opacity: '.2'
-        //            });
         }
     });
 
     Y.namespace('Wegas').VariableDescriptorTreeview = VariableDescriptorTreeview;
 
+    /**
+     * To be plugged on a Y.Wedance.EditorTreeview, when an node is clicked,
+     * show the default admin menu, retrieved using Y.Wegas.Editable.getMenuCfg()
+     * method.
+     *
+     */
+    var EditMenuTreeviewPlugin = Y.Base.create("wegas-editmenutreeviewplugin", Y.Plugin.Base, [], {
+        initializer: function () {
+            this.menu = new Y.Wegas.Menu();
+
+            this.afterHostEvent("render", function () {
+                this.get("host").treeView.on("*:click", this.onTreeViewClick, this);
+            });
+        },
+        onTreeViewClick: function (e) {
+            //Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");
+
+            var menuItems, data = e.node.get("data"),
+            domTarget = e.domEvent.target,
+            host = this.get("host");
+
+            host.currentSelection = data.entity.get("id");
+            data.dataSource = host.get("dataSource");
+
+            menuItems = data.entity.getMenuCfg(data);
+
+            if (menuItems.length === 0) {
+                return;
+            }
+
+            this.menu.removeAll();                                             // Populate the menu with the elements associated to the
+            this.menu.add(menuItems);
+
+            if (domTarget.hasClass("wegas-treeview-editmenubutton")) {          // If user clicked on the edit button
+                this.menu.attachTo(domTarget);                                  // Display the edit button next to it
+            } else {                                                            // Otherwise the user clicked on the node
+                this.menu.item(0).fire("click");                         // Excute the actions associated to the first item of the menu
+            }
+        }
+    }, {
+        NS: "treeviewmenu",
+        NAME: "treeviewmenu"
+    });
+    Y.namespace("Plugin").EditMenuTreeviewPlugin = EditMenuTreeviewPlugin;
+
+
+    /**
+    * Not yet in usese
+    */
+    var SortableTreeview = Y.Base.create("wegas-sortabletreeview", Y.Plugin.Base, [], {
+        initializer: function () {
+            this.afterHostEvent("render", function () {
+                //this.sortable = new Y.Sortable({
+                //    container: this.get("contentBox"),
+                //    nodes: 'li',
+                //    opacity: '.2'
+                //});
+                });
+        }
+    }, {
+        NS: "treeviewmenu",
+        NAME: "treeviewmenu"
+    });
+    Y.namespace("Plugin").SortableTreeview = SortableTreeview;
+
+    /**
+     *
+     */
     var LobbyTreeView = Y.Base.create("wegas-editor-treeview", Y.Wegas.EditorTreeView, [], {
+
+        bindUI: function () {
+            LobbyTreeView.superclass.bindUI.apply(this);
+            //this.treeView.on("*:click", this.onTreeViewClick, this);
+            this.treeView.on("addChild", function (e) {
+                e.child.plug(Y.Plugin.OpenUrlAction, {
+                    url: "wegas-app/view/play.html?gameId=" + e.child.get("data.entity").get("id"),
+                    target: "self"
+                });
+            })
+        },
 
         genTreeViewElements: function (elements) {
             var ret = [], i, el;
@@ -538,6 +587,4 @@ YUI.add('wegas-editor-treeview', function (Y) {
     });
 
     Y.namespace('Wegas').LobbyTreeView = LobbyTreeView;
-
-
 });

@@ -147,8 +147,9 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                 this.permsField.destroy();
             }
 
-            var gmId = this.get("data").entity.get("id");
-            if (this.get("data").entity instanceof Y.Wegas.persistence.GameModel) {
+            var e = this.get("data").get("entity"),
+            gmId = e.get("id");
+            if (e instanceof Y.Wegas.persistence.GameModel) {
                 this.targetEntityId = "gm" + gmId;
             } else {
                 this.targetEntityId = "g" + gmId;
@@ -166,10 +167,10 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                         Y.Array.forEach(data, function (role) {
                             acc.push(role.get("val"));
                         }, this);
-                        
+
                         this.messageDiv = Y.Node.create('<div class="wegas-smallmessage">Click new to add rights</div>');
-                        this.get(CONTENTBOX).getDOMNode().appendChild(this.messageDiv.getDOMNode());          
-                        
+                        this.get(CONTENTBOX).getDOMNode().appendChild(this.messageDiv.getDOMNode());
+
                         this.permsField = new PermissionList({
                             //listLabel: 'Websites',
                             elementType: {
@@ -203,7 +204,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
         sync: function() {
             var list = this.permsField.getRoleIds();
-            
+
             Y.Array.forEach(this.permsField.subFields, function(eachSubfield) {
                 Y.Array.forEach(eachSubfield.roleSelect.choicesList, function(role) {
                     if (eachSubfield.roleSelect.getValue().id === role.value || list.indexOf(role.value) === -1) {
@@ -213,7 +214,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                     }
                 }, this);
             }, this);
-            
+
             if (this.permsField.subFields.length < 1){
                 this.messageDiv.show();
             } else {
@@ -276,7 +277,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                     break;
                 }
             }
-            
+
             PermissionList.superclass.onDelete.apply(this, arguments);
         }
     });

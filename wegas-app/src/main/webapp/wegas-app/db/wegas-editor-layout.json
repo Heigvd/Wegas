@@ -236,7 +236,7 @@
                         "type": "Tab",
                         "label": "Variables",
                         "children": [{
-                                "type": "VariableDescriptorTreeview",
+                                "type": "EditorTreeView",
                                 "dataSource": "VariableDescriptor",
                                 "excludeClasses": {
                                     "MCQDescriptor": true
