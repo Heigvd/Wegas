@@ -250,7 +250,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.fileUploader.on("fileuploaderror", function(e) {
                 e.file.progressBar.set("color", "red");
                 e.file.treeLeaf.set("loading", false);
-                this.showMessage("error", e.file.get("name") + ": upload failed");
+                this.showMessage("error", e.statusText);
                 try {
                     e.file.treeLeaf.destroy();
                 } catch (ex) {

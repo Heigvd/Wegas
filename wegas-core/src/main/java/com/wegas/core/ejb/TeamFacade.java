@@ -19,6 +19,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -53,16 +55,35 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     public void create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
+        if (t.getToken() == null || t.getToken().equals("") || gameFacade.findByToken(t.getToken()) != null || this.findByToken(t.getToken()) != null) {
+            t.setToken(Helper.genToken(10));
+        }
         g.addTeam(t);
         em.flush();
         em.refresh(t);
         g.getGameModel().propagateDefaultInstance(false);
     }
 
-    public Team findByToken(String token) throws PersistenceException {
+    @Override
+    public Team update(final Long gameId, Team entity) {
+        if (entity.getToken() == null || entity.getToken().equals("") || (this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId() != entity.getId()) || gameFacade.findByToken(entity.getToken()) != null) {
+            entity.setToken(Helper.genToken(10));
+        }
+        return super.update(gameId, entity);
+    }
+
+    public Team findByToken(String token) {
         Query findByToken = em.createNamedQuery("findTeamByToken");
         findByToken.setParameter("token", token);
-        return (Team) findByToken.getSingleResult();
+        Team team;
+        try {
+            team = (Team) findByToken.getSingleResult();
+        } catch (NoResultException ex) {
+            team = null;
+        } catch (NonUniqueResultException ex) {
+            team = (Team) findByToken.getResultList().get(0);
+        }
+        return team;
     }
 
     /**
