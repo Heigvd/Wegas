@@ -53,7 +53,7 @@ YUI.add('wegas-tabview', function (Y) {
                 tabs = tabView.add(tabCfg);                                     // Instantiate a new tab
                 return tabs.item(0);
             } else {                                                            // Otherwise,
-            //TabView.tabs[id].setAttrs(tabCfg);                              // update the tab config
+                //TabView.tabs[id].setAttrs(tabCfg);                              // update the tab config
             }
             return TabView.tabs[id];
         },

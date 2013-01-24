@@ -7,11 +7,9 @@
  *
  * Copyright (C) 2012
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-cssloader', function(Y) {
     "use strict";
 
@@ -22,8 +20,8 @@ YUI.add('wegas-cssloader', function(Y) {
                     context: this,
                     on : {
                         success : function (tId, e) {
-                            CSSLoader._customCSSText = e.responseText;
-                            CSSLoader._customCSSStyleSheet = new Y.StyleSheet(e.responseText);
+                            CSSLoader.customCSSText = e.responseText;
+                            CSSLoader.customCSSStyleSheet = new Y.StyleSheet(e.responseText);
                         },
                         failure : function (id, o) {
                             Y.error("initCSS(): Page CSS loading async call failed!", new Error("Loading failed"), "Y.Wegas.App");
