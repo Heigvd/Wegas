@@ -339,12 +339,6 @@ YUI().use(function(Y) {
                         ws_provides: 'TreeViewFilter'
                     },
                     /** Editor **/
-                    'wegas-editor': {
-                        path: 'wegas-editor/js/wegas-editor-min.js',
-                        requires: ['wegas-app', 'wegas-rightscss'
-                        /*'wegas-editorcss'*/                                   // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
-                        ]
-                    },
                     'wegas-editorcss': {
                         path: 'wegas-editor/css/wegas-editor.css',
                         type: 'css'
@@ -435,7 +429,7 @@ YUI().use(function(Y) {
                         ws_provides: 'ProgressBar'
                     },
                     'wegas-statemachineviewer': {
-                        path: 'wegas-editor/js/wegas-statemachineviewer-min.js',
+                        path: 'wegas-editor/js/widget/wegas-statemachineviewer-min.js',
                         requires: ['dd-constrain', 'wegas-datasourcerest',
                         'wegas-statemachineviewercss', 'jsplumb-yui-all', 'button',
                         'wegas-statemachine-entities'],
@@ -450,7 +444,7 @@ YUI().use(function(Y) {
                         ws_provides: "MCQTabView"
                     },
                     'wegas-editor-pagetreeview': {
-                        path: 'wegas-editor/js/wegas/wegas-editor-pagetreeview-min.js',
+                        path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
                         requires: ['wegas-datasourcerest'],
                         ws_provides: "PageTreeview"
                     },
@@ -564,7 +558,6 @@ YUI().use(function(Y) {
                         requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace', 'wegas-proggame-display'],
                         ws_provides: 'ProgGameLevel'
                     },
-                    /** MMO **/
                     'wegas-proggame-display': {
                         path: 'wegas-proggame/js/wegas-proggame-display-min.js',
                         requires: ['wegas-widget', 'crafty'],
