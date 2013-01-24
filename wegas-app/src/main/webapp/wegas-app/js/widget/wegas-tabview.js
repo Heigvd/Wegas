@@ -65,13 +65,9 @@ YUI.add('wegas-tabview', function (Y) {
             var nTab = TabView.createTab(id, tabViewSelector, tabCfg);          // create a new one
 
             nTab.removeAll().each(function (i) {
-                i.destroy();                                         // Empty it
+                i.destroy();                                                    // Empty it
             });
-            //nTab.each(function (i) {
-            //    i.remove();
-            //    i.destroy();
-            //});
-            nTab.get("panelNode").empty();                                       // @fixme since the above method is not enough
+            nTab.get("panelNode").empty();                                      // @fixme since the above method is not enough
             nTab.load(widgetCfg, fn);                                           // Load target widget
             nTab.set("selected", 2);
             nTab.plug(Removeable);
@@ -101,26 +97,26 @@ YUI.add('wegas-tabview', function (Y) {
 
         var children,
         handle;
- 
+
         if (config && config.children) {
- 
+
             children = config.children;
-        
+
             handle = this.after("initializedChange", function (e) {
                 this._add(children);
                 handle.detach();
             });
- 
+
         }
- 
+
         //  Widget method overlap
         Y.after(this._renderChildren, this, "renderUI");
         Y.after(this._bindUIParent, this, "bindUI");
- 
+
         //        this.after("selectionChange", this._afterSelectionChange);
         //        this.after("selectedChange", this._afterParentSelectedChange);
         //        this.after("activeDescendantChange", this._afterActiveDescendantChange);
- 
+
         this._hDestroyChild = this.after("*:destroy", this._afterDestroyChild);
         this.after("*:focusedChange", this._updateActiveDescendant);;
     }
@@ -193,7 +189,7 @@ YUI.add('wegas-tabview', function (Y) {
         witem: function(index) {
             return this._witems[index];
         }
-        
+
     }, {
 
         CSS_PREFIX: "yui3-tab",

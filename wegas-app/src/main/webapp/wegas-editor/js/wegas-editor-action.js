@@ -233,61 +233,61 @@ YUI.add('wegas-editor-action', function (Y) {
             newEntity, targetArray;
 
             switch (this.get("method")) {
-            case "put":
-                EditEntityAction.showEditForm(entity, function (newVal) {
+                case "put":
+                    EditEntityAction.showEditForm(entity, function (newVal) {
 
-                    entity.setAttrs(newVal);
+                        entity.setAttrs(newVal);
 
-                    dataSource.rest.put(parentEntity.toObject(), {
-                        success: function () {
-                            EditEntityAction.hideEditFormOverlay();
-                            EditEntityAction.showFormMessage("success", "Item has been updated");
-                        },
-                        failure: function (e) {
-                            EditEntityAction.hideEditFormOverlay();
-                            EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
-                        }
+                        dataSource.rest.put(parentEntity.toObject(), {
+                            success: function () {
+                                EditEntityAction.hideEditFormOverlay();
+                                EditEntityAction.showFormMessage("success", "Item has been updated");
+                            },
+                            failure: function (e) {
+                                EditEntityAction.hideEditFormOverlay();
+                                EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                            }
+                        });
                     });
-                });
-                break;
+                    break;
 
-            case "post":
-                newEntity = Y.Wegas.Editable.revive({
-                    "@class": this.get("targetClass")
-                });
-                EditEntityAction.showEditForm(newEntity, Y.bind(function (newVal) {
-                    newEntity.setAttrs(newVal);
-                    entity.get(this.get("attributeKey")).push(newEntity);
-
-                    dataSource.rest.put(entity.toObject(), {
-                        success: function () {
-                            EditEntityAction.hideEditFormOverlay();
-                            EditEntityAction.showFormMessage("success", "Item has been added");
-                            EditEntityAction.hideFormFields();
-                        },
-                        failure: function (e) {
-                            EditEntityAction.hideEditFormOverlay();
-                            EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
-                        }
+                case "post":
+                    newEntity = Y.Wegas.Editable.revive({
+                        "@class": this.get("targetClass")
                     });
-                }, this));
-                break;
+                    EditEntityAction.showEditForm(newEntity, Y.bind(function (newVal) {
+                        newEntity.setAttrs(newVal);
+                        entity.get(this.get("attributeKey")).push(newEntity);
 
-            case "delete":
-                if (confirm("Are your sure your want to delete this item ?")) {
-                    targetArray = parentEntity.get(this.get("attributeKey"));
-                    Y.Array.find(targetArray, function (e, i, a) {
-                        if (e.get("id") === entity.get("id")) {
-                            a.splice(i, 1);
-                            return true;
-                        }
-                        return false;
-                    });
-                    dataSource.rest.put(parentEntity.toObject());
-                } else {
-                    return;
-                }
-                break;
+                        dataSource.rest.put(entity.toObject(), {
+                            success: function () {
+                                EditEntityAction.hideEditFormOverlay();
+                                EditEntityAction.showFormMessage("success", "Item has been added");
+                                EditEntityAction.hideFormFields();
+                            },
+                            failure: function (e) {
+                                EditEntityAction.hideEditFormOverlay();
+                                EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                            }
+                        });
+                    }, this));
+                    break;
+
+                case "delete":
+                    if (confirm("Are your sure your want to delete this item ?")) {
+                        targetArray = parentEntity.get(this.get("attributeKey"));
+                        Y.Array.find(targetArray, function (e, i, a) {
+                            if (e.get("id") === entity.get("id")) {
+                                a.splice(i, 1);
+                                return true;
+                            }
+                            return false;
+                        });
+                        dataSource.rest.put(parentEntity.toObject());
+                    } else {
+                        return;
+                    }
+                    break;
             }
         }
     }, {
@@ -438,7 +438,7 @@ YUI.add('wegas-editor-action', function (Y) {
     Y.extend(OpenTabAction, Action, {
         execute: function () {
             var childCfg = this.get("children");                                // Forward plugin data to the target widget
-            childCfg.data = this.getAttrs();                                    // @fixme @fx Is this useful?
+            childCfg.data = this;                                               // @fixme Usde in wegas-inputex-permissionselect
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                 this.get("tabSelector"), {}, childCfg);
         }
@@ -527,7 +527,6 @@ YUI.add('wegas-editor-action', function (Y) {
         NS: "wegas",
         NAME: "LoadTreeviewNodeAction",
         ATTRS: {
-            entity: {},
             tabId: {},
             tabSelector: {
                 value: '#centerTabView'
@@ -536,42 +535,6 @@ YUI.add('wegas-editor-action', function (Y) {
     });
 
     Y.namespace("Plugin").LoadTreeviewNodeAction = LoadTreeviewNodeAction;
-
-    /**
-     *  @class CloneEntityAction
-     *  @deprecated
-     *  @module Wegas
-     *  @constructor
-     */
-    var CloneEntityAction = function () {
-        CloneEntityAction.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.extend(CloneEntityAction, EntityAction, {
-        execute: function () {
-            this._clone(this.get("entity"), this.get("entity").parentDescriptor);
-
-        },
-        _onSuccess: function (e) {
-            Y.log("Clone successfull");
-        },
-        _clone: function (entity, parent) {
-            if (parent && parent.toObject) {
-                parent = parent.toObject();
-            }
-            Y.Wegas.VariableDescriptorFacade.rest.clone(entity.get("id"), parent, {
-                success: Y.bind(this._onSuccess, this)
-            });
-        }
-    }, {
-        NS: "wegas",
-        NAME: "CloneEntityAction",
-        ATTRS: {
-            childs: {}
-        }
-    });
-
-    Y.namespace("Plugin").CloneEntityAction = CloneEntityAction;
 
     // *** Buttons *** //
     /**
@@ -657,29 +620,30 @@ YUI.add('wegas-editor-action', function (Y) {
             }
         }
     });
-    
+
     /**
-     * 
+     *
      */
     var CONTENTBOX = 'contentBox',
-        Linkwidget;
+    Linkwidget;
 
     Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        
+
         renderUI: function(){
             Linkwidget.superclass.renderUI.apply(this);
-            
+
             this.p = Y.Node.create('<div class="playerlink-label"><p>Player link</p><div>');
             this.get(CONTENTBOX).append(this.p);
-            
-            this.textField = new Y.inputEx.StringField({parentEl: this.get(CONTENTBOX)});
+
+            this.textField = new Y.inputEx.StringField({
+                parentEl: this.get(CONTENTBOX)
+                });
             this.get(CONTENTBOX).on("click", function (e) {
                 e.halt(true);
             });
         },
 
         syncUI: function() {
-            console.log(this.get("entity").get("id"));
             var url = document.URL + "game.html?token=a";
             this.textField.setValue(url);
         }

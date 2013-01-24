@@ -30,8 +30,7 @@ YUI.add('wegas-action', function(Y) {
             },
             destroyed: {
                 "transient": true
-            },
-            /* Shortcut */
+            }
         }
     });
 
@@ -55,7 +54,7 @@ YUI.add('wegas-action', function(Y) {
                 value: "click"
             },
             entity: {
-//                readonly: true,
+                readonly: true,
                 getter: function() {
                     return this.get("host").get("entity");
                 }
