@@ -374,3 +374,9 @@ body {
 .editor-animator-impactlist .inputEx-ListField .wegas-addbutton {
     margin-left: -50px;
 }
+
+/* Player link menu */
+.yui3-menu-content .editor-playerlink-button {
+    padding: .1em 0.6em .1em;
+    border-top: double;
+}
