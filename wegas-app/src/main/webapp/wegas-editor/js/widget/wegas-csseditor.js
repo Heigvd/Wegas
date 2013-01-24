@@ -14,10 +14,10 @@ YUI.add('wegas-csseditor', function (Y) {
             this.plug(Y.Plugin.WidgetToolbar);
 
             var form, cb = this.get(CONTENTBOX),
-            value = Y.Wegas.app._customCSSText || '',
+            value = Y.Wegas.CSSLoader._customCSSText || '',
             el = this.toolbar.get('header');
 
-            form = new Y.inputEx.AceField({
+            this.form = new Y.inputEx.AceField({
                 parentEl: cb._node,
                 name: 'text',
                 type: 'ace',
@@ -25,14 +25,13 @@ YUI.add('wegas-csseditor', function (Y) {
                 language: "css",
                 value: value
             });
-            Y.Wegas.app._customCSSForm = form;
-
+            
             this.previewButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-preview\"></span>Preview",
                 on: {
                     click: Y.bind(function () {
-                        Y.Wegas.app._customCSSStyleSheet.disable();
-                        Y.Wegas.app._customCSSStyleSheet = new Y.StyleSheet(form.getValue());
+                        Y.Wegas.CSSLoader._customCSSStyleSheet.disable();
+                        Y.Wegas.CSSLoader._customCSSStyleSheet = new Y.StyleSheet(form.getValue());
                         // showFormMessage('success', 'CSS has been updated.');
                     }, this)
                 }
@@ -46,6 +45,7 @@ YUI.add('wegas-csseditor', function (Y) {
         destructor: function () {
             this.previewButton.destroy();
             this.saveButton.destroy();
+            this.form.destroy();
         }
     });
 

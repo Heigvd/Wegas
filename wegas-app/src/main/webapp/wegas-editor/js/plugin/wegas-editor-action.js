@@ -145,9 +145,6 @@ YUI.add('wegas-editor-action', function (Y) {
     };
 
     Y.extend(LoadTreeviewNodeAction, Action, {
-
-        tab: null,
-
         execute: function () {
             var entity = this.get("entity"),
             tabId = this.get("tabId") || this.get("host").get("label"),
@@ -169,13 +166,14 @@ YUI.add('wegas-editor-action', function (Y) {
             });
         }
     }, {
-        NS: "wegas",
+        NS: "LoadTreeviewNodeAction",
         NAME: "LoadTreeviewNodeAction",
         ATTRS: {
             tabId: {},
             tabSelector: {
                 value: '#centerTabView'
-            }
+            },
+            entity: {}
         }
     });
 
