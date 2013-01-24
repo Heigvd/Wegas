@@ -16,6 +16,7 @@ import javax.ejb.Stateless;
 import javax.script.ScriptException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -43,7 +44,9 @@ public class ScriptLibrary {
     @Produces(MediaType.APPLICATION_JSON)
     public GameModel edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("scriptKey") String scriptKey, String script) {
-
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        
         GameModel gameModel = gameModelFacade.find(gameModelId);
         gameModel.getScriptLibrary().put(scriptKey, script);
         // return Response.ok().build();
@@ -56,6 +59,8 @@ public class ScriptLibrary {
     public GameModel delete(@PathParam("gameModelId") Long gameModelId,
             @PathParam("scriptKey") String scriptKey) {
 
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        
         GameModel gameModel = gameModelFacade.find(gameModelId);
         gameModel.getScriptLibrary().remove(scriptKey);
         return gameModel;

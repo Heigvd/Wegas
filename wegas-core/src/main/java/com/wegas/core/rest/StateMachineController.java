@@ -19,6 +19,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.ejb.statemachine.StateMachineDescriptorFacade;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;
 import java.util.List;
@@ -31,6 +32,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  *
@@ -51,6 +54,8 @@ public class StateMachineController {
     private ScriptFacade scriptManager;
     @EJB
     private PlayerFacade playerFacade;
+    @EJB
+    private UserFacade userFacade;
     @Inject
     private RequestManager requestManager;
 
@@ -77,6 +82,9 @@ public class StateMachineController {
             @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId,
             @PathParam("transitionId") Long transitionId)
             throws ScriptException, WegasException {
+
+        checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
+
         StateMachineDescriptor stateMachineDescriptorEntity = (StateMachineDescriptor) stateMachineDescriptorFacade.find(stateMachineDescriptorId);
         StateMachineInstance stateMachineInstanceEntity = (StateMachineInstance) stateMachineDescriptorEntity.getInstance(playerFacade.find(playerId));
         State currentState = stateMachineInstanceEntity.getCurrentState();
@@ -97,5 +105,11 @@ public class StateMachineController {
             }
         }
         return (StateMachineInstance) variableInstanceFacade.update(stateMachineInstanceEntity.getId(), stateMachineInstanceEntity);
+    }
+
+    private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {
+        if (!SecurityUtils.getSubject().isPermitted("Game:Edit:g" + gameId) && !userFacade.matchCurrentUser(playerId)) {
+            throw new UnauthorizedException();
+        }
     }
 }

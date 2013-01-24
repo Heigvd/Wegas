@@ -18,6 +18,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -49,6 +50,9 @@ public class VariableInstanceController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public VariableInstance update(@PathParam("entityId") Long entityId, VariableInstance entity) {
+        
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + variableInstanceFacade.findGame(entityId).getId());
+        
         return variableInstanceFacade.update(entityId, entity);
     }
 

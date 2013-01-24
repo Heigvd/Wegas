@@ -10,6 +10,7 @@
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.Serializable;
@@ -92,5 +93,13 @@ public class RequestController implements Serializable {
      */
     public User getCurrentUser() {
         return userFacade.getCurrentUser();
+    }
+    
+    public String getCurrentRole(){
+        String cssClass = "";
+        for (Role r : userFacade.getCurrentUser().getMainAccount().getRoles()){
+            cssClass += " wegas-group-" +r.getName();
+        }
+        return cssClass.toLowerCase();
     }
 }

@@ -322,15 +322,17 @@ body {
 .wegas-page-editor .content-header{
     cursor: pointer;
 }
-.preview-content > .inputEx-fieldWrapper  .inputEx-Field {
+
+/* Pageloader view src plugin styles */
+.wegas-pageloader > .inputEx-fieldWrapper  .inputEx-Field {
     float:none;
     height:100%;
 }
-.preview-content > .inputEx-fieldWrapper .inputEx-fieldWrapper {
+.wegas-pageloader > .inputEx-fieldWrapper .inputEx-fieldWrapper {
     height:100%;
     margin-bottom:0;
 }
-.preview-content > .inputEx-fieldWrapper .ace_editor {
+.wegas-pageloader > .inputEx-fieldWrapper .ace_editor {
     top:0px;
     left:0px;
     right:40px;
@@ -343,6 +345,34 @@ body {
 .lobbyOr {
     margin-left: 135px;
     font-weight: bold;
+}
+
+/* style for Animator -> impact game */
+.editor-animator-impactlist {
+    margin-top: 10px;
+    margin-left: 65px;
+}
+
+.editor-animator-impactlist .inputEx-ListField{
+    float: none;
+    margin-top: 10px;
+}
+
+.editor-animator-impactlist textarea{
+    margin-top: 10px;
+}
+
+.wegas-impactgame .results .result {
+    padding: 2px 10px;
+    font-size: 11px;
+}
+
+.editor-animator-impactlist .inputEx-ListField .wegas-removebutton{
+    margin-left: 90px;
+}
+
+.editor-animator-impactlist .inputEx-ListField .wegas-addbutton {
+    margin-left: -50px;
 }
 
 .loading-icon{

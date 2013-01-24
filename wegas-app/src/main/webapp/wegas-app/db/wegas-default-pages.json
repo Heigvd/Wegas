@@ -1,0 +1,294 @@
+{
+    "1": {
+        "id": 1,
+        "label": "Main layout",
+        "type": "List",
+        "cssClass": "layout wegas-cep",
+        "children": [{
+                "type": "List",
+                "cssClass": "header",
+                "children": [{
+                        "type": "List",
+                        "direction": "horizontal",
+                        "cssClass": "variables",
+                        "children": [{
+                                "type": "Title",
+                                "content": "",
+                                "cssClass": "title"
+                            }, {
+                                "type": "List",
+                                "cssClass": "timeIndicators",
+                                "children": [{
+                                        "type": "VariableDisplay",
+                                        "label": "Phase",
+                                        "view": "title",
+                                        "variable": {
+                                            "name": "phases"
+                                        }
+                                    }, {
+                                        "type": "VariableDisplay",
+                                        "label": "Period",
+                                        "view": "valuebox",
+                                        "variable": {
+                                            "name": "phases"
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "label": "Next period",
+                                "view": "button",
+                                "tooltip": "Advance to next period",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "onClick": {
+                                                "@class": "Script",
+                                                "language": "JavaScript",
+                                                "content": "passPeriod();"
+                                            }
+                                        }
+                                    }],
+                                "cssClass": "fl"
+                            }, {
+                                "type": "VariableDisplay",
+                                "label": "Time cards",
+                                "view": "box",
+                                "variable": {
+                                    "name": "humanResources"
+                                },
+                                "cssClass": "fr timecards"
+                            }, {
+                                "type": "GaugeDisplay",
+                                "variable": {
+                                    "name": "customerApproval"
+                                },
+                                "cssClass": "fr"
+                            }, {
+                                "type": "GaugeDisplay",
+                                "variable": {
+                                    "name": "managementApproval"
+                                },
+                                "cssClass": "fr"
+                            }, {
+                                "type": "GaugeDisplay",
+                                "variable": {
+                                    "name": "teamMotivation"
+                                },
+                                "cssClass": "fr"
+                            }
+                        ]
+                    }, {
+                        "type": "List",
+                        "cssClass": "menu",
+                        "direction": "horizontal",
+                        "children": [{
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-home\"></span>Accueil",
+                                "cssClass": "menu-button",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 2,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }
+                                ]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-questions\"></span>Questions",
+                                "cssClass": "menu-button",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 4,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }, {
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": {
+                                                "name": "questions2"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-actions\"></span>Actions",
+                                "cssClass": "menu-button",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 5,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }, {
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": {
+                                                "name": "actions"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-employees\"></span>Employees",
+                                "cssClass": "menu-button",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 3,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }
+                                ]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-mail\"></span>Mails",
+                                "cssClass": "menu-button",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 6,
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }, {
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": {
+                                                "name": "inbox"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }, {
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon cep-icon-history\"></span>Historique",
+                                "cssClass": "menu-button",
+                                "disabled": true
+                            }, {
+                                "type": "LoginButton",
+                                "cssClass": "menu-loginbutton"
+                            }
+                        ]
+                    }
+                ]
+            }, {
+                "type": "PageLoader",
+                "pageLoaderId": "maindisplayarea",
+                "cssClass": "body",
+                "defaultPageId": 2
+            }, {
+                "type": "List",
+                "cssClass": "footer",
+                "direction": "horizontal",
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "Copyright 2012 Heig-vd.ch"
+                    }
+                ]
+            }
+        ]
+    },
+    "2": {
+        "id": 2,
+        "type": "Text",
+        "content": "Welcome to CEP case."
+    },
+    "3": {
+        "id": 3,
+        "type": "CEPFolder",
+        "listVariables": "employees",
+        "plugins": [{"fn": "Injector"}],
+        "searchInProperties": [
+            "properties"
+        ],
+        "selectors": [
+            {
+                "type": "image",
+                "name": "picture",
+                "height": 35,
+                "width": 35
+            }, {
+                "name": "surname",
+                "label": "Prénom : "
+            }
+        ],
+        "informations": [
+            {
+                "name": "Information personnelles : ",
+                "className": "titre"
+            }, {
+                "type": "image",
+                "name": "picture",
+                "height": "150",
+                "width": "150",
+                "className": "picture"
+            }, {
+                "name": "name",
+                "label": "Nom : "
+            }, {
+                "name": "surname",
+                "label": "Prénom : "
+            }, {
+                "name": "salary",
+                "label": "Salaire : "
+            }, {
+                "type": "valueBox",
+                "name": "moral",
+                "label": "Moral : ",
+                "maxValue": 100
+            }, {
+                "type": "valueBox",
+                "name": "experience",
+                "label": "Expérience : ",
+                "maxValue": 100
+            }, {
+                "name": "description",
+                "label": "Description : "
+            }, {
+                "type": "position",
+                "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 4 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 3 : Elle se rend compte de toute l'énergie que vous avez dépensé pour elle et veux donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 2 : Elle sais ce que vous avez fait pour l'entreprise et travaillera à son tour pour la développer.</li><li>Niveau 1 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 0 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li><li>Niveau -1 : Elle ne supporte pas vos méthodes et fera tout pour vous mettre des batons dans les roues.</li></ul>",
+                "selector": "li",
+                "name": "leadershipLevel",
+                "invert": "true",
+                "minVal": -1
+            }]
+    },
+    "4": {
+        "id": 4,
+        "type": "MCQTabView",
+        "variable": {
+            "expr": "questions.items[phases.value].descriptorId"
+        }
+    },
+    "5": {
+        "id": 5,
+        "type": "MCQTabView",
+        "variable": {
+            "expr": "actions.items[phases.value].descriptorId"
+        }
+    },
+    "6": {
+        "id": 6,
+        "type": "InboxDisplay",
+        "variable": {
+            "name": "inbox"
+        }
+    },
+    "7": {
+        "id": 7,
+        "type": "ResultsDisplay"
+    },
+    "1000": {
+        "id": 1000,
+        "type": "UserPreferences"
+    }
+}

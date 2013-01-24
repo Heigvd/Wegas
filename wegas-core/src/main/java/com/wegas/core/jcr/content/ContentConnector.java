@@ -43,6 +43,16 @@ import org.xml.sax.SAXException;
 public class ContentConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
+
+    public static String bytesToHumanReadable(Long bytes) {
+        Integer unit = 1024;
+        if (bytes < unit) {
+            return bytes + "B";
+        }
+        Integer exponent = (int) (Math.log(bytes) / Math.log(unit));
+        String prefix = ("KMGTPE").charAt(exponent - 1) + "";
+        return String.format("%.1f%sB", bytes / Math.pow(unit, exponent), prefix);
+    }
     private Session session;
     private String workspace = null;
 
@@ -152,13 +162,17 @@ public class ContentConnector {
     protected Calendar getLastModified(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED).getDate();
     }
+    /*
+     * Return content Bytes size
+     */
 
-    protected Long getSize(String absolutePath) throws RepositoryException {
+    protected Long getBytesSize(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getSize();
     }
 
     /**
-     * Compress directory and children to ZipOutputStream. Warning: metadatas are not included due to zip limitation
+     * Compress directory and children to ZipOutputStream. Warning: metadatas
+     * are not included due to zip limitation
      *
      * @param out a ZipOutputStream to write files to
      * @param path root path to compress
@@ -258,9 +272,7 @@ public class ContentConnector {
 
     }
 
-    public void importXML(InputStream input)
-            throws IOException, SAXException, ParserConfigurationException,
-            TransformerException, RepositoryException {
+    public void importXML(InputStream input) throws IOException, SAXException, ParserConfigurationException, TransformerException, RepositoryException {
         try {
             DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
             bf.setIgnoringElementContentWhitespace(true);
@@ -291,7 +303,8 @@ public class ContentConnector {
      *
      * @throws RepositoryException
      */
-    private void initializeNamespaces() throws RepositoryException {
+    private void initializeNamespaces()
+            throws RepositoryException {
         for (String prefix : WFSConfig.namespaces.keySet()) {
             try {
                 session.getWorkspace().getNamespaceRegistry().getURI(prefix);
