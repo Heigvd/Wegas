@@ -68,17 +68,20 @@ YUI.add('wegas-app', function (Y) {
         render: function () {
             Y.io.header("Accept-Language", Y.config.lang);                      // Set the language for all requests
             Y.JSON.useNativeParse = true;                                       // @todo Shall we use browser native parser ?
-            
+
             this.on("render", function () {                                     // Remove loading overlay
                 Y.one("body").removeClass("wegas-loading-overlay");
             });
 
-            Y.on("io:failure", function (e, response) {
-                var exception = response.responseText.substring(response.responseText.indexOf('"exception'), response.responseText.length);
+            Y.on("io:failure", function (tId, e) {
+                if (!e) {
+                    return;
+                }
+                var exception = e.responseText.substring(e.responseText.indexOf('"exception'), e.responseText.length);
                 exception = exception.split(",");
-                if (response.status == 400 && exception[0] == '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
-                exception[0] == '"exception":"org.apache.shiro.authz.UnauthenticatedException"'){
-//                    Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
+                if (e.status == 400 && exception[0] == '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
+                    exception[0] == '"exception":"org.apache.shiro.authz.UnauthenticatedException"'){
+                    //                    Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
                     alert("You have been logged out or does not have permissions");
                 }
 
@@ -96,38 +99,29 @@ YUI.add('wegas-app', function (Y) {
          * @description initilize DataSources
          */
         initDataSources: function () {
-            var k, dataSource, dataSources = this.get('dataSources');
+            var k, dataSource, dataSources = this.get('dataSources'),
+            onInitialRequest = function (e) {
+                this.requestCounter -= 1;
+                if (this.requestCounter === 0) {
+                    this.renderUI();                                            // Run the renderUI()method when they all arrived.
+                }
+            }
 
             this.requestCounter = 0;
 
             for (k in dataSources) {
                 if (dataSources.hasOwnProperty(k)) {
-                    dataSources[k].source = this.get("base") + dataSources[k].source;
-                    dataSource = new Y.Wegas.DataSource(dataSources[k]);
-                    this.dataSources[k] = this[k + "Facade"] = Y.Wegas[k + "Facade"] = dataSource;
-                    dataSource.once("response", this.onInitialRequest, this);
-                    if (Y.Lang.isNumber(dataSource.sendInitialRequest())) {     // Send an initial request
-                        this.requestCounter += 1;                               // If the request was sent, we update the counter, which is used n the onInitialRequest() callback
+                    dataSources[k].source = this.get("base") + dataSources[k].source; // Set up datasource path
+                    dataSource = new Y.Wegas.DataSource(dataSources[k]);        // Instantiate the datasource
+                    this.dataSources[k] = Y.Wegas[k + "Facade"] = this[k + "Facade"] = dataSource; // Set up global references
+                    dataSource.once("response", onInitialRequest, this);        // Listen to the datasources initial requests
+                    if (Y.Lang.isNumber(dataSource.sendInitialRequest())) {     // Send the initial request
+                        this.requestCounter += 1;                               // If the request was sent, update the counter, which is used n the onInitialRequest() callback
                     }
                 }
             }
 
             if (this.requestCounter === 0) {                                    // If no request was sent, render directly
-                this.renderUI();
-            }
-        },
-
-        /**
-         * @methodOf Y.Wegas.App#
-         * @private
-         * @name onInitialRequest
-         * @param Y.Event A Yui event
-         * @description Listen to the datasources initial requests and run the renderUI()
-         * method when they all arrived.
-         */
-        onInitialRequest: function (e) {
-            this.requestCounter -= 1;
-            if (this.requestCounter === 0) {
                 this.renderUI();
             }
         },
@@ -220,6 +214,14 @@ YUI.add('wegas-app', function (Y) {
          *    <li>currentTeam : xxxxxxxxxxxxxxx</li>
          *    <li>currentPlayer : xxxxxxxxxxxxxx</li>
          *    <li>currentUser : Object litteral representing current user</li>
+         *    <li>editorMenus :
+         *        This field is used to globally override Entities edition menus.
+         *        Use the target class name as the key.
+         *    </li>
+         *    <li>editorForms :
+         *        This field is used to globally override Entities edition forms.
+         *        Use the target class name as the key.
+         *    </li>
          * </ul>
          */
         ATTRS: {
@@ -264,6 +266,21 @@ YUI.add('wegas-app', function (Y) {
                         Y.one("body").addClass("wegas-devmode");
                     }
                 }
+            },
+
+            /**
+            * This field is used to globally override Entities edition menus.
+            * Use the target class name as the key.
+            */
+            editorMenus: {
+                value: {}
+            },
+            /**
+            * This field is used to globally override Entities edition forms.
+            * Use the target class name as the key.
+            */
+            editorForms: {
+                value: {}
             }
         },
         /**
