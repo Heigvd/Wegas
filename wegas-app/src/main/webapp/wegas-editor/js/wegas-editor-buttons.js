@@ -30,7 +30,7 @@ YUI.add('wegas-editor-buttons', function (Y) {
             this.plug(Y.Plugin.WidgetMenu);
 
             this.menu.on("button:click", function (e) {
-                Y.Wegas.app.set('currentPlayer', e.target.get("data").entity.get("id"));
+                Y.Wegas.app.set('currentPlayer', e.target.get("entity").get("id"));
             });
 
             Y.Wegas.GameFacade.after("response", this.syncUI, this);
@@ -62,14 +62,16 @@ YUI.add('wegas-editor-buttons', function (Y) {
                     menuItems.push({
                         type: "Button",
                         label: cPlayer.get("name"),
-                        data: {
-                            entity: cPlayer
-                        }
+                        entity: cPlayer
                     });
                 }
             }
 
             this.menu.set("children", menuItems);
+        }
+    }, {
+        ATTS: {
+            entity: {}
         }
     });
 
@@ -109,9 +111,7 @@ YUI.add('wegas-editor-buttons', function (Y) {
                             target: "self"
                         }
                     }],
-                    data: {
-                        entity: games[j]
-                    }
+                    entity: games[j]
                 });
             }
             this.menu.set("children", menuItems);
