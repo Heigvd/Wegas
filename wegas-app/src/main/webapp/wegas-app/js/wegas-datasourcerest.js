@@ -107,12 +107,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     Y.bind(function (payload) {
                 payload.serverResponse = Y.Wegas.Editable.revive(payload.response.results); // Revive
 
-                if (payload.serverResponse.get) {                               // Request is in managed mode, trigger cache update
+//                if (payload.serverResponse.get) {                               // Request is in managed mode, trigger cache update
                     this.onResponseRevived(payload);
                     this.get("host").fire("response", payload);
-                } else {
-                    Y.log("Unable to revive server response.", "error");
-                }
+//                } else {
+//                    Y.log("Unable to revive server response.", "error");
+//                }
             }, this, payload));
 
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");

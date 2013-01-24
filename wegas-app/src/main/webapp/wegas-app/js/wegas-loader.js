@@ -28,7 +28,7 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/wegas-app-min.js',
                         requires: [
                         'wegas-entity', 'wegas-datasourcerest', 'wegas-scripteval',
-                        'wegas-pageloader', 'wegas-button', 'stylesheet'
+                        'wegas-pageloader', 'wegas-button'
                         // 'wegas-appcss',                                      // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
@@ -324,6 +324,11 @@ YUI().use(function(Y) {
                     'wegas-widgettoolbarcss': {
                         path: 'wegas-app/css/wegas-widgettoolbar.css',
                         type: "css"
+                    },
+                    "wegas-cssloader": {
+                        path: 'wegas-app/js/plugin/wegas-cssloader-min.js',
+                        requires: ['stylesheet'],
+                        ws_provides: 'CSSLoader'
                     },
                     'treeview': {
                         path: 'wegas-editor/js/util/treeview-min.js',

@@ -1,6 +1,9 @@
 {
     "id": 2003,
     "type": "Layout",
+    "plugins": [{
+        "fn": "CSSLoader"
+    }],
     "top": {
         "height": 25,
         "scroll": null,

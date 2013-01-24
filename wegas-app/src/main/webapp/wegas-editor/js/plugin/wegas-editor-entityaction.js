@@ -45,7 +45,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
             dataSource: {
                 getter: function (val) {
                     if (Y.Lang.isString(val)) {
-                        return Y.Wegas[val];
+                        return Y.Wegas.app.dataSources[val];
                     }
                     return val;
                 }
@@ -209,7 +209,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
                         return Y.Wegas.VariableDescriptorFacade;
                     }
                     if (Y.Lang.isString(val)) {
-                        return Y.Wegas[val];
+                        return Y.Wegas.app.dataSources[val];
                     }
                     return val;
                 }

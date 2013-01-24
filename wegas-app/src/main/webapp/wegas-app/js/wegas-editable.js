@@ -38,7 +38,7 @@ YUI.add('wegas-editable', function (Y) {
          */
         toJSON: function () {
             var k, ret = this.getAttrs(),
-                    attrCfgs = this.getAttrCfgs();
+            attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
                 if (attrCfgs[k] && attrCfgs[k]["transient"]) {                           // Remove any transient attribute
@@ -122,8 +122,8 @@ YUI.add('wegas-editable', function (Y) {
          */
         getMenuCfg: function (data) {
             var menus = Y.Wegas.app.get('editorMenus'),
-                    //    staticMenus =
-                    menu;
+            //    staticMenus =
+            menu;
 
             if (menus) {
                 menu = menus[ this.get('@class')] || menus[this.get("type")];   // Select first server defined forms, based on the @class or the type attribute
@@ -138,7 +138,8 @@ YUI.add('wegas-editable', function (Y) {
 
                     if (elts[i].plugins) {
                         for (j = 0; j < elts[i].plugins.length; j = j + 1) {
-                            Y.mix(elts[i].plugins[j], data, true);
+                            elts[i].plugins[j].cfg = elts[i].plugins[j].cfg || {};
+                            Y.mix(elts[i].plugins[j].cfg, data, true);
                             if (elts[i].plugins[j].cfg && elts[i].plugins[j].cfg.children) {
                                 mixMenuCfg(elts[i].plugins[j].cfg.children, data);
                             }
@@ -191,9 +192,9 @@ YUI.add('wegas-editable', function (Y) {
          */
         getRawModulesFromDefinition: function (cfg) {
             var i, props, type = cfg.type || cfg["@class"],
-                    module = YUI_config.groups.wegas.modulesByType[type],
-                    modules = [],
-                    pushFn = function (field) {
+            module = YUI_config.groups.wegas.modulesByType[type],
+            modules = [],
+            pushFn = function (field) {
                 if (field) {
                     modules = modules.concat(Editable.getModulesFromDefinition(field));
                 }
