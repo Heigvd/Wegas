@@ -180,6 +180,16 @@ YUI().use(function(Y) {
                         'wegas-editor-action', 'inputex-select', 'inputex-string'],
                         ws_provides: "JoinGameWidget"
                     },
+                    'wegas-jointeamwidget': {
+                        path: 'wegas-app/js/widget/wegas-jointeamwidget-min.js',
+                        requires: ['wegas-joingamewidget'],
+                        ws_provides: "JoinTeamWidget"
+                    },
+                    'wegas-panelwidget': {
+                        path: 'wegas-app/js/widget/wegas-panelwidget-min.js',
+                        requires: ['panel', 'wegas-joingamewidget'],
+                        ws_provides: "PanelWidget"
+                    },
                     'wegas-imageloader': {
                         path: 'wegas-app/js/widget/wegas-imageloader-min.js',
                         requires: ['io-base', 'imageloader']
@@ -333,12 +343,16 @@ YUI().use(function(Y) {
                     /** Editor **/
                     'wegas-editor': {
                         path: 'wegas-editor/js/wegas-editor-min.js',
-                        requires: ['wegas-app'
+                        requires: ['wegas-app', 'wegas-rightscss'
                         /*'wegas-editorcss'*/                                   // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                         ]
                     },
                     'wegas-editorcss': {
                         path: 'wegas-editor/css/wegas-editor.css',
+                        type: 'css'
+                    },
+                    'wegas-rightscss': {
+                        path: 'wegas-editor/css/wegas-rights.css',
                         type: 'css'
                     },
                     /** Editor's Widgets **/
@@ -369,8 +383,13 @@ YUI().use(function(Y) {
                     },
                     'wegas-console': {
                         path: 'wegas-editor/js/wegas-console-min.js',
-                        requires: ['ace-javascript', 'wegas-inputex-ace'],
+                        requires: ['ace-javascript'],
                         ws_provides: 'Console'
+                    },
+                    'wegas-impactgame': {
+                        path: 'wegas-editor/js/wegas-impactgame-min.js',
+                        requires: ['wegas-console', 'wegas-inputex-wysiwygscript', "inputex-hidden"],
+                        ws_provides: 'ImpactGame'
                     },
                     'wegas-editor-treeview': {
                         path: 'wegas-editor/js/wegas-editor-treeview-min.js',

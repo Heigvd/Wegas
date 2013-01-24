@@ -256,7 +256,18 @@ YUI.add('wegas-app', function (Y) {
             /**
              * Object litteral representing current user.
              */
-            currentUser: { }
+            currentUser: { },
+            /**
+             *
+             */
+            devMode: {
+                value: false,
+                setter: function (val) {
+                    if (val) {
+                        Y.one("body").addClass("wegas-devmode");
+                    }
+                }
+            }
         },
         /**
          * @methodOf Y.Wegas.App

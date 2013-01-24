@@ -74,12 +74,12 @@ YUI.add('wegas-pageeditor', function(Y) {
                         this.jsonView.show();
                         this.jsonView.editor.resize();
                         this.jsonView.focus();
-                        this.designButton.hide();
+                        this.designButton.disable();
                         this.saveButton.show();
                     } else {
                         this.get("host").get("contentBox").show();
                         this.jsonView.hide();
-                        this.designButton.show();
+                        this.designButton.enable();
                         this.saveButton.hide();
                     }
                 };
@@ -96,7 +96,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.sourceButton.set("pressed", false);
                     this.get("host").get("contentBox").show();
                     this.jsonView.hide();
-                    this.designButton.show();
+                    this.designButton.enable();
                     this.saveButton.hide();
                     //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
                     page["@pageId"] = host.get("widget")["@pageId"];

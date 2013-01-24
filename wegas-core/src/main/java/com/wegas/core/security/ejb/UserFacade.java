@@ -15,6 +15,7 @@ import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.GuestAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
@@ -56,9 +57,8 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     @EJB
     private RoleFacade roleFacade;
-    
     /**
-     * 
+     *
      */
     @EJB
     private PlayerFacade playerFacade;
@@ -127,7 +127,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param id
      * @return
      */
-    public List<Map> findPermissionByGameModelId(String id) {
+    public List<Map> findPermissionByInstance(String id) {
 
         Query findByToken = em.createNamedQuery("findPermissionByGameModelId");
         findByToken.setParameter("gameId", "%:" + id);
@@ -143,31 +143,15 @@ public class UserFacade extends AbstractFacadeImpl<User> {
 
             for (String permission : unRole.getPermissions()) {
                 String splitedPermission[] = permission.split(":");
-                if (splitedPermission[2].equals(id)) {
-                    permissions.add(permission);
+                if (splitedPermission.length >= 3) {
+                    if (splitedPermission[2].equals(id)) {
+                        permissions.add(permission);
+                    }
                 }
             }
         }
 
         return allRoles;
-    }
-
-    /**
-     * Delete permission by role and permission
-     *
-     * @param roleId
-     * @param permission
-     * @return
-     */
-    public boolean deletePermissionByGameModelIdAndPermissions(Long roleId, String permission) {
-        String permissionToRemove = null;
-        Role r = roleFacade.find(roleId);
-        for (String p : r.getPermissions()) {
-            if (p.equals(permission)) {
-                permissionToRemove = p;
-            }
-        }
-        return r.getPermissions().remove(permissionToRemove);
     }
 
     /**
@@ -177,7 +161,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param permission
      * @return
      */
-    public boolean addPermissionByGameModelIdAndPermissions(Long roleId, String permission) {
+    public boolean addPermissionsByInstance(Long roleId, String permission) {
         boolean added = false;
         boolean exist = false;
         Role r = roleFacade.find(roleId);
@@ -192,6 +176,24 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
 
         return added;
+    }
+
+    /**
+     * Delete permission by role and permission
+     *
+     * @param roleId
+     * @param permission
+     * @return
+     */
+    public boolean deletePermissionByInstance(Long roleId, String permission) {
+        String permissionToRemove = null;
+        Role r = roleFacade.find(roleId);
+        for (String p : r.getPermissions()) {
+            if (p.equals(permission)) {
+                permissionToRemove = p;
+            }
+        }
+        return r.getPermissions().remove(permissionToRemove);
     }
 
     /**
@@ -211,6 +213,54 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             }
         }
         return r.getPermissions().removeAll(currentPermissions);
+    }
+
+    /**
+     * Delete all role permissions by a game or gameModel id
+     *
+     * @param gOrGmId
+     * @return
+     */
+    public void deleteAllRolePermissionsById(String gOrGmId) {
+        List<Role> roles = roleFacade.findAll();
+        Iterator<Role> it = roles.iterator();
+        Role role;
+        Iterator<String> itP;
+        String p;
+        while (it.hasNext()) {
+            role = it.next();
+            itP = role.getPermissions().iterator();
+            while (itP.hasNext()) {
+                p = itP.next();
+                String splitedPermission[] = p.split(":");
+                if (splitedPermission.length >= 3) {
+                    if (splitedPermission[2].equals(gOrGmId)) {
+                        itP.remove();
+                    }
+                }
+            }
+        }
+    }
+
+    public void deleteUserPermissionByInstance(String gameOrGameModelId) {
+        Query findByToken = em.createNamedQuery("findUserPermissions");
+        findByToken.setParameter("gameId", "%:" + gameOrGameModelId);
+        List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
+        for (AbstractAccount a : accounts) {
+            em.detach(a);
+            for (Iterator<String> sit = a.getPermissions().iterator(); sit.hasNext();) {
+                String p = sit.next();
+                String splitedPermission[] = p.split(":");
+                if (splitedPermission.length >= 3) {
+                    if (splitedPermission[2].equals(gameOrGameModelId)) {
+                        sit.remove();
+                    }
+                }
+            }
+            em.merge(a);
+        }
+
+
     }
 
     public void sendNewPassword(String email) {

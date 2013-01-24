@@ -39,7 +39,7 @@ h3 {
     color: #000;
 }
 /*Page style*/
-.layout, html, .preview-content{
+.layout, html, .editor-preview {
     background-color:#C1C1C1;
 }
 /* Headers style */

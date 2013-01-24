@@ -12,6 +12,7 @@ package com.wegas.core.jcr.content;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -19,6 +20,7 @@ import java.util.Map;
  */
 final public class WFSConfig {
 
+    final static private ResourceBundle resourceBundle = ResourceBundle.getBundle("wegas");
     /**
      * JNDI name for Repository lookup
      */
@@ -48,10 +50,17 @@ final public class WFSConfig {
      */
     protected static final String WFS_DESCRIPTION = WeGAS_FILE_SYSTEM_PREFIX + "description";
     /**
+     * File size limit in bytes
+     */
+    protected static final Long MAX_FILE_SIZE = new Long(resourceBundle.getString("jcr.file.maxsize"));
+    /**
+     * Repository size limit in bytes
+     */
+    protected static final Long MAX_REPO_SIZE = new Long(resourceBundle.getString("jcr.repository.maxsize"));
+    /**
      * Custom namespaces registered with JCR.
      */
     protected static final Map<String, String> namespaces = new HashMap<String, String>() {
-
         {
             put("wfs", "http://www.wegas.com/wfs/1.0");                         //WeGAS File System
         }

@@ -106,6 +106,24 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
 
     }
 
+    public Game findGame(VariableInstance instance) {
+        if (instance.getScope() instanceof PlayerScope) {
+            return playerFacade.find(instance.getPlayerScopeKey()).getGame();
+        } else if (instance.getScope() instanceof TeamScope) {
+            return teamFacade.find(instance.getTeamScopeKey()).getGame();
+        } else if (instance.getScope() instanceof GameScope) {
+            throw new UnsupportedOperationException();                      // @fixme
+        } else if (instance.getScope() instanceof GameModelScope) {
+            return instance.getDescriptor().getGameModel().getGames().get(0);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+    
+    public Game findGame(Long instanceId) {
+        return this.findGame(this.find(instanceId));
+    }
+
     public Player findAPlayer(VariableInstance instance)
             throws NoPlayerException {
         Player p;
