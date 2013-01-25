@@ -111,7 +111,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     @Override
     public Game update(final Long entityId, Game entity) {
-        if (entity.getToken() == null || entity.getToken().equals("") || (this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId() != entity.getId()) || teamFacade.findByToken(entity.getToken()) != null) {
+        if (entity.getToken() == null || entity.getToken().equals("") || (this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0) || teamFacade.findByToken(entity.getToken()) != null) {
             entity.setToken(Helper.genToken(10));
         }
         return super.update(entityId, entity);
