@@ -246,7 +246,7 @@
                                 <privateOption>true</privateOption>
                                 <!-- If you're using the maven default setup this alternative is sometimes required
                                 to make the plugin work: ${basedir}/src/main/webapp/ -->
-                                <srcDir>${basedir}/src/main/webapp</srcDir>
+                                <srcDir>${basedir}/wegas-app/src/main/webapp</srcDir>
                                 <exclude><!-- Since jsdoctk 2.3.2 -->
                                     <param>lib</param><!--Multiple param entries allowed-->
                                 </exclude>
