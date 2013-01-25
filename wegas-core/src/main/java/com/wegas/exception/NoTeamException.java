@@ -16,13 +16,25 @@ package com.wegas.exception;
  */
 public class NoTeamException extends WegasException {
 
+    /**
+     *
+     */
     public NoTeamException() {
     }
 
+    /**
+     *
+     * @param message
+     */
     public NoTeamException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param message
+     * @param cause
+     */
     public NoTeamException(String message, Throwable cause) {
         super(message, cause);
     }

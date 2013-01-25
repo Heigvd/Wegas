@@ -31,6 +31,14 @@ abstract public class AbstractContentDescriptor implements Serializable {
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
 
+    /**
+     *
+     * @param name
+     * @param path
+     * @param mimeType
+     * @return
+     * @throws RepositoryException
+     */
     @JsonCreator
     public static AbstractContentDescriptor getDescriptor(@JsonProperty("name") String name, @JsonProperty("path") String path, @JsonProperty("mimeType") String mimeType) throws RepositoryException {
         if (mimeType.equals(DirectoryDescriptor.MIME_TYPE)) {
@@ -41,27 +49,53 @@ abstract public class AbstractContentDescriptor implements Serializable {
     }
     @XmlTransient
     private boolean synched = false;
+    /**
+     *
+     */
     protected String mimeType;
     private String name;
     private String path;
     private String note = "";
     private String description = "";
+    /**
+     *
+     */
     @XmlTransient
     protected String fileSystemAbsolutePath;
+    /**
+     *
+     */
     @XmlTransient
     protected ContentConnector connector;
 
+    /**
+     *
+     * @param absolutePath
+     * @param contentConnector
+     */
     protected AbstractContentDescriptor(String absolutePath, ContentConnector contentConnector) {
         this.connector = contentConnector;
         this.parseAbsolutePath(absolutePath);
         this.buildNamespaceAbsolutePath();
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @param contentConnector
+     * @param mimeType
+     */
     protected AbstractContentDescriptor(String absolutePath, ContentConnector contentConnector, String mimeType) {
         this(absolutePath, contentConnector);
         this.mimeType = mimeType;
     }
 
+    /**
+     *
+     * @param name
+     * @param path
+     * @param contentConnector
+     */
     protected AbstractContentDescriptor(String name, String path, ContentConnector contentConnector) {
         path = path.startsWith("/") ? path : "/" + path;
         this.connector = contentConnector;
@@ -70,36 +104,71 @@ abstract public class AbstractContentDescriptor implements Serializable {
         this.buildNamespaceAbsolutePath();
     }
 
+    /**
+     *
+     * @param mimeType
+     * @param name
+     * @param path
+     * @param contentConnector
+     */
     protected AbstractContentDescriptor(String mimeType, String name, String path, ContentConnector contentConnector) {
         this(name, path, contentConnector);
         this.mimeType = mimeType;
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean isDirectory() {
         return this.mimeType.equals(DirectoryDescriptor.MIME_TYPE);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getMimeType() {
         return mimeType;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param mimeType
+     */
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
         this.name = name.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
         this.buildNamespaceAbsolutePath();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public String getFullPath() {
         String p = fileSystemAbsolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
@@ -109,42 +178,80 @@ abstract public class AbstractContentDescriptor implements Serializable {
         return p;
     }
 
+    /**
+     *
+     * @param path
+     */
     public void setPath(String path) {
         this.path = path.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
         this.buildNamespaceAbsolutePath();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNote() {
         return note;
     }
 
+    /**
+     *
+     * @param note
+     */
     public void setNote(String note) {
         this.note = note == null ? "" : note;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * 
+     * @param description
+     */
     public void setDescription(String description) {
         this.description = description == null ? "" : description;
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public boolean isSynched() {
         return synched;
     }
 
+    /**
+     *
+     * @return
+     * @throws RepositoryException
+     */
     @XmlTransient
     public boolean exist() throws RepositoryException {
         return connector.nodeExist(fileSystemAbsolutePath);
     }
 
+    /**
+     *
+     * @return
+     * @throws RepositoryException
+     */
     @XmlTransient
     public boolean hasChildren() throws RepositoryException {
         return connector.getNode(fileSystemAbsolutePath).hasNodes();
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     public void sync() throws RepositoryException {
         if (this.exist()) {                                                     //check existence then load it else create it
             try {
@@ -162,6 +269,12 @@ abstract public class AbstractContentDescriptor implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param file
+     * @return
+     * @throws RepositoryException
+     */
     @XmlTransient
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
         Node parent = connector.getNode(fileSystemAbsolutePath);
@@ -170,10 +283,19 @@ abstract public class AbstractContentDescriptor implements Serializable {
         return file;
     }
 
+    /**
+     *
+     * @return
+     */
     public Long getBytes() {
         return new Long(0);
     }
 
+    /**
+     *
+     * @param force
+     * @throws RepositoryException
+     */
     @XmlTransient
     public void delete(boolean force) throws RepositoryException {
         if (this.exist()) {
@@ -185,6 +307,10 @@ abstract public class AbstractContentDescriptor implements Serializable {
         }
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     @XmlTransient
     public void getContentFromRepository() throws RepositoryException {
         this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
@@ -192,6 +318,10 @@ abstract public class AbstractContentDescriptor implements Serializable {
         this.description = connector.getDescription(fileSystemAbsolutePath);
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     @XmlTransient
     public void setContentToRepository() throws RepositoryException {
         connector.setMimeType(fileSystemAbsolutePath, mimeType);
@@ -200,6 +330,10 @@ abstract public class AbstractContentDescriptor implements Serializable {
         connector.save();
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     @XmlTransient
     public void saveToRepository() throws RepositoryException {
         String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
@@ -208,6 +342,10 @@ abstract public class AbstractContentDescriptor implements Serializable {
         parent.addChild(this);
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     protected ZipEntry getZipEntry() {
         ZipEntry desc = new ZipEntry(this.getFullPath());

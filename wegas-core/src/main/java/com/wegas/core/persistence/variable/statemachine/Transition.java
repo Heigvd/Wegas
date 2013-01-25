@@ -61,6 +61,9 @@ public class Transition extends AbstractEntity {
     private Script preStateImpact;
     private Long nextStateId;
 
+    /**
+     *
+     */
     public Transition() {
     }
 
@@ -69,26 +72,50 @@ public class Transition extends AbstractEntity {
         return id;
     }
 
+    /**
+     *
+     * @return
+     */
     public Long getNextStateId() {
         return nextStateId;
     }
 
+    /**
+     *
+     * @param nextStateId
+     */
     public void setNextStateId(Long nextStateId) {
         this.nextStateId = nextStateId;
     }
 
+    /**
+     *
+     * @return
+     */
     public Script getTriggerCondition() {
         return triggerCondition;
     }
 
+    /**
+     *
+     * @param triggerCondition
+     */
     public void setTriggerCondition(Script triggerCondition) {
         this.triggerCondition = triggerCondition;
     }
 
+    /**
+     *
+     * @return
+     */
     public Script getPreStateImpact() {
         return preStateImpact;
     }
 
+    /**
+     *
+     * @param preStateImpact
+     */
     public void setPreStateImpact(Script preStateImpact) {
         this.preStateImpact = preStateImpact;
     }

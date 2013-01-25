@@ -42,57 +42,112 @@ public class ResponseModel implements Serializable {
     private Script impact;
     private String notes;
 
+    /**
+     *
+     */
     public ResponseModel() {
     }
 
+    /**
+     *
+     * @return
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     *
+     * @return
+     */
     public Script getImpact() {
         return impact;
     }
 
+    /**
+     *
+     * @param impact
+     */
     public void setImpact(Script impact) {
         this.impact = impact;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     *
+     * @param label
+     */
     public void setLabel(String label) {
         this.label = label;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNotes() {
         return notes;
     }
 
+    /**
+     *
+     * @param notes
+     */
     public void setNotes(String notes) {
         this.notes = notes;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getResponseText() {
         return responseText;
     }
 
+    /**
+     *
+     * @param responseText
+     */
     public void setResponseText(String responseText) {
         this.responseText = responseText;
     }
 
+    /**
+     *
+     * @return
+     */
     public UserAction getAction() {
         return action;
     }
 
+    /**
+     *
+     * @param action
+     */
     public void setAction(UserAction action) {
         this.action = action;
     }

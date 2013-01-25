@@ -80,6 +80,12 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         parentGameModel.addVariableDescriptor(variableDescriptor);
     }
 
+    /**
+     *
+     * @param variableDescriptorId
+     * @param entity
+     * @return
+     */
     public ListDescriptor createChild(Long variableDescriptorId, VariableDescriptor entity) {
         return this.createChild((ListDescriptor) this.find(variableDescriptorId), entity);
     }
@@ -160,6 +166,12 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         }
     }
 
+    /**
+     *
+     * @param gameModel
+     * @param baseLabel
+     * @return
+     */
     public String findAvailableLabel(GameModel gameModel, String baseLabel) {
         int suff = 1;
         String base = Helper.stripLabelSuffix(baseLabel);

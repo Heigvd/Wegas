@@ -18,13 +18,25 @@ import javax.ejb.ApplicationException;
 @ApplicationException(rollback = false)
 public class WegasException extends RuntimeException {
 
+    /**
+     *
+     */
     public WegasException() {
     }
 
+    /**
+     *
+     * @param message
+     */
     public WegasException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param message
+     * @param cause
+     */
     public WegasException(String message, Throwable cause) {
         super(message, cause);
     }

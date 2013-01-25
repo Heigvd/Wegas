@@ -43,6 +43,12 @@ public class RoleFacade extends AbstractFacadeImpl<Role> {
         super(Role.class);
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     * @throws PersistenceException
+     */
     public Role findByName(String name) throws PersistenceException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();

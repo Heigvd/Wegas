@@ -67,9 +67,9 @@
 <a class="jxr_linenumber" name="57" href="#57">57</a>          <em class="jxr_comment">// Handle view parameter</em>
 <a class="jxr_linenumber" name="58" href="#58">58</a>          String newUri = cr.getRequestUri().toString();
 <a class="jxr_linenumber" name="59" href="#59">59</a>          String firstPathSeg = cr.getPathSegments().get(0).getPath();
-<a class="jxr_linenumber" name="60" href="#60">60</a>          <strong class="jxr_keyword">switch</strong> (firstPathSeg) {
-<a class="jxr_linenumber" name="61" href="#61">61</a>              
-<a class="jxr_linenumber" name="62" href="#62">62</a>  
+<a class="jxr_linenumber" name="60" href="#60">60</a>          
+<a class="jxr_linenumber" name="61" href="#61">61</a>          <strong class="jxr_keyword">switch</strong> (firstPathSeg) {
+<a class="jxr_linenumber" name="62" href="#62">62</a>            
 <a class="jxr_linenumber" name="63" href="#63">63</a>              <strong class="jxr_keyword">case</strong> <span class="jxr_string">"Private"</span>:
 <a class="jxr_linenumber" name="64" href="#64">64</a>                  String id = cr.getPathSegments().get(1).getPath();
 <a class="jxr_linenumber" name="65" href="#65">65</a>                  rmf.setView(<strong class="jxr_keyword">this</strong>.stringToView(firstPathSeg));

@@ -57,9 +57,9 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
         // Handle view parameter
         String newUri = cr.getRequestUri().toString();
         String firstPathSeg = cr.getPathSegments().get(0).getPath();
-        
+
         switch (firstPathSeg) {
-          
+
             case "Private":
                 String id = cr.getPathSegments().get(1).getPath();
                 rmf.setView(this.stringToView(firstPathSeg));
@@ -88,6 +88,11 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
         return cr;
     }
 
+    /**
+     *
+     * @param str
+     * @return
+     */
     public Class stringToView(String str) {
         switch (str) {
             case "Index":
@@ -109,11 +114,19 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
 
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public ContainerRequestFilter getRequestFilter() {
         return this;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public ContainerResponseFilter getResponseFilter() {
         return null;

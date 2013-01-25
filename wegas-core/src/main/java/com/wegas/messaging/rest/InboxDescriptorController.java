@@ -51,14 +51,19 @@ public class InboxDescriptorController {
     @EJB
     private PlayerFacade playerFacade;
 
+    /**
+     *
+     * @param messageId
+     * @return
+     */
     @GET
     @Path("Message/{messageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public Message find(@PathParam("messageId") Long messageId) {
-        
+
         Message m = messageFacade.find(messageId);
         checkPermissions(m);
-        
+
         return m;
     }
 
@@ -74,9 +79,9 @@ public class InboxDescriptorController {
     public InboxInstance editMessage(@PathParam("messageId") Long messageId,
             Message message) {
         Message update = messageFacade.update(messageId, message);
-        
+
         checkPermissions(update);
-        
+
         return update.getInboxInstanceEntity();
     }
 
@@ -89,26 +94,31 @@ public class InboxDescriptorController {
     @Path("Message/Read/{messageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public InboxInstance readMessage(@PathParam("messageId") Long messageId) {
-        Message update = messageFacade.find(messageId);       
-        
+        Message update = messageFacade.find(messageId);
+
         checkPermissions(update);
-        
+
         update.setUnread(false);
         return update.getInboxInstanceEntity();
     }
 
+    /**
+     *
+     * @param messageId
+     * @return
+     */
     @DELETE
     @Path("Message/{messageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public InboxInstance deleteMessage(@PathParam("messageId") Long messageId) {
         Message m = messageFacade.find(messageId);
-        
+
         checkPermissions(m);
-        
+
         messageFacade.remove(m);
         return m.getInboxInstanceEntity();
     }
-    
+
     private void checkPermissions(Message m){
         if (!SecurityUtils.getSubject().isPermitted("Game:Edit:g" + variableInstanceFacade.findGame(m.getInboxInstanceEntity()).getId())) {
              try{

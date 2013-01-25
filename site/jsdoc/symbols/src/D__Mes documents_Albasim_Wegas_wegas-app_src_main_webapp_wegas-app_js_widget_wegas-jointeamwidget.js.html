@@ -1,0 +1,73 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*
+<span class='line'>  2</span>  * Wegas
+<span class='line'>  3</span>  * http://www.albasim.com/wegas/
+<span class='line'>  4</span>  *
+<span class='line'>  5</span>  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+<span class='line'>  6</span>  * Media Engineering :: Information Technology Managment :: Comem
+<span class='line'>  7</span>  *
+<span class='line'>  8</span>  * Copyright (C) 2012
+<span class='line'>  9</span>  */</span><span class="WHIT">
+<span class='line'> 10</span> 
+<span class='line'> 11</span> </span><span class="COMM">/**
+<span class='line'> 12</span>  * @fileoverview
+<span class='line'> 13</span>  * @author Yannick Lagger &lt;lagger.yannick@gmail.com>
+<span class='line'> 14</span>  */</span><span class="WHIT">
+<span class='line'> 15</span> 
+<span class='line'> 16</span> </span><span class="NAME">YUI.add</span><span class="PUNC">(</span><span class="STRN">'wegas-jointeamwidget'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Y</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 17</span> </span><span class="WHIT">    </span><span class="STRN">"use strict"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 18</span> 
+<span class='line'> 19</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">JoinTeamWidget</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'> 22</span>     * @name Y.Wegas.JoinTeamWidget
+<span class='line'> 23</span>     * @extends Y.Wegas.JoinGameWidget
+<span class='line'> 24</span>     * @class  class for join a team
+<span class='line'> 25</span>     * @constructor
+<span class='line'> 26</span>     * @description Allows just to join a team
+<span class='line'> 27</span>     */</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="WHIT">    </span><span class="NAME">JoinTeamWidget</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Y.Base.create</span><span class="PUNC">(</span><span class="STRN">"wegas-jointeamwidget"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Y.Wegas.JoinGameWidget</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NAME">Y.WidgetChild</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Y.Wegas.Widget</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 30</span>          * @lends Y.Wegas.JoinTeamWidget.prototype
+<span class='line'> 31</span>          */</span><span class="WHIT">
+<span class='line'> 32</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 33</span>          * @function
+<span class='line'> 34</span>          * @private
+<span class='line'> 35</span>          * @description Difference compared to the parent class:
+<span class='line'> 36</span>          * 1) token is get from the url
+<span class='line'> 37</span>          * 2) then call directly the sendJoinGame()
+<span class='line'> 38</span>          */</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="WHIT">        </span><span class="NAME">renderUI</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="WHIT">            </span><span class="NAME">JoinTeamWidget.superclass.renderUI.apply</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 41</span> </span><span class="WHIT">            </span><span class="NAME">this.tokenField.setValue</span><span class="PUNC">(</span><span class="NAME">document.location.search.substring</span><span class="PUNC">(</span><span class="NUMB">7</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 42</span> </span><span class="WHIT">            </span><span class="NAME">this.sendJoinGame</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 43</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 44</span> 
+<span class='line'> 45</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 46</span>          * @function
+<span class='line'> 47</span>          * @private
+<span class='line'> 48</span>          */</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">        </span><span class="NAME">bindUI</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="WHIT">            </span><span class="NAME">JoinTeamWidget.superclass.bindUI.apply</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 52</span> 
+<span class='line'> 53</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 54</span>          * @function
+<span class='line'> 55</span>          * @private
+<span class='line'> 56</span>          * @description Reload the same page
+<span class='line'> 57</span>          */</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">        </span><span class="NAME">joinTeamSuccess</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">            </span><span class="NAME">this.showMessage</span><span class="PUNC">(</span><span class="STRN">"success"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"Game joined"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">10000</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="WHIT">            </span><span class="NAME">window.location.reload</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 63</span> 
+<span class='line'> 64</span> </span><span class="WHIT">    </span><span class="NAME">Y.namespace</span><span class="PUNC">(</span><span class="STRN">'Wegas'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">JoinTeamWidget</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">JoinTeamWidget</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 66</span> </span></pre></body></html>

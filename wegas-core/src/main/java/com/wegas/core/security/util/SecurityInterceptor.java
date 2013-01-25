@@ -40,6 +40,12 @@ public class SecurityInterceptor {
 //    private Subject subject;
     private Logger log = LoggerFactory.getLogger(SecurityInterceptor.class);
 
+    /**
+     *
+     * @param ctx
+     * @return
+     * @throws Exception
+     */
     @AroundInvoke
     public Object interceptGet(InvocationContext ctx) throws Exception {
         log.info("Securing {}.{}({})", new Object[]{ctx.getClass().getName(),

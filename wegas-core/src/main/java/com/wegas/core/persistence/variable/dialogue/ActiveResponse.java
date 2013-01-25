@@ -29,13 +29,24 @@ public class ActiveResponse extends State {
     @MapKeyJoinColumn(name = "action_name", referencedColumnName = "name", insertable = false, updatable = false)
     private Map<UserAction, ResponseModel> currentResponses;
 
+    /**
+     *
+     */
     public ActiveResponse() {
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<UserAction, ResponseModel> getCurrentResponses() {
         return currentResponses;
     }
 
+    /**
+     *
+     * @param currentResponses
+     */
     public void setCurrentResponses(Map<UserAction, ResponseModel> currentResponses) {
         this.currentResponses = currentResponses;
     }

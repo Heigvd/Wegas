@@ -36,9 +36,16 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     @Transient
     private Script postTriggerEvent;
 
+    /**
+     *
+     */
     public TriggerDescriptor() {
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean isOneShot() {
         return oneShot;
     }
@@ -52,6 +59,10 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         this.oneShot = oneShot;
     }
 
+    /**
+     *
+     * @return
+     */
     public Script getPostTriggerEvent() {
         return postTriggerEvent;
     }
@@ -65,6 +76,10 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         this.postTriggerEvent = postTriggerEvent;
     }
 
+    /**
+     *
+     * @return
+     */
     public Script getTriggerEvent() {
         return triggerEvent;
     }
@@ -72,6 +87,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      * Override to make this function transient
      *
+     * @return
      * @see StateMachineDescriptor#getStates
      */
     @Override
@@ -99,6 +115,9 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         super.merge(entity);
     }
 
+    /**
+     *
+     */
     @PostLoad
     public void onLoad() {
         try {
@@ -117,6 +136,9 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         }
     }
 
+    /**
+     *
+     */
     @PrePersist
     public void buildStateMachine() {
         State initialState = new State();

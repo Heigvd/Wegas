@@ -1,3 +1,12 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
 /**
  * @module inputex-url
  */
@@ -95,14 +104,14 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             this.checkboxValue();
         },
         checkboxValue: function () {
-            Y.Array.forEach(this.permissionsCheckBoxes, function(box, i) {
+            Y.Array.forEach(this.permissionsCheckBoxes, function(box) {
                 box.setValue(false, false);
             });
 
             //this.roleSelect.setValue(this.getValue(), false);
-            Y.Array.forEach(this.getValue().permissions, function (perm, i) {
+            Y.Array.forEach(this.getValue().permissions, function (perm) {
                 var splitedPermissions = perm.split(":");
-                Y.Array.forEach(this.permissionsCheckBoxes, function (box, i) {
+                Y.Array.forEach(this.permissionsCheckBoxes, function (box) {
                     if (box.options.rightLabel === splitedPermissions[1]) {
                         box.setValue(true, false);
                     }
@@ -187,7 +196,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                             },
                             useButtons: true,
                             value: acc,
-                            parentEl: this.get(CONTENTBOX).getDOMNode(),
+                            parentEl: this.get(CONTENTBOX),
                             className: "roleBox"
                         });
                         this.permsField.on("updated", this.sync, this);

@@ -28,13 +28,24 @@ public class DialogueInstance extends StateMachineInstance {
     @JoinColumn(name = "history_response", referencedColumnName = "responseHistory", insertable = false, updatable = false)
     private List<ResponseModel> responseHistory;
 
+    /**
+     *
+     */
     public DialogueInstance() {
     }
 
+    /**
+     *
+     * @return
+     */
     public List<ResponseModel> getResponseHistory() {
         return responseHistory;
     }
 
+    /**
+     *
+     * @param responseHistory
+     */
     public void setResponseHistory(List<ResponseModel> responseHistory) {
         this.responseHistory = responseHistory;
     }
