@@ -115,6 +115,8 @@ YUI.add('wegas-editor-action', function (Y) {
                 params = "gameModelId=" + entity.get("id");
             } else if (entity instanceof Y.Wegas.persistence.Player) {
                 params = "id=" + entity.get("id");
+            } else if (entity instanceof Y.Wegas.persistence.Team) {
+                params = "teamId=" + entity.get("id");
             } else {
                 params = "gameId=" + entity.get("id");
             }
@@ -194,8 +196,8 @@ YUI.add('wegas-editor-action', function (Y) {
     * @extends Y.Widget
     * @class  class for display the player link in menu's
     * @constructor
-    * @param Object Will be used to fill attributes field 
-    * @description Allows to display the player link in a menu. 
+    * @param Object Will be used to fill attributes field
+    * @description Allows to display the player link in a menu.
     * the link is in a textField. For this field inputEx is used
     */
     var CONTENTBOX = 'contentBox',
@@ -225,7 +227,7 @@ YUI.add('wegas-editor-action', function (Y) {
                 e.halt(true);
             });
         },
-        
+
         /*
          * @memberOf Y.Wegas.Linkwidget#
          * @private
