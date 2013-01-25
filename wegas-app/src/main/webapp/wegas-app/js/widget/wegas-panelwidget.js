@@ -27,7 +27,14 @@ YUI.add('wegas-panelwidget', function (Y) {
     * @description Create a panel with all children
     */
     PanelWidget = Y.Base.create("wegas-panelwidget", Y.Panel, [Y.WidgetChild, Y.Wegas.Widget], {
-
+        /**
+         * @lends Y.Wegas.PanelWidget#
+         */
+        /**
+         * @function
+         * @private
+         * @description Instantiates all children widget
+         */
         syncUI: function () {
             PanelWidget.superclass.syncUI.apply(this);
             Y.Array.forEach(this.get("children"), function (child, i){
@@ -36,9 +43,12 @@ YUI.add('wegas-panelwidget', function (Y) {
                 }, this);
         }
     },{
-        /*
-         * @memberOf Y.Wegas.PanelWidget#
-         * @name attrributes
+        /**
+         * @lends Y.Wegas.PanelWidget
+         */
+        /**
+         * @field
+         * @static
          * @description
          * <p><strong>Method</strong></p>
          * <ul>
