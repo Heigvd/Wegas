@@ -110,10 +110,18 @@ public class RequestManager implements Serializable {
         this.updatedInstances.clear();
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Exception> getExceptions() {
         return exceptions;
     }
 
+    /**
+     *
+     * @param exception
+     */
     public void addException(Exception exception) {
         this.exceptions.add(exception);
     }
@@ -135,6 +143,7 @@ public class RequestManager implements Serializable {
 
     /**
      *
+     * @param bundle
      * @return the ResourceBundle
      */
     public ResourceBundle getBundle(String bundle) {
@@ -165,9 +174,16 @@ public class RequestManager implements Serializable {
          */
         private Player player;
 
+        /**
+         *
+         */
         public PlayerAction() {
         }
 
+        /**
+         *
+         * @param p
+         */
         public PlayerAction(Player p) {
             this.player = p;
         }

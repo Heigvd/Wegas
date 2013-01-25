@@ -63,11 +63,13 @@ public class FileController {
      * @param gameModelId
      * @param name
      * @param note
+     * @param description
      * @param path
      * @param file
      * @param details
      * @return
      * @throws RepositoryException
+     * @throws WegasException
      */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -238,6 +240,13 @@ public class FileController {
         return new ArrayList<>();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @return
+     * @throws RepositoryException
+     * @throws IOException
+     */
     @GET
     @Path("exportRawXML")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -263,6 +272,12 @@ public class FileController {
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(new Long(extractGameModelId(gameModelId))).getName() + "_files.xml").build();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @return
+     * @throws RepositoryException
+     */
     @GET
     @Path("exportXML")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -293,6 +308,12 @@ public class FileController {
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(new Long(extractGameModelId(gameModelId))).getName() + "_files.xml.gz").build();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @return
+     * @throws RepositoryException
+     */
     @GET
     @Path("exportZIP")
     public Response exportZIP(@PathParam("gameModelId") String gameModelId) throws RepositoryException {
@@ -313,6 +334,19 @@ public class FileController {
         return Response.ok(out, "application/zip").header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(new Long(extractGameModelId(gameModelId))).getName() + "_files.zip").build();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param file
+     * @param details
+     * @return
+     * @throws RepositoryException
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @throws TransformerException
+     * @throws WegasException
+     */
     @POST
     @Path("importXML")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -389,6 +423,13 @@ public class FileController {
         return null;
     }
 
+    /**
+     *
+     * @param tmpDescriptor
+     * @param gameModelId
+     * @param absolutePath
+     * @return
+     */
     @PUT
     @Path("{absolutePath : .*?}")
     @Consumes(MediaType.APPLICATION_JSON)

@@ -18,6 +18,12 @@ import javax.jcr.RepositoryException;
  */
 public class ContentConnectorFactory {
 
+    /**
+     *
+     * @param gameModelId
+     * @return
+     * @throws RepositoryException
+     */
     static public ContentConnector getContentConnectorFromGameModel(Long gameModelId) throws RepositoryException {
         if (gameModelId == null) {
             return new ContentConnector();

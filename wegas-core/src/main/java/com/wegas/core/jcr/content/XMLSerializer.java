@@ -37,6 +37,11 @@ public class XMLSerializer implements ContentHandler {
     private ContentHandler ch;
     private Boolean started = false;
 
+    /**
+     *
+     * @param os
+     * @throws SAXException
+     */
     public XMLSerializer(OutputStream os) throws SAXException {
         try {
             final Transformer t = tf.newTransformer();

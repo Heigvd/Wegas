@@ -84,9 +84,16 @@ public class Result extends AbstractEntity {
     @XmlTransient
     private List<Reply> replies;
 
+    /**
+     *
+     */
     public Result() {
     }
 
+    /**
+     *
+     * @param name
+     */
     public Result(String name) {
         this.name = name;
     }

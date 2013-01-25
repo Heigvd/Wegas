@@ -43,9 +43,16 @@ public class StateMachineInstance extends VariableInstance implements Serializab
     @Column(name = "transitionId")
     private List<Long> transitionHistory = new ArrayList<>();
 
+    /**
+     *
+     */
     public StateMachineInstance() {
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public State getCurrentState() {
         return ((StateMachineDescriptor) this.getDescriptor()).getStates().get(this.currentStateId);
@@ -65,14 +72,26 @@ public class StateMachineInstance extends VariableInstance implements Serializab
         this.currentStateId = currentStateId;
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean getEnabled() {
         return enabled;
     }
 
+    /**
+     *
+     * @param enabled
+     */
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Long> getTransitionHistory() {
         return transitionHistory;
     }
@@ -80,6 +99,10 @@ public class StateMachineInstance extends VariableInstance implements Serializab
 //    public void setTransitionHistory(List<Long> transitionHistory) {
 //        this.transitionHistory = transitionHistory;
 //    }
+    /**
+     *
+     * @param id
+     */
     public void transitionHistoryAdd(Long id) {
         this.transitionHistory.add(id);
     }

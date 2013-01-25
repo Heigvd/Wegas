@@ -97,6 +97,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @param userId
+     * @return
+     */
     public List<Game> registeredGames(Long userId) {
         User user = this.find(userId);
         List<Game> ret = new ArrayList<>();
@@ -219,7 +224,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * Delete all role permissions by a game or gameModel id
      *
      * @param gOrGmId
-     * @return
      */
     public void deleteAllRolePermissionsById(String gOrGmId) {
         List<Role> roles = roleFacade.findAll();
@@ -242,6 +246,10 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @param gameOrGameModelId
+     */
     public void deleteUserPermissionByInstance(String gameOrGameModelId) {
         Query findByToken = em.createNamedQuery("findUserPermissions");
         findByToken.setParameter("gameId", "%:" + gameOrGameModelId);
@@ -263,6 +271,10 @@ public class UserFacade extends AbstractFacadeImpl<User> {
 
     }
 
+    /**
+     *
+     * @param email
+     */
     public void sendNewPassword(String email) {
         JpaAccount acc = (JpaAccount) accountFacade.findByEmail(email);
         EMailFacade emailFacade = new EMailFacade();
@@ -277,10 +289,19 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @param account
+     */
     public void update(JpaAccount account) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *
+     * @param playerId
+     * @return
+     */
     public boolean matchCurrentUser(Long playerId) {
         return this.getCurrentUser().equals(playerFacade.find(playerId).getUser());
     }

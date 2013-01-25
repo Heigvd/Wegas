@@ -18,10 +18,17 @@ import javax.ejb.ApplicationException;
 @ApplicationException(rollback=false)
 public class PersistenceException extends RuntimeException {
 
+    /**
+     *
+     */
     public PersistenceException() {
         super();
     }
 
+    /**
+     *
+     * @param cause
+     */
     public PersistenceException(Throwable cause) {
         super(cause);
     }

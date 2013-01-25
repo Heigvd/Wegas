@@ -94,8 +94,8 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
 
     /**
      *
-     * @param teamId
-     * @param userId
+     * @param team
+     * @param user
      * @return
      */
     public Player joinTeam(Team team, User user) {
@@ -106,11 +106,22 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         return p;
     }
 
+    /**
+     *
+     * @param teamId
+     * @param userId
+     * @return
+     */
     public Player joinTeam(Long teamId, Long userId) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         return this.joinTeam(this.find(teamId), userFacade.find(userId));
     }
 
+    /**
+     *
+     * @param team
+     * @param player
+     */
     public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
         em.flush();

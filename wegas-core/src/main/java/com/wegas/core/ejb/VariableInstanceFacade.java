@@ -89,6 +89,11 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
         return this.find(variableDescriptorId, playerFacade.find(playerId));
     }
 
+    /**
+     *
+     * @param instance
+     * @return
+     */
     public List<Player> findAllPlayer(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
             List<Player> players = new ArrayList<>();
@@ -106,6 +111,11 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
 
     }
 
+    /**
+     *
+     * @param instance
+     * @return
+     */
     public Game findGame(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
             return playerFacade.find(instance.getPlayerScopeKey()).getGame();
@@ -119,11 +129,22 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
             throw new UnsupportedOperationException();
         }
     }
-    
+
+    /**
+     *
+     * @param instanceId
+     * @return
+     */
     public Game findGame(Long instanceId) {
         return this.findGame(this.find(instanceId));
     }
 
+    /**
+     *
+     * @param instance
+     * @return
+     * @throws NoPlayerException
+     */
     public Player findAPlayer(VariableInstance instance)
             throws NoPlayerException {
         Player p;

@@ -46,9 +46,16 @@ public class User extends AbstractEntity {
     @JsonManagedReference(value = "user-account")
     private List<AbstractAccount> accounts = new ArrayList<>();
 
+    /**
+     *
+     */
     public User() {
     }
 
+    /**
+     *
+     * @param acc
+     */
     public User(AbstractAccount acc) {
         this.addAccount(acc);
     }
@@ -111,6 +118,10 @@ public class User extends AbstractEntity {
         account.setUser(this);
     }
 
+    /**
+     * 
+     * @return
+     */
     @XmlTransient
     public final AbstractAccount getMainAccount() {
         if (!this.accounts.isEmpty()) {
@@ -120,6 +131,10 @@ public class User extends AbstractEntity {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         if (this.getMainAccount() != null) {
             return this.getMainAccount().getName();

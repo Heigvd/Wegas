@@ -27,10 +27,17 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.SimpleByteSource;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author fx
+ */
 public class JpaRealm extends AuthorizingRealm {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JpaRealm.class);
 
+    /**
+     *
+     */
     public JpaRealm() {
         setName("JpaRealm");                                                    //This name must match the name in the User class's getPrincipals() method
     }
@@ -76,6 +83,11 @@ public class JpaRealm extends AuthorizingRealm {
         }
     }
 
+    /**
+     *
+     * @return
+     * @throws NamingException
+     */
     public AccountFacade accountFacade() throws NamingException {
         return Helper.lookupBy(AccountFacade.class);
     }

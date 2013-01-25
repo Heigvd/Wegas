@@ -29,6 +29,11 @@ public class ListInstance extends VariableInstance {
         // @fixme make this abstract if there really is nothing to do
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
     public VariableDescriptor item(int index) {
         return ((ListDescriptor) this.getDescriptor()).item(index);
     }

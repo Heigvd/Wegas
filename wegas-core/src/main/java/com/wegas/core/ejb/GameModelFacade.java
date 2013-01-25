@@ -114,6 +114,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      *
      * @param name
      * @return
+     * @throws NoResultException
      */
     public GameModel findByName(String name) throws NoResultException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
