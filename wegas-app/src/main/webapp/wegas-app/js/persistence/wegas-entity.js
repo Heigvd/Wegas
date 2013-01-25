@@ -183,7 +183,7 @@ YUI.add('wegas-entity', function (Y) {
         },
         EDITMENU: [{
             type: "Button",
-            label: "Explore",
+            label: "Properties",
             cssClass: "editor-exploreGameModel-button",
             plugins: [{
                 fn: "LoadTreeviewNodeAction",
@@ -192,6 +192,12 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }, {
                 fn: "EditEntityAction"
+            }]
+        }, {
+            type: "Button",
+            label: "Edit",
+            plugins: [{
+                fn: "OpenGameAction"
             }]
         }, {
             type: "Button",
@@ -263,15 +269,21 @@ YUI.add('wegas-entity', function (Y) {
                 }
             }
         },
-        EDITMENU: [{
+        EDITMENU: [ {
+            type: "EditEntityButton",
+            label: "Properties",
+            cssClass: "editor-gameProperties-button"
+        }, {
+            type: "Button",
+            label: "View in editor",
+            plugins: [{
+                fn: "OpenGameAction"
+            }]
+        }, {
             type: "AddEntityChildButton",
             label: "Add team",
             cssClass: "editor-addTeam-button",
             targetClass: "Team"
-        }, {
-            type: "EditEntityButton",
-            label: "Properties",
-            cssClass: "editor-gameProperties-button"
         }, {
             type: "Button",
             label: "Share",
@@ -328,6 +340,23 @@ YUI.add('wegas-entity', function (Y) {
             label: "Properties",
             cssClass: "editor-teamProperties-button"
         }, {
+            type: "Button",
+            label: "View in editor",
+            plugins: [{
+                fn: "OpenGameAction"
+            }]
+        },
+        //{            // We allow the player to open its pages with the widget
+        //    type: "Button",
+        //    label: "Open",
+        //    plugins: [{
+        //        fn: "OpenGameAction",
+        //        cfg: {
+        //            editorUrl: "wegas-app/view/play.html?"
+        //        }
+        //    }]
+        //},
+        {
             type: "Button",
             label: "Add player",
             cssClass: "editor-addPlayer-button",

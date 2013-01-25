@@ -1,6 +1,9 @@
 {
     "id": 2003,
     "type": "Layout",
+    "plugins": [{
+        "fn": "CSSLoader"
+    }],
     "top": {
         "height": 25,
         "scroll": null,
@@ -69,6 +72,12 @@
                                                 }
                                             }]
                                     }
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Log",
+                                    "children": {
+                                        "type": "Log"
+                                    }
                                 }]
                         }
                     }]
@@ -85,6 +94,9 @@
                                     "children": {
                                         "type": "EditorTreeView",
                                         "dataSource": "User",
+                                        "request": {
+                                            "request": "/"
+                                        },
                                         "plugins": [{
                                                 "fn": "WidgetToolbar",
                                                 "cfg": {
@@ -103,6 +115,9 @@
                                     "children": {
                                         "type": "EditorTreeView",
                                         "dataSource": "Role",
+                                        "request": {
+                                            "request": "/"
+                                        },
                                         "plugins": [{
                                                 "fn": "WidgetToolbar",
                                                 "cfg": {
@@ -236,7 +251,7 @@
                         "type": "Tab",
                         "label": "Variables",
                         "children": [{
-                                "type": "VariableDescriptorTreeview",
+                                "type": "EditorTreeView",
                                 "dataSource": "VariableDescriptor",
                                 "excludeClasses": {
                                     "MCQDescriptor": true

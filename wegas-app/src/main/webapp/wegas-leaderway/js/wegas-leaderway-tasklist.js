@@ -84,10 +84,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          */
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
-            this.handlers.update = Y.Wegas.app.dataSources.VariableDescriptor.after("update", function () {
-                if (true)
-                    this.syncUI();
-            }, this);
+            this.handlers.update = Y.Wegas.app.dataSources.VariableDescriptor.after("update", this.syncUI, this);
 
             this.handlers.selectRow = this.table.delegate('click', function (e) {
                 this.selectRow(e);
@@ -116,15 +113,15 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          */
         syncUI: function () {
             var listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks");
-            if (!listTasksDescriptor)
+            if (!listTasksDescriptor) {
                 return;
+            }
             this.data.length = 0;
             this.getTasksData(listTasksDescriptor);
             this.table.addRows(this.data);
             if (!this.data[0]) {
                 this.table.showMessage("Aucun mandat n'est disponible.");
-            }
-            else {
+            } else {
                 this.table.hideMessage();
             }
             this.goToFinalPage();// ! hack function
@@ -213,8 +210,8 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * @return String, a texte including all the skillset of the given task.
          */
         getSkillsets: function (taskInstance) {
-            var temp = new Array();
-            for (var key in taskInstance.get('skillset')) {
+            var key, temp = [];
+            for (key in taskInstance.get('skillset')) {
                 temp.push(key, ' (', taskInstance.get('skillset')[key], ')\n');
             }
             return temp.join("");
@@ -244,7 +241,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             //get new task descriptor
             for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
-                if (listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId) {
+                if (listTasksDescriptor.get('items')[i].get('id') === taskDescriptorId) {
                     this.selectedTaskDescriptor = listTasksDescriptor.get('items')[i];
                     break;
                 }
@@ -295,8 +292,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             if (success) { // useless, players expect a success
 //                Y.one('.leaderway-feedback').one('p').addClass('green');
 //                Y.one('.leaderway-feedback').one('p').insert("Le mandat à été délégué !");
-            }
-            else {
+            } else {
                 Y.one('.leaderway-feedback').one('p').addClass('red');
                 Y.one('.leaderway-feedback').one('p').insert("Le mandat n'a pas pu être délégué.");
             }
@@ -337,8 +333,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
         }
 
-    },
-    {
+    }, {
         ATTRS: {
             dialoguePageId: {
                 value: null,

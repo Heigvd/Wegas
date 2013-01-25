@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -13,7 +13,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,6 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "NumberDescriptor")
 public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     private static final long serialVersionUID = 1L;
@@ -80,6 +78,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     public void setValue(Player p, double value) {
         this.getInstance(p).setValue(value);
     }
+
     public void setValue(Player p, int value) {
         this.getInstance(p).setValue(value);
     }
@@ -88,10 +87,12 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         NumberInstance instance = this.getInstance(p);
         instance.setValue(instance.getValue() + value);
     }
+
     public void add(Player p, int value) {
         NumberInstance instance = this.getInstance(p);
         instance.setValue(instance.getValue() + value);
     }
+
     public double getValue(Player p) {
         return this.getInstance(p).getValue();
     }

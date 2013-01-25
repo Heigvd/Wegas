@@ -11,7 +11,6 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "StringDescriptor")
 public class StringDescriptor extends VariableDescriptor<StringInstance> {
 
     private static final long serialVersionUID = 1L;

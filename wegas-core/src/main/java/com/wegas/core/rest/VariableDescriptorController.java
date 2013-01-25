@@ -53,15 +53,18 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<VariableDescriptor> index() {
-        
+
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + this.getGameModelId());
-        
+
         Long gameModelId = this.getGameModelId();
         GameModel gameModel = gameModelFacade.find(gameModelId);
         return gameModel.getChildVariableDescriptors();
     }
-    
+
     @Override
+    @GET
+    @Path("{entityId : [1-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
     public VariableDescriptor get(@PathParam("entityId") Long entityId) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + this.getGameModelId());
@@ -71,9 +74,9 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
 
     @Override
     public VariableDescriptor create(VariableDescriptor entity) {
-        
+
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + this.getGameModelId());
-        
+
         this.variableDescriptorFacade.create(new Long(this.getPathParam("gameModelId")),
                 entity);
         return entity;
@@ -84,12 +87,12 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ListDescriptor createChild(@PathParam(value = "variableDescriptorId") Long variableDescriptorId, VariableDescriptor entity) {
-        
+
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + this.getGameModelId());
-        
+
         return variableDescriptorFacade.createChild(variableDescriptorId, entity);
     }
-    
+
     @Override
     public VariableDescriptor update(Long entityId, VariableDescriptor entity) {
 
@@ -97,7 +100,7 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
 
         return super.update(entityId, entity);
     }
-    
+
     @Override
     public VariableDescriptor duplicate(Long entityId) throws IOException {
 
@@ -124,9 +127,9 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
     @Path("Reset")
     @Produces(MediaType.APPLICATION_JSON)
     public Response reset(@PathParam("gameModelId") Long gameModelId) {
-        
+
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        
+
         gameModelFacade.reset(gameModelId);
         return Response.ok().build();
     }

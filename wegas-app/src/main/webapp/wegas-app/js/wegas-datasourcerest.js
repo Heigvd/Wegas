@@ -23,14 +23,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
     };
 
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
-
         initializer: function () {
             this.publish("EntityUpdatedEvent", {
                 broadcast: true,
                 bubbles: false
             });
         },
-
         sendInitialRequest: function () {
             if (this.get("initialRequest") !== undefined) {                     // Use this condition so we allow empty strin e.g. ""
                 var sender = this.rest || this;
@@ -105,7 +103,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             Y.log("Response received from " + this.get('host').get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
 
-            Y.Wegas.Editable.use(payload.response.results, // Lookup dependencies
+            Y.Wegas.Editable.use(payload.response.results,                      // Lookup dependencies
                 Y.bind(function (payload) {
                     payload.serverResponse = Y.Wegas.Editable.revive(payload.response.results); // Revive
                     this.onResponseRevived(payload);
@@ -114,8 +112,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },
-
-
         onResponseRevived: function (e) {
             var i, evtPayload, response = e.serverResponse;
             this.updated = false;
@@ -124,7 +120,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             if (Lang.isArray(response)) {                                       // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < response.length; i += 1) {
-                    this.updated =  this.updateCache(e.cfg.method, response[i]) || this.updated;
+                    this.updated = this.updateCache(e.cfg.method, response[i]) || this.updated;
                 }
             } else {
                 for (i = 0; i < response.get("entities").length; i += 1) {      // Update the cache with the Entites in the reply body
@@ -154,25 +150,27 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *  @for DataSourceREST
          */
         updateCache: function (method, entity) {
-            var ret = null;
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.DataSourceRest");
             switch (method) {
                 case "DELETE":
-                    ret = this.find("id", entity, function (entity, needle, index, stack) {
+                    if (this.find("id", entity, function (entity, needle, index, stack) {
                         stack.splice(index, 1);
                         return true;
-                    });
+                    })) {
+                        return true;
+                    }
                     break;
                 default:
-                    ret = this.find("id", entity, function (entity, needle) {
+                    if (this.find("id", entity, function (entity, needle) {
                         entity.setAttrs(needle.getAttrs());
                         return true;
-                    });
+                    })) {
+                        return true;
+                    }
                     break;
             }
-            if (ret === null) {
-                this.addToCache(entity);
-            }
+            this.addToCache(entity);                                            // In case we still have not found anything
+            return true;
         },
         addToCache: function (entity) {
             this.getCache().push(entity);
@@ -182,7 +180,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         _failureHandler: function (e) {
             //console.log("DataSourceRest._failureHandler", e);
-            Y.log("Datasource error:" + (e.response.results.message || e), "error", 'Y.Wegas.DataSourceRest');
+            Y.log("Exception while sending request \"" + (e.request || "") + "\": "
+                + (e.response.results.message || e.response.results.exception || e), "error", 'Y.Wegas.DataSourceRest');
         },
         /// *** Cache methods *** //
 
@@ -378,16 +377,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
-
         initializer: function () {
             this.on("EntityUpdatedEvent", function (e) {
                 var i, entities = e.serverEvent.get("updatedEntities");
                 for (i = 0; i < entities.length; i += 1) {  // Update the cache with the entites contained in the reply
-                    this.updated = this.updateCache("POST", entities[i]);
+                    this.updated = this.updateCache("POST", entities[i]) || this.updated;
                 }
             }, this);
         },
-
         walkEntity: function (entity, callback) {
             if (entity.get && entity.get("items")) {
                 if (callback(entity.get("items"))) {
@@ -701,6 +698,25 @@ YUI.add('wegas-datasourcerest', function (Y) {
             /* Publishing */
             this.publish("pageUpdated");
         },
+        /**
+         * Server requests methods
+         *
+         * @method sendRequest
+         */
+        sendRequest: function (requestCfg) {
+            requestCfg.callback = requestCfg.callback || {
+                success: this._successHandler,
+                failure: this._failureHandler
+            };
+            requestCfg.cfg = requestCfg.cfg || {};
+            requestCfg.cfg.Page = requestCfg.cfg.Page || '';
+            requestCfg.cfg.headers = requestCfg.cfg.headers || {};
+            Y.mix(requestCfg.cfg.headers, {
+                'Content-Type': 'application/json;charset=ISO-8859-1'
+            });
+
+            return this.get('host').sendRequest(requestCfg);
+        },
         beforeResponse: function (e) {
             var result = e.response.results,
             page = e.data ? (e.data.getResponseHeader("Page") || '') : null,
@@ -734,25 +750,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         destroyCache: function () {
             this.get("host").data = {};
-        },
-        /**
-         * Server requests methods
-         *
-         * @method sendRequest
-         */
-        sendRequest: function (requestCfg) {
-            requestCfg.callback = requestCfg.callback || {
-                success: this._successHandler,
-                failure: this._failureHandler
-            };
-            requestCfg.cfg = requestCfg.cfg || {};
-            requestCfg.cfg.Page = requestCfg.cfg.Page || '';
-            requestCfg.cfg.headers = requestCfg.cfg.headers || {};
-            Y.mix(requestCfg.cfg.headers, {
-                'Content-Type': 'application/json;charset=ISO-8859-1'
-            });
-
-            return this.get('host').sendRequest(requestCfg);
         },
         put: function (entity) {
             var pageId = entity["@pageId"], pe = Y.clone(entity);

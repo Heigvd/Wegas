@@ -64,6 +64,7 @@ YUI.add("wegas-button", function (Y) {
             label: {
                 type: "string"
             },
+            data: {},
             tooltip: {
                 type: "string",
                 optional: true,
@@ -72,9 +73,6 @@ YUI.add("wegas-button", function (Y) {
             disabled: {
                 "transient": false,
                 "type": "boolean"
-            },
-            entity: {
-                "transient": true
             },
             cssClass: {
                 value: null
