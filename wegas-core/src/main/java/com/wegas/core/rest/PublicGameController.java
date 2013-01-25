@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
 public class PublicGameController {
 
     /**
@@ -47,7 +48,6 @@ public class PublicGameController {
      */
     @GET
     @Path("PublicGames/Games/{userId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     public Collection<Game> publicGame(@PathParam("userId") Long userId) {
         return gameFacade.getPublicGames(userId);
     }
@@ -59,7 +59,6 @@ public class PublicGameController {
      */
     @GET
     @Path("RegisteredGames/{userId : [1-9][0-9]*}/")
-    @Produces(MediaType.APPLICATION_JSON)
     public Collection<Game> registeredGames(@PathParam("userId") Long userId) {
         return (Collection) userFacade.registeredGames(userId);
     }
