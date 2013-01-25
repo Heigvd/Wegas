@@ -26,6 +26,9 @@ public class TransitionFacade extends AbstractFacadeImpl<Transition> {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
+    /**
+     *
+     */
     public TransitionFacade() {
         super(Transition.class);
     }

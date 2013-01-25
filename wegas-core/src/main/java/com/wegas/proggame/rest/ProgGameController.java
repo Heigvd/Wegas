@@ -32,6 +32,14 @@ public class ProgGameController {
     @EJB
     private ScriptFacade scriptFacade;
 
+    /**
+     *
+     * @param playerId
+     * @param script
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
+     */
     @POST
     @Path("/Run/Player/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)

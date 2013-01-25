@@ -55,7 +55,9 @@ public class ResourceCombo {
     /**
      * Retrieve
      *
+     * @param req
      * @return
+     * @throws IOException
      */
     @GET
     @Produces({MediaTypeJs, MediaTypeCss})

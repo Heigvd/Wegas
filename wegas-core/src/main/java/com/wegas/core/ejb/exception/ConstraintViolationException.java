@@ -18,18 +18,34 @@ import javax.ejb.ApplicationException;
 @ApplicationException(rollback=true)
 public class ConstraintViolationException extends RuntimeException {
 
+    /**
+     *
+     */
     public ConstraintViolationException() {
         super();
     }
 
+    /**
+     *
+     * @param cause
+     */
     public ConstraintViolationException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     *
+     * @param msg
+     * @param cause
+     */
     public ConstraintViolationException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
+    /**
+     *
+     * @param msg
+     */
     public ConstraintViolationException(String msg) {
         super(msg);
     }

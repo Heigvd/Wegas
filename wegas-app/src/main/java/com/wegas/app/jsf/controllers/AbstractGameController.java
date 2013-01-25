@@ -163,4 +163,5 @@ public class AbstractGameController implements Serializable {
     public void setGameModelId(Long gameModelId) {
         this.gameModelId = gameModelId;
     }
+
 }

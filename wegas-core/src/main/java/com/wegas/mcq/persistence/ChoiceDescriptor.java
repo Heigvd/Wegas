@@ -90,6 +90,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         }
     }
 
+    /**
+     *
+     * @param r
+     */
     public void addResult(Result r) {
         this.results.add(r);
         r.setChoiceDescriptor(this);
@@ -186,6 +190,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.results = results;
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     */
     public Boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }

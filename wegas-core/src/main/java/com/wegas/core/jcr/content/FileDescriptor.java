@@ -37,20 +37,43 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonIgnore
     private Long bytes;
 
+    /**
+     *
+     * @param absolutePath
+     * @param contentConnector
+     */
     public FileDescriptor(String absolutePath, ContentConnector contentConnector) {
         super(absolutePath, contentConnector);
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @param mimeType
+     * @param lastModified
+     * @param bytes
+     * @param contentConnector
+     */
     public FileDescriptor(String absolutePath, String mimeType, Calendar lastModified, Long bytes, ContentConnector contentConnector) {
         super(absolutePath, contentConnector, mimeType);
         this.dataLastModified = lastModified;
         this.bytes = bytes;
     }
 
+    /**
+     *
+     * @param name
+     * @param path
+     * @param contentConnector
+     */
     public FileDescriptor(String name, String path, ContentConnector contentConnector) {
         super(name, path, contentConnector);
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public InputStream getBase64Data() {
         try {
@@ -107,17 +130,29 @@ public class FileDescriptor extends AbstractContentDescriptor {
         this.setBase64Data(new ByteArrayInputStream(data.getBytes()), mimeType);
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonProperty("dataLastModified")
     public Calendar getDataLastModified() {
         return dataLastModified;
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonProperty("bytes")
     @Override
     public Long getBytes() {
         return bytes;
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     @Override
     public void getContentFromRepository() throws RepositoryException {
         if (this.getMimeType().equals(DirectoryDescriptor.MIME_TYPE) || this.fileSystemAbsolutePath.equals("/")) {
@@ -129,6 +164,11 @@ public class FileDescriptor extends AbstractContentDescriptor {
         super.getContentFromRepository();
     }
 
+    /**
+     *
+     * @return
+     * @throws IOException
+     */
     @XmlTransient
     protected byte[] getBytesData() throws IOException {
         try {

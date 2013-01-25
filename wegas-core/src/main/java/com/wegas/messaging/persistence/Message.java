@@ -84,15 +84,31 @@ public class Message extends NamedEntity {
     @JoinColumn(name = "variableinstance_id", nullable = false)
     private InboxInstance inboxInstanceEntity;
 
+    /**
+     *
+     */
     public Message() {
     }
 
+    /**
+     *
+     * @param from
+     * @param subject
+     * @param body
+     */
     public Message(String from, String subject, String body) {
         this.from = from;
         this.subject = subject;
         this.body = body;
     }
 
+    /**
+     *
+     * @param from
+     * @param subject
+     * @param body
+     * @param attachements
+     */
     public Message(String from, String subject, String body, List<String> attachements) {
         this.from = from;
         this.subject = subject;

@@ -22,6 +22,12 @@ public class DescriptorFactory {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(DescriptorFactory.class);
 
+    /**
+     *
+     * @param node
+     * @param contentConnector
+     * @return
+     */
     public static AbstractContentDescriptor getDescriptor(Node node, ContentConnector contentConnector) {
         AbstractContentDescriptor abstractContentDescriptor = null;
         String nodePath = null;
@@ -46,6 +52,13 @@ public class DescriptorFactory {
         return abstractContentDescriptor;
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @param contentConnector
+     * @return
+     * @throws RepositoryException
+     */
     public static AbstractContentDescriptor getDescriptor(String absolutePath, ContentConnector contentConnector) throws RepositoryException {
         AbstractContentDescriptor abstractContentDescriptor = new AbstractContentDescriptor(absolutePath, contentConnector) {};
         Node node;

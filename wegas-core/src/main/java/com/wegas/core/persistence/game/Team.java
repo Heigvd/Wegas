@@ -73,9 +73,16 @@ public class Team extends AbstractEntity {
     @JsonBackReference(value = "game-team")
     private Game game;
 
+    /**
+     *
+     */
     public Team() {
     }
 
+    /**
+     *
+     * @param name
+     */
     public Team(String name) {
         this.name = name;
     }
@@ -91,6 +98,9 @@ public class Team extends AbstractEntity {
         this.setToken(t.getToken());
     }
 
+    /**
+     *
+     */
     @PrePersist
     @PreUpdate
     public void prePersist() {

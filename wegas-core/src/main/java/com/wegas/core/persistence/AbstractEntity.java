@@ -109,12 +109,19 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     /**
      *
      * @return @throws IOException
+     * @throws IOException
      */
     public String toJson() throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         return mapper.writeValueAsString(this);
     }
 
+    /**
+     *
+     * @param view
+     * @return
+     * @throws IOException
+     */
     public String toJson(Class view) throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         return mapper.writerWithView(view).writeValueAsString(this);

@@ -24,13 +24,24 @@ public class UserInput extends Transition {
 
     private String userActionName;
 
+    /**
+     *
+     */
     public UserInput() {
     }
 
+    /**
+     *
+     * @return
+     */
     public String getUserActionName() {
         return userActionName;
     }
 
+    /**
+     *
+     * @param userActionName
+     */
     public void setUserActionName(String userActionName) {
         this.userActionName = userActionName;
     }
