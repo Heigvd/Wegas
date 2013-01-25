@@ -19,7 +19,7 @@ YUI.add('wegas-app', function (Y) {
     * @name Y.Wegas.App
     * @class  Base class for wegas, handle initialisation of datasources and rendering
     * @constructor
-    * @param Object cfg
+    * @param Object Will be used to fill attributes field 
     * @description create a new wegas-app
     */
     var App = Y.Base.create("wegas-app", Y.Base, [], {
