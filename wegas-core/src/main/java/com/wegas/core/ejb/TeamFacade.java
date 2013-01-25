@@ -72,6 +72,12 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         return super.update(gameId, entity);
     }
 
+    /**
+     * Search for a team with token
+     *
+     * @param token
+     * @return first team found or null
+     */
     public Team findByToken(String token) {
         Query findByToken = em.createNamedQuery("findTeamByToken");
         findByToken.setParameter("token", token);
