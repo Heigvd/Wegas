@@ -19,8 +19,8 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
 
     /**
      * Adds an url regexp, and display the favicon at this url
-     * @class inputEx.UrlField
-     * @extends inputEx.StringField
+     * @class Y.inputEx.Wegas.RoleSelect
+     * @extends Y.inputEx.SelectField
      * @constructor
      * @param {Object} options inputEx.Field options object
      * <ul>
@@ -32,44 +32,55 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
     };
 
     Y.extend(RoleSelect, Y.inputEx.SelectField, {
+        /** @lends Y.inputEx.Wegas.RoleSelect# */
         setValue: function (val, sendUpdatedEvent) {
-            this.value = val;
+            this.ovalue = val;
             RoleSelect.superclass.setValue.call(this, val.id, sendUpdatedEvent);
         },
         getValue: function () {
-            return {
-                "@class": "Role",
-                name: "",
-                description: "",
-                id: RoleSelect.superclass.getValue.call(this)
-            };
+            if (this.ovalue) {
+                return this.ovalue;                                             // Still loading
+            } else {
+                return {
+                    "@class": "Role",
+                    name: "",
+                    description: "",
+                    id: RoleSelect.superclass.getValue.call(this)
+                };
+            }
         },
         setOptions: function (options) {
-            this.options.choices = [];
             RoleSelect.superclass.setOptions.call(this, options);
+            this.options.choices = [];
         },
+
         render: function () {
-            RoleSelect.superclass.render.call(this, options);
-            Y.Wegas.RoleFacade.rest.sendRequest({
-                request: "/",
-                on: {
-                    success: Y.bind(function () {
-                        this.renderOptions(Y.Wegas.RoleFacade.data)
-                    }, this)
-                }
-            });
+            RoleSelect.superclass.render.apply(this, arguments);
+            if (RoleSelect.initialReq) {
+                Y.Wcegas.RoleFacade.rest.sendRequest({
+                    request: "/",
+                    on: {
+                        success: Y.bind(function () {
+                            RoleSelect.initialReq = true;
+                            this.renderOptions(Y.Wegas.RoleFacade.data);
+                        }, this)
+                    }
+                });
+            } else {
+                this.renderOptions(Y.Wegas.RoleFacade.data);
+            }
 
         },
         renderOptions: function (options) {
             var i;
             for (i = 0; i < options.length; i = i + 1) {
-                this.createChoiceNode()
-                this.options.choices.push({
-                    value: Y.Wegas.RoleFacade.data[i].get("id"),
-                    label: Y.Wegas.RoleFacade.data[i].get("name")
+                this.addChoice({
+                    value: options[i].get("id"),
+                    label: options[i].get("name")
                 });
             }
-
+            this.setValue(this.ovalue, false);
+            delete this.ovalue;
         }
     });
 
