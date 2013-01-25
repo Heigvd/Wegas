@@ -9,6 +9,7 @@
  */
 
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
@@ -19,13 +20,23 @@ YUI.add('wegas-joingamewidget', function (Y) {
     JoinGameWidget;
 
     /**
-     *
-     *  @class Y.Wegas.JoinGameWidget
-     */
+    * @name Y.Wegas.JoinGameWidget
+    * @extends Y.Widget
+    * @class  class for join a game and a team
+    * @constructor
+    * @description Allows to join a game by token or a public game. Then you can 
+    * join or create a new team
+    */
     JoinGameWidget = Y.Base.create("wegas-joingamewidget", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         // *** Private fields *** //
 
-        // *** Lifecycle Methods *** //
+        /**
+         * @methodOf Y.Wegas.JoinGameWidget#
+         * @private
+         * @name renderUI
+         * @description All button and fields are created.
+         * For creating the field inputEx libary is used
+         */
         renderUI: function () {
             var cb = this.get(CONTENTBOX);
 
@@ -77,6 +88,13 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.showPublicGames();
         },
 
+        /**
+         * @methodOf Y.Wegas.JoinGameWidget#
+         * @private
+         * @name bindUI
+         * @description All events are added to the buttons
+         * Create team button call rest url : rest/GameModel/{gameModelID}/Game/{gameID}/CreateTeam/{teamName}
+         */
         bindUI: function () {            
             this.tokenField.on("updated", function (e) {
                 if (this.tokenField.getValue() !== "") {
@@ -130,6 +148,13 @@ YUI.add('wegas-joingamewidget', function (Y) {
             }, this);
         },
         
+        /**
+         * @methodOf Y.Wegas.JoinGameWidget#
+         * @private
+         * @name sendJoinGame
+         * @description Method for join a game by token
+         * Call rest request for join the game : rest/GameModel/1/Game/{gameModelID}/JoinGame/{token}
+         */
         sendJoinGame: function(){
             Y.Wegas.GameFacade.rest.sendRequest({
                 request: "/JoinGame/" + this.tokenField.getValue(),
@@ -150,7 +175,13 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }
             });
         },
-
+        
+        /**
+         * @methodOf Y.Wegas.JoinGameWidget#
+         * @private
+         * @name showTeams
+         * @description Hide and show all necessary field
+         */
         showTeams: function () {
             //this.msg.empty();
 
@@ -179,6 +210,13 @@ YUI.add('wegas-joingamewidget', function (Y) {
             }
         },
 
+        /**
+         * @methodOf Y.Wegas.JoinGameWidget#
+         * @private
+         * @name showPublicGames
+         * @description Add all public game in a listbox
+         * Use rest request for get public games: rest/PublicGames/Games/{userID}
+         */
         showPublicGames: function () {
             this.selectPublicGame.addChoice({
                 label: "--Select--",
@@ -204,6 +242,12 @@ YUI.add('wegas-joingamewidget', function (Y) {
             });
         },
         
+        /**
+         * @methodOf Y.Wegas.JoinGameWidget#
+         * @private
+         * @name sendJoinTeamRequest
+         * @description User rest request: rest/GameModel/1/Game/{gameModelID}/JoinTeam/{teamID}
+         */
         sendJoinTeamRequest: function (teamId) {
             Y.Wegas.GameFacade.rest.sendRequest({
                 request: "/JoinTeam/" + teamId,
@@ -218,6 +262,12 @@ YUI.add('wegas-joingamewidget', function (Y) {
             });
         },
         
+        /**
+         * @methodOf Y.Wegas.JoinGameWidget#
+         * @private
+         * @name joinTeamSuccess
+         * @description Display the button and field for join a game by token or a public game
+         */
         joinTeamSuccess : function() {
             this.showMessage("success", "Game joined, it has been added to your games", 10000);
             
@@ -238,6 +288,12 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.createTeamField.setValue("");
         },
         
+        /**
+         * @methodOf Y.Wegas.JoinGameWidget#
+         * @private
+         * @name removeAllTeamsChoices
+         * @description Remove all teams from the listbox
+         */
         removeAllTeamsChoices: function(){
             var i;
             for (i = 0; i < this.teams.length; i = i + 1) {
