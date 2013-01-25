@@ -32,8 +32,20 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
     };
 
     Y.extend(inputEx.Wegas.RoleSelect, inputEx.SelectField, {
+        render: function () {
+            Y.Wegas.RoleFacade.rest.sendRequest({
+                request: "/",
+                on: {
+                    success: Y.bind(function () {
 
+                    }, this)
+                }
+            });
+
+        },
         setValue: function (val, sendUpdatedEvent) {
+            this.value = val;
+
             inputEx.Wegas.RoleSelect.superclass.setValue.call(this, val.id, sendUpdatedEvent);
         },
         getValue: function () {
@@ -54,6 +66,9 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
                     label: Y.Wegas.RoleFacade.data[i].get("name")
                 });
             }
+        },
+        renderOptions: function () {
+
         }
     });
 

@@ -63,7 +63,7 @@
                             },
                             "User": {
                                 source: "rest/User",
-                                initialRequest: "",
+                                initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
                                         fn: "UserDataSourceREST"
                                     }]
@@ -72,8 +72,8 @@
                     };
 
                     Y.on('domready', function() {                               // When dom is ready,
-                        var editor = new Y.Wegas.App(cfg);                   // Launch the editor as soon as Dom is ready
-                        editor.render();
+                        var app = new Y.Wegas.App(cfg);                         // Launch the editor as soon as Dom is ready
+                        app.render();
                     });
                 });
             </script>
