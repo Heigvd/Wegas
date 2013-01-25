@@ -56,20 +56,14 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
 
         render: function () {
             RoleSelect.superclass.render.apply(this, arguments);
-            if (RoleSelect.initialReq) {
-                Y.Wcegas.RoleFacade.rest.sendRequest({
-                    request: "/",
-                    on: {
-                        success: Y.bind(function () {
-                            RoleSelect.initialReq = true;
-                            this.renderOptions(Y.Wegas.RoleFacade.data);
-                        }, this)
-                    }
-                });
-            } else {
-                this.renderOptions(Y.Wegas.RoleFacade.data);
-            }
-
+            Y.Wegas.RoleFacade.rest.sendRequest({
+                request: "/",
+                on: {
+                    success: Y.bind(function () {
+                        this.renderOptions(Y.Wegas.RoleFacade.data);
+                    }, this)
+                }
+            });
         },
         renderOptions: function (options) {
             var i;
