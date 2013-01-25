@@ -42,7 +42,11 @@ YUI.add("wegas-widget", function (Y) {
         anim.on("end", this.remove, this, true);
         anim.run();
     };
-
+    /**
+     * Extension common to all wegas widgets
+     *
+     * @class Y.Wegas.Widget
+     */
     function Widget() {
         this.after("render", function () {
             var bb = this.get(BOUNDING_BOX);
@@ -52,7 +56,7 @@ YUI.add("wegas-widget", function (Y) {
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
-            || this.constructor.NAME.toLowerCase();                                 // the usual "yui3-" prefix)
+        || this.constructor.NAME.toLowerCase();                                 // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
 
         this.publish("exception", {
@@ -61,6 +65,7 @@ YUI.add("wegas-widget", function (Y) {
     }
 
     Y.mix(Widget.prototype, {
+        /** @lends Y.Wegas.Widget# */
 
         defaultExceptionHandler: function (e) {
             this.fire("exception", e.response.results);
@@ -401,5 +406,4 @@ YUI.add("wegas-widget", function (Y) {
         return this;
     };
     Y.Widget.prototype.plug = Y.DataSource.IO.prototype.plug;
-    Y.DataSource.IO.prototype.plug = Y.DataSource.IO.prototype.plug;
 });
