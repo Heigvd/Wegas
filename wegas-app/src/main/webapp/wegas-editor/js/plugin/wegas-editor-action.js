@@ -8,6 +8,7 @@
  * Copyright (C) 2012
  */
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-editor-action', function (Y) {
@@ -206,11 +207,14 @@ YUI.add('wegas-editor-action', function (Y) {
     Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
         /**
-         * @methodOf Y.Wegas.Linkwidget#
+         * @lends Y.Wegas.Linkwidget#
+         */
+
+        /**
+         * @function
          * @private
-         * @name renderUI
-         * @description 1) Add a <div class="playerlink-label"><p>Player link</p><div> node for
-         * display a label in the menu
+         * @description 
+         * 1) Add a <div class="playerlink-label"><p>Player link</p><div> node fordisplay a label in the menu
          * 2) Add the inputeExStringField
          * 3) Stop the click event on this contentbox
          */
@@ -227,11 +231,10 @@ YUI.add('wegas-editor-action', function (Y) {
                 e.halt(true);
             });
         },
-
-        /*
-         * @memberOf Y.Wegas.Linkwidget#
+        
+        /**
+         * @function
          * @private
-         * @name syncUI
          * @description Add the new url
          */
         syncUI: function() {
@@ -239,9 +242,12 @@ YUI.add('wegas-editor-action', function (Y) {
             this.textField.setValue(url);
         }
     }, {
-        /*
-         * @memberOf Y.Wegas.Linkwidget#
-         * @name attrributes
+        /**
+         * @lends Y.Wegas.Linkwidget
+         */
+        /**
+         * @field
+         * @static
          * @description
          * <p><strong>Method</strong></p>
          * <ul>
