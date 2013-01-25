@@ -66,7 +66,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
 
     @Override
     public Team update(final Long gameId, Team entity) {
-        if (entity.getToken() == null || entity.getToken().equals("") || (this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId() != entity.getId()) || gameFacade.findByToken(entity.getToken()) != null) {
+        if (entity.getToken() == null || entity.getToken().equals("") || (this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0) || gameFacade.findByToken(entity.getToken()) != null) {
             entity.setToken(Helper.genToken(10));
         }
         return super.update(gameId, entity);
