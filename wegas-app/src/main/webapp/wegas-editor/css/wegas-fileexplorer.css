@@ -135,3 +135,12 @@
 .wegas-fileexplorer > .wegas-toolbar .treeview-search{
     margin: 3px 2px;
 }
+.wegas-fileexplorer > .fileexplorer-footer{
+    position: absolute;
+    bottom:27px;
+    width: 100%;
+    text-align: center;
+    color: rgb(160,160,160);
+    font-style: italic;
+    overflow: hidden;
+}
