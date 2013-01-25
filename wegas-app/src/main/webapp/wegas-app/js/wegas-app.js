@@ -177,7 +177,7 @@ YUI.add('wegas-app', function (Y) {
          * @description
          * <p><strong>Method</strong></p>
          * <ul>
-         *    <li>base: Base Url for app, <i>default: /Wegas/</i></li>
+         *    <li>base: Base Url for app, <i>default: /</i></li>
          *    <li>layoutSrc : xxxxxxxxxxxxxxx</li>
          *    <li>dataSources : xxxxxxxxxxxxxxx</li>
          *    <li>cssStylesheets : xxxxxxxxxxxxxxx<i>default: []</i></li>

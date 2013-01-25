@@ -64,7 +64,7 @@
 }
 
 .unread-count .value{
-    background-image: url(/Wegas/wegas-crimesim/images/unread-count.png);
+    background-image: url(../../wegas-crimesim/images/unread-count.png);
     background-position: center;
     background-repeat: no-repeat;
     color:white;
@@ -112,7 +112,7 @@
     height: 15px;
     border: 1px solid gray;
     cursor: pointer;
-    background: white url(/Wegas/wegas-app/images/sprite_icons.png) 2px 3px no-repeat;
+    background: white url(../../wegas-app/images/sprite_icons.png) 2px 3px no-repeat;
 }
 .schedule-detail .schedule-icon-close:hover {
     background-color: lightgray;
@@ -195,7 +195,7 @@
 }
 
 .schedule-table .schedule-available div:hover .icon {
-    background: transparent url(/Wegas/wegas-editor/images/wegas-editor-sprite.png) no-repeat 25px 3px;
+    background: transparent url(../../wegas-editor/images/wegas-editor-sprite.png) no-repeat 25px 3px;
     cursor:pointer;
 }
 
@@ -239,7 +239,7 @@
 /* Schedule cancel icon */
 .schedule-table .schedule-present.schedule-task .icon .close-icon,
 .schedule-table .schedule-future.schedule-task .icon .close-icon {
-    background: transparent url(/Wegas/wegas-crimesim/images/close-icon.png) no-repeat 0px 0px;
+    background: transparent url(../../wegas-crimesim/images/close-icon.png) no-repeat 0px 0px;
     position: absolute;
     top: 0px;
     right: 0px;
