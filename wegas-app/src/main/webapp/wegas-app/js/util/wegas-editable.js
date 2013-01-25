@@ -23,13 +23,16 @@ YUI.add('wegas-editable', function (Y) {
     Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
-    /**
+     /**
+     * Extension allowing edition on wegas entities.
      *
+     * @class Y.Wegas.Editable
      */
     function Editable () {
     }
 
     Y.mix(Editable.prototype, {
+        /** @lends Y.Wegas.Editable# */
         /**
          * Serialize to a json object. Method used <b>recursively</b> by JSON.stringify
          *

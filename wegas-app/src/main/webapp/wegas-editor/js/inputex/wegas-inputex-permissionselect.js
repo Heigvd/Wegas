@@ -7,8 +7,9 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
     /**
      * Adds an url regexp, and display the favicon at this url
-     * @class inputEx.UrlField
-     * @extends inputEx.StringField
+     *
+     * @class Y.inputEx.Wegas.PermissionSelect
+     * @extends Y.inputEx.StringField
      * @constructor
      * @param {Object} options inputEx.Field options object
      * <ul>
@@ -19,6 +20,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
         inputEx.Wegas.PermissionSelect.superclass.constructor.call(this, options);
     };
     Y.extend(inputEx.Wegas.PermissionSelect, inputEx.Field,  {
+        /** @lends Y.inputEx.Wegas.PermissionSelect# */
         setOptions: function (options) {
             inputEx.Wegas.PermissionSelect.superclass.setOptions.call(this, options);
             this.options.permissions = options.permissionsChoices;
@@ -122,12 +124,15 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
     inputEx.registerType("permissionsselect", inputEx.Wegas.PermissionSelect);             // Register this class as "wegasurl" type
 
     /**
-     *
+     * @class Y.Wegas.RolePermissionList
+     * @extends Y.Widget
+     * @constructor
+     * @param {Object} options
      */
     var CONTENTBOX = "contentBox", RolePermissionList;
 
     RolePermissionList = Y.Base.create("wegas-permissionlist", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
-
+        /** @lends Y.Wegas.RolePermissionList# */
         renderUI: function () {
             this.plug(Y.Plugin.WidgetToolbar);
             this.bNew = this.toolbar.add({
@@ -222,6 +227,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             }
         }
     }, {
+        /** @lends Y.Wegas.RolePermissionList */
         ATTRS: {
             permsList: {
                 value: []
@@ -235,8 +241,12 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
     /**
      * @fixme @hack override to had event
+     *
+     * @class Y.inputEx.Wegas.PermissionList
+     * @extends Y.inputEx.ListField
+     * @constructor
+     * @param {Object} options
      */
-
     var PermissionList = function(options) {
         PermissionList.superclass.constructor.call(this, options);
     };
@@ -251,7 +261,6 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             });
             return list;
         },
-
 
         onAddButton: function() {
             PermissionList.superclass.onAddButton.apply(this, arguments);
@@ -282,5 +291,5 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
         }
     });
 
-    inputEx.registerType("permissionslist", PermissionList);             // Register this class as "wegasurl" type
+    inputEx.registerType("permissionslist", PermissionList);                    // Register this class as "wegasurl" type
 });
