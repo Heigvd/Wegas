@@ -72,9 +72,10 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     /**
+     * Search for a game with token
      *
      * @param token
-     * @return
+     * @return first game found or null
      */
     public Game findByToken(String token) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
