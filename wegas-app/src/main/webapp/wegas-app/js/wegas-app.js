@@ -34,26 +34,24 @@ YUI.add('wegas-app', function (Y) {
         dataSources: [],
 
         /**
-         * @methodOf Y.Wegas.App#
+         * @function
          * @private
-         * @name initializer
          * @description Lifecycle methods
          */
         initializer: function () {
             Y.Wegas.app = this;
             /**
              * @memberOf Y.Wegas.App#
-             * @name render
              * @event
+             * @name render
              * @description render event
              */
             this.publish("render", {});
         },
 
         /**
-         * @methodOf Y.Wegas.App#
+         * @function
          * @private
-         * @name destructor
          * @description destructor methods.
          */
         destructor : function () {
@@ -64,8 +62,7 @@ YUI.add('wegas-app', function (Y) {
         },
 
         /**
-         * @methodOf Y.Wegas.App#
-         * @name render
+         * @function
          * @description render function
          */
         render: function () {
@@ -94,9 +91,8 @@ YUI.add('wegas-app', function (Y) {
 
         // *** Private methods ** //
         /**
-         * @methodOf Y.Wegas.App#
+         * @function
          * @private
-         * @name initDataSources
          * @description initilize DataSources
          */
         initDataSources: function () {
@@ -128,9 +124,8 @@ YUI.add('wegas-app', function (Y) {
         },
 
         /**
-         * @methodOf Y.Wegas.App#
+         * @function
          * @private
-         * @name initPage
          * @description initPage methods
          */
         initPage: function () {
