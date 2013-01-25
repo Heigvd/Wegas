@@ -28,21 +28,40 @@ public class Coordinate implements Serializable {
     @Column(columnDefinition = "SMALLINT")
     private Integer y;
 
+    /**
+     *
+     */
     public Coordinate() {
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer getX() {
         return x;
     }
 
+    /**
+     *
+     * @param x
+     */
     public void setX(Integer x) {
         this.x = x;
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer getY() {
         return y;
     }
 
+    /**
+     *
+     * @param y
+     */
     public void setY(Integer y) {
         this.y = y;
     }

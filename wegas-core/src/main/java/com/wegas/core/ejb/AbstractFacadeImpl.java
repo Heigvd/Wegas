@@ -96,6 +96,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      *
      * @param entityId
      * @return
+     * @throws IOException
      */
     @Override
     public T duplicate(final Long entityId) throws IOException {
@@ -180,6 +181,12 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
         return ((Long) q.getSingleResult()).intValue();
     }
 
+    /**
+     *
+     * @param ic
+     * @return
+     * @throws Exception
+     */
     @AroundInvoke
     public Object interceptor(InvocationContext ic) throws Exception {
         Object o = null;

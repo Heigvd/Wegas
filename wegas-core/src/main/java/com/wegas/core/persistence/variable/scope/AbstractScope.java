@@ -96,6 +96,10 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
         return ret;
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public VariableInstance getInstance() {
         return this.getVariableInstance(RequestFacade.lookup().getPlayer());

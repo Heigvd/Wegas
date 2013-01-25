@@ -18,13 +18,13 @@ YUI.add('wegas-editor-buttons', function (Y) {
     "use strict";
 
     /**
-     * @class SelectPlayerButton
+     * @class Y.Wegas.SelectPlayerButton
      * @constructor
      * @extends Widget
      * @param {Object} cfg The button config object
      */
     var SelectPlayerButton = Y.Base.create("button", Y.Wegas.Button, [], {
-
+        /** @lends Y.Wegas.SelectPlayerButton# */
         bindUI: function () {
             SelectPlayerButton.superclass.bindUI.apply(this, arguments);
             this.plug(Y.Plugin.WidgetMenu);

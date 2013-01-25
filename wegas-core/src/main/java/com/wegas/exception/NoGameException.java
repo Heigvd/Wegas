@@ -16,13 +16,25 @@ package com.wegas.exception;
  */
 public class NoGameException extends WegasException {
 
+    /**
+     *
+     */
     public NoGameException() {
     }
 
+    /**
+     *
+     * @param message
+     */
     public NoGameException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param message
+     * @param cause
+     */
     public NoGameException(String message, Throwable cause) {
         super(message, cause);
     }

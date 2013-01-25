@@ -152,6 +152,7 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      *
      * @param token
      * @return
+     * @throws Exception
      */
     @GET
     @Path("/JoinGame/{token : .*}/")
@@ -180,6 +181,11 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         }
     }
 
+    /**
+     *
+     * @param teamId
+     * @return
+     */
     @GET
     @Path("/JoinTeam/{teamId : .*}/")
     @Produces(MediaType.APPLICATION_JSON)
@@ -190,6 +196,12 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
         return g;
     }
 
+    /**
+     *
+     * @param gameId
+     * @param name
+     * @return
+     */
     @POST
     @Path("{gameId : .*}/CreateTeam/{name : .*}/")
     @Produces(MediaType.APPLICATION_JSON)

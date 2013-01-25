@@ -71,14 +71,19 @@ public class InboxInstance extends VariableInstance {
 
     /**
      *
-     * @param message
+     * @param from
+     * @param subject
+     * @param body
      */
     public void sendMessage(String from, String subject, String body) {
         this.sendMessage(new Message(from, subject, body));
     }
     /**
      *
-     * @param message
+     * @param from
+     * @param subject
+     * @param body
+     * @param attachements
      */
     public void sendMessage(String from, String subject, String body, List<String> attachements) {
         this.sendMessage(new Message(from, subject, body, attachements));

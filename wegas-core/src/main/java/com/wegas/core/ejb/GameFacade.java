@@ -129,6 +129,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     /**
      * Metod return all public games
      *
+     * @param userId
      * @return Collection<Game>
      */
     public Collection<Game> getPublicGames(Long userId) {

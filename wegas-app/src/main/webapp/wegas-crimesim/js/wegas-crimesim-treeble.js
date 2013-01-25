@@ -59,8 +59,9 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             }
         },
         destructor: function() {
+            var i;
             this.datatable.destroy();
-            for (var i in this.handlers) {
+            for (i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
@@ -202,6 +203,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             }
         }
     });
+    Y.namespace('Wegas').CrimeSimTreeble = Treeble;
 
     //Below : Hack because current verion of TreebleDataSource isn't on YUI (this is the worked version from Guithub).
     Y.TreebleDataSource.prototype.toggle = function(path, request, completion) {
@@ -294,6 +296,4 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         }
         return true;
     };
-
-    Y.namespace('Wegas').CrimeSimTreeble = Treeble;
 });

@@ -155,6 +155,10 @@ abstract public class VariableInstance extends AbstractEntity {
     @Column(name = "teamvariableinstances_key", nullable = false, insertable = false, updatable = false)
     private Long teamScopeKey;
 
+    /**
+     *
+     * @return
+     */
     @JsonIgnore
     public Long getTeamScopeKey() {
         return teamScopeKey;
@@ -165,6 +169,10 @@ abstract public class VariableInstance extends AbstractEntity {
     @Column(name = "variableinstances_key", nullable = false, insertable = false, updatable = false)
     private Long playerScopeKey;
 
+    /**
+     *
+     * @return
+     */
     @JsonIgnore
     public Long getPlayerScopeKey() {
         return playerScopeKey;

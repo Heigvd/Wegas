@@ -73,6 +73,7 @@ public class StateMachineController {
      * @param transitionId
      * @return StateMachineInstance
      * @throws ScriptException
+     * @throws WegasException
      */
     @GET
     @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Do/{transitionId : [1-9][0-9]*}")

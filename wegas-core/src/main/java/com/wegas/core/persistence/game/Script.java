@@ -34,13 +34,25 @@ public class Script implements Serializable {
     @Lob
     private String content = "";
 
+    /**
+     *
+     */
     public Script() {
     }
 
+    /**
+     *
+     * @param content
+     */
     public Script(String content) {
         this.content = content;
     }
 
+    /**
+     *
+     * @param language
+     * @param content
+     */
     public Script(String language, String content) {
         this.lang = language;
         this.content = content;

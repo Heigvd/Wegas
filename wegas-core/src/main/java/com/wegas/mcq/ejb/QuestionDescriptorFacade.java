@@ -63,9 +63,10 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     /**
      *
      * @param choiceId
-     * @param playerId
+     * @param player
      * @param startTime
      * @return
+     * @throws WegasException
      */
     public Reply selectChoice(Long choiceId, Player player, Long startTime) throws WegasException {
         ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
@@ -102,6 +103,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param playerId
      * @param startTime
      * @return
+     * @throws WegasException
      */
     public Reply selectChoice(Long choiceId, Long playerId, Long startTime) throws WegasException {
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
@@ -121,6 +123,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
 
     /**
      *
+     * @param playerId
      * @param replyId
      * @return
      */
@@ -147,6 +150,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param player
      * @param reply
      * @throws ScriptException
+     * @throws WegasException
      */
     public void validateReply(Player player, Reply reply) throws ScriptException, WegasException {
         ChoiceDescriptor choiceDescriptor = reply.getResult().getChoiceDescriptor();
@@ -172,6 +176,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param player
      * @param replyVariableInstanceId
      * @throws ScriptException
+     * @throws WegasException
      */
     public void validateReply(Player player, Long replyVariableInstanceId) throws ScriptException, WegasException {
         this.validateReply(player, em.find(Reply.class, replyVariableInstanceId));
@@ -182,6 +187,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @param playerId
      * @param replyVariableInstanceId
      * @throws ScriptException
+     * @throws WegasException
      */
     public void validateReply(Long playerId, Long replyVariableInstanceId) throws ScriptException, WegasException {
         this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);

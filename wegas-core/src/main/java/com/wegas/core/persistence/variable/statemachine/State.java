@@ -63,6 +63,9 @@ public class State extends AbstractEntity {
     private List<Transition> transitions = new ArrayList<>();
     private Coordinate editorPosition;
 
+    /**
+     *
+     */
     public State() {
     }
 
@@ -71,34 +74,66 @@ public class State extends AbstractEntity {
         return id;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     *
+     * @param label
+     */
     public void setLabel(String label) {
         this.label = label;
     }
 
+    /**
+     *
+     * @return
+     */
     public Script getOnEnterEvent() {
         return onEnterEvent;
     }
 
+    /**
+     *
+     * @param onEnterEvent
+     */
     public void setOnEnterEvent(Script onEnterEvent) {
         this.onEnterEvent = onEnterEvent;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Transition> getTransitions() {
         return transitions;
     }
 
+    /**
+     *
+     * @param transitions
+     */
     public void setTransitions(List<Transition> transitions) {
         this.transitions = transitions;
     }
 
+    /**
+     *
+     * @return
+     */
     public Coordinate getEditorPosition() {
         return editorPosition;
     }
 
+    /**
+     *
+     * @param editorPosition
+     */
     public void setEditorPosition(Coordinate editorPosition) {
         this.editorPosition = editorPosition;
     }

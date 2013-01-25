@@ -44,11 +44,25 @@ public class PageConnector {
         }
     }
 
+    /**
+     *
+     * @param gameModelName
+     * @return
+     * @throws PathNotFoundException
+     * @throws RepositoryException
+     */
     protected NodeIterator listChildren(String gameModelName) throws PathNotFoundException, RepositoryException {
         NodeIterator ni = this.getRootNode(gameModelName).getNodes();
         return ni;
     }
 
+    /**
+     *
+     * @param gameModelName
+     * @param path
+     * @return
+     * @throws RepositoryException
+     */
     protected Node getChild(String gameModelName, String path) throws RepositoryException {
         try {
             return this.getRootNode(gameModelName).getNode(path);
@@ -57,6 +71,13 @@ public class PageConnector {
         }
     }
 
+    /**
+     *
+     * @param gameModelName
+     * @param name
+     * @return
+     * @throws RepositoryException
+     */
     protected Node addChild(String gameModelName, String name) throws RepositoryException {
         Node root = this.getRootNode(gameModelName);
         if (!root.hasNode(name)) {
@@ -68,6 +89,12 @@ public class PageConnector {
         }
     }
 
+    /**
+     *
+     * @param gameModelName
+     * @param name
+     * @throws RepositoryException
+     */
     protected void deleteChild(String gameModelName, String name) throws RepositoryException {
         Node root = this.getRootNode(gameModelName);
         if (root.hasNode(name)) {
@@ -79,6 +106,11 @@ public class PageConnector {
         }
     }
 
+    /**
+     *
+     * @param gameModelName
+     * @throws RepositoryException
+     */
     protected void deleteRoot(String gameModelName) throws RepositoryException {
         Node root = this.getSession().getRootNode();
         if (root.hasNode(gameModelName)) {
@@ -87,10 +119,20 @@ public class PageConnector {
         }
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     protected void save() throws RepositoryException {
         getSession().save();
     }
 
+    /**
+     *
+     * @param gameModelName
+     * @return
+     * @throws RepositoryException
+     */
     protected boolean exist(String gameModelName) throws RepositoryException {
         return this.getSession().getRootNode().hasNode(gameModelName);
     }

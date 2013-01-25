@@ -1,0 +1,244 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*
+<span class='line'>  2</span>  * Wegas
+<span class='line'>  3</span>  * http://www.albasim.com/wegas/
+<span class='line'>  4</span>  *
+<span class='line'>  5</span>  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+<span class='line'>  6</span>  * Media Engineering :: Information Technology Managment :: Comem
+<span class='line'>  7</span>  *
+<span class='line'>  8</span>  * Copyright (C) 2012
+<span class='line'>  9</span>  */</span><span class="WHIT">
+<span class='line'> 10</span> 
+<span class='line'> 11</span> </span><span class="COMM">/**
+<span class='line'> 12</span>  * @fileoverview
+<span class='line'> 13</span>  * @author Francois-Xavier Aeberhard &lt;fx@red-agent.com>
+<span class='line'> 14</span>  */</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="NAME">YUI.add</span><span class="PUNC">(</span><span class="STRN">"wegas-inputex-rte"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Y</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">    </span><span class="STRN">"use strict"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 17</span> 
+<span class='line'> 18</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">inputEx</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Y.inputEx</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> 
+<span class='line'> 20</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'> 21</span>      * Wrapper for the Rich Text Editor from YUI
+<span class='line'> 22</span>      * @class inputEx.RTEField
+<span class='line'> 23</span>      * @extends inputEx.Field
+<span class='line'> 24</span>      * @constructor
+<span class='line'> 25</span>      * @param {Object} options
+<span class='line'> 26</span>      */</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="WHIT">    </span><span class="NAME">inputEx.RTEField</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="WHIT">        </span><span class="NAME">inputEx.RTEField.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 30</span> 
+<span class='line'> 31</span> </span><span class="WHIT">    </span><span class="NAME">Y.extend</span><span class="PUNC">(</span><span class="NAME">inputEx.RTEField</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">inputEx.Textarea</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 32</span> 
+<span class='line'> 33</span> </span><span class="WHIT">        </span><span class="NAME">destroy</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="WHIT">            </span><span class="NAME">inputEx.RTEField.superclass.destroy.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 36</span> 
+<span class='line'> 37</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 38</span>          * Set the default values of the options
+<span class='line'> 39</span>          * @param {Object} options Options object as passed to the constructor
+<span class='line'> 40</span>          */</span><span class="WHIT">
+<span class='line'> 41</span> </span><span class="WHIT">        </span><span class="NAME">setOptions</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 42</span> </span><span class="WHIT">            </span><span class="NAME">inputEx.RTEField.superclass.setOptions.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 43</span> 
+<span class='line'> 44</span> </span><span class="WHIT">            </span><span class="NAME">this.options.opts</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options.opts</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="WHIT">            </span><span class="NAME">this.options.typeInvite</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 47</span> 
+<span class='line'> 48</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 49</span> 	 * Render the field using the YUI Editor widget
+<span class='line'> 50</span> 	 */</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">        </span><span class="NAME">renderComponent</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="WHIT">            </span><span class="NAME">inputEx.RTEField.superclass.renderComponent.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">inputEx.RTEField.init</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="WHIT">                </span><span class="NAME">inputEx.RTEField.init</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="WHIT">                </span><span class="NAME">tinyMCE.init</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="WHIT">                    </span><span class="COMM">// General options</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">                    </span><span class="NAME">mode</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"none"</span><span class="PUNC">,</span><span class="WHIT">                                              </span><span class="COMM">// "none", "textares"</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">                    </span><span class="NAME">theme</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"advanced"</span><span class="PUNC">,</span><span class="WHIT">                                         </span><span class="COMM">// "simple", "advanced"</span><span class="WHIT">
+<span class='line'> 59</span> 
+<span class='line'> 60</span> </span><span class="WHIT">                    </span><span class="COMM">// autolink, lists,spellchecker,pagebreak,style,</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">                    </span><span class="COMM">// layer,table,save,advhr,advimage,advlink,emotions,iespell,</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="WHIT">                    </span><span class="COMM">// inlinepopups,insertdatetime,preview,media,searchreplace,</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">                    </span><span class="COMM">// print,contextmenu,paste,directionality,fullscreen,noneditable,</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">                    </span><span class="COMM">// visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist, autosave,visualblocks</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="WHIT">                    </span><span class="COMM">// </span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">                    </span><span class="COMM">//plugins : "autolink,autoresize,lists,spellchecker,style,layer,table," +</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">                    </span><span class="COMM">//"advimage,advlink,emotions,iespell,inlinepopups,media," +</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">                    </span><span class="COMM">//"searchreplace,contextmenu,fullscreen,visualchars",</span><span class="WHIT">
+<span class='line'> 69</span> 
+<span class='line'> 70</span> </span><span class="WHIT">                    </span><span class="NAME">plugins</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"autolink,autoresize,style,table,"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">                    </span><span class="STRN">"advimage,advlink,iespell,inlinepopups,media,"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">                    </span><span class="STRN">"contextmenu"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 73</span> 
+<span class='line'> 74</span> </span><span class="WHIT">                    </span><span class="COMM">// Theme options</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">                    </span><span class="NAME">theme_advanced_buttons1</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"bold,italic,styleselect,link,image,media,|,cleanup,code"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 76</span> 
+<span class='line'> 77</span> </span><span class="WHIT">                    </span><span class="COMM">// Theme options ( full )</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">                    </span><span class="COMM">//                    theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,|,bullist,numlist,|,outdent,indent,|,undo,redo,|,link,unlink,image,media,charmap,emotions,iespell,|,forecolor,backcolor",</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">                    </span><span class="COMM">//                    theme_advanced_buttons2 : "tablecontrols,|,hr,removeformat,cleanup,styleprops,iespell,spellchecker,visualaid,|,insertlayer,moveforward,movebackward,absolute,|,search,replace,|,fullscreen,code",</span><span class="WHIT">
+<span class='line'> 80</span> 
+<span class='line'> 81</span> </span><span class="WHIT">                    </span><span class="NAME">theme_advanced_toolbar_location</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"top"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">                    </span><span class="NAME">theme_advanced_toolbar_align</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"left"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">                    </span><span class="NAME">theme_advanced_statusbar_location</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"none"</span><span class="PUNC">,</span><span class="WHIT">                 </span><span class="COMM">// top, bottom, none</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">                    </span><span class="NAME">theme_advanced_resizing</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">                    </span><span class="NAME">relative_urls</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 86</span> 
+<span class='line'> 87</span> </span><span class="WHIT">                    </span><span class="NAME">file_browser_callback</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">field_name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">url</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">type</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">win</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 88</span> 
+<span class='line'> 89</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">inputEx.RTEField.filePanel</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">                            </span><span class="NAME">inputEx.RTEField.filePanel</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Y.Panel</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">                                </span><span class="NAME">headerContent</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'Choose a file from library'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">                                </span><span class="NAME">bodyContent</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">                                </span><span class="NAME">width</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">600</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">                                </span><span class="NAME">height</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Y.DOM.winHeight</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NUMB">150</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">                                </span><span class="NAME">zIndex</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">303000</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">                                </span><span class="NAME">modal</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">                                </span><span class="NAME">render</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">                                </span><span class="NAME">centered</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">                            </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>100</span> 
+<span class='line'>101</span> </span><span class="WHIT">                            </span><span class="NAME">inputEx.RTEField.filePanel.explorer</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Y.Wegas.FileExplorer</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">render</span><span class="PUNC">(</span><span class="NAME">inputEx.RTEField.filePanel.getStdModNode</span><span class="PUNC">(</span><span class="NAME">Y.WidgetStdMod.BODY</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>102</span> 
+<span class='line'>103</span> </span><span class="WHIT">                            </span><span class="NAME">inputEx.RTEField.filePanel.explorer.on</span><span class="PUNC">(</span><span class="STRN">"*:fileSelected"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">path</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">                                </span><span class="NAME">e.stopImmediatePropagation</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">                                </span><span class="NAME">e.preventDefault</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">                                </span><span class="NAME">inputEx.RTEField.filePanel.hide</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>107</span> 
+<span class='line'>108</span> </span><span class="WHIT">                                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">win</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">inputEx.RTEField.filePanel.win</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="WHIT">                                </span><span class="NAME">field_name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">inputEx.RTEField.filePanel.field_name</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">                                </span><span class="NAME">targetInput</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">win.document.getElementById</span><span class="PUNC">(</span><span class="NAME">field_name</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">                                </span><span class="NAME">targetInput.value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Y.Plugin.CRDataSource.getFullpath</span><span class="PUNC">(</span><span class="NAME">path</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">  </span><span class="COMM">// update the input field</span><span class="WHIT">
+<span class='line'>112</span> 
+<span class='line'>113</span> </span><span class="WHIT">                                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">win.ImageDialog</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="STRN">"undefined"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// are we an image browser</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">                                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">win.ImageDialog.getImageData</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">         </span><span class="COMM">// we are, so update image dimensions...</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">                                        </span><span class="NAME">win.ImageDialog.getImageData</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">                                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>117</span> 
+<span class='line'>118</span> </span><span class="WHIT">                                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">win.ImageDialog.showPreviewImage</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">     </span><span class="COMM">// ... and preview if necessary</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">                                        </span><span class="NAME">win.ImageDialog.showPreviewImage</span><span class="PUNC">(</span><span class="NAME">Y.Plugin.CRDataSource.getFullpath</span><span class="PUNC">(</span><span class="NAME">path</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">                                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">                                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">                                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">win.Media</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">                                </span><span class="COMM">// If in an editor window</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">                                    </span><span class="NAME">win.Media.formToData</span><span class="PUNC">(</span><span class="STRN">"src"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">                </span><span class="COMM">// update the data</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">                                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">                            </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>127</span> 
+<span class='line'>128</span> </span><span class="WHIT">                        </span><span class="NAME">inputEx.RTEField.filePanel.show</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">                        </span><span class="NAME">inputEx.RTEField.filePanel.win</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">win</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">                        </span><span class="NAME">inputEx.RTEField.filePanel.field_name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">field_name</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">                        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>133</span> 
+<span class='line'>134</span> </span><span class="WHIT">                    </span><span class="COMM">//content_css : "css/content.css",                              // Example content CSS (should be your site CSS)</span><span class="WHIT">
+<span class='line'>135</span> 
+<span class='line'>136</span> </span><span class="WHIT">                    </span><span class="COMM">// Drop lists for link/image/media/template dialogs</span><span class="WHIT">
+<span class='line'>137</span> </span><span class="WHIT">                    </span><span class="COMM">//                    template_external_list_url : "lists/template_list.js",</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">                    </span><span class="COMM">//                    external_link_list_url : "lists/link_list.js",</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">                    </span><span class="COMM">//                    external_image_list_url : "lists/image_list.js",</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">                    </span><span class="COMM">//                    media_external_list_url : "lists/media_list.js",</span><span class="WHIT">
+<span class='line'>141</span> 
+<span class='line'>142</span> </span><span class="WHIT">                    </span><span class="COMM">// Style formats</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">                    </span><span class="NAME">style_formats</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">                        </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'Title 1'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">                        </span><span class="NAME">block</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'h1'</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">                        </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'Title 2'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">                        </span><span class="NAME">block</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'h2'</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">                    </span><span class="COMM">//                    styles : {</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">                    </span><span class="COMM">//                        color : '#ff0000'</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">                    </span><span class="COMM">//                    }</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">                        </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'Title 3'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">                        </span><span class="NAME">block</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'h3'</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">                        </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'Normal'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">                        </span><span class="NAME">inline</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'span'</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">                    </span><span class="COMM">//{</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">                    </span><span class="COMM">//    title : 'Bold text',</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">                    </span><span class="COMM">//    inline : 'b'</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">                    </span><span class="COMM">//},{</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">                    </span><span class="COMM">//    title : 'Red text',</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">                    </span><span class="COMM">//    inline : 'span',</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">                    </span><span class="COMM">//    styles : {</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">                    </span><span class="COMM">//        color : '#ff0000'</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">                    </span><span class="COMM">//    }</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">                    </span><span class="COMM">//},{</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="WHIT">                    </span><span class="COMM">//    title : 'Red header',</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">                    </span><span class="COMM">//    block : 'h1',</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="WHIT">                    </span><span class="COMM">//    styles : {</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">                    </span><span class="COMM">//        color : '#ff0000'</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">                    </span><span class="COMM">//    }</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">                    </span><span class="COMM">//},{</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">                    </span><span class="COMM">//    title : 'Example 1',</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="WHIT">                    </span><span class="COMM">//    inline : 'span',</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">                    </span><span class="COMM">//    classes : 'example1'</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">                    </span><span class="COMM">//},{</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">                    </span><span class="COMM">//    title : 'Example 2',</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">                    </span><span class="COMM">//    inline : 'span',</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">                    </span><span class="COMM">//    classes : 'example2'</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">                    </span><span class="COMM">//},{</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">                    </span><span class="COMM">//    title : 'Table styles'</span><span class="WHIT">
+<span class='line'>184</span> </span><span class="WHIT">                    </span><span class="COMM">//},{</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="WHIT">                    </span><span class="COMM">//    title : 'Table row 1',</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">                    </span><span class="COMM">//    selector : 'tr',</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">                    </span><span class="COMM">//    classes : 'tablerow1'</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">                    </span><span class="COMM">//}</span><span class="WHIT">
+<span class='line'>189</span> 
+<span class='line'>190</span> </span><span class="WHIT">                    </span><span class="PUNC">]</span><span class="WHIT">
+<span class='line'>191</span> 
+<span class='line'>192</span> </span><span class="WHIT">                </span><span class="COMM">// Replace values for the template plugin</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">                </span><span class="COMM">//template_replace_values : {</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">                </span><span class="COMM">//    username : "Some User",</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">                </span><span class="COMM">//    staffid : "991234"</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">                </span><span class="COMM">//}</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">            </span><span class="NAME">Y.once</span><span class="PUNC">(</span><span class="STRN">"domready"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">                </span><span class="NAME">tinyMCE.execCommand</span><span class="PUNC">(</span><span class="STRN">'mceAddControl'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.el.id</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>203</span> 
+<span class='line'>204</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>205</span>          * Set the html content
+<span class='line'>206</span>          * @param {String} value The html string
+<span class='line'>207</span>          * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
+<span class='line'>208</span>          */</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">        </span><span class="NAME">setValue</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>210</span> </span><span class="WHIT">            </span><span class="NAME">inputEx.RTEField.superclass.setValue.apply</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>211</span> 
+<span class='line'>212</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tmceI</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">tinyMCE.get</span><span class="PUNC">(</span><span class="NAME">this.el.id</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>213</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">tmceI</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>214</span> </span><span class="WHIT">                </span><span class="NAME">tmceI.setContent</span><span class="PUNC">(</span><span class="NAME">value</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>217</span> 
+<span class='line'>218</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>219</span>          * Get the html string
+<span class='line'>220</span>          * @return {String} the html string
+<span class='line'>221</span>          */</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">        </span><span class="NAME">getValue</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">            </span><span class="NAME">tinyMCE.triggerSave</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">inputEx.RTEField.superclass.getValue.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>226</span> 
+<span class='line'>227</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>228</span>          * @static
+<span class='line'>229</span>          */</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">        </span><span class="NAME">filePanel</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>232</span> 
+<span class='line'>233</span> 
+<span class='line'>234</span> </span><span class="WHIT">    </span><span class="NAME">inputEx.registerType</span><span class="PUNC">(</span><span class="STRN">"html"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">inputEx.RTEField</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">                        </span><span class="COMM">// Register this class as "html" type</span><span class="WHIT">
+<span class='line'>235</span> 
+<span class='line'>236</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>237</span> </span></pre></body></html>

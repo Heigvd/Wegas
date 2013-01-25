@@ -36,7 +36,6 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             this.renderDetailsPanel(this.get(CONTENTBOX));
         },
         bindUI: function() {
-            var cb = this.get(CONTENTBOX);
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
 

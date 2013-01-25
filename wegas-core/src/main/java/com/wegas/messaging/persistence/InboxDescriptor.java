@@ -64,12 +64,12 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param p
      * @param from
      * @param subject
-     * @param content
+     * @param body
      */
     public void sendMessage(Player p, String from, String subject, String body) {
         this.getInstance(p).sendMessage(from, subject, body);
     }
-    
+
     /**
      *
      * Sugar to be used from scripts.
@@ -77,12 +77,18 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param p
      * @param from
      * @param subject
-     * @param content
+     * @param body
+     * @param attachements
      */
     public void sendMessage(Player p, String from, String subject, String body, List<String> attachements) {
         this.getInstance(p).sendMessage(from, subject, body, attachements);
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     */
     public Boolean isEmpty(Player p) {
         return this.getInstance(p).getMessages().isEmpty();
     }

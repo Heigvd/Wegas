@@ -82,6 +82,12 @@ public class VariableDescriptorController extends AbstractRestController<Variabl
         return entity;
     }
 
+    /**
+     *
+     * @param variableDescriptorId
+     * @param entity
+     * @return
+     */
     @POST
     @Path("{variableDescriptorId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)

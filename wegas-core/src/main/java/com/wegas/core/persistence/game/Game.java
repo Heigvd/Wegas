@@ -111,6 +111,10 @@ public class Game extends NamedEntity {
         return this.teams;
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonIgnore
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>();
