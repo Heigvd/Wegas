@@ -520,7 +520,7 @@ YUI().use(function(Y) {
                     },
 
                     'wegas-crimesim-treeble': {
-                        path: 'wegas-crimesim/js/wegas-crimesim-treeble.min.js',
+                        path: 'wegas-crimesim/js/wegas-crimesim-treeble-min.js',
                         requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble'],
                         ws_provides: "CrimeSimTreeble"
                     },
