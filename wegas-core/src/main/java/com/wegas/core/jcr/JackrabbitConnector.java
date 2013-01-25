@@ -36,7 +36,7 @@ public class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
     final private ResourceBundle resourceBundle = ResourceBundle.getBundle("wegas");
-    final private String DIR = System.getProperty("user.dir") + "/" + resourceBundle.getString("jcr.repository.home");
+    final private String DIR = System.getProperty("file.dir") + "/" + resourceBundle.getString("jcr.repository.home");
     private static JackrabbitRepository repo;
     private JackrabbitRepositoryFactory rf;
 
