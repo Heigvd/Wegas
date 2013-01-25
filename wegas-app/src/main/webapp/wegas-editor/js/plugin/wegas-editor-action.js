@@ -190,13 +190,28 @@ YUI.add('wegas-editor-action', function (Y) {
     });
 
     /**
-     *
-     */
+    * @name Y.Wegas.Linkwidget
+    * @extends Y.Widget
+    * @class  class for display the player link in menu's
+    * @constructor
+    * @param Object Will be used to fill attributes field 
+    * @description Allows to display the player link in a menu. 
+    * the link is in a textField. For this field inputEx is used
+    */
     var CONTENTBOX = 'contentBox',
     Linkwidget;
 
     Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
 
+        /**
+         * @methodOf Y.Wegas.Linkwidget#
+         * @private
+         * @name renderUI
+         * @description 1) Add a <div class="playerlink-label"><p>Player link</p><div> node for
+         * display a label in the menu
+         * 2) Add the inputeExStringField
+         * 3) Stop the click event on this contentbox
+         */
         renderUI: function(){
             Linkwidget.superclass.renderUI.apply(this);
 
@@ -210,12 +225,27 @@ YUI.add('wegas-editor-action', function (Y) {
                 e.halt(true);
             });
         },
-
+        
+        /*
+         * @memberOf Y.Wegas.Linkwidget#
+         * @private
+         * @name syncUI
+         * @description Add the new url
+         */
         syncUI: function() {
-            var url = document.URL + "game.html?token=" + this.get("entity").get("token");
+            var url = Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token");
             this.textField.setValue(url);
         }
     }, {
+        /*
+         * @memberOf Y.Wegas.Linkwidget#
+         * @name attrributes
+         * @description
+         * <p><strong>Method</strong></p>
+         * <ul>
+         *    <li>entity: get the entity</li>
+         * </ul>
+         */
         ATTRS: {
             entity: {}
         }
