@@ -1,5 +1,5 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -11,12 +11,12 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.Player;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 
 /**
@@ -25,7 +25,9 @@ import org.apache.shiro.SecurityUtils;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/{gameId : [1-9][0-9]*}/Team/{teamId : [1-9][0-9]*}/Player")
-public class PlayerController extends AbstractRestController<PlayerFacade, Player> {
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class PlayerController {
 
     private static final Logger logger = Logger.getLogger("Authoring_GM");
     /**
@@ -34,65 +36,80 @@ public class PlayerController extends AbstractRestController<PlayerFacade, Playe
     @EJB
     private PlayerFacade playerFacade;
 
-    @Override
-    public Player get(Long entityId) {
-
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + this.getPathParam("gameId"));
-        
-        return super.get(entityId);
-    }
-    
-    @Override
-    public Collection<Player> index() {
-        
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + this.getPathParam("gameId"));
-        
-        return super.index();
-    }
     /**
      *
+     * @param gameId
+     * @param entityId
+     * @return
+     */
+    @GET
+    @Path("{entityId : [1-9][0-9]*}")
+    public Player get(@PathParam("gameId") Long gameId,
+            @PathParam("entityId") Long entityId) {
+
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + gameId);
+
+        return playerFacade.find(entityId);
+    }
+
+    /**
+     *
+     * @param gameId
+     * @return
+     */
+    @GET
+    public Collection<Player> index(@PathParam("gameId") Long gameId) {
+
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + gameId);
+
+        return playerFacade.findAll();
+    }
+
+    /**
+     *
+     * @param gameId
+     * @param entity
+     * @param teamId
+     * @return
+     */
+    @POST
+    public Player create(@PathParam("gameId") Long gameId,
+            @PathParam("teamId") Long teamId, Player entity) {
+
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
+
+        playerFacade.create(teamId, entity);
+        return entity;
+    }
+
+    /**
+     *
+     * @param gameId
+     * @param entityId
      * @param entity
      * @return
      */
-    @Override
-    public Player create(Player entity) {
-        
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
-        
-        playerFacade.create(new Long(this.getPathParam("teamId")), entity);
-        return entity;
-    }
-    
-    @Override
-    public Player update(Long entityId, Player entity){
-        
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
-        
-        return super.update(entityId, entity);
-    }
-    
-    @Override
-    public Player duplicate(Long entityId) throws IOException{
-        
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
-        
-        return super.duplicate(entityId);
-    }
-    
-    @Override
-    public Player delete(Long entityId){
-        
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
-        
-        return super.delete(entityId); 
+    @PUT
+    @Path("{entityId: [1-9][0-9]*}")
+    public Player update(@PathParam("gameId") Long gameId,
+            @PathParam("entityId") Long entityId, Player entity) {
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
+        return playerFacade.update(entityId, entity);
     }
 
     /**
      *
+     * @param entityId
      * @return
      */
-    @Override
-    protected PlayerFacade getFacade() {
-        return this.playerFacade;
+    @DELETE
+    @Path("{entityId: [1-9][0-9]*}")
+    public Player delete(@PathParam("entityId") Long entityId) {
+        Player entity = playerFacade.find(entityId);
+
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entity.getGame().getId());
+
+        playerFacade.remove(entityId);
+        return entity;
     }
 }

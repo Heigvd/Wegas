@@ -45,57 +45,112 @@ public class UserAction implements Serializable {
     @MapKeyColumn(name = "response_name", insertable = false, updatable = false)
     private Map<String, ResponseModel> responseModels;
 
+    /**
+     *
+     */
     public UserAction() {
     }
 
+    /**
+     *
+     * @return
+     */
     public DialogueDescriptor getDialogue() {
         return dialogue;
     }
 
+    /**
+     *
+     * @param dialogue
+     */
     public void setDialogue(DialogueDescriptor dialogue) {
         this.dialogue = dialogue;
     }
 
+    /**
+     *
+     * @return
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     *
+     * @return
+     */
     public Script getImpact() {
         return impact;
     }
 
+    /**
+     *
+     * @param impact
+     */
     public void setImpact(Script impact) {
         this.impact = impact;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     *
+     * @param label
+     */
     public void setLabel(String label) {
         this.label = label;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNotes() {
         return notes;
     }
 
+    /**
+     *
+     * @param notes
+     */
     public void setNotes(String notes) {
         this.notes = notes;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, ResponseModel> getResponseModels() {
         return responseModels;
     }
 
+    /**
+     *
+     * @param responseModels
+     */
     public void setResponseModels(Map<String, ResponseModel> responseModels) {
         this.responseModels = responseModels;
     }

@@ -44,6 +44,11 @@ public class ContentConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
 
+    /**
+     *
+     * @param bytes
+     * @return
+     */
     public static String bytesToHumanReadable(Long bytes) {
         Integer unit = 1024;
         if (bytes < unit) {
@@ -56,6 +61,11 @@ public class ContentConnector {
     private Session session;
     private String workspace = null;
 
+    /**
+     *
+     * @param gameModelId
+     * @throws RepositoryException
+     */
     protected ContentConnector(Long gameModelId) throws RepositoryException {
         this.workspace = "GM_" + gameModelId;
         this.session = SessionHolder.getSession(this.workspace);
@@ -63,11 +73,21 @@ public class ContentConnector {
 
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     protected ContentConnector() throws RepositoryException {
         this.session = SessionHolder.getSession(null);
         this.initializeNamespaces();
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
     protected Node getNode(String absolutePath) throws RepositoryException {
         try {
             return session.getNode(absolutePath);
@@ -77,15 +97,33 @@ public class ContentConnector {
         }
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
     protected boolean nodeExist(String absolutePath) throws RepositoryException {
         return session.nodeExists(absolutePath);
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @throws RepositoryException
+     */
     protected void deleteFile(String absolutePath) throws RepositoryException {
         this.getNode(absolutePath).remove();
         session.save();
     }
 
+    /**
+     *
+     * @param path
+     * @return
+     * @throws PathNotFoundException
+     * @throws RepositoryException
+     */
     protected NodeIterator listChildren(String path) throws PathNotFoundException, RepositoryException {
         return session.getNode(path).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
     }
@@ -107,14 +145,35 @@ public class ContentConnector {
         return null;
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
     protected InputStream getData(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getStream();
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     * @throws IOException
+     */
     protected byte[] getBytesData(String absolutePath) throws RepositoryException, IOException {
         return IOUtils.toByteArray(this.getData(absolutePath));
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @param mimeType
+     * @param data
+     * @return
+     * @throws RepositoryException
+     */
     protected Node setData(String absolutePath, String mimeType, InputStream data) throws RepositoryException {
         Node newNode = this.getNode(absolutePath);
         newNode.setProperty(WFSConfig.WFS_MIME_TYPE, mimeType);
@@ -124,14 +183,32 @@ public class ContentConnector {
         return newNode;
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
     protected String getMimeType(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_MIME_TYPE).getString();
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @param mimeType
+     * @throws RepositoryException
+     */
     protected void setMimeType(String absolutePath, String mimeType) throws RepositoryException {
         this.getNode(absolutePath).setProperty(WFSConfig.WFS_MIME_TYPE, mimeType);
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
     protected String getNote(String absolutePath) throws RepositoryException {
         try {
             return this.getProperty(absolutePath, WFSConfig.WFS_NOTE).getString();
@@ -140,11 +217,23 @@ public class ContentConnector {
         }
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @param note
+     * @throws RepositoryException
+     */
     protected void setNote(String absolutePath, String note) throws RepositoryException {
         note = note == null ? "" : note;
         this.getNode(absolutePath).setProperty(WFSConfig.WFS_NOTE, note);
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
     protected String getDescription(String absolutePath) throws RepositoryException {
         try {
             return this.getProperty(absolutePath, WFSConfig.WFS_DESCRIPTION).getString();
@@ -153,12 +242,24 @@ public class ContentConnector {
         }
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @param description
+     * @throws RepositoryException
+     */
     protected void setDescription(String absolutePath, String description) throws RepositoryException {
         description = description == null ? "" : description;
         this.getNode(absolutePath).setProperty(WFSConfig.WFS_DESCRIPTION, description);
 
     }
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
     protected Calendar getLastModified(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED).getDate();
     }
@@ -166,6 +267,12 @@ public class ContentConnector {
      * Return content Bytes size
      */
 
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
     protected Long getBytesSize(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getSize();
     }
@@ -229,6 +336,11 @@ public class ContentConnector {
         }
     }
 
+    /**
+     *
+     * @param oldGameModelId
+     * @throws RepositoryException
+     */
     public void cloneWorkspace(Long oldGameModelId) throws RepositoryException {
         ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId);
         NodeIterator it = connector.listChildren("/");
@@ -240,6 +352,10 @@ public class ContentConnector {
         session.save();
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     public void clearWorkspace() throws RepositoryException {
         NodeIterator it = this.listChildren("/");
         while (it.hasNext()) {
@@ -248,6 +364,9 @@ public class ContentConnector {
         this.save();
     }
 
+    /**
+     *
+     */
     public void save() {
         if (session.isLive()) {
             try {
@@ -258,6 +377,13 @@ public class ContentConnector {
         }
     }
 
+    /**
+     *
+     * @param out
+     * @throws RepositoryException
+     * @throws IOException
+     * @throws SAXException
+     */
     public void exportXML(OutputStream out) throws RepositoryException, IOException, SAXException {
 
         XMLSerializer handler = new XMLSerializer(out);
@@ -272,6 +398,15 @@ public class ContentConnector {
 
     }
 
+    /**
+     *
+     * @param input
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @throws TransformerException
+     * @throws RepositoryException
+     */
     public void importXML(InputStream input) throws IOException, SAXException, ParserConfigurationException, TransformerException, RepositoryException {
         try {
             DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();

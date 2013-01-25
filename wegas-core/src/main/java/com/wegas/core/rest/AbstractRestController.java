@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @param <T>
+ * @param <U>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public abstract class AbstractRestController<T extends AbstractFacade, U extends AbstractEntity> {
@@ -97,6 +98,7 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
      *
      * @param entityId
      * @return
+     * @throws IOException
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")

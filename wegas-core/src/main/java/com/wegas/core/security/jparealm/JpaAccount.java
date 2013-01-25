@@ -56,6 +56,9 @@ public class JpaAccount extends AbstractAccount {
         }
     }
 
+    /**
+     *
+     */
     @PrePersist
     public void prePersist() {
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
@@ -64,6 +67,9 @@ public class JpaAccount extends AbstractAccount {
         this.preUpdate();
     }
 
+    /**
+     *
+     */
     @PreUpdate
     public void preUpdate() {
         if (this.password != null) {
@@ -81,6 +87,10 @@ public class JpaAccount extends AbstractAccount {
         return password;
     }
 
+    /**
+     *
+     * @param password
+     */
     public void setPassword(String password) {
         this.password = password;
     }

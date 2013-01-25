@@ -81,12 +81,12 @@ public class ScriptFacade {
      * Fires an engineInvocationEvent, which should be intercepted to customize
      * engine scope.
      *
-     * @param player
      * @param scripts A list of ScriptEntities to evaluate, all programming
      * language should be the same
      * @param arguments
      * @return
      * @throws ScriptException
+     * @throws WegasException
      */
     public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         while (scripts.remove(null)) {
@@ -143,7 +143,9 @@ public class ScriptFacade {
      * Default customization of our engine: inject the script library, the root
      * variable instances and some libraries.
      *
-     * @param messageEvent
+     * @param evt
+     * @throws ScriptException
+     * @throws WegasException
      */
     public void onEngineInstantiation(@Observes ScriptFacade.EngineInvocationEvent evt) throws ScriptException, WegasException {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
@@ -185,39 +187,41 @@ public class ScriptFacade {
     }
 
     // *** Sugar *** //
+    /**
+     *
+     * @param scripts
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
+     */
     public Object eval(List<Script> scripts) throws ScriptException, WegasException {
         return this.eval(scripts, new HashMap<String, AbstractEntity>());
     }
 
+    /**
+     *
+     * @param s
+     * @param arguments
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
+     */
     public Object eval(Script s, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         List<Script> scripts = new ArrayList<>();
         scripts.add(s);
         return this.eval(scripts, arguments);
     }
 
+    /**
+     *
+     * @param p
+     * @param s
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
+     */
     public Object eval(Player p, Script s) throws ScriptException, WegasException {
         requestManager.setPlayer(p);
-        return this.eval(s);
-    }
-
-    public Object eval(Player p, List<Script> s) throws ScriptException, WegasException {
-        requestManager.setPlayer(p);
-        return this.eval(s);
-    }
-
-    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
-        requestManager.setPlayer(player);
-        return this.eval(s, arguments);
-    }
-
-    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
-        requestManager.setPlayer(player);                                       // Set up request's execution context
-        return this.eval(scripts, arguments);
-    }
-
-    public Object eval(Long playerId, Script s)
-            throws ScriptException, WegasException {
-        requestManager.setPlayer(playerEntityFacade.find(playerId));
         return this.eval(s);
     }
 
@@ -227,16 +231,79 @@ public class ScriptFacade {
      * @param s
      * @return
      * @throws ScriptException
+     * @throws WegasException
+     */
+    public Object eval(Player p, List<Script> s) throws ScriptException, WegasException {
+        requestManager.setPlayer(p);
+        return this.eval(s);
+    }
+
+    /**
+     *
+     * @param player
+     * @param s
+     * @param arguments
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
+     */
+    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
+        requestManager.setPlayer(player);
+        return this.eval(s, arguments);
+    }
+
+    /**
+     *
+     * @param player
+     * @param scripts
+     * @param arguments
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
+     */
+    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
+        requestManager.setPlayer(player);                                       // Set up request's execution context
+        return this.eval(scripts, arguments);
+    }
+
+    /**
+     *
+     * @param playerId
+     * @param s
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
+     */
+    public Object eval(Long playerId, Script s)
+            throws ScriptException, WegasException {
+        requestManager.setPlayer(playerEntityFacade.find(playerId));
+        return this.eval(s);
+    }
+
+    /**
+     *
+     * @param s
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
      */
     public Object eval(Script s) throws ScriptException, WegasException {
         return this.eval(s, new HashMap<String, AbstractEntity>());
     }
 
+    /**
+     *
+     */
     public class EngineInvocationEvent {
 
         private Player player;
         private ScriptEngine engine;
 
+        /**
+         *
+         * @param player
+         * @param engine
+         */
         public EngineInvocationEvent(Player player, ScriptEngine engine) {
             this.player = player;
             this.engine = engine;

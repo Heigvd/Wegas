@@ -75,24 +75,49 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     }
 
     // **** Sugar for editor *** //
+    /**
+     *
+     * @param p
+     * @param value
+     */
     public void setValue(Player p, double value) {
         this.getInstance(p).setValue(value);
     }
 
+    /**
+     *
+     * @param p
+     * @param value
+     */
     public void setValue(Player p, int value) {
         this.getInstance(p).setValue(value);
     }
 
+    /**
+     *
+     * @param p
+     * @param value
+     */
     public void add(Player p, double value) {
         NumberInstance instance = this.getInstance(p);
         instance.setValue(instance.getValue() + value);
     }
 
+    /**
+     *
+     * @param p
+     * @param value
+     */
     public void add(Player p, int value) {
         NumberInstance instance = this.getInstance(p);
         instance.setValue(instance.getValue() + value);
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     */
     public double getValue(Player p) {
         return this.getInstance(p).getValue();
     }

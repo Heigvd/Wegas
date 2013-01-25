@@ -59,14 +59,26 @@ public class RequestFacade {
         return requestManager;
     }
 
+    /**
+     *
+     * @param view
+     */
     public void setView(Class view) {
         this.requestManager.setView(view);
     }
 
+    /**
+     *
+     * @return
+     */
     public Class getView() {
         return this.requestManager.getView();
     }
 
+    /**
+     *
+     * @param playerId
+     */
     public void setPlayer(Long playerId) {
         Player p = playerFacade.find(playerId);
         //playerFacade.getEntityManager().detach(p);
@@ -81,6 +93,10 @@ public class RequestFacade {
         return this.requestManager.getPlayer();
     }
 
+    /**
+     *
+     * @return
+     */
     public static RequestFacade lookup() {
         try {
             return Helper.lookupBy(RequestFacade.class);
@@ -90,6 +106,9 @@ public class RequestFacade {
         }
     }
 
+    /**
+     *
+     */
     public void commit() {
         em.flush();
         if (this.getUpdatedInstances().size() > 0) {
@@ -134,12 +153,17 @@ public class RequestFacade {
     }
 
     /**
-     * @param local the local to set
+     * @param locale
      */
     public void setLocale(Locale locale) {
         this.requestManager.setLocale(locale);
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public ResourceBundle getBundle(String name) {
         return this.requestManager.getBundle(name);
     }

@@ -37,49 +37,97 @@ public class Page implements Serializable {
     private JsonNode content;
     private String name;
 
+    /**
+     *
+     * @param id
+     * @param content
+     * @throws IOException
+     */
     public Page(Integer id, String content) throws IOException {
         this.id = id;
         this.content = mapper.readTree(content);
     }
 
+    /**
+     *
+     * @param id
+     * @param content
+     */
     public Page(Integer id, JsonNode content) {
         this.id = id;
         this.content = content;
     }
 
+    /**
+     *
+     */
     public Page() {
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /**
+     *
+     * @return
+     */
     public JsonNode getContent() {
         return content;
     }
 
+    /**
+     *
+     * @param content
+     */
     @JsonIgnore
     public void setContent(JsonNode content) {
         this.content = content;
     }
 
+    /**
+     *
+     * @param content
+     * @throws IOException
+     */
     @JsonIgnore
     public void setContent(String content) throws IOException {
         this.content = mapper.readTree(content);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @param patch
+     * @throws IOException
+     */
     public void patch(String patch) throws IOException {
         diff_match_patch dmp = new diff_match_patch(new StandardBreakScorer());
         LinkedList<diff_match_patch.Patch> patches = (LinkedList<diff_match_patch.Patch>) dmp.patch_fromText(patch);

@@ -28,56 +28,113 @@ public class WegasScriptException extends WegasException {
     private String script;
     private Integer lineNumber;
 
+    /**
+     *
+     */
     public WegasScriptException() {
     }
 
+    /**
+     *
+     * @param message
+     */
     public WegasScriptException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param script
+     * @param lineNumber
+     */
     public WegasScriptException(String script, Integer lineNumber) {
         this.script = script;
         this.lineNumber = lineNumber;
     }
 
+    /**
+     *
+     * @param script
+     * @param lineNumber
+     * @param message
+     */
     public WegasScriptException(String script, Integer lineNumber, String message) {
         super(message);
         this.script = script;
         this.lineNumber = lineNumber;
     }
 
+    /**
+     *
+     * @param script
+     * @param lineNumber
+     * @param message
+     * @param cause
+     */
     public WegasScriptException(String script, Integer lineNumber, String message, Throwable cause) {
         super(message, cause);
         this.script = script;
         this.lineNumber = lineNumber;
     }
 
+    /**
+     *
+     * @param message
+     * @param cause
+     */
     public WegasScriptException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     *
+     * @param script
+     * @param message
+     */
     public WegasScriptException(String script, String message) {
         super(message);
         this.script = script;
     }
 
+    /**
+     *
+     * @param script
+     * @param message
+     * @param cause
+     */
     public WegasScriptException(String script, String message, Throwable cause) {
         super(message, cause);
         this.script = script;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getScript() {
         return script;
     }
 
+    /**
+     *
+     * @param script
+     */
     public void setScript(String script) {
         this.script = script;
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer getLineNumber() {
         return lineNumber;
     }
 
+    /**
+     *
+     * @param lineNumber
+     */
     public void setLineNumber(Integer lineNumber) {
         this.lineNumber = lineNumber;
     }

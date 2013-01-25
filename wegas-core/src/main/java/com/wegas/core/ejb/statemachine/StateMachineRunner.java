@@ -65,13 +65,24 @@ public class StateMachineRunner implements Serializable {
     @Inject
     private RequestManager requestManager;
 
+    /**
+     *
+     */
     public StateMachineRunner() {
     }
 
+    /**
+     *
+     * @param playerAction
+     */
     public void entityUpdateListener(@Observes RequestManager.PlayerAction playerAction) {
         this.playerUpdated(playerAction.getPlayer());
     }
 
+    /**
+     *
+     * @param player
+     */
     public void playerUpdated(Player player) {
 
         Integer steps = 0;

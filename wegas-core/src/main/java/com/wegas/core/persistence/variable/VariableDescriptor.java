@@ -159,6 +159,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return (T) this.scope.getVariableInstance(player);
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public T getInstance() {
         return (T) this.getScope().getInstance();
@@ -283,6 +287,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.label = label;
     }
 
+    /**
+     *
+     */
     @PrePersist
     @PreUpdate
     public void prePersist() {

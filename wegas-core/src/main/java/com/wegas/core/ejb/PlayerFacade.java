@@ -70,6 +70,13 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         //this.create(player);
     }
 
+    /**
+     *
+     * @param gameId
+     * @param userId
+     * @return
+     * @throws PersistenceException
+     */
     public Player findByGameIdAndUserId(Long gameId, Long userId) throws PersistenceException {
         Query findByGameIdAndUserId = em.createNamedQuery("findPlayerByGameIdAndUserId");
         findByGameIdAndUserId.setParameter("gameId", gameId);
@@ -77,12 +84,22 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         return (Player) findByGameIdAndUserId.getSingleResult();
     }
 
+    /**
+     *
+     * @param gameId
+     * @return
+     */
     public List<Player> findByGameId(Long gameId) {
         Query findByGameId = em.createNamedQuery("findPlayerByGameId");
         findByGameId.setParameter("gameId", gameId);
         return findByGameId.getResultList();
     }
 
+    /**
+     *
+     * @param g
+     * @return
+     */
     public Player findCurrentPlayer(Game g) {
         return this.findByGameIdAndUserId(g.getId(), userFacade.getCurrentUser().getId());
     }

@@ -32,21 +32,40 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
      */
     public static final String MIME_TYPE = "application/wfs-directory";
 
+    /**
+     *
+     * @param absolutePath
+     * @param contentConnector
+     */
     public DirectoryDescriptor(String absolutePath, ContentConnector contentConnector) {
         super(absolutePath, contentConnector);
         this.mimeType = MIME_TYPE;
     }
 
+    /**
+     *
+     * @param name
+     * @param path
+     * @param contentConnector
+     */
     public DirectoryDescriptor(String name, String path, ContentConnector contentConnector) {
         super(name, path, contentConnector);
         this.mimeType = MIME_TYPE;
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public boolean isRootDirectory() {
         return this.fileSystemAbsolutePath.equals("/");
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonProperty("bytes")
     @Override
     public Long getBytes() {
@@ -62,6 +81,11 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
         return sum;
     }
 
+    /**
+     *
+     * @return
+     * @throws RepositoryException
+     */
     @XmlTransient
     public List<AbstractContentDescriptor> list() throws RepositoryException {
         NodeIterator nodeIterator = this.connector.listChildren(this.fileSystemAbsolutePath);
