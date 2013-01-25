@@ -1,3 +1,12 @@
+/*
+ * Wegas
+ * http://www.albasim.com/wegas/
+ *
+ * School of Business and Engineering Vaud, http://www.heig-vd.ch/
+ * Media Engineering :: Information Technology Managment :: Comem
+ *
+ * Copyright (C) 2012
+ */
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -24,10 +33,10 @@ YUI.add('wegas-console', function (Y) {
                 rows: 7
             });
             cb.append('<div class="results"></div>');
-            
+
             this.runButton();
         },
-        
+
         executeScript: function (scriptEntity) {
             Y.Wegas.app.dataSources.VariableDescriptor.rest.sendRequest({
                 request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
@@ -46,12 +55,12 @@ YUI.add('wegas-console', function (Y) {
                     }, this)
                 }
             });
-            
+
         },
-        
+
         runButton: function (){
             var el = this.toolbar.get('header');
-            
+
             this.runButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run script",
                 on: {
@@ -60,7 +69,7 @@ YUI.add('wegas-console', function (Y) {
                             "@class": "Script",
                             language: "JavaScript",
                             content: this.srcField.getValue()
-                        });                        
+                        });
                     }, this)
                 }
             }).render(el);

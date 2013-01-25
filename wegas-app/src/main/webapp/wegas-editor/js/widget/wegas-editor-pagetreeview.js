@@ -1,6 +1,5 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -8,7 +7,6 @@
  *
  * Copyright (C) 2012
  */
-
 YUI.add('wegas-editor-pagetreeview', function(Y) {
     var PageEditor, CONTENT_BOX = "contentBox", BOUNDING_BOX = "boundingBox";
 

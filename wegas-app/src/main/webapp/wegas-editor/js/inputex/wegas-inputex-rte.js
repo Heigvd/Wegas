@@ -7,7 +7,6 @@
  *
  * Copyright (C) 2012
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -19,8 +18,8 @@ YUI.add("wegas-inputex-rte", function (Y) {
 
     /**
      * Wrapper for the Rich Text Editor from YUI
-     * @class inputEx.RTEField
-     * @extends inputEx.Field
+     * @class Y.inputEx.RTEField
+     * @extends Y.inputEx.Textarea
      * @constructor
      * @param {Object} options
      */
@@ -62,7 +61,7 @@ YUI.add("wegas-inputex-rte", function (Y) {
                     // inlinepopups,insertdatetime,preview,media,searchreplace,
                     // print,contextmenu,paste,directionality,fullscreen,noneditable,
                     // visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist, autosave,visualblocks
-                    // 
+                    //
                     //plugins : "autolink,autoresize,lists,spellchecker,style,layer,table," +
                     //"advimage,advlink,emotions,iespell,inlinepopups,media," +
                     //"searchreplace,contextmenu,fullscreen,visualchars",
