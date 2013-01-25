@@ -39,8 +39,9 @@ YUI.add('wegas-scripteval', function(Y) {
             try {
                 result = this.localEval(script);
                 this.fire("evaluated", result, id);
-                if (cb && cb.success)
+                if (cb && cb.success) {
                     cb.success.call(cb.scope || this, result);
+                }
                 return result;
             } catch (error) {
                 url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
@@ -82,14 +83,14 @@ YUI.add('wegas-scripteval', function(Y) {
             return (new Function("with(this) { return " + script + ";}")).call(this.context);
         },
         buildContext: function() {
-            var data = this.get("host").data;
+            var i, j, data = this.get("host").data;
             this.upToDate = true;
             this.context = {};
-            for (var i in data) {
+            for (i in data) {
                 this.context[data[i].get('name')] = JSON.parse(JSON.stringify(data[i].getInstance()));
                 if (data[i] instanceof Y.Wegas.persistence.ListDescriptor) {
                     this.context[data[i].get('name')].items = [];
-                    for (var j in data[i].get("items")) {
+                    for (j in data[i].get("items")) {
                         this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance())));
                     }
                 }

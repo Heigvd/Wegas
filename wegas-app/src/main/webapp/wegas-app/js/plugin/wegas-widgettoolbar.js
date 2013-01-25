@@ -24,26 +24,20 @@ YUI.add('wegas-widgettoolbar', function (Y) {
         WidgetToolbar.superclass.constructor.apply(this, arguments);
     };
 
-    WidgetToolbar.NS = "toolbar";
-    WidgetToolbar.NAME = "toolbar";
-
-
     Y.extend(WidgetToolbar, Y.Plugin.Base, {
+        //className: null,
 
         // *** Lifecycle methods *** //
-
         initializer: function () {
-            //            var host = this.get("host");
-            //            this.afterHostEvent("render", function () {
-            //
-            //                }, this);
+            this.children = [];
             this.render();
+            //this.get("host").afterHostEvent("render", function () {}, this);
         },
 
         destructor: function () {
-            var i, children = this.get("children");
-            for (i = 0; i < children.length; i = i + 1) {
-                children[i].destroy();
+            var i;
+            for (i = 0; i < this.children.length; i = i + 1) {
+                this.children[i].destroy();
             }
         },
 
@@ -51,13 +45,11 @@ YUI.add('wegas-widgettoolbar', function (Y) {
         // *** Private methods *** //
         render: function () {
             var i, host = this.get("host"),
-            bb = host.get('boundingBox'),
-            cb = host.get('contentBox'),
             children = this.get("children");
-            bb.addClass("wegas-hastoolbar");
-            bb.append('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
-            cb.addClass("wegas-toolbar-sibling");
-            cb.setStyles({
+            host.get('boundingBox').addClass("wegas-hastoolbar")
+            .append('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
+            host.get('contentBox').addClass("wegas-toolbar-sibling")
+            .setStyles({
                 position: "absolute",
                 //bottom: "26px",
                 overflow: "auto",
@@ -68,7 +60,7 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             });
 
             for (i = 0; i < children.length; i = i + 1) {
-                children[i] = this.add(children[i]);
+                this.children.push(this.add(children[i]));
             }
         },
 
@@ -79,9 +71,14 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             widget.render(this.get("header"));
             widget.addTarget(this.get("host"));
             return widget;
+        },
+        item: function (index) {
+            return this.children[index];
         }
 
     }, {
+        NS: "toolbar",
+        NAME: "toolbar",
         ATTRS: {
             children: {
                 value: []

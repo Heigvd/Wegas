@@ -29,8 +29,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
         // *** Lifecycle methods *** //
         initializer: function () {
             this.afterHostEvent("render", function () {
-                var bb = this.get("host").get("boundingBox"),
-                aClass = "";
+                var bb = this.get("host").get("boundingBox");
 
                 bb.delegate(this.get("event"), function (e) {
                     var menu = this.getMenu();                                  // Get a menu instance

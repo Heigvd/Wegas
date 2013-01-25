@@ -1,4 +1,4 @@
-/* 
+/*
     Document   : wegas-button
     Created on : 17 janv. 2013, 16:24:10
     Author     : Benjamin
@@ -26,11 +26,11 @@
 }
 .yui3-skin-sam .wegas-icon-newfile {
     background: url(../images/wegas-app-sprite.png) no-repeat 1px -1210px,
-        url(../../wegas_editor/images/wegas-icon-files.png) no-repeat 1px -228px;
+        url(../../wegas-editor/images/wegas-icon-files.png) no-repeat 1px -228px;
 }
 .yui3-skin-sam .wegas-icon-newdir {
     background: url(../images/wegas-app-sprite.png) no-repeat 1px -1167px,
-        url(../images/wegas-button-sprite.png) no-repeat 1px -272px;
+        url(../images/wegas-app-sprite.png) no-repeat 1px -272px;
 }
 .yui3-skin-sam .wegas-icon-play {
     background-position: 0px -192px;

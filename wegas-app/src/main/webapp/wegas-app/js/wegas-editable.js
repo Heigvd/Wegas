@@ -38,7 +38,7 @@ YUI.add('wegas-editable', function (Y) {
          */
         toJSON: function () {
             var k, ret = this.getAttrs(),
-                    attrCfgs = this.getAttrCfgs();
+            attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
                 if (attrCfgs[k] && attrCfgs[k]["transient"]) {                           // Remove any transient attribute
@@ -122,11 +122,11 @@ YUI.add('wegas-editable', function (Y) {
          */
         getMenuCfg: function (data) {
             var menus = Y.Wegas.app.get('editorMenus'),
-                    //    staticMenus =
-                    menu;
+            //    staticMenus =
+            menu;
 
             if (menus) {
-                menu = menus[ this.get('@class')] || menus[this.get("type")];  // Select first server defined forms, based on the @class or the type attribute
+                menu = menus[ this.get('@class')] || menus[this.get("type")];   // Select first server defined forms, based on the @class or the type attribute
             }
             menu = menu || this.getStatic("EDITMENU")[0] || [];                 // And if no form is defined we return the default one defined in the entity
 
@@ -134,10 +134,12 @@ YUI.add('wegas-editable', function (Y) {
             function mixMenuCfg (elts, data) {
                 var i, j;
                 for (i = 0; i < elts.length; i += 1) {
-                    Y.mix(elts[i], data);// Attach self and the provided datasource to the menu items, to allow them to know which entity to update
+                    Y.mix(elts[i], data, true);                                 // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
 
                     if (elts[i].plugins) {
                         for (j = 0; j < elts[i].plugins.length; j = j + 1) {
+                            elts[i].plugins[j].cfg = elts[i].plugins[j].cfg || {};
+                            Y.mix(elts[i].plugins[j].cfg, data, true);
                             if (elts[i].plugins[j].cfg && elts[i].plugins[j].cfg.children) {
                                 mixMenuCfg(elts[i].plugins[j].cfg.children, data);
                             }
@@ -190,9 +192,9 @@ YUI.add('wegas-editable', function (Y) {
          */
         getRawModulesFromDefinition: function (cfg) {
             var i, props, type = cfg.type || cfg["@class"],
-                    module = YUI_config.groups.wegas.modulesByType[type],
-                    modules = [],
-                    pushFn = function (field) {
+            module = YUI_config.groups.wegas.modulesByType[type],
+            modules = [],
+            pushFn = function (field) {
                 if (field) {
                     modules = modules.concat(Editable.getModulesFromDefinition(field));
                 }

@@ -8,10 +8,6 @@
         <ui:define name="head">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
             <style type="text/css">
-                .wegas-toolbar {
-                    box-shadow: none;
-                    border: none;
-                }
                 .wegas-joingamewidget {
                     padding: 20px;
                 }
@@ -26,7 +22,7 @@
 
         <ui:define name="body">
             <script type="text/javascript">
-                var Y = YUI().use("wegas-app", "wegas-editor", function (Y) {
+                var Y = YUI().use("wegas-app", "wegas-rightcss", function (Y) {
                     var cfg = {
                         layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
                         debug : true,
@@ -75,27 +71,8 @@
                         }
                     };
 
-                    Y.Wegas.persistence.Game.EDITMENU.splice(0, 0, {
-                        type: "Button",
-                        label: "Open in editor",
-                        plugins: [{
-                                fn: "OpenGameAction"
-                            }]
-                    });
-
-                    Y.Wegas.persistence.Game.EDITMENU.splice(0, 0, {            // We allow the player to open its pages with the widget
-                        type: "Button",
-                        label: "Open",
-                        plugins: [{
-                                fn: "OpenGameAction",
-                                cfg: {
-                                    editorUrl: "wegas-app/view/play.html?"
-                                }
-                            }]
-                    });
-
                     Y.on('domready', function() {                               // When dom is ready,
-                        var editor = new Y.Wegas.Editor(cfg);                   // Launch the editor as soon as Dom is ready
+                        var editor = new Y.Wegas.App(cfg);                   // Launch the editor as soon as Dom is ready
                         editor.render();
                     });
                 });
