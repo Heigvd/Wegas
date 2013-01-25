@@ -19,7 +19,7 @@ YUI.add('wegas-impactgame', function (Y) {
     ImpactGame = Y.Base.create("wegas-impactgame", Y.Wegas.Console, [Y.WidgetChild,  Y.Wegas.Widget], {
 
         renderUI: function () {
-            this.plug( Y.Plugin.WidgetToolbar );
+            this.plug(Y.Plugin.WidgetToolbar);
 
             var cb = this.get(CONTENTBOX);
 
@@ -33,10 +33,10 @@ YUI.add('wegas-impactgame', function (Y) {
 
             this.runButton();
         },
-        
-        runButton: function (){
+
+        runButton: function () {
             var el = this.toolbar.get('header');
-            
+
             this.runButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run script",
                 on: {
@@ -45,13 +45,12 @@ YUI.add('wegas-impactgame', function (Y) {
                             "@class": "Script",
                             language: "JavaScript",
                             content: this.srcField.getValue().content
-                        });                        
+                        });
                     }, this)
                 }
             }).render(el);
         }
     });
-
 
     Y.namespace('Wegas').ImpactGame = ImpactGame;
 });

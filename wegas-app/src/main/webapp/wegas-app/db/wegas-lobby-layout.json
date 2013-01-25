@@ -18,6 +18,9 @@
                         "children": {
                             "type": "EditorTreeView",
                             "dataSource": "User",
+                            "request": {
+                                "request": "/"
+                            },
                             "plugins": [{
                                 "fn": "WidgetToolbar",
                                 "cfg": {
@@ -36,6 +39,9 @@
                         "children": {
                             "type": "EditorTreeView",
                             "dataSource": "Role",
+                            "request": {
+                                "request": "/"
+                            },
                             "plugins": [{
                                 "fn": "WidgetToolbar",
                                 "cfg": {

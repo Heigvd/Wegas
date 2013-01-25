@@ -81,7 +81,7 @@ YUI.add('wegas-app', function (Y) {
                 exception = exception.split(",");
                 if (e.status === 400 && exception[0] === '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
                     exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
-                    //                    Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
+                    // Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
                     alert("You have been logged out or does not have permissions");
                 }
             }, this);

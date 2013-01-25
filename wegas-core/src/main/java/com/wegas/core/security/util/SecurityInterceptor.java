@@ -12,13 +12,14 @@ package com.wegas.core.security.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import javax.naming.AuthenticationException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -68,7 +69,7 @@ public class SecurityInterceptor {
             log.debug("[security] checking for authenticated user.");
             try {
                 if (!subject.isAuthenticated()) {
-                    throw new AuthorizationException();
+                    throw new AuthenticationException("Subject is not logged in.");
                 }
             } catch (Exception e) {
                 log.error("Access denied - {}: {}", e.getClass().getName(),
@@ -114,7 +115,7 @@ public class SecurityInterceptor {
                     }
                 }
                 if (!roleVerified) {
-                    throw new AuthorizationException(
+                    throw new UnauthorizedException(
                             "Access denied. User doesn't have enough privilege Roles:"
                             + listOfRoles + " to access this page.");
                 }
@@ -167,7 +168,7 @@ public class SecurityInterceptor {
                     }
                 }
                 if (!permitted) {
-                    throw new AuthorizationException(
+                    throw new UnauthorizedException(
                             "Access denied. User doesn't have enough privilege Permissions:"
                             + listOfRoles + " to access this page.");
                 }
