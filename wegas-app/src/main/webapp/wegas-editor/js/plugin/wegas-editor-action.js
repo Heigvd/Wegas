@@ -80,10 +80,9 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(OpenTabAction, Action, {
         execute: function () {
-            var childCfg = this.get("children");                                // Forward plugin data to the target widget
-            childCfg.data = this;                                               // @fixme Usde in wegas-inputex-permissionselect
+            var childCfg = this.get("children")[0];                             // @fixme currently we only render the first child
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
-                this.get("tabSelector"), {}, childCfg);
+                this.get("tabSelector"), {}, childCfg);                         // Forward plugin data to the target widget
         }
     }, {
         NS: "wegas",
@@ -92,10 +91,11 @@ YUI.add('wegas-editor-action', function (Y) {
             tabSelector: {
                 value: '#centerTabView'
             },
-            children: {}
+            children: {
+                value: []
+            }
         }
     });
-
     Y.namespace("Plugin").OpenTabAction = OpenTabAction;
 
     /**
@@ -205,7 +205,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
             this.textField = new Y.inputEx.StringField({
                 parentEl: this.get(CONTENTBOX)
-                });
+            });
             this.get(CONTENTBOX).on("click", function (e) {
                 e.halt(true);
             });

@@ -121,9 +121,9 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
     inputEx.registerType("permissionsselect", inputEx.Wegas.PermissionSelect);             // Register this class as "wegasurl" type
 
-
-
-
+    /**
+     *
+     */
     var CONTENTBOX = "contentBox", RolePermissionList;
 
     RolePermissionList = Y.Base.create("wegas-permissionlist", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
@@ -147,7 +147,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                 this.permsField.destroy();
             }
 
-            var e = this.get("data").get("entity"),
+            var e = this.get("entity"),
             gmId = e.get("id");
             if (e instanceof Y.Wegas.persistence.GameModel) {
                 this.targetEntityId = "gm" + gmId;
@@ -226,7 +226,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             permsList: {
                 value: []
             },
-            data: {}
+            entity: {}
         }
     });
 

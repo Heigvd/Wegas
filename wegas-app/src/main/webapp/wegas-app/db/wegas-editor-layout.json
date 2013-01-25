@@ -60,7 +60,7 @@
                             "children": [{
                                     "type": "OpenTabButton",
                                     "label": "Console",
-                                    "children": {
+                                    "children": [{
                                         "type": "Console",
                                         "class": "wegas-console",
                                         "plugins": [{
@@ -71,13 +71,13 @@
                                                         }]
                                                 }
                                             }]
-                                    }
+                                    }]
                                 }, {
                                     "type": "OpenTabButton",
                                     "label": "Log",
-                                    "children": {
+                                    "children": [{
                                         "type": "Log"
-                                    }
+                                    }]
                                 }]
                         }
                     }]
@@ -91,7 +91,7 @@
                             "children": [{
                                     "type": "OpenTabButton",
                                     "label": "Users",
-                                    "children": {
+                                    "children": [{
                                         "type": "EditorTreeView",
                                         "dataSource": "User",
                                         "request": {
@@ -108,11 +108,11 @@
                                                         }]
                                                 }
                                             }]
-                                    }
+                                    }]
                                 }, {
                                     "type": "OpenTabButton",
                                     "label": "Groups",
-                                    "children": {
+                                    "children": [{
                                         "type": "EditorTreeView",
                                         "dataSource": "Role",
                                         "request": {
@@ -129,7 +129,7 @@
                                                         }]
                                                 }
                                             }]
-                                    }
+                                    }]
                                 }]
                         }
                     }]
@@ -143,33 +143,33 @@
                             "children": [{
                                     "type": "OpenTabButton",
                                     "label": "Styles",
-                                    "children": {
+                                    "children": [{
                                         "type": "CSSEditor",
                                         "class": "wegas-csseditor"
-                                    }
+                                    }]
                                 }, {
                                     "type": "OpenTabButton",
                                     "label": "Files",
-                                    "children": {
+                                    "children": [{
                                         "type": "FileExplorer",
                                         "plugins": [{
                                                 "fn": "WidgetToolbar"
                                             }]
-                                    }
+                                    }]
                                 }, {
                                     "type": "OpenTabButton",
                                     "label": "Scripts",
-                                    "children": {
+                                    "children": [{
                                         "type": "ScriptLibrary"
-                                    }
+                                    }]
                                 }, {
                                     "type": "OpenTabButton",
                                     "label": "Pages",
                                     "tabSelector": "#leftTabView",
-                                    "children": {
+                                    "children": [{
                                         "type": "PageTreeview",
                                         "pageLoader": "previewPageLoader"
-                                    }
+                                    }]
                                 }]
                         }
                     }]
@@ -183,14 +183,14 @@
                             "children": [{
                                     "type": "OpenTabButton",
                                     "label": "Players",
-                                    "children": {
+                                    "children": [{
                                         "type": "EditorTreeView",
                                         "dataSource": "Game"
-                                    }
+                                    }]
                                 },{
                                     "type": "OpenTabButton",
                                     "label": "Impact game",
-                                    "children": {
+                                    "children": [{
                                         "type": "ImpactGame",
                                         "class": "wegas-console",
                                         "plugins": [{
@@ -201,7 +201,7 @@
                                                         }]
                                                 }
                                             }]
-                                    }
+                                    }]
                                 }]
                         }
                     }]
@@ -218,9 +218,9 @@
                                     "plugins": [{
                                             "fn": "OpenTabAction",
                                             "cfg": {
-                                                "children": {
+                                                "children": [{
                                                     "type": "UserPreferences"
-                                                }
+                                                }]
                                             }
                                         }]
                                 }, {
