@@ -61,7 +61,7 @@ public class ChoiceInstance extends VariableInstance {
 
     /**
      *
-     * @return
+     * @param currentResultId
      */
     public void setCurrentResultId(Long currentResultId) {
         this.currentResultId = currentResultId;
@@ -81,6 +81,10 @@ public class ChoiceInstance extends VariableInstance {
         this.setCurrentResult(other.getCurrentResult());
     }
 
+    /**
+     *
+     * @param index
+     */
     public void setCurrentResultByIndex(int index) {
         this.setCurrentResult(( (ChoiceDescriptor) this.getDescriptor() ).getResults().get(index));
     }

@@ -36,13 +36,24 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @MapKeyColumn(name = "fsm_statekey")
     private Map<Long, State> states = new HashMap<>();
 
+    /**
+     *
+     */
     public StateMachineDescriptor() {
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<Long, State> getStates() {
         return states;
     }
 
+    /**
+     *
+     * @param states
+     */
     public void setStates(HashMap<Long, State> states) {
         this.states = states;
     }
@@ -60,14 +71,27 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     }
 
     /* script methods */
+    /**
+     * 
+     * @param p
+     */
     public void enable(Player p) {
         this.getInstance(p).setEnabled(Boolean.TRUE);
     }
 
+    /**
+     *
+     * @param p
+     */
     public void disable(Player p) {
         this.getInstance(p).setEnabled(Boolean.FALSE);
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     */
     public Boolean isEnabled(Player p) {
         return this.getInstance(p).getEnabled();
     }

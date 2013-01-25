@@ -77,6 +77,11 @@ public class Helper {
         return lookupBy(type, type);
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public static String encodeVariableName(String name) {
 
         StringBuilder sb = new StringBuilder();
@@ -137,7 +142,7 @@ public class Helper {
 
     /**
      *
-     * @param name
+     * @param label
      * @return the provided name stripped of its (#) suffix.
      */
     public static String stripLabelSuffix(String label) {
@@ -150,6 +155,11 @@ public class Helper {
         }
     }
 
+    /**
+     *
+     * @param label
+     * @return
+     */
     public static int getLabelSuffix(String label) {
         Pattern pattern = Pattern.compile("^(.*)\\((\\d+)\\)$");
         Matcher matcher = pattern.matcher(label);

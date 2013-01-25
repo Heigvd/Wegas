@@ -152,6 +152,7 @@ public class Assignment extends AbstractEntity {
 
     /**
      *
+     * @param newTaskDescriptorId
      * @return
      */
     public Long setTaskDescriptorId(long newTaskDescriptorId) {

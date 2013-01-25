@@ -65,7 +65,7 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
     /**
      *
      * @param entityId
-     * @param entity
+     * @param account
      * @return
      */
     @Override
@@ -96,7 +96,7 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
     /**
      * Return a user based on his principal.
      *
-     * @param principal
+     * @param username
      * @return
      * @throws NoResultException
      */
@@ -109,6 +109,12 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
         return (AbstractAccount) q.getSingleResult();
     }
 
+    /**
+     *
+     * @param email
+     * @return
+     * @throws NoResultException
+     */
     public AbstractAccount findByEmail(String email) throws NoResultException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();

@@ -34,6 +34,12 @@ public class SessionHolder {
     final static private SimpleCredentials admin = new SimpleCredentials(resourceBundle.getString("jcr.admin.username"), resourceBundle.getString("jcr.admin.password").toCharArray());
     private static Map<String, Session> sessionMap = new HashMap<>();
 
+    /**
+     *
+     * @param repository
+     * @return
+     * @throws RepositoryException
+     */
     public static Session getSession(String repository) throws RepositoryException {
         Session session;
         if (!SessionHolder.sessionMap.containsKey(repository) || !SessionHolder.sessionMap.get(repository).isLive()) {
@@ -50,6 +56,11 @@ public class SessionHolder {
         return sessionMap.get(repository);
     }
 
+    /**
+     *
+     * @param repository
+     * @throws RepositoryException
+     */
     public static void closeSession(String repository) throws RepositoryException {
         if (SessionHolder.sessionMap.containsKey(repository) && SessionHolder.sessionMap.get(repository).isLive()) {
             SessionHolder.sessionMap.get(repository).save();
@@ -58,6 +69,11 @@ public class SessionHolder {
         SessionHolder.sessionMap.remove(repository);
     }
 
+    /**
+     *
+     * @param repository
+     * @throws RepositoryException
+     */
     protected static void createWorkspace(String repository) throws RepositoryException {
         Session s;
 

@@ -60,10 +60,20 @@ public class QuestionDescriptor extends ListDescriptor {
     }
 // *** Sugar for scripts *** //
 
+    /**
+     *
+     * @param p
+     * @param value
+     */
     public void setActive(Player p, boolean value) {
         ( (QuestionInstance) this.getInstance(p) ).setActive(value);
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     */
     public Boolean isActive(Player p) {
         QuestionInstance instance = (QuestionInstance) this.getInstance(p);
         return instance.getActive();
@@ -127,6 +137,11 @@ public class QuestionDescriptor extends ListDescriptor {
         this.pictures = pictures;
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     */
     public Boolean isReplied(Player p) {
         QuestionInstance instance = (QuestionInstance) this.getInstance(p);
         return !instance.getReplies().isEmpty();

@@ -36,6 +36,12 @@ public class PlayerController {
     @EJB
     private PlayerFacade playerFacade;
 
+    /**
+     *
+     * @param gameId
+     * @param entityId
+     * @return
+     */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public Player get(@PathParam("gameId") Long gameId,
@@ -46,6 +52,11 @@ public class PlayerController {
         return playerFacade.find(entityId);
     }
 
+    /**
+     *
+     * @param gameId
+     * @return
+     */
     @GET
     public Collection<Player> index(@PathParam("gameId") Long gameId) {
 
@@ -56,7 +67,9 @@ public class PlayerController {
 
     /**
      *
+     * @param gameId
      * @param entity
+     * @param teamId
      * @return
      */
     @POST
@@ -69,6 +82,13 @@ public class PlayerController {
         return entity;
     }
 
+    /**
+     *
+     * @param gameId
+     * @param entityId
+     * @param entity
+     * @return
+     */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public Player update(@PathParam("gameId") Long gameId,
@@ -77,6 +97,11 @@ public class PlayerController {
         return playerFacade.update(entityId, entity);
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     public Player delete(@PathParam("entityId") Long entityId) {

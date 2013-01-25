@@ -34,25 +34,31 @@ public class ScriptLibrary {
 
     /**
      *
-     * @param playerId
+     * @param gameModelId
      * @param script
+     * @param scriptKey
      * @return p
-     * @throws ScriptException
      */
     @POST
     @Path("{scriptKey : [a-zA-Z0-9_]+}")
     @Produces(MediaType.APPLICATION_JSON)
     public GameModel edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("scriptKey") String scriptKey, String script) {
-        
+
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        
+
         GameModel gameModel = gameModelFacade.find(gameModelId);
         gameModel.getScriptLibrary().put(scriptKey, script);
         // return Response.ok().build();
         return gameModel;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param scriptKey
+     * @return
+     */
     @DELETE
     @Path("{scriptKey : [a-zA-Z0-9_]+}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -60,7 +66,7 @@ public class ScriptLibrary {
             @PathParam("scriptKey") String scriptKey) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        
+
         GameModel gameModel = gameModelFacade.find(gameModelId);
         gameModel.getScriptLibrary().remove(scriptKey);
         return gameModel;

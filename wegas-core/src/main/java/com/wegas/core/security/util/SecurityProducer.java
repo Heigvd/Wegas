@@ -34,6 +34,9 @@ public class SecurityProducer {
     private SecurityManager securityManager;
 
 //    @PostConstruct
+    /**
+     *
+     */
     public void init() {
         final String iniFile = "classpath:shiro.ini";
         logger.info("Initializing Shiro INI SecurityManager using " + iniFile);
@@ -43,11 +46,19 @@ public class SecurityProducer {
 
 //    @Produces
 //    @Named("securityManager")
+    /**
+     *
+     * @return
+     */
     public SecurityManager getSecurityManager() {
         return securityManager;
     }
 
 //    @Produces
+    /**
+     *
+     * @return
+     */
     public Subject getSubject() {
         return SecurityUtils.getSubject();
     }

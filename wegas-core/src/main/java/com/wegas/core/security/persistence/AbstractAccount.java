@@ -197,6 +197,10 @@ public class AbstractAccount extends AbstractEntity {
         this.roles = roles;
     }
 
+    /**
+     *
+     * @param role
+     */
     public void addRole(Role role) {
         this.roles.add(role);
     }
@@ -214,10 +218,18 @@ public class AbstractAccount extends AbstractEntity {
     public void setPermissions(Set<String> permissions) {
         this.permissions = permissions;
     }
-    
+
+    /**
+     *
+     * @param permission
+     */
     public void removePermission(String permission){
         this.permissions.remove(permission);
     }
+    /**
+     *
+     * @param permission
+     */
     public void addPermission(String permission){
         this.permissions.add(permission);
     }

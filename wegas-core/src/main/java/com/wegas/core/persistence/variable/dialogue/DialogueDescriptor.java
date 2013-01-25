@@ -29,13 +29,24 @@ public class DialogueDescriptor extends StateMachineDescriptor {
     @MapKeyColumn(name = "name", updatable = false, insertable = false)
     private Map<String, UserAction> userActions;
 
+    /**
+     *
+     */
     public DialogueDescriptor() {
     }
 
+    /**
+     * 
+     * @return
+     */
     public Map<String, UserAction> getUserActions() {
         return userActions;
     }
 
+    /**
+     *
+     * @param userActions
+     */
     public void setUserActions(Map<String, UserAction> userActions) {
         this.userActions = userActions;
     }

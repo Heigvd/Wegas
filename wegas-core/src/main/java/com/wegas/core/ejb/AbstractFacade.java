@@ -43,6 +43,7 @@ public interface AbstractFacade<T extends AbstractEntity> {
      *
      * @param entityId
      * @return
+     * @throws IOException
      */
     public T duplicate(final Long entityId) throws IOException;
 

@@ -35,11 +35,21 @@ public class Pages implements Serializable {
     @XmlTransient
     private PageConnector connector;
 
+    /**
+     *
+     * @param gameModelName
+     * @throws RepositoryException
+     */
     public Pages(String gameModelName) throws RepositoryException {
         this.gameModelName = gameModelName;
         this.connector = new PageConnector();
     }
 
+    /**
+     *
+     * @return
+     * @throws RepositoryException
+     */
     public Map<Integer, String> getIndex() throws RepositoryException {
         if (!this.connector.exist(this.gameModelName)) {
             return null;
@@ -59,6 +69,11 @@ public class Pages implements Serializable {
         return ret;
     }
 
+    /**
+     *
+     * @return
+     * @throws RepositoryException
+     */
     public Map<Integer, JsonNode> getPages() throws RepositoryException {
         if (!this.connector.exist(this.gameModelName)) {
             return null;
@@ -82,6 +97,12 @@ public class Pages implements Serializable {
         return ret;
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     * @throws RepositoryException
+     */
     public Page getPage(Integer id) throws RepositoryException {
         Node n = this.connector.getChild(gameModelName, id.toString());
         Page ret = null;
@@ -99,10 +120,19 @@ public class Pages implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getGameModelName() {
         return gameModelName;
     }
 
+    /**
+     *
+     * @param page
+     * @throws RepositoryException
+     */
     public void store(Page page) throws RepositoryException {
         Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
         n.setProperty("content", page.getContent().toString());
@@ -112,6 +142,11 @@ public class Pages implements Serializable {
         this.connector.save();
     }
 
+    /**
+     *
+     * @param page
+     * @throws RepositoryException
+     */
     public void setMeta(Page page) throws RepositoryException {
         Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
         if (page.getName() != null) {
@@ -120,10 +155,19 @@ public class Pages implements Serializable {
         this.connector.save();
     }
 
+    /**
+     *
+     * @param pageId
+     * @throws RepositoryException
+     */
     public void deletePage(String pageId) throws RepositoryException {
         this.connector.deleteChild(this.gameModelName, pageId);
     }
 
+    /**
+     *
+     * @throws RepositoryException
+     */
     public void delete() throws RepositoryException {
         this.connector.deleteRoot(this.gameModelName);
     }

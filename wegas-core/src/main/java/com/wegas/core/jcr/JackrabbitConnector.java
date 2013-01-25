@@ -79,6 +79,10 @@ public class JackrabbitConnector {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     protected javax.jcr.Repository getRepo() {
         return JackrabbitConnector.repo;
     }

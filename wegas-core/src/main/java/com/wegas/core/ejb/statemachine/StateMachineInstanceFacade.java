@@ -33,6 +33,9 @@ public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineI
     @EJB
     private ScriptFacade scriptManager;
 
+    /**
+     *
+     */
     public StateMachineInstanceFacade() {
         super(StateMachineInstance.class);
     }
@@ -54,6 +57,12 @@ public class StateMachineInstanceFacade extends AbstractFacadeImpl<StateMachineI
 //        return entity;
 //    }
 
+    /**
+     *
+     * @param entity
+     * @throws ScriptException
+     * @throws WegasException
+     */
     public void step(StateMachineInstance entity) throws ScriptException, WegasException{
         List<Transition> transitions = entity.getCurrentState().getTransitions();
         for(Transition transition: transitions){

@@ -31,6 +31,9 @@ public class StateMachineDescriptorFacade extends AbstractFacadeImpl<StateMachin
     @EJB
     private GameModelFacade gameModelEntityFacade;
 
+    /**
+     *
+     */
     public StateMachineDescriptorFacade() {
         super(StateMachineDescriptor.class);
     }
