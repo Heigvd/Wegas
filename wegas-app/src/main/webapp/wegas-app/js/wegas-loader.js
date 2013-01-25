@@ -37,7 +37,7 @@ YUI().use(function(Y) {
                         type: 'css'
                     },
                     'wegas-editable': {
-                        path: 'wegas-app/js/wegas-editable-min.js',
+                        path: 'wegas-app/js/util/wegas-editable-min.js',
                         requires: ['base'/*, 'inputex-jsonschema'*/]
                     },
                     'wegas-datasourcerest': {
@@ -46,11 +46,11 @@ YUI().use(function(Y) {
                         "datasource-io", "datasource-jsonschema", "datasource-cache"]
                     },
                     'wegas-scripteval': {
-                        path: 'wegas-app/js/wegas-scripteval-min.js',
+                        path: 'wegas-app/js/util/wegas-scripteval-min.js',
                         requires: ['plugin']
                     },
                     'wegas-injector': {
-                        path: 'wegas-app/js/util/wegas-injector-min.js',
+                        path: 'wegas-app/js/plugin/wegas-injector-min.js',
                         ws_provides: "Injector"
                     },
 
