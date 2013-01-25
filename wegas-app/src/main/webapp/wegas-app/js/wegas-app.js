@@ -19,11 +19,14 @@ YUI.add('wegas-app', function (Y) {
     * @name Y.Wegas.App
     * @class  Base class for wegas, handle initialisation of datasources and rendering
     * @constructor
-    * @param Object Will be used to fill attributes field 
+    * @param Object Will be used to fill attributes field
     * @description create a new wegas-app
     */
     var App = Y.Base.create("wegas-app", Y.Base, [], {
 
+        /**
+         * @lends Y.Wegas.App#
+         */
         // ** Private fields ** //
         /**
          * Holds a reference to all the dataSources used.
@@ -166,8 +169,11 @@ YUI.add('wegas-app', function (Y) {
         }
     }, {
         /**
-         * @memberOf Y.Wegas.App#
-         * @name attrributes
+         * @lends Y.Wegas.App
+         */
+        /**
+         * @field
+         * @static
          * @description
          * <p><strong>Method</strong></p>
          * <ul>
@@ -250,9 +256,8 @@ YUI.add('wegas-app', function (Y) {
             }
         },
         /**
-         * @methodOf Y.Wegas.App
+         * @function
          * @static
-         * @name genId
          * @return {integer} time
          * @description generate ID
          */
@@ -261,9 +266,8 @@ YUI.add('wegas-app', function (Y) {
             return now.getHours() + now.getMinutes() + now.getSeconds();
         },
         /**
-         * @methodOf Y.Wegas.App
+         * @function
          * @static
-         * @name htmlEntities
          * @param str String
          * @return {String} Escaped string
          * @description Escape all necessary character

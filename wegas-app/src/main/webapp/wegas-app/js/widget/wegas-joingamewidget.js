@@ -24,16 +24,18 @@ YUI.add('wegas-joingamewidget', function (Y) {
     * @extends Y.Widget
     * @class  class for join a game and a team
     * @constructor
-    * @description Allows to join a game by token or a public game. Then you can 
+    * @description Allows to join a game by token or a public game. Then you can
     * join or create a new team
     */
     JoinGameWidget = Y.Base.create("wegas-joingamewidget", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+        /**
+         * @lends Y.Wegas.JoinGameWidget#
+         */
         // *** Private fields *** //
 
         /**
-         * @methodOf Y.Wegas.JoinGameWidget#
+         * @function
          * @private
-         * @name renderUI
          * @description All button and fields are created.
          * For creating the field inputEx libary is used
          */
@@ -46,7 +48,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 label: "Enter a key phrase to join a game",
                 typeInvite: "Enter a token"
             });
-            
+
             this.p = Y.Node.create('<div class="lobbyOr"><p>Or</p><div>');
             cb.append(this.p);
 
@@ -89,13 +91,12 @@ YUI.add('wegas-joingamewidget', function (Y) {
         },
 
         /**
-         * @methodOf Y.Wegas.JoinGameWidget#
+         * @function
          * @private
-         * @name bindUI
          * @description All events are added to the buttons
          * Create team button call rest url : rest/GameModel/{gameModelID}/Game/{gameID}/CreateTeam/{teamName}
          */
-        bindUI: function () {            
+        bindUI: function () {
             this.tokenField.on("updated", function (e) {
                 if (this.tokenField.getValue() !== "") {
                     this.selectPublicGame.setValue("");
@@ -113,7 +114,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                     this.sendJoinGame();
                 }else if (this.selectPublicGame.getValue() != ""){
                     this.currentGame = this.selectPublicGame.getValue();
-                    this.showTeams(); 
+                    this.showTeams();
                     this.selectPublicGame.removeChoice({
                         value: this.currentGame
                     });
@@ -130,7 +131,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
             }, this);
             this.createButton.on("click", function (e) {                      // Create a new team
                 if (this.createTeamField.validate()) {
-                    Y.Wegas.GameFacade.rest.sendRequest({    
+                    Y.Wegas.GameFacade.rest.sendRequest({
                         request: "/" + this.currentGame.get("id") + "/CreateTeam/" + this.createTeamField.getValue(),
                         cfg: {
                             method: "POST"
@@ -147,11 +148,10 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }
             }, this);
         },
-        
+
         /**
-         * @methodOf Y.Wegas.JoinGameWidget#
+         * @function
          * @private
-         * @name sendJoinGame
          * @description Method for join a game by token
          * Call rest request for join the game : rest/GameModel/1/Game/{gameModelID}/JoinGame/{token}
          */
@@ -164,7 +164,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                             instanceof Y.Wegas.persistence.Team) {
                             this.sendJoinTeamRequest(                       // it means we can join this team directly
                                 e.response.entity.get("id"));
-                        } else {       
+                        } else {
                             this.currentGame = e.response.entity;
                             this.showTeams();                               // otherwise the player can choose or create its team
                         }
@@ -175,11 +175,10 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }
             });
         },
-        
+
         /**
-         * @methodOf Y.Wegas.JoinGameWidget#
+         * @function
          * @private
-         * @name showTeams
          * @description Hide and show all necessary field
          */
         showTeams: function () {
@@ -211,9 +210,8 @@ YUI.add('wegas-joingamewidget', function (Y) {
         },
 
         /**
-         * @methodOf Y.Wegas.JoinGameWidget#
+         * @function
          * @private
-         * @name showPublicGames
          * @description Add all public game in a listbox
          * Use rest request for get public games: rest/PublicGames/Games/{userID}
          */
@@ -232,7 +230,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
                             this.selectPublicGame.addChoice({
                                 label: game.get("name"),
                                 value: game
-                            });                            
+                            });
                         }, this);
                     }, this),
                     failure: Y.bind(function (e) {
@@ -241,11 +239,10 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }
             });
         },
-        
+
         /**
-         * @methodOf Y.Wegas.JoinGameWidget#
+         * @function
          * @private
-         * @name sendJoinTeamRequest
          * @description User rest request: rest/GameModel/1/Game/{gameModelID}/JoinTeam/{teamID}
          */
         sendJoinTeamRequest: function (teamId) {
@@ -261,19 +258,18 @@ YUI.add('wegas-joingamewidget', function (Y) {
                 }
             });
         },
-        
+
         /**
-         * @methodOf Y.Wegas.JoinGameWidget#
+         * @function
          * @private
-         * @name joinTeamSuccess
          * @description Display the button and field for join a game by token or a public game
          */
         joinTeamSuccess : function() {
             this.showMessage("success", "Game joined, it has been added to your games", 10000);
-            
+
             Y.Wegas.RegisteredGamesFacade.rest.clearCache();
             Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
-            
+
             this.joinGameButton.show();
             this.tokenField.show();
             this.selectPublicGame.show();
@@ -287,11 +283,10 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.tokenField.setValue("");
             this.createTeamField.setValue("");
         },
-        
+
         /**
-         * @methodOf Y.Wegas.JoinGameWidget#
+         * @function
          * @private
-         * @name removeAllTeamsChoices
          * @description Remove all teams from the listbox
          */
         removeAllTeamsChoices: function(){

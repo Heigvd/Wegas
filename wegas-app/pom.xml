@@ -12,6 +12,7 @@
     <groupId>com.wegas</groupId>
     <artifactId>wegas-app</artifactId>
     <packaging>war</packaging>
+    <name>wegas-app</name>
 
     <properties>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>

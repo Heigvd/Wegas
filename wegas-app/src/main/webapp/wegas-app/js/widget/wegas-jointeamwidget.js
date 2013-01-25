@@ -26,11 +26,12 @@ YUI.add('wegas-jointeamwidget', function (Y) {
     * @description Allows just to join a team
     */
     JoinTeamWidget = Y.Base.create("wegas-jointeamwidget", Y.Wegas.JoinGameWidget, [Y.WidgetChild, Y.Wegas.Widget], {
-        
         /**
-         * @methodOf Y.Wegas.JoinTeamWidget#
+         * @lends Y.Wegas.JoinTeamWidget.prototype
+         */
+        /**
+         * @function
          * @private
-         * @name renderUI
          * @description Difference compared to the parent class:
          * 1) token is get from the url
          * 2) then call directly the sendJoinGame()
@@ -42,18 +43,16 @@ YUI.add('wegas-jointeamwidget', function (Y) {
         },
 
         /**
-         * @methodOf Y.Wegas.JoinTeamWidget#
+         * @function
          * @private
-         * @name bindUI
          */
-        bindUI: function () {            
+        bindUI: function () {
             JoinTeamWidget.superclass.bindUI.apply(this);
         },
-        
+
         /**
-         * @methodOf Y.Wegas.JoinTeamWidget#
+         * @function
          * @private
-         * @name joinTeamSuccess
          * @description Reload the same page
          */
         joinTeamSuccess: function () {
