@@ -3,18 +3,6 @@
     "name": "Book",
     "cssUri":"wegas-book/css/wegas-book.css",
     "widgetsUri":"wegas-book/db/wegas-book-pages.json#",
-    "games": [{
-        "@class": "Game",
-        "name": "First game",
-        "teams": [{
-            "@class": "Team",
-            "name": "Red",
-            "players": [{
-                "@class": "Player",
-                "name": "Jo"
-            }]
-        }]
-    }],
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
         "name":"combatSkill",

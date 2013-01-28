@@ -7,20 +7,19 @@
  *
  * Copyright (C) 2012
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-action', function(Y) {
     "use strict";
 
     /**
      *  Extension that adds editable capacities to plugins
+     *
+     *  @class Y.Wegas.Plugin
+     *  @constructor
      */
-    function Plugin() {
-    }
-
+    function Plugin() {}
     Y.mix(Plugin.prototype, {});
     Y.mix(Plugin, {
         ATTRS: {
@@ -35,16 +34,26 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-
     Y.namespace("Wegas").Plugin = Plugin;
 
+    /**
+     *  @class Y.Plugin.Action
+     *  @extends Y.Plugin.Base
+     *  @constructor
+     */
     var Action = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        /** @lends Y.Plugin.Action */
+        /**
+         * @function
+         * @private
+         */
         initializer: function() {
-            this.onHostEvent(this.get("targetEvent"), function() {
-               // this.setAttrs(this.get("host").get("data"));                  // Pass the action data from the host to the plug
-                this.execute();
-            }, this);
+            this.onHostEvent(this.get("targetEvent"), this.execute, this);
         },
+        /**
+         * @function
+         * @protected
+         */
         execute: function() {
             Y.error("Y.Plugin.Action.execute() is abstract, should be overriddent");
         }
@@ -63,6 +72,7 @@ YUI.add('wegas-action', function(Y) {
      *  @class OpenGameAction
      *  @module Wegas
      *  @constructor
+     *  @extends Y.Plugin.Action
      */
     var OpenUrlAction = function() {
         OpenUrlAction.superclass.constructor.apply(this, arguments);
@@ -91,19 +101,18 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-
     Y.namespace("Plugin").OpenUrlAction = OpenUrlAction;
 
 
     /**
-     *  @class OpenPageAction
+     *  @class Y.Plugin.OpenPageAction
+     *  @extends Y.Plugin.Action
      *  @module Wegas
      *  @constructor
      */
     var OpenPageAction = function() {
         OpenPageAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(OpenPageAction, Action, {
         initializer: function() {
             OpenPageAction.superclass.initializer.apply(this, arguments);
@@ -191,9 +200,7 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-
     Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
-
 
     var PopupPlg = function() {
         PopupPlg.superclass.constructor.apply(this, arguments);

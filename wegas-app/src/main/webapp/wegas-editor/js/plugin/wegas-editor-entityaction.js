@@ -89,7 +89,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
             if (!EditEntityAction.tab) {                                      // First make sure the edit tab exists
                 EditEntityAction.tab = Y.Wegas.TabView.createTab("Edit", '#rightTabView');
                 //EditEntityAction.tab = Y.Wegas.TabView.createTab("Edit", '#centerTabView');
-                EditEntityAction.form = new Y.Wegas.FormWidget();
+                EditEntityAction.form = new Y.Wegas.Form();
 
                 EditEntityAction.form.on("submit", function (e) {
                     this.form.showOverlay();
