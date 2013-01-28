@@ -94,3 +94,8 @@
     padding: 4px 1px 0 0;
 }
 
+.yui3-skin-sam .wegas-inbox .wegas-toolbar,
+.yui3-skin-sam .wegas-userpreferences .wegas-toolbar{
+    background-color:rgba(255, 255, 255, 0.4);
+}
+
