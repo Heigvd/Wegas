@@ -20,10 +20,11 @@ YUI.add('wegas-loginwidget', function(Y) {
 
     /**
      *
-     *  @class Y.Wegas.JoinGameWidget
-     *
+     *  @class Y.Wegas.LoginWidget
+     *  @constructor     *
      */
     LoginWidget = Y.Base.create("wegas-loginwidget", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+        /** @lends Y.Wegas.LoginWidget# */
         // *** Private fields *** //
         defaultRedirect: "wegas-app/view/lobby.html",
         // *** Lifecycle Methods *** //

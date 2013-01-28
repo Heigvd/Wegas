@@ -22,7 +22,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
         'Managed-Mode': 'true'
     };
 
+    /**
+     * @class Y.Wegas.DataSource
+     * @extends Y.DataSource.IO
+     */
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
+        /** @lends Y.Wegas.DataSource# */
         initializer: function () {
             this.publish("EntityUpdatedEvent", {
                 broadcast: true,
@@ -47,8 +52,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     /**
-     *  @class DataSourceREST
+     *  @class Y.Plugin.DataSourceREST
      *  @module Wegas
+     *  @extends Y.Plugin.Base
      *  @constructor
      */
     DataSourceREST = function () {
@@ -115,6 +121,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         },
         onResponseRevived: function (e) {
             var i, entity, evtPayload, response = e.serverResponse;
+
             this.updated = false;
             if (e.error) {                                                      // If there was an server error, do not update the cache
                 return;
@@ -125,10 +132,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             } else {
                 for (i = 0; i < response.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
-                   entity = response.get("entities")[i];
+                    entity = response.get("entities")[i];
                     if (Lang.isObject(entity)) {
                         this.updated = this.updateCache(e.cfg.method, entity) || this.updated;
                     }
+                    e.response.entity = entity; /* Shortcut, usefule if there is only one instance */
                 }
 
                 for (i = 0; i < response.get("events").length; i += 1) {

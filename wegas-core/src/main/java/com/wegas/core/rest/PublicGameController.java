@@ -47,7 +47,7 @@ public class PublicGameController {
      * @return
      */
     @GET
-    @Path("PublicGames/Games/{userId : [1-9][0-9]*}")
+    @Path("PublicGames/{userId : [1-9][0-9]*}")
     public Collection<Game> publicGame(@PathParam("userId") Long userId) {
         return gameFacade.getPublicGames(userId);
     }
