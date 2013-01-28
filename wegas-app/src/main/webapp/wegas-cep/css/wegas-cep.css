@@ -407,10 +407,7 @@ h3 {
 
 .informations .nodeformatter-properties span{
     display:inline-block;
-}
-
-.informations .label{
-    width:75px;
+    vertical-align: top;
 }
 
 .informations .nodeformatter-valuebox {
@@ -442,7 +439,7 @@ h3 {
 .informations .nodeformatter-valuebox .box-unit{
     display:block;
     background-color:#6F89A2;
-    background-image:url(/Wegas/wegas-cep/images/gaugeFiller.png);
+    background-image:url(../../wegas-cep/images/gaugeFiller.png);
     background-repeat: repeat-x;
     float:left;
     width:2px;
