@@ -154,7 +154,6 @@ YUI.add('wegas-editor-action', function (Y) {
                 label: entity.get("name") || "Unnamed"
             },
             tab = Y.Wegas.TabView.createTab(tabId, this.get("tabSelector"), tabCfg);
-
             tab.set("selected", 2);
 
             tab.witem(0).set("emptyMessage", "This game model has no games.");
@@ -213,7 +212,7 @@ YUI.add('wegas-editor-action', function (Y) {
         /**
          * @function
          * @private
-         * @description 
+         * @description
          * 1) Add a <div class="playerlink-label"><p>Player link</p><div> node fordisplay a label in the menu
          * 2) Add the inputeExStringField
          * 3) Stop the click event on this contentbox
@@ -231,7 +230,7 @@ YUI.add('wegas-editor-action', function (Y) {
                 e.halt(true);
             });
         },
-        
+
         /**
          * @function
          * @private

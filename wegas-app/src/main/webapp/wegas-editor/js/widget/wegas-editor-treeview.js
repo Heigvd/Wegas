@@ -483,6 +483,13 @@ YUI.add('wegas-editor-treeview', function (Y) {
      *
      */
     var LobbyTreeView = Y.Base.create("wegas-editor-treeview", Y.Wegas.EditorTreeView, [], {
+
+        // ** Lifecycle methods ** //
+        renderUI: function () {
+            this.treeView = new Y.TreeView();
+            this.treeView.render(this.get(CONTENTBOX));
+        },
+
         bindUI: function () {
             LobbyTreeView.superclass.bindUI.apply(this);
             //this.treeView.on("*:click", this.onTreeViewClick, this);

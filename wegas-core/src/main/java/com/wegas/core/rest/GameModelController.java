@@ -101,10 +101,10 @@ public class GameModelController {
         Collection<GameModel> games = new ArrayList<>();
         Subject s = SecurityUtils.getSubject();
         //String r =  (requestManager.getView() == Views.Index.class) ? "View": "Edit";
-        
+
         for (GameModel g : gameModelFacade.findAll()) {
-            //if (!s.isPermitted("GameModel:" + r +":gm" + aGm.getId())) {
-            if (!s.isPermitted("GameModel:View:gm" + g.getId())) {
+            //if (s.isPermitted("GameModel:" + r +":gm" + aGm.getId())) {
+            if (s.isPermitted("GameModel:View:gm" + g.getId())) {
                 games.add(g);
             }
         }

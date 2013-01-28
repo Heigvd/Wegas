@@ -104,19 +104,19 @@ YUI.add("wegas-button", function (Y) {
      * Plugin which adds an unread message counter to a widget.
      *
      * @class Y.Wegas.UnreadCount
+     * @extends Y.Plugin.Base
+     * @borrows Y.Wegas.Plugin, Y.Wegas.Editable
      */
     var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        /** @lends Y.Wegas.UnreadCount# */
         initializer: function () {
             this.vdHandler = // If data changes, refresh
-                    Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
-            this.pcHandler = // If data changes, refresh
-                    Y.Wegas.app.on("currentPlayerChanger", this.syncUI, this);
+                    Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
 
             this.afterHostEvent("render", this.syncUI, this);
         },
         destructor: function () {
             this.vdHandler.detach();
-            this.pcHandler.detach();
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),

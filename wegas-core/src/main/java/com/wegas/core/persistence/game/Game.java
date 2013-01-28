@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.ejb.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
@@ -76,6 +77,13 @@ public class Game extends NamedEntity {
 
     /**
      *
+     */
+    public Game(String name) {
+        this.name = name;
+    }
+
+    /**
+     *
      * @param name
      * @param token
      */
@@ -91,7 +99,10 @@ public class Game extends NamedEntity {
     @PreUpdate
     public void prePersist() {
         if (this.getToken() == null) {
-            this.setToken(this.getName().replace(" ", "-"));
+            this.setToken(Helper.genToken(10));
+        }
+        if ( this.teams.isEmpty()) {
+            this.addTeam(new Team("Default"));
         }
     }
 

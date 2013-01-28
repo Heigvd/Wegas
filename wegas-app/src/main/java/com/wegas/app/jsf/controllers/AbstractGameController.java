@@ -31,17 +31,17 @@ public class AbstractGameController implements Serializable {
     /**
      *
      */
-    @ManagedProperty(value = "#{param.id}")
+    @ManagedProperty("#{param.id}")
     protected Long playerId;
     /**
      *
      */
-    @ManagedProperty(value = "#{param.gameId}")
+    @ManagedProperty("#{param.gameId}")
     protected Long gameId;
     /**
      *
      */
-    @ManagedProperty(value = "#{param.gameModelId}")
+    @ManagedProperty("#{param.gameModelId}")
     protected Long gameModelId;
     /**
      *
