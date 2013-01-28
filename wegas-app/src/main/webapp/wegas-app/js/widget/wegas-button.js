@@ -16,8 +16,8 @@ YUI.add("wegas-button", function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-            BOUNDINGBOX = 'boundingBox',
-            Button;
+    BOUNDINGBOX = 'boundingBox',
+    Button;
 
     /* @fixme So we can display html tag inside a button */
     Y.Button.prototype._uiSetLabel = function (value) {
@@ -33,9 +33,12 @@ YUI.add("wegas-button", function (Y) {
      *  to the original Y.Button
      *
      *  @class Y.Wegas.Button
+     *  @constructor
      *
      */
     Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+
+        /** @lends Y.Wegas.Button */
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
@@ -82,18 +85,18 @@ YUI.add("wegas-button", function (Y) {
                 _inputex: {
                     _type: "editablelist",
                     items: [{
-                            type: "Button",
-                            label: "Tooltip",
-                            data: "Tooltip"
-                        }, {
-                            type: "Button",
-                            label: "Impact",
-                            data: "ExecuteScriptAction"
-                        }, {
-                            type: "Button",
-                            label: "Open page",
-                            data: "OpenPageAction"
-                        }]
+                        type: "Button",
+                        label: "Tooltip",
+                        data: "Tooltip"
+                    }, {
+                        type: "Button",
+                        label: "Impact",
+                        data: "ExecuteScriptAction"
+                    }, {
+                        type: "Button",
+                        label: "Open page",
+                        data: "OpenPageAction"
+                    }]
                 }
             }
         }
@@ -111,7 +114,7 @@ YUI.add("wegas-button", function (Y) {
         /** @lends Y.Wegas.UnreadCount# */
         initializer: function () {
             this.vdHandler = // If data changes, refresh
-                    Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
+            Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
 
             this.afterHostEvent("render", this.syncUI, this);
         },
@@ -120,8 +123,8 @@ YUI.add("wegas-button", function (Y) {
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),
-                    target = cb.one(".unread-count"),
-                    unreadCount = this.getUnreadCount();
+            target = cb.one(".unread-count"),
+            unreadCount = this.getUnreadCount();
 
             if (!target) {                                                      // If the counter span has not been rendered, do it
                 cb.append('<span class="unread-count"></span>');
@@ -136,7 +139,7 @@ YUI.add("wegas-button", function (Y) {
         },
         getUnreadCount: function () {
             var i, instance, messages, count = 0,
-                    descriptor = this.get('variable.evaluated');
+            descriptor = this.get('variable.evaluated');
 
             if (!descriptor) {
                 return 0;

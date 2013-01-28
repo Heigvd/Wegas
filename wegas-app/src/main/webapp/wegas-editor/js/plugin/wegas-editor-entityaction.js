@@ -15,15 +15,10 @@
 
 YUI.add('wegas-editor-entityaction', function (Y) {
     "use strict";
-    /**
-     *  @class Action
-     *  @module Wegas
-     *  @constructor
-     */
     var Action = Y.Plugin.Action, EntityAction;
 
     /**
-     *  @class Action
+     *  @class Y.Wegas.EntityAction
      *  @module Wegas
      *  @constructor
      */
@@ -32,6 +27,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
     };
 
     Y.extend(EntityAction, Action, {}, {
+        /** @lends Y.Wegas.EntityAction */
         NS: "entityaction",
         NAME: "EntityAction",
         ATTRS: {

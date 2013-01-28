@@ -222,7 +222,7 @@ YUI.add('wegas-joingamewidget', function (Y) {
             });
 
             Y.Wegas.PublicGamesFacade.rest.sendRequest({
-                request: "/Games/" + Y.Wegas.app.get('currentUser').id,
+                request: "/" + Y.Wegas.app.get('currentUser').id,
                 on: {
                     success: Y.bind(function (e) {
                         var data = e.response.results.entities;
