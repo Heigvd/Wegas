@@ -17,13 +17,9 @@ import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -39,7 +35,9 @@ import org.apache.shiro.subject.Subject;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/")
-public class GameController extends AbstractRestController<GameFacade, Game> {
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class GameController {
 
     /**
      *
@@ -74,75 +72,58 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Override
-    public Game get(@PathParam("entityId") Long entityId) {
+    public Game find(@PathParam("entityId") Long entityId) {
 
         SecurityUtils.getSubject().checkPermission("Game:View:g" + entityId);
 
-        return super.get(entityId);
+        return gameFacade.find(entityId);
     }
 
     /**
      *
      * @return
      */
-    @Override
-    public Collection<Game> index() {
-        GameModel gameModel = gameModelEntityFacade.find(new Long(this.getPathParam("gameModelId")));
-        Collection<Game> game = new ArrayList<>(gameModel.getGames());
+    @GET
+    public Collection<Game> index(@PathParam("gameModelId") Long gameModelId) {
+        Collection<Game> games = new ArrayList<>();
+        Subject s = SecurityUtils.getSubject();
 
-        for (Game aG : gameModel.getGames()) {
-            Subject s = SecurityUtils.getSubject();
-            boolean isPermitted = s.isPermitted("Game:Edit:g" + aG.getId());
-            if (!isPermitted) {
-                game.remove(aG);
+        for (Game aG : gameModelEntityFacade.find(gameModelId).getGames()) {
+            if (s.isPermitted("Game:Edit:g" + aG.getId())) {
+                games.add(aG);
             }
         }
-        return game;
+        return games;
         //return gameModel.getGames();
     }
 
-    @Override
-    public Game create(Game entity) {
+    @POST
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) {
 
         SecurityUtils.getSubject().checkPermission("Game:Create");
 
-        this.gameFacade.create(new Long(this.getPathParam("gameModelId")), entity);
-
-        if (entity.getId() != null) {
-            userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + entity.getId());
-            userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + entity.getId());
-        }
+        this.gameFacade.create(gameModelId, entity);
         return entity;
     }
 
-    @Override
-    public Game update(Long entityId, Game entity) {
+    @PUT
+    @Path("{entityId: [1-9][0-9]*}")
+    public Game update(@PathParam("gameModelId") Long entityId, Game entity) {
 
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
 
-        return super.update(entityId, entity);
+        return gameFacade.update(entityId, entity);
     }
 
-    @Override
-    public Game duplicate(Long entityId) throws IOException {
+    @DELETE
+    @Path("{entityId: [1-9][0-9]*}")
+    public Game delete(@PathParam("entityId") Long entityId) {
 
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
 
-        return super.duplicate(entityId);
-    }
-
-    @Override
-    public Game delete(Long entityId) {
-
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
-
-        userFacade.deleteUserPermissionByInstance("g" + entityId);
-
-        userFacade.deleteAllRolePermissionsById("g" + entityId);
-
-        return super.delete(entityId);
+        Game entity = gameFacade.find(entityId);
+        gameFacade.remove(entity);
+        return entity;
     }
 
     /**
@@ -156,7 +137,6 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @GET
     @Path("/JoinGame/{token : .*}/")
-    @Produces(MediaType.APPLICATION_JSON)
     @TransactionAttribute()
     public Object tokenJoinGame(@PathParam("token") String token) throws Exception {
         Game game = gameFacade.findByToken(token);
@@ -169,11 +149,11 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
             game = team.getGame();
         }
 
-        try {                                                                   // We check if logged user is already registered in the target game
+        try {                                        // We check if logged user is already registered in the target game
             playerFacade.findByGameIdAndUserId(
                     game.getId(), userFacade.getCurrentUser().getId());
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
-        } catch (PersistenceException e) {                                        // If there is no NoResultException, everything is ok, we can return the game
+        } catch (PersistenceException e) {           // If there is no NoResultException, everything is ok, we can return the game
 
             SecurityUtils.getSubject().checkPermission("Game:Token:g" + game.getId());
 
@@ -188,12 +168,9 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @GET
     @Path("/JoinTeam/{teamId : .*}/")
-    @Produces(MediaType.APPLICATION_JSON)
     public Game joinTeam(@PathParam("teamId") Long teamId) {
         checkPermissions(teamFacade.find(teamId).getGame().getId());
-        Game g = teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
-        addRights(g);
-        return g;
+        return teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
     }
 
     /**
@@ -204,37 +181,15 @@ public class GameController extends AbstractRestController<GameFacade, Game> {
      */
     @POST
     @Path("{gameId : .*}/CreateTeam/{name : .*}/")
-    @Produces(MediaType.APPLICATION_JSON)
     public Team createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
         checkPermissions(gameId);
         Team t = new Team(name);
-        this.teamFacade.create(new Long(this.getPathParam("gameId")), t);
-//        Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
-        addRights(teamFacade.find(t.getId()).getGame());
+        this.teamFacade.create(gameId, t);
+        //Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
+
         return t;
     }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected GameFacade getFacade() {
-        return gameFacade;
-    }
-
-    private void addRights(Game game) {
-        Subject s = SecurityUtils.getSubject();
-        boolean gExist = s.isPermitted("Game:View:g" + game.getId());
-        boolean gmExist = s.isPermitted("GameModel:View:gm" + game.getGameModel().getId());
-
-        if (!gExist) {
-            userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g" + game.getId());
-        }
-        if (!gmExist) {
-            userFacade.getCurrentUser().getMainAccount().getPermissions().add("GameModel:View:gm" + game.getGameModel().getId());
-        }
-    }
 
     private void checkPermissions(Long id) throws UnauthorizedException {
         if (!SecurityUtils.getSubject().isPermitted("Game:Token:g" + id) && !SecurityUtils.getSubject().isPermitted("Game:View:g" + id)) {

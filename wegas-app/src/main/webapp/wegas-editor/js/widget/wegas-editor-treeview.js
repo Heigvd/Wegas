@@ -546,27 +546,25 @@ YUI.add('wegas-editor-treeview', function (Y) {
         lastOpenedNode: null,
         initializer: function () {
             this.afterHostEvent("render", function () {
-                var host = this.get("host");
-
-                //if treeleaf is empty, load elements (all instances)
-                host.treeView.before("*:nodeExpanded", function (e) {
-                    this.fillsLeaf(e.node);
-                }, this);
-
+                this.get("host").treeView.before("*:nodeExpanded",
+                    this.fillsLeaf, this);                                      //if treeleaf is empty, load elements (all instances)
             });
         },
-        fillsLeaf: function (node) {
-            var id = node.get("data").entity.get("id");
+        fillsLeaf: function (e) {
+            var node = e.node,
+            id = node.get("data").entity.get("id");
 
             if (node.get("data").entity instanceof Y.Wegas.persistence.VariableDescriptor) {
-                if (node.size() > 1) {
+                if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
                     return;
                 }
-                node.add({
-                    label: '<span style="font-style:italic">loading</span>',
-                    iconCSS: 'loading-icon'
-                });
                 node.removeAll();
+
+                node.set("loading", true);
+                //node.add({
+                //    label: '<span style="font-style:italic">loading</span>',
+                //    iconCSS: 'loading-icon'
+                //});
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/" + id + "?view=Editor"
                 });
