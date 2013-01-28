@@ -188,6 +188,9 @@
 }
 .schedule-table td .icon {
     height:26px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .schedule-table .schedule-past {

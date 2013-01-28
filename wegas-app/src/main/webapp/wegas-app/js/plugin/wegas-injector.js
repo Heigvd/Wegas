@@ -19,13 +19,13 @@ YUI.add("wegas-injector", function(Y) {
         var nodeName = element.getDOMNode().nodeName;
         switch (nodeName) {
             case "IMG":
-                if (!element.hasAttribute("src")) {
+                if (!element.hasAttribute("src") || !element.getAttribute("src").match("^(https?://)")) {
                     element.setAttribute("src", Y.Wegas.app.get("dataSources").File.source + "read" + element.getAttribute("data-file"));
                     element.removeAttribute("data-file");
                 }
                 break;
             default:
-                if (!element.hasAttribute("href")) {
+                if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(http://)")) {
                     element.setAttribute("href", Y.Wegas.app.get("dataSources").File.source + "read" + element.getAttribute("data-file"));
                     element.removeAttribute("data-file");
                 }
