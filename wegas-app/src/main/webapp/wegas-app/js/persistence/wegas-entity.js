@@ -561,29 +561,9 @@ YUI.add('wegas-entity', function(Y) {
                 type: "Button",
                 disabled: true,
                 label: "Permissions"
-            }
-            //        , {
-            //            type: "DeleteEntityButton"
-            //        }
-        ]
-                //EDITFORM : [{
-                //    name: 'name',
-                //    label:'Name',
-                //    required: true
-                //}, {
-                //    name: 'password',
-                //    type: 'password',
-                //    label: 'New password',
-                //    showMsg: true,
-                //    id: 'firstPassword',
-                //    strengthIndicator: true,
-                //    capsLockWarning: true
-                //}, {
-                //    type: 'password',
-                //    label: 'Confirmation',
-                //    showMsg: true,
-                //    confirm: 'firstPassword'
-                //}]
+            }, {
+                       type: "DeleteEntityButton"
+            }]
     });
 
     /**

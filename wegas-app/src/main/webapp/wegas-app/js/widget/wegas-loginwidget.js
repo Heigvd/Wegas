@@ -124,10 +124,10 @@ YUI.add('wegas-loginwidget', function(Y) {
                 + '</div>');
         },
         bindUI: function() {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX),
+            inuptNode = cb.one("input");
 
             cb.one(".alt-link").on("click", this.toggleCreateAccount, this);
-
             cb.one(".send-new-password").on("click", this.toggleSendNewPassword, this);
 
             this.loginButton.on("click", this.onSubmit, this);
@@ -136,13 +136,13 @@ YUI.add('wegas-loginwidget', function(Y) {
                     this.loginButton.fire("click");
                 }
             });
-            this.after("render", function(e) {
-                cb.one("input").focus();
-            });
+            this.after("render", inuptNode.focus, inuptNode);
         },
         syncUI: function() {
             this.set("mode", this.get("mode"));
         },
+
+        // *** Private methods *** //
         toggleCreateAccount: function() {
             if (this.get("mode") === "login") {
                 this.set("mode", "createaccount");
@@ -159,30 +159,30 @@ YUI.add('wegas-loginwidget', function(Y) {
         },
         onSubmit: function(e) {
             var data;
-            if (this.get("mode") === "login") {                                 // Join a game based on a token
-                if (!this.loginForm.validate()) {
-                    return;
-                }
-                data = this.loginForm.getValue();
-                this.doLogin(data.email, data.password, data.remember);
+            switch (this.get("mode")) {
+                case "login":
+                    if (this.loginForm.validate()) {
+                        data = this.loginForm.getValue();
+                        this.login(data.email, data.password, data.remember);
+                    }
+                    break;
 
-            } else if (this.get("mode") === "createaccount") {
-                if (!this.createAccountForm.validate()) {
-                    return;
-                }
-                data = this.createAccountForm.getValue();
-                this.createAccount(data);
+                case "createaccount":
+                    if (this.createAccountForm.validate()) {
+                        this.createAccount(this.createAccountForm.getValue());
+                    }
+                    break;
 
-            } else if (this.get("mode") === "sendNewPassword") {
-                if (!this.sendNewPasswordForm.validate()) {
-                    return;
-                }
-                data = this.sendNewPasswordForm.getValue();
-                this.showOverlay();
-                this.sendNewPassword(data.email);
+                case "sendNewPassword":
+                    if (this.sendNewPasswordForm.validate()) {
+                        data = this.sendNewPasswordForm.getValue();
+                        this.showOverlay();
+                        this.sendNewPassword(data.email);
+                    }
+                    break;
             }
         },
-        doLogin: function(email, password, remember) {
+        login: function(email, password, remember) {
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/Authenticate/?email=" + email
                 + "&password=" + password
@@ -210,10 +210,11 @@ YUI.add('wegas-loginwidget', function(Y) {
                     data: data
                 },
                 on: {
-                    success: Y.bind(function(e) {
+                    success: Y.bind(function(data, e) {
                         this.showMessage("success", "User created, you can now use it to login", 4000);
-                        this.set("mode", "login");
-                    }, this),
+                        //this.set("mode", "login");
+                        this.login(data.email, data.password, false);
+                    }, this, data),
                     failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Error creating user", 4000);
                     }, this)
