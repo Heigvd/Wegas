@@ -72,6 +72,14 @@ public class UserController {
         return userFacade.find(entityId);
     }
 
+    @POST
+    public User create(User user) {
+        SecurityUtils.getSubject().checkPermission("User:Edit");
+
+        userFacade.create(user);
+        return user;
+    }
+
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public User update(@PathParam("entityId") Long entityId, User entity) {
@@ -83,33 +91,27 @@ public class UserController {
         return userFacade.update(entityId, entity);
     }
 
-    /**
-     *
-     * @param accountId
-     * @param entity
-     * @return
-     * @throws IOException
-     */
-    @PUT
-    @Path("Account/{accountId: [1-9][0-9]*}")
-    public AbstractAccount updateAccount(@PathParam("accountId") Long accountId, AbstractAccount entity) throws IOException {
+
+    @DELETE
+    @Path("{accountId: [1-9][0-9]*}")
+    public User delete(@PathParam("accountId") Long accountId) {
         AbstractAccount a = accountFacade.find(accountId);
+        User user = a.getUser();
         if (!userFacade.getCurrentUser().equals(a.getUser())) {
             SecurityUtils.getSubject().checkPermission("User:Edit");
         }
-        return accountFacade.update(accountId, entity);
-    }
 
-    @DELETE
-    @Path("{entityId: [1-9][0-9]*}")
-    public User delete(@PathParam("entityId") Long entityId) {
-        User u = userFacade.find(entityId);
-
-        if (!userFacade.getCurrentUser().equals(u)) {
-            SecurityUtils.getSubject().checkPermission("User:Edit");
-        }
-        userFacade.remove(entityId);
-        return u;
+        accountFacade.remove(a);
+        userFacade.remove(user);
+        return user;
+        //return user;
+        //User u = userFacade.find(entityId);
+        //
+        //if (!userFacade.getCurrentUser().equals(u)) {
+        //    SecurityUtils.getSubject().checkPermission("User:Edit");
+        //}
+        //userFacade.remove(entityId);
+        //return u;
     }
 
     /**
@@ -162,7 +164,6 @@ public class UserController {
     @POST
     @Path("Signup")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
     public void signup(@FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("firstname") String firstname,

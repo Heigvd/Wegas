@@ -630,11 +630,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return false;
         },
-        //      updateCache: function ( method, entity ) {
-        //
-        //            for
-        //            VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
-        //       },
+        
+        //updateCache: function ( method, entity ) {},
 
         put: function (data, callback) {
             if (data['@class'] === "JpaAccount") {
@@ -652,7 +649,6 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
         },
         post: function (data, parentData, callback) {
-
             if (data["@class"] === "JpaAccount") {                              // Allow user creation based on a Jpa Account
                 data = {
                     "@class": "User",
