@@ -407,10 +407,7 @@ h3 {
 
 .informations .nodeformatter-properties span{
     display:inline-block;
-}
-
-.informations .label{
-    width:75px;
+    vertical-align: top;
 }
 
 .informations .nodeformatter-valuebox {
