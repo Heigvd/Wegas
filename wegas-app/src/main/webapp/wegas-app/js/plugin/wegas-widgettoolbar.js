@@ -25,7 +25,6 @@ YUI.add('wegas-widgettoolbar', function (Y) {
     };
 
     Y.extend(WidgetToolbar, Y.Plugin.Base, {
-        //className: null,
 
         // *** Lifecycle methods *** //
         initializer: function () {
@@ -50,14 +49,13 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             .append('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
             host.get('contentBox').addClass("wegas-toolbar-sibling")
             .setStyles({
-                position: "relative",
+                position: "absolute",
                 //bottom: "26px",
                 overflow: "auto",
                 padding: "0",
                 left: "0px",
                 right: "0px",
-                top: "31px",
-                margin: "0 0 31px 0"
+                top: "31px"
             });
 
             for (i = 0; i < children.length; i = i + 1) {
