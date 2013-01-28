@@ -137,8 +137,10 @@
                 "id": "gamesTreeViewTab",
                 "type": "Tab",
                 "label": "Games",
+                "visible": "false",
                 "children": [{
                     "type": "EditorTreeView",
+                "visible": "false",
                     "dataSource": "Game",
                     "emptyMessage": "Click in the left column to select a game.",
                     "plugins": [{

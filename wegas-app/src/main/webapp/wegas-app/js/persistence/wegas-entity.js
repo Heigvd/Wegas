@@ -343,7 +343,7 @@ YUI.add('wegas-entity', function(Y) {
                 cssClass: "editor-teamProperties-button"
             }, {
                 type: "Button",
-                label: "View in editor",
+                label: "View as",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -388,6 +388,12 @@ YUI.add('wegas-entity', function(Y) {
                 type: "EditEntityButton",
                 label: "Properties",
                 cssClass: "editor-playerProperties-button"
+            }, {
+                type: "Button",
+                label: "View as",
+                plugins: [{
+                        fn: "OpenGameAction"
+                    }]
             }, {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deletePlayer-button"

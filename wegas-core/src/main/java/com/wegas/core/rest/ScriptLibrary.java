@@ -23,6 +23,8 @@ import org.apache.shiro.SecurityUtils;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/ScriptLibrary/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class ScriptLibrary {
 
     /**
@@ -40,7 +42,6 @@ public class ScriptLibrary {
      */
     @POST
     @Path("{scriptKey : [a-zA-Z0-9_]+}")
-    @Produces(MediaType.APPLICATION_JSON)
     public GameModel edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("scriptKey") String scriptKey, String script) {
 
@@ -60,7 +61,6 @@ public class ScriptLibrary {
      */
     @DELETE
     @Path("{scriptKey : [a-zA-Z0-9_]+}")
-    @Produces(MediaType.APPLICATION_JSON)
     public GameModel delete(@PathParam("gameModelId") Long gameModelId,
             @PathParam("scriptKey") String scriptKey) {
 

@@ -28,6 +28,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 broadcast: true,
                 bubbles: false
             });
+            this.after("sourceChange", this.sendInitialRequest);
         },
         sendInitialRequest: function () {
             if (this.get("initialRequest") !== undefined) {                     // Use this condition so we allow empty strin e.g. ""
@@ -113,7 +114,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },
         onResponseRevived: function (e) {
-            var i, evtPayload, response = e.serverResponse;
+            var i, entity, evtPayload, response = e.serverResponse;
             this.updated = false;
             if (e.error) {                                                      // If there was an server error, do not update the cache
                 return;
@@ -123,10 +124,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     this.updated = this.updateCache(e.cfg.method, response[i]) || this.updated;
                 }
             } else {
-                for (i = 0; i < response.get("entities").length; i += 1) {      // Update the cache with the Entites in the reply body
-                    e.response.entity = response.get("entities")[i];
-                    if (Lang.isObject(e.response.entity)) {
-                        this.updated = this.updateCache(e.cfg.method, e.response.entity) || this.updated;
+                for (i = 0; i < response.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
+                   entity = response.get("entities")[i];
+                    if (Lang.isObject(entity)) {
+                        this.updated = this.updateCache(e.cfg.method, entity) || this.updated;
                     }
                 }
 
@@ -378,6 +379,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
         initializer: function () {
+            /**
+             * Server event, triggered through the managed-mode response events.
+             */
             this.on("EntityUpdatedEvent", function (e) {
                 var i, entities = e.serverEvent.get("updatedEntities");
                 for (i = 0; i < entities.length; i += 1) {  // Update the cache with the entites contained in the reply

@@ -9,8 +9,6 @@
  */
 package com.wegas.core.security.rest;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -66,7 +64,7 @@ public class UserController {
 
     @GET
     @Path("{entityId : [1-9][0-9]*}")
-    public User get(Long entityId) {
+    public User get(@PathParam("entityId") Long entityId) {
         if (!userFacade.getCurrentUser().getId().equals(entityId)) {
             SecurityUtils.getSubject().checkPermission("User:Edit");
         }
@@ -105,9 +103,11 @@ public class UserController {
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     public User delete(@PathParam("entityId") Long entityId) {
-        SecurityUtils.getSubject().checkPermission("User:Edit");
-
         User u = userFacade.find(entityId);
+
+        if (!userFacade.getCurrentUser().equals(u)) {
+            SecurityUtils.getSubject().checkPermission("User:Edit");
+        }
         userFacade.remove(entityId);
         return u;
     }

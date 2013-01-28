@@ -27,7 +27,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Stateless
 @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class PublicGameController {
 
     /**

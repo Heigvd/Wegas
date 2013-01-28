@@ -36,7 +36,7 @@ public class SingleLobbyController implements Serializable {
     /**
      *
      */
-    @ManagedProperty(value = "#{param.token}")
+    @ManagedProperty("#{param.token}")
     private String token;
     /**
      *

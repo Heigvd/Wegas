@@ -133,7 +133,6 @@ public class VariableDescriptorController {
      */
     @GET
     @Path("Reset")
-    @Produces(MediaType.APPLICATION_JSON)
     public Response reset(@PathParam("gameModelId") Long gameModelId) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);

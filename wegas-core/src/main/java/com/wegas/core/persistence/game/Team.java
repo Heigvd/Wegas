@@ -9,6 +9,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.ejb.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +106,7 @@ public class Team extends AbstractEntity {
     @PreUpdate
     public void prePersist() {
         if (this.getToken() == null) {
-            this.setToken(this.getName());
+            this.setToken(Helper.genToken(10));
         }
         this.token = this.token.replace(" ", "-");
     }

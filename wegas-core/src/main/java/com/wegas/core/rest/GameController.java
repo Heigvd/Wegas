@@ -15,7 +15,6 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
@@ -88,9 +87,9 @@ public class GameController {
         Collection<Game> games = new ArrayList<>();
         Subject s = SecurityUtils.getSubject();
 
-        for (Game aG : gameModelEntityFacade.find(gameModelId).getGames()) {
-            if (s.isPermitted("Game:Edit:g" + aG.getId())) {
-                games.add(aG);
+        for (Game g : gameModelEntityFacade.find(gameModelId).getGames()) {
+            if (s.isPermitted("Game:Edit:g" + g.getId())) {
+                games.add(g);
             }
         }
         return games;
@@ -108,7 +107,7 @@ public class GameController {
 
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
-    public Game update(@PathParam("gameModelId") Long entityId, Game entity) {
+    public Game update(@PathParam("entityId") Long entityId, Game entity) {
 
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
 
@@ -189,7 +188,6 @@ public class GameController {
 
         return t;
     }
-
 
     private void checkPermissions(Long id) throws UnauthorizedException {
         if (!SecurityUtils.getSubject().isPermitted("Game:Token:g" + id) && !SecurityUtils.getSubject().isPermitted("Game:View:g" + id)) {
