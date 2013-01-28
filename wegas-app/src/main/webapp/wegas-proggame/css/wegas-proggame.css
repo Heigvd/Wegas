@@ -219,28 +219,28 @@
     height:30px;
 }
 .object-layer .player.dir-1 {
-    background: url(/Wegas/wegas-proggame/images/sprites-1.png) 5px 0px no-repeat;
+    background: url(../../wegas-proggame/images/sprites-1.png) 5px 0px no-repeat;
 }
 .object-layer .player.dir-2 {
-    background: url(/Wegas/wegas-proggame/images/sprites-1.png) 4px -32px no-repeat;
+    background: url(../../wegas-proggame/images/sprites-1.png) 4px -32px no-repeat;
 }
 .object-layer .player.dir-3 {
-    background: url(/Wegas/wegas-proggame/images/sprites-1.png) 4px -65px no-repeat;
+    background: url(../../wegas-proggame/images/sprites-1.png) 4px -65px no-repeat;
 }
 .object-layer .player.dir-4 {
-    background: url(/Wegas/wegas-proggame/images/sprites-1.png) 4px -95px no-repeat;
+    background: url(../../wegas-proggame/images/sprites-1.png) 4px -95px no-repeat;
 }
 .object-layer .enemy.dir-1 {
-    background: url(/Wegas/wegas-proggame/images/sprites-1.png) -68px 0px no-repeat;
+    background: url(../../wegas-proggame/images/sprites-1.png) -68px 0px no-repeat;
 }
 .object-layer .enemy.dir-2 {
-    background: url(/Wegas/wegas-proggame/images/sprites-1.png) -68px -32px no-repeat;
+    background: url(../../wegas-proggame/images/sprites-1.png) -68px -32px no-repeat;
 }
 .object-layer .enemy.dir-3 {
-    background: url(/Wegas/wegas-proggame/images/sprites-1.png) -68px -65px no-repeat;
+    background: url(../../wegas-proggame/images/sprites-1.png) -68px -65px no-repeat;
 }
 .object-layer .enemy.dir-4 {
-    background: url(/Wegas/wegas-proggame/images/sprites-1.png) -68px -95px no-repeat;
+    background: url(../../wegas-proggame/images/sprites-1.png) -68px -95px no-repeat;
 }
 
 .object-layer .missile {
@@ -249,7 +249,7 @@
     height: 30px;
     width: 30px;
     position:absolute;
-    background: url(/Wegas/wegas-proggame/images/8ball.png) 8px 8px no-repeat;
+    background: url(../../wegas-proggame/images/8ball.png) 8px 8px no-repeat;
 }
 
 #cr-stage{

@@ -11,7 +11,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-YUI.add('wegas-proggame-display', function (Y) {
+YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
     var CONTENTBOX = 'contentBox',
             GRIDSIZE = 32;
@@ -26,7 +26,7 @@ YUI.add('wegas-proggame-display', function (Y) {
         gridH: null,
         gridW: null,
         allowNextCommand: null,
-        initializer: function () {
+        initializer: function() {
             this.allowNextCommand = false;
             this.publish("commandExecuted", {});
             if (this.get('map')) {
@@ -34,7 +34,7 @@ YUI.add('wegas-proggame-display', function (Y) {
                 this.gridW = this.get('map')[0].length;
             }
         },
-        renderUI: function () {
+        renderUI: function() {
             var i, j, k,
                     craftyNode = Y.Node.create("<div id='cr-stage'></div>");
             this.get(CONTENTBOX).append(craftyNode);
@@ -49,28 +49,28 @@ YUI.add('wegas-proggame-display', function (Y) {
 
             Crafty.refWidget = this;
 
-            Crafty.bind('commandExecuted', function () {
+            Crafty.bind('commandExecuted', function() {
                 if (Crafty.refWidget.allowNextCommand) {
                     Crafty.refWidget.allowNextCommand = false;
                     Crafty.refWidget.fire('commandExecuted');
                 }
-            })
+            });
 
             Crafty.background('rgb(110,110,110)');
             //sprites (temporary, need to create dynamically)
-            Crafty.sprite(24, 32, '/Wegas/wegas-proggame/images/characters.png', {
+            Crafty.sprite(24, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/characters.png', {
                 characters: [0, 0]
             });
-            Crafty.sprite(32, 32, '/Wegas/wegas-proggame/images/lightning.png', {
+            Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
                 lightning: [0, 0]
             });
-            Crafty.sprite(32, 32, '/Wegas/wegas-proggame/images/terrain.png', {
+            Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/terrain.png', {
                 terrain: [0, 0]
             });
             //move function
             Crafty.c('move4Direction', {//require Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
                 tweenEnd: null,
-                init: function () {
+                init: function() {
                     var i, sprites = this.cfg.sprites;
                     this.requires("Tween, SpriteAnimation");
                     for (i = 0; i < sprites.length; i++) {
@@ -82,7 +82,7 @@ YUI.add('wegas-proggame-display', function (Y) {
                         }
                     }
                     this.tweenEnd = []; //Tween x and y. Thus, the tween end when this variable contain x and y.
-                    this.bind('TweenEnd', function (e) {
+                    this.bind('TweenEnd', function(e) {
                         this.tweenEnd.push(e);
                         if (this.tweenEnd.length === 2) {
                             this.stop();
@@ -91,7 +91,7 @@ YUI.add('wegas-proggame-display', function (Y) {
                         }
                     }, this);
                 },
-                execMove: function (direction, toX, toY, speed) {
+                execMove: function(direction, toX, toY, speed) {
                     var animDir, time, dist;
                     switch (direction) {
                         case 1:
@@ -121,14 +121,14 @@ YUI.add('wegas-proggame-display', function (Y) {
                 }});
             Crafty.c("shoot", {
                 shot: null,
-                init: function () {
-                    this.bind("moveEnded", function () {
+                init: function() {
+                    this.bind("moveEnded", function() {
                         if (this.shot) {
                             this.shot.destroy();
                         }
                     }, this);
                 },
-                execFire: function (dir, toX, toY, speed) {
+                execFire: function(dir, toX, toY, speed) {
                     this.shot = Crafty.e('2D, lightningShot, ' + Crafty.refWidget.renderMethod);
                     this.shot.attr('x', this.pos()._x);
                     this.shot.attr('y', this.pos()._y);
@@ -137,7 +137,7 @@ YUI.add('wegas-proggame-display', function (Y) {
             });
 
             Crafty.c("lightningShot", {//temporary hard-coded
-                init: function () {
+                init: function() {
                     var animations = [{
                             "name": "moveUp",
                             "x": 0,
@@ -166,17 +166,17 @@ YUI.add('wegas-proggame-display', function (Y) {
 
             Crafty.c("die", {
                 isDying: null,
-                init: function () {
+                init: function() {
                     this.requires("Tween");
                     this.isDying = false;
-                    this.bind('TweenEnd', function (e) {
+                    this.bind('TweenEnd', function(e) {
                         if (this.isDying) {
                             Crafty.trigger('commandExecuted');
                             this.destroy();
                         }
                     }, this);
                 },
-                execDie: function () {
+                execDie: function() {
                     this.isDying = true;
                     this.tween({alpha: 0}, 50);
                 }
@@ -213,9 +213,9 @@ YUI.add('wegas-proggame-display', function (Y) {
 
             //Entities
             var object, pos;
-            var makeEntity = function (cfg) {
+            var makeEntity = function(cfg) {
                 Crafty.c(cfg.id, {
-                    init: function () {
+                    init: function() {
                         this.cfg = cfg;
                         if (cfg.spriteSheet) {
                             this.requires(cfg.spriteSheet);
@@ -241,7 +241,7 @@ YUI.add('wegas-proggame-display', function (Y) {
                 }
             }
         },
-        destructor: function () {
+        destructor: function() {
             var k;
             for (k in Crafty("*")) {
                 if (Crafty("*")[k].destroy) {
@@ -252,7 +252,7 @@ YUI.add('wegas-proggame-display', function (Y) {
             Crafty.unbind('moveEnded');
             Crafty.unbind('commandExecuted');
         },
-        execute: function (command) {
+        execute: function(command) {
             var object, entity, dir, pos, i;
             switch (command.type) {
                 case "resetLevel":
@@ -317,7 +317,7 @@ YUI.add('wegas-proggame-display', function (Y) {
                     break;
             }
         },
-        getRealXYPos: function (position) {
+        getRealXYPos: function(position) {
             var pos = [];
             if (!position || typeof position[0] !== 'number' || typeof position[1] !== 'number') {
                 return pos;

@@ -54,28 +54,28 @@
 }
 
 .wegas-book-dice .result-value-1{
-    background-image:url(/Wegas/wegas-book/images/de1.png);
+    background-image:url(../../wegas-book/images/de1.png);
     background-color: black;
 }
 
 .wegas-book-dice .result-value-2{
-    background-image:url(/Wegas/wegas-book/images/de2.png);
+    background-image:url(../../wegas-book/images/de2.png);
 }
 
 .wegas-book-dice .result-value-3{
-    background-image:url(/Wegas/wegas-book/images/de3.png);
+    background-image:url(../../wegas-book/images/de3.png);
 }
 
 .wegas-book-dice .result-value-4{
-    background-image:url(/Wegas/wegas-book/images/de4.png);
+    background-image:url(../../wegas-book/images/de4.png);
 }
 
 .wegas-book-dice .result-value-5{
-    background-image:url(/Wegas/wegas-book/images/de5.png);
+    background-image:url(../../wegas-book/images/de5.png);
 }
 
 .wegas-book-dice .result-value-6{
-    background-image:url(/Wegas/wegas-book/images/de6.png);
+    background-image:url(../../wegas-book/images/de6.png);
 }
 
 .wegas-book-fight-content .opponent div{
