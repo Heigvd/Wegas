@@ -106,6 +106,10 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
         GameModel gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
+
+        userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + game.getId());
+        userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + game.getId());
+
         super.create(game);
     }
 
@@ -115,6 +119,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             entity.setToken(Helper.genToken(10));
         }
         return super.update(entityId, entity);
+    }
+
+    @Override
+    public void remove(Game entity) {
+        super.remove(entity);
+
+        userFacade.deleteUserPermissionByInstance("g" + entity.getId());
+        userFacade.deleteAllRolePermissionsById("g" + entity.getId());
     }
 
     /**
