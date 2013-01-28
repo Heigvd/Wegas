@@ -19,12 +19,14 @@ YUI.add("wegas-userpreferences", function (Y) {
                 var k, entity = Y.Wegas.UserFacade.rest.get("currentUser").getMainAccount(),
                 host = this.get("host"),
                 fieldsToIgnore = [];
-                for (k in entity.toObject()) {                                      //hide ineditable fields
+
+                for (k in entity.toObject()) {                                  //hide ineditable fields
                     if (k !== 'firstname' && k !== 'lastname'
                         && k !== 'password' && k !== 'submit') {
                         fieldsToIgnore.push(k);
                     }
                 }
+                
                 host.cancelButton.hide();
                 host.set("cfg", entity.getFormCfg(fieldsToIgnore));
                 host.set("values", entity.toObject());
@@ -37,16 +39,10 @@ YUI.add("wegas-userpreferences", function (Y) {
         },
 
         sendUpdate: function () {
-            var k,
-            user = Y.Wegas.UserFacade.rest.get("currentUser").getMainAccount().toObject(),
+            var user = Y.Wegas.UserFacade.rest.get("currentUser").getMainAccount().toObject(),
             host = this.get("host"),
-            updatedAccount = host.get('form').getValue();
+            updatedAccount = Y.mix(host.get('form').getValue(), user);//need to send an "JpAccount", thus merge account and updates
 
-            for (k in user) {                                           //need to send an "JpAccount", thus merge account and updates
-                if (!updatedAccount[k]) {
-                    updatedAccount[k] = user[k];
-                }
-            }
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/Account/" + updatedAccount.id,
                 cfg: {
