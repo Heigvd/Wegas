@@ -9,12 +9,14 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import java.util.HashMap;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -42,6 +44,8 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     @EJB
     private GameFacade gameFacade;
+    @EJB
+    private VariableInstanceFacade variableInstanceFacade;
     /**
      *
      */
@@ -90,6 +94,22 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
             team = (Team) findByToken.getResultList().get(0);
         }
         return team;
+    }
+
+    @Override
+    public void remove(Team entity) {
+        List<VariableInstance> instances = this.getAssociatedInstances(entity);
+        System.out.print(instances);
+        this.em.remove(entity);
+        for (VariableInstance i : instances) {
+            this.em.remove(i);
+        }
+    }
+
+    public List<VariableInstance> getAssociatedInstances(Team team) {
+        Query findInstances = em.createNamedQuery("findTeamInstances");
+        findInstances.setParameter("teamid", team.getId());
+        return findInstances.getResultList();
     }
 
     /**

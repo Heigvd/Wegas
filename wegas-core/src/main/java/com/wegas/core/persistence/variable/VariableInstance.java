@@ -47,6 +47,10 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class)
 })
+@NamedQueries({
+    @NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
+    @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid")
+})
 //@JsonIgnoreProperties(value={"descriptorId"})
 abstract public class VariableInstance extends AbstractEntity {
 
