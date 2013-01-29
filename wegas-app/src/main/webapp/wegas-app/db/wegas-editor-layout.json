@@ -219,7 +219,10 @@
                                             "fn": "OpenTabAction",
                                             "cfg": {
                                                 "children": [{
-                                                    "type": "UserPreferences"
+                                                    "type": "Form",
+                                                    "plugins": [{
+                                                        "fn": "UserPreferences"
+                                                    }]
                                                 }]
                                             }
                                         }]

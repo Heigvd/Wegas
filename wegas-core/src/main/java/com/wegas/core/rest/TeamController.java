@@ -9,16 +9,17 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Team;
-import java.io.IOException;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -26,7 +27,9 @@ import org.apache.shiro.SecurityUtils;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/{gameId : [1-9][0-9]*}/Team")
-public class TeamController extends AbstractRestController<TeamFacade, Team> {
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class TeamController {
 
     private static final Logger logger = LoggerFactory.getLogger(TeamController.class);
     /**
@@ -34,64 +37,47 @@ public class TeamController extends AbstractRestController<TeamFacade, Team> {
      */
     @EJB
     private TeamFacade teamFacade;
-
     /**
      *
-     * @return
      */
-    @Override
-    protected TeamFacade getFacade() {
-        return this.teamFacade;
-    }
-    
-    @Override
-    public Team get(Long entityId) {
+    @EJB
+    private GameFacade gameFacade;
 
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + this.getPathParam("gameId"));
-        
-        return super.get(entityId);
+    @GET
+    @Path("{teamId : [1-9][0-9]*}")
+    public Team get(@PathParam("teamId") Long teamId) {
+        Team t = teamFacade.find(teamId);
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + t.getGameId());
+        return t;
     }
 
-    @Override
-    public Collection<Team> index() {
-        
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + this.getPathParam("gameId"));
-        
-        return super.index();
+    @GET
+    public Collection<Team> index(@PathParam("gameId") Long gameId) {
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + gameId);
+        return gameFacade.find(gameId).getTeams();
     }
-    
-    @Override
-    public Team create(Team entity) {
-        
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
-        
-        this.teamFacade.create(new Long(this.getPathParam("gameId")),
-                (Team) entity);
+
+    @POST
+    public Team create(@PathParam("gameId") Long gameId, Team entity) {
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
+        this.teamFacade.create(gameId, entity);
         return entity;
     }
-    
-    @Override
-    public Team update(Long entityId, Team entity){
-        
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
-        
-        return super.update(entityId, entity);
+
+    @PUT
+    @Path("{teamId : [1-9][0-9]*}")
+    public Team update(@PathParam("teamId") Long teamId, Team entity) {
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + teamFacade.find(teamId).getGameId());
+        return teamFacade.update(teamId, entity);
     }
-    
-    @Override
-    public Team duplicate(Long entityId) throws IOException{
-        
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
-        
-        return super.duplicate(entityId);
-    }
-    
-    @Override
-    public Team delete(Long entityId){
-        
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + this.getPathParam("gameId"));
-        
-        return super.delete(entityId); 
+
+    @DELETE
+    @Path("{teamId: [1-9][0-9]*}")
+    public Team delete(@PathParam("teamId") Long teamId) {
+        Team entity = teamFacade.find(teamId);
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entity.getGameId());
+        teamFacade.remove(entity);
+        return entity;
     }
     /**
      *

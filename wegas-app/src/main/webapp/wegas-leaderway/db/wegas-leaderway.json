@@ -3,21 +3,6 @@
     "name": "Leaderway",
     "cssUri": "wegas-leaderway/css/wegas-leaderway.css",
     "widgetsUri": "wegas-leaderway/db/wegas-leaderway-pages.json#",
-    "games": [{
-            "@class": "Game",
-            "name": "Test-16",
-            "teams": [{
-                    "@class": "Team",
-                    "name": "Les autres",
-                    "players": [{
-                            "@class": "Player",
-                            "name": "Jo",
-                            "user": {
-                                "@class": "User"
-                            }
-                        }]
-                }]
-        }],
     "childVariableDescriptors": [{
             "@class": "NumberDescriptor",
             "name": "budget",

@@ -34,8 +34,10 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
     Y.extend(RoleSelect, Y.inputEx.SelectField, {
         /** @lends Y.inputEx.Wegas.RoleSelect# */
         setValue: function (val, sendUpdatedEvent) {
-            this.ovalue = val;
-            RoleSelect.superclass.setValue.call(this, val.id, sendUpdatedEvent);
+            if (val) {
+                this.ovalue = val;
+                RoleSelect.superclass.setValue.call(this, val.id, sendUpdatedEvent);
+            } 
         },
         getValue: function () {
             if (this.ovalue) {

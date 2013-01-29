@@ -9,9 +9,9 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -35,13 +35,13 @@ public class EditorGameController extends AbstractGameController {
     /**
      *
      */
-    @ManagedProperty(value = "#{param.teamId}")
+    @ManagedProperty("#{param.teamId}")
     protected Long teamId;
     /**
      *
      */
     @EJB
-    protected UserFacade teamFacade;
+    protected TeamFacade teamFacade;
 
     /**
      *

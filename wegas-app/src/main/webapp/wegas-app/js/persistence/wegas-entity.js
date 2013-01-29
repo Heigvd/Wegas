@@ -343,7 +343,7 @@ YUI.add('wegas-entity', function(Y) {
                 cssClass: "editor-teamProperties-button"
             }, {
                 type: "Button",
-                label: "View in editor",
+                label: "View as",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -388,6 +388,12 @@ YUI.add('wegas-entity', function(Y) {
                 type: "EditEntityButton",
                 label: "Properties",
                 cssClass: "editor-playerProperties-button"
+            }, {
+                type: "Button",
+                label: "View as",
+                plugins: [{
+                        fn: "OpenGameAction"
+                    }]
             }, {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deletePlayer-button"
@@ -555,29 +561,9 @@ YUI.add('wegas-entity', function(Y) {
                 type: "Button",
                 disabled: true,
                 label: "Permissions"
-            }
-            //        , {
-            //            type: "DeleteEntityButton"
-            //        }
-        ]
-                //EDITFORM : [{
-                //    name: 'name',
-                //    label:'Name',
-                //    required: true
-                //}, {
-                //    name: 'password',
-                //    type: 'password',
-                //    label: 'New password',
-                //    showMsg: true,
-                //    id: 'firstPassword',
-                //    strengthIndicator: true,
-                //    capsLockWarning: true
-                //}, {
-                //    type: 'password',
-                //    label: 'Confirmation',
-                //    showMsg: true,
-                //    confirm: 'firstPassword'
-                //}]
+            }, {
+                       type: "DeleteEntityButton"
+            }]
     });
 
     /**

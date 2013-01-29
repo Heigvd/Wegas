@@ -38,7 +38,7 @@ public class RequestController implements Serializable {
     /**
      *
      */
-    @ManagedProperty(value = "#{param.lang}")
+    @ManagedProperty("#{param.lang}")
     private String lang = "en";
 
     /**
@@ -94,7 +94,7 @@ public class RequestController implements Serializable {
     public User getCurrentUser() {
         return userFacade.getCurrentUser();
     }
-    
+
     public String getCurrentRole(){
         String cssClass = "";
         for (Role r : userFacade.getCurrentUser().getMainAccount().getRoles()){
