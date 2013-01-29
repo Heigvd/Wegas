@@ -109,7 +109,7 @@ public class PlayerController {
 
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entity.getGame().getId());
 
-        playerFacade.remove(entityId);
+        playerFacade.remove(entity);
         return entity;
     }
 }
