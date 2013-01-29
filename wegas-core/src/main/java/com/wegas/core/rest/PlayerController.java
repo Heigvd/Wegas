@@ -10,6 +10,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Player;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -35,33 +36,33 @@ public class PlayerController {
      */
     @EJB
     private PlayerFacade playerFacade;
+    @EJB
+    private TeamFacade teamFacade;
 
     /**
      *
      * @param gameId
-     * @param entityId
+     * @param playerId
      * @return
      */
     @GET
-    @Path("{entityId : [1-9][0-9]*}")
-    public Player get(@PathParam("gameId") Long gameId,
-            @PathParam("entityId") Long entityId) {
-
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + gameId);
-
-        return playerFacade.find(entityId);
+    @Path("{playerId : [1-9][0-9]*}")
+    public Player get(@PathParam("playerId") Long playerId) {
+        Player p = playerFacade.find(playerId);
+        SecurityUtils.getSubject().checkPermission("Game:View:g" + p.getGameId());
+        return playerFacade.find(playerId);
     }
 
     /**
+     *
+     * @fixme Returns ALL players in the server ....
      *
      * @param gameId
      * @return
      */
     @GET
     public Collection<Player> index(@PathParam("gameId") Long gameId) {
-
         SecurityUtils.getSubject().checkPermission("Game:View:g" + gameId);
-
         return playerFacade.findAll();
     }
 
@@ -73,11 +74,8 @@ public class PlayerController {
      * @return
      */
     @POST
-    public Player create(@PathParam("gameId") Long gameId,
-            @PathParam("teamId") Long teamId, Player entity) {
-
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
-
+    public Player create(@PathParam("teamId") Long teamId, Player entity) {
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + teamFacade.find(teamId).getGameId());
         playerFacade.create(teamId, entity);
         return entity;
     }
@@ -85,31 +83,28 @@ public class PlayerController {
     /**
      *
      * @param gameId
-     * @param entityId
+     * @param playerId
      * @param entity
      * @return
      */
     @PUT
-    @Path("{entityId: [1-9][0-9]*}")
-    public Player update(@PathParam("gameId") Long gameId,
-            @PathParam("entityId") Long entityId, Player entity) {
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
-        return playerFacade.update(entityId, entity);
+    @Path("{playerId: [1-9][0-9]*}")
+    public Player update(@PathParam("playerId") Long playerId, Player entity) {
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + playerFacade.find(playerId).getGameId());
+        return playerFacade.update(playerId, entity);
     }
 
     /**
      *
-     * @param entityId
+     * @param playerId
      * @return
      */
     @DELETE
-    @Path("{entityId: [1-9][0-9]*}")
-    public Player delete(@PathParam("entityId") Long entityId) {
-        Player entity = playerFacade.find(entityId);
-
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entity.getGame().getId());
-
-        playerFacade.remove(entity);
-        return entity;
+    @Path("{playerId: [1-9][0-9]*}")
+    public Player delete(@PathParam("playerId") Long playerId) {
+        Player p = playerFacade.find(playerId);
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + p.getGameId());
+        playerFacade.remove(playerId);
+        return p;
     }
 }

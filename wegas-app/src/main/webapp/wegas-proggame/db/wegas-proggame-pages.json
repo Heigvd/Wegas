@@ -678,6 +678,9 @@
             }]
     }, "1000": {
         "id": 1000,
-        "type": "UserPreferences"
+        "type": "Form",
+        "plugins": [{
+            "fn": "UserPreferences"
+        }]
     }
 }

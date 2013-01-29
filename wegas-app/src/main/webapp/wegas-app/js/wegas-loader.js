@@ -166,7 +166,7 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/widget/wegas-form-min.js',
                         requires: ['wegas-widget', 'wegas-inputex', 'inputex-string', 'inputex-jsonschema',
                         'wegas-widgettoolbar'],
-                        ws_provides: "FormWidget"
+                        ws_provides: "Form"
                     },
                     'wegas-loginwidget': {
                         path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
@@ -215,7 +215,7 @@ YUI().use(function(Y) {
                         ws_provides: "NodeFormatter"
                     },
                     'wegas-userpreferences': {
-                        path: 'wegas-app/js/widget/wegas-userpreferences-min.js',
+                        path: 'wegas-app/js/plugin/wegas-userpreferences-min.js',
                         requires: ["wegas-form"],
                         ws_provides: "UserPreferences"
                     },

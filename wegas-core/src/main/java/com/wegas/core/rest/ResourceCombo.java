@@ -12,17 +12,13 @@ package com.wegas.core.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,12 +66,20 @@ public class ResourceCombo {
         // List<Variant> vars = Variant.mediaTypes(types).add().build();
         // Variant var = req.selectVariant(vars);
 
-        //final CacheControl cacheControl = new CacheControl();
-        //cacheControl.setMaxAge(60000);
+        final CacheControl cc = new CacheControl();
+        cc.setMaxAge(60000);
+        //cc.setPrivate(true);
+        //cc.setNoTransform(true);
+        //cc.setMustRevalidate(false);
+        //cc.setNoCache(false);
+
+        //EntityTag etag = new EntityTag();
+        //Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(updateTimestamp, etag);
+
 
         return Response.ok(this.getCombinedFile(files, mediaType)).
                 type(mediaType).
-                //cacheControl(cacheControl).
+                cacheControl(cc).
                 //expires()
                 build();
 
