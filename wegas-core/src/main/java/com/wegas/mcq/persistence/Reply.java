@@ -39,6 +39,10 @@ public class Reply extends AbstractEntity {
     /**
      *
      */
+    private Boolean unread = true;
+    /**
+     *
+     */
     @ManyToOne(optional = false)
     private Result result;
     /**
@@ -56,6 +60,7 @@ public class Reply extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Reply other = (Reply) a;
+        this.setUnread(other.getUnread());
         this.setResult(other.getResult());
         this.setStartTime(other.getStartTime());
     }
@@ -88,6 +93,22 @@ public class Reply extends AbstractEntity {
     public void setQuestionInstance(QuestionInstance questionInstance) {
         this.questionInstance = questionInstance;
     }
+    
+    /*
+     * @return the unread
+     */
+    public Boolean getUnread() {
+        return unread;
+    }
+
+    /**
+     * @param answer the answer to set
+     */
+    public void setUnread(Boolean unread) {
+        this.unread = unread;
+    }
+
+    /**
 
     /**
      * @return the startTime
