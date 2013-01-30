@@ -1,6 +1,5 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -8,25 +7,24 @@
  *
  * Copyright (C) 2012
  */
-
 YUI.add("wegas-injector", function(Y) {
     "use strict";
+
     var MATCHER = "[data-file]",
-            Injector = function(cfg) {
+    Injector = function(cfg) {
         Injector.superclass.constructor.apply(this, arguments);
     },
-            parser = function(element) {
-        var nodeName = element.getDOMNode().nodeName;
-        switch (nodeName) {
+    parser = function(element) {
+        switch (element.getDOMNode().nodeName) {
             case "IMG":
                 if (!element.hasAttribute("src") || !element.getAttribute("src").match("^(https?://)")) {
-                    element.setAttribute("src", Y.Wegas.app.get("dataSources").File.source + "read" + element.getAttribute("data-file"));
+                    element.setAttribute("src", Y.Wegas.FileFacade.source + "read" + element.getAttribute("data-file"));
                     element.removeAttribute("data-file");
                 }
                 break;
             default:
                 if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(http://)")) {
-                    element.setAttribute("href", Y.Wegas.app.get("dataSources").File.source + "read" + element.getAttribute("data-file"));
+                    element.setAttribute("href", Y.Wegas.FileFacade.source + "read" + element.getAttribute("data-file"));
                     element.removeAttribute("data-file");
                 }
         }
@@ -40,22 +38,19 @@ YUI.add("wegas-injector", function(Y) {
                 DOMCharacterDataModified: true
             });
             this.gallery = false;
+
             this.insertEvent = this.get("host").get("boundingBox").delegate("DOMNodeInserted", function(e) {
-                var list = e.currentTarget.all(MATCHER);
                 e.halt(true);
-                list.each(function(item) {
-                    parser(item);
-                });
+                e.currentTarget.all(MATCHER).each(parser);
                 this.instanciateGallery(e.currentTarget);
             }, function(item) {
                 return (item.all(MATCHER).size() > 0);
             }, this);
-            this.renderEvent = this.afterHostEvent("*:render", function(e) {
-                var list = e.currentTarget.get("boundingBox").all(MATCHER);
-                list.each(function(item) {
-                    parser(item);
-                });
-                this.instanciateGallery(e.currentTarget.get("boundingBox"));
+
+            this.afterHostEvent("*:render", function(e) {
+                var bb = e.currentTarget.get("boundingBox");
+                bb.all(MATCHER).each(parser);
+                this.instanciateGallery(bb);
             }, this);
         },
         instanciateGallery: function(element) {
@@ -74,7 +69,6 @@ YUI.add("wegas-injector", function(Y) {
         },
         destructor: function() {
             this.insertEvent.detach();
-            this.renderEvent.detach();
             if (this.gallery && Injector.GALLERY) {
                 Injector.GALLERY_COUNTER -= 1;
                 if (Injector.GALLERY_COUNTER === 0) {
@@ -82,13 +76,14 @@ YUI.add("wegas-injector", function(Y) {
                 }
             }
         }
+    }, {
+        NAME: "Injector",
+        NS: "injector",
+        GALLERY: null,
+        GALLERY_COUNTER: 0,
+        ATTRS: {}
     });
-    Injector.NAME = "Injector";
-    Injector.NS = "injector";
-    Injector.GALLERY = null;
-    Injector.GALLERY_COUNTER = 0;
-    Injector.ATTRS = {
-    };
-
     Y.Plugin.Injector = Injector;
+
 });
+
