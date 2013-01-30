@@ -135,10 +135,10 @@ public class GameModel extends NamedEntity {
     @PrePersist
     public void prePersist() {
         if (this.games.isEmpty()) {
-            String l = this.getName() + " Test game";
             Team t = new Team("Default");
             t.addPlayer(new Player("Test player"));
-            Game g = new Game(l, l);
+            
+            Game g = new Game(this.getName() + " Test game");
             g.addTeam(t);
             this.addGame(g);
         }

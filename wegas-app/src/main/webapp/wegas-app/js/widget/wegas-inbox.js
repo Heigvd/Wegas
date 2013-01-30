@@ -51,7 +51,7 @@ YUI.add('wegas-inbox', function (Y) {
             }, this);
         },
         syncUI: function () {
-            var i, msg, tab, from,
+            var i, msg, tab, from, indexCounter = 0,
                     inboxVariable = this.get('variable.evaluated').getInstance(),
                     messages = inboxVariable.get("messages"),
                     selectedIndex = 0,
@@ -74,9 +74,10 @@ YUI.add('wegas-inbox', function (Y) {
                 tab.msg = msg;
                 tabs.push(tab);
 
-                if (this.msg && msg.id === this.msg.id) {
-                    selectedIndex = i;
+                if (this.msg && this.msg.get("id") === msg.get("id")) {
+                    selectedIndex = indexCounter;
                 }
+                indexCounter += 1;
             }
             this.tabView.add(tabs);
 

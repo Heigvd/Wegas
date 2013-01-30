@@ -14,6 +14,7 @@ import com.wegas.core.ejb.statemachine.StateMachineRunner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.List;
 import javax.ejb.EJB;
@@ -82,6 +83,21 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         findByGameIdAndUserId.setParameter("gameId", gameId);
         findByGameIdAndUserId.setParameter("userId", userId);
         return (Player) findByGameIdAndUserId.getSingleResult();
+    }
+
+    public List<VariableInstance> getAssociatedInstances(Player player) {
+        Query findPlayerInstance = em.createNamedQuery("findPlayerInstances");
+        return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
+    }
+
+    @Override
+    public void remove(Player player) {
+        List<VariableInstance> instances = this.getAssociatedInstances(player);
+        System.out.print("Player instance:" + instances);
+        this.em.remove(player);
+        for (VariableInstance i : instances) {
+            this.em.remove(i);
+        }
     }
 
     /**

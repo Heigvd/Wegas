@@ -25,22 +25,6 @@
                                                 "dataSource": "GameModelFacade"
                                             }
                                         }]
-                                }, {
-                                    "type": "Button",
-                                    "label": "Duplicate",
-                                    "plugins": [{
-                                            "fn": "DuplicateEntityAction",
-                                            "cfg": {
-                                                "entity": "currentGameModel",
-                                                "dataSource": "GameModelFacade"
-                                            }
-                                        }]
-                                }, {
-                                    "type": "DeleteEntityButton",
-                                    "cfg": {
-                                        "entity": "currentGameModel",
-                                        "dataSource": "GameModelFacade"
-                                    }
                                 }]
                         }
                     }]
@@ -219,7 +203,10 @@
                                             "fn": "OpenTabAction",
                                             "cfg": {
                                                 "children": [{
-                                                    "type": "UserPreferences"
+                                                    "type": "Form",
+                                                    "plugins": [{
+                                                        "fn": "UserPreferences"
+                                                    }]
                                                 }]
                                             }
                                         }]
