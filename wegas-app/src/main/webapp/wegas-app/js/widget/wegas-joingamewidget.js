@@ -45,8 +45,8 @@ YUI.add('wegas-joingamewidget', function (Y) {
             this.tokenField = new Y.inputEx.StringField({                       // Render
                 required: false,
                 parentEl: cb,
-                label: "Enter a key phrase to join a game",
-                typeInvite: "Enter a token"
+                label: "Enter a token to join a game",
+                typeInvite: "token"
             });
 
             this.p = Y.Node.create('<div class="lobbyOr"><p>Or</p><div>');
