@@ -237,7 +237,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'GameModel':
-                                text = 'Game model: ' + el.get("name");
+                                text = el.get("name") || "no name";
                                 ret.push({
                                     label: text,
                                     selected: selected,
@@ -325,7 +325,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
         genVariableInstanceElements: function (label, el) {
             var l,
             selected = (this.currentSelection == el.get("id")) ? 2 : 0;
-            
+
             switch (el.get('@class')) {
                 case 'StringInstance':
                 case 'NumberInstance':
