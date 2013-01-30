@@ -81,7 +81,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(OpenTabAction, Action, {
         execute: function () {
-            var childCfg = this.get("children")[0];                             // @fixme currently we only render the first child
+            var childCfg = this.get("wchildren")[0];                             // @fixme currently we only render the first child
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                 this.get("tabSelector"), {}, childCfg);                         // Forward plugin data to the target widget
         }
@@ -92,7 +92,7 @@ YUI.add('wegas-editor-action', function (Y) {
             tabSelector: {
                 value: '#centerTabView'
             },
-            children: {
+            wchildren: {
                 value: []
             }
         }

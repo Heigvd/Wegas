@@ -44,7 +44,7 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Console",
-                        "children": [{
+                        "wchildren": [{
                             "type": "Console",
                             "cssClass": "wegas-console",
                             "plugins": [{
@@ -59,7 +59,7 @@
                     }, {
                         "type": "OpenTabButton",
                         "label": "Log",
-                        "children": [{
+                        "wchildren": [{
                             "type": "Log"
                         }]
                     }]
@@ -75,7 +75,7 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Users",
-                        "children": [{
+                        "wchildren": [{
                             "type": "EditorTreeView",
                             "dataSource": "User",
                             "request": {
@@ -96,7 +96,7 @@
                     }, {
                         "type": "OpenTabButton",
                         "label": "Groups",
-                        "children": [{
+                        "wchildren": [{
                             "type": "EditorTreeView",
                             "dataSource": "Role",
                             "request": {
@@ -127,14 +127,14 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Styles",
-                        "children": [{
+                        "wchildren": [{
                             "type": "CSSEditor",
                             "cssClass": "wegas-csseditor"
                         }]
                     }, {
                         "type": "OpenTabButton",
                         "label": "Files",
-                        "children": [{
+                        "wchildren": [{
                             "type": "FileExplorer",
                             "plugins": [{
                                 "fn": "WidgetToolbar"
@@ -143,14 +143,14 @@
                     }, {
                         "type": "OpenTabButton",
                         "label": "Scripts",
-                        "children": [{
+                        "wchildren": [{
                             "type": "ScriptLibrary"
                         }]
                     }, {
                         "type": "OpenTabButton",
                         "label": "Pages",
                         "tabSelector": "#leftTabView",
-                        "children": [{
+                        "wchildren": [{
                             "type": "PageTreeview",
                             "pageLoader": "previewPageLoader"
                         }]
@@ -167,14 +167,14 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Players",
-                        "children": [{
+                        "wchildren": [{
                             "type": "EditorTreeView",
                             "dataSource": "Game"
                         }]
                     },{
                         "type": "OpenTabButton",
                         "label": "Impact game",
-                        "children": [{
+                        "wchildren": [{
                             "type": "ImpactGame",
                             "cssClass": "wegas-console",
                             "plugins": [{
@@ -202,7 +202,7 @@
                         "plugins": [{
                             "fn": "OpenTabAction",
                             "cfg": {
-                                "children": [{
+                                "wchildren": [{
                                     "type": "Form",
                                     "plugins": [{
                                         "fn": "UserPreferences"
