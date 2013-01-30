@@ -96,6 +96,7 @@
         "children": [{
             "type": "TabView",
             "id": "leftTabView",
+            "cssClass": "editor-tab",
             "children": [{
                 "type": "Tab",
                 "label": "Your games",
@@ -129,6 +130,7 @@
         "children": [{
             "id": "centerTabView",
             "type": "TabView",
+            "cssClass": "editor-tab",
             "children": [{
                 "type": "Tab",
                 "label": "Join a game",
@@ -168,6 +170,7 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
+            "cssClass": "editor-tab",
             "children": [],
             "plugins": [{
                 "fn": "LayoutToggleTab"

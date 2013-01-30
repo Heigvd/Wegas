@@ -29,7 +29,8 @@ YUI.add('wegas-widgettoolbar', function (Y) {
         // *** Lifecycle methods *** //
         initializer: function () {
             this.children = [];
-            this.afterHostEvent("render", this.render, this);
+            this.render();
+        //this.afterHostEvent("render", this.render, this);
         },
 
         destructor: function () {

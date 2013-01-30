@@ -30,6 +30,7 @@
     background-repeat: no-repeat;
     background-position: -0px -41px;
     cursor:pointer;
+    margin-left: -3px;
 }
 .yui3-treenode-collapsed .yui3-treenode-content-toggle{
     background-position: 0px -3px;
@@ -39,6 +40,8 @@
     display:inline-block;
     width:21px;
     height:18px;
+}
+.yui3-treeleaf-content-icon {
     margin-left: -20px;
 }
 .yui3-treenode-default-icon{
@@ -75,7 +78,7 @@
 }
 .yui3-treenode-content-header,
 .yui3-treeleaf-content-header{
-    padding:2px 18px 2px 2px;
+    padding:2px 27px 2px 2px;
     white-space: nowrap;
     font-style: normal;
     transition: max-height 1s;

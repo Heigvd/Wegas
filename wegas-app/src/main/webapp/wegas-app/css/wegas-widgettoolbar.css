@@ -13,12 +13,8 @@
 */
 
 /** Toolbar styles **/
-.wegas-hastoolbar {
-    position: relative;
-}
+.wegas-hastoolbar {}
 .wegas-toolbar {
-    position: absolute;
-    top: 0;
     vertical-align: top;
     min-height: 26px;
     padding: 2px 0;
@@ -28,9 +24,7 @@
     background:white;
     z-index: 23;
 }
-.wegas-toolbar-sibling {
-
-}
+.wegas-toolbar-sibling {}
 
 .yui-layout-unit-right .wegas-toolbar {
     padding-left:6px;

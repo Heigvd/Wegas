@@ -197,7 +197,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 ret.push({
                                     type: 'TreeNode',
                                     label: text,
-                                    collapsed: false,
+                                    collapsed: true,
                                     selected: selected,
                                     children: this.genTreeViewElements(el.get("teams")),
                                     data: {
