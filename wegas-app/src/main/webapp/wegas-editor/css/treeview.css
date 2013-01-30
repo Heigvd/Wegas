@@ -39,6 +39,7 @@
     display:inline-block;
     width:21px;
     height:18px;
+    margin-left: -20px;
 }
 .yui3-treenode-default-icon{
     background-image: url(../images/tree_view_icons_blue_01_arrow_beside_folders.gif);
@@ -74,9 +75,8 @@
 }
 .yui3-treenode-content-header,
 .yui3-treeleaf-content-header{
-    padding:2px;
+    padding:2px 18px 2px 2px;
     white-space: nowrap;
-    overflow: hidden;
     font-style: normal;
     transition: max-height 1s;
     -o-transition: max-height 1s;
@@ -110,6 +110,10 @@
     display:inline-block;
     white-space: normal;
     vertical-align: text-top;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 .yui3-treeview [contenteditable="true"]{
     display: inline-block;
