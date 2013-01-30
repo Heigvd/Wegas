@@ -127,7 +127,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      */
     @Override
     public void remove(final Long id) {
-        getEntityManager().remove(this.find(id));
+        this.remove(this.find(id));
     }
 
     /**
