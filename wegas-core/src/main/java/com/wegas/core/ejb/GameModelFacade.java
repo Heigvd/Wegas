@@ -92,13 +92,9 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
 
         GameModel oldEntity = this.find(entityId);                              // Retrieve the entity to duplicate
-
-        String serialized = mapper.writerWithView(Views.Export.class).
-                writeValueAsString(oldEntity);
-        GameModel newEntity = mapper.readValue(serialized, GameModel.class);    // and deserialize it
+        GameModel newEntity = (GameModel) oldEntity.duplicate();
 
         boolean added = false;
         int suffix = 1;

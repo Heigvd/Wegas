@@ -219,16 +219,17 @@ YUI.add('wegas-editor-action', function (Y) {
          */
         renderUI: function(){
             Linkwidget.superclass.renderUI.apply(this);
+            var cb = this.get(CONTENTBOX);
 
-            this.p = Y.Node.create('<div class="playerlink-label"><p>Player link</p><div>');
-            this.get(CONTENTBOX).append(this.p);
+            cb.append('<div class="playerlink-label"><p>Share link</p><div>');
 
             this.textField = new Y.inputEx.StringField({
-                parentEl: this.get(CONTENTBOX)
+                parentEl: cb
             });
-            this.get(CONTENTBOX).on("click", function (e) {
+            cb.on("click", function (e) {
                 e.halt(true);
-            });
+                this.textField.el.select();
+            }, this);
         },
 
         /**
