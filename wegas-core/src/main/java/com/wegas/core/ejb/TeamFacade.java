@@ -47,7 +47,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     @EJB
     private GameFacade gameFacade;
     @EJB
-    private VariableInstanceFacade variableInstanceFacade;
+    private PlayerFacade playerFacade;
     /**
      *
      */
@@ -116,10 +116,13 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
 
     @Override
     public void remove(Team entity) {
-        List<VariableInstance> instances = this.getAssociatedInstances(entity);
-        System.out.print(instances);
+        List<VariableInstance> instancesToRemove = this.getAssociatedInstances(entity);
+        List<Player> players = entity.getPlayers();
+        for(Player p : players){
+            instancesToRemove.addAll(playerFacade.getAssociatedInstances(p));
+        }
         this.em.remove(entity);
-        for (VariableInstance i : instances) {
+        for (VariableInstance i : instancesToRemove) {
             this.em.remove(i);
         }
     }
