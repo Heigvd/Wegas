@@ -1,18 +1,6 @@
 {
     "@class":"GameModel",
     "name":"CrimeSim",
-    "games":[{
-        "@class":"Game",
-        "name":"Test-16",
-        "teams":[{
-            "@class": "Team",
-            "name":"Les autres",
-            "players": [ {
-                "@class": "Player",
-                "name": "Jo"
-            }]
-        }]
-    }],
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
         "name":"cost",

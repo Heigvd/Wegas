@@ -75,7 +75,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
             for (i in elements) {
                 if (elements.hasOwnProperty(i)) {
                     el = elements[i];
-                    elClass = (el.get) ? el.get('@class') : el['type'];
+                    elClass = el.get('@class');
                     collapsed = !this.isNodeExpanded(el);
                     selected = (this.currentSelection === el.get("id")) ? 2 : 0;
 
@@ -237,7 +237,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 break;
 
                             case 'GameModel':
-                                text = 'Game model: ' + el.get("name");
+                                text = el.get("name") || "no name";
                                 ret.push({
                                     label: text,
                                     selected: selected,
@@ -324,7 +324,8 @@ YUI.add('wegas-editor-treeview', function (Y) {
         },
         genVariableInstanceElements: function (label, el) {
             var l,
-            selected = (el.get) ? ((this.currentSelection == el.get("id")) ? 2 : 0) : 0;
+            selected = (this.currentSelection == el.get("id")) ? 2 : 0;
+
             switch (el.get('@class')) {
                 case 'StringInstance':
                 case 'NumberInstance':
@@ -483,6 +484,13 @@ YUI.add('wegas-editor-treeview', function (Y) {
      *
      */
     var LobbyTreeView = Y.Base.create("wegas-editor-treeview", Y.Wegas.EditorTreeView, [], {
+
+        // ** Lifecycle methods ** //
+        renderUI: function () {
+            this.treeView = new Y.TreeView();
+            this.treeView.render(this.get(CONTENTBOX));
+        },
+
         bindUI: function () {
             LobbyTreeView.superclass.bindUI.apply(this);
             //this.treeView.on("*:click", this.onTreeViewClick, this);
@@ -546,27 +554,25 @@ YUI.add('wegas-editor-treeview', function (Y) {
         lastOpenedNode: null,
         initializer: function () {
             this.afterHostEvent("render", function () {
-                var host = this.get("host");
-
-                //if treeleaf is empty, load elements (all instances)
-                host.treeView.before("*:nodeExpanded", function (e) {
-                    this.fillsLeaf(e.node);
-                }, this);
-
+                this.get("host").treeView.before("*:nodeExpanded",
+                    this.fillsLeaf, this);                                      //if treeleaf is empty, load elements (all instances)
             });
         },
-        fillsLeaf: function (node) {
-            var id = node.get("data").entity.get("id");
+        fillsLeaf: function (e) {
+            var node = e.node,
+            id = node.get("data").entity.get("id");
 
             if (node.get("data").entity instanceof Y.Wegas.persistence.VariableDescriptor) {
-                if (node.size() > 1) {
+                if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
                     return;
                 }
-                node.add({
-                    label: '<span style="font-style:italic">loading</span>',
-                    iconCSS: 'loading-icon'
-                });
                 node.removeAll();
+
+                node.set("loading", true);
+                //node.add({
+                //    label: '<span style="font-style:italic">loading</span>',
+                //    iconCSS: 'loading-icon'
+                //});
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/" + id + "?view=Editor"
                 });
@@ -601,13 +607,13 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 return;
             }
 
-            this.menu.removeAll();                                             // Populate the menu with the elements associated to the
+            this.menu.removeAll();                                  // Populate the menu with the elements associated to the
             this.menu.add(menuItems);
 
             if (domTarget.hasClass("wegas-treeview-editmenubutton")) {          // If user clicked on the edit button
                 this.menu.attachTo(domTarget);                                  // Display the edit button next to it
             } else {                                                            // Otherwise the user clicked on the node
-                this.menu.item(0).fire("click");                         // Excute the actions associated to the first item of the menu
+                this.menu.item(0).fire("click");                    // Excute the actions associated to the first item of the menu
             }
         }
     }, {

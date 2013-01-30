@@ -31,7 +31,12 @@ body {
 }
 
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .wegas-hastoolbar > .wegas-toolbar-sibling {
-    bottom:26px;
+    position: absolute;
+    bottom: 26px;
+    padding: 0;
+    left: 0px;
+    right: 0px;
+    top: 31px;
 }
 
 /* Console Widget Styles */

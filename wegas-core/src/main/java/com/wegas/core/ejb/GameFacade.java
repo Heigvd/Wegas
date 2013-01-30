@@ -15,17 +15,12 @@ import com.wegas.core.persistence.game.Game_;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
-import com.wegas.exception.WegasException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -106,6 +101,10 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
         GameModel gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
+
+        userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + game.getId());
+        userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + game.getId());
+
         super.create(game);
     }
 
@@ -115,6 +114,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             entity.setToken(Helper.genToken(10));
         }
         return super.update(entityId, entity);
+    }
+
+    @Override
+    public void remove(Game entity) {
+        super.remove(entity);
+
+        userFacade.deleteUserPermissionByInstance("g" + entity.getId());
+        userFacade.deleteAllRolePermissionsById("g" + entity.getId());
     }
 
     /**

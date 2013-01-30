@@ -300,6 +300,9 @@
         "targetPageLoaderId": "maindisplayarea"
     },
     "1000": {
-        "type": "UserPreferences"
+        "type": "Form",
+        "plugins": [{
+            "fn": "UserPreferences"
+        }]
     }
 }

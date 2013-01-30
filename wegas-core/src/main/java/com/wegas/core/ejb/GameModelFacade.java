@@ -11,10 +11,12 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel_;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -44,6 +46,8 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     private EntityManager em;
     @EJB
     private RequestFacade requestFacade;
+    @EJB
+    private UserFacade userFacade;
 
     /**
      *
@@ -59,6 +63,31 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     @Override
     public EntityManager getEntityManager() {
         return em;
+    }
+
+    @Override
+    public void create(GameModel entity) {
+        super.create(entity);
+        if (entity.getId() != null) {
+            userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Edit:gm" + entity.getId());
+            userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View:gm" + entity.getId());
+            if (entity.getGames().get(0) != null) {
+                userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + entity.getGames().get(0).getId());
+                userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + entity.getGames().get(0).getId());
+            }
+        }
+    }
+
+    @Override
+    public void remove(final Long id) {
+        userFacade.deleteUserPermissionByInstance("gm" + id);
+        userFacade.deleteAllRolePermissionsById("gm" + id);
+
+        for (Game g : this.find(id).getGames()) {
+            userFacade.deleteUserPermissionByInstance("g" + g.getId());
+            userFacade.deleteAllRolePermissionsById("g" + g.getId());
+        }
+        super.remove(id);
     }
 
     @Override

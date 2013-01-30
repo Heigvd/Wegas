@@ -9,12 +9,14 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import java.util.HashMap;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -23,6 +25,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -42,6 +46,8 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     @EJB
     private GameFacade gameFacade;
+    @EJB
+    private VariableInstanceFacade variableInstanceFacade;
     /**
      *
      */
@@ -59,6 +65,9 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
             t.setToken(Helper.genToken(10));
         }
         g.addTeam(t);
+
+        //Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
+        this.addRights(g);
         em.flush();
         em.refresh(t);
         g.getGameModel().propagateDefaultInstance(false);
@@ -70,6 +79,19 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
             entity.setToken(Helper.genToken(10));
         }
         return super.update(gameId, entity);
+    }
+
+    private void addRights(Game game) {
+        Subject s = SecurityUtils.getSubject();
+        boolean gExist = s.isPermitted("Game:View:g" + game.getId());
+        boolean gmExist = s.isPermitted("GameModel:View:gm" + game.getGameModel().getId());
+
+        if (!gExist) {
+            userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g" + game.getId());
+        }
+        if (!gmExist) {
+            userFacade.getCurrentUser().getMainAccount().getPermissions().add("GameModel:View:gm" + game.getGameModel().getId());
+        }
     }
 
     /**
@@ -92,6 +114,22 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         return team;
     }
 
+    @Override
+    public void remove(Team entity) {
+        List<VariableInstance> instances = this.getAssociatedInstances(entity);
+        System.out.print(instances);
+        this.em.remove(entity);
+        for (VariableInstance i : instances) {
+            this.em.remove(i);
+        }
+    }
+
+    public List<VariableInstance> getAssociatedInstances(Team team) {
+        Query findInstances = em.createNamedQuery("findTeamInstances");
+        findInstances.setParameter("teamid", team.getId());
+        return findInstances.getResultList();
+    }
+
     /**
      *
      * @param team
@@ -103,6 +141,8 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         Player p = new Player();
         p.setUser(user);
         this.joinTeam(team, p);
+
+        this.addRights(p.getGame());
         return p;
     }
 

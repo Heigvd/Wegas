@@ -26,6 +26,8 @@ import org.apache.shiro.SecurityUtils;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/{variableDescriptorId : [1-9][0-9]*}/VariableInstance/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class VariableInstanceController {
 
     /**
@@ -47,24 +49,20 @@ public class VariableInstanceController {
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public VariableInstance update(@PathParam("entityId") Long entityId, VariableInstance entity) {
-        
+
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + variableInstanceFacade.findGame(entityId).getId());
-        
+
         return variableInstanceFacade.update(entityId, entity);
     }
 
     /**
      *
-     * @param variableDescriptorId
-     * @fixme Is this method still in use?
+     * @param variableDescriptorId @fixme Is this method still in use?
      *
      * @return
      */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     public Collection<VariableInstance> index(@PathParam("variableDescriptorId") Long variableDescriptorId) {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getScope().getVariableInstances().values();
@@ -82,8 +80,6 @@ public class VariableInstanceController {
      */
     @POST
     @Path("user/{userId : [1-9][0-9]*}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public VariableInstance setVariableInstance(
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("variableDescriptorId") Long variableDescriptorId,

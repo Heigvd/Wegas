@@ -29,8 +29,7 @@ YUI.add('wegas-widgettoolbar', function (Y) {
         // *** Lifecycle methods *** //
         initializer: function () {
             this.children = [];
-            this.render();
-            //this.get("host").afterHostEvent("render", function () {}, this);
+            this.afterHostEvent("render", this.render, this);
         },
 
         destructor: function () {
@@ -40,23 +39,13 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             }
         },
 
-
         // *** Private methods *** //
         render: function () {
             var i, host = this.get("host"),
             children = this.get("children");
             host.get('boundingBox').addClass("wegas-hastoolbar")
             .append('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
-            host.get('contentBox').addClass("wegas-toolbar-sibling")
-            .setStyles({
-                position: "absolute",
-                //bottom: "26px",
-                overflow: "auto",
-                padding: "0",
-                left: "0px",
-                right: "0px",
-                top: "31px"
-            });
+            host.get('contentBox').addClass("wegas-toolbar-sibling");
 
             for (i = 0; i < children.length; i = i + 1) {
                 this.children.push(this.add(children[i]));

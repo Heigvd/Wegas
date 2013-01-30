@@ -15,9 +15,7 @@
 YUI.add('wegas-form', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', FormWidget;
-
-    FormWidget = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    var Form = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         // ** Private Fields ** //
 
         // ** Lifecycle Methods ** //
@@ -64,7 +62,7 @@ YUI.add('wegas-form', function (Y) {
                 }
             }).render(toolbarNode);
         },
-    
+
         destroyForm: function () {
             this.set("form", null);
         }
@@ -90,7 +88,7 @@ YUI.add('wegas-form', function (Y) {
             },
             cfg: {
                 setter: function (val) {
-                    val.parentEl = this.get(CONTENTBOX);                        // Set up the form parentEl attribute, so it knows where to render
+                    val.parentEl = this.get("contentBox");                        // Set up the form parentEl attribute, so it knows where to render
                     val.className = "wegas-form-ix";
                     Y.inputEx.use(val, Y.bind(function (cfg) {                  // Load form dependencies
                         var form = Y.inputEx(cfg);                              // Initialize and render form
@@ -103,7 +101,7 @@ YUI.add('wegas-form', function (Y) {
         }
     });
 
-    Y.namespace("Wegas").FormWidget = FormWidget;
+    Y.namespace("Wegas").Form = Form;
 
     var inputEx = Y.inputEx,
             lang = Y.Lang;
