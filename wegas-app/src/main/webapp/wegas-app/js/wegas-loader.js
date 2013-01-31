@@ -673,7 +673,8 @@ YUI().use(function(Y) {
                     'googletranslate': {
                         //fullpath: "//translate.google.com/translate_a/element.js?cb=googleSectionalElementInit&"
                         //fullpath: "//translate.google.com/translate_a/element.js?ug=section&hl=en&cb=googleSectionalElementInit"
-                        fullpath: "//translate.google.com/translate_a/element.js?hl=en"
+                        //fullpath: "//translate.google.com/translate_a/element.js?hl=en"
+                        fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
                     }
                 }
             }
