@@ -9,7 +9,7 @@
  */
 package com.wegas.mcq.rest;
 
-import com.wegas.core.rest.AbstractRestController;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.mcq.ejb.ReplyFacade;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
@@ -44,7 +44,7 @@ public class ReplyController {
     @Produces(MediaType.APPLICATION_JSON)
     public Reply update(@PathParam("entityId") Long entityId, Reply entity) {
 
-      //  SecurityUtils.getSubject().checkPermission("Game:Edit:g" + variableInstanceFacade.findGame(entityId).getId());
+        //SecurityUtils.getSubject().checkPermission("Game:Edit:g" + VariableInstanceFacade.findGame(entityId).getId());
 
         return replyFacade.update(entityId, entity);
     }

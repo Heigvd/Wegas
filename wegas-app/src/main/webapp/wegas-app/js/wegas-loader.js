@@ -533,7 +533,6 @@ YUI().use(function(Y) {
                         requires: ['wegas-button'],
                         ws_provides: "ChoicesRepliesUnreadCount"
                     },
-
                     'wegas-crimesim-treeble': {
                         path: 'wegas-crimesim/js/wegas-crimesim-treeble-min.js',
                         requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble'],
