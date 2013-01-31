@@ -12,6 +12,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Game_;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
@@ -118,6 +119,9 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     @Override
     public void remove(Game entity) {
+        for(Team t : entity.getTeams()){
+            teamFacade.remove(t);
+        }
         super.remove(entity);
 
         userFacade.deleteUserPermissionByInstance("g" + entity.getId());

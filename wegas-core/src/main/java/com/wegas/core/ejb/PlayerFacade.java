@@ -93,7 +93,6 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
     @Override
     public void remove(Player player) {
         List<VariableInstance> instances = this.getAssociatedInstances(player);
-        System.out.print("Player instance:" + instances);
         this.em.remove(player);
         for (VariableInstance i : instances) {
             this.em.remove(i);
