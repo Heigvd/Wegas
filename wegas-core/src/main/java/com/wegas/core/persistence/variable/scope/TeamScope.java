@@ -90,7 +90,7 @@ public class TeamScope extends AbstractScope {
      */
     @Override
     public void propagateDefaultInstance(boolean force) {
-        logger.debug("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
+        logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
 
         VariableDescriptor vd = this.getVariableDescriptor();
         GameModel gm = vd.getGameModel();

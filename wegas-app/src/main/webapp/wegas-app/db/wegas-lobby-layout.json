@@ -15,7 +15,7 @@
                     "children": [{
                         "type": "OpenTabButton",
                         "label": "Users",
-                        "children": [{
+                        "wchildren": [{
                             "type": "EditorTreeView",
                             "dataSource": "User",
                             "request": {
@@ -36,7 +36,7 @@
                     }, {
                         "type": "OpenTabButton",
                         "label": "Groups",
-                        "children": [{
+                        "wchildren": [{
                             "type": "EditorTreeView",
                             "dataSource": "Role",
                             "request": {
@@ -69,7 +69,7 @@
                         "plugins": [{
                             "fn": "OpenTabAction",
                             "cfg": {
-                                "children": [{
+                                "wchildren": [{
                                     "type": "Form",
                                     "plugins": [{
                                         "fn": "UserPreferences"
@@ -96,6 +96,7 @@
         "children": [{
             "type": "TabView",
             "id": "leftTabView",
+            "cssClass": "editor-tab",
             "children": [{
                 "type": "Tab",
                 "label": "Your games",
@@ -129,6 +130,7 @@
         "children": [{
             "id": "centerTabView",
             "type": "TabView",
+            "cssClass": "editor-tab",
             "children": [{
                 "type": "Tab",
                 "label": "Join a game",
@@ -168,6 +170,7 @@
         "children": [{
             "type": "TabView",
             "id": "rightTabView",
+            "cssClass": "editor-tab",
             "children": [],
             "plugins": [{
                 "fn": "LayoutToggleTab"

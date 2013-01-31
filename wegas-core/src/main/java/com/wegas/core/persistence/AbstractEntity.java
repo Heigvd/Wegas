@@ -16,6 +16,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -63,7 +64,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += ( getId() != null ? getId().hashCode() : 0 );
+        hash += (getId() != null ? getId().hashCode() : 0);
         hash += getClass().hashCode();
         return hash;
     }
@@ -92,18 +93,34 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      */
     @Override
     public AbstractEntity clone() {
-        //AnonymousEntity ae = (AnonymousEntity)super.clone();
-        //AbstractEntity ae = (AbstractEntity) SerializationUtils.clone(this);
-        //ae.setId(null);
         AbstractEntity ae = null;
         try {
             ae = this.getClass().newInstance();
             ae.merge(this);
-        }
-        catch (InstantiationException | IllegalAccessException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(AbstractEntity.class.getName()).log(Level.SEVERE, "Error during clone", ex);
         }
         return ae;
+    }
+
+    /**
+     * Duplicate an entity by using Jackson Mapper and provided view
+     *
+     * @return
+     */
+    public AbstractEntity duplicate(Class view) throws IOException {
+        //AnonymousEntity ae = (AnonymousEntity)super.clone();
+        //AbstractEntity ae = (AbstractEntity) SerializationUtils.clone(this);
+        //ae.setId(null);
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
+        String serialized = mapper.writerWithView(view).
+                writeValueAsString(this);                                       // Serialize the entity
+
+        return mapper.readValue(serialized, AbstractEntity.class);              // and deserialize it
+    }
+
+    public AbstractEntity duplicate() throws IOException {
+        return this.duplicate(Views.Export.class);
     }
 
     /**

@@ -213,7 +213,7 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
-                            children: [{
+                            wchildren: [{
                                 type: "RolePermissionList",
                                 permsList: [{
                                         name: "GameModel:View"
@@ -292,7 +292,7 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
-                            children: [{
+                            wchildren: [{
                                 type: "RolePermissionList",
                                 permsList: [{
                                         name: "Game:View"

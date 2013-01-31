@@ -49,10 +49,6 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/util/wegas-scripteval-min.js',
                         requires: ['plugin']
                     },
-                    'wegas-injector': {
-                        path: 'wegas-app/js/plugin/wegas-injector-min.js',
-                        ws_provides: "Injector"
-                    },
 
                     /** Persistence **/
                     'wegas-entity': {
@@ -97,16 +93,6 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/widget/wegas-loginbutton-min.js',
                         requires: ['wegas-button', 'wegas-widgetmenu'],
                         ws_provides: 'LoginButton'
-                    },
-                    'wegas-action': {
-                        path: 'wegas-app/js/plugin/wegas-action-min.js',
-                        requires: ['plugin']
-                    },
-                    'wegas-tooltip': {
-                        path: 'wegas-app/js/plugin/wegas-tooltip-min.js',
-                        requires: ["wegas-action", "event-mouseenter", "widget", "widget-stack",
-                        "widget-position", 'widget-position-constrain'],
-                        ws_provides: 'Button'
                     },
                     'wegas-chat': {
                         path: 'wegas-app/js/widget/wegas-chat-min.js',
@@ -214,11 +200,59 @@ YUI().use(function(Y) {
                         path: 'wegas-app/js/widget/wegas-nodeformatter-min.js',
                         ws_provides: "NodeFormatter"
                     },
+                    'wegas-googletranslate': {
+                        path: 'wegas-app/js/widget/wegas-googletranslate-min.js',
+                        requires: ["googletranslate"],
+                        ws_provides: "GoogleTranslate"
+                    },
+
+                    /** Plugins **/
                     'wegas-userpreferences': {
                         path: 'wegas-app/js/plugin/wegas-userpreferences-min.js',
                         requires: ["wegas-form"],
                         ws_provides: "UserPreferences"
                     },
+                    'wegas-action': {
+                        path: 'wegas-app/js/plugin/wegas-action-min.js',
+                        requires: ['plugin']
+                    },
+                    'wegas-tooltip': {
+                        path: 'wegas-app/js/plugin/wegas-tooltip-min.js',
+                        requires: ["wegas-action", "event-mouseenter", "widget", "widget-stack",
+                        "widget-position", 'widget-position-constrain'],
+                        ws_provides: 'Button'
+                    },
+                    'wegas-injector': {
+                        path: 'wegas-app/js/plugin/wegas-injector-min.js',
+                        ws_provides: "Injector"
+                    },
+
+                    'wegas-widgetmenu': {
+                        path: 'wegas-app/js/plugin/wegas-widgetmenu-min.js',
+                        requires: ['plugin', 'yui-later', 'event-mouseenter', 'event-outside',
+                        'widget', 'widget-parent', 'widget-child', 'widget-stack',
+                        'widget-position', 'widget-position-align', 'widget-position-constrain',
+                        'wegas-widgetmenucss']
+                    },
+                    'wegas-widgetmenucss': {
+                        path: 'wegas-app/css/wegas-widgetmenu.css',
+                        type: "css"
+                    },
+                    'wegas-widgettoolbar': {
+                        path: 'wegas-app/js/plugin/wegas-widgettoolbar-min.js',
+                        requires: ['wegas-widgettoolbarcss'],
+                        ws_provides: 'WidgetToolbar'
+                    },
+                    'wegas-widgettoolbarcss': {
+                        path: 'wegas-app/css/wegas-widgettoolbar.css',
+                        type: "css"
+                    },
+                    "wegas-cssloader": {
+                        path: 'wegas-app/js/plugin/wegas-cssloader-min.js',
+                        requires: ['stylesheet'],
+                        ws_provides: 'CSSLoader'
+                    },
+
                     /** Inputex Fields **/
                     'wegas-inputex': {
                         path: 'wegas-editor/css/wegas-inputex.css',
@@ -304,32 +338,8 @@ YUI().use(function(Y) {
                         'esprima' ],
                         ix_provides: 'variableselect'
                     },
+
                     /** Common Widgets **/
-                    'wegas-widgetmenu': {
-                        path: 'wegas-app/js/plugin/wegas-widgetmenu-min.js',
-                        requires: ['plugin', 'yui-later', 'event-mouseenter', 'event-outside',
-                        'widget', 'widget-parent', 'widget-child', 'widget-stack',
-                        'widget-position', 'widget-position-align', 'widget-position-constrain',
-                        'wegas-widgetmenucss']
-                    },
-                    'wegas-widgetmenucss': {
-                        path: 'wegas-app/css/wegas-widgetmenu.css',
-                        type: "css"
-                    },
-                    'wegas-widgettoolbar': {
-                        path: 'wegas-app/js/plugin/wegas-widgettoolbar-min.js',
-                        requires: ['wegas-widgettoolbarcss'],
-                        ws_provides: 'WidgetToolbar'
-                    },
-                    'wegas-widgettoolbarcss': {
-                        path: 'wegas-app/css/wegas-widgettoolbar.css',
-                        type: "css"
-                    },
-                    "wegas-cssloader": {
-                        path: 'wegas-app/js/plugin/wegas-cssloader-min.js',
-                        requires: ['stylesheet'],
-                        ws_provides: 'CSSLoader'
-                    },
                     'treeview': {
                         path: 'wegas-editor/js/util/treeview-min.js',
                         requires: ['widget', 'widget-parent', 'widget-child', 'treeviewcss']
@@ -664,6 +674,11 @@ YUI().use(function(Y) {
                     },
                     'crafty': {
                         path: 'crafty/crafty-min.js'
+                    },
+                    'googletranslate': {
+                        //fullpath: "//translate.google.com/translate_a/element.js?cb=googleSectionalElementInit&"
+                        //fullpath: "//translate.google.com/translate_a/element.js?ug=section&hl=en&cb=googleSectionalElementInit"
+                        fullpath: "//translate.google.com/translate_a/element.js?hl=en"
                     }
                 }
             }
