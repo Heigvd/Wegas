@@ -81,7 +81,7 @@ YUI.add('wegas-editor-action', function (Y) {
 
     Y.extend(OpenTabAction, Action, {
         execute: function () {
-            var childCfg = this.get("children")[0];                             // @fixme currently we only render the first child
+            var childCfg = this.get("wchildren")[0];                             // @fixme currently we only render the first child
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                 this.get("tabSelector"), {}, childCfg);                         // Forward plugin data to the target widget
         }
@@ -92,7 +92,7 @@ YUI.add('wegas-editor-action', function (Y) {
             tabSelector: {
                 value: '#centerTabView'
             },
-            children: {
+            wchildren: {
                 value: []
             }
         }
@@ -219,16 +219,17 @@ YUI.add('wegas-editor-action', function (Y) {
          */
         renderUI: function(){
             Linkwidget.superclass.renderUI.apply(this);
+            var cb = this.get(CONTENTBOX);
 
-            this.p = Y.Node.create('<div class="playerlink-label"><p>Player link</p><div>');
-            this.get(CONTENTBOX).append(this.p);
+            cb.append('<div class="playerlink-label"><p>Share link</p><div>');
 
             this.textField = new Y.inputEx.StringField({
-                parentEl: this.get(CONTENTBOX)
+                parentEl: cb
             });
-            this.get(CONTENTBOX).on("click", function (e) {
+            cb.on("click", function (e) {
                 e.halt(true);
-            });
+                this.textField.el.select();
+            }, this);
         },
 
         /**

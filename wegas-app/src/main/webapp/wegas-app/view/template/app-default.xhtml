@@ -23,7 +23,7 @@
                             m.type = 'text/javascript';
                             m.async = true;
                             m.src = (window.location.protocol == 'https:' ? 'https:' : 'http:') +
-                                    '//musculahq.appspot.com/Muscula.js';
+                                '//musculahq.appspot.com/Muscula.js';
                             var s = document.getElementsByTagName('script')[0];
                             s.parentNode.insertBefore(m, s);
                             window.Muscula.run = function (c) {
@@ -128,11 +128,10 @@
 
 
                     var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                            comboBase = base + '/rest/combo?';
+                    comboBase = base + '/rest/combo?';
                     function setupLocalPath (groupName) {
                         YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
                         YUI_config.groups[groupName].comboBase = comboBase;
-                        //YUI_config.groups[name].comboBase = comboBase;
                     }
                     setupLocalPath("wegas");
                     YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
@@ -166,10 +165,7 @@
 
                 <ui:insert name="body">
                     <script type="text/javascript">
-                        var Y = YUI({
-                            //filter: 'raw'
-                            //filters: { event: 'debug' }
-                        }).use('wegas-app', function (Y) {
+                        YUI().use('wegas-app', function (Y) {
                             var cfg = {
                                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                                 debug: true,
@@ -206,7 +202,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                                //resultFields: ["name", "id", "@class"]
+                                                        //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
                                             }, {
@@ -237,7 +233,7 @@
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                                //resultFields: ["name", "id", "@class"]
+                                                        //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
                                             }]

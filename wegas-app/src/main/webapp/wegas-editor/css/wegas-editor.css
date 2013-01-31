@@ -29,16 +29,21 @@ body {
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .yui3-widget {
     position: relative;
 }
-
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .wegas-hastoolbar > .wegas-toolbar-sibling {
+.yui3-skin-sam .editor-tab > div > div > div > .wegas-hastoolbar {
+    position: relative;
+}
+.yui3-skin-sam .editor-tab > div > div > div > .wegas-hastoolbar > .wegas-toolbar-sibling {
     position: absolute;
+    top: 31px;
     bottom: 26px;
-    padding: 0;
     left: 0px;
     right: 0px;
-    top: 31px;
+    overflow: auto;
 }
-
+.yui3-skin-sam .editor-tab > div > div > div > .wegas-hastoolbar > .wegas-toolbar {
+    position: absolute;
+    top: 0;
+}
 /* Console Widget Styles */
 .wegas-console div.inputEx-Field {
     float:none;
@@ -382,8 +387,11 @@ body {
 
 /* Player link menu */
 .yui3-menu-content .editor-playerlink-button {
-    padding: .1em 0.6em .1em;
-    border-top: double;
+    padding: 0.4em 0.6em .1em;
+    border-top: 1px solid lightgray;
+}
+.yui3-menu-content .editor-playerlink-button input {
+    width: 300px
 }
 
 .loading-icon{

@@ -9,47 +9,47 @@
  */
 YUI.add('treeview', function(Y) {
     var getClassName = Y.ClassNameManager.getClassName,
-        TREEVIEW = 'treeview',
-        TREENODE = 'treenode',
-        TREELEAF = 'treeleaf',
-        CONTENT_BOX = "contentBox",
-        BOUNDING_BOX = "boundingBox",
-        classNames = {
-            loading: getClassName(TREENODE, "loading"),
-            collapsed: getClassName(TREENODE, "collapsed"),
-            visibleRightWidget: getClassName(TREEVIEW, "visible-right")
-        },
-        RIGHTWIDGETSETTERFN = function(v) {
-            if (this.get("rightWidget") !== v && this.get("rightWidget")) {// Remove existing child
-                if (this.get("rightWidget") instanceof Y.Node) {        // Case 1: Y.Node
-                    this.get("rightWidget").remove();
+    TREEVIEW = 'treeview',
+    TREENODE = 'treenode',
+    TREELEAF = 'treeleaf',
+    CONTENT_BOX = "contentBox",
+    BOUNDING_BOX = "boundingBox",
+    classNames = {
+        loading: getClassName(TREENODE, "loading"),
+        collapsed: getClassName(TREENODE, "collapsed"),
+        visibleRightWidget: getClassName(TREEVIEW, "visible-right")
+    },
+    RIGHTWIDGETSETTERFN = function(v) {
+        var rightWidget = this.get("rightWidget"),
+        targetNode = this.get(BOUNDING_BOX).one(".yui3-tree-rightwidget");
+        if (rightWidget !== v && rightWidget) {                             // Remove existing child
+            if (rightWidget instanceof Y.Node) {                            // Case 1: Y.Node
+                rightWidget.remove();
+            } else {
+                rightWidget.get(BOUNDING_BOX).remove();                     // Case 2: Y.Widget
+                rightWidget.removeTarget(this);
+                this.set("parent", null);
+            }
+        }
+        if (v) {                                                            // Append the new widget
+            if (v instanceof Y.Node) {                                      // Case 1: Y.Node
+                v.appendTo(targetNode);
+            } else {                                                        // Case 2: Y.Widget
+                if (v.get("rendered")) {
+                    v.get(BOUNDING_BOX).appendTo(targetNode);
                 } else {
-                    this.get("rightWidget").get(BOUNDING_BOX).remove(); // Case 2: Y.Widget
-                    this.get("rightWidget").removeTarget(this);
-                    this.set("parent", null);
+                    v.render(targetNode);
                 }
+                v.set("parent", this);
+                v.addTarget(this);
             }
-            if (v) {                                                    // Append the new widget
-                if (v instanceof Y.Node) {                              // Case 1: Y.Node
-                    v.appendTo("#" + this.get("id") + "_right");
-                } else {                                                // Case 2: Y.Widget
-                    if (v.get("rendered")) {
-                        v.get(BOUNDING_BOX).appendTo("#" + this.get("id") + "_right");
-                    } else {
-                        v.render("#" + this.get("id") + "_right");
-                    }
-                    v.set("parent", this);
-                    v.addTarget(this);
-                }
-            }
-            return v;
-        };
+        }
+        return v;
+    };
 
     Y.TreeView = Y.Base.create("treeview", Y.Widget, [Y.WidgetParent], {
         BOUNDING_TEMPLATE: "<div></div>",
         CONTENT_TEMPLATE: "<ul></ul>",
-        initializer: function() {
-        },
         bindUI: function() {
             this.on("*:click", function(e) {
                 if (e.node && e.node !== this) {
@@ -101,8 +101,9 @@ YUI.add('treeview', function(Y) {
         iconNode: null,
         currentIconCSS: null,
         menuNode: null,
-        eventInstances: {},
+        eventInstances: null,
         initializer: function() {
+            this.eventInstances = {};
             this.publish("toggleClick", {
                 bubbles: false,
                 broadcast: false,
@@ -127,14 +128,14 @@ YUI.add('treeview', function(Y) {
         renderUI: function() {
             var bb = this.get(BOUNDING_BOX), header;
             header = Y.Node.create("<div class='content-header " + this.getClassName("content", "header") + "'></div>");
-            bb.insertBefore(header, this.get(CONTENT_BOX));
+            bb.prepend(header);
             this.toggleNode = Y.Node.create("<span class='" + this.getClassName("content", "toggle") + "'></span>");
             this.iconNode = Y.Node.create("<span class='" + this.getClassName("content", "icon") + "'></span>");
             this.labelNode = Y.Node.create("<span class='" + this.getClassName("content", "label") + "'></span>");
             header.append(this.toggleNode);
             header.append(this.iconNode);
             header.append(this.labelNode);
-            header.append("<div id=\"" + this.get("id") + "_right\" class=\"" + this.getClassName("content", "rightwidget") + "\">");
+            header.append("<div class=\"" + this.getClassName("content", "rightwidget") + " yui3-tree-rightwidget\">");
             if (this.get('collapsed') && !bb.hasClass(classNames.collapsed)) {
                 bb.addClass(classNames.collapsed);
             }
@@ -219,7 +220,7 @@ YUI.add('treeview', function(Y) {
         },
         expand: function(fireEvent) {
             this.set("collapsed", false);
-            fireEvent = (fireEvent === undefined) ? true : fireEvent;
+            fireEvent = fireEvent || true;
             if (fireEvent) {
                 this.fire('nodeExpanded', {
                     node: this
@@ -252,10 +253,7 @@ YUI.add('treeview', function(Y) {
             });
         },
         destroyChildren: function() {
-            var i, widgets = this.removeAll();
-            for (i in widgets) {
-                widgets.each(this.destroyChild, this);
-            }
+            this.removeAll().each(this.destroyChild, this);
         },
         destroyChild: function(item, index) {
             item.destroy();
@@ -368,7 +366,7 @@ YUI.add('treeview', function(Y) {
             this.labelNode = Y.Node.create("<span class='" + this.getClassName("content", "label") + "'></span>");
             header.append(this.iconNode);
             header.append(this.labelNode);
-            header.append("<div id=\"" + this.get("id") + "_right\" class=\"" + this.getClassName("content", "rightwidget") + "\">");
+            header.append("<div class=\"" + this.getClassName("content", "rightwidget") + " yui3-tree-rightwidget\">");
         },
         bindUI: function() {
             this.onceAfter("renderedChange", function(e) {

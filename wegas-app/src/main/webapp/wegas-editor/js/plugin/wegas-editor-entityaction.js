@@ -443,13 +443,4 @@ YUI.add('wegas-editor-entityaction', function (Y) {
             }
         }
     });
-
-    /**
-     * Shortcut to create a Button with an OpenTabAction plugin
-     */
-    Y.Wegas.OpenTabButton = Y.Base.create("button", Y.Wegas.Button, [], {
-        initializer: function (cfg) {
-            this.plug(OpenTabAction, cfg);
-        }
-    });
 });

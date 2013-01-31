@@ -11,6 +11,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
@@ -91,7 +92,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
 
     /**
      *
-     * Duplicate an entity by serialising it using the "Editor" view and
+     * Duplicate an entity by serializing it using the "Editor" view and
      * serializing it back.
      *
      * @param entityId
@@ -100,15 +101,9 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      */
     @Override
     public T duplicate(final Long entityId) throws IOException {
-
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-
         T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
-
-        String serialized = mapper.writerWithView(Views.Export.class).writeValueAsString(oldEntity);                                 // Serilize the entity
-        T newEntity = (T) mapper.readValue(serialized, AbstractEntity.class);   // and deserialize it
-
-        this.create(newEntity);                                                 // Store it db
+        T newEntity = (T) oldEntity.duplicate();
+        this.create(newEntity);                                                 // Store it in db
         return newEntity;
     }
 

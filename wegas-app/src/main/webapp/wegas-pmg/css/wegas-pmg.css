@@ -394,7 +394,6 @@ h2{
 .yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
     display:inline-block;
     width:50%;
-    float:left;
     padding:0;
     border: none;
 }

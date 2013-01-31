@@ -24,8 +24,6 @@
 .yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
     display:inline-block;
     width:60%;
-    float:left;
-    overflow:inherit;
     padding:0;
     border:none;
 }
