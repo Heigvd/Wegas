@@ -18,13 +18,11 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             this.menuAction.plug(Y.Plugin.WidgetMenu, {
                 children: [{
                         type: "Button",
-                        label: "Imposer un mandat",
-                        tooltip: "Coûte 15 de moral et 10 de confiance",
+                        label: "Attribuer un mandat",
                         cssClass: "folder-action-giveTask"
                     }, {
                         type: "Button",
                         label: "S'entretenir",
-                        tooltip: "Coûte 1 action",
                         cssClass: "folder-action-speak"
                     }]
             });
